@@ -43,11 +43,12 @@
      <_ Name="TELCAL_ARCHIVE"
                             Code="alma.telcal.TelCalArchiveImpl.TelCalArchiveHelper"
                             Type="IDL:alma/telcal/TelCalArchive:1.0"
-                            Contianer="frodoContainer"/>
+                            Container="frodoContainer"/>
                              
 
       <_ Name="SohailaTestComp"  
-                             Code="alma.TestArchive.TestCompImpl.TestCompHelper"                             Type="IDL:alma/TestArchive/TestComp:1.0"
+                             Code="alma.TestArchive.TestCompImpl.TestCompHelper"                             
+                             Type="IDL:alma/TestArchive/TestComp:1.0"
                              Container="frodoContainer"/>
 
       <_ Name="FRIDGE1"	    Code="acsexmplFridgeImpl"	  
