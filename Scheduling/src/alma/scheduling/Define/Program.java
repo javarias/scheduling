@@ -78,7 +78,7 @@ public class Program implements ProgramMember {
 	private NotifyPI notify;
 	private Expression scienceGoal;
 	private WeatherCondition weatherConstraint;
-	private double frequency;
+	private double centerFrequency;
 	private FrequencyBand frequencyBand;
 	private SBSetup requiredInitialSetup;
 	private int maximumTimeInSeconds;
@@ -111,7 +111,7 @@ public class Program implements ProgramMember {
 		notify = null;
 		scienceGoal = null;
 		weatherConstraint = null;
-		frequency = 0.0;
+		centerFrequency = 0.0;
 		frequencyBand = null;
 		requiredInitialSetup = null;
 		maximumTimeInSeconds = 0;
@@ -551,17 +551,17 @@ public class Program implements ProgramMember {
 	////////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * @return Returns the frequency.
+	 * @return Returns the centerFrequency.
 	 */
 	public double getFrequency() {
-		return frequency;
+		return centerFrequency;
 	}
 
 	/**
-	 * @param frequency The frequency to set.
+	 * @param centerFrequency The center frequency to set.
 	 */
-	public void setFrequency(double frequency) {
-		this.frequency = frequency;
+	public void setFrequency(double centerFrequency) {
+		this.centerFrequency = centerFrequency;
 	}
 
 	/**

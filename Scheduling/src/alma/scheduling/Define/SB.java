@@ -71,7 +71,7 @@ public class SB implements ProgramMember {
 	private String observingScript;
 	private boolean standardScript;
 	private Target target;
-	private double frequency;
+	private double centerFrequency;
 	private FrequencyBand frequencyBand;
 	
 	// LST range in hours -- used to support increased UV coverage.
@@ -102,7 +102,7 @@ public class SB implements ProgramMember {
 		observingScript = null;
 		standardScript = true;
 		target = null;
-		frequency = 0.0;
+		centerFrequency = 0.0;
 		frequencyBand = null;
 		lstBegin = -1.0;
 		lstEnd = -1.0;
@@ -116,7 +116,7 @@ public class SB implements ProgramMember {
 		return "\tSB (" + getId() + "," + getTimeOfCreation() + "," + getTimeOfUpdate() + ") [" +
 		getProject().getId() + "," + getParent().getId() + "] " +
 		getSchedBlockId() + " " + getScientificPriority() + " " + getTarget() + " " +
-		getFrequency() + " " + getStatus();
+		getCenterFrequency() + " " + getStatus();
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class SB implements ProgramMember {
 		out.println(indent + "\tobservingScript " + observingScript);
 		out.println(indent + "\tstandardScript " + standardScript);
 		out.println(indent + "\ttarget " + target);
-		out.println(indent + "\tfrequency " + frequency);
+		out.println(indent + "\tcenterFrequency " + centerFrequency);
 		out.println(indent + "\tfrequencyBand " + (frequencyBand == null ? "null" : frequencyBand.toString()));
 		out.println(indent + "\tproject " + (project == null ? "null" : project.getId()));
 		out.println(indent + "\ttimeOfCreation " + (timeOfCreation == null ? "null" : timeOfCreation.toString()));
@@ -363,15 +363,15 @@ public class SB implements ProgramMember {
 	/**
 	 * @return Returns the frequency.
 	 */
-	public double getFrequency() {
-		return frequency;
+	public double getCenterFrequency() {
+		return centerFrequency;
 	}
 
 	/**
-	 * @param frequency The frequency to set.
+	 * @param centerFrequency The frequency to set.
 	 */
-	public void setFrequency(double frequency) {
-		this.frequency = frequency;
+	public void setCenterFrequency(double centerFrequency) {
+		this.centerFrequency = centerFrequency;
 	}
 
 	/**

@@ -461,12 +461,15 @@ public class ALMAArchive implements Archive {
      */
     private SB convertToSB2(XmlEntityStruct xml) throws Exception {
         ALMASB sb = null;
+        System.out.println(xml.xmlString);
         try {
             SchedBlock schedblock = (SchedBlock) 
                 entityDeserializer.deserializeEntity(xml, Class.forName(
                     "alma.entity.xmlbinding.schedblock.SchedBlock"));
             sb = new ALMASB(schedblock, schedblock.getSchedBlockEntity().getEntityId());
-            sb.setParent(new Program(sb.getId()));
+            //sb.setCenterFrequency(schedblock.
+            //sb.setParent(new Program("not implemented yet"));
+            
         } catch(EntityException e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
@@ -479,7 +482,7 @@ public class ALMAArchive implements Archive {
         Project proj = null;
         try {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
-            System.out.println(xml_struct.xmlString);
+            //System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
             //System.out.println(xml_struct.xmlString);
         } catch (MalformedURI e) { 

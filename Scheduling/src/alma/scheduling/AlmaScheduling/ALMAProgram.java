@@ -41,6 +41,6 @@ public class ALMAProgram extends Program {
     //Copy of the obs unit set that came out of the archive.
     
     public ALMAProgram() {
-        super(null);
+        super("not yet implemented");
     }
 }

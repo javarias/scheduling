@@ -32,6 +32,7 @@ import alma.scheduling.Define.Equatorial;
 
 //import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.obsproject.*;
 import alma.entities.generalincludes.*;
 
 /**
@@ -52,58 +53,65 @@ public class ALMASB extends SB {
     public ALMASB(SchedBlock sb, String id) {
         super(id);
         this.almaSchedBlock = sb;
+        setParent(new ALMAProgram());
         extractInfoFromSB();
         setReady(new DateTime(System.currentTimeMillis()));
         //System.out.println("in ALMASB: "+ getStatus().isReady());
     }
 
     private void extractInfoFromSB() {
-      try {
-        this.almaObsTarget = almaSchedBlock.getObsTarget();
-        for(int i=0; i < almaObsTarget.length; i++) {
-            double ra = almaObsTarget[i].getFieldSpec().getFieldSource().
-                getSourceCoordinates().getLatitude().getContent();
+        try {
+            this.almaObsTarget = almaSchedBlock.getObsTarget();
+            for(int i=0; i < almaObsTarget.length; i++) {
+                double ra = almaObsTarget[i].getFieldSpec().getFieldSource().
+                    getSourceCoordinates().getLatitude().getContent();
             
-            String ra_unit = almaObsTarget[i].getFieldSpec().getFieldSource().
-                getSourceCoordinates().getLatitude().getUnit();
+                String ra_unit = almaObsTarget[i].getFieldSpec().getFieldSource().
+                    getSourceCoordinates().getLatitude().getUnit();
             //System.out.println(ra + " " + ra_unit);
 
-            double dec = almaObsTarget[i].getFieldSpec().getFieldSource().
-                getSourceCoordinates().getLongitude().getContent();
-            String dec_unit = almaObsTarget[i].getFieldSpec().getFieldSource().
-                getSourceCoordinates().getLongitude().getUnit();
-            //System.out.println(dec + " " + dec_unit);
-            FieldPatternT target_pattern = almaObsTarget[i].getFieldSpec().
-                getFieldPattern();
-            String type = target_pattern.getType().toString();
-            //System.out.println(type);
-            Target t;
-            if(type.equals("rectangle")){
-                RectangleT_SB rec = target_pattern.getRectangle();
-                if(rec == null) {
-                    //System.out.println("Rectangle info not there! rec == null!");
+                double dec = almaObsTarget[i].getFieldSpec().getFieldSource().
+                    getSourceCoordinates().getLongitude().getContent();
+                String dec_unit = almaObsTarget[i].getFieldSpec().getFieldSource().
+                    getSourceCoordinates().getLongitude().getUnit();
+                //System.out.println(dec + " " + dec_unit);
+                FieldPatternT target_pattern = almaObsTarget[i].getFieldSpec().
+                    getFieldPattern();
+                String type = target_pattern.getType().toString();
+                //System.out.println(type);
+                Target t;
+                if(type.equals("rectangle")){
+                    RectangleT_SB rec = target_pattern.getRectangle();
+                    if(rec == null) {
+                        //System.out.println("Rectangle info not there! rec == null!");
+                    }
+                    if(rec.getLatitudeLength() == null) {
+                        //System.out.println("latitude length == null");
+                    }   
+                    //System.out.println(rec.getLatitudeLength().getContent());
+                    //System.out.println(rec.getLatitudeLength().getUnit());
+                    //System.out.println(rec.getLongitudeLength().getContent());
+                    //System.out.println(rec.getLongitudeLength().getUnit());
+                    t = new Target(new Equatorial(ra,dec), 10,20);
+                    super.setTarget(t);
+                } else if(type.equals("circle")) {
+                } else if(type.equals("spiral")) {
+                } else {
+                    // error?
                 }
-                if(rec.getLatitudeLength() == null) {
-                    //System.out.println("latitude length == null");
-                }
-                //System.out.println(rec.getLatitudeLength().getContent());
-                //System.out.println(rec.getLatitudeLength().getUnit());
-                //System.out.println(rec.getLongitudeLength().getContent());
-                //System.out.println(rec.getLongitudeLength().getUnit());
-                t = new Target(new Equatorial(ra,dec), 10,20);
-                super.setTarget(t);
-            } else if(type.equals("circle")) {
-            } else if(type.equals("spiral")) {
-            } else {
-                // error?
             }
+            this.almaPhaseCalTarget = almaSchedBlock.getPhaseCalTarget(); 
+            this.almaPointingCalTarget = almaSchedBlock.getPointingCalTarget(); 
+
+            //preconditions
+            WeatherConstraints weather =    
+                almaSchedBlock.getPreconditions().getWeatherConstraints();
+            String polarization = almaSchedBlock.getPreconditions().getPolarization();
+            String baselineCal = almaSchedBlock.getPreconditions().getBaselineCal();
+        } catch(Exception e) {
+            System.out.println("SCHEDULING: "+e.toString());
+            e.printStackTrace();
         }
-        this.almaPhaseCalTarget = almaSchedBlock.getPhaseCalTarget(); 
-        this.almaPointingCalTarget = almaSchedBlock.getPointingCalTarget(); 
-      } catch(Exception e) {
-          System.out.println("SCHEDULING: "+e.toString());
-          e.printStackTrace();
-      }
     }
     
 }

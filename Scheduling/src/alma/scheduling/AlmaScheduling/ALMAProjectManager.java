@@ -33,6 +33,7 @@ import alma.acs.container.ContainerException;
 
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.Program;
 import alma.scheduling.ObsProjectManager.ProjectManager;
@@ -133,13 +134,14 @@ public class ALMAProjectManager extends ProjectManager {
                 System.out.println("Project = "+projects[i].getId());
                 System.out.println("SB length... "+ids.length);
                 for (int j=0;j < ids.length; j++) {
-                    Program prog = new Program("not implemented yet");
-                    prog.setProject(projects[i]);
+                    //Program prog = new Program("not implemented yet");
+                    //prog.setProject(projects[i]);
                     SB sb = archive.getSB(ids[j]);
+                    sb.getParent().setProject(projects[i]);
                     sb.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
                     sb.setProject(projects[i]);
-                    prog.addMember(sb);
-                    projects[i].setProgram(prog);
+                    sb.getParent().addMember(sb);
+                    projects[i].setProgram(sb.getParent());
                     tmpsbs.add(sb);
                 }
             }

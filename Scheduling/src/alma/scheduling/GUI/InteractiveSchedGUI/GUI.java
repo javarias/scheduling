@@ -621,7 +621,7 @@ public class GUI extends JFrame {
     }
 
     public void openObservingTool(){ 
-        String projID = outputView.getSelectedText();
+        String projID = sbOutputView.getSelectedText();
         if(projID != null) {
             controller.openObservingTool(projID);
         } else {
