@@ -86,11 +86,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     public void receive(ExecBlockEvent e) {
         try {
         logger.info("SCHEDULING: Starting to process the control event");
+        ExecBlock eb = null;
         switch(e.type.value()) {
             case 0:
                 logger.info("SCHEDULING: Event reason = started");
                 logger.info("SCHEDULING: Received sb start event from control.");
-                startSession(e);
+                eb = createExecBlock(e);
+                eb.setStartTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)));
+                startSession(eb);
                 break;
             case 1:
                 logger.info("SCHEDULING: Event reason = end");
@@ -98,12 +101,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
                     e.type.value(), e.status.value(), new DateTime(
                         UTCUtility.utcOmgToJava(e.startTime)));
-                endSession(e);
                 updateSB(ce);
-                ExecBlock eb = new ExecBlock(e.execID, e.saId);
-                eb.setParent(new SB(e.sbId)); // do this to get SB id over to PM, will be replaced with proper SB
-                eb.setStartTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)));
-                eb.setEndTime(new DateTime(System.currentTimeMillis()),Status.COMPLETE);
+                eb = createExecBlock(e);
+                eb.setEndTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)),Status.COMPLETE);
+                endSession(eb);
                 sbCompleted(eb);
                 String[] ids = updateProjectStatus(eb);
                 startPipeline(ce, ids);
@@ -161,19 +162,20 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     //  Util functions 
     ///////////////////////////////////////////////////////////////////////////
 
+    private ExecBlock createExecBlock(ExecBlockEvent event) {
+        ExecBlock eb = new ExecBlock(event.execID, event.saId);
+        // do this to get SB id over to PM, will be replaced with proper SB
+        eb.setParent(new SB(event.sbId));
+        return eb;
+    }
+    
     /**
      * Updates the scheduling block with the info gotten from the control
      * event. If the SB is complete
      */
     private void updateSB(ControlEvent e) {
-        //try {
-            logger.info("SCHEDULING: updating the SB after event from control received");
-            //archive.updateSB(e);
-            manager.updateSB(e);
-        //} catch(SchedulingException ex) {
-        //    logger.severe("SCHEDULING: error updating sb");
-        //    ex.printStackTrace();
-        //}
+        logger.info("SCHEDULING: updating the SB after event from control received");
+        manager.updateSB(e);
     }
 
 
@@ -181,81 +183,33 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * Creates a Session object for the start of this SB execution session. 
      * Stores the session object in the archive and sends out a start session
      * event.
-     * @param ExecBlockEvent The event which tells us that the SB has started
+     * @param ExecBlock The ExecBlock which tells us that the SB has started
      *                       its execution.
      */
-    private void startSession(ExecBlockEvent e) {
-      try {
-        logger.info("SCHEDULING: Start of a Session! MUST BE FIXED");
-
-        /*
-        //create a session object 
-        Session s = createSession(e);
-        String sessionID = archive.storeSession(s);
-        //send out the session start event
-        StartSession start_event = new StartSession (e.startTime, 
-            sessionID, "ous_partid", e.sbId, e.execID); 
-        publisher.publish(start_event);       
-        manager.sessionStart(sessionID,e.sbId);
-       */
-      }catch(Exception ex) {
-        logger.severe("SCHEDULING: error! ");
-        ex.printStackTrace();
-      }
+    private void startSession(ExecBlock eb) {
+        try {
+            logger.info("SCHEDULING: Start of a Session!");
+            manager.sendStartSessionEvent(eb);
+        }catch(Exception ex) {
+            logger.severe("SCHEDULING: error! ");
+            ex.printStackTrace();
+        }
     }
 
-    private SessionT createSession(ExecBlockEvent e) {
-        /*
-        Session s = new Session();
-        SessionEntityT  s_entity = new SessionEntityT();
-        s.setSessionEntity(s_entity);
-        //s.setEndTime(""+e.startTime);
-        EntityRefT execRef = new EntityRefT();
-        execRef.setEntityId(e.execID);
-        ExecutionT execution = new ExecutionT();
-        execution.setExecBlockReference(execRef);
-        SessionSequenceItem seq_item = new SessionSequenceItem();
-        seq_item.setExecution(execution);
-        SessionSequence seq = new SessionSequence();
-        seq.setSessionSequenceItem(seq_item);
-        SessionSequence[] seqArray = new SessionSequence[1];
-        seqArray[0] = seq;
-        s.setSessionSequence(seqArray);
-        */
-        return null;
-    }
-    
     /**
      * Updates an existing session object in the archive to say that the SB has 
      * finished its execution. Then sends out an event saying that the session 
      * has ended.
-     * @param ExecBlockEvent The event to tell us that the event has ended.
+     * @param ExecBlock 
      */
-    private void endSession(ExecBlockEvent e) {
-        //query session object from the archive
-        logger.info("SCHEDULING: End of a Session! MUST BE FIXED");
-        /*try {
-            //Get Session from the archive.
-            //ALMASession session = (ALMASession)archive.querySession(e.execID);
-            //update session object and update it in the archive
-            //alma.entity.xmlbinding.session.Session s = session.getSession();
-            Session s = archive.querySession(e);
-            updateSession(s, e);
-            //archive.updateSession
-            //send out the session end event
-            EndSession end_event = new EndSession (
-                                        e.startTime, 
-                                        s.getSessionEntity().getEntityId(),
-                                        "ous_partid", 
-                                        e.execID);
-            publisher.publish(end_event);
-            manager.sessionEnd(e.sbId);
-        } catch(Exception ex) {
-            logger.severe("SCHEDULING: error in ALMAReceiveEvent:endSession");
-            ex.printStackTrace();
+    private void endSession(ExecBlock eb) {
+        try {
+            logger.info("SCHEDULING: End of a Session! ");
+            manager.sendEndSessionEvent(eb);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: error! ");
+            e.printStackTrace();
         }
-        */
-
     }
 
     private void updateSession(SessionT s, ExecBlockEvent e) {

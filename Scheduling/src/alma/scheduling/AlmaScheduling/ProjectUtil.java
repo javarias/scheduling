@@ -822,6 +822,7 @@ public class ProjectUtil {
 	}
 	
 	static private ObsUnitSetStatusT assignObsProgramStatus(Program source, DateTime now) {
+        System.out.println("Assigning obs program status");
 		ObsUnitSetStatusT target = new ObsUnitSetStatusT ();
 		target.setEntityPartId(source.getObsUnitSetStatusId());
 		ObsProjectRefT obsUnitSetRef = new ObsProjectRefT ();
@@ -871,6 +872,7 @@ public class ProjectUtil {
 	}
 	
 	static private SessionT[] assignSession(ObservedSession[] session) {
+        System.out.println("assigning sessions!");
 		SessionT[] list = new SessionT [session.length];
 		SessionT x = null; 
 		for (int i = 0; i < session.length; ++i) {

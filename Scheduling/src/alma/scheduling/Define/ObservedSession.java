@@ -150,5 +150,6 @@ public class ObservedSession {
 	}
 
     public boolean execExists(String id) {
+        return false;
     }
  }

@@ -264,13 +264,25 @@ public class ProjectStatusQueue {
 		ProjectStatus x = null;
 		for (int i = 0; i < queue.size(); ++i) {
 			x = (ProjectStatus)queue.get(i);
-			//if (x.getId().equals(entityId)) {
 			if (x.getProjectStatusEntity().getEntityId().equals(entityId)) {
 				return true;
 			}
 		}
 		return false;
 	}
+
+    public synchronized ProjectStatus getStatusFromProjectId(String projectId) {
+        ProjectStatus x=null;
+        for(int i=0; i < queue.size(); i++){
+            x = (ProjectStatus)queue.get(i);
+            if(x.getObsProjectRef().getEntityId().equals(projectId)) {
+                return x;
+            }
+        }
+        return null;
+    }
+
+
 
 	/**
 	 * Get the number of items in the queue.

@@ -31,6 +31,7 @@ import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.Message;
@@ -52,43 +53,9 @@ import java.util.logging.Logger;
  */
 public class DynamicScheduler extends Scheduler implements Runnable {
 	
-    // All the configuration info needed by this scheduler
-    //protected SchedulerConfiguration config = null;
-    //Initial subarrayId
-   // protected short subarrayId = -1;
-    //The logger
-    //protected Logger logger = null;
-    //The clock for this scheduler
-    //protected Clock clock = null;
-    //The dynamic scheduling algorithm that controls this scheduler
-    //protected DynamicSchedulingAlgorithm dsa = null;
-    //If this scheduler is for Interactive mode this controller is
-    //the controlling object for its GUI.
-   // private GUIController controller;
-    
     public DynamicScheduler(SchedulerConfiguration config) {
         super(config);
     }
-        /*
-    	this.config = config;
-    	this.subarrayId = config.getSubarrayId();
-    	this.clock = config.getClock();
-    	this.logger = config.getLog();
-    	// At a minimum, the configuration, clock, and log objects
-    	// cannot be null and the subarrayId cannot be negative.
-    	if (config == null)
-    		throw new IllegalArgumentException(name() +     
-                ": There is no configuration object!");
-    	if (subarrayId < 0)
-    		throw new IllegalArgumentException(name() + 
-                ": Invalid subarray-id!");
-    	if (logger == null)
-    		throw new IllegalArgumentException(name() + 
-                ": There is no logger!");
-    	if (clock == null)
-    		throw new IllegalArgumentException(name() + 
-                ": There is no clock!");
-                */
     
     /**
      * Form a name of this scheduler, which includes its thread name and the id
@@ -110,53 +77,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     	config.setTask(Thread.currentThread());
         runDynamic();
     }
-    	//if (config.isDynamic()){ 
-    //	} else {
-      //      logger.info("SCHEDULING: Running in INTERACTIVE mode");
-    	//	runInteractive();
-        //}
         
-    
-    /**
-     * If in interactive mode, this method validates the configuration file
-     * for an interactive session.
-     * @return String Returns null if there were no errors. If errors in 
-     *                validating occured the error string would be returned.
-    private String validateInteractiveConfig() {
-    	DateTime t = config.getCommandedEndTime();
-    	if (t == null || t.isNull())
-    		return name() + ": There is no commanded stop time.";
-    	if (config.getControl() == null)
-    		return name() + ": There is no control component.";
-    	if (config.getOperator() == null)
-    		return name() + ": There is no operator component.";
-    	if (config.getTelescope() == null)
-    		return name() + ": There is no telescope model component.";
-    	if (config.getProjectManager() == null)
-    		return name() + ": There is no project manager component.";
-    	// We might need to add more things later, as we implement the 
-    	// interactive mode.
-    	return null;
-    }
-     */
-    
-    /**
-     * Starts the interactive GUI by initializing the GUI's Controller.
-    public void runInteractive() {
-    	System.out.println(name() + " is running in interactive mode!");
-        controller = new GUIController(config);
-        Thread t = new Thread(controller);
-        t.start();
-    	
-    	// Validate the configuration object.
-    	
-    	//System.out.println("Unfortunately, interactive mode is not "+
-        //    "implemented at this time.");
-    	//System.out.println(name() + " is aborting.");
-    	//config.errorEnd("Interactive mode is not implemented.",
-        //    clock.getDateTime());
-    }
-     */
     
     /**
      * If in dynamic mode, this method validates the configuration file
@@ -372,15 +293,16 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     logger.info("SCHEDULING: About to schedule sb = "+selectedSB.getId());
                     selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
                     logger.info("SB is now "+selectedSB.getStatus().getStatus());
+                    //TODO When Lindsey says so ;)
+                    //ObservedSession session = 
+                    //    config.getProjectManager().createObservedSession(
+                    //            selectedSB.getParent());
+                    //config.getProjectManager().sendStartSessionEvent(session);
       		        config.getControl().execSB(config.getSubarrayId(), best);
                 } else {
                     logger.info("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...
                 }
-                    
-
-                //finished executing, get rid of the subarray
-                //config.getControl().destroySubarray(subarrayid);
             } catch (Exception e) {
                 //clear queue! 
                 config.getQueue().clear();
@@ -391,8 +313,6 @@ public class DynamicScheduler extends Scheduler implements Runnable {
             }
     		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
     	}
-        //logger.info("SCHEDULING: removing sb "+best.getBestSelection()+" from queue now..");
-        //config.getQueue().remove(best.getBestSelection());
    	
     	return false;
     }

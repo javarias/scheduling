@@ -57,11 +57,13 @@ public class ALMAControl implements Control {
     private ControlSystem control_system;
     private Vector controllers;
     private Logger logger;
+    private Vector observedSessions;
 
     public ALMAControl(ContainerServices cs) {
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.controllers = new Vector();
+        this.observedSessions = new Vector();
         try {
             control_system = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("ControlSystem1"));

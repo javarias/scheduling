@@ -25,12 +25,14 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-//import java.util.logging.Logger;
 
 import java.util.Vector;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
+import alma.acs.util.UTCUtility;
 
+import alma.scheduling.StartSession;
+import alma.scheduling.EndSession;
 import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Event.Publishers.PublishEvent;
@@ -43,11 +45,13 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.ProjectQueue;
+import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 import alma.entities.commonentity.EntityRefT;
+import alma.entity.xmlbinding.execblock.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
 /**
@@ -297,5 +301,91 @@ public class ALMAProjectManager extends ProjectManager {
         }
     }
 
+    /**
+      * Creates an Observed session and maps it to the ProjectStatus. The ProjectStatus then 
+      * gets updated in the archive. 
+      */
+    public ObservedSession createObservedSession(Program p) {
+
+        ObservedSession session = new ObservedSession();
+        session.setSessionId(ProjectUtil.genPartId());
+        session.setProgram(p);
+        Project proj = pQueue.get(p.getProject().getId());
+        proj.setProgram(p);
+        ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
+        try {
+            ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            archive.updateProjectStatus(ps);
+        } catch(SchedulingException e) {
+            logger.severe("SCHEDULING: error mapping PS with Session");
+            e.printStackTrace();
+        }
+        return session;
+    }
+
+
+    /* Will be this way in future
+    public void sendStartSessionEvent(ObservedSession session) {
+    }
+    */
+    public void sendStartSessionEvent(ExecBlock eb) {
+        String sbid = ((SB)eb.getParent()).getId();
+        SB sb = sbQueue.get(sbid);
+        //in future will be done in scheduler.
+        ObservedSession session = createObservedSession(sb.getParent());
+
+        try {
+            StartSession start_event = new StartSession(
+                    UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
+                    session.getSessionId(),
+                    session.getProgram().getId(),
+                    sbid,
+                    eb.getId());
+            publisher.publish(start_event);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Failed to send start session event!");
+            e.printStackTrace();
+        }
+    }
+
+    /* will change eventually to this
+    public void sendEndSessionEvent(ObservedSession session) {
+    }
+    */
+    public void sendEndSessionEvent(ExecBlock eb) {
+        String execid = eb.getExecId();
+        String sbid = ((SB)eb.getParent()).getId();
+        SB sb = sbQueue.get(sbid);
+        String projectid = ((Project)sb.getProject()).getId();
+        ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
+        ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
+        SessionT[] sessions = obsProgram.getSession();
+        SessionT session = null;
+        for(int i=0; i < sessions.length; i++) {
+            ExecBlockEntityRefT[] execblocks = sessions[i].getExecBlockRef();
+            for(int j=0; j < execblocks.length; j++) {
+                if(execblocks[j].getEntityId().equals(execid)){
+                    logger.info("SCHEDULING: session found!");
+                    session = sessions[i];
+                    break;
+                }
+            }
+            if(session != null) {
+                break;
+            }
+        }
+        try {
+            EndSession end_event = new EndSession(
+                    UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
+                    session.getEntityPartId(),
+                    obsProgram.getEntityPartId(),
+                    execid);
+            publisher.publish(end_event);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Failed to send end session event!");
+            e.printStackTrace();
+        }
+                        
+    }
     
 }

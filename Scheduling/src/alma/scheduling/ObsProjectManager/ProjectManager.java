@@ -30,6 +30,8 @@ import java.util.logging.Logger;
 
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.TaskControl;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.ObservedSession;
 
 /**
  * @author Sohaila Lucero
@@ -96,6 +98,19 @@ public class ProjectManager implements Runnable,
      */
     public TaskControl getProjectManagerTaskControl() {
         return pmTaskControl;
+    }
+
+    public ObservedSession createObservedSession(Program p) {
+        ObservedSession session = new ObservedSession();
+        session.setProgram(p);
+        //TODO generate the part id without ProjectUtil somehow...
+        return session;
+    }
+
+    public void sendStartSessionEvent(ObservedSession session){
+    }
+
+    public void sendEndSessionEvent(ObservedSession session) {
     }
     
 }

@@ -31,6 +31,8 @@ import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Status;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
@@ -147,4 +149,10 @@ public class ProjectManagerSimulator
         return null;
     }
 	
+    public ObservedSession createObservedSession(Program p) {
+        return null;
+    }
+
+    public void sendStartSessionEvent(ObservedSession session){}
+    public void sendEndSessionEvent(ObservedSession session){}
 }

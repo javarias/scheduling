@@ -284,7 +284,6 @@ public class ALMAMasterScheduler extends MasterScheduler
 
         //TODO Eventually populate s_policy with info from the schedulingPolicy
         Policy s_policy = createPolicy();
-        //logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
         
         short subarrayId = createSubarray(new short[0], "dynamic");
         

@@ -54,4 +54,8 @@ public interface ProjectManager {
 	
 
     public TaskControl getProjectManagerTaskControl();
+    
+    public ObservedSession createObservedSession(Program p);
+    public void sendStartSessionEvent(ObservedSession session);
+    public void sendEndSessionEvent(ObservedSession session);
 }
