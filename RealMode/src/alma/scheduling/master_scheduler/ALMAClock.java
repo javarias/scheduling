@@ -49,7 +49,7 @@ public class ALMAClock extends ClockBase {
 	 * @param container The object that implements the container services.
 	 */
 	public ALMAClock (boolean isSimulation, ContainerServices container) {
-		System.out.println("The Clock has been constructed.");
+		System.out.println("SCHEDULING: The Clock has been constructed.");
 		synchronize();
 	}
 	

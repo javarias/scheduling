@@ -36,6 +36,8 @@ import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
 import alma.entity.xmlbinding.schedblock.*;
 
 import ALMA.Control.ArrayController;
+import ALMA.Control.TooLateException;
+import ALMA.Control.ArrayNotIdleException;
 /**
  * The ALMADispatcher class presents a list of scheduling blocks for execution
  * to the telescope operator, in priority order, and waits for a selection.
@@ -70,7 +72,7 @@ public class ALMADispatcher implements ControlProxy {
         subArrays = new Vector();
         antennaMonitor = new Vector();
         this.logger = containerServices.getLogger();
-		logger.log(Level.INFO,"The Dispatcher has been constructed.");
+		logger.log(Level.INFO,"SCHEDULING: The Dispatcher has been constructed.");
 	}
 
     /**
@@ -94,17 +96,24 @@ public class ALMADispatcher implements ControlProxy {
 	 *  @param time
 	 */
 	public void sendToControl(String id, STime time) {
-		logger.log(Level.INFO,"Sending SB with id = "+id+" to controller.");
+		logger.log(Level.INFO,"SCHEDULING: Sending SB with id = "+id+" to controller.");
         try {
             //connect to control's component
             arrayControllerComp = ALMA.Control.ArrayControllerHelper.narrow(
                 containerServices.getComponent("ArrayController1"));
-            logger.log(Level.INFO, "Got array controller");
+            logger.log(Level.INFO, "SCHEDULING: Got array controller");
             //tell control to process the schedblock
-            arrayControllerComp.processSchedBlock(id, time.getTime());
+            //arrayControllerComp.processSchedBlock(id, time.getTime());
+            try {
+                arrayControllerComp.observeNow(id);
+            } catch(ArrayNotIdleException e){
+                logger.severe("SCHEDULING: "+e.toString());
+            } catch(TooLateException e) {
+                logger.severe("SCHEDULING: "+e.toString());
+            }
         } catch (Exception e) {
-            logger.log(Level.INFO, "error getting array controller");
-            e.printStackTrace();
+            logger.severe("SCHEDULING: error getting array controller");
+            logger.severe("SCHEDULING: "+e.toString());
         }
 	}
 

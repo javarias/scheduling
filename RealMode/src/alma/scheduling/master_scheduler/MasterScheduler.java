@@ -156,7 +156,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		this.container = null;
         
 		setNullReferences();
-		System.out.println("The MasterScheduler has been constructed.");
+		System.out.println("SCHEDULING: The MasterScheduler has been constructed.");
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         this.componentName = null;
         this.container = null;
         setNullReferences();
-        System.out.println("The MasterScheduler has been constructed.");
+        System.out.println("SCHEDULING: The MasterScheduler has been constructed.");
 	}
 
 	/**
@@ -299,7 +299,8 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		
 		// OK, we're done.
 		schedulingState.setState(State.INITIALIZED);
-		System.out.println("The MasterScheduler has been initialized.");
+		logger.info("SCHEDULING: The MasterScheduler has been initialized.");
+		//System.out.println("SCHEDULING: The MasterScheduler has been initialized.");
 	}
 
 	/**
@@ -331,19 +332,21 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	public void execute() {
 		// Set the state to executing.
 		schedulingState.setState(State.EXECUTING);
-        System.out.println("starting execute");
+        logger.info("SCHEDULING: starting execute");
+        //System.out.println("SCHEDULING: starting execute");
+        
         
         // get non-complete SBs from archive, right now it gets ALL sbs.
         SchedBlock[] sbs = archive.getSchedBlock();
-        System.out.println("Getting SBs from archive");
+        logger.info("SCHEDULING: Getting SBs from archive");
 
         // place SBs in master SB queue
         if(sbs != null) {
-            System.out.println("sbs not null storing into queue");
+            logger.info("SCHEDULING: sbs not null storing into queue");
             //queue.addNonCompleteSBsToQueue(sbs);   
             queue.addSchedBlock(sbs);
         } else {
-            System.out.println("sbs null will result in error?");
+            logger.info("SCHEDULING: sbs null will result in error?");
         }
         
         // form unique list of sb ids from queue
@@ -382,7 +385,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         
         operator.setMessageQueue(messageQueue);
         
-		System.out.println("The MasterScheduler is executing.");
+		logger.info("SCHEDULING: The MasterScheduler is executing.");
 	}
 
 	/**
@@ -451,7 +454,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		setNullReferences();
 		
 		// We're done.				
-		System.out.println("The MasterScheduler has been cleaned up and is now stopped.");
+		logger.info("SCHEDULING: The MasterScheduler has been cleaned up and is now stopped.");
 	
 	}
 
@@ -465,7 +468,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	 * @see alma.acs.component.ComponentLifecycle#aboutToAbort()
 	 */
 	public void aboutToAbort() {
-		System.out.println("The MasterScheduler has been requested to abort.");
+		logger.info("SCHEDULING: The MasterScheduler has been requested to abort.");
 		cleanUp();
 	}
 
@@ -477,9 +480,9 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
             try {
                 logger.info("MSsleeping!");
                 Thread.sleep(msSleepTime); 
-                logger.log(Level.INFO,"MS Thread woken up.");
+                logger.log(Level.INFO,"SCHEDULING: MS Thread woken up.");
             } catch(InterruptedException e){
-                logger.log(Level.INFO,"MS Thread interrupted.");
+                logger.log(Level.INFO,"SCHEDULING: MS Thread interrupted.");
             }
         }    
     }
@@ -524,7 +527,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	public void stopScheduling() throws InvalidOperation {
         for(int i=0; i < scheduler.size(); i++) {
             ((Scheduler)scheduler.get(i)).stop();
-            logger.log(Level.INFO,"Scheduler #"+i+" stopped.");
+            logger.log(Level.INFO,"SCHEDULING: Scheduler stopped.");
         }
 	}
 
@@ -555,14 +558,14 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	public void response(String messageId, String reply) throws UnidentifiedResponse 
     {
         if(logger == null) {
-            System.out.println("logger is null!");
+            System.out.println("SCHEDULING: logger is null!");
         }
-        logger.log(Level.INFO,"in MS. MessageID = "+messageId);
-        logger.log(Level.INFO,"in MS. Reply = "+reply);
-        logger.log(Level.INFO,"in MS. messageQueue size = "+messageQueue.size());
+        logger.log(Level.INFO,"SCHEDULING: in MS. MessageID = "+messageId);
+        logger.log(Level.INFO,"SCHEDULING: in MS. Reply = "+reply);
+        logger.log(Level.INFO,"SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
        
        if(messageQueue.size() < 1) {
-            logger.log(Level.INFO,"in MS. MessageQueue was empty. Try starting with startScheduling function!");
+            logger.log(Level.INFO,"SCHEDULING: in MS. MessageQueue was empty. Try starting with startScheduling function!");
             return;
             /*
             Vector tmpIds = queue.getAllUid();
@@ -576,9 +579,9 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         } 
         
         Message item = messageQueue.getMessage(messageId);
-        logger.log(Level.INFO,"in MS. Got message with id="+item.getMessageId());
+        logger.log(Level.INFO,"SCHEDULING: in MS. Got message with id="+item.getMessageId());
         item.setReply(reply);
-        logger.log(Level.INFO, "in MS. message = "+ messageId + 
+        logger.log(Level.INFO, "SCHEDULING: in MS. message = "+ messageId + 
             " gotten and reply = "+ reply + " sent.");
         item.getThread().interrupt();
         //messageQueue.removeMessage(messageId);

@@ -38,7 +38,7 @@ public class MessageQueue {
 
     public MessageQueue() {
         queue = new Vector();
-        System.out.println("Message queue created");
+        System.out.println("SCHEDULING: Message queue created");
     }
 
     public synchronized void addMessage(String messageId, Thread timer) {

@@ -26,7 +26,7 @@
 
 package ALMA.scheduling.master_scheduler;
 
-import ALMA.Control.ExecBlockEndEvent;
+import ALMA.Control.ExecBlockEvent;
 import ALMA.scheduling.project_manager.ALMAPipeline;
 import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
 
@@ -44,11 +44,11 @@ public class ProcessControlEvent implements Runnable {
     private ProjectManagerTaskControl pmTaskControl;
     private ALMAArchive archive;
     private ALMAPipeline pipeline;
-    private ExecBlockEndEvent event;
+    private ExecBlockEvent event;
     
     public ProcessControlEvent(ProjectManagerTaskControl pmtc,
                                 ALMAArchive a, ALMAPipeline p,
-                                    ExecBlockEndEvent e) {
+                                    ExecBlockEvent e) {
 
         this.pmTaskControl = pmtc;
         this.archive = a;
@@ -57,7 +57,7 @@ public class ProcessControlEvent implements Runnable {
     }                                
 
     public void run() {
-        System.out.println("process control event started");
+        System.out.println("SCHEDULING: process control event started");
         updateSB(event.sbId);
         startPipeline(event.sbId);
     }

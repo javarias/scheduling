@@ -59,7 +59,7 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
         this.container = container;
         this.logger = container.getLogger();
         this.isSimulation = isSimulation;
-        System.out.println("The ALMATelescopeOperator has been constructed.");
+        System.out.println("SCHEDULING: The ALMATelescopeOperator has been constructed.");
 	}
 
 
@@ -87,19 +87,19 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
 //        Message m = messageQueue.getMessage(messageId);
 //        m.setThread(timer);
         
-        logger.log(Level.INFO,"in TO, messageQueue size ="+messageQueue.size());
+        //logger.log(Level.INFO,"SCHEDULING: in TO, messageQueue size ="+messageQueue.size());
         //System.out.println(messageQueue.toString());
-        logger.log(Level.INFO,"in TO. sbidlist len = "+ sbIdList.length);
+        //logger.log(Level.INFO,"SCHEDULING: in TO. sbidlist len = "+ sbIdList.length);
 
         int pos = 0; //First one.
         String reply = sbIdList[pos];
-        logger.log(Level.INFO,"in TO. reply ="+ reply);
+        logger.log(Level.INFO,"SCHEDULING: in TO. reply ="+ reply);
         try {
             this.masterSchedulerComp = ALMA.scheduling.MSHelper.narrow(
                 container.getComponent("MASTER_SCHEDULER"));
-            logger.log(Level.INFO,"in TO. ms response about to be called");
+            logger.log(Level.INFO,"SCHEDULING: in TO. ms response about to be called");
             masterSchedulerComp.response(messageId, reply);
-            logger.log(Level.INFO,"in TO. ms response called");
+            logger.log(Level.INFO,"SCHEDULING: in TO. ms response called");
             //TODO= container.release("MASTER_SCHEDULER");
 //            if(timer.isAlive()){
 //                timer.interrupt();
@@ -110,23 +110,23 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
 
         try {
             timer.join();
-            logger.log(Level.INFO,"in TO. timer.join()");
+            logger.log(Level.INFO,"SCHEDULING: in TO. timer.join()");
         } catch(InterruptedException e) {
-            logger.log(Level.INFO,"in TO. timer interrupted");
+            logger.log(Level.INFO,"SCHEDULING: in TO. timer interrupted");
         }
 
         if(messageQueue == null) {
-            logger.log(Level.INFO,"in TO. messageQueue is null");
+            logger.log(Level.INFO,"SCHEDULING: in TO. messageQueue is null");
         }
         if(messageId == null) {
-            logger.log(Level.INFO,"in TO. messageId is null");
+            logger.log(Level.INFO,"SCHEDULING: in TO. messageId is null");
         }
         if(messageQueue.getMessage(messageId) == null) {
-            logger.log(Level.INFO,"in TO. mesage is null");
+            logger.log(Level.INFO,"SCHEDULING: in TO. mesage is null");
             return "";
         }
         if(messageQueue.getMessage(messageId).getReply() == null){
-            logger.log(Level.INFO,"in TO. message reply is null");
+            logger.log(Level.INFO,"SCHEDULING: in TO. message reply is null");
         }
 
         return messageQueue.getMessage(messageId).getReply();
@@ -150,7 +150,7 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
     
     public void setMessageQueue(MessageQueue mq) {
         this.messageQueue = mq;
-        System.out.println("Message queue set in operator");
+        System.out.println("SCHEDULING: Message queue set in operator");
     }
 
 	public static void main(String[] args) {

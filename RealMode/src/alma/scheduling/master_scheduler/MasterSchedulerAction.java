@@ -76,18 +76,12 @@ public class MasterSchedulerAction implements Runnable {
                 // dont know where this info comes from..
             } catch (InterruptedException e) {
             }
-            System.out.println("MB Action running");
+            System.out.println("SCHEDULING: MB Action running");
         }
 	}
 
-    /*
-    public void start() {
-        taskInfoThread.start();
-        System.out.println("MB Action started");
-    }
-    */
     public void stop() {
-        System.out.println("MB Action stopped");
+        System.out.println("SCHEDULING: MB Action stopped");
     }
     ///////////////////////////////////////////////////
 
