@@ -2,9 +2,9 @@
 
 # Shutdown acs and java processes
 
-killACS
+#killACS
 #acsStopContainer Activator >&  /dev/null
-#acsStopContainer hugoActivator >&  /dev/null
-#maciManagerShutdown >&  /dev/null
-#acsStopORBSRVC >&  /dev/null
-#acsdataClean
+acsStopContainer frodoContainer -b0 >&  /dev/null
+maciManagerShutdown -b0 >&  /dev/null
+acsStopORBSRVC -b0 >&  /dev/null
+acsdataClean
