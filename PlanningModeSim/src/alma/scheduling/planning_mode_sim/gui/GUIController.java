@@ -217,24 +217,26 @@ public class GUIController implements Runnable {
                 totalprojects = Integer.parseInt(tmpstr);
             }
             //System.out.println(totalprojects);
-            projects = new Vector();
-            Component[] projectPanes = ((JTabbedPane)p5Comps[1]).getComponents();
-            Component[] tabPanes, tmp, comps;
-            JPanel panel1, panel2, targetpanel;
-            for(int i=0; i < totalprojects; i++) {
-                tabPanes = ((JScrollPane)projectPanes[i]).getComponents();
-                tmp = ((JViewport)tabPanes[0]).getComponents();
-                panel1 =(JPanel)tmp[0]; //mainpanel
-                tmp = panel1.getComponents();
-                panel2 = (JPanel)tmp[0];
-                comps = panel2.getComponents();
-                projects.add(((JTextField)comps[1]).getText());
-                projects.add(((JTextField)comps[3]).getText());
-                projects.add(((JTextField)comps[5]).getText());
-                projects.add(((JTextField)comps[7]).getText());
-                //add targets now!
-                Component[] targets = ((JPanel)tmp[1]).getComponents();
-                projects.add(getTargetsInfo(targets));
+            if(totalprojects > 0 ){
+                projects = new Vector();
+                Component[] projectPanes = ((JTabbedPane)p5Comps[1]).getComponents();
+                Component[] tabPanes, tmp, comps;
+                JPanel panel1, panel2, targetpanel;
+                for(int i=0; i < totalprojects; i++) {
+                    tabPanes = ((JScrollPane)projectPanes[i]).getComponents();
+                    tmp = ((JViewport)tabPanes[0]).getComponents();
+                    panel1 =(JPanel)tmp[0]; //mainpanel
+                    tmp = panel1.getComponents();
+                    panel2 = (JPanel)tmp[0];
+                    comps = panel2.getComponents();
+                    projects.add(((JTextField)comps[1]).getText());
+                    projects.add(((JTextField)comps[3]).getText());
+                    projects.add(((JTextField)comps[5]).getText());
+                    projects.add(((JTextField)comps[7]).getText());
+                    //add targets now!
+                    Component[] targets = ((JPanel)tmp[1]).getComponents();
+                    projects.add(getTargetsInfo(targets));
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -727,7 +727,7 @@ public class GUI extends JFrame {
             }
         });
         gridbag.setConstraints(tf,c);
-        tf.selectAll();
+        //tf.selectAll();
         header.add(tf);
         l = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
