@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #Get the ACS instance 
-export ACS_INSTANCE=`cat sched_acs_instance`
+export ACS_INSTANCE=`cat sched_acs_instance.log`
 
 #Stop all acs processes
 acsStop

@@ -44,16 +44,16 @@ import java.io.IOException;
  */
 //public class TestDateTime extends ComponentClientTestCase{
 public class TestDateTime extends TestCase{
-/*
+    
     public TestDateTime() throws Exception {
         super("DateTime Test");
     }
     protected void setUp() throws Exception {
     }
-    public void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
     }
-    */
-	public void testLeap() {
+    
+    public void testLeap() {
         assertFalse(DateTime.isLeapYear(2003));
         assertTrue(DateTime.isLeapYear(2000));
         assertFalse(DateTime.isLeapYear(2001));

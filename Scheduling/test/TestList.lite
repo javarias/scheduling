@@ -1,1 +1,3 @@
+PROLOGUE prologue
 allTests
+EPILOGUE epilogue

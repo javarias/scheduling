@@ -40,14 +40,14 @@ public class TestAntenna extends TestCase {
         super("AntennaClassTest");
         antenna = new Antenna((short)10, 100, false);
     }
-    //protected void setUp() throws Exception {
+    protected void setUp() throws Exception {
         //super.setUp();
         // create an antenna with id = 10, locaition =100, and it
         // doesnt have a nutator
-      //  antenna = new Antenna((short)10, 100, false);
-    //}
-    //public void tearDown() throws Exception {
-    //}
+        antenna = new Antenna((short)10, 100, false);
+    }
+    public void tearDown() throws Exception {
+    }
 
     public void testID() {
         assertEquals(10, antenna.getAntennaId());

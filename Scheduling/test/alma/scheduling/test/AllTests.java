@@ -37,12 +37,9 @@ public class AllTests {//extends TestSuite{
     public static Test suite(){
         TestSuite suite = new TestSuite();
         try {
-            /*
-            suite.addTest(new alma.scheduling.test.TestDateTime());
-            suite.addTest(new alma.scheduling.test.TestAntenna());
-            */
             suite.addTestSuite(alma.scheduling.test.TestAntenna.class);
             suite.addTestSuite(alma.scheduling.test.TestDateTime.class);
+            suite.addTestSuite(alma.scheduling.test.TestALMAArchive.class);
         }catch(Exception e) {
             System.out.println("hmm");
         }
