@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.5 2003/03/26 00:15:48 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.6 2003/03/26 16:41:18 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -17,10 +17,12 @@
 #------------------------------------------------------------------------
 
 DEBUG = on
-# 
+
+#
 # XML schema files and includes
-# 
-#XSDBIND = 
+#
+XSDBIND = SchedulingEntities
+XSDBIND_INCLUDE = systementities
 
 # 
 # IDL Files and flags
