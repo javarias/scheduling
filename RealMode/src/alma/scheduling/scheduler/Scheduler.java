@@ -122,7 +122,7 @@ public class Scheduler implements Runnable {
         try {
             schedEventReceiver = new SchedulerEventReceiver(container, 
                                     schedulerTaskControl, this);
-            schedEventReceiver.addSubscription(alma.Control.EXECEVENTS.class);
+            schedEventReceiver.addSubscription(alma.Control.ExecBlockEvent.class);
             schedEventReceiver.consumerReady();
         } catch(Exception e) {
         }

@@ -135,7 +135,7 @@ public class ProjectManager implements Runnable {
             logger.info("SCHEDULING: Trying to get NCs");
             
             try {
-                control_event.addSubscription(alma.Control.EXECEVENTS.class);
+                control_event.addSubscription(alma.Control.ExecBlockEvent.class);
                 control_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to CONTROL");
             } catch(Exception e) {
