@@ -364,7 +364,7 @@ public class Scheduler implements Runnable {
     		}
     	} else {
             try {
-                short[] idleantennas = config.getControl().getIdleAntennas();
+                String[] idleantennas = config.getControl().getIdleAntennas();
                 SB selectedSB = config.getQueue().get(bestSBId);
         		// We've got somthing to schedule.
                 // try and create a sub array

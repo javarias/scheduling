@@ -85,7 +85,7 @@ public class SiteCharacteristics {
 		// TODO Until site characteristics are really defined, we will just generate these.
 		// This should be changed in favor of a setter method.
 		for (int i = 0; i < antenna.length; ++i) {
-			antenna[i] = new Antenna ((short)i, i, false);
+			antenna[i] = new Antenna (""+i+"", i, false);
 		}
 		this.band = band;
 	}
@@ -113,9 +113,9 @@ public class SiteCharacteristics {
 	 * @return The antenna with the specified antenna-id.  Null is returned
 	 * if there is no such antenna.
 	 */
-	public Antenna getAntenna(int antennaId) {
+	public Antenna getAntenna(String antennaId) {
 		for (int i = 0; i < antenna.length; ++i) {
-			if (antenna[i].getAntennaId() == antennaId)
+			if (antenna[i].getAntennaId().equals(antennaId))
 				return antenna[i];
 		}
 		return null;

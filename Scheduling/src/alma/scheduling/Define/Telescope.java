@@ -112,9 +112,9 @@ public abstract class Telescope {
 	 * @param antennaId
 	 * @return
 	 */
-	public Antenna getAntenna(int antennaId) {
+	public Antenna getAntenna(String antennaId) {
 		for (int i = 0; i < antenna.length; ++i) {
-			if (antenna[i].getAntennaId() == antennaId)
+			if (antenna[i].getAntennaId().equals(antennaId))
 				return antenna[i];
 		}
 		return null;

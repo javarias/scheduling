@@ -52,7 +52,7 @@ public class ALMATelescope extends Telescope  {
         super.setSite(site);
         Antenna[] antennas = new Antenna[64];
         for(int i = 0; i < 64; i++) {
-            antennas[i] = new Antenna((short)i, i, false);
+            antennas[i] = new Antenna(""+i+"", i, false);
         }
         super.addSubarray(new Subarray((short)0,antennas)); 
 

@@ -112,11 +112,11 @@ public class ALMAOperator implements Operator {
     /**
      *
      */
-    public boolean confirmAntennaActive(int antennaId) {
+    public boolean confirmAntennaActive(String antennaId) {
         return true;
     }
 
-    public boolean confirmSubarrayCreation(int[] antennaId) {
+    public boolean confirmSubarrayCreation(String[] antennaId) {
         return true;
     }
 }

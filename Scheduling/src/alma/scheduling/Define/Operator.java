@@ -67,7 +67,7 @@ public interface Operator {
 	 * @return True if and only if the specified antenna is in manual mode and
 	 * it can be placed in active mode.
 	 */
-	public boolean confirmAntennaActive (int antennaId);
+	public boolean confirmAntennaActive (String antennaId);
 	
 	/**
 	 * Reply true if and only it is OK to create a subarray out of the specified
@@ -78,7 +78,7 @@ public interface Operator {
 	 * @return True if and only it is OK to create a subarray out of the specified
 	 * list of antennas.
 	 */
-	public boolean confirmSubarrayCreation (int[] antennaId);
+	public boolean confirmSubarrayCreation (String[] antennaId);
 
 
    class SelectSBTimer implements Runnable {

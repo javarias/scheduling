@@ -78,7 +78,7 @@ public interface Control {
 	 * @param antenna The list of antennas that are to make up the sub-array.
 	 * @return The id of the newly created sub-array. 
 	 */
-	public short createSubarray(short[] antenna)
+	public short createSubarray(String[] antenna)
 		throws SchedulingException;
 	
 	/**
@@ -101,7 +101,7 @@ public interface Control {
 	 * @return The list of antenna ids that are currently idle, but on-line.  
 	 * This number may be zero.
 	 */
-	public short[] getIdleAntennas()
+	public String[] getIdleAntennas()
 		throws SchedulingException;
 	
 	/**
@@ -109,7 +109,7 @@ public interface Control {
 	 * @param subarrayId The sub-array of interest.
 	 * @return The list of antenna ids currently allocated to the specified sub-array.
 	 */
-	public short[] getSubarrayAntennas(short subarrayId)
+	public String[] getSubarrayAntennas(short subarrayId)
 		throws SchedulingException;
 
 }

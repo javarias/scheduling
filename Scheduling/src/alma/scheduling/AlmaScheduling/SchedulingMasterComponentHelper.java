@@ -26,8 +26,10 @@ import java.util.logging.Logger;
 
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;
-import alma.scheduling.SchedulingMasterComponentOperations;
-import alma.scheduling.SchedulingMasterComponentPOATie;
+import alma.ACS.MasterComponentPOATie;
+import alma.ACS.MasterComponentOperations;
+//import alma.scheduling.SchedulingMasterComponentOperations;
+//import alma.scheduling.SchedulingMasterComponentPOATie;
 import alma.scheduling.AlmaScheduling.SchedulingMasterComponentImpl;
 
 /**
@@ -39,7 +41,7 @@ import alma.scheduling.AlmaScheduling.SchedulingMasterComponentImpl;
  * copy the line below into a new entry in the file $ACS_CDB/MACI/Components/Components.xml 
  * and modify the instance name of the component and the container: 
  * <p>
- * Name="SCHEDULINGMASTERCOMPONENT1" Code="alma.scheduling.SchedulingMasterComponentImpl.SchedulingMasterComponentHelper" Type="IDL:alma/scheduling/SchedulingMasterComponent:1.0" Container="frodoContainer"
+ * Name="SCHEDULINGMASTERCOMPONENT1" Code="alma.scheduling.SchedulingMasterComponentImpl.SchedulingMasterComponentHelper" Type="IDL:alma/ACS/MasterComponent:1.0" Container="java"
  * <p>
  * @author alma-component-helper-generator-tool
  */
@@ -67,7 +69,7 @@ public class SchedulingMasterComponentHelper extends ComponentHelper
 	*/
 	protected Class _getPOATieClass()
 	{
-		return SchedulingMasterComponentPOATie.class;
+		return MasterComponentPOATie.class;
 	}
 
 	/**
@@ -75,7 +77,7 @@ public class SchedulingMasterComponentHelper extends ComponentHelper
 	*/
 	protected Class _getOperationsInterface()
 	{
-		return SchedulingMasterComponentOperations.class;
+		return MasterComponentOperations.class;
 	}
 
 }

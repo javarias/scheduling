@@ -124,7 +124,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException If antenna is null or contains nothing an 
      *                             exception is thrown.
      */
-    public short createSubarray(short[] antenna) throws SchedulingException {
+    public short createSubarray(String[] antenna) throws SchedulingException {
         if(antenna == null || antenna.length == 0) {
             throw new SchedulingException
                 ("SCHEDULING: Cannot create a subarray with out any antennas!");
@@ -174,16 +174,16 @@ public class ALMAControl implements Control {
     /** 
      *
      */
-    public short[] getIdleAntennas() throws SchedulingException {
-        try {
-            short[] antennas = control_system.availableAntennas();
+    public String[] getIdleAntennas() throws SchedulingException {
+        //try {
+            String[] antennas = control_system.availableAntennas();
             logger.info("SCHEDULING: Got "+ antennas.length +" antennas");
             return antennas;
-        } catch(CSInactiveException e) {
-            logger.severe("SCHEDULING: Control System == INACTIVE!");
-            e.printStackTrace();
-            return null;
-        }
+        //} catch(CSInactiveException e) {
+        //    logger.severe("SCHEDULING: Control System == INACTIVE!");
+        //    e.printStackTrace();
+        //    return null;
+        //}
         /*
         
         short[] tmp_antennas = new short[64];
@@ -198,7 +198,7 @@ public class ALMAControl implements Control {
     /**
      *
      */
-    public short[] getSubarrayAntennas(short subarrayId) {
+    public String[] getSubarrayAntennas(short subarrayId) {
         return null;
     }
     

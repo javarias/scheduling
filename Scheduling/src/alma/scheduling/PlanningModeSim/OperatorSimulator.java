@@ -92,7 +92,7 @@ public class OperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.define.OperatorProxy#confirmAntennaActive(java.lang.String)
 	 */
-	public boolean confirmAntennaActive(int antennaId) {
+	public boolean confirmAntennaActive(String antennaId) {
 		Antenna ant = telescope.getAntenna(antennaId);
 		if (ant == null) {
 			logger.severe("OperatorSimulator: No such antenna as " + antennaId);
@@ -106,7 +106,7 @@ public class OperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.define.OperatorProxy#confirmSubarrayCreation(java.lang.String[])
 	 */
-	public boolean confirmSubarrayCreation(int[] antennaId) {
+	public boolean confirmSubarrayCreation(String[] antennaId) {
 		Antenna ant = null;
 		for (int i = 0; i < antennaId.length; ++i) {
 			ant = telescope.getAntenna(antennaId[i]);

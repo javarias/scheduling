@@ -48,7 +48,7 @@ package alma.scheduling.Define;
  */
 public class Antenna {
 
-	private short antennaId;
+	private String antennaId;
 	private int locationId;
 	private boolean nutator;
 
@@ -72,7 +72,7 @@ public class Antenna {
 	 * 			is identified.
 	 * @param nutator whether or not this antenna has nutator capabilities.
 	 */
-	public Antenna(short antennaId, int locationId, boolean nutator) {
+	public Antenna(String antennaId, int locationId, boolean nutator) {
 		this.antennaId = antennaId;
 		this.locationId = locationId;
 		this.nutator = nutator; 
@@ -84,7 +84,7 @@ public class Antenna {
 	 * @return A number <= 0 and <= 32768 that represents
 	 * 			how this antenna is identified.
 	 */
-	public short getAntennaId() {                                                                                                              
+	public String getAntennaId() {                                                                                                              
 		return antennaId;
 	}
 

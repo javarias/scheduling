@@ -102,7 +102,7 @@ public class GUIController implements Runnable {
 
      public void executeSB(String sb_id) {
         try {
-            short[] antennas = config.getControl().getIdleAntennas();
+            String[] antennas = config.getControl().getIdleAntennas();
             short subarray = config.getControl().createSubarray(antennas);
             config.getControl().execSB(subarray, sb_id);
         } catch(SchedulingException e) {

@@ -96,10 +96,10 @@ public class ControlSimulator extends BasicComponent implements Control {
 		logger.info(instanceName + ".execute complete");
 	}
 
-	private Antenna getAntenna(int antennaId) {
+	private Antenna getAntenna(String antennaId) {
 		Antenna[] x = telescope.getAntenna();
 		for (int i = 0; i < x.length; ++i) {
-			if (x[i].getAntennaId() == antennaId)
+			if (x[i].getAntennaId().equals( antennaId))
 				return x[i];
 		}
 		return null;
@@ -114,7 +114,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 		return null;
 	}
 
-	public short createSubarray(short[] antenna) throws SchedulingException {
+	public short createSubarray(String[] antenna) throws SchedulingException {
 		Antenna x = null;
 		for (int i = 0; i < antenna.length; ++i) {
 			x = getAntenna(antenna[i]);
@@ -244,14 +244,14 @@ public class ControlSimulator extends BasicComponent implements Control {
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getIdleAntennas()
 	 */
-	public short[] getIdleAntennas() throws SchedulingException {
+	public String[] getIdleAntennas() throws SchedulingException {
 		Antenna[] x = telescope.getAntenna();
 		int count = 0;
 		for (int i = 0; i < x.length; ++i) {
 			if (x[i].isIdle())
 				++count;
 		}
-		short[] s = new short [count];
+		String[] s = new String [count];
 		int n = 0;
 		for (int i = 0; i < x.length; ++i) {
 			if (x[i].isIdle()) {
@@ -264,14 +264,14 @@ public class ControlSimulator extends BasicComponent implements Control {
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getSubarrayAntennas(int)
 	 */
-	public short[] getSubarrayAntennas(short subarrayId)
+	public String[] getSubarrayAntennas(short subarrayId)
 		throws SchedulingException {
 		// Get the subarray.
 		Subarray s = getSubarray(subarrayId);
 		if (s == null)
 			error("Subarray " + subarrayId + " was not found.");
 		Antenna[] a = s.getAntenna();
-		short[] x = new short [a.length];
+		String[] x = new String [a.length];
 		for (int i = 0; i < x.length; ++i)
 			x[i] = a[i].getAntennaId();
 		return x;

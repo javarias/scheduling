@@ -131,7 +131,7 @@ public class MasterScheduler extends BasicComponent {
 				p[i].setReady(now);
 
 			// Create a subarray.
-			short[] ant = control.getIdleAntennas();
+			String[] ant = control.getIdleAntennas();
 			short subarrayId = control.createSubarray(ant);
 			
 			// Create a scheduler configuration.
