@@ -1,67 +1,69 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
-<xs:schema targetNamespace="Alma/Scheduling/PipelineProcessingRequest" 
-	xmlns:ppr="Alma/Scheduling/PipelineProcessingRequest" 
-	xmlns:prj="Alma/ObsPrep/ObsProject" 
-	xmlns:sber="Alma/ObsPrep/SBExecRec"	 
-	xmlns:ent="Alma/CommonEntity"	 
-    xmlns:gen="Alma/GeneralIncludes"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-	elementFormDefault="unqualified" attributeFormDefault="unqualified" 
-	version="1">
-
-    <xs:import namespace="Alma/GeneralIncludes" schemaLocation="GeneralIncludes.xsd"/>
+<!-- edited with XMLSPY v5 rel. 2 U (http://www.xmlspy.com) by Sohaila Roberts -->
+<xs:schema targetNamespace="Alma/Scheduling/PipelineProcessingRequest" xmlns:ppr="Alma/Scheduling/PipelineProcessingRequest" xmlns:ent="Alma/CommonEntity" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1">
 	<xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
-	<xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="TestObsProject.xsd"/>
-	<xs:import namespace="Alma/ObsPrep/SBExecRec" schemaLocation="TestSBExecRec.xsd"/>
-
-		<xs:element name="PipelineProcessingRequest">
+	<xs:element name="PipelineProcessingRequest">
 		<xs:annotation>
-			<xs:documentation>Initate a request to run the science data reduction pipeline</xs:documentation>
+			<xs:appinfo>Initate a request to run the 
+      science data reduction pipeline
+    </xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-                <xs:element name="PipelineProcessingRequestEntity" type="ent:EntityT"/>
+				<xs:element name="PipelineProcessingRequestEntity" type="ent:EntityT"/>
 				<xs:element name="ImagingProcedureName" type="xs:string"/>
-				<xs:element name="ProjectReference" type="xs:string"/>
-				<xs:element name="Status">
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:enumeration value="submitted"/>
-							<xs:enumeration value="incomplete"/>
-							<xs:enumeration value="complete-success"/>
-							<xs:enumeration value="complete-failure"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:element>
+				<xs:element name="ProjectReference" type="ent:EntityRefT"/>
+				<xs:element name="RequestStatus" type="ppr:RequestStatusT"/>
+				<xs:element name="CompletionStatus" type="ppr:CompletionStatusT"/>
+				<xs:element name="ResultsReference" type="ent:EntityRefT"/>
 				<xs:element name="Comment" type="xs:string"/>
-				<xs:sequence maxOccurs="unbounded">
-					<xs:element name="ReductionUnit" type="ppr:ReductionUnitT"/>
-				</xs:sequence>
+				<xs:element name="ReductionUnit" type="ppr:ReductionUnitT"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 	<xs:complexType name="ReductionUnitT">
-		<xs:sequence>
-			<xs:element name="ReductionUnitReference" type="ent:EntityRefT"/>
-			<xs:element name="ReductionUnitT">
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="ObsUnitSet"/>
-						<xs:enumeration value="SB"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:sequence minOccurs="0" maxOccurs="unbounded">
-				<xs:element name="ExecutionReference" type="xs:string"/>
-			</xs:sequence>
-		</xs:sequence>
+        <xs:complexContent>
+            <xs:restriction base="ent:EntityRefT">
+                <xs:attribute name="entityTypeName" type="xs:string" use="required" fixed="ObsUnitSet"/>
+            </xs:restriction>
+        </xs:complexContent>
 	</xs:complexType>
-    <xs:complexType name="PipelineProcessingRequestEntityT">
-      <xs:complexContent>
-        <xs:restriction base="ent:EntityT">
-         <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="PipelineProcessingRequest"/>
-        </xs:restriction>
-      </xs:complexContent>
-     </xs:complexType>
+
+	<xs:complexType name="CompletionStatusT">
+      <xs:sequence>
+		<xs:element name="completionStatus">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="submitted"/>
+                    <xs:enumeration value="incomplete"/>
+                    <xs:enumeration value="complete_failed"/>
+                    <xs:enumeration value="complete_succeeded"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RequestStatusT">
+      <xs:sequence>
+		<xs:element name="requestStatus">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="queued"/>
+                    <xs:enumeration value="running"/>
+                    <xs:enumeration value="completed"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="PipelineProcessingRequestEntityT">
+		<xs:complexContent>
+			<xs:restriction base="ent:EntityT">
+				<xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="PipelineProcessingRequest"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
 </xs:schema>
