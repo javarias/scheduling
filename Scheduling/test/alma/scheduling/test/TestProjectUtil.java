@@ -40,7 +40,7 @@ import alma.scheduling.Define.SchedulingException;
 
 import alma.scheduling.AlmaScheduling.ProjectUtil;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
-import alma.entity.xmlbinding.session.Session;
+//import alma.entity.xmlbinding.session.Session;
 
 import java.util.ArrayList;
 import java.io.*;
@@ -138,6 +138,7 @@ public class TestProjectUtil {
 		return prj;
 	}
 	
+    /*
 	public static Session executeSB(Project project) {
 		SB[] sbList = project.getAllSBs();
 		SB x = sbList[0];
@@ -183,6 +184,7 @@ public class TestProjectUtil {
 		//x.getParent().
 		return s;
 	}
+    */
 	
 	public static void main(String[] arg) {
 		System.out.println("Test of Project");
@@ -220,7 +222,7 @@ public class TestProjectUtil {
 		*/
 		
 		// Now simulate the execution of one SB.
-		Session session = executeSB(prj);
+		//Session session = executeSB(prj);
 		doTree(System.out,prj,"The version after ending a SB.");
 		
 		try {
@@ -232,13 +234,14 @@ public class TestProjectUtil {
 			//pStatus.marshal(xmlOut);
 			System.out.println("...complete");
 			
-			System.out.println("Creating Session ...");
+			//System.out.println("Creating Session ...");
+            /*
 			xmlOut = new PrintWriter(new BufferedWriter(
 					new FileWriter(new java.io.File ("xmlSession-1.xml"))));
 					//new FileWriter(new java.io.File (outDir,"xmlSession-1.xml"))));
 			//session.marshal(xmlOut);
 			System.out.println("...complete");
-			
+			*/
 		} catch (SchedulingException err) {
 			err.printStackTrace();
 			return;
