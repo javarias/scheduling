@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.11 2003/07/28 15:16:16 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.12 2003/07/31 23:09:03 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -20,7 +20,6 @@ DEBUG = on
 #COMPONENT_HELPERS=on
 USER_JFLAGS= -deprecation
 
-USER_JFLAGS = -deprecation
 #
 # XML schema files and includes
 #

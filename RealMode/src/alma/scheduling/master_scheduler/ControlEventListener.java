@@ -50,13 +50,17 @@ public class ControlEventListener extends Consumer {
             System.out.println("#####ExecBlockEndEvent gotten!####"); //+event);
             String id = event.sbId;
             System.out.println(id);
+            //update sb status in the archive
+            updateSB(id);
+            //start the pipeline!
             startPipeline(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void updateSB() {
+    public void updateSB(String id) {
+        dispatcher.updateSB(id);
     }
 
     public void startPipeline(String sb_id) {
