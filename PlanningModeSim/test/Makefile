@@ -1,7 +1,7 @@
 #*******************************************************************************
 # E.S.O. - ACS project
 #
-# "@(#) $Id: Makefile,v 1.2 2003/11/07 22:23:04 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.3 2003/11/07 22:35:53 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -88,9 +88,9 @@ man   : do_man
 install : install_all
 	@echo " . . . installation done"
 
-test:
-	tat -nc -v
-	@echo " . . . test done"
+#test
+#	tat -nc -v
+#	@echo " . . . test done"
 
 
 db : db_all
