@@ -5,10 +5,12 @@
 	xmlns:prj="Alma/ObsPrep/ObsProject" 
 	xmlns:sber="Alma/ObsPrep/SBExecRec"	 
 	xmlns:ent="Alma/CommonEntity"	 
+    xmlns:gen="Alma/GeneralIncludes"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
 	elementFormDefault="unqualified" attributeFormDefault="unqualified" 
 	version="1">
 
+    <xs:import namespace="Alma/GeneralIncludes" schemaLocation="GeneralIncludes.xsd"/>
 	<xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
 	<xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="TestObsProject.xsd"/>
 	<xs:import namespace="Alma/ObsPrep/SBExecRec" schemaLocation="TestSBExecRec.xsd"/>
@@ -19,6 +21,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+                <xs:element name="PipelineProcessingRequestEntity" type="ent:EntityT"/>
 				<xs:element name="ImagingProcedureName" type="xs:string"/>
 				<xs:element name="ProjectReference" type="xs:string"/>
 				<xs:element name="Status">
@@ -54,11 +57,11 @@
 			</xs:sequence>
 		</xs:sequence>
 	</xs:complexType>
-	  <xsd:complexType name="PipelineProcessingRequestEntityT">
-    <xsd:complexContent>
-      <xsd:restriction base="ent:EntityT">
-        <xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="PipelineProcessingRequest"/>
-      </xsd:restriction>
-    </xsd:complexContent>
-  </xsd:complexType>
+    <xs:complexType name="PipelineProcessingRequestEntityT">
+      <xs:complexContent>
+        <xs:restriction base="ent:EntityT">
+         <xs:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="PipelineProcessingRequest"/>
+        </xs:restriction>
+      </xs:complexContent>
+     </xs:complexType>
 </xs:schema>
