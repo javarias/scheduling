@@ -63,11 +63,8 @@ public class ALMAControl implements Control {
         this.logger = cs.getLogger();
         this.controllers = new Vector();
         try {
-        //alma/Control/ControlSystemHelper
             control_system = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("ControlSystem1"));
-            //control_system.start();
-            //control_system.initSys();
             logger.info("SCHEDULING: Got ControlSystem Component");
         } catch (Exception ce) {
             logger.severe("SCHEDULING: error getting ControlSystem Component.");
@@ -112,7 +109,6 @@ public class ALMAControl implements Control {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();
         }
-    
     }
 
 
@@ -180,24 +176,9 @@ public class ALMAControl implements Control {
      *
      */
     public String[] getIdleAntennas() throws SchedulingException {
-        //try {
             String[] antennas = control_system.availableAntennas();
             logger.info("SCHEDULING: Got "+ antennas.length +" antennas");
             return antennas;
-        //} catch(CSInactiveException e) {
-        //    logger.severe("SCHEDULING: Control System == INACTIVE!");
-        //    e.printStackTrace();
-        //    return null;
-        //}
-        /*
-        
-        short[] tmp_antennas = new short[64];
-        for (int i=0; i < 64; i++) {
-            tmp_antennas[i] = (short)i;
-        }
-        return tmp_antennas;
-        */
-        
     }
 
     /**

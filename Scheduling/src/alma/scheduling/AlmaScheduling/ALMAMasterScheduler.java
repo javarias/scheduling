@@ -93,7 +93,6 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Receiver telcal_nc;
     private Receiver pipeline_nc;
     private ALMAReceiveEvent eventreceiver;
-    //private ALMAReceiveControlEvent control_event;
     
     /** 
      * Constructor
@@ -166,6 +165,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 containerServices);
         pipeline_nc.attach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
         pipeline_nc.begin();
+        
     }
 
     /**
@@ -174,7 +174,9 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void cleanUp() {
         super.setStopCommand(true);
         this.manager.setStopCommand(true);
-        publisher.disconnect();
+        control_nc.detach("alma.Control.ExecBlockEvent", eventreceiver);
+        pipeline_nc.detach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
+        ((CorbaReceiver)pipeline_nc).disconnect();
     }
 
     /**

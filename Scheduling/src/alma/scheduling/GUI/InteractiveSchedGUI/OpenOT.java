@@ -57,7 +57,7 @@ public class OpenOT implements Runnable {
         } catch(Exception e) {
             e.printStackTrace();
         }*/
-//       alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
+       alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
     }
     
 }

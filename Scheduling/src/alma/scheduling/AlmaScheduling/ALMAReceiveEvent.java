@@ -32,6 +32,8 @@ import alma.entity.xmlbinding.projectstatus.*;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
+import alma.acs.util.UTCUtility;
+import alma.acs.util.UTCUtility;
 
 import alma.Control.ExecBlockEvent;
 import alma.Control.ControlSystemStatusEvent;
@@ -58,7 +60,6 @@ import alma.scheduling.Define.SchedulingException;
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
     private ALMAProjectManager manager;
-    //private ALMAArchive archive;
     private ALMAPipeline pipeline;
     private ALMAPublishEvent publisher;
 
@@ -68,7 +69,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.containerServices = cs;    
         this.logger = cs.getLogger();
         this.manager = m;
-        //this.archive = a;
         this.pipeline = p;
         this.publisher = pub;
     }
@@ -95,14 +95,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             case 1:
                 logger.info("SCHEDULING: Event reason = end");
                 logger.info("SCHEDULING: Received sb end event from control.");
-                //ArrayTime time = new ArrayTime(e.startTime);
                 ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
-                    e.type.value(), e.status.value(), new DateTime(e.startTime));
+                    e.type.value(), e.status.value(), new DateTime(
+                        UTCUtility.utcOmgToJava(e.startTime)));
                 endSession(e);
                 updateSB(ce);
                 ExecBlock eb = new ExecBlock(e.execID, e.saId);
                 eb.setParent(new SB(e.sbId)); // do this to get SB id over to PM, will be replaced with proper SB
-                eb.setStartTime(new DateTime(e.startTime));
+                eb.setStartTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)));
                 eb.setEndTime(new DateTime(System.currentTimeMillis()),Status.COMPLETE);
                 sbCompleted(eb);
                 String[] ids = updateProjectStatus(eb);

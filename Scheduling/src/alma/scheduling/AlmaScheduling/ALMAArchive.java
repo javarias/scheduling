@@ -52,7 +52,6 @@ import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproject.types.*;            
-import alma.entities.generalincludes.*;
 import alma.entities.commonentity.*;
 
 
@@ -103,7 +102,6 @@ public class ALMAArchive implements Archive {
         ObsProject[] obsProj = getAllObsProjects();
         for(int i=0; i < obsProj.length; i++) {
             ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
-            //ProjectStatus ps = ProjectUtil.map(obsProj[i], new DateTime(System.currentTimeMillis()));
             if(ps == null) { //no project status for this project. so create one
                  logger.info("SCHEDULING: no ps for this project");
                  //TODO ps = createProjectStatus(obsProject[i]);

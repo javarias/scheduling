@@ -400,7 +400,8 @@ public class ProjectUtil {
 		
 		// How do we detect if the ProjectStatus is a "dummy".
 		// Answer: If the timeOfUpdate is null or of length 0.
-		String timeOfUpdate = s.getTimeOfUpdate();
+		/* Sohaila: Took out temporarily
+        String timeOfUpdate = s.getTimeOfUpdate();
 		if (timeOfUpdate == null || timeOfUpdate.length() == 0) {
 			// If the project status is a dummy, then we're done.
 			validate(project);
@@ -410,6 +411,7 @@ public class ProjectUtil {
 		// Now, we apply the ProjectStatus data.
 		update(project,s,now);
 		validate(project);
+        */
 		return project;
 	}
 
