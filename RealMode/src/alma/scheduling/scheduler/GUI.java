@@ -66,7 +66,7 @@ import alma.entity.xmlbinding.schedblock.SchedBlock;
 /*
 import alma.obsprep.util.PropertyHandler;
 */
-import alma.obsprep.editors.ObservingTool;
+//import alma.obsprep.editors.ObservingTool;
 /**
  * A Gui that lets a PI interact with a scheduler to do interactive
  * scheduling.

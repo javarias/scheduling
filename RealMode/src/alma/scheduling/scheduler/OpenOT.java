@@ -35,7 +35,7 @@ public class OpenOT implements Runnable {
         id = projectID;
     }
     public void run() {
-        alma.obsprep.editors.ObservingTool.main(new String[] {"-x","-r",id});
+        //alma.obsprep.editors.ObservingTool.main(new String[] {"-x","-r",id});
     }
     
 }
