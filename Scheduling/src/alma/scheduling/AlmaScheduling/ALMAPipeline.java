@@ -41,12 +41,12 @@ import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.SchedulingException;
 
-import alma.pipelinescience.SciencePipeline;
+import alma.pipelinescience.SciPipeScheduler;
 
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.9 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.10 2005/02/11 15:11:29 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -54,7 +54,7 @@ public class ALMAPipeline implements SciPipeline {
     //logger
     private Logger logger;
     //science pipeline component
-    private SciencePipeline pipelineComp;
+    private SciPipeScheduler pipelineComp;
     //entity serializer
     private EntitySerializer entitySerializer;
     
@@ -73,7 +73,7 @@ public class ALMAPipeline implements SciPipeline {
      */
     private void getPipelineComponents() {
         try {
-            pipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
+            pipelineComp = alma.pipelinescience.SciPipeSchedulerHelper.narrow(
                 containerServices.getComponent("SCIENCE_PIPELINE"));
             
         } catch(ContainerException e) {

@@ -41,10 +41,10 @@ import alma.Control.ExecBlockEvent;
 import alma.Control.ControlSystemStatusEvent;
 import alma.TelCalPublisher.FocusReducedEvent;
 import alma.TelCalPublisher.PointingReducedEvent;
-import alma.pipelinescience.ScienceProcessingRequestEnd;
+import alma.pipelinescience.ScienceProcessingDoneEvent;
 
-import alma.scheduling.StartSession;
-import alma.scheduling.EndSession;
+import alma.scheduling.StartSessionEvent;
+import alma.scheduling.EndSessionEvent;
 import alma.scheduling.Event.Receivers.*;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.DateTime;
@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.19 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.20 2005/02/11 15:11:29 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -160,7 +160,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      *
      * @param ScienceProcessingRequestEnd The event sent by the Pipeline subsystem
      */
-    public void receive(ScienceProcessingRequestEnd e) {
+    public void receive(ScienceProcessingDoneEvent e) {
         logger.info("SCHEDULING: Starting to process the pipeline event");
     }
 

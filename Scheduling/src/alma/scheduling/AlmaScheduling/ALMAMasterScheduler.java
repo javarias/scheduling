@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.18 2005/01/26 18:20:14 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.19 2005/02/11 15:11:29 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -154,7 +154,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
                                              (ALMAPublishEvent)publisher);
         control_nc = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.Control.CHANNELNAME.value,
+            AbstractNotificationChannel.CORBA, 
+            alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
                 containerServices);
         control_nc.attach("alma.Control.ExecBlockEvent", eventreceiver);
         control_nc.begin();
@@ -170,7 +171,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         
         // Connect to the Pipeline NC
         pipeline_nc = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.pipelinescience.CHANNELNAME.value,
+            AbstractNotificationChannel.CORBA, 
+            alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
                 containerServices);
         pipeline_nc.attach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
         pipeline_nc.begin();

@@ -31,8 +31,8 @@ import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
 
-import alma.scheduling.StartSession;
-import alma.scheduling.EndSession;
+import alma.scheduling.StartSessionEvent;
+import alma.scheduling.EndSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Event.Publishers.PublishEvent;
@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.24 2005/01/19 19:14:43 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.25 2005/02/11 15:11:29 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -346,7 +346,7 @@ public class ALMAProjectManager extends ProjectManager {
         session.addExec(eb);
         sessionStart(session.getSessionId(), sbid);
         try {
-            StartSession start_event = new StartSession(
+            StartSessionEvent start_event = new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                     session.getSessionId(),
                     session.getProgram().getId(),
@@ -385,7 +385,7 @@ public class ALMAProjectManager extends ProjectManager {
                     logger.info("SCHEDULING: session part id = "+session.getEntityPartId());
                     sessionEnd(session.getEntityPartId(), sbid);
                     try {
-                        EndSession end_event = new EndSession(
+                        EndSessionEvent end_event = new EndSessionEvent(
                                 UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                                 session.getEntityPartId(),
                                 obsProgram.getEntityPartId(),

@@ -27,8 +27,8 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 
-import alma.scheduling.StartSession;
-import alma.scheduling.EndSession;
+import alma.scheduling.StartSessionEvent;
+import alma.scheduling.EndSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.DateTime;
@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.4 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.5 2005/02/11 15:11:29 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -64,7 +64,7 @@ public class ALMAPublishEvent extends PublishEvent {
         this.logger = cs.getLogger();
         this.sched_nc = AbstractNotificationChannel.createNotificationChannel(
             AbstractNotificationChannel.CORBA, 
-                alma.scheduling.CHANNELNAME.value, 
+                alma.scheduling.CHANNELNAME_SCHEDULING.value, 
                     container);
     }
 
@@ -109,7 +109,7 @@ public class ALMAPublishEvent extends PublishEvent {
      */
     public void publish(long start_time, String session_id, String ouc_id, String sb_id) {
         
-        StartSession event = new StartSession();//start_time, session_id, ouc_id, sb_id);
+        StartSessionEvent event = new StartSessionEvent();//start_time, session_id, ouc_id, sb_id);
         event.startTime = start_time;
         event.sessionId = session_id;
         event.obsUnitSetId = ouc_id;
@@ -127,7 +127,7 @@ public class ALMAPublishEvent extends PublishEvent {
      */
     public void publish(long end_time, String session_id, String ouc_id) {
 
-        EndSession event = new EndSession();
+        EndSessionEvent event = new EndSessionEvent();
         event.endTime = end_time;
         event.sessionId = session_id;
         event.obsUnitSetId = ouc_id;
@@ -141,10 +141,10 @@ public class ALMAPublishEvent extends PublishEvent {
         logger.info("SCHEDULING: event's class == "+
             event.getClass().getName());
         String eventClass = event.getClass().getName();
-        if(eventClass.equals("alma.scheduling.StartSession")) {
-            sched_nc.publish((StartSession)event);
-        } else if(eventClass.equals("alma.scheduling.EndSession")) {
-            sched_nc.publish((EndSession)event);
+        if(eventClass.equals("alma.scheduling.StartSessionEvent")) {
+            sched_nc.publish((StartSessionEvent)event);
+        } else if(eventClass.equals("alma.scheduling.EndSessionEvent")) {
+            sched_nc.publish((EndSessionEvent)event);
         } else if(eventClass.equals("alma.scheduling.NothingCanBeScheduledEvent")) {
             sched_nc.publish((NothingCanBeScheduledEvent)event);
         }
