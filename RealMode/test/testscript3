@@ -3,4 +3,4 @@
 # Run test
 echo " Running test"
 
-abeansStart -endorsed alma.scheduling.test.SchedTest1
+abeansStart -endorsed ALMA.scheduling.test.SchedTest1

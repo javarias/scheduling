@@ -3,6 +3,6 @@
 # Run test
 echo " Running test"
 
-abeansStart -endorsed alma.scheduling.test.SchedTest4
+abeansStart -endorsed ALMA.scheduling.test.SchedTest4
 
 

@@ -3,4 +3,4 @@
 # Run test
 echo " Running test"
 
-abeansStart -endorsed alma.scheduling.master_scheduler.MasterScheduler
+abeansStart -endorsed ALMA.scheduling.master_scheduler.MasterScheduler

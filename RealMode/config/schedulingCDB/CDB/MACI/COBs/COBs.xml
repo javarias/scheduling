@@ -32,7 +32,7 @@
                              Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
                              Activator="hugoActivator"/>                             
       <_ Name="SCIENCE_PIPELINE"
-                             Code="alma.pipelinescience.components.SciencePipelineHelper"
-                             Type="IDL:alma/pipelinescience/SciencePipeline:1.0"
+                             Code="ALMA.pipelinescience.components.SciencePipelineHelper"
+                             Type="IDL:ALMA/pipelinescience/SciencePipeline:1.0"
                              Activator="hugoActivator"/>            
 </COBs>
