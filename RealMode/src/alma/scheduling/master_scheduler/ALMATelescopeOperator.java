@@ -90,6 +90,8 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
             messageQueue.addMessage(m);
         } catch(Exception e) {
         }
+        //put sbs in prefereable picking order!
+        sortSBs();
         //search sb ids to get the first non-complete sb
         int pos = 0; //First one.
         for(int i=0; i < sbIdList.length; i++) {
@@ -157,6 +159,10 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
             } 
         } catch(NullPointerException e) {}
         return result;
+    }
+
+    public void sortSBs() {
+        logger.info("SCHEDULING: sorting SBs!");
     }
 
 	/* (non-Javadoc)

@@ -93,18 +93,16 @@ public class ALMADispatcher implements ControlProxy {
         } else {    
             try {
                 //connect to control's components
-                /*
                 controlSysComp = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("ControlSystem1"));
                 logger.log(Level.INFO, "SCHEDULING: Got control system");
                 short[] subarray = new short[1];
-                */
-                //arrayControllerComp = controlSysComp.createSubArray(subarray);
+                arrayControllerComp = controlSysComp.createSubArray(subarray);
+                /*
                 arrayControllerComp = alma.Control.ArrayControllerHelper.narrow(
                     containerServices.getComponent("ArrayController1"));
+                */
                 logger.info("SCHEDULING: Got array controller");
-                //tell control to process the schedblock
-                //arrayControllerComp.processSchedBlock(id, time.getTime());
                 arrayControllerComp.observeNow(id);
             } catch (Exception e) {
                 logger.severe("SCHEDULING: error getting array controller");
