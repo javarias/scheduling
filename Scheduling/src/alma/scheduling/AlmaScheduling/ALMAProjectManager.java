@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.22 2004/11/30 23:36:05 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.23 2004/12/02 17:01:27 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -68,6 +68,7 @@ public class ALMAProjectManager extends ProjectManager {
     private ProjectQueue pQueue;
     private ProjectStatusQueue psQueue;
     private ALMAPublishEvent publisher;
+    private ALMAPipeline pipeline;
 
     public ALMAProjectManager(ContainerServices cs, ALMAArchive a, SBQueue q, PublishEvent p) {
         super();
@@ -78,6 +79,7 @@ public class ALMAProjectManager extends ProjectManager {
         this.sbQueue = q;
         this.psQueue = new ProjectStatusQueue();
         this.pQueue = new ProjectQueue();
+        this.pipeline = new ALMAPipeline(cs);
         pQueue.add(pollArchive());
     }
 
@@ -255,9 +257,11 @@ public class ALMAProjectManager extends ProjectManager {
             SBStatusT[] sbs = parseObsUnitSetStatus(sets[i]);
         }
         try {
+            psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not update project status in archive!");
+            e.printStackTrace();
         }
         return ids;
     }
@@ -320,6 +324,7 @@ public class ALMAProjectManager extends ProjectManager {
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
             ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
             logger.severe("SCHEDULING: error mapping PS with Session");
@@ -338,6 +343,7 @@ public class ALMAProjectManager extends ProjectManager {
         SB sb = sbQueue.get(sbid);
         //in future will be done in scheduler.
         ObservedSession session = createObservedSession(sb.getParent());
+        session.addExec(eb);
         sessionStart(session.getSessionId(), sbid);
         try {
             StartSession start_event = new StartSession(
@@ -366,33 +372,38 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
         SessionT[] sessions = obsProgram.getSession();
         SessionT session = null;
+        logger.info("SCHEDULING: in PM sessions length = "+sessions.length);
         for(int i=0; i < sessions.length; i++) {
             ExecBlockEntityRefT[] execblocks = sessions[i].getExecBlockRef();
             for(int j=0; j < execblocks.length; j++) {
                 if(execblocks[j].getEntityId().equals(execid)){
                     logger.info("SCHEDULING: session found!");
                     session = sessions[i];
-                    break;
+                    logger.info("SCHEDULING: sbid = " +sbid);
+                    logger.info("SCHEDULING: session part id = "+session.getEntityPartId());
+                    sessionEnd(session.getEntityPartId(), sbid);
+                    try {
+                        EndSession end_event = new EndSession(
+                                UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
+                                session.getEntityPartId(),
+                                obsProgram.getEntityPartId(),
+                                execid);
+                        publisher.publish(end_event);
+                    } catch(Exception e) {
+                        logger.severe("SCHEDULING: Failed to send end session event!");
+                        e.printStackTrace();
+                    }
+                    return;
                 }
                 logger.info("SCHEDULING: hmmm...");
             }
+            /*
             if(session != null) {
                 logger.info("SCHEDULING: Session wasn't null.");
                 break;
             }
             logger.info("SCHEDULING: Session stuff?");
-        }
-        sessionEnd(session.getEntityPartId(), sbid);
-        try {
-            EndSession end_event = new EndSession(
-                    UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-                    session.getEntityPartId(),
-                    obsProgram.getEntityPartId(),
-                    execid);
-            publisher.publish(end_event);
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: Failed to send end session event!");
-            e.printStackTrace();
+            */
         }
                         
     }
@@ -419,12 +430,32 @@ public class ALMAProjectManager extends ProjectManager {
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
             ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
             logger.severe("SCHEDULING: error mapping PS with PPR");
             e.printStackTrace();
         }
         return ppr;
+    }
+
+    public void startPipeline(SciPipelineRequest ppr) throws SchedulingException {
+        //get PS that contains this ppr.
+        Program prog = ppr.getProgram();
+        Project proj = prog.getProject();
+        ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
+        archive.updateProjectStatus(ps);
+
+        logger.info("SCHEDULING: Starting Pipeline");
+        String pprString = archive.getPPRString(ps, ppr.getId());
+        String pipelineResult = pipeline.processRequest(pprString);
+        //need to convert PS into xml string and parse for the ppr stuff...
+        /* TODO
+           archive.getPPRString.......
+
+        String pprSXmlString = "";
+        pipeline.start(pprXmlString);
+        */
     }
 
 }

@@ -27,6 +27,7 @@
 package alma.scheduling.AlmaScheduling;
 
 import java.util.ArrayList;
+import alma.scheduling.Define.SchedulingException;
 import alma.entity.xmlbinding.projectstatus.*;
 
 /**
@@ -35,7 +36,7 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.3 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.4 2004/12/02 17:01:27 sslucero Exp $
  */
 public class ProjectStatusQueue {
 
@@ -289,7 +290,25 @@ public class ProjectStatusQueue {
 	 * Get the number of items in the queue.
 	 * @return The number of ProjectStatus in this queue.
 	 */
-	public int size() {
+	public synchronized int size() {
 		return queue.size();
 	}
+
+    /**
+      * Updates the project status in the queue.
+      * @param ps The ProjectStatus to update.
+      */
+    public synchronized void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
+        String ps_id = ps.getProjectStatusEntity().getEntityId();
+        if(!isExists(ps_id)) {
+            throw new SchedulingException(
+                    "SCHEDULING: Cannot update ProjectStatus coz it doesn't exist in the queue. Try adding it.");
+        }
+        for(int i = 0; i< queue.size(); i++) {
+            if( ps_id.equals(((ProjectStatus)queue.get(i)).getProjectStatusEntity().getEntityId()) ){
+                queue.set(i, ps);
+            }
+        }
+    }
+    
 }

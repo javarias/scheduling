@@ -61,7 +61,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.28 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.29 2004/12/02 17:01:27 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -921,6 +921,31 @@ public class ALMAArchive implements Archive {
                 "exec block event was received!");
             e.printStackTrace();
         }
+    }
+
+    public String getPPRString(ProjectStatus ps, String pprId) {
+        String result = "";
+        try {
+            updateProjectStatus(ps);
+
+            String query = new String("/ps:ProjectStatus//ps:PipelineProcessingRequest[@entityPartId='"+pprId+"']");
+            String schema = new String("ProjectStatus");
+            
+            Cursor cursor = archOperationComp.queryDirty(query,schema);
+            if(cursor == null) {
+                throw new SchedulingException ("SCHEDULING: Error querying archive for PPR");
+            }
+            while(cursor.hasNext()){
+                QueryResult res = cursor.next();
+                System.out.println("PPR xml= "+res.xml);
+            }
+
+            //query the archive for the pipelineprocessing requestthe pipelineprocessing request..
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Error getting the PPR String.");
+            e.printStackTrace();
+        }
+        return result;
     }
 
     

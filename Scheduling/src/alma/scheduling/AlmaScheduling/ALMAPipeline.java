@@ -46,7 +46,7 @@ import alma.pipelinescience.SciencePipeline;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.7 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.8 2004/12/02 17:01:27 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     private ContainerServices containerServices;
@@ -93,37 +93,11 @@ public class ALMAPipeline implements SciPipeline {
         return  requestResult;
     }
 
-    /**
-     * Creates a pipeline processing request entity, ready for the archive, using
-     * the given SchedBlock id. 
-     *
-     * @param ps_id The ProjectStatus id for the Reduction unit's entityId
-     * @param oucs_id The ObsUnitSetStatus id for the Reduction unit's partId 
-     * @return XmlEntityStruct The PipelineProcessingRequest converted to a struct
-     */
-    public PipelineProcessingRequestT createPipelineProcessingRequest(String ps_id, String oucs_id) {
-        PipelineProcessingRequestT ppr=null;
-        try { 
-            ppr = new PipelineProcessingRequestT();
-            //PipelineProcessingRequestEntityT ppr_entity = new PipelineProcessingRequestEntityT();
-            //containerServices.assignUniqueEntityId(ppr_entity);
-            //ppr.setPipelineProcessingRequestEntity(ppr_entity);
-            logger.info("SCHEDULING: PPR created");
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: Error creating PPR");
-            e.printStackTrace();
-        }
-        return ppr;
+    public void start(SciPipelineRequest ppr) throws SchedulingException {
     }
-//    public String createPipelineProcessingRequest
 
-    /**
-      *
-      */
-    public void start(SciPipelineRequest ppr)
-        throws SchedulingException {
-
-            //TODO
+    public void start(String pprString) throws SchedulingException {
+        
         logger.info("SCHEDULING: Starting the science pipeline");
         //processRequest();
     }
@@ -135,6 +109,7 @@ public class ALMAPipeline implements SciPipeline {
 
         return null;
     }
+
 }
 
 

@@ -86,7 +86,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.11 2004/11/30 23:36:05 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.12 2004/12/02 17:01:27 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -932,7 +932,8 @@ public class ProjectUtil {
 		ProjectStatusRefT pRef = new ProjectStatusRefT ();
 		pRef.setEntityId(ppr.getProgram().getProject().getProjectStatusId());
 		pRef.setDocumentVersion("1");
-		pRef.setPartId(ppr.getId());
+		//pRef.setPartId(ppr.getId());
+        pRef.setPartId(ppr.getProgram().getObsUnitSetStatusId());
 		target.setObsUnitSetStatusRef(pRef);
 		// Set the request status.
 		if (ppr.getStatus().getStartTime() == null)

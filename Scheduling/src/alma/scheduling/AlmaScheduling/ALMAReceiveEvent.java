@@ -57,25 +57,26 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.17 2004/11/30 23:36:05 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.18 2004/12/02 17:01:27 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
     private ALMAProjectManager manager;
-    private ALMAPipeline pipeline;
+    //private ALMAPipeline pipeline;
     private ALMAPublishEvent publisher;
     private Vector currentEB; //a list of the ExecBlock that are currently started but not finished.
 
     /**
       *
       */
-    public ALMAReceiveEvent(ContainerServices cs, ALMAProjectManager m, ALMAArchive a, 
-        ALMAPipeline p, ALMAPublishEvent pub) {
+    public ALMAReceiveEvent(ContainerServices cs, 
+                            ALMAProjectManager m,
+                            ALMAPublishEvent pub) {
         
         this.containerServices = cs;    
         this.logger = cs.getLogger();
         this.manager = m;
-        this.pipeline = p;
+        //this.pipeline = p;
         this.publisher = pub;
         this.currentEB = new Vector();
     }
@@ -244,6 +245,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         SciPipelineRequest ppr=null;
         try {
             ppr = manager.createSciPipelineRequest(e.getSBId(), "Empty Comment");
+            manager.startPipeline(ppr);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: error starting the science pipeline");
             ex.printStackTrace();

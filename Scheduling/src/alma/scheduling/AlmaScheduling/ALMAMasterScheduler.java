@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.15 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.16 2004/12/02 17:01:27 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -89,7 +89,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     // all the alma telescopes
     private ALMATelescope telescope;
     //Interface to the pipeline subsystem
-    private ALMAPipeline pipeline;
+    //MOVED TO ALMAProjectManager
+    //private ALMAPipeline pipeline;
 
     private Receiver control_nc;
     private Receiver telcal_nc;
@@ -129,7 +130,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.messageQueue = new MessageQueue();
         this.operator = new ALMAOperator(containerServices, messageQueue);
         this.telescope = new ALMATelescope();
-        this.pipeline = new ALMAPipeline(containerServices);
+        //this.pipeline = new ALMAPipeline(containerServices);
         
         logger.config("SCHEDULING: MasterScheduler initialized");
     }
@@ -144,8 +145,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         pmThread.start();
 
         // Connect to the Control NC
-        eventreceiver = new ALMAReceiveEvent(containerServices, manager, archive, 
-                                             pipeline, (ALMAPublishEvent)publisher);
+        eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
+                                             (ALMAPublishEvent)publisher);
         control_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.Control.CHANNELNAME.value,
                 containerServices);
