@@ -1,7 +1,7 @@
 #*******************************************************************************
 # E.S.O. - ACS project
 #
-# "@(#) $Id: Makefile,v 1.1 2003/11/07 00:00:11 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.2 2003/11/07 22:23:04 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -32,7 +32,12 @@ jjj_EXTRAS=
 # Scripts (public and local)
 #----------------------------
 SCRIPTS     =
-SCRIPTS_L   = testRunSimulator
+SCRIPTS_L   = testRunSimulator \
+              testTestA \
+              testTestB \
+              testTestDateTime \
+              testTestSimulator \
+              
 
 #
 # java sources in Jarfile on/off
