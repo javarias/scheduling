@@ -21,34 +21,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File AllTests.java
+ * File TestALMAControl.java
  */
  
 package alma.scheduling.test;
+import alma.scheduling.AlmaScheduling.ALMAControl;
+import alma.acs.component.client.ComponentClientTestCase;
 
-import junit.framework.TestSuite;
-import junit.framework.Test;
+public class TestALMAControl extends ComponentClientTestCase {
+    private ALMAControl control; 
+    
+    public TestALMAControl() throws Exception {
+        super("Testing ALMAControl");
+    }
 
-public class AllTests {//extends TestSuite{
-    /*
-    private static TestDateTime dtTest = new TestDateTime();
-    private static TestAntenna antennaTest = new TestAntenna();
-    */
-    public static Test suite(){
-        TestSuite suite = new TestSuite();
+    protected void setUp() throws Exception {
+        super.setUp();
+        control = new ALMAControl(getContainerServices());
+        m_logger.info("SCHED_TEST: Setup complete");
+    }
+
+    protected void tearDown() throws Exception {
+    }
+
+    public void test1CreateSubarray() {
+        short[] antennas = {1,2,3,4,5,6,7,8,9};
+        short subarray = -1;
         try {
-            suite.addTestSuite(alma.scheduling.test.TestAntenna.class);
-            suite.addTestSuite(alma.scheduling.test.TestDateTime.class);
-            suite.addTestSuite(alma.scheduling.test.TestALMAArchive.class);
-            suite.addTestSuite(alma.scheduling.test.TestALMAControl.class);
-        }catch(Exception e) {
-            System.out.println("hmm");
+            subarray = control.createSubarray(antennas);
+            assertTrue(subarray != -1);
+        } catch(Exception e) {
+            m_logger.severe("SCHED_TEST: error");
+            e.printStackTrace();
         }
-        return suite;
     }
 
     public static void main(String[] args) {
-        //junit.textui.TestRunner.run(AllTests.class);
-        alma.acs.testsupport.tat.TATJUnitRunner.run(AllTests.class);
+        alma.acs.testsupport.tat.TATJUnitRunner.run(TestALMAControl.class);
     }
 }

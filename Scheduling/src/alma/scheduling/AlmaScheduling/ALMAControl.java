@@ -75,6 +75,8 @@ public class ALMAControl implements Control {
      */
     public void execSB(short subarrayId, BestSB best, DateTime time) 
         throws SchedulingException {
+
+        execSB(subarrayId, best);
     }
 
     /**
