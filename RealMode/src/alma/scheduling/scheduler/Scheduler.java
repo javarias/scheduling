@@ -73,6 +73,7 @@ public class Scheduler implements Runnable {
     private SchedulerTaskControl schedulerTaskControl;
     private ALMAClock clock;
     private PIProxy piproxy;
+    private SchedulingPublisher s_publisher;
     
     public Scheduler(boolean isSimulation, 
                       ContainerServices c, 
@@ -82,7 +83,8 @@ public class Scheduler implements Runnable {
                            MessageQueue mq, 
                             ALMAClock cl,
                              PIProxy pip,
-                              String m) {
+                              String m,
+                               SchedulingPublisher sp) {
         this.schedulerState = new State(State.NEW);
         this.isSimulation = isSimulation;
         this.container = c;
@@ -93,6 +95,7 @@ public class Scheduler implements Runnable {
         this.clock = cl;
         this.piproxy = pip;
         this.mode = m;
+        this.s_publisher = sp;
 
         logger = container.getLogger();
         
@@ -123,6 +126,7 @@ public class Scheduler implements Runnable {
             //should send out nothingCanBeScheduled but
             //for now this is the end of the project and we start the pipeline
                 logger.info("SCHEDULING: No more SBs to process!");
+                s_publisher.pubish();
                 moreSBs = false;
                 break;
             }
