@@ -43,7 +43,7 @@ import alma.ControlExceptions.*;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.18 2005/02/16 21:25:33 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.19 2005/02/28 17:09:59 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -65,7 +65,7 @@ public class ALMAControl implements Control {
         this.observedSessions = new Vector();
         try {
             control_system = alma.Control.ControlSystemHelper.narrow(
-                containerServices.getComponent("ControlSystem1"));
+                containerServices.getComponent("CONTROL_ControlSystem1"));
             logger.info("SCHEDULING: Got ControlSystem Component");
         } catch (Exception ce) {
             logger.severe("SCHEDULING: error getting ControlSystem Component.");
@@ -208,5 +208,17 @@ public class ALMAControl implements Control {
             }
         }
         return null;
+    }
+
+    /**
+      * release control comp
+      */
+    public void releaseControlComp() {
+        try {
+            containerServices.releaseComponent("CONTROL_ControlSystem1");
+        }catch(Exception e) {
+            logger.severe("SCHEDULING: Error releasing control comp.");
+            e.printStackTrace();
+        }
     }
 }

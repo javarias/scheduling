@@ -46,7 +46,7 @@ import alma.pipelinescience.SciPipeScheduler;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.10 2005/02/11 15:11:29 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.11 2005/02/28 17:09:59 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -74,10 +74,22 @@ public class ALMAPipeline implements SciPipeline {
     private void getPipelineComponents() {
         try {
             pipelineComp = alma.pipelinescience.SciPipeSchedulerHelper.narrow(
-                containerServices.getComponent("SCIENCE_PIPELINE"));
+                containerServices.getComponent("PIPELINE_SCIPIPEMANAGER"));
             
         } catch(ContainerException e) {
             logger.severe("SCHEDULING: Error getting pipeline component");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+      * Release pipeline comp
+      */
+    public void releasePipelineComp() {
+        try {
+            containerServices.releaseComponent("PIPELINE_SCIPIPEMANAGER");
+        }catch(Exception e) {
+            logger.severe("SCHEDULING: error releasing pipeline comp.");
             e.printStackTrace();
         }
     }

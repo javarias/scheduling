@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.26 2005/02/16 21:25:33 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.27 2005/02/28 17:09:59 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -219,12 +219,12 @@ public class ALMAProjectManager extends ProjectManager {
 
     
     /**
-      * Returns two strings. Ons is the id of the ProjectStatus and the second is
-      * the id of the obs unit set that just completed.
-      * NOTE: this is temporary
+      * 
+      * 
+      * 
       */
-    public String[] updateProjectStatus(ExecBlock eb) {
-        String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
+    public void updateProjectStatus(ExecBlock eb) {
+        //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
         logger.info ("in PM, ps update");
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
@@ -240,7 +240,7 @@ public class ALMAProjectManager extends ProjectManager {
                 break;
             }
         }
-        ids[0] = ps.getProjectStatusEntity().getEntityId(); //for pipeline back in ALMAReceiveEvent
+        //ids[0] = ps.getProjectStatusEntity().getEntityId(); //for pipeline back in ALMAReceiveEvent
         logger.info("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
 
         /**
@@ -263,7 +263,7 @@ public class ALMAProjectManager extends ProjectManager {
             logger.severe("SCHEDULING: Could not update project status in archive!");
             e.printStackTrace();
         }
-        return ids;
+        //return ids;
     }
 
 
@@ -312,12 +312,14 @@ public class ALMAProjectManager extends ProjectManager {
       * Creates an Observed session and maps it to the ProjectStatus. The ProjectStatus then 
       * gets updated in the archive. 
       */
-    public ObservedSession createObservedSession(Program p) {
+    public ObservedSession createObservedSession(Program p, ExecBlock eb) {
 
         ObservedSession session = new ObservedSession();
         session.setSessionId(ProjectUtil.genPartId());
         session.setProgram(p);
         session.setStartTime(new DateTime(System.currentTimeMillis()));
+        //System.out.println("EXEC BLOCK: eb id ="+eb.getId());
+        session.addExec(eb);
         p.addObservedSession(session);
         Project proj = pQueue.get(p.getProject().getId());
         proj.setProgram(p);
@@ -342,16 +344,23 @@ public class ALMAProjectManager extends ProjectManager {
         String sbid = ((SB)eb.getParent()).getId();
         SB sb = sbQueue.get(sbid);
         //in future will be done in scheduler.
-        ObservedSession session = createObservedSession(sb.getParent());
-        session.addExec(eb);
+        ObservedSession session = createObservedSession(sb.getParent(),eb);
+        //session.addExec(eb);
         sessionStart(session.getSessionId(), sbid);
+        logger.info("SCHEDULING: Session id == "+session.getSessionId());
         try {
-            StartSessionEvent start_event = new StartSessionEvent(
+            long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
+            logger.info("SCHEDULING: "+time+", "+session.getSessionId()+", "+session.getProgram().getId()+", "+
+                    sbid+", "+eb.getId()+"."); 
+            StartSessionEvent start_event = new StartSessionEvent(0L, "a", "b", "c", "d");
+/*
+                new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                     session.getSessionId(),
                     session.getProgram().getId(),
                     sbid,
                     eb.getId());
+                    */
             publisher.publish(start_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send start session event!");
@@ -450,14 +459,17 @@ public class ALMAProjectManager extends ProjectManager {
 
         logger.info("SCHEDULING: Starting Pipeline");
         String pprString = archive.getPPRString(ps, ppr.getId());
+        logger.info("SCHEDULING: (in PM) PPR string =  "+pprString);
         String pipelineResult = pipeline.processRequest(pprString);
-        //need to convert PS into xml string and parse for the ppr stuff...
-        /* TODO
-           archive.getPPRString.......
+    }
 
-        String pprSXmlString = "";
-        pipeline.start(pprXmlString);
-        */
+    public void managerStopped() {
+        try {
+            pipeline.releasePipelineComp();
+        } catch(Exception e){
+            logger.severe("SCHEDULING: error releasing pipeline comp from PM");
+            e.printStackTrace();
+        }
     }
 
 }

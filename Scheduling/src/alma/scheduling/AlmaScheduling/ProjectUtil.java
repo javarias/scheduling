@@ -88,7 +88,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.14 2005/02/16 21:25:33 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.15 2005/02/28 17:09:59 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -471,6 +471,7 @@ public class ProjectUtil {
 		p.setObsUnitSetStatusId(genPartId());
 		setProgramMember(p);
 		
+		project.setProgram(program);
 		// Mark the project as ready.  (This also initializes the totals.)
 		project.setReady(now);
 		
@@ -530,7 +531,12 @@ public class ProjectUtil {
 			boolean[] schedUsed, Project project, Program parent,  
 			DateTime now) throws SchedulingException {
 		
+        if(set.getEntityPartId() == null) {
+            set.setEntityPartId(genPartId());
+            System.out.println("Program ID = "+set.getEntityPartId());
+        }
 		Program program = new Program (set.getEntityPartId());
+        System.out.println("Program ID = "+program.getId());
 		program.setProject(project);
 		program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
 		program.setTimeOfCreation(now);
@@ -889,7 +895,7 @@ public class ProjectUtil {
             try {
 			    x.setEndTime(session[i].getEndTime().toString());
             } catch (NullPointerException npe) {
-                System.out.println("SCHEDULING: End time not set.");
+			    x.setEndTime("End time not known yet.");
             }
 			// Set the reference to the ObsUnitSetStatus.
 			ProjectStatusRefT pRef = new ProjectStatusRefT ();
@@ -900,9 +906,11 @@ public class ProjectUtil {
 			//x.setObsUnitSetStatusRef(pRef);
 			// Set the list of exec block references.
 			ExecBlock[] s = session[i].getExec();
+            //System.out.println("EXEC BLOCKS: len = "+s.length);
 			ExecBlockRefT[] execRef = new ExecBlockRefT [s.length];//hso
 			for (int j = 0; j < s.length; ++j) {
 				execRef[i] = new ExecBlockRefT ();//hso
+                //System.out.println("EXEC BLOCK: id = "+s[i].getExecId());
 				execRef[i].setExecBlockId(s[i].getExecId());
 //				execRef[i].setPartId(nullPartId);//hso
 //				execRef[i].setDocumentVersion("1");//hso

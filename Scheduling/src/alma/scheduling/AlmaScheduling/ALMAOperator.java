@@ -98,6 +98,7 @@ public class ALMAOperator implements Operator {
         //best.setSelection(0); //for now set the first one to be the best one!
         String bestSBId= best.getBestSelection(); //used when Exec's operator times out
         if(bestSBId == null) {
+            logger.info("SCHEDULING: best sb id == null. no visible targets");
             best = new BestSB(new NothingCanBeScheduled(new DateTime(System.currentTimeMillis()),
                             NothingCanBeScheduled.NoVisibleTargets, ""));
         } else {

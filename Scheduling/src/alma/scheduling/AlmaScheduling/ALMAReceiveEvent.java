@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.20 2005/02/11 15:11:29 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.21 2005/02/28 17:09:59 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -193,6 +193,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * @return ExecBlock Internal obj to scheduling, contains the info we want from control
       */
     private ExecBlock createExecBlock(ExecBlockEvent event) {
+        // System.out.println("EXECBLOCK in event id = "+event.execID);
         ExecBlock eb = new ExecBlock(event.execID, event.saId);
         // do this to get SB id over to PM, will be replaced with proper SB
         eb.setParent(new SB(event.sbId));
@@ -274,13 +275,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * Returns the ObsUnitSet part ID which is what the pipeline needs
       * @param ExecBlock
       * @return String[]
-      */
     private String[] updateProjectStatus(ExecBlock eb) {
         String[] id_info=null;
         logger.info("SCHEDULING: Updating the projectStatus");
         id_info = manager.updateProjectStatus(eb);
         return id_info;
     }
+      */
 
     /**
       * Retrieves the exec block with the given id from the exec block queue.

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 /**
  * description
  * 
- * @version $Id: ObservedSession.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ObservedSession.java,v 1.5 2005/02/28 17:09:59 sslucero Exp $
  * @author Allen Farris
  */
 public class ObservedSession {
@@ -67,6 +67,7 @@ public class ObservedSession {
      */
     public void addExec(ExecBlock x) {
     	exec.add(x);
+    //    System.out.println("EXECBLOCK x.id = "+x.getId());
     }
 
     /**

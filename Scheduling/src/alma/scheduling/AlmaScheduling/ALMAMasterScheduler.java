@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.19 2005/02/11 15:11:29 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.20 2005/02/28 17:09:59 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -135,7 +135,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.messageQueue = new MessageQueue();
         this.operator = new ALMAOperator(containerServices, messageQueue);
         this.telescope = new ALMATelescope();
-        //this.pipeline = new ALMAPipeline(containerServices);
         
         logger.config("SCHEDULING: MasterScheduler initialized");
     }
@@ -174,7 +173,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             AbstractNotificationChannel.CORBA, 
             alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
                 containerServices);
-        pipeline_nc.attach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
+        pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
         pipeline_nc.begin();
         
     }
@@ -185,9 +184,12 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void cleanUp() {
         super.setStopCommand(true);
         this.manager.setStopCommand(true);
+        this.manager.managerStopped();
+        this.control.releaseControlComp();
+        this.archive.releaseArchiveComponents();
         control_nc.detach("alma.Control.ExecBlockEvent", eventreceiver);
         ((CorbaReceiver)control_nc).disconnect();
-        pipeline_nc.detach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
+        pipeline_nc.detach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
         ((CorbaReceiver)pipeline_nc).disconnect();
     }
 
@@ -316,6 +318,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             } catch(InterruptedException e) {
                 if(config.isNothingToSchedule()){
                     config.respondStop();
+                    logger.info("SCHEDULING: interrupted sched thread in MS");
                     manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
                 }
             }

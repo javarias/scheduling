@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.5 2005/02/11 15:11:29 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.6 2005/02/28 17:09:59 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -141,12 +141,24 @@ public class ALMAPublishEvent extends PublishEvent {
         logger.info("SCHEDULING: event's class == "+
             event.getClass().getName());
         String eventClass = event.getClass().getName();
+        try {
         if(eventClass.equals("alma.scheduling.StartSessionEvent")) {
+            logger.info("SCHEDULING: about to publish start session event");
             sched_nc.publish((StartSessionEvent)event);
+            logger.info("SCHEDULING: published start session event");
+            
         } else if(eventClass.equals("alma.scheduling.EndSessionEvent")) {
+            logger.info("SCHEDULING: about to publish end session event");
             sched_nc.publish((EndSessionEvent)event);
+            logger.info("SCHEDULING: published end session event");
+
         } else if(eventClass.equals("alma.scheduling.NothingCanBeScheduledEvent")) {
+            logger.info("SCHEDULING: about to publish nothing can be scheduled event");
             sched_nc.publish((NothingCanBeScheduledEvent)event);
+            logger.info("SCHEDULING: published nothing can be scheduled event");
+        }
+        }catch(Exception e) {
+            e.printStackTrace();
         }
     }
 
