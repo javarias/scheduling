@@ -70,7 +70,7 @@ public class TestMasterComponent extends ComponentClientTestCase {
         m_logger.info("SCHED_TEST: setup called");
 
         sched_mc = alma.ACS.MasterComponentHelper.narrow(getContainerServices().
-                            getComponent("SCHEDULINGMASTERCOMPONENT"));
+                            getComponent("SCHEDULING_MASTER_COMP"));
         assertNotNull(sched_mc);
     }
 
