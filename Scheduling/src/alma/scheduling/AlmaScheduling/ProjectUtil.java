@@ -31,10 +31,12 @@ import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproposal.*;
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.execblock.*;
+import alma.entity.xmlbinding.valuetypes.StatusT;//hso
 import alma.entity.xmlbinding.valuetypes.TimeT;
 import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
 import alma.entity.xmlbinding.valuetypes.LongitudeT;
 import alma.entity.xmlbinding.valuetypes.LatitudeT;
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.entities.commonentity.*;
 
 import alma.scheduling.Define.SchedulingException;
@@ -86,7 +88,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.12 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.13 2005/01/19 19:14:43 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -810,12 +812,12 @@ public class ProjectUtil {
 	static private StatusT assignState(Status source) {
 		StatusT target = new StatusT ();
 		switch (source.getStatusAsInt()) {
-			case Status.NOTDEFINED: target.setState(StateType.NOTDEFINED); break;
-			case Status.WAITING: target.setState(StateType.WAITING); break;
-			case Status.READY: target.setState(StateType.READY); break;
-			case Status.RUNNING: target.setState(StateType.RUNNING); break;
-			case Status.ABORTED: target.setState(StateType.ABORTED); break;
-			case Status.COMPLETE: target.setState(StateType.COMPLETE); break;
+			case Status.NOTDEFINED: target.setState(StatusTStateType.NOTDEFINED); break;//hso
+			case Status.WAITING: target.setState(StatusTStateType.WAITING); break;//hso
+			case Status.READY: target.setState(StatusTStateType.READY); break;//hso
+			case Status.RUNNING: target.setState(StatusTStateType.RUNNING); break;//hso
+			case Status.ABORTED: target.setState(StatusTStateType.ABORTED); break;//hso
+			case Status.COMPLETE: target.setState(StatusTStateType.COMPLETE); break;//hso
 		}
 		target.setReadyTime(source.getReadyTime() == null ? "" : source.getReadyTime().toString());
 		target.setStartTime(source.getStartTime() == null ? "" : source.getStartTime().toString());
@@ -844,7 +846,7 @@ public class ProjectUtil {
 		target.setNumberObsUnitSetsCompleted(source.getNumberProgramsCompleted());
 		target.setNumberObsUnitSetsFailed(source.getNumberProgramsFailed());
 		target.setTotalSBs(source.getTotalSBs());
-		target.setNumberSBSCompleted(source.getNumberSBsCompleted());
+		target.setNumberSBsCompleted(source.getNumberSBsCompleted());//hso
 		target.setNumberSBsFailed(source.getNumberSBsFailed());
 		
 		// Set the session list.
@@ -898,12 +900,12 @@ public class ProjectUtil {
 			//x.setObsUnitSetStatusRef(pRef);
 			// Set the list of exec block references.
 			ExecBlock[] s = session[i].getExec();
-			ExecBlockEntityRefT[] execRef = new ExecBlockEntityRefT [s.length];
+			ExecBlockRefT[] execRef = new ExecBlockRefT [s.length];//hso
 			for (int j = 0; j < s.length; ++j) {
-				execRef[i] = new ExecBlockEntityRefT ();
-				execRef[i].setEntityId(s[i].getExecId());
-				execRef[i].setPartId(nullPartId);
-				execRef[i].setDocumentVersion("1");
+				execRef[i] = new ExecBlockRefT ();//hso
+				execRef[i].setExecBlockId(s[i].getExecId());
+//				execRef[i].setPartId(nullPartId);//hso
+//				execRef[i].setDocumentVersion("1");//hso
 			}
 			x.setExecBlockRef(execRef);
 			list[i] = x;
@@ -937,28 +939,29 @@ public class ProjectUtil {
 		target.setObsUnitSetStatusRef(pRef);
 		// Set the request status.
 		if (ppr.getStatus().getStartTime() == null)
-			target.setRequestStatus(RequestStatusType.QUEUED);
+			target.setRequestStatus(PipelineProcessingRequestTRequestStatusType.QUEUED);//hso
 		else if (ppr.getStatus().getEndTime() == null)
-			target.setRequestStatus(RequestStatusType.RUNNING);
+			target.setRequestStatus(PipelineProcessingRequestTRequestStatusType.RUNNING);//hso
 		else
-			target.setRequestStatus(RequestStatusType.COMPLETED);
+			target.setRequestStatus(PipelineProcessingRequestTRequestStatusType.COMPLETED);//hso
 		// Set the completion status.
 		if (ppr.getStatus().getEndTime() == null) {
 			if (ppr.getStatus().getReadyTime() != null)
-				target.setCompletionStatus(CompletionStatusType.SUBMITTED);
+				target.setCompletionStatus(PipelineProcessingRequestTCompletionStatusType.SUBMITTED);//hso
 			else 
-				target.setCompletionStatus(CompletionStatusType.INCOMPLETE);
+				target.setCompletionStatus(PipelineProcessingRequestTCompletionStatusType.INCOMPLETE);//hso
 		} else if (ppr.getStatus().isAborted())
-			target.setCompletionStatus(CompletionStatusType.COMPLETE_FAILED);
+			target.setCompletionStatus(PipelineProcessingRequestTCompletionStatusType.COMPLETE_FAILED);//hso
 		else if (ppr.getStatus().isComplete())
-			target.setCompletionStatus(CompletionStatusType.COMPLETE_SUCCEEDED);
+			target.setCompletionStatus(PipelineProcessingRequestTCompletionStatusType.COMPLETE_SUCCEEDED);//hso
 		// Set the reference to the processing results.
-		EntityRefT pprResult = new EntityRefT ();
-		pprResult.setEntityId(ppr.getResults());
-		pprResult.setDocumentVersion("1");
-		pprResult.setEntityTypeName("");
-		pprResult.setPartId(nullPartId);
-		target.setPPResultsRef(pprResult);
+// hso: pprResult removed for the time being, in agreement with Lindsey.        
+//		EntityRefT pprResult = new EntityRefT ();
+//		pprResult.setEntityId(ppr.getResults());
+//		pprResult.setDocumentVersion("1");
+//		pprResult.setEntityTypeName("");
+//		pprResult.setPartId(nullPartId);
+//		target.setPPResultsRef(pprResult);
 		// Set the comment.
 		target.setComment(ppr.getComment());
 		// Set the imaging procedure name.
@@ -966,11 +969,15 @@ public class ProjectUtil {
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
         if(parm != null) {
-    		String[] s = new String [parm.length];
-		    for (int i = 0; i < s.length; ++i){
-	    		s[i] = parm[i].toString();
+//    		String[] s = new String [parm.length];//hso
+            PipelineParameterT[] pparams = new PipelineParameterT[parm.length];//hso
+		    for (int i = 0; i < parm.length; ++i){//hso
+//                s[i] = parm[i].toString();//hso
+                pparams[i] = new PipelineParameterT();//hso
+                pparams[i].setName("???"); //hso:todo
+                pparams[i].setValue(parm[i].toString()); //hso:todo
             }
-    		target.setParm(s);
+    		target.setPipelineParameter(pparams);//hso
         }
 		// OK, we're done.
 		return target;
@@ -1005,7 +1012,7 @@ public class ProjectUtil {
 	static private ExecStatusT[] assignExec(ExecBlock[] ex, DateTime now) {
 		ExecStatusT[] list = new ExecStatusT [ex.length];
 		ExecStatusT exStatus = null;
-		ExecBlockEntityRefT execRef = null;
+		ExecBlockRefT execRef = null;//hso
 		StatusT state = null;
 		BestSBT bestSB = null;
 		for (int i = 0; i < ex.length; ++i) {
@@ -1013,10 +1020,10 @@ public class ProjectUtil {
 			// Set entity part-id.
 			exStatus.setEntityPartId(ex[i].getExecStatusId());
 			// Set execblock reference.
-			execRef = new ExecBlockEntityRefT ();
-			execRef.setEntityId(ex[i].getExecId());
-			execRef.setPartId(nullPartId);
-			execRef.setDocumentVersion("1");
+			execRef = new ExecBlockRefT ();//hso
+			execRef.setExecBlockId(ex[i].getExecId());//hso
+//			execRef.setPartId(nullPartId);//hso
+//			execRef.setDocumentVersion("1");//hso
 			exStatus.setExecBlockRef(execRef);
 			// Set times.
 			exStatus.setTimeOfCreation(ex[i].getTimeOfCreation().toString());
@@ -1036,38 +1043,48 @@ public class ProjectUtil {
 		BestSBT target = new BestSBT ();
 		
 		// Set the number of units.
-		target.setNumberUnits(best.getNumberReturned());
+//		target.setNumberUnits(best.getNumberReturned());//hso
 		
 		// Set the array of SB-ids.
 		String[] s = best.getSbId();
-		SchedBlockRefT[] sbRef = new SchedBlockRefT [s.length];
+        double[] success = best.getSuccess();//hso
+        double[] ranks = best.getRank();//hso
+        String[] scores = best.getScoreString();//hso
+//		SchedBlockRefT[] sbRef = new SchedBlockRefT [s.length];//hso
 		// The above really should be SchedBlockRefT.
+        
 		for (int i = 0; i < s.length; ++i) {
-			sbRef[i] = new SchedBlockRefT ();
-			sbRef[i].setEntityId(s[i]);
-			sbRef[i].setPartId(nullPartId);
-			sbRef[i].setDocumentVersion("1");
+            BestSBItemT bestSBItem = new BestSBItemT();//hso
+            bestSBItem.setScore(scores[i]);//hso
+            bestSBItem.setSuccess(Double.toString(success[i]));//hso
+            bestSBItem.setRank(Double.toString(ranks[i]));//hso
+            SchedBlockRefT sbRef = new SchedBlockRefT();//hso
+			sbRef.setEntityId(s[i]);//hso
+			sbRef.setPartId(nullPartId);//hso
+			sbRef.setDocumentVersion("1");//hso
+            target.addBestSBItem(bestSBItem);//hso
 		}
-		target.setSBId(sbRef);
-		
-		// Set the array of score strings.
-		target.setScore(best.getScoreString());
-		
-		// Set the array of success strings.
-		double[] d = best.getSuccess();
-		s = new String [d.length];
-		for (int i = 0; i < d.length; ++i) {
-			s[i] = Double.toString(d[i]);
-		}
-		target.setSuccess(s);
-		
-		// Set the array of rank strings.
-		d = best.getRank(); 
-		s = new String [d.length];
-		for (int i = 0; i < d.length; ++i) {
-			s[i] = Double.toString(d[i]);
-		}
-		target.setRank(s);
+//		target.setSBId(sbRef);//hso
+
+//hso: these have been set above        
+//		// Set the array of score strings.
+//		target.setScore(best.getScoreString());
+//		
+//		// Set the array of success strings.
+//		double[] d = best.getSuccess();
+//		s = new String [d.length];
+//		for (int i = 0; i < d.length; ++i) {
+//			s[i] = Double.toString(d[i]);
+//		}
+//		target.setSuccess(s);
+//		
+//		// Set the array of rank strings.
+//		d = best.getRank(); 
+//		s = new String [d.length];
+//		for (int i = 0; i < d.length; ++i) {
+//			s[i] = Double.toString(d[i]);
+//		}
+//		target.setRank(s);
 		
 		// Set selection and time of selection.
 		target.setSelection(best.getSelection());

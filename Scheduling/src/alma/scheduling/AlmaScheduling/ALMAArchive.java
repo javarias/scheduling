@@ -61,7 +61,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.31 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.32 2005/01/19 19:14:43 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -181,7 +181,7 @@ public class ALMAArchive implements Archive {
       */
     private ObsProject[] getAllObsProjects() throws SchedulingException {
         Vector tmpObsProject = new Vector();
-        ObsProject[] projects = null;
+        ObsProject[] projects=null;
         String query = new String("/prj:ObsProject");
         String schema = new String("ObsProject");
         String className = new String(
@@ -217,6 +217,11 @@ public class ALMAArchive implements Archive {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
         }
+        /*
+        if(projects == null){
+            projects = new ObsProject[1];
+            projects[0]= new ObsProject();
+        }*/
         return projects;
 
     }
@@ -570,6 +575,17 @@ public class ALMAArchive implements Archive {
         entityDeserializer = EntityDeserializer.getEntityDeserializer(
             containerServices.getLogger());
         logger.fine("SCHEDULING: The ALMAArchive has been constructed.");
+    }
+
+    /**
+      * Releases all the archive components.
+      * TODO: find out how to release operational one..
+      */
+    public void releaseArchiveComponents() {
+        try {
+            containerServices.releaseComponent("ARCHIVE_CONNECTION");
+        } catch (Exception e) {
+        }
     }
 
     /**

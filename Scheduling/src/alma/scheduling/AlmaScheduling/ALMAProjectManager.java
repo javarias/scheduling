@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.23 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.24 2005/01/19 19:14:43 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -374,9 +374,11 @@ public class ALMAProjectManager extends ProjectManager {
         SessionT session = null;
         logger.info("SCHEDULING: in PM sessions length = "+sessions.length);
         for(int i=0; i < sessions.length; i++) {
-            ExecBlockEntityRefT[] execblocks = sessions[i].getExecBlockRef();
+            ExecBlockRefT[] execblocks = sessions[i].getExecBlockRef();
+            //ExecBlockEntityRefT[] execblocks = sessions[i].getExecBlockRef();
             for(int j=0; j < execblocks.length; j++) {
-                if(execblocks[j].getEntityId().equals(execid)){
+                //if(execblocks[j].getEntityId().equals(execid)){
+                if(execblocks[j].getExecBlockId().equals(execid)){
                     logger.info("SCHEDULING: session found!");
                     session = sessions[i];
                     logger.info("SCHEDULING: sbid = " +sbid);
