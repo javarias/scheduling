@@ -1,3 +1,5 @@
 PROLOGUE prologue
 allTests
+testPublisher
+testStartSched
 EPILOGUE epilogue

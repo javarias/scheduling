@@ -38,6 +38,7 @@ import alma.ACS.ComponentStates;
 import alma.scheduling.InvalidOperation;
 import alma.scheduling.NoSuchSB;
 import alma.scheduling.SchedulingInfo;
+import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.UnidentifiedResponse;
 import alma.scheduling.MasterSchedulerIFOperations;
 
@@ -121,13 +122,13 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.archive = new ALMAArchive(containerServices);
         this.sbQueue = new SBQueue();
         this.clock = new ALMAClock();
-        this.manager = new ALMAProjectManager(containerServices, archive, sbQueue);
+        this.publisher = new ALMAPublishEvent(containerServices);
+        this.manager = new ALMAProjectManager(containerServices, archive, sbQueue, publisher);
         this.control = new ALMAControl(containerServices);
         this.messageQueue = new MessageQueue();
         this.operator = new ALMAOperator(containerServices, messageQueue);
         this.telescope = new ALMATelescope();
         this.pipeline = new ALMAPipeline(containerServices);
-        this.publisher = new ALMAPublishEvent(containerServices);
         
         logger.config("SCHEDULING: MasterScheduler initialized");
     }
@@ -299,6 +300,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             } catch(InterruptedException e) {
                 if(config.isNothingToSchedule()){
                     config.respondStop();
+                    manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
                 }
             }
         }

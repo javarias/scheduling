@@ -1,7 +1,7 @@
 #*******************************************************************************
 # NRAO
 #
-# "@(#) $Id: Makefile,v 1.1 2004/08/23 21:43:57 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.2 2004/09/30 20:12:43 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -20,7 +20,7 @@
 # Scripts (public and local)
 # ----------------------------
 SCRIPTS         = 
-SCRIPTS_L       = prologue allTests epilogue
+SCRIPTS_L       = prologue allTests testPublisher testStartSched epilogue
 
 # 
 # Jarfiles and their directories

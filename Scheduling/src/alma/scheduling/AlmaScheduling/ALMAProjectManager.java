@@ -31,6 +31,9 @@ import java.util.Vector;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.Event.Publishers.PublishEvent;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Status;
@@ -56,11 +59,13 @@ public class ALMAProjectManager extends ProjectManager {
     private SBQueue sbQueue;
     private ProjectQueue pQueue;
     private ProjectStatusQueue psQueue;
+    private ALMAPublishEvent publisher;
 
-    public ALMAProjectManager(ContainerServices cs, ALMAArchive a, SBQueue q) {
+    public ALMAProjectManager(ContainerServices cs, ALMAArchive a, SBQueue q, PublishEvent p) {
         super();
         this.containerServices = cs;
         this.logger = cs.getLogger();
+        this.publisher =(ALMAPublishEvent)p;
         this.archive = a;
         this.sbQueue = q;
         this.psQueue = new ProjectStatusQueue();
@@ -154,32 +159,6 @@ public class ALMAProjectManager extends ProjectManager {
                     }
                 }
             }
-            /*
-            SB[] sbs = 
-            logger.info("SCHEDULING: total SBs = "+sbs.length);
-            for(int i=0; i< sbs.length; i++) {
-                ids = sbQueue.getAllIds();
-                //initially on first poll it will be 0 coz sbQueue has nothing in it yet.
-                logger.info("SCHEDULING: sb # in queue = "+ids.length);
-                String tmp_id = sbs[i].getId();
-                if(ids.length == 0) { //nothing in the SBQueue
-                    System.out.println("SCHEDULING: id's length == 0");
-                    sb_present = false;
-                }
-                for(int j=0; j< ids.length; j++) {
-                    logger.info("SCHEDULING: DOES "+tmp_id+" == "+ids[j]);
-                    if(tmp_id.equals(ids[j])) { // SB already in queue
-                        sb_present = true;
-                        break;
-                    } else {
-                        sb_present = false; //not in queue
-                    }
-                }
-                if(!sb_present) { //not already in queue so add it to queue.
-                    System.out.println("SCHEDULING: sbpresent false; adding "+tmp_id +" to queue");
-                    sbQueue.add(sbs[i]);
-                }
-            }*/
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error polling archive: "+e.toString());
             e.printStackTrace();
@@ -188,54 +167,9 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
 
-    /** 
-     * Get the SB ids from all the projects and retrieve the SB objects from 
-     * the archive.
-     *
-     * @param Project[]
-     * @return SB[]
-     */
-    /*
-    private SB[] getSBsFromProjects(Project[] projects) {
-        logger.info("SCHEDULING: Getting SBs from projects");
-        Vector tmpsbs = new Vector();
-        try {
-            for(int i=0; i< projects.length; i++) {
-                String[] ids = projects[i].getSBIds();
-                System.out.println("Project = "+projects[i].getId());
-                System.out.println("SB length... "+ids.length);
-                Program prog = new Program("not implemented yet");
-                prog.setDataReductionProcedureName("data reduction name");
-                for (int j=0;j < ids.length; j++) {
-                    SB sb = archive.getSB(ids[j]);
-                    //sb.getParent().setProject(projects[i]);
-                    sb.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
-                    sb.setProject(projects[i]);
-                    sb.setParent(prog);
-                    //projects[i].setProgram(sb.getParent());
-                    prog.addMember(sb);
-                    tmpsbs.add(sb);
-                    //sb.setReady(new DateTime(System.currentTimeMillis()));
-                } 
-                projects[i].setProgram(prog);
-                prog.setProject(projects[i]);
-                //prog.setReady(new DateTime(System.currentTimeMillis()));
-                projects[i].setReady(new DateTime(System.currentTimeMillis()));
-                projects[i].setProgram(prog);
-            }
-        } catch (Exception e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
-        }
-        System.out.println("SB total from all projects = "+tmpsbs.size());
-        SB[] schedblocks = new SB[tmpsbs.size()];
-        for(int i=0; i < tmpsbs.size();i++){
-            schedblocks[i] = (SB)tmpsbs.elementAt(i);
-        }
-        System.out.println("schedblock[] size == "+schedblocks.length);
-        return schedblocks;
-    }*/
-
+    /**
+      *
+      */
     public void sessionStart(String sessionId, String sb_id) {
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
         logger.info("SCHEDULING:(session info) Session ("+sessionId+") has started.");
@@ -243,6 +177,9 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
     }
 
+    /**
+      *
+      */
     public void sessionEnd(String sb_id) {
         logger.info("sb id = "+sb_id);
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
@@ -340,6 +277,15 @@ public class ALMAProjectManager extends ProjectManager {
         } catch(Exception e) {
         }
         return ids;
+    }
+
+    /**
+      *
+      */
+    public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason){
+        NothingCanBeScheduledEvent event = new NothingCanBeScheduledEvent(
+                reason, (new DateTime(System.currentTimeMillis())).toString(), "");
+        publisher.publish(event);
     }
 
     

@@ -6,7 +6,7 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.4 2004/08/31 21:06:05 sroberts Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.5 2004/09/30 20:13:59 sroberts Exp $"
 
 Documents:
 
@@ -24,7 +24,20 @@ Configuration Requirements:
   			TELCAL
   			and of course SCHEDULING
     
+Scheduling's CDB requirements:
+    * Components.xml
+      <_ Name="SCHEDULINGMASTERCOMPONENT"
+            Code="alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper"
+            Type="IDL:alma/ACS/MasterComponent:1.0"
+            Container="java"/>
 
+      <_ Name="MasterScheduler"
+            Code="alma.scheduling.AlmaScheduling.MasterSchedulerIFHelper"
+            Type="IDL:alma/scheduling/MasterSchedulerIF:1.0"
+            Container="java" 
+            Default="true" />
+
+    * Plus an instance of the master component in the alma dir
 
 Tested:
     - JUnit tests have been written for some of the classes. Alot of the 
@@ -32,16 +45,38 @@ Tested:
       with other ALMA subsystems. In the future scheduling simulators will be
       completed to avoid this interaction in testing.
   			  
+    - Scheduling has been tested using entities created using the ALMA-OT batchmode. The files
+      used duiring this process are present in the test directory. 
 
+Requirements for Scheduling Tests for R2:
+    - The following steps must be preformed before running tat/make test on scheduling.
+        - archiveCleanXindice
+        - archiveLoadSchema $ACSROOT/idl
+            (NOTE: I do not know where ITS puts all the schemas but
+             all the schemas must be loaded correctly.)
+        - ACS Started so that the ALMA-OT can be run using the command in the next step.
+        - from the Scheduling's test directory:
+            ALMA-OT -batch import-save.py ExpertTestProject.zip
+            (NOTE: The ITS setup (ObservingTool.properties) might be different than the  
+             file provided by scheduling. Depends on them)
+        - Shutdown ACS 
+        
 
-Tests: all run as a suite, AllTests.java
-    Tests include:
-        TestAntenna
-        TestDateTime
-        TestALMAArchive
-        TestALMAControl
-        TestStatus
-        TestTime
+Tests: 
+    - TestALMAPublishEvent
+    - TestStartScheduling
+    - All the tests below run as a suite, AllTests.java
+        AllTests include:
+            TestAntenna
+            TestDateTime
+            TestALMAArchive
+            TestALMAControl
+            TestStatus
+            TestTime
+
+TEST NOTE: Scheduling now has an Interactive Scheduling Mode. This requires human interaction
+           and therefore cannot be automatically tested. For more imformation on how to test 
+           the Interactive Scheduling mode please see Allen Farris or Sohaila Lucero.
     
 Known problems/bugs:
     - In interactive scheduling when the observing tool is used (when sb is 
@@ -55,6 +90,8 @@ Cost:
 Changes:
    Big Changes:
    	- PlanningModeSim and RealMode modules have been merged into one, Scheduling. 
+    - Updated CDB
+
 
    New Structure
    
@@ -63,7 +100,9 @@ Changes:
      
    New Features:
    
+     - SchedulingMasterComponent exists, not sure if its implemented the way EXEC requires. 
      - Interactive Scheduling is up and running in a very elementary way.
+     - ProjectStatus is now used
      - New entity, Session, has been implemented 
      - New Events, start session and end session, have been implemented.
         

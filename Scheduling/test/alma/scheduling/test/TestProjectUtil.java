@@ -52,16 +52,14 @@ import java.io.*;
  * @author Allen Farris
  */
 public class TestProjectUtil {
-	//private static final String outDir = "\\Users\\afarris\\eclipse\\workspace\\af\\test";
-	private static final String outDir = "./";
 	
 	private static void doTree(PrintStream out, Project prj, String message) {
-		out.println(message);
-		out.println("===================================================");
-		out.println("The lite version of the project tree");
+		System.out.println(message);
+		System.out.println("===================================================");
+		System.out.println("The lite version of the project tree");
 		prj.printTreeLite(out,"");
-		out.println("");
-		out.println("The complete version of the project tree");
+		System.out.println("");
+		System.out.println("The complete version of the project tree");
 		prj.printTree(out,"");
 	}
 	private static void doLiteTree(PrintStream out, Project prj, String message) {
@@ -188,16 +186,18 @@ public class TestProjectUtil {
 	
 	public static void main(String[] arg) {
 		System.out.println("Test of Project");
+        /*
 		PrintStream out = null;
 		try {
-			out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File (outDir,"out.txt")));
+			//out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File (outDir,"out.txt")));
+			out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File ("out.txt")));
 		} catch (Exception err) {
 			err.printStackTrace();
 			System.exit(0);
-		}
+		}*/
 
 		Project prj = createProject();
-		doTree(out,prj,"The initial version of the tree.");
+		doTree(System.out, prj, "The initial version of the tree.");
 		
 		/*
 		try {
@@ -221,20 +221,22 @@ public class TestProjectUtil {
 		
 		// Now simulate the execution of one SB.
 		Session session = executeSB(prj);
-		doTree(out,prj,"The version after ending a SB.");
+		doTree(System.out,prj,"The version after ending a SB.");
 		
 		try {
 			System.out.println("Creating ProjectStatus ...");
 			PrintWriter xmlOut = new PrintWriter(new BufferedWriter(
-					new FileWriter(new java.io.File (outDir,"xmlProjectStatus-1.xml"))));
+					new FileWriter(new java.io.File ("xmlProjectStatus-1.xml"))));
+					//new FileWriter(new java.io.File (outDir,"xmlProjectStatus-1.xml"))));
 			ProjectStatus pStatus = ProjectUtil.map(prj,new DateTime(2004,4,6,12,0,0));
-			pStatus.marshal(xmlOut);
+			//pStatus.marshal(xmlOut);
 			System.out.println("...complete");
 			
 			System.out.println("Creating Session ...");
 			xmlOut = new PrintWriter(new BufferedWriter(
-					new FileWriter(new java.io.File (outDir,"xmlSession-1.xml"))));
-			session.marshal(xmlOut);
+					new FileWriter(new java.io.File ("xmlSession-1.xml"))));
+					//new FileWriter(new java.io.File (outDir,"xmlSession-1.xml"))));
+			//session.marshal(xmlOut);
 			System.out.println("...complete");
 			
 		} catch (SchedulingException err) {
