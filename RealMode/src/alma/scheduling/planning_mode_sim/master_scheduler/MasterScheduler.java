@@ -1,4 +1,4 @@
-/**
+/*
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002

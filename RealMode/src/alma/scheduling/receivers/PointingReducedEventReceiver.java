@@ -44,8 +44,8 @@ public class PointingReducedEventReceiver extends Consumer {
     private Logger logger;
     private ContainerServices containerServices;
     
-    public PointingReducedEventReceiver(ContainerServices cs){
-        super(alma.TelCalPublisher.CHANNELNAME.value);
+    public PointingReducedEventReceiver(ContainerServices cs) throws Exception {
+        super(alma.TelCalPublisher.CHANNELNAME.value, cs);
         this.containerServices = cs;
         this.logger = cs.getLogger();
     }

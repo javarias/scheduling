@@ -2,6 +2,7 @@
  * ALMA - Atacama Large Millimeter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
@@ -20,55 +21,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File ClockSimulator.java
+ * File ProjectManager.java
  */
  
-package alma.scheduling.simulator;
-
-//import alma.scheduling.define.ClockBase;
-import alma.scheduling.define.STime;
-import alma.scheduling.define.ArrayTime;
+package alma.scheduling.define;
 
 /**
- * Description 
+ * The ProjectManager interface defines public methods needed by various
+ * components, both real and simulated.
  * 
- * @version 1.00  Jul 18, 2003
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
-public class ClockSimulator {// extends ClockBase {
+public interface ProjectManager {
 
 	/**
-	 * 
+	 * Return true if and only if the project to which the specified SB
+	 * belongs is a new project, i.e., one that has no SBs that have ever 
+	 * been executed. 
+	 * @param unit
+	 * @return
 	 */
-	public ClockSimulator() {
-		//super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.Clock#getSTime()
+	public boolean newProject(SB unit);
+	
+	/**
+	 * Return the number of SBs that remain to be executed in the project
+	 * to which the specified SB belongs.
+	 * @param unit
+	 * @return
 	 */
-	public STime getSTime() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.Clock#getArrayTime()
-	 */
-	public ArrayTime getArrayTime() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.Clock#synchronize()
-	 */
-	public void synchronize() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public static void main(String[] args) {
-	}
+	public int numberRemaining(SB unit);
+	
 }

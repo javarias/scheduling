@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.define.STime;
 import alma.scheduling.define.ArrayTime;
-import alma.scheduling.define.ClockBase;
+//import alma.scheduling.define.ClockBase;
 import alma.scheduling.define.ClockAlarmListener;
 
 import alma.scheduling.define.DateTime;
@@ -47,7 +47,7 @@ import alma.scheduling.define.DateTime;
  * @version 1.00 May 5, 2003
  * @author Allen Farris
  */
-public class ALMAClock extends ClockBase {
+public class ALMAClock /*extends ClockBase*/ {
 	int delta;
     private Logger logger;
     private ContainerServices container;

@@ -23,8 +23,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
-import alma.scheduling.planning_mode_sim.simulator.Tag;
-import alma.scheduling.planning_mode_sim.simulator.Simulator;
+import alma.scheduling.planning_mode_sim.Tag;
+import alma.scheduling.planning_mode_sim.Simulator;
 
 /**
  * This class has all the functionality that is required by the GUI. It
@@ -294,7 +294,11 @@ public class GUIController implements Runnable {
                 + "before a simulation can be run.");
         } else {
             clearInputFields();
-            simulator = new Simulator(".", "data.txt", "output.txt", "log.txt");
+            simulator = new Simulator();
+            try {
+                simulator.initialize(".", "data.txt", "output.txt", "log.txt");
+            } catch(Exception e) {
+            }
             Thread t = new Thread(simulator);
             t.start();
         }

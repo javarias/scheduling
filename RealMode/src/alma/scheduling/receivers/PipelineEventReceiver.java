@@ -53,9 +53,9 @@ public class PipelineEventReceiver extends Consumer {
     private ContainerServices containerServices;
 
     public PipelineEventReceiver(ContainerServices cs, ALMAPipeline p, 
-        ALMAArchive a) {
+        ALMAArchive a) throws Exception {
         
-        super(alma.pipelinescience.CHANNELNAME.value);
+        super(alma.pipelinescience.CHANNELNAME.value, cs);
         this.pipeline = p;
         this.archive = a;
         this.containerServices = cs;

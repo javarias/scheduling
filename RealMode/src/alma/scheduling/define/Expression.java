@@ -2,6 +2,7 @@
  * ALMA - Atacama Large Millimeter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
@@ -33,18 +34,20 @@ import java.util.*;
  * string, parses and stores it.  There is also a method to evaluate
  * the expression, which yields a boolean.  The logical expression has 
  * the following definition.
- * 
  * Syntax:
- * 		<logical_expression> :=
- * 			a. '(' <logical_expression ')'
- * 			b. '!' '(' <logical_expression ')'
- * 			c. <logical_expression> '&&' 	<logical_expression>
- * 			d. <logical_expression> '||' <logical_expression>
- * 			e. <function_name> <comparison_operator> <numeric_value>
- * 			f. <numeric_value> <comparison_operator> <function_name>
- * 		<comparison_operator> := '==' | '!=' | '<' | '<=' | '>' | '>='
- * 		<numeric_value>  := a valid floating point number
- * 
+ * <ul>
+ * 	<li>	&lt;logical_expression&gt; :=
+ *    <ul>
+ * 		<li>	'(' &lt;logical_expression&gt; ')'
+ * 		<li>	'!' '(' &lt;logical_expression&gt; ')'
+ * 		<li>	&lt;logical_expression&gt; '&&' 	&lt;logical_expression&gt;
+ * 		<li>	&lt;logical_expression&gt; '||' &lt;logical_expression&gt;
+ * 		<li>	&lt;function_name&gt; &lt;comparison_operator&gt; &lt;numeric_value&gt;
+ * 		<li>	&lt;numeric_value&gt; &lt;comparison_operator&gt; &lt;function_name&gt;
+ *    </ul>
+ *  <li>	&lt;comparison_operator&gt; := '==' | '!=' | '&lt;' | '&lt;=' | '&gt;' | '&gt;='
+ * 	<li>	&lt;numeric_value&gt;  := a valid floating point number
+ * </ul>
  * 
  * There are two things that must be configured prior to using this class.
  * The first is to supply the names of external fuctions that can appear in
@@ -65,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version 1.00  Jun 4, 2003
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
 public class Expression {
@@ -73,6 +76,7 @@ public class Expression {
 	// These following section defines the functions in the logical expressions.  
 	private static String[] functionName;
 	private static Method[] method;
+	private static Object[] obj;
 
 	
 	/**
@@ -114,33 +118,24 @@ public class Expression {
 	 * of the functions supplied in setFunctionNames.
 	 * 
 	 */
-	public static void setMethods(String[] methodName) {
-		if (methodName.length != functionName.length)
+	public static void setMethods(Object[] o) {
+		if (o.length != functionName.length)
 			throw new IllegalArgumentException(
-			"The number of method names is not equal to the number of function names.");
+			"Expression initialization error!  The number of objects (" + 
+			o.length + ") is not equal to the number of function names (" + 
+			functionName.length + ").");
 		method = new Method [functionName.length];
-		Class classObj;
-		String s = null;
-		int n;
+		obj = new Object [functionName.length];
+		for (int i = 0; i < obj.length; ++i)
+			obj[i] = o[i];
+		Class classObj = null;
 		for (int i = 0; i < functionName.length; ++i) {
-			s = methodName[i].trim();
 			try {
-				n = s.lastIndexOf('.');
-				if (n == -1)
-					throw new IllegalArgumentException(
-					"Invalid funtion name syntax!  The class name must be specified.");
-				classObj = Class.forName(s.substring(0,n));
-				method[i] = classObj.getMethod(s.substring(n + 1),null);
-			} catch (NoSuchElementException err) {
-				System.out.println("Invalid syntax defining functions!");
-				System.exit(0);
-			} catch (ClassNotFoundException err) {
-				System.out.println(
-				"Invalid syntax defining functions! Class name in " + s + " was not found.");
-				System.exit(0);
+				classObj = obj[i].getClass();
+				method[i] = classObj.getMethod("compute",null);
 			} catch (NoSuchMethodException err) {
-				System.out.println(
-				"Invalid syntax defining functions! Method name in " + s + " was not found.");
+				System.out.println("Invalid syntax defining functions! " +
+					"There is no \"compute()\" method in " + classObj.getName());
 				System.exit(0);
 			}
 		}
@@ -151,11 +146,12 @@ public class Expression {
 	 */
 	public static float execute(int n) {
 		try {
-			Float f =  (Float)(method[n].invoke(null,null));
-			return f.floatValue();
+			Double d =  (Double)(method[n].invoke(obj[n],null));
+			return (float)d.doubleValue();
 		} catch (Exception err) {
 			System.out.println("Oops! This isn't supposed to happen.");
-			System.out.println(err.toString());
+			err.printStackTrace();
+			System.exit(0);
 		}
 		return 0.0F;
 	}
@@ -204,12 +200,12 @@ public class Expression {
 					f2 = ((Float)((Pair)stack.pop()).value).floatValue();
 					f1 = ((Float)((Pair)stack.pop()).value).floatValue();
 					s1 = (String)p.value;
-					if (s1.equals("=="))      b1 = f1 == f2;
-					else if (s1.equals("!=")) b1 = f1 != f2;
-					else if (s1.equals("<"))  b1 = f1 < f2;
-					else if (s1.equals("<=")) b1 = f1 <= f2;
-					else if (s1.equals(">"))  b1 = f1 > f2;
-					else if (s1.equals(">"))  b1 = f1 != f2;
+					if (s1.equals("=="))       b1 = f1 == f2;
+					else if (s1.equals("!="))  b1 = f1 != f2;
+					else if (s1.equals("<"))   b1 = f1 < f2;
+					else if (s1.equals("<="))  b1 = f1 <= f2;
+					else if (s1.equals(">"))   b1 = f1 > f2;
+					else if (s1.equals(">="))  b1 = f1 >= f2;
 					stack.push(new Pair(BOOLEAN,new Boolean(b1)));
 					break;
 				case NOT_OPERATOR:

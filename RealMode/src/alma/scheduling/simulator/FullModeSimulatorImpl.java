@@ -41,7 +41,7 @@ import alma.acs.container.ContainerException;
 import alma.scheduling.*;
 import alma.scheduling.master_scheduler.MasterScheduler;
 
-import alma.scheduling.planning_mode_sim.simulator.SimulationInput;
+import alma.scheduling.planning_mode_sim.SimulationInput;
 import alma.entity.xmlbinding.schedulinginfo.*;
 import alma.entity.xmlbinding.schedulingpolicy.*;
 
@@ -119,7 +119,8 @@ public class FullModeSimulatorImpl extends ComponentImplBase
         }
         logger.fine("SCHEDULING SIMULATOR: file has been loaded!");
         try {
-            data = new SimulationInput(f.getAbsolutePath(), logger);
+            //data = new SimulationInput(f.getAbsolutePath(), logger);
+            data = new SimulationInput();
         } catch(Exception e) {
             logger.severe("SCHEDULING SIMULATOR: could not create "+
                 "SimulationInput object!");

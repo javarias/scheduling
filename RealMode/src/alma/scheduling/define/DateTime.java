@@ -50,7 +50,7 @@ package alma.scheduling.define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version 1.10  Feb. 2, 2004
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
 public class DateTime {
@@ -425,6 +425,14 @@ public class DateTime {
 	}
 	
 	/**
+	 * return true if the value of this DateTime is zero.
+	 * @return true if the value of this DateTime is zero
+	 */
+	public boolean isNull() {
+		return jd == 0.0;
+	}
+	
+	/**
 	 * Add the specified number of days (and fractions thereof) to
 	 * this DateTime.
 	 * @param days the number of days to be added.
@@ -529,12 +537,35 @@ public class DateTime {
 	public String toString() {
 		Date d = getDate();
 		Time t = getTime();
-		StringBuffer s = new StringBuffer(d.getYear() + "-");
+		int yy = d.getYear();
 		int mm = d.getMonth();
 		int dd = d.getDay();
 		int hh = t.getHours();
 		int min = t.getMinutes();
-		int sec = (int)(t.getSeconds() + 0.5); 
+		int sec = (int)(t.getSeconds() + 0.5);
+		if (sec == 60) {
+			sec = 0;
+			++min;
+			if (min == 60) {
+				min = 0;
+				++hh;
+				if (hh == 24) {
+					hh = 0;
+					++dd;
+					if ( ((mm == 4 || mm == 6 || mm == 9 || mm == 11) && dd > 30) ||
+						 (mm == 2 && (dd > (DateTime.isLeapYear(yy) ? 29 : 28))) ||
+						 (dd > 31) ) {
+						dd = 1;
+						++mm;
+						if (mm > 12) {
+							mm = 1;
+							++yy;
+						}
+					}
+				}
+			}
+		}
+		StringBuffer s = new StringBuffer(yy + "-");
 		if (mm < 10) s.append('0'); s.append(mm); s.append('-');
 		if (dd < 10) s.append('0'); s.append(dd); s.append('T');
 		if (hh < 10) s.append('0'); s.append(hh); s.append(':');
@@ -551,7 +582,18 @@ public class DateTime {
 		StringBuffer s = new StringBuffer();
 		int hh = t.getHours();
 		int min = t.getMinutes();
-		int sec = (int)(t.getSeconds() + 0.5); 
+		int sec = (int)(t.getSeconds()); 
+		if (sec == 60) {
+			sec = 0;
+			++min;
+			if (min == 60) {
+				min = 0;
+				++hh;
+				if (hh == 24) {
+					hh = 0;
+				}
+			}
+		}
 		if (hh < 10) s.append('0'); s.append(hh); s.append(':');
 		if (min < 10) s.append('0'); s.append(min);  s.append(':');
 		if (sec < 10.0) s.append('0'); s.append(sec);
@@ -602,11 +644,11 @@ public class DateTime {
 	// * @param c the local clock
 	// * @return
 	//*/
-	/*static public DateTime lstToLocalTime(double lst, Date d, Clock c) {
+	/*static public DateTime lstToLocalTime(double lst, Date d) {
 		// (1) Find the Greenwich mean sideral time.
-		double gmst = lst + c.getLongitudeInHours();
+		double gmst = lst + longitudeInHours;
 		// (2) For this date, calculate the sideral time at 0h UT.
-		DateTime x = new DateTime(c,d.getYear(),d.getMonth(),(double)d.getDay());
+		DateTime x = new DateTime(d.getYear(),d.getMonth(),(double)d.getDay());
 		double t0 = x.getJD() - 2451545.0;
 		double T = (t0) / 36525.0;
 		double TT = T * T;
@@ -620,62 +662,89 @@ public class DateTime {
 		// (3) Then calulate the Greenwich mean time for this Greenwich mean sideral time.
 		double ut = (gmst - theta) / 1.00273790935;
 		// (4) Finally, apply the time zone correction.
-		ut -= c.getConvertToUT();
+		ut -= convertToUT;
 		System.out.println(">>> gmst " + gmst);
 		System.out.println(">>> x " + x);
 		System.out.println(">>> T " + T);
 		System.out.println(">>> y " + y);
 		System.out.println(">>> theta " + theta);
 		System.out.println(">>> ut " + ut);
-		x = new DateTime(c,d,ut);
+		x = new DateTime(d,ut);
 		return x;
+	}
+	static public void main(String[] args) {
+		DateTime.setClockCoordinates(107.6177275,34.0787491666667,-7);
+		System.out.println("Timezone is MST.");
+
+		long currentSystemTime = System.currentTimeMillis();
+		DateTime current  = new DateTime(currentSystemTime / 86400000.0 + 2440587.5);
+		System.out.println("The current time, as a DateTime is " + current.toString());
+		System.out.println("The currrent system time is " + currentSystemTime);
+		
+		double lst = current.getLocalSiderealTime();
+		System.out.println("lst = " + lst);
+		
+		Date day = new Date (2004,2,12);
+		DateTime x = DateTime.lstToLocalTime(lst,day);
+		System.out.println("Lst to local = " + x);
 	}*/
 
-
 	/**
-	 * @return
+	 * Get the conversion factor that converts local time to UT, i.e.
+	 * the factor, in units of fractions of a day, that must be added 
+	 * to local time to get UT. 
+	 * @return The factor, in units of fractions of a day, that must be added 
+	 * to local time to get UT.
 	 */
 	public static double getConvertToUT() {
 		return convertToUT;
 	}
 
 	/**
-	 * @return
+	 * Get the local latitude in radians.
+	 * @return The local latitude in radians.
 	 */
 	public static double getLatitude() {
 		return latitude;
 	}
 
 	/**
-	 * @return
+	 * Get the local latitude in degrees.
+	 * @return The local latitude in degrees.
 	 */
 	public static double getLatitudeInDegrees() {
 		return latitudeInDegrees;
 	}
 
 	/**
-	 * @return
+	 * Get the local longitude in radians.
+	 * @return The local longitude in radians.
 	 */
 	public static double getLongitude() {
 		return longitude;
 	}
 
 	/**
-	 * @return
+	 * Get the local longitude in degrees.
+	 * @return The local longitude in degrees.
 	 */
 	public static double getLongitudeInDegrees() {
 		return longitudeInDegrees;
 	}
 
 	/**
-	 * @return
+	 * Get the local longitude in hours.
+	 * @return The local longitude in lours.
 	 */
 	public static double getLongitudeInHours() {
 		return longitudeInHours;
 	}
 
 	/**
-	 * @return
+	 * Get the local timezone, i.e., the number of hours between the 
+	 * local time zone and UT, i.e., localTime - UT.
+	 * @return The number of hours between the local time zone and 
+	 * UT, i.e., localTime - UT.
 	 */
 	public static int getTimeZone() {
 		return timeZone;

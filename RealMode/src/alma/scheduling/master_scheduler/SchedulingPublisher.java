@@ -61,7 +61,7 @@ public class SchedulingPublisher {
         /* Scheduling NC stuff */
         sched_nc = AbstractNotificationChannel.createNotificationChannel(
                 AbstractNotificationChannel.CORBA,
-                    alma.scheduling.CHANNELNAME.value);
+                    alma.scheduling.CHANNELNAME.value, container);
                 
 	}
 

@@ -2,6 +2,7 @@
  * ALMA - Atacama Large Millimeter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
@@ -27,9 +28,22 @@ package alma.scheduling.define;
 
 /**
  * The Priority class implements a priority that varies
- * from 1 (lowest) to 10 (highest).
+ * from 1 (lowest) to 10 (highest).  The priorties have 
+ * names:
+ * <ul>
+ * 		<li> HIGHEST (10)
+ * 		<li> HIGHER (9)
+ * 		<li> HIGH (8)
+ * 		<li> MEDIUMPLUS(7)
+ * 		<li> MEDIUM	(6)
+ * 		<li> MEDIUMMINUS (5)
+ * 		<li> LOW (4)
+ * 		<li> LOWER (3)
+ * 		<li> LOWEST	 (2)
+ * 		<li> BACKGROUND	(1)
+ * </ul>
  * 
- * @version 1.00  Jun 4, 2003
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
 public class Priority {
@@ -54,12 +68,42 @@ public class Priority {
 	}
 	
 	/**
-	 * Create a Status object from a previously existing Status
+	 * Create a Priority object from a previously existing Priority
 	 * object, which will usually be one of the static public final 
-	 * Status objects.
+	 * Priority objects.
 	 */
 	public Priority (Priority x) {
 		this.priority = x.priority;
+		this.isConstant = false;
+	}
+	
+	/**
+	 * Create a Priority object from a string.
+	 */
+	public Priority (String arg) {
+		String s = arg.toLowerCase();
+		if (s.equals("highest"))
+			this.priority = HIGHEST.priority;
+		else if (s.equals("higher"))
+			this.priority = HIGHER.priority;
+		else if (s.equals("high"))
+			this.priority = HIGH.priority;
+		else if (s.equals("mediumplus"))
+			this.priority = MEDIUMPLUS.priority;
+		else if (s.equals("medium"))
+			this.priority = MEDIUM.priority;
+		else if (s.equals("mediumminus"))
+			this.priority = MEDIUMMINUS.priority;
+		else if (s.equals("low"))
+			this.priority = LOW.priority;
+		else if (s.equals("lower"))
+			this.priority = LOWER.priority;
+		else if (s.equals("lowest"))
+			this.priority = LOWEST.priority;
+		else if (s.equals("background"))
+			this.priority = BACKGROUND.priority;
+		else 
+			throw new IllegalArgumentException (arg + " is not a legal value for priority");
 		this.isConstant = false;
 	}
 	
@@ -93,6 +137,10 @@ public class Priority {
 		}
 	}
 	
+	public int getPriorityAsInt() {
+		return priority;
+	}
+	
 	/**
 	 * Return true if this state is equal to the specified state.
 	 */
@@ -112,34 +160,41 @@ public class Priority {
 	 */
 	public static void main(String[] args) {
 		Priority p = null;
-		p = new Priority(Priority.HIGHEST); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.HIGHER); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.HIGH); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.MEDIUMPLUS); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.MEDIUM); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.MEDIUMMINUS); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.LOW); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.LOWER); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.LOWEST); System.out.println("SCHEDULING: priority is " + p);
-		p = new Priority(Priority.BACKGROUND); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.HIGHEST); System.out.println("priority is " + p);
+		p = new Priority(Priority.HIGHER); System.out.println("priority is " + p);
+		p = new Priority(Priority.HIGH); System.out.println("priority is " + p);
+		p = new Priority(Priority.MEDIUMPLUS); System.out.println("priority is " + p);
+		p = new Priority(Priority.MEDIUM); System.out.println("priority is " + p);
+		p = new Priority(Priority.MEDIUMMINUS); System.out.println("priority is " + p);
+		p = new Priority(Priority.LOW); System.out.println("priority is " + p);
+		p = new Priority(Priority.LOWER); System.out.println("priority is " + p);
+		p = new Priority(Priority.LOWEST); System.out.println("priority is " + p);
+		p = new Priority(Priority.BACKGROUND); System.out.println("priority is " + p);
 		
-		System.out.println("SCHEDULING: is priority low? " + p.equals(Priority.LOW));
-		System.out.println("SCHEDULING: is priority background? " + p.equals(Priority.BACKGROUND));
+		System.out.println("is priority low? " + p.equals(Priority.LOW));
+		System.out.println("is priority background? " + p.equals(Priority.BACKGROUND));
 		p.setPriority(Priority.LOW);
-		System.out.println("SCHEDULING: priority is " + p);
-		System.out.println("SCHEDULING: is priority low? " + p.equals(Priority.LOW));
-		System.out.println("SCHEDULING: is priority background? " + p.equals(Priority.BACKGROUND));
+		System.out.println("priority is " + p);
+		System.out.println("is priority low? " + p.equals(Priority.LOW));
+		System.out.println("is priority background? " + p.equals(Priority.BACKGROUND));
 		p.setPriority(Priority.MEDIUM);
-		System.out.println("SCHEDULING: priority is " + p);
+		System.out.println("priority is " + p);
 		p.setPriority(Priority.MEDIUMPLUS);
-		System.out.println("SCHEDULING: priority is " + p);
+		System.out.println("priority is " + p);
 		try {
-			System.out.println("SCHEDULING: priority is " + Priority.HIGHEST);
+			System.out.println("priority is " + Priority.HIGHEST);
 			HIGHEST.setPriority(Priority.LOWEST);
 		} catch (UnsupportedOperationException err) {
-			System.out.println("SCHEDULING:"+ err.toString());
+			System.out.println(err.toString());
 		}
-		System.out.println("SCHEDULING: priority is " + Priority.HIGHEST);
+		System.out.println("priority is " + Priority.HIGHEST);
+		
+		try {
+			p = new Priority("mediumMinus");
+			System.out.println("priority is " + p);
+		} catch (Exception err) {
+			err.printStackTrace();
+		}
 	}
 }
 

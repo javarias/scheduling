@@ -96,34 +96,38 @@ public class ProjectManager implements Runnable {
 
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
-        control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
-        pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
-        pointing_event = new PointingReducedEventReceiver(cs);
-        focus_event = new FocusReducedEventReceiver(cs);
+        try {
+            control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
+            pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
+            pointing_event = new PointingReducedEventReceiver(cs);
+            focus_event = new FocusReducedEventReceiver(cs);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        }
         if(isSimulation) {
             //its a simulation, so create local channels
             
             controlReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.CORBA, 
-                    alma.Control.CHANNELNAME.value);
+                    alma.Control.CHANNELNAME.value, containerServices);
             controlReceiver.attach("alma.Control.ExecBlockEvent",control_event);
             controlReceiver.begin();
 
             pipelineReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.CORBA, 
-                    alma.pipelinescience.CHANNELNAME.value); 
+                    alma.pipelinescience.CHANNELNAME.value, containerServices); 
             pipelineReceiver.attach("alma.pipelinescience.ScienceProcessingRequestEnd",pipeline_event);
             pipelineReceiver.begin();
             
             pointingReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.CORBA, 
-                    alma.TelCalPublisher.CHANNELNAME.value); 
+                    alma.TelCalPublisher.CHANNELNAME.value, containerServices); 
             pointingReceiver.attach("alma.TelCalPublisher.PointingReducedEvent", pointing_event);
             pointingReceiver.begin();
 
             focusReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.CORBA, 
-                    alma.TelCalPublisher.CHANNELNAME.value); 
+                    alma.TelCalPublisher.CHANNELNAME.value, containerServices); 
             focusReceiver.attach("alma.TelCalPublisher.FocusReducedEvent", focus_event);
             focusReceiver.begin();
         } else {

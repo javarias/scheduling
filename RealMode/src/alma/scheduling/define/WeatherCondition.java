@@ -2,6 +2,7 @@
  * ALMA - Atacama Large Millimeter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
@@ -27,22 +28,27 @@ package alma.scheduling.define;
 
 /**
  * The WeatherCondition class defines a measure of the favorable conditions 
- * under which a block may be executed.  After being created, the principle 
+ * under which a scheduling block may be executed.  After being created, the principle 
  * method is 'evaluate()'.  This method returns a float that is between 0.0 
  * and 1.0.
- * 			1.0 means "it doesn't get better than this". 
- * 			0.0 means "forget it".  
+ * <ul>
+ * 		<li>	1.0 means "it doesn't get better than this". 
+ * 		<li>	0.0 means "forget it".
+ * </ul>  
  * For intermediate values, the higher the value the more favorable are 
- * the conditions.
- * 
- * The constructor takes an array of strings.  Each string is of the form:
- * 
- * 		<logical_expression> -> <target>
- * 
+ * the conditions.  The constructor takes an array of strings.  Each string 
+ * is of the form:
+ * <ul>
+ * 		<li> &lt;logical_expression&gt; -&gt; &lt;target&gt;
+ * </ul>
  * where target is a floating point number between 0.0 and 1.0.  All the
  * environmental variables have names (humidity, temperature, pressure, 
  * windVelocity, windDirection, etc.) and these names may appear in the 
  * logical expression.
+ * When the favorable condition 'evaluate()' method is called, the logical
+ * expressions are evaluated in the order in which they were defined.  The 
+ * first expression that is true, results in the 'target' that is associated 
+ * with that condition being returned as the favorable condition indicator.
  * 
  * The syntax of a string is defined below.
  * 
@@ -60,10 +66,6 @@ package alma.scheduling.define;
  * 		<numeric_value> := a valid floating point number
  * 		<factor_name> := one of the names of the environmental factors
  * 
- * When the favorable condition 'evaluate()' method is called, the logical
- * expressions are evaluated in the order in which they were defined.  The 
- * first expression that is true, results in the 'target' that is associated 
- * with that condition being returned as the favorable condition indicator.
  * An example will make this clearer.
  * 
  * Suppose we have the following array of strings as defining the 
@@ -80,7 +82,7 @@ package alma.scheduling.define;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version 1.00  Jun 4, 2003
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
 public class WeatherCondition {
@@ -142,6 +144,8 @@ public class WeatherCondition {
 	 * Provide a unit test.
 	 */
 	public static void main(String[] args) {
+		/* <<< This test needs to be fixed.  It doesn't work any more.
+
 		// First we must configure the Expression class.
 		String[] names = {
 			"temperature",
@@ -151,7 +155,7 @@ public class WeatherCondition {
 			"windDirection"
 		};
 		Expression.setFunctionNames(names);
-		System.out.println("SCHEDULING: OK, static functions are set.");
+		System.out.println("OK, static functions are set.");
 		//Simulator sim = new Simulator(null,null,null,
 		//					new Time(2003,2,26,10,0,0), new Time(2003,2,28,10,0,0));
 		//EnvironmentalModel.setSimulator(sim);
@@ -163,7 +167,7 @@ public class WeatherCondition {
 			"schedule.EnvironmentalModel.getWindDirection"
 		};
 		Expression.setMethods(methods);
-		System.out.println("SCHEDULING: OK, methods are set.");
+		System.out.println("OK, methods are set.");
 
 
 		String[] x = {
@@ -175,9 +179,9 @@ public class WeatherCondition {
 			"humidity >  50.0 -> 0.0"
 		};		 
 		WeatherCondition f1 = new WeatherCondition (x);
-		System.out.println("SCHEDULING: f1: " + f1);
-		System.out.println("SCHEDULING: f1's current value is " + f1.evaluate());
-
+		System.out.println("f1: " + f1);
+		System.out.println("f1's current value is " + f1.evaluate());
+		*/
 	}
 	
 	

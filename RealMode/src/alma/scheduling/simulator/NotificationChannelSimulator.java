@@ -51,13 +51,13 @@ public class NotificationChannelSimulator {
         this.logger = cs.getLogger();
         control = AbstractNotificationChannel.createNotificationChannel(
             AbstractNotificationChannel.CORBA, 
-                alma.Control.CHANNELNAME.value);
+                alma.Control.CHANNELNAME.value, cs);
         pipeline = AbstractNotificationChannel.createNotificationChannel(
             AbstractNotificationChannel.CORBA, 
-                alma.pipelinescience.CHANNELNAME.value);
+                alma.pipelinescience.CHANNELNAME.value, cs);
         telcal = AbstractNotificationChannel.createNotificationChannel(
             AbstractNotificationChannel.CORBA, 
-                alma.TelCalPublisher.CHANNELNAME.value);
+                alma.TelCalPublisher.CHANNELNAME.value, cs);
         logger.fine("SCHEDULING SIMULATOR: NCs created.");
     }
     

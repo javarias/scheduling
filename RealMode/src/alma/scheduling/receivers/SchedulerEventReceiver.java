@@ -28,6 +28,7 @@ package alma.scheduling.receivers;
 import org.omg.CosNotification.*;
 import alma.acsnc.*;
 import alma.acs.nc.*;
+import alma.acs.container.ContainerServices;
 
 import alma.Control.ExecBlockEvent;
 import alma.Control.ExecBlockEventHelper;
@@ -48,15 +49,16 @@ public class SchedulerEventReceiver extends Consumer {
     private SchedulerTaskControl schedTaskControl;
     private Scheduler scheduler;
 
-    public SchedulerEventReceiver(Scheduler s) {
-        super(alma.Control.CHANNELNAME.value);
+    public SchedulerEventReceiver(ContainerServices cs, Scheduler s) throws Exception {
+        super(alma.Control.CHANNELNAME.value, cs);
         this.scheduler = s;
         System.out.println("SCHEDULING: SchedulerEventReceiver created.");
     }
-    public SchedulerEventReceiver(SchedulerTaskControl stc,
-                                    Scheduler s) {
+    public SchedulerEventReceiver(ContainerServices cs, 
+                                    SchedulerTaskControl stc,
+                                        Scheduler s) throws Exception  {
 
-        this(s);
+        this(cs, s);
         this.schedTaskControl = stc;
     }
 

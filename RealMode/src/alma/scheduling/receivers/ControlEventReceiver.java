@@ -50,9 +50,9 @@ public class ControlEventReceiver extends Consumer {
     private MasterSBQueue sbQueue;
     
     public ControlEventReceiver(ContainerServices cs, ALMAPipeline p, 
-        ALMAArchive a, MasterSBQueue q){
+        ALMAArchive a, MasterSBQueue q) throws Exception {
         
-        super(alma.Control.CHANNELNAME.value);
+        super(alma.Control.CHANNELNAME.value, cs);
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.pipeline = p;

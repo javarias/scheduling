@@ -2,6 +2,7 @@
  * ALMA - Atacama Large Millimeter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
@@ -20,53 +21,46 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File ClockSimulator.java
+ * File SchedulingException.java
  */
  
-package alma.scheduling.simulator;
-
-//import alma.scheduling.define.ClockBase;
-import alma.scheduling.define.STime;
-import alma.scheduling.define.ArrayTime;
+package alma.scheduling.define;
 
 /**
- * Description 
+ * Define an exception thrown by the Scheduling Subsystem. 
  * 
- * @version 1.00  Jul 18, 2003
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
-public class ClockSimulator {// extends ClockBase {
+public class SchedulingException extends Exception {
 
 	/**
 	 * 
 	 */
-	public ClockSimulator() {
-		//super();
-		// TODO Auto-generated constructor stub
+	public SchedulingException() {
+		super();
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.Clock#getSTime()
+	/**
+	 * @param arg0
 	 */
-	public STime getSTime() {
-		// TODO Auto-generated method stub
-		return null;
+	public SchedulingException(String arg0) {
+		super(arg0);
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.Clock#getArrayTime()
+	/**
+	 * @param arg0
+	 * @param arg1
 	 */
-	public ArrayTime getArrayTime() {
-		// TODO Auto-generated method stub
-		return null;
+	public SchedulingException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.Clock#synchronize()
+	/**
+	 * @param arg0
 	 */
-	public void synchronize() {
-		// TODO Auto-generated method stub
-
+	public SchedulingException(Throwable arg0) {
+		super(arg0);
 	}
 
 	public static void main(String[] args) {

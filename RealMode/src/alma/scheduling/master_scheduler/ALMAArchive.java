@@ -239,6 +239,8 @@ public class ALMAArchive implements ArchiveProxy {
             logger.severe("SCHEDULING: "+ e.toString());
         } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: "+ e.toString());
+        } catch(DirtyEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
         }
     }
 
@@ -311,6 +313,8 @@ public class ALMAArchive implements ArchiveProxy {
         } catch(NotFound e) {
             logger.severe("SCHEDULING: "+ e.toString());
         } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(DirtyEntity e) {
             logger.severe("SCHEDULING: "+ e.toString());
         }
     }
@@ -437,6 +441,8 @@ public class ALMAArchive implements ArchiveProxy {
             logger.severe("SCHEDULING: "+ e.toString());
         } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: "+ e.toString());
+        } catch(DirtyEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
         }
         
     }
@@ -487,6 +493,8 @@ public class ALMAArchive implements ArchiveProxy {
             logger.severe("SCHEDULING: "+ e.toString());
         } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: "+ e.toString());
+        } catch(DirtyEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
         }
     }
     
@@ -505,6 +513,8 @@ public class ALMAArchive implements ArchiveProxy {
             logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
             logger.severe("SCHEDULING: "+e.toString());
+        } catch(DirtyEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
         }
         return entity;
     }

@@ -42,8 +42,8 @@ public class FocusReducedEventReceiver extends Consumer {
     private Logger logger;
     private ContainerServices containerServices;
     
-    public FocusReducedEventReceiver(ContainerServices cs){
-        super(alma.TelCalPublisher.CHANNELNAME.value);
+    public FocusReducedEventReceiver(ContainerServices cs) throws Exception {
+        super(alma.TelCalPublisher.CHANNELNAME.value, cs);
         this.containerServices = cs;
         this.logger = cs.getLogger();
     }

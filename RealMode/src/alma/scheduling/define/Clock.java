@@ -2,6 +2,7 @@
  * ALMA - Atacama Large Millimeter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
@@ -25,14 +26,17 @@
  
 package alma.scheduling.define;
 
-import alma.scheduling.define.STime;
+import alma.scheduling.define.DateTime;
 import alma.scheduling.define.ArrayTime;
 
 /**
- * The Clock interface provides the current time and the geographical
- * location of the clock. 
+ * The Clock interface provides the current time, the precise geographical
+ * location of the clock and time zone information.  It also provides 
+ * methods for synchronizing the system time and the array time, as well as 
+ * setting alarms, i.e. methods that provide for a notification at a particular 
+ * time.
  * 
- * @version 1.00  Jun 3, 2003
+ * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
 public interface Clock {
@@ -48,25 +52,33 @@ public interface Clock {
 	 * For example, 9:00 Mountain Daylight Time is 15:00 UT, so if the local time is 
 	 * MDT, zone is -6;
 	 */
-	public void setCoordinates(double lng, double lat, int zone);
+	public void setClockCoordinates(double lng, double lat, int zone);
 
 	/**
-	 * Return the current time as an STime object.  This time is
+	 * Convert this DateTime to a string in FITS format that
+	 * corresponds to the local time.
+	 */
+	public String toString();
+
+	/**
+	 * Return the current time as an DateTime object.  This time is
 	 * an approximation to the array time.  It uses the current system
 	 * time and adds a delta to it to synchronize it to the array time.
-	 * @return The current time as an STime object.
+	 * @return The current time as an DateTime object.
 	 */
-	public STime getSTime();
-
-	/** 
-	 * Get the current time in milliseconds.  The actual
-	 * quantity returned is the difference, measured in milliseconds, between the current 
-	 * time and midnight, January 1, 1970 UTC.
-	 * 
-	 * @return the difference, measured in milliseconds, between the current 
-	 * time and midnight, January 1, 1970 UTC.
+	public DateTime getDateTime();
+	
+	/**
+	 * Return the current time of day in hours, where 0.0 <= hours < 24.0.
+	 * @return The current time of day in hours, where 0.0 <= hours < 24.0.
 	 */
-	public long currentTimeMillis();
+	public double getTimeOfDay();
+	
+	/**
+	 * Return the Julian day.
+	 * @return The Julian day as a double.
+	 */
+	public double getJD();
 
 	/**
 	 * Return the array time.  This time is from the control system,
@@ -135,7 +147,7 @@ public interface Clock {
 	 * @param time		The time at which the alarm goes off.
 	 * @param listener	The listener method to call to process the alarm.
 	 */
-	public void setAlarm(STime time, ClockAlarmListener listener);
+	public void setAlarm(DateTime time, ClockAlarmListener listener);
 
 	/**
 	 * Set an alarm, to go off at N seconds from now.
