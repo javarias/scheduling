@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.Program;
 
@@ -58,21 +59,10 @@ public class ALMAProject extends Project {
                 obs.getProjectName(), 
                     obs.getVersion(), 
                         obs.getPI() );
+        setTimeOfCreation(new DateTime(System.currentTimeMillis()));
         this.obsProject = obs;
         this.sbs = getSBRefs(obsProject.getObsProgram().getObsUnitSetTChoice());
-        //System.out.println("SB Ref size in project ="+sbs.length);
-        System.out.println("In ALMAProject constructor");
 
-        createProgram();
-    }
-
-    private void createProgram() {
-        Program p = new Program("No ID available yet");
-        p.setProject(this);
-        for(int i=0; i < sbs.length; i++) {
-            p.addMember(new SB(sbs[i].getEntityId()));
-        }
-        setProgram(p);
     }
 
     private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) {

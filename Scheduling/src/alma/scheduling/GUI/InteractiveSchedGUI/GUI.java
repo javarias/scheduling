@@ -79,7 +79,7 @@ public class GUI extends JFrame {
     private JTextArea outputView;
     private JTextArea sbOutputView;
     private JDialog littleframe;
-    private String projectID;
+    //private String projectID;
     
     public GUI(GUIController c) {
         this.controller = c;
@@ -221,6 +221,16 @@ public class GUI extends JFrame {
                 stopSB();
             }
         });
+        JButton refreshSBs = new JButton("Refresh SB Queue");
+        refreshSBs.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == ""){
+                    mustLogin();
+                    return;
+                }
+                refreshSBQueue();
+            }
+        });
         JButton endSession = new JButton("End Interactive Session");
         endSession.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -310,6 +320,20 @@ public class GUI extends JFrame {
         panel.add(blank);
 
         c.gridwidth = 2;
+        gridbag.setConstraints(refreshSBs, c);
+        panel.add(refreshSBs);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        blank = new JLabel("");
+        gridbag.setConstraints(blank, c);
+        panel.add(blank);
+        ///////////////////////////////////////
+        c.gridwidth = 1;
+        blank = new JLabel("");
+        gridbag.setConstraints(blank, c);
+        panel.add(blank);
+
+        c.gridwidth = 2;
         gridbag.setConstraints(stopSB, c);
         panel.add(stopSB);
 
@@ -379,8 +403,6 @@ public class GUI extends JFrame {
                             "javax.swing.JTextField")){
                             
                             String selectedSB = ((JTextField)tmpC[i]).getText();
-                            //outputView.append("SB "+selectedSB+" is now executing.\n");
-                            // Do something with the selected SB
                             controller.executeSB(selectedSB);
                         }
                     }
@@ -482,10 +504,11 @@ public class GUI extends JFrame {
             outputView.append(s[i].getSchedBlockId() +"\n");
             sbOutputView.append("SchedBlock ID: "+s[i].getSchedBlockId() +"\n");
             try {
-                projectID = s[i].getProject().getId();
+                String projectID = s[i].getProject().getId();
                 sbOutputView.append("SB's project id: "+ projectID +"\n");
             } catch (Exception e) {
                 sbOutputView.append("SB's project id: not set to a project! this is bad!\n");
+                e.printStackTrace();
             }
             //sbOutputView.append("SchedBlock Observing Procedure: "+
             //    s[i].getObsProcedure() +"\n");
@@ -598,10 +621,42 @@ public class GUI extends JFrame {
     }
 
     public void openObservingTool(){ 
-        OpenOT ot = new OpenOT(projectID);
-        Thread t = new Thread(ot);
-        t.start();
-        //ObservingTool.main(new String[]{"-r",projectID});
+        String projID = outputView.getSelectedText();
+        if(projID != null) {
+            controller.openObservingTool(projID);
+        } else {
+            JTextField tf = new JTextField();
+            JButton ok = new JButton("Ok");
+            ok.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    JButton tmpB = (JButton)e.getSource();
+                    JPanel tmpP = (JPanel)tmpB.getParent();
+                    Component[] tmpC = tmpP.getComponents();
+                    for(int i=0; i<tmpC.length; i++) {
+                        if((tmpC[i].getClass().getName()).equals(
+                            "javax.swing.JTextField")){
+                            
+                            String projID = ((JTextField)tmpC[i]).getText();
+                            controller.openObservingTool(projID);
+                        }
+                    }
+                    littleframe.hide();
+                }
+            });
+
+            JButton cancel = new JButton("Cancel");
+            cancel.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    littleframe.hide();
+                }
+            });
+            ok.setFocusable(true);
+            makePopupFrame("","Enter Project id:", tf, ok, cancel);
+        }
+    }
+
+    private void refreshSBQueue() {
+        controller.refreshSBQueue();
     }
 
     private void clear() {

@@ -92,10 +92,10 @@ public class GUIController implements Runnable {
     */
 
     /**
-     *  Deletes the SB from the schedulers subqueue.
+     *  Deletes the SB from the schedulers queue.
      */
      public void deleteSB(String sb_id) {
-        //config.removeSBfromQueue(sb_id, "aborted");
+        config.getQueue().remove(sb_id);
      }
 
      public void executeSB(String sb_id) {
@@ -110,6 +110,14 @@ public class GUIController implements Runnable {
 
     }
 
+    public void openObservingTool(String projectID) {
+        //SB sb = config.getQueue().get(sbid);
+        //String projectID = (sb.getProject()).getId();
+        OpenOT ot = new OpenOT(projectID);
+        Thread t = new Thread(ot);
+        t.start();
+    }
+
      //public short[] selectAntennasForSubarray() {
      
      //}
@@ -118,6 +126,10 @@ public class GUIController implements Runnable {
     
     public void setLogin(String id) {
         userlogin = id;
+    }
+
+    public void refreshSBQueue() {
+        config.getProjectManager().getProjectManagerTaskControl().interruptTask();
     }
     
     ////////////////////////////////////////////////////

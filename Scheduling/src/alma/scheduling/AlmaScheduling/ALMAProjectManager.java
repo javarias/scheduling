@@ -34,6 +34,7 @@ import alma.acs.container.ContainerException;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Project;
+import alma.scheduling.Define.Program;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
@@ -83,26 +84,30 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("SCHEDULING: Polling ARCHIVE");
         boolean sb_present = false;
         try {
-            String[] ids = sbQueue.getAllIds();
-            logger.info("SCHEDULING: sb # in queue = "+ids.length);
+            String[] ids;
             Project[] projs = archive.getAllProject();
             logger.info("SCHEDULING: projects = "+projs.length);
-            ALMASB[] sbs = getSBsFromProjects(projs);
+            SB[] sbs = getSBsFromProjects(projs);
             logger.info("SCHEDULING: total SBs = "+sbs.length);
             for(int i=0; i< sbs.length; i++) {
+                ids = sbQueue.getAllIds();
+                logger.info("SCHEDULING: sb # in queue = "+ids.length);
                 String tmp_id = sbs[i].getId();
                 if(ids.length == 0) { //nothing in the SBQueue
+                    System.out.println("SCHEDULING: id's length == 0");
                     sb_present = false;
                 }
                 for(int j=0; j< ids.length; j++) {
+                    logger.info("SCHEDULING: DOES "+tmp_id+" == "+ids[j]);
                     if(tmp_id.equals(ids[j])) { // SB already in queue
                         sb_present = true;
+                        break;
                     } else {
                         sb_present = false; //not in queue
                     }
                 }
                 if(!sb_present) { //not already in queue so add it to queue.
-                    System.out.println("SCHEDULING: sb false; adding to queue");
+                    System.out.println("SCHEDULING: sbpresent false; adding "+tmp_id +" to queue");
                     sbQueue.add(sbs[i]);
                 }
             }
@@ -116,29 +121,39 @@ public class ALMAProjectManager extends ProjectManager {
      * Get the SB ids from all the projects and retrieve the SB objects from 
      * the archive.
      *
-     * @param ALMAProject[]
-     * @return ALMASB[]
+     * @param Project[]
+     * @return SB[]
      */
-    private ALMASB[] getSBsFromProjects(Project[] projects) {
+    private SB[] getSBsFromProjects(Project[] projects) {
         logger.info("SCHEDULING: Getting SBs from projects");
         Vector tmpsbs = new Vector();
-        for(int i=0; i< projects.length; i++) {
-            String[] ids = ((ALMAProject)projects[i]).getSBIds();
-            //TODO Eventaully change the above so that I get the SBs from
-            //     the 'Project' using project.getProgram().getAllSBs()
-            for(int j=0; j < ids.length; j++){
-                try {
-                    tmpsbs.add(archive.getSB(ids[j]));
-                }catch(Exception e) {}
+        try {
+            for(int i=0; i< projects.length; i++) {
+                String[] ids = ((ALMAProject)projects[i]).getSBIds();
+                System.out.println("Project = "+projects[i].getId());
+                System.out.println("SB length... "+ids.length);
+                for (int j=0;j < ids.length; j++) {
+                    Program prog = new Program("not implemented yet");
+                    prog.setProject(projects[i]);
+                    SB sb = archive.getSB(ids[j]);
+                    sb.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
+                    sb.setProject(projects[i]);
+                    prog.addMember(sb);
+                    projects[i].setProgram(prog);
+                    tmpsbs.add(sb);
+                }
             }
+        } catch (Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            e.printStackTrace();
         }
         System.out.println("SB total from all projects = "+tmpsbs.size());
-        ALMASB[] schedblocks = new ALMASB[tmpsbs.size()];
+        SB[] schedblocks = new SB[tmpsbs.size()];
         for(int i=0; i < tmpsbs.size();i++){
-            schedblocks[i] = (ALMASB)tmpsbs.elementAt(i);
+            schedblocks[i] = (SB)tmpsbs.elementAt(i);
         }
+        System.out.println("schedblock[] size == "+schedblocks.length);
         return schedblocks;
     }
 
-    //public void setProjectManagerTaskControl
 }

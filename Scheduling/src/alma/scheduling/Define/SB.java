@@ -588,6 +588,7 @@ public class SB implements ProgramMember {
 	 * @param project The project to set.
 	 */
 	public void setProject(Project project) {
+        System.out.println("SCHEDULING: Project set with id="+project.getId());
 		this.project = project;
 	}
 

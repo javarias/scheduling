@@ -179,7 +179,24 @@ public class ALMAArchive implements Archive {
 
 	// Program
 	public Program getProgram(String id) throws SchedulingException{
-        return null;
+        Program program=null;
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            //project = convertToProgram2(xml);
+            //XmlEntityStruct xml = archOperationComp.retrieve(id);
+            //XmlEntityStruct xml = archOperationComp.updateRetrieve(id);
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        //} catch(DirtyEntity e) {
+        //    logger.severe("SCHEDULING: "+e.toString());
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        }
+        return program;
     }
     public void updateProgram(Program s) throws SchedulingException{ }
 
@@ -238,6 +255,7 @@ public class ALMAArchive implements Archive {
         SB sb = null;
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            //System.out.println(xml.xmlString);
             sb = convertToSB2(xml);
             //XmlEntityStruct xml = archOperationComp.retrieve(id);
             //XmlEntityStruct xml = archOperationComp.updateRetrieve(id);
@@ -461,7 +479,7 @@ public class ALMAArchive implements Archive {
         Project proj = null;
         try {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
-            //System.out.println(xml_struct.xmlString);
+            System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
             //System.out.println(xml_struct.xmlString);
         } catch (MalformedURI e) { 
@@ -503,6 +521,43 @@ public class ALMAArchive implements Archive {
         }
         return proj;
     }
+
+    /*Program
+    private Program convertToProgram1(QueryResult res) throws Exception{
+        String prog_id = res.identifier;
+        Program prog = null;
+        try {
+            XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(prog_id);
+            System.out.println(xml_struct.xmlString);
+            proj = convertToProgram2(xml_struct);
+        } catch (MalformedURI e) { 
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        } catch (ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        } catch (NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        //} catch (DirtyEntity e) {
+        //    throw new Exception (e);
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        }
+        return prog;
+    }
+    private Program convertToProgram2(XmlEntityStruct xml) throws Exception{
+        ALMAProgram prog = null;
+        try {
+            ObsProgram obsProg = (ObsProgram)
+                entityDeserializer.deserializeEntity(xml.Class.forName(
+                    "alma.entity.xmlbinding.
+        } catch (Exception e){
+        }
+        return prog;
+    }
+    */
 
     private Session convertToSession1(QueryResult res) throws Exception {
         String session_id = res.identifier;

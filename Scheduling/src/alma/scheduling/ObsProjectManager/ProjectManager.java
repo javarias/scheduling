@@ -45,14 +45,21 @@ public class ProjectManager implements Runnable,
     protected ProjectManagerTaskControl pmTaskControl;
 
     public ProjectManager() {
-        System.out.println("I'm created!");
+        System.out.println("SCHEDULING: PM created!");
+        this.stopCommand = false;
     }
     
     /**
      *
      */
     public void run() {
-        this.stopCommand = false;
+    }
+
+    public void setStopCommand(boolean stop) {
+        this.stopCommand = stop;
+    }
+    public boolean getStopCommand() {
+        return stopCommand;
     }
 
     /**

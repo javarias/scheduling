@@ -168,6 +168,7 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public void cleanUp() {
         super.setStopCommand(true);
+        this.manager.setStopCommand(true);
         publisher.disconnect();
     }
 
