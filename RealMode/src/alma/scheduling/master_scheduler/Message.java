@@ -62,11 +62,6 @@ public class Message {
     public EntityT getMessageEntity() {
         return messageEntity;
     }
-    /*
-    public void setMessageId(String m) {
-        messageEntity.entityTypeName = m;
-    }
-    */
     public void setThread(Thread t) {
         thread = t;
     }

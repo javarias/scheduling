@@ -26,10 +26,10 @@
  
 package ALMA.scheduling.simulator;
 
-import ALMA.entity.xmlbinding.obsproject.ObsProject;
-import ALMA.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
-import ALMA.entity.xmlbinding.schedblock.SchedBlock;
-import ALMA.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
+import alma.entity.xmlbinding.obsproject.ObsProject;
+import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
+import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
 import ALMA.scheduling.define.STime;
 import ALMA.scheduling.master_scheduler.ArchiveProxy;
 

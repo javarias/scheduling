@@ -73,6 +73,11 @@ public class ALMAArchive implements ArchiveProxy {
     private EntitySerializer entitySerializer;
     private EntityDeserializer entityDeserializer;
     private Logger logger;
+
+    private int sbCount;
+    private int pprCount;
+    private int projectCount;
+    private int policyCount;
     
     public ALMAArchive (boolean isSimulation, ContainerServices container) {
         this.containerServices = container;
@@ -106,12 +111,13 @@ public class ALMAArchive implements ArchiveProxy {
         String query = "/*";
         String schema = "SchedBlock";
         String className = "alma.entity.xmlbinding.schedblock.SchedBlock";
+        //String className = "alma.bo.SchedBlock";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
+            sbCount = cursor.count();
             if(cursor == null) {
-                System.out.println("cursor is null..");
+                logger.severe("cursor is null..");
             }
-            //System.out.println("got "+cursor.count()+" from archive");
             SchedBlock[] sbs = new SchedBlock[cursor.count()];
             logger.log(Level.FINE, "Cursor's count = "+ cursor.count());
             int i=0;
@@ -148,7 +154,7 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public SchedBlock getSchedBlock(String id) {
         SchedBlock sb = null;
-        //This is a temporary fix coz i can't do namespace querys yet!!
+        //This is a temporary fix coz i can't do namespace queries yet!!
         SchedBlock[] all_sb = getSchedBlock();
         for(int i=0; i < all_sb.length; i++) {
             if(((String)all_sb[i].getSchedBlockEntity().getEntityId()).equals(id)){
@@ -181,7 +187,6 @@ public class ALMAArchive implements ArchiveProxy {
             "alma.entity.xmlbinding.schedblock.SchedBlock");
         //update status - for now it just does it to complete! will change!!! :)
         ObsUnitControl ouc = sb_obj.getObsUnitControl(); 
-        //.setSchedStatus(SchedStatusT.COMPLETED);
         if(ouc == null) {
             ouc = new ObsUnitControl();
         }
@@ -218,6 +223,7 @@ public class ALMAArchive implements ArchiveProxy {
         String className = "alma.entity.xmlbinding.obsproject.ObsProject";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
+            projectCount = cursor.count();
             ObsProject[] obsProject = new ObsProject[cursor.count()];
             int i=0;
             while(cursor.hasNext()) {
@@ -270,11 +276,12 @@ public class ALMAArchive implements ArchiveProxy {
     }
 
     public SchedulingPolicy[] getSchedulingPolicy() {
-        /*
-        String query = "/SchedulingPolicy";
+        //String query = "/SchedulingPolicy";
+        String query = "/*";
         String schema = "SchedulingPolicy";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
+            policyCount = cursor.count();
             SchedulingPolicy[] schedulingPolicy = new SchedulingPolicy[cursor.count()];
             int i=0;
             while(cursor.hasNext()) {
@@ -286,7 +293,6 @@ public class ALMAArchive implements ArchiveProxy {
         } catch (ArchiveInternalError e) {
             logger.log(Level.SEVERE, e.toString());
         }
-        */
         return null;
     }
 
@@ -492,7 +498,7 @@ public class ALMAArchive implements ArchiveProxy {
             Cursor cursor = operArchiveComp.query(queryString, schema);
             while(cursor.hasNext()) {
                 QueryResult result = cursor.next();
-                System.out.println("xml string: "+result.xml);
+                //logger.info("xml string: "+result.xml);
                 objects.add(  convertToObject(result, schema) );
             }
         } catch (ArchiveInternalError e) {
@@ -534,7 +540,7 @@ public class ALMAArchive implements ArchiveProxy {
         Vector sbs = null;
         //SchedBlock sb;
         //SchedBlockEntityT sb_entity;
-        System.out.println("Getting noncomplete sbs from archive");
+        logger.info("Getting noncomplete sbs from archive");
         String query = "/SchedBlock/ObsUnitControl[@schedStatus=\"waiting\"]";
         try {
             sbs = new Vector(); 
@@ -560,7 +566,14 @@ public class ALMAArchive implements ArchiveProxy {
         //query archive for new sbs
         // true if there are new sbs, else false
         result = false;
-        System.out.println("checking for new sbs");
+        logger.info("checking for new sbs");
+        //get all sbs from archive. if count is more than current count 
+        //then there are new ones!
+        int currCount = sbCount;
+        SchedBlock[] tmp = getSchedBlock();
+        if(sbCount > currCount) {
+            result = true;
+        }
         return result;
     }
 
@@ -575,7 +588,12 @@ public class ALMAArchive implements ArchiveProxy {
         //query archive for new projects
         // true if there are new ones, else false
         result = false;
-        System.out.println("checking for new project defs");
+        logger.info("checking for new project defs");
+        int currCount = projectCount;
+        ObsProject[] tmp = getProject();
+        if(projectCount > currCount) {
+            result = true;
+        }
         return result;
     }
 

@@ -30,14 +30,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import ALMA.scheduling.define.STime;
-import ALMA.scheduling.master_scheduler.State;
-import ALMA.scheduling.master_scheduler.MasterSBQueue;
-import ALMA.scheduling.master_scheduler.ALMATelescopeOperator;
-import ALMA.scheduling.master_scheduler.ALMADispatcher;
-import ALMA.scheduling.master_scheduler.Message;
-import ALMA.scheduling.master_scheduler.MessageQueue;
-
-import ALMA.scheduling.project_manager.ProjectManager;
+import ALMA.scheduling.master_scheduler.*;
+import ALMA.scheduling.project_manager.PIProxy;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -63,55 +57,45 @@ public class Scheduler implements Runnable {
 	 * in simulation mode or in real mode.
      */
     private boolean isSimulation;
-    /**
-     * The state of the scheduler
-     */
+    /** The state of the scheduler */
     private State schedulerState;
-    /**
-     *  The mode of the scheduler.
-     */
+    /** The mode of the scheduler.  */
     private String mode;
-    private MasterSBQueue queue;
+    /** Selected number of SBs from masterSbQueue */
+    private SBSubQueue queue;
     private ContainerServices container;
     private ALMATelescopeOperator operator;
     private ALMADispatcher dispatcher;
-    private ProjectManager projectManager;
     private Logger logger;
     private MessageQueue messageQueue;
+    /** The task control object for the scheduler */
+    private SchedulerTaskControl schedulerTaskControl;
+    private ALMAClock clock;
+    private PIProxy piproxy;
     
     public Scheduler(boolean isSimulation, 
                       ContainerServices c, 
-                       ALMATelescopeOperator o, 
-                        ALMADispatcher d,
-                         MasterSBQueue q, 
-                          MessageQueue mq, 
-                           ProjectManager pm,
-                            String m) {
+                        ALMATelescopeOperator o, 
+                         ALMADispatcher d,
+                          SBSubQueue q, 
+                           MessageQueue mq, 
+                            ALMAClock cl,
+                             PIProxy pip,
+                              String m) {
+        this.schedulerState = new State(State.NEW);
         this.isSimulation = isSimulation;
         this.container = c;
         this.operator = o;
         this.dispatcher = d;
         this.queue = q;
         this.messageQueue = mq;
-        this.schedulerState = new State(State.NEW);
+        this.clock = cl;
+        this.piproxy = pip;
         this.mode = m;
-        this.projectManager = pm;
 
         logger = container.getLogger();
         
-        // Subscribe to Control's NC and Pipeline's NC
-        
-        /* put this after connecting to the control component
-        c_consumer = new ControlConsumer();
-        c_consumer.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
-        c_consumer.consumerReady();
-        */
-        
-        /* put this after connecting to the pipeline component
-        p_consumer = new PipelineConsumer();
-        p_consumer.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
-        p_consumer.consumerReady();
-        */
+        initialize();
     }
 
     public void initialize() {
@@ -120,13 +104,16 @@ public class Scheduler implements Runnable {
     
 
     public void run() {
+    //eventually needs to be put in a while loop.
         schedulerState = State.EXECUTING;
         System.out.println("Scheduler is running in "+mode+" mode!");
-        Vector uidList = queue.getAllUid();
+        /*
+        Vector uidList = queue.getIds();
         String[] ids = new String[uidList.size()];
         for(int i=0; i < uidList.size(); i++) {
             ids[i] = (String)uidList.elementAt(i);
-        }
+        }*/
+        String[] ids = queue.getIds();
         Message m = new Message();
         try {
             container.assignUniqueEntityId(m.getMessageEntity());
@@ -143,8 +130,6 @@ public class Scheduler implements Runnable {
         } else {
             logger.log(Level.INFO, "selectedSB was null. Nothing sent to control.");
         }
-        //this will go whereever the control event comes back saying sb is done
-        //startPipeline(selectedSB);
     }
     
     public void stop() {
@@ -152,6 +137,14 @@ public class Scheduler implements Runnable {
         System.out.println("Scheduler is stopped");
     }
 
+    public void dispatchSB(String id) {
+        //no STime available yet so ignoring.
+        dispatcher.sendToControl(id, new STime() );
+    }
+
+    ///////////////////////////////////////////////////////
+
+    /* GetMethods */
     /**
      *  Gets a single scheduling block out of the MasterSBQueue
      *  @param ids An array of strings which contain all the SB uids
@@ -164,21 +157,20 @@ public class Scheduler implements Runnable {
         return sb;
     }
     public SchedBlock getSB() {
-        SchedBlock sb = queue.getSB();
+        SchedBlock sb = queue.getSchedBlock();
         return sb;
     }
-
-    public void dispatchSB(String id) {
-        //no STime available yet so ignoring.
-        dispatcher.sendToControl(id, new STime() );
+    public SchedulerTaskControl getSchedulerTaskControl() {
+        return schedulerTaskControl;
     }
 
-    /*
-    public void startPipeline(String id) {
-        projectManager.startPipeline(id);
+    /* SetMethods */
+
+    public void setSchedulerTaskControl(SchedulerTaskControl stc) {
+        this.schedulerTaskControl = stc;
     }
-    */
-    
+    ///////////////////////////////////////////////////////
+
 	public static void main(String[] args) {
 	}
 }

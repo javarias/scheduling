@@ -202,6 +202,11 @@ public class Container implements ContainerServices {
 		return null;
 	}
 
+    public com.cosylab.CDB.DAL getCDB() {
+        return null;
+    }
+
+
 	public static void main(String[] args) {
 		System.out.println("Unit test of container.");
 		Container container = new Container (Mode.FULL);

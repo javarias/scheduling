@@ -56,9 +56,9 @@ public class TelescopeOperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.master_scheduler.Scheduling_to_TelescopeOperator#SelectSB(java.lang.String[], java.lang.String)
 	 */
-	public void SelectSB(String[] sbIdList, String messageId) {
+	public String selectSB(String[] sbIdList, String messageId) {
 		// TODO Auto-generated method stub
-
+        return null;
 	}
 
 	/* (non-Javadoc)
@@ -72,7 +72,7 @@ public class TelescopeOperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.master_scheduler.Scheduling_to_TelescopeOperator#comfirmSubarrayCreation(short[], java.lang.String)
 	 */
-	public void comfirmSubarrayCreation(
+	public void confirmSubarrayCreation(
 		short[] antennaIdList,
 		String messageId) {
 		// TODO Auto-generated method stub

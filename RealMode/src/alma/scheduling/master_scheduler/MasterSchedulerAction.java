@@ -25,9 +25,7 @@
  */
 package ALMA.scheduling.master_scheduler;
 
-import alma.acs.nc.SimpleSupplier;
-
-import ALMA.scheduling.NothingCanBeScheduledEvent;
+//import ALMA.scheduling.NothingCanBeScheduledEvent;
 
 /**
  * The MasterSchedulerAction class encapsulates periodic actions that
@@ -42,41 +40,37 @@ import ALMA.scheduling.NothingCanBeScheduledEvent;
 public class MasterSchedulerAction implements Runnable {
     private ALMAArchive archive;
     private MasterSBQueue queue;
-    private SimpleSupplier simpleSupplier;
+    private Thread taskInfoThread;
+    private TaskControlInfo taskControlInfo;
+    private int msaSleepTime = 300000; //5 minutes
+    private boolean msaFlag = true;
+
 	/**
 	 * Constructor for MasterSchedulerAction.
 	 */
-	public MasterSchedulerAction() {
+	public MasterSchedulerAction(ALMAArchive a,MasterSBQueue q) {
 		super();
-        String[] names = new String[3];
-        names[SimpleSupplier.CHANNELPOS] = ALMA.scheduling.CHANNELNAME.value;
-        names[SimpleSupplier.TYPEPOS] = ALMA.acsnc.DEFAULTTYPE.value;
-        names[SimpleSupplier.HELPERPOS] = new
-            String("ALMA.scheduling.NothingCanBeScheduledEventHelper");
-        simpleSupplier = new SimpleSupplier(names);
-	}
-    public void setArchive(ALMAArchive a) {
         this.archive = a;
-    }
-    public void setMasterSBQueue(MasterSBQueue q) {
         this.queue = q;
-    }
+	}
 
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-        while(true) {
+        while(msaFlag) {
             try {
-                this.wait(30000); //wait 5 minutes
+                taskInfoThread.sleep(msaSleepTime); //wait 5 minutes
                 // Check for new SBs from archive
                 if(archive.checkNewSB()) { //if true do something with the new sbs
+                    taskControlInfo.interruptMasterScheduler();
                 }
                 // Check for new project defs from archive
                 if(archive.checkNewProjectDefs()) { //if true do something with new project defs
                 }
                 // Check master queue for fixed events
                 if(queue.checkNewFixedEvents()) {
+                    taskControlInfo.interruptMasterScheduler();
                 }
                 // Check for sub-array config changes
                 // dont know where this info comes from..
@@ -86,18 +80,36 @@ public class MasterSchedulerAction implements Runnable {
         }
 	}
 
+    /*
     public void start() {
+        taskInfoThread.start();
         System.out.println("MB Action started");
     }
+    */
     public void stop() {
         System.out.println("MB Action stopped");
     }
-    public void sendNothingCanBeScheduledEvent(NothingCanBeScheduledEvent ev) {
-        try {
-            simpleSupplier.publishEvent(ev); 
-        } catch (Exception e) {
-        }
+    ///////////////////////////////////////////////////
+
+    /* Get Methods */
+
+    public TaskControlInfo getTaskControlInfo(){
+        return taskControlInfo;
     }
+    public Thread getTaskInfoThread() {
+        return taskInfoThread;
+    }
+    /* Set Methods */
+
+    public void setTaskControlInfo(TaskControlInfo tci) {
+        this.taskControlInfo = tci;
+    }
+    public void setTaskInfoThread(Thread t) {
+        this.taskInfoThread = t;
+    }
+    
+    ///////////////////////////////////////////////////
+
 
 	public static void main(String[] args) {
 	}

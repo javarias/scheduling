@@ -1,4 +1,3 @@
-
 /*
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
@@ -40,23 +39,17 @@ import org.omg.CORBA.SetOverrideType;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
-import ALMA.scheduling.Executive_to_Scheduling;
-import ALMA.scheduling.InvalidOperation;
-import ALMA.scheduling.NoSuchSB;
-import ALMA.scheduling.TelescopeOperator_to_Scheduling;
-import ALMA.scheduling.UnidentifiedResponse;
-import ALMA.scheduling.NothingCanBeScheduledEvent;
 import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.obsproject.*;
 //import alma.bo.SchedBlock;
 
-import ALMA.scheduling.project_manager.PIProxy;
-import ALMA.scheduling.project_manager.ALMAPipeline;
+import ALMA.scheduling.*;
 import ALMA.scheduling.project_manager.ProjectManager;
-//import ALMA.scheduling.project_manager.ALMANothingCanBeScheduledSupplier;
-import ALMA.scheduling.scheduler.Scheduler;
+import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
+import ALMA.scheduling.project_manager.PIProxy;
+import ALMA.scheduling.scheduler.*;
 
 import java.io.File;
 import java.io.ObjectOutputStream;
@@ -68,11 +61,11 @@ import java.util.Vector;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import alma.acs.component.client.ComponentClient;
-import ALMA.scheduling.MSOperations;
-import ALMA.scheduling.MS;
-
 import alma.acs.nc.SimpleSupplier;
+import alma.acs.component.client.ComponentClient;
+//import ALMA.scheduling.MSOperations;
+//import ALMA.scheduling.MS;
+
 
 /**
  * The MasterScheduler class is the major controlling class in the Scheduling
@@ -82,19 +75,13 @@ import alma.acs.nc.SimpleSupplier;
  * @author Allen Farris
  */
 
-public class MasterScheduler implements MS, ComponentLifecycle {
+public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	
-	/**
-	 * The scheduling subsystem's component name.
-	 */
+	/** The scheduling subsystem's component name.  */
 	private String componentName;
-	/**
-	 * The object that provides container services.
-	 */
+	/** The object that provides container services.  */
 	private ContainerServices container;
-	/**
-	 * The state of the scheduling subsystem.
-	 */
+	/** The state of the scheduling subsystem.  */
 	private State schedulingState;
 	/**
 	 * A flag that is shared with threads to indicate that a command
@@ -106,34 +93,45 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 	 * in simulation mode or in real mode.
 	 */
 	private boolean isSimulation;
-	/**
-	 * A lockfile used to insure that only one copy of the MasterScheduler
-	 * is running in real mode.
-	 */
-	private File lockfile;
 	
-	// The following are objects used by the MasterScheduler.
-	
+	/** The object that Scheduling uses to communicate with the Archive */
 	private ALMAArchive archive;
-	//private ALMAPipeline pipeline;
+	/** Impl if TelescopeOperator */
 	private ALMATelescopeOperator operator;
+	/** PIProxy object */
 	private PIProxy pi;
+	/** The object scheduling uses to communicate with Control system */
 	private ALMADispatcher dispatcher;
+	/** The Clock */
 	private ALMAClock clock;
+	/** The object which holds all the SchedBlocks/SUnits */
 	private MasterSBQueue queue;
+	/** The object that holds all the messages */
     private MessageQueue messageQueue;
+    /** The ProjectManager object */
 	private ProjectManager projectManager;
+    /** A List of all the scheduling policies */
 	private ArrayList schedulingPolicy;
+    /** A List of all the antennas (active? all? available?) */
 	private ArrayList antenna;
+    /** A List of all the schedulers that are created */
 	private ArrayList scheduler;
+    /** The MasterScheduler periodic action object */
 	private MasterSchedulerAction action;
+    /** The thread for the MasterSchedulerAction */
+    private Thread actionThread;
+    /** The master scheduler's thread */
+    private Thread msThread;
+    /** MasterSchedulers TaskControlInfo */
+    private TaskControlInfo msControlInfo;
+    /** The logger */
     private Logger logger;
-    //private SimpleSupplier simpleSupplier;
-    //private ALMANothingCanBeScheduledSupplier nothingCanBeScheduled;
+    /** Time the MS thread sleeps */
+    private int msSleepTime = 300000;//5 minute sleep
+    
 	
 	private void setNullReferences() {
 		archive = null;
-		//pipeline = null;
 		operator = null;
 		pi = null;
 		dispatcher = null;
@@ -145,11 +143,7 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 		antenna = new ArrayList ();
 		scheduler = new ArrayList();
 		action = null;
-        
-        //simpleSupplier = null;
-        //nothingCanBeScheduled = null;
 	}
-	
 	
 	/**
 	 * Create a MasterScheduler to run in the "real" mode.
@@ -160,7 +154,6 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 		this.isSimulation = false;
 		this.componentName = null;
 		this.container = null;
-		this.lockfile = null;
         
 		setNullReferences();
 		System.out.println("The MasterScheduler has been constructed.");
@@ -178,7 +171,6 @@ public class MasterScheduler implements MS, ComponentLifecycle {
         this.isSimulation = isSimulation;
         this.componentName = null;
         this.container = null;
-        this.lockfile = null;
         setNullReferences();
         System.out.println("The MasterScheduler has been constructed.");
 	}
@@ -229,13 +221,6 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 	 * <li> Creates an empty queue of SchedBlocks.
 	 * <li> Create an empty list of Schedulers.
 	 * <li> Create a periodic action object.
-	 * <li> If mode is real and lockfile is null, check for the existence
-	 * 		of a lockfile.  If it exists, an exception is thrown indicating
-	 * 		that a MasterScheduler object is already running and this initialized
-	 * 		object cannot be executed.  If the lockfile exists and there is no
-	 * 		MasterScheduler object running, the lockfile must be manually removed
-	 * 		before this object can be executed.  In these circumstances, this object 
-	 * 		is not placed in an error state.
 	 * <li> Set state to "initialized".
 	 * </ul>
 	 * 
@@ -258,78 +243,54 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 		// and an exception is thrown.
 		
 		try {
+            //get logger from container
             logger = container.getLogger();
-
+			// Create the Master SB queue.
+			queue = new MasterSBQueue ();
+            // Create the Message queue
+            messageQueue = new MessageQueue();
 			// Create the archive proxy.
 			archive = new ALMAArchive(isSimulation,container);			
-            logger.log(Level.FINE, "Got archive in MS");
-			
-			// Create the pipeline proxy.
-			//pipeline = new ALMAPipeline(isSimulation,container);
-			
+            //logger.log(Level.FINE, "Got archive in MS");
+            
 			// Create the telescope operator proxy.
 			operator = new ALMATelescopeOperator(isSimulation,container);
-            logger.log(Level.FINE, "Got operator in MS");
+            //logger.log(Level.FINE, "Got operator in MS");
 			
 			// Create the PI proxy.
 			pi = new PIProxy(isSimulation,container);
-            logger.log(Level.FINE, "Got PIProxy in MS");
+            //logger.log(Level.FINE, "Got PIProxy in MS");
             
 			// Create a periodic action object.
-			action = new MasterSchedulerAction ();
+			action = new MasterSchedulerAction (archive, queue);
+
+			// Create the ALMADispatcher.
+			dispatcher = new ALMADispatcher(isSimulation,container,archive);
+            //logger.log(Level.FINE, "Got alma dispatcher in MS");
 
 			// Create the Project Manager.
-            projectManager = new ProjectManager(isSimulation, archive, action);
-            projectManager.setContainerServices(container);
-			
-			// Create the ALMADispatcher.
-			dispatcher = new ALMADispatcher(isSimulation,container,archive,projectManager);
-            logger.log(Level.FINE, "Got alma dispatcher in MS");
+            projectManager = new ProjectManager(isSimulation, container, 
+                                                 archive, queue, dispatcher);
 			
 			// Create the ALMAClock.
 			clock = new ALMAClock(isSimulation,container);
-            logger.log(Level.FINE, "Got alma clock in MS");
+            //logger.log(Level.FINE, "Got alma clock in MS");
 			
 			// Get the list of scheduling policies from the archive.
 			schedulingPolicy = new ArrayList ();
-            logger.log(Level.FINE, "Scheduling policy created in MS");
-			// ...
-        //    schedulingPolicy = archive.getSchedPolicy();
+            //logger.log(Level.FINE, "Scheduling policy created in MS");
+            //schedulingPolicy = archive.getSchedPolicy();
 			
 			// Get the list of commissioned antennas from the archive.
 			antenna = new ArrayList ();
 			// ...
-        //    antenna = archive.getAntennas();
+            //antenna = archive.getAntennas();
 			
-			
-			// Create the Master SB queue.
-			queue = new MasterSBQueue ();
-			
-            // Create the Message queue
-            messageQueue = new MessageQueue();
-
 			// Create an empty list of schedulers.
 			scheduler = new ArrayList();
-			
-            action.setArchive(archive);
-            action.setMasterSBQueue(queue);
-			
-            //get logger from container
 
-            operator.setMessageQueue(messageQueue);
-
-            /* Setup stuff for notification channel and sending out the 
-             * NothingCanBeScheduledEvent thing
-             */
-            /*
-            String[] names = new String[3];
-            names[SimpleSupplier.CHANNELPOS] = ALMA.scheduling.CHANNELNAME.value;
-            names[SimpleSupplier.TYPEPOS] = ALMA.acsnc.DEFAULTTYPE.value;
-            names[SimpleSupplier.HELPERPOS] = new 
-                String("ALMA.scheduling.NothingCanBeScheduledEventHelper");
-            simpleSupplier = new SimpleSupplier(names);		
-            */
-            //nothingCanBeScheduled = new ALMANothingCanBeScheduledSupplier();
+            // TODO Initialize Notification Channel
+            
 		} catch (Exception ex) {
 			schedulingState.setState(State.ERROR);
 			throw new UnsupportedOperationException(
@@ -352,7 +313,6 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 	 * The execute method performs the following activities.
 	 * 
 	 * <ul>
-	 * <li> Creates a lockfile to prevent any other MasterScheduler from executing.
 	 * <li> Get the full set of SBs from the archive that have not been completed
 	 * 		and place them in the master SB queue.
 	 * <li> Form a unique list of SB-ids from the master SB queue and give those to
@@ -381,7 +341,7 @@ public class MasterScheduler implements MS, ComponentLifecycle {
         if(sbs != null) {
             System.out.println("sbs not null storing into queue");
             //queue.addNonCompleteSBsToQueue(sbs);   
-            queue.addSB(sbs);
+            queue.addSchedBlock(sbs);
         } else {
             System.out.println("sbs null will result in error?");
         }
@@ -392,7 +352,7 @@ public class MasterScheduler implements MS, ComponentLifecycle {
         //projectManager.addSBUids(uid);
 
         // Get all project definitions out of the archive
-        ObsProject[] proj = archive.getProject();
+        //ObsProject[] proj = archive.getProject();
         
 
         // TODO get antenna state from control
@@ -401,20 +361,34 @@ public class MasterScheduler implements MS, ComponentLifecycle {
         // TODO setup notification channel recievers for PM - consumer
         // TODO setup notification channel listeners - 
 
-
-        // TODO Start PM thread
-        projectManager.start();
-        // TODO start perodic action obj
-        action.start();
+        // Start perodic action obj
+        actionThread = new Thread(action);
+        actionThread.start();
+        action.setTaskInfoThread(actionThread);
+        // Create MasterScheduler Thread and start it.
+        msThread = new Thread(this);
+        msThread.start();
+        // Create MasterScheduler TaskControlInfo
+        msControlInfo = new TaskControlInfo(msThread,actionThread);
+        // Set task control in action
+        action.setTaskControlInfo(msControlInfo);
+        // Start PM thread
+        Thread pmThread = new Thread(projectManager);
+        // Create ProjectManagerTaskControl
+        ProjectManagerTaskControl pmtc = new ProjectManagerTaskControl(msThread, pmThread);
+        projectManager.setProjectManagerTaskControl(pmtc);
+        pmThread.start();
+        dispatcher.setProjectManagerTaskControl(pmtc);
         
+        operator.setMessageQueue(messageQueue);
         
 		System.out.println("The MasterScheduler is executing.");
 	}
 
 	/**
-	 * The cleanUp method tells all threads in the subsystem to stop and 
-	 * deletes the lockfile. It then waits for all threads to stop, sets 
-	 * all object references to null and sets the state to "stopped". 
+	 * The cleanUp method tells all threads in the subsystem to stop.
+	 * It then waits for all threads to stop, sets all object 
+     * references to null and sets the state to "stopped". 
 	 * 
 	 * @see alma.acs.component.ComponentLifecycle#cleanUp()
 	 */
@@ -443,10 +417,12 @@ public class MasterScheduler implements MS, ComponentLifecycle {
         }
 
         // Disconnect from other subsystem's notification channels
+        /*
         try {
             dispatcher.disconnectFromControl();
             projectManager.disconnectFromPipeline();
         } catch(Exception e) {}
+        */
 		
 		// If there is a Project Manager thread, tell it to stop.
         if(projectManager != null) {
@@ -492,6 +468,21 @@ public class MasterScheduler implements MS, ComponentLifecycle {
 		System.out.println("The MasterScheduler has been requested to abort.");
 		cleanUp();
 	}
+
+    /**
+     * MasterScheduler's run method.
+     */
+    public void run() {
+        while(!stopCommand) {
+            try {
+                logger.info("MSsleeping!");
+                Thread.sleep(msSleepTime); 
+                logger.log(Level.INFO,"MS Thread woken up.");
+            } catch(InterruptedException e){
+                logger.log(Level.INFO,"MS Thread interrupted.");
+            }
+        }    
+    }
 
 	/**
 	 * The startScheduling method is called by the Executive subsystem in order to start
@@ -839,12 +830,20 @@ public class MasterScheduler implements MS, ComponentLifecycle {
             logger.log(Level.SEVERE, "Scheduler not started. Invalid mode: "+mode);
             return;
         }
+        Vector subSBQueue = queue.queueToVector();
+        // for now the subqueue is the queue
+        SBSubQueue subQueue = new SBSubQueue(subSBQueue);
         Scheduler s = new Scheduler(isSimulation, container, operator, 
-                                        dispatcher, queue, messageQueue, 
-                                            projectManager, mode); 
+                                        dispatcher, subQueue, messageQueue, 
+                                            clock, pi, mode); 
+        Thread schedThread = new Thread(s);
+        SchedulerTaskControl stc = 
+            new SchedulerTaskControl(msThread,schedThread);
+        s.setSchedulerTaskControl(stc);
+        schedThread.start();
         scheduler.add(s);
-        s.initialize();
-        s.run();
+        //s.initialize();
+        //s.run();
     }
 
 	public static void main(String[] args) {

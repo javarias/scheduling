@@ -71,16 +71,7 @@ public class MessageQueue {
         }
     }
 
-    public int size() {
+    public synchronized int size() {
         return queue.size();
     }
-/*
-    public String toString() {
-        String res = "Messages:\n";
-        for(int i=0; i < queue.size(); i++ ){
-            res += ((Message)queue.elementAt(i)).toString() +"\n";
-        }
-        return res;
-    }
-    */
 }

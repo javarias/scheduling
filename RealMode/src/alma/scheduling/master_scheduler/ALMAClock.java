@@ -29,6 +29,8 @@ package ALMA.scheduling.master_scheduler;
 import alma.acs.container.ContainerServices;
 import ALMA.scheduling.define.STime;
 import ALMA.scheduling.define.ArrayTime;
+import ALMA.scheduling.define.ClockBase;
+import ALMA.scheduling.define.ClockAlarmListener;
 
 /**
  * The Clock class gives access to the array time, as implemented by
@@ -38,7 +40,7 @@ import ALMA.scheduling.define.ArrayTime;
  * @version 1.00 May 5, 2003
  * @author Allen Farris
  */
-public class ALMAClock implements Clock {
+public class ALMAClock extends ClockBase {
 	int delta;
 
 	/**

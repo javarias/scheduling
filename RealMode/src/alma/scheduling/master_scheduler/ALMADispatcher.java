@@ -31,7 +31,7 @@ import java.util.logging.Level;
 
 import alma.acs.container.ContainerServices;
 import ALMA.scheduling.define.STime;
-import ALMA.scheduling.project_manager.ProjectManager;
+import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
 
 import alma.entity.xmlbinding.schedblock.*;
 
@@ -45,7 +45,7 @@ import ALMA.Control.ArrayController;
  * @version 1.00 May 2, 2003
  * @author Allen Farris
  */
-public class ALMADispatcher implements Dispatcher {
+public class ALMADispatcher implements ControlProxy {
 	private boolean isSimulation;
 	private ContainerServices containerServices;
     private ALMAArchive archive;
@@ -54,17 +54,18 @@ public class ALMADispatcher implements Dispatcher {
     private Vector antennaMonitor;
     private ArrayController arrayControllerComp;
     private Logger logger;
-    private ControlEventListener c_event;
-    private ProjectManager projectManager;
+    //private ControlReceiverEvent c_event;
+    private ProjectManagerTaskControl pmtc;
 
 	//private Vector schedBlocks;
 	//private ArrayController ac;
     
-	public ALMADispatcher (boolean isSimulation, ContainerServices container, ALMAArchive a, ProjectManager pm) {
+	public ALMADispatcher (boolean isSimulation, ContainerServices container,
+                            ALMAArchive a) {
 		this.isSimulation = isSimulation;
 		this.containerServices = container;
         this.archive = a;
-        this.projectManager = pm;
+        //this.projectManager = pm;
         idleAntennas = new Vector();
         subArrays = new Vector();
         antennaMonitor = new Vector();
@@ -99,16 +100,6 @@ public class ALMADispatcher implements Dispatcher {
             arrayControllerComp = ALMA.Control.ArrayControllerHelper.narrow(
                 containerServices.getComponent("ArrayController1"));
             logger.log(Level.INFO, "Got array controller");
-            //connect to control's event channel
-            c_event = new ControlEventListener(this);
-            try {
-                c_event.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
-                c_event.consumerReady();
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, "Error connecting to control NC: "+e.toString());
-                c_event.disconnect();
-                alma.acs.nc.Helper.disconnect();
-            }
             //tell control to process the schedblock
             arrayControllerComp.processSchedBlock(id, time.getTime());
         } catch (Exception e) {
@@ -156,24 +147,14 @@ public class ALMADispatcher implements Dispatcher {
         return results;
     }
 
-    public void disconnectFromControl() {
-        c_event.disconnect();
+    ///////////////////////////////////////
+    /* Get Methods */
+    /* Set Methods */
+    public void setProjectManagerTaskControl(ProjectManagerTaskControl p) {
+        this.pmtc = p;
     }
+    ///////////////////////////////////////
 
-    public void startPipeline(String id) {
-        projectManager.startPipeline(id);
-    }
-
-    public void updateSB(String id) {
-        archive.updateSchedBlock(id);
-    }
-
-    // Notification Channel Methods
-    /*
-    public void push_structured_event(StructuredEvent structuredEvent) 
-            throws org.omg.CosEventComm.Disconnected {
-        
-    }*/
 
 	public static void main(String[] args) {
 	}

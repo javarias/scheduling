@@ -26,7 +26,7 @@
  
 package ALMA.scheduling.simulator;
 
-import ALMA.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
+import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 import ALMA.scheduling.master_scheduler.SchedulingException;
 import ALMA.scheduling.project_manager.PipelineProxy;
 import ALMA.scheduling.project_manager.PipelineStatus;

@@ -20,84 +20,72 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  * 
- * File MasterSBQueue.java
+ * File SBSubQueue.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package ALMA.scheduling.scheduler;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 //import alma.bo.SchedBlock;
 
 /**
- * The MasterSBQueue class is the collection of scheduling blocks
- * currently under consideration by the scheduling system.
+ * The SBSubQueue class is a sub-collection of scheduling blocks
+ * currently under consideration by the scheduling system. This 
+ * queue is sent to a particular scheduler for execution.
  * 
- * @version 1.00 May 5, 2003
- * @author Allen Farris
+ * @author Sohaila Roberts
  */
-public class MasterSBQueue {
+public class SBSubQueue {
 	private Vector queue;
 
-	public MasterSBQueue () {
+	public SBSubQueue () {
         queue = new Vector();
 	}
+    public SBSubQueue(Vector q) {
+        queue = q;
+    }
 
-    public synchronized void addSchedBlock(SchedBlock sb) {
-    System.out.println("Adding sbs to queue");
+    public void addSchedBlock(SchedBlock sb) {
+        System.out.println("Adding sbs to queue");
         queue.add(sb);
     }
 
-    //public void addNonCompleteSBsToQueue(Vector sbs) {
-    public synchronized void addSchedBlock(SchedBlock[] sbs) {
+    public void addSchedBlock(SchedBlock[] sbs) {
         //int len = sbs.size();
         for(int i=0; i < sbs.length; i++) {
             queue.add(sbs[i]);
         }
     }
-
+    
+    /////////////////////////////////////////////////////
+    /* GetMethods */
+    
     /**
      *  Returns the SchedBlock at location i
      */
-    public synchronized SchedBlock getSchedBlock(int i) {
+    public SchedBlock getSchedBlock(int i) {
         return (SchedBlock)queue.elementAt(i);
     }
     /**
      *  Returns the first SB in the queue
      */
-    public synchronized SchedBlock getSchedBlock() {
+    public SchedBlock getSchedBlock() {
         return (SchedBlock) queue.firstElement();
     }
 
-
-    public synchronized Vector getAllUid() {
-        int size = queue.size();
-        //String[] uid = new String[size];
-        Vector uid = new Vector();
-        for(int i = 0; i< size; i++) {
-        
-        //    System.out.println( ((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId() );
-            uid.add( (String)((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId() );
-            //uid.add( (String)((SchedBlock)queue.elementAt(i)).getId());
-        }
-        return uid;
-    }
-
     /**
-     * Checks to see if any new Fixed Events have been entered.
-     * Returns true if there are new fixed events, else false.
-     * @return boolean
+     *  Return a list of all the ids
      */
-    public synchronized boolean checkNewFixedEvents() {
-        boolean result;
-        // true if theres a new event
-        result = false;
-        return result;
+    public String[] getIds() {
+        String[] tmp = new String[queue.size()];
+        for(int i =0; i < queue.size(); i++) {
+            tmp[i] = (String)((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId();
+        }
+        return tmp;
     }
-    
-    public synchronized Vector queueToVector() {
-        return queue;
-    }
+
+    /////////////////////////////////////////////////////
 	public static void main(String[] args) {
 	}
 }
