@@ -984,7 +984,7 @@ public class ALMAArchive implements Archive {
             ObsProject obsProj= (ObsProject)
                 entityDeserializer.deserializeEntity(xml, Class.forName(
                     "alma.entity.xmlbinding.obsproject.ObsProject"));
-            proj = new ALMAProject(obsProj); 
+          //  proj = new ALMAProject(obsProj); 
         //    proj = ProjectUtil.initialize(
         } catch(EntityException e) {
             logger.severe("SCHEDULING: "+e.toString());
