@@ -41,6 +41,13 @@ public class ALMAControlReceiver extends ControlEventReceiver {
         this.logger = cs.getLogger();
     }
 
+    /**
+     * When an ExecBlockEvent is received by the scheduling subsystem it is
+     * received here and the type is determined. Once the type is determined 
+     * the appropriate action is taken.
+     *
+     * @param ExecBlockEvent The event sent out by the control subsystem.
+     */ 
     public void receive(ExecBlockEvent e) {
         logger.info("SCHEDULING: Starting to process the control event");
         String sb_id = e.sbId;

@@ -33,8 +33,9 @@ import alma.TelCalPublisher.PointingReducedEvent;
 import alma.scheduling.Event.Receivers.TelcalEventReceiver;
 
 /**
- * This Class receives the ExecBlockEvent sent out by telcal. 
+ * This Class receives the events sent out by telcal. 
  *
+ * @author Sohaila Lucero
  */
 public class ALMATelcalReceiver extends TelcalEventReceiver {
 
@@ -42,10 +43,22 @@ public class ALMATelcalReceiver extends TelcalEventReceiver {
         this.logger = cs.getLogger();
     }
 
+    /**
+     * When the scheduling subsystem receives the FocusReducedEvent event
+     * from the telcal subsystem it is received here and processed accordingly.
+     *
+     * @param FocusReducedEvent The event sent by the Telcal subsystem
+     */
     public void receive(FocusReducedEvent e) {
         logger.info("SCHEDULING: Starting to process the focus reduced event");
     }
 
+    /**
+     * When the scheduling subsystem receives the PointingReducedEvent event
+     * from the telcal subsystem it is received here and processed accordingly.
+     *
+     * @param PointingReducedEvent The event sent by the Telcal subsystem
+     */
     public void receive(PointingReducedEvent e) {
         logger.info("SCHEDULING: Starting to process the pointing reduced event");
     }

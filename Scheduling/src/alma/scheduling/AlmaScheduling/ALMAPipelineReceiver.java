@@ -34,6 +34,7 @@ import alma.scheduling.Event.Receivers.PipelineEventReceiver;
 /**
  * This Class receives the ScienceProcessingRequestEnd event sent out 
  * by Pipeline. 
+ *
  * @author Sohaila Lucero
  */
 public class ALMAPipelineReceiver extends PipelineEventReceiver {
@@ -42,6 +43,12 @@ public class ALMAPipelineReceiver extends PipelineEventReceiver {
         this.logger = cs.getLogger();
     }
 
+    /**
+     * When the scheduling subsystem receives the ScienceProcessingRequestEnd event
+     * from the pipeline subsystem it is received here and processed accordingly
+     *
+     * @param ScienceProcessingRequestEnd The event sent by the Pipeline subsystem
+     */
     public void receive(ScienceProcessingRequestEnd e) {
         logger.info("SCHEDULING: Starting to process the pipeline event");
     }
