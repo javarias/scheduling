@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.32 2005/03/29 18:11:55 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.33 2005/03/29 20:49:16 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -580,7 +580,7 @@ public class ALMAProjectManager extends ProjectManager {
         System.out.println("Creating PPR in PM");
         SB sb = sbQueue.get(sbid);
         Program prog = sb.getParent();
-        System.out.println("sb parent's part id = "+prog.getObsUnitSetStatusId());
+        //System.out.println("sb parent's part id = "+prog.getObsUnitSetStatusId());
         SciPipelineRequest ppr = new SciPipelineRequest(prog, s);
  		ppr.setReady(ProjectUtil.genPartId(), new DateTime(System.currentTimeMillis()));
         ppr.setStarted(new DateTime(System.currentTimeMillis()));

@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * A Program is a hierarchical tree whose leaves are SB objects. 
  * It is an ObsProgram as viewed by the scheduling subsystem.
  * 
- * @version $Id: Program.java,v 1.6 2005/03/17 21:41:47 sslucero Exp $
+ * @version $Id: Program.java,v 1.7 2005/03/29 20:49:16 sslucero Exp $
  * @author Allen Farris
  */
 public class Program implements ProgramMember {
@@ -98,6 +98,7 @@ public class Program implements ProgramMember {
 	 */
 	public Program(String id) {
 		programId = id;
+        obsUnitSetStatusId = id;
 		project = null;
 		timeOfCreation = null;
 		timeOfUpdate = null;

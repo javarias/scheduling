@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.21 2005/03/29 18:11:55 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.22 2005/03/29 20:49:16 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -433,9 +433,11 @@ public class ProjectUtil {
 		for (int i = 0; i < m.length; ++i) {
 			if (m[i] instanceof Program) {
 				((Program)m[i]).setObsUnitSetStatusId(genPartId());
+                System.out.println("part id for program member, prog");
 				setProgramMember((Program)m[i]);
 			} else {
 				((SB)m[i]).setSbStatusId(genPartId());
+                System.out.println("part id for program member, sb");
 				setSBMember((SB)m[i]);
 			}
 		}
@@ -461,7 +463,10 @@ public class ProjectUtil {
 			if (n == 0)
 				break;
 		}
-		return new String (s);
+        String tmp = new String (s);
+        System.out.println("Generating another partId: "+tmp);
+		//return new String (s);
+        return tmp;
 	}
 
 	/**
@@ -479,12 +484,13 @@ public class ProjectUtil {
 			DateTime now) throws SchedulingException {
 		
         if(set.getEntityPartId() == null) {
+            System.out.println("generating part it for program");
             set.setEntityPartId(genPartId());
         }
 		Program program = new Program (set.getEntityPartId());
         System.out.println("Program ID = "+program.getId());
 		program.setProject(project);
-		program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
+		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
 		program.setTimeOfCreation(now);
 		program.setTimeOfUpdate(now);
 		program.setParent(parent);
@@ -530,6 +536,8 @@ public class ProjectUtil {
 			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
 			SB memberSB = null;
 			for (int i = 0; i < setMember.length; ++i) {
+                System.out.println("stupid parent id1 ="+program.getId());
+                System.out.println("stupid parent id2 ="+program.getObsUnitSetStatusId());
 				memberSB = initialize(setMember[i],sched,schedUsed,project,program,now);
 				program.addMember(memberSB);
 			}
@@ -568,6 +576,7 @@ public class ProjectUtil {
 		sb.setProject(project);
 		sb.setTimeOfCreation(now);
 		sb.setTimeOfUpdate(now);
+        System.out.println("SB parent part id (in sb initialize PU)"+parent.getObsUnitSetStatusId());
 		sb.setParent(parent);
 
 		// We need to use the entityId to get the SchedBlock from the sched array.
@@ -921,7 +930,8 @@ public class ProjectUtil {
 		pRef.setEntityId(ppr.getProgram().getProject().getProjectStatusId());
 		pRef.setDocumentVersion("1");
 		//pRef.setPartId(ppr.getId());
-        pRef.setPartId(ppr.getProgram().getObsUnitSetStatusId());
+        //pRef.setPartId(ppr.getProgram().getObsUnitSetStatusId());
+        pRef.setPartId(ppr.getProgram().getProgramId());
 		target.setObsUnitSetStatusRef(pRef);
 		// Set the request status.
 		if (ppr.getStatus().getStartTime() == null)
