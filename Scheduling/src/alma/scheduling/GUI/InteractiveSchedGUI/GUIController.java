@@ -54,6 +54,8 @@ public class GUIController implements Runnable {
         this.config = s;
     }
 
+    public GUIController() {}
+
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(
             "alma/scheduling/Image/"+name);
@@ -139,5 +141,7 @@ public class GUIController implements Runnable {
     }
 
     public static void main(String[] args) {
+        GUIController c = new GUIController();
+        c.run();
     }
 }

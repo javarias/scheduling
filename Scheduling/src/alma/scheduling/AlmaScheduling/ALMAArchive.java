@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import java.util.Vector;
 
 import alma.scheduling.Define.*;
+import alma.scheduling.ProjectStatusUtil;
 
 import alma.xmlentity.XmlEntityStruct;
 
@@ -47,10 +48,11 @@ import alma.xmlstore.Cursor;
 import alma.xmlstore.CursorPackage.QueryResult;
 
 import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproject.types.*;            
 import alma.entities.generalincludes.*;
-//
+
 
 /**
  * This class provides all the functionalitiy from the archvie which 
@@ -107,10 +109,10 @@ public class ALMAArchive implements Archive {
                 logger.info("SCHEDULING: cursor not null!");
             }
             while(cursor.hasNext()) {
-                logger.info("SCHED: NEXT!");
+                //logger.info("SCHED: NEXT!");
                 QueryResult res = cursor.next();
                 try {
-                    logger.info("SCHED: convert to proj");
+                    //logger.info("SCHED: convert to proj");
                     tmp_projects.add(convertToProject1(res));
                 }catch(Exception e) {
                     logger.severe("SCHEDULING: "+e.toString());
@@ -121,13 +123,43 @@ public class ALMAArchive implements Archive {
             for(int i=0; i < tmp_projects.size();i++) {
                 projects[i] = (Project)tmp_projects.elementAt(i);
             }
-            logger.info("SCHEDULING: Projects available = "+tmp_projects.size());
+            //logger.info("SCHEDULING: Projects available = "+tmp_projects.size());
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
         }
-        logger.info("RETURNING with projects");
         return projects;
+    }
+
+    public ProjectStatus[] getAllProjectStatus() throws SchedulingException {
+        ProjectStatus[] projectStatus = null;
+        Vector tmp_ps = new Vector();
+        String query = new String("/ps:ProjectStatus");
+        String schema = new String("ProjectStatus");
+        String className = new String(
+            "alma.entity.xmlbinding.projectstatus.ProjectStatus");
+        try {
+            Cursor cursor = archOperationComp.queryDirty(query,schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying project status");
+                return null;
+            } else {
+                logger.info("SCHEDULING: cursor was not null.");
+            }
+            while(cursor.hasNext()) {
+                QueryResult res = cursor.next();
+                try{
+                    tmp_ps.add(convertToProjectStatus1(res));
+                } catch(Exception e) {
+                    logger.severe("SCHEDULING: "+e.toString());
+                    throw new SchedulingException (e);
+                }
+            }
+        } catch(ArchiveInternalError e) {
+             logger.severe("SCHEDULING: "+e.toString());
+             throw new SchedulingException(e);
+        }
+        return projectStatus;
     }
 
     /**
@@ -346,6 +378,7 @@ public class ALMAArchive implements Archive {
             containerServices.assignUniqueEntityId(session.getSession().getSessionEntity());
             XmlEntityStruct sessionStruct = entitySerializer.serializeEntity(
                 session.getSession(), session.getSession().getSessionEntity());
+            //System.out.println(sessionStruct.xmlString);
             archOperationComp.store(sessionStruct);
             id = session.getSession().getSessionEntity().getEntityId();
             //System.out.println(sessionStruct.xmlString);
@@ -482,7 +515,7 @@ public class ALMAArchive implements Archive {
         Project proj = null;
         try {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
-            //System.out.println(xml_struct.xmlString);
+            System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
             //System.out.println(xml_struct.xmlString);
         } catch (MalformedURI e) { 
@@ -600,6 +633,45 @@ public class ALMAArchive implements Archive {
             throw new Exception (e);
         }
         return session;
+    }
+
+    private ProjectStatus convertToProjectStatus1(QueryResult res) throws Exception {
+        String ps_id = res.identifier;
+        ProjectStatus ps = null;
+        try{
+            XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(ps_id);
+            ps = convertToProjectStatus2(xml_struct);
+        } catch (MalformedURI e) { 
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        } catch (ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        } catch (NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        //} catch (DirtyEntity e) {
+        //    throw new Exception (e);
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        }
+        return ps;
+    }
+
+    private ProjectStatus convertToProjectStatus2(XmlEntityStruct xml) throws Exception {
+        ALMAProjectStatus almaps = null;
+        try {
+            alma.entity.xmlbinding.projectstatus.ProjectStatus ps =
+                (alma.entity.xmlbinding.projectstatus.ProjectStatus)
+                    entityDeserializer.deserializeEntity(xml, Class.forName(
+                        "alma.entity.xmlbinding.projectstatus.ProjectStatus"));
+            almaps = new ALMAProjectStatus(ps);
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        }
+        return almaps;
     }
 
     /**

@@ -113,6 +113,7 @@ public class ALMAPublishEvent extends PublishEvent {
     }
 
     /**
+     * Publishes an EndSession event.
      *
      * @param long The end time of the session. Defined in ACS time
      * @param String The session's ID

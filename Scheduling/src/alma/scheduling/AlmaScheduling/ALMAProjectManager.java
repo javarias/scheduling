@@ -71,7 +71,9 @@ public class ALMAProjectManager extends ProjectManager {
             }catch(InterruptedException e) {
                 logger.info("SCHEDULING: ProjectManager Interrupted!");
             }
-            pollArchive();
+            if(!stopCommand){
+                pollArchive();
+            }
         }
     }
 

@@ -77,9 +77,13 @@ public class ALMASB extends SB {
                 //System.out.println(dec + " " + dec_unit);
                 FieldPatternT target_pattern = almaObsTarget[i].getFieldSpec().
                     getFieldPattern();
+                
+                Target t;
+                t = new Target(new Equatorial(ra,dec), 10,20); //not sure why i picked 10 and 20..
+                super.setTarget(t);
+                /*
                 String type = target_pattern.getType().toString();
                 //System.out.println(type);
-                Target t;
                 if(type.equals("rectangle")){
                     alma.entity.xmlbinding.schedblock.RectangleT rec =  target_pattern.getRectangle();
                     if(rec == null) {
@@ -92,13 +96,11 @@ public class ALMASB extends SB {
                     //System.out.println(rec.getLatitudeLength().getUnit());
                     //System.out.println(rec.getLongitudeLength().getContent());
                     //System.out.println(rec.getLongitudeLength().getUnit());
-                    t = new Target(new Equatorial(ra,dec), 10,20);
-                    super.setTarget(t);
                 } else if(type.equals("circle")) {
                 } else if(type.equals("spiral")) {
                 } else {
                     // error?
-                }
+                }*/
             }
             this.almaPhaseCalTarget = almaSchedBlock.getPhaseCalTarget(); 
             this.almaPointingCalTarget = almaSchedBlock.getPointingCalTarget(); 

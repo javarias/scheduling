@@ -33,6 +33,7 @@ import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
 import alma.Control.ExecBlockEvent;
+import alma.Control.ControlSystemStatusEvent;
 import alma.TelCalPublisher.FocusReducedEvent;
 import alma.TelCalPublisher.PointingReducedEvent;
 import alma.pipelinescience.ScienceProcessingRequestEnd;
@@ -98,6 +99,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 break;
         }
 
+    }
+    /**
+     * Event sent by the control system indication what the status of the control
+     * system is.
+     * @param ControlSystemStatusEvent
+     */
+    public void receive(ControlSystemStatusEvent e) {
+        logger.info("SCHEDULING: Received Control System's status event.");
     }
 
     /**
