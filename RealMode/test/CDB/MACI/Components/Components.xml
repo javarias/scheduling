@@ -26,7 +26,7 @@
       
       <_ Name="ArrayController1"
                              Code="alma.Control.arrayInterfaces.ArrayControllerHelper"
-                             Type="IDL:alma/Control/:1.0"
+                             Type="IDL:alma/Control/ArrayController:1.0"
                              Container="frodoContainer"/>            
       <_ Name="GETTELCALRESULTS1"
                              Code="GetTelCalResults"
@@ -46,4 +46,8 @@
                             Type="IDL:alma/FRIDGE/FridgeControl:1.0"		
                             Container="bilboContainer"/>
 
+      <_ Name="OBS_PROJ_REP"
+                             Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
+                             Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
+                             Container="frodoContainer"/>
 </Components>
