@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R2.
  * 
- * @version Version 1.40 July 21, 2004
+ * @version $Id: R2aPolicy.java,v 1.3 2004/11/23 21:22:07 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R2aPolicy extends PolicyType {

@@ -90,7 +90,7 @@ block with the highest final score is selected for execution, provided that
 score is greater than zero. 
 
  * 
- * @version Version 1.40 Jun 9, 2004
+ * @version $Id: R1Policy.java,v 1.3 2004/11/23 21:22:07 sslucero Exp $
  * @author Allen Farris
  */
 class R1Policy extends PolicyType {

@@ -103,7 +103,7 @@ import alma.scheduling.Define.BestSB;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version Version 1.40 Jun 9, 2004
+ * @version $Id: InteractiveScheduler.java,v 1.2 2004/11/23 21:22:31 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {

@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version 1.10 March 4, 2004
+ * @version $Id: DynamicScheduler.java,v 1.4 2004/11/23 21:22:31 sslucero Exp $
  * @author Allen Farris
  *
  */

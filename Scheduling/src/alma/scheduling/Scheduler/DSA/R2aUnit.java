@@ -35,7 +35,7 @@ import java.text.NumberFormat;
 /**
  * The R2aUnit class is used by the R2aPolicy class.
  * 
- * @version Version 1.40 Jun 9, 2004
+ * @version $Id: R2aUnit.java,v 1.4 2004/11/23 21:22:07 sslucero Exp $
  * @author Allen Farris
  */
 class R2aUnit extends SchedulingUnit {

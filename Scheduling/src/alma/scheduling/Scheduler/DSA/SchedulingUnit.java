@@ -34,7 +34,7 @@ package alma.scheduling.Scheduler.DSA;
  * times) and the various factors that are computed whenever the 
  * policy computes the score, rank, and success factors. 
  * 
- * @version Version 1.40 Jun 9, 2004
+ * @version $Id: SchedulingUnit.java,v 1.3 2004/11/23 21:22:07 sslucero Exp $
  * @author Allen Farris
  */
 abstract class SchedulingUnit {

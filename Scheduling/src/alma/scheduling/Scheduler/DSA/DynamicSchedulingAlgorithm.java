@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * So, there is a good deal of thinking to be done on how to do this.
  * For now, the second method is not implemented.
  * 
- * @version 1.00  Sep 26, 2003
+ * @version $Id: DynamicSchedulingAlgorithm.java,v 1.3 2004/11/23 21:22:07 sslucero Exp $
  * @author Allen Farris
  */
 public class DynamicSchedulingAlgorithm {

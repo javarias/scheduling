@@ -35,7 +35,7 @@ import java.text.NumberFormat;
 /**
  * The R1Unit class is used by the R1Policy class.
  * 
- * @version Version 1.40 Jun 9, 2004
+ * @version $Id: R1Unit.java,v 1.4 2004/11/23 21:22:07 sslucero Exp $
  * @author Allen Farris
  */
 class R1Unit extends SchedulingUnit {

@@ -107,7 +107,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version 1.10  Feb. 18, 2004
+ * @version $Id: SchedulerConfiguration.java,v 1.5 2004/11/23 21:22:31 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
