@@ -36,6 +36,7 @@ import alma.scheduling.define.STime;
 import alma.scheduling.master_scheduler.*;
 import alma.scheduling.project_manager.PIProxy;
 import alma.scheduling.receivers.SchedulerEventReceiver;
+//import alma.scheduling.
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -79,6 +80,9 @@ public class Scheduler implements Runnable {
     private GUIController controller;
     
     private SchedulerEventReceiver schedEventReceiver; //rename this oneday
+    
+    public Scheduler (SchedulerConfiguration config) {
+    }
     
     public Scheduler(boolean isSimulation, 
                       ContainerServices c, 
