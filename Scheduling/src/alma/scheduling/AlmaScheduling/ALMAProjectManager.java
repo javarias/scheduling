@@ -52,13 +52,13 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 import alma.entities.commonentity.EntityRefT;
-import alma.entity.xmlbinding.execblock.*;
+//import alma.entity.xmlbinding.execblock.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.25 2005/02/11 15:11:29 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.26 2005/02/16 21:25:33 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services

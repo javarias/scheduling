@@ -30,7 +30,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproposal.*;
 import alma.entity.xmlbinding.schedblock.*;
-import alma.entity.xmlbinding.execblock.*;
+//import alma.entity.xmlbinding.execblock.*;
 import alma.entity.xmlbinding.valuetypes.StatusT;//hso
 import alma.entity.xmlbinding.valuetypes.TimeT;
 import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
@@ -88,7 +88,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.13 2005/01/19 19:14:43 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.14 2005/02/16 21:25:33 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -666,17 +666,17 @@ public class ProjectUtil {
         
         //Sohaila: modified coz of errors.
         SpectralSpecT setup;
-		if (targetList[0].getSpectralSpecCount() < 1){
+		//if (targetList[0].getSpectralSpecCount() < 1){
 		//	throw new SchedulingException("There is no SpectralSpec object in the scheduling block with id " + 
 		//			sb.getSchedBlockId());
             
-            SpectralSpecT[] setups = new SpectralSpecT[1];
-            setup = new SpectralSpecT();
-            setups[0] = setup;
-            targetList[0].setSpectralSpec(setups);
-        } else {
-    		setup = targetList[0].getSpectralSpec(0);
-        }
+        //    SpectralSpecT[] setups = new SpectralSpecT[1];
+        //    setup = new SpectralSpecT();
+        //    setups[0] = setup;
+        //    targetList[0].setSpectralSpec(setups);
+        //} else {
+    		setup = targetList[0].getSpectralSpec();
+        //}
         //////
 		alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
 		if (freqSetup == null) {

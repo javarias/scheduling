@@ -60,7 +60,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.33 2005/02/03 23:31:41 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.34 2005/02/16 21:25:33 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -731,17 +731,17 @@ public class ALMAArchive implements Archive {
             }
             switch(ce.getStatus()) {
                 case 0://exec block status = processing
-                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.RUNNING);
+                    //ouc.setSchedStatus(ObsUnitControlTSchedStatusType.RUNNING);
                     //sb.setRunning();
                     break;
                 case 1: //exec block status = ok
-                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.COMPLETED);
+                    //ouc.setSchedStatus(ObsUnitControlTSchedStatusType.COMPLETED);
                     break;
                 case 2://exec block status = failed
-                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.ABORTED);
+                    //ouc.setSchedStatus(ObsUnitControlTSchedStatusType.ABORTED);
                     break;
                 case 3://exec block status = timeout
-                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.ABORTED);
+                    //ouc.setSchedStatus(ObsUnitControlTSchedStatusType.ABORTED);
                     break;
                 default://exec block status kooky.. 
                     break;
