@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<EntitybuilderSettings>
+
+    <EntitySchema schemaName="PipelineProcessingRequest.xsd" xmlNamespace="Alma/Scheduling/PipelineProcessingRequest"/>
+    <EntitySchema schemaName="SchedulingInfo.xsd" xmlNamespace="Alma/Scheduling/SchedulingInfo"/>
+    <EntitySchema schemaName="SchedulingPolicy.xsd" xmlNamespace="Alma/Scheduling/SchedulingPolicy"/>
+    
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/PipelineProcessingRequest" jPackage="alma.entity.xmlbinding.pipelineprocessingrequest"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/SchedulingInfo" jPackage="alma.entity.xmlbinding.schedulinginfo"/>
+    <XmlNamespace2JPackage xmlNamespace="Alma/Scheduling/SchedulingPolicy" jPackage="alma.entity.xmlbinding.schedulingpolicy"/>
+    
+</EntitybuilderSettings>

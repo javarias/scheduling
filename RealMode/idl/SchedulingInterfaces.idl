@@ -80,7 +80,7 @@ module scheduling {
 	interface Executive_to_Scheduling {
 
 		// Begin scheduling with the specified scheduling policy.
-		void startScheduling (in SchedulingPolicy schedulingPolicy) raises (InvalidOperation);
+		void startScheduling (in SchedulingPolicy schedPolicy) raises (InvalidOperation);
 	
 		// Stop all scheduling.
 		void stopScheduling () raises (InvalidOperation);
@@ -163,22 +163,22 @@ module scheduling {
 		SubarrayId createSubarray (in AntennaIdSeq antennaIdList, in string schedulingMode) raises (InvalidOperation); 
 
 		// De-allocate a sub-array.
-		//	subarrayId	the identifier of the sub-array to be de-allocated
-		void destroySubarray (in SubarrayId subarrayId) raises (InvalidOperation);
+		//	subId		the identifier of the sub-array to be de-allocated
+		void destroySubarray (in SubarrayId subId) raises (InvalidOperation);
 
 		// Execute a project on a particular sub-array
 		//	projectId	the identifier of the project to be executed
-		//	subarrayId	the sub-array on which the project is to 
+		//	subId		the sub-array on which the project is to 
 		//				be executed
-		void executeProject (in EntityId projectId, in SubarrayId subarrayId) raises (InvalidOperation);
+		void executeProject (in EntityId projectId, in SubarrayId subId) raises (InvalidOperation);
 
 		// Execute a scheduling block on a particular sub-array.
 		//	sbId		the identifier of the scheduling block to be 
 		//				executed
-		//	subarrayId	the sub-array on which the SB is to be executed
+		//	subId		the sub-array on which the SB is to be executed
 		//	when		the time at which the scheduling block is to be
 		//			executed
-		void executeSB (in EntityId sbId, in SubarrayId subarrayId, in Time when);
+		void executeSB (in EntityId sbId, in SubarrayId subId, in Time when);
 
 		// Stop a scheduling block.
 		//	sbId		the identifier of the scheduling block to be 
@@ -186,20 +186,20 @@ module scheduling {
 		void stopSB (in EntityId sbId) raises (InvalidOperation, NoSuchSB);
 
 		// Pause all active scheduling on a particular sub-array.
-		//	subarrayId	the sub-array on which scheduling is to be stopped
-		void pauseScheduling (in SubarrayId subarrayId) raises (InvalidOperation);
+		//	subId		the sub-array on which scheduling is to be stopped
+		void pauseScheduling (in SubarrayId subId) raises (InvalidOperation);
 
 		// Resume active scheduling on a particular sub-array.
-		//	subarrayId	the sub-array on which scheduling is to be resumed
-		void resumeScheduling (in SubarrayId subarrayId) raises (InvalidOperation);
+		//	subId		the sub-array on which scheduling is to be resumed
+		void resumeScheduling (in SubarrayId subId) raises (InvalidOperation);
 
 		// Place an antenna in manual mode.
-		//	antennaId	the antenna id that is to be placed in manual mode
-		void manualMode (in AntennaId antennaId) raises (InvalidOperation);
+		//	antId		the antenna id that is to be placed in manual mode
+		void manualMode (in AntennaId antId) raises (InvalidOperation);
 
 		// Make an antenna available for active mode.
-		//	antennaId	the antenna id that is available for active mode
-		void activeMode (in AntennaId antennaId) raises (InvalidOperation);
+		//	antId		the antenna id that is available for active mode
+		void activeMode (in AntennaId antId) raises (InvalidOperation);
 	};
 
 	// ICD 5.1 Published when nothing can be scheduled under current conditions.
