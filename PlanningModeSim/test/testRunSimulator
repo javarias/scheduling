@@ -1,4 +1,0 @@
-#! /bin/bash
-
-acsStartJava alma.scheduling.planning_mode_sim.test.RunSimulator . input.txt output.txt log.txt
-
