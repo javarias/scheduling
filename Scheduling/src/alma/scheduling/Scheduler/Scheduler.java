@@ -51,18 +51,25 @@ import java.util.logging.Logger;
  */
 public class Scheduler implements Runnable {
 	
+    // All the configuration info needed by this scheduler
     private SchedulerConfiguration config = null;
+    //Initial subarrayId
     private short subarrayId = -1;
-    private Logger log = null;
+    //The logger
+    private Logger logger = null;
+    //The clock for this scheduler
     private Clock clock = null;
+    //The dynamic scheduling algorithm that controls this scheduler
     private DynamicSchedulingAlgorithm dsa = null;
+    //If this scheduler is for Interactive mode this controller is
+    //the controlling object for its GUI.
     private GUIController controller;
     
     public Scheduler(SchedulerConfiguration config) {
     	this.config = config;
     	this.subarrayId = config.getSubarrayId();
     	this.clock = config.getClock();
-    	this.log = config.getLog();
+    	this.logger = config.getLog();
     	// At a minimum, the configuration, clock, and log objects
     	// cannot be null and the subarrayId cannot be negative.
     	if (config == null)
@@ -71,7 +78,7 @@ public class Scheduler implements Runnable {
     	if (subarrayId < 0)
     		throw new IllegalArgumentException(name() + 
                 ": Invalid subarray-id!");
-    	if (log == null)
+    	if (logger == null)
     		throw new IllegalArgumentException(name() + 
                 ": There is no logger!");
     	if (clock == null)
@@ -90,17 +97,27 @@ public class Scheduler implements Runnable {
 			"] (subarray " + subarrayId + ")";
     }
     
+    /**
+     * Once the scheduler thread is started we decide here which
+     * mode to run, Dynamic or Interactive.
+     */
     public void run() {
     	config.setTask(Thread.currentThread());
     	if (config.isDynamic()){ 
-            log.info("SCHEDULING: Running in DYNAMIC mode");
+            logger.info("SCHEDULING: Running in DYNAMIC mode");
     		runDynamic();
     	} else {
-            log.info("SCHEDULING: Running in INTERACTIVE mode");
+            logger.info("SCHEDULING: Running in INTERACTIVE mode");
     		runInteractive();
         }
     }
     
+    /**
+     * If in interactive mode, this method validates the configuration file
+     * for an interactive session.
+     * @return String Returns null if there were no errors. If errors in 
+     *                validating occured the error string would be returned.
+     */
     private String validateInteractiveConfig() {
     	DateTime t = config.getCommandedEndTime();
     	if (t == null || t.isNull())
@@ -118,6 +135,9 @@ public class Scheduler implements Runnable {
     	return null;
     }
     
+    /**
+     * Starts the interactive GUI by initializing the GUI's Controller.
+     */
     public void runInteractive() {
     	System.out.println(name() + " is running in interactive mode!");
         controller = new GUIController(config);
@@ -138,6 +158,12 @@ public class Scheduler implements Runnable {
         //    clock.getDateTime());
     }
     
+    /**
+     * If in dynamic mode, this method validates the configuration file
+     * for an dynamic session.
+     * @return String Returns null if there were no errors. If errors in 
+     *                validating occured the error string would be returned.
+     */
     private String validateDynamicConfig() {
     	if (config.getControl() == null)
     		return name() + ": There is no control component.";
@@ -164,6 +190,9 @@ public class Scheduler implements Runnable {
     	return null;
     }
     
+    /**
+     * Not yet implemented.. 
+     */
     private void checkRunning() {
     	// TODO Check to see if anything is running and, if so, stop it.
     }
@@ -179,31 +208,31 @@ public class Scheduler implements Runnable {
     	String msg = validateDynamicConfig();
     	if (msg != null) {
     		config.errorEnd(msg,clock.getDateTime());
-    		log.severe("SCHEDULING: "+name() + ": Configuraton error! " + msg);
+    		logger.severe("SCHEDULING: "+name() + ": Configuraton error! " + msg);
     		return;
     	}
-    	log.info("SCHEDULING: "+name() + ": Configuration object validated.");
+    	logger.info("SCHEDULING: "+name() + ": Configuration object validated.");
     	
     	// Create the dynamic scheduling algorithm object.
     	try {
     		dsa = new DynamicSchedulingAlgorithm(
     				subarrayId, config.getPolicy(), config.getQueue(), clock,
-					config.getTelescope(), config.getProjectManager(), log, 
+					config.getTelescope(), config.getProjectManager(), logger, 
                     config.getBestNumber());
                     
     	} catch (SchedulingException err) {
     		config.errorEnd(err.toString(),clock.getDateTime());
-    		log.severe("SCHEDULING: "+name() + ": Error creating dynamic scheduling "+
+    		logger.severe("SCHEDULING: "+name() + ": Error creating dynamic scheduling "+
                 "algorithm ! " + err.toString());
     		return;
     	}
-    	log.info("SCHEDULING: "+name() + ": Dynamic scheduling algorithm created.");
+    	logger.info("SCHEDULING: "+name() + ": Dynamic scheduling algorithm created.");
     	
     	// Set the start and end times.  (The ending time may be null.)
     	DateTime start = clock.getDateTime();
     	DateTime end = config.getCommandedEndTime();
     	config.start(start,end);
-    	log.info("SCHEDULING: "+name() + ": Started " + start);
+    	logger.info("SCHEDULING: "+name() + ": Started " + start);
     	
     	// Go into the major run-time loop.
     	// We'll need the following variables in the loop.
@@ -216,7 +245,7 @@ public class Scheduler implements Runnable {
     		// 1. Check to see if the master scheduler told us to stop.
     		if (config.isStopFlag()) {
     			checkRunning();
-    			log.info("SCHEDULING: "+name() + ": Stopping because stop flag is set.");
+    			logger.info("SCHEDULING: "+name() + ": Stopping because stop flag is set.");
     			break;
     		}
     		
@@ -226,7 +255,7 @@ public class Scheduler implements Runnable {
     			now = clock.getDateTime();
     			if (now.ge(end)) {
     				checkRunning();
-    				log.info("SCHEDULING: "+name() + ": Stopping because we are at the end "+
+    				logger.info("SCHEDULING: "+name() + ": Stopping because we are at the end "+
                         "of the scheduling period.");
 					break;
     			}
@@ -235,9 +264,9 @@ public class Scheduler implements Runnable {
     		// 3. Check to see if there are any scheduling units in the queue.
     		if (config.getQueue().size() == 0) {
     			checkRunning();
-    			log.info("SCHEDULING: "+name() + ": Stopping because there are no more "+
+    			logger.info("SCHEDULING: "+name() + ": Stopping because there are no more "+
                     "scheduling units.");
-                log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in scheduler.");
+                logger.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in scheduler.");
                 config.getSchedulingPublisher().publish("No more SBs to schedule");
 
                 //NothingCanBeScheduled.NoResources
@@ -256,7 +285,7 @@ public class Scheduler implements Runnable {
                     }
     			}
     		} catch (SchedulingException err) {
-    			log.severe("SCHEDULING: "+err.toString());
+    			logger.severe("SCHEDULING: "+err.toString());
     			config.errorEnd(err.toString(),clock.getDateTime());
     			return;
     		}
@@ -278,7 +307,7 @@ public class Scheduler implements Runnable {
     	System.out.println(name() + " started " + config.getActualStartTime());
     	System.out.println(name() + " ended " + config.getActualEndTime());
     }
-   int number=0; 
+
     /**
      * Perform the required actions in synchronous mode.
      * @return true if we are stopping this thread; otherwise return false 
@@ -286,7 +315,6 @@ public class Scheduler implements Runnable {
      * @throws SchedulingException
      */
     private boolean synchronousMode() throws SchedulingException {
-        //System.out.println(number++);
     	DateTime now = clock.getDateTime();
     	
     	// Get the best list from the dsa.
@@ -295,12 +323,12 @@ public class Scheduler implements Runnable {
     	
     	if (best == null) {
     		// There will be no best list if there is nothing left to schedule.
-            log.info("SCHEDULING: "+name()+" nothing left to schedule. BestSB == null");
+            logger.info("SCHEDULING: "+name()+" nothing left to schedule. BestSB == null");
     		return true;
     	}
     	
     	// Log the best list.
-    	log.info("SCHEDULING: "+name() + ": " + best.toString());
+    	logger.info("SCHEDULING: "+name() + ": " + best.toString());
         // create a message to correspond to this selectSB request
         Message m = new Message();
         // Submit the list to the operator to get the id of the best SB from 
@@ -318,17 +346,17 @@ public class Scheduler implements Runnable {
     		case SchedulerConfiguration.STOP:
     			return true;
     		case SchedulerConfiguration.FILLER:
-    			log.severe("SCHEDULING: "+name() + ": Invalid action response! Fillers "+
+    			logger.severe("SCHEDULING: "+name() + ": Invalid action response! Fillers "+
                     "cannot run in synchronous mode.");
     			throw new SchedulingException("Invalid action response! "+
                     "Fillers cannot run in synchronous mode.");
     		case SchedulerConfiguration.SB:
-    			log.severe("SCHEDULING: "+name() + ": Invalid action response! SBs cannot "+
+    			logger.severe("SCHEDULING: "+name() + ": Invalid action response! SBs cannot "+
                     "run at this time.");
     			throw new SchedulingException("Invalid action response! SBs "+
                     "cannot run at this time.");
     		default:
-    			log.severe("SCHEDULING: "+name() + ": Invalid action parameter! (" 
+    			logger.severe("SCHEDULING: "+name() + ": Invalid action parameter! (" 
                     + config.getAction() + ")"); 
     			throw new SchedulingException("Invalid action parameter! (" 
                     + config.getAction() + ")"); 
@@ -340,7 +368,7 @@ public class Scheduler implements Runnable {
             selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
     		//config.getOperator().selectSB(best);
     		// ... and execute the selected scheduling unit.
-    		log.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
+    		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
             short[] idleantennas = config.getControl().getIdleAntennas();
             short subarrayid = config.getControl().createSubarray(idleantennas);
     		config.getControl().execSB(subarrayid,best);
@@ -351,6 +379,12 @@ public class Scheduler implements Runnable {
     	return false;
     }
     
+    /**
+     * Perform the required actions in asynchronous mode.
+     * Not implemented yet so a SchedulingException is always thrown!
+     *
+     * @throws SchedulingException
+     */
     private boolean asynchronousMode() throws SchedulingException {
     	throw new SchedulingException(name() + ": The asycronous mode is not "+
             "implemented at this time!");    	
