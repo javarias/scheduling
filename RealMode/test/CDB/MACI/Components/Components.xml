@@ -32,9 +32,9 @@
                              Type="IDL:alma/Control/ArrayController:1.0"
                              Container="frodoContainer"/>            
       <_ Name="GETTELCALRESULTS1"
-                             Code="GetTelCalResults"
+                             Code="alma.TelCalPublisher.GetTelCalResultsImpl.GetTelCalResultsHelper"
                              Type="IDL:alma/TelCalPublisher/GetTelCalResults:1.0"
-                             Container="bilboContainer"/>
+                             Container="frodoContainer"/>
       <_ Name="TELCAL_SENT_NC_1"
                             Code="ReceivingDataManager"
                             Type="IDL:alma/TelCalReceivedNC/ReceivingDataManager:1.0"
