@@ -1,0 +1,17 @@
+FINE: ready to talk with components!
+FINE: component MASTER_SCHEDULER retrieved successfully.
+FINE: SCHED_TEST: MS Component created
+SCHED_TEST: sup1 created
+SCHED_TEST: sup2 created
+INFO: SCHED_TEST: About to call startScheduling
+FINE: SCHED_TEST: MasterScheduler startScheduling called.
+FINE: SCHED_TEST: Scheduling started
+Got scheduling channel
+INFO: client 'alma.acs.component.client.ComponentClient' attempts to retrieve component 'MASTER_SCHEDULER' more than once; will return existing reference.
+SCHED_TEST: SchedConsumer created
+SCHED_TEST: Published TelCalEvents
+INFO: SCHED_TEST: MasterScheduler's status = executing!
+Got scheduling channel
+INFO: client 'alma.acs.component.client.ComponentClient' attempts to retrieve component 'MASTER_SCHEDULER' more than once; will return existing reference.
+SCHED_TEST: SchedConsumer created
+INFO: SCHED_TEST: About to call stopScheduling

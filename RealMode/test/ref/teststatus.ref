@@ -1,0 +1,13 @@
+SCHEDULING: state is waiting
+SCHEDULING: state is ready
+SCHEDULING: state is running
+SCHEDULING: is state running? true
+SCHEDULING: is state complete? false
+SCHEDULING: state is complete
+SCHEDULING: is state RUNNING? false
+SCHEDULING: is state COMPLETE? true
+SCHEDULING: state is aborted
+SCHEDULING: state is ready
+SCHEDULING: state is waiting
+SCHEDULING: java.lang.UnsupportedOperationException: Cannot change the state of a constant object.
+SCHEDULING: state is waiting

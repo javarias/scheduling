@@ -1,0 +1,24 @@
+SCHED_TEST: function MessageQueue()
+SCHEDULING: Message queue created
+SCHED_TEST: function Message()
+SCHED_TEST: function MessageQueue.addMessage(Message m)
+SCHED_TEST: Should get error coz it has no entity!
+SCHED_TEST: java.lang.Exception: Cannot add a message that has no id!
+SCHED_TEST: function Message(id, thread)
+SCHED_TEST: function MessageQueue.addMessage(Message m) no error
+SCHED_TEST: function MessageQueue.addMessage(String id, Thread timer)
+SCHED_TEST: function MessageQueue.getMessage(id)
+SCHED_TEST: Message = Reply=null MessageId=tmp id 2
+SCHED_TEST: function MessageQueue.size()
+SCHED_TEST: size=2
+SCHED_TEST: function MessageQueue.removeMessage(id)
+SCHED_TEST: function Message.setReply()
+SCHED_TEST: function Message.setThread()
+SCHED_TEST: Message.getMessageEntity()
+SCHED_TEST: got entity
+SCHED_TEST: Message.getMessageId()
+SCHED_TEST: id = tmp id 2
+SCHED_TEST: function Message.getReply()
+SCHED_TEST: reply = reply 1
+SCHED_TEST: fundtion Message.getThread()
+SCHED_TEST: got thread 
