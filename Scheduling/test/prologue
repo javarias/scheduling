@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #Set my CDB
-ACS_CDB=.
+ACS_CDB=`pwd`
 
 #Start ACS & the Manager
 acsStart >& sched_acsStart.log

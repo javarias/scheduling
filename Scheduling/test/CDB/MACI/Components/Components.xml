@@ -29,23 +29,23 @@
 
       <!-- ********* COMPONENTS *********** -->                
 
-      <_ Name="SCHEDULINGMASTERCOMPONENT"
+      <_ Name="SCHEDULING_MASTER_COMP"
             Code="alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper"
             Type="IDL:alma/ACS/MasterComponent:1.0"
             Container="java"/>
 
-      <_ Name="MasterScheduler"
+      <_ Name="SCHEDULING_MASTERSCHEDULER"
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/scheduling/MasterSchedulerIF:1.0"
             Container="python" 
             Default="true" />
 
-      <_ Name="ControlSystem1" 
+      <_ Name="CONTROL_ControlSystem1" 
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/Control/ControlSystem:1.0"
             Container="python" />
             
-      <_ Name="ArrayController1" 
+      <_ Name="CONTROL_ArrayController1" 
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/Control/ArrayController:1.0"
             Container="python"/>
@@ -56,7 +56,7 @@
             Container="python"
             Default="true"/>
 
-      <_ Name="OPERATIONAL"
+      <_ Name="ARCHIVE_OPERATIONAL"
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/xmlstore/Operational:1.0"
             Container="python"
