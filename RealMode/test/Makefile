@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.17 2003/12/23 18:41:32 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.18 2003/12/23 19:06:10 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -57,15 +57,15 @@ schedulingTest_EXTRAS =
 # ----------------------------
 SCRIPTS         = 
 SCRIPTS_L       = prologue \
-                   testschedsystem teststime teststatus \
-                   testalmaarchive testtimeinterval \
+                   teststime teststatus \
+                   testtimeinterval \
                    testschedmessages testweathercondition \
-                   testschedreceivers testcomponentstate \
+                   testcomponentstate \
                    testpipelinestatus testppr \
                    testsbsubqueue \
                    testpriority \
                   epilogue
-
+#testschedsystem testschedreceivers testalmaarchive 
 #>>>>> END OF standard rules
 
 #
