@@ -88,7 +88,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.15 2005/02/28 17:09:59 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.16 2005/02/28 19:12:38 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -533,7 +533,6 @@ public class ProjectUtil {
 		
         if(set.getEntityPartId() == null) {
             set.setEntityPartId(genPartId());
-            System.out.println("Program ID = "+set.getEntityPartId());
         }
 		Program program = new Program (set.getEntityPartId());
         System.out.println("Program ID = "+program.getId());

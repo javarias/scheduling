@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.28 2005/02/28 17:52:46 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.29 2005/02/28 19:12:38 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -338,7 +338,24 @@ public class ALMAProjectManager extends ProjectManager {
     /**
       * Updates the observng session information.
       */
-    public void updateObservedSession(){
+    public void updateObservedSession(Project p, ProjectStatus ps, String sessionId, String endTime){
+        logger.info("SCHEDULING: updating session with end time.");
+        try {
+            ObservedSession[] allSes = p.getProgram().getAllSession();
+            ObservedSession ses=null;
+            for(int i=0; i < allSes.length; i++){
+                if(allSes[i].getSessionId() == sessionId){
+                    ses = allSes[i];
+                    ses.setEndTime(new DateTime(endTime));
+                }
+            }
+            ps = ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
+            psQueue.updateProjectStatus(ps);
+            archive.updateProjectStatus(ps);
+        } catch(Exception e){
+            logger.severe("SCHEDULING: error updating PS with session");
+            e.printStackTrace();
+        }
     }
 
 
@@ -356,11 +373,7 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("SCHEDULING: Session id == "+session.getSessionId());
         try {
             long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
-            logger.info("SCHEDULING: "+time+", "+session.getSessionId()+", "+session.getProgram().getId()+", "+
-                    sbid+", "+eb.getId()+"."); 
-            StartSessionEvent start_event = // new StartSessionEvent(0L, "a", "b", "c", "d");
-
-                new StartSessionEvent(
+            StartSessionEvent start_event = new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                     session.getSessionId(),
                     session.getProgram().getId(),
@@ -380,10 +393,12 @@ public class ALMAProjectManager extends ProjectManager {
     }
     */
     public void sendEndSessionEvent(ExecBlock eb) {
+        String endTime = (new DateTime(System.currentTimeMillis())).toString();
         String execid = eb.getExecId();
         String sbid = ((SB)eb.getParent()).getId();
         SB sb = sbQueue.get(sbid);
-        String projectid = ((Project)sb.getProject()).getId();
+        Project proj = (Project)sb.getProject();
+        String projectid = proj.getId();
         ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
         SessionT[] sessions = obsProgram.getSession();
@@ -397,9 +412,11 @@ public class ALMAProjectManager extends ProjectManager {
                 if(execblocks[j].getExecBlockId().equals(execid)){
                     logger.info("SCHEDULING: session found!");
                     session = sessions[i];
+                    session.setEndTime(endTime);
                     logger.info("SCHEDULING: sbid = " +sbid);
                     logger.info("SCHEDULING: session part id = "+session.getEntityPartId());
                     sessionEnd(session.getEntityPartId(), sbid);
+                    updateObservedSession(proj, ps, session.getEntityPartId(), endTime);
                     try {
                         EndSessionEvent end_event = new EndSessionEvent(
                                 UTCUtility.utcJavaToOmg(System.currentTimeMillis()),

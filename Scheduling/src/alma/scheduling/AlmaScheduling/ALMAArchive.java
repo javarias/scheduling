@@ -60,7 +60,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.35 2005/02/24 14:53:24 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.36 2005/02/28 19:12:38 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -337,7 +337,7 @@ public class ALMAArchive implements Archive {
     /**
       *
       */
-    public void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
+    public synchronized void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
         try {
             XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
             logger.info("SCHEDULING: updated PS: "+xml.xmlString);
