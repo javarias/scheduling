@@ -43,7 +43,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.14 2005/02/02 22:12:59 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.15 2005/02/02 22:26:16 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -101,7 +101,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    m_containerServices.getComponent("MasterScheduler"));
+                    m_containerServices.getComponent("SCHEDULING_MASTERSCHEDULER"));
             }
         } catch (ContainerException e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass2.");
@@ -132,7 +132,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: shutDownSubsysPass1() method called");
         try {
             if(masterScheduler != null) {
-                m_containerServices.releaseComponent("MasterScheduler");
+                m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
                 masterScheduler = null;
             }
         } catch(Exception e) {
@@ -156,7 +156,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: shutDownSubsysPass2() method called");
         try {
             if(masterScheduler != null) {
-                m_containerServices.releaseComponent("MasterScheduler");
+                m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
                 masterScheduler = null;
             }
         } catch(Exception e) {
