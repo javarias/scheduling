@@ -59,14 +59,11 @@ import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicyEntityT;
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequestEntityT;
 
-import ALMA.TelCalPublisher.PublishTelCalEvents;
-import ALMA.TelCalPublisher.PublishTelCalEventsHelper;
-
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
 
 /**
- *  Test for R0+, Passing around a scheduling block!
+ *  R1 Test! 
  *  @author Sohaila Roberts
  */
 public class SchedSystemTest {
@@ -78,7 +75,6 @@ public class SchedSystemTest {
     private SchedBlock[] sbs;
     private Logger logger;
     private TestSchedConsumer consumer;
-    private PublishTelCalEvents telcalComp;
     
     public SchedSystemTest(ContainerServices cs) {
         this.containerServices = cs;
@@ -122,7 +118,6 @@ public class SchedSystemTest {
         }
         logger.fine("SCHED_TEST: Scheduling started"); 
         //testNothingToSchedule();
-        //testTelCalEvents();
     }
 
     public void testNothingToSchedule() {
@@ -134,22 +129,6 @@ public class SchedSystemTest {
         } catch(Exception e) {
             consumer.disconnect();
             alma.acs.nc.Helper.disconnect();
-        }
-    }
-
-    public void testTelCalEvents() {
-        try{
-            telcalComp = ALMA.TelCalPublisher.PublishTelCalEventsHelper.narrow(
-                containerServices.getComponent("PUBLISHTELCALEVENTS1"));
-            logger.info("SCHED_TEST: TelCal Component Created!");
-
-            telcalComp.raisePointingScanReducedEvent("TestingPointing",1,2,3);
-            telcalComp.raiseFocusScanReducedEvent("TestingFocus",1,2,3);
-            
-        } catch (ContainerException e) {
-            logger.severe("SCHED_TEST: "+e.toString());
-        } catch(ALMA.ACSErr.ACSException e) {
-            logger.severe("SCHED_TEST: "+e.toString());
         }
     }
 
@@ -174,30 +153,37 @@ public class SchedSystemTest {
     public void release() {
         logger.info("SCHED_TEST: About to release components");
         containerServices.releaseComponent("MASTER_SCHEDULER");
-        containerServices.releaseComponent("PUBLISHTELCALEVENTS1");
+        //containerServices.releaseComponent("PUBLISHTELCALEVENTS1");
     }
 
 
     public static void main(String[] args) {
         try {
-            String name = "Test7";
+            String name = "Scheduling Subsystem Test";
             String managerLoc = System.getProperty("ACS.manager");
             ComponentClient client = new ComponentClient(null, managerLoc, name);
             ContainerServices cs = client.getContainerServices();
             
             SchedSystemTest test = new SchedSystemTest(cs);
             
+            TestSchedSupplier telcal_events = new TestSchedSupplier();
+
             test.testStartScheduling();
 
             test.testNothingToSchedule();
 
-            test.testTelCalEvents();
+            //Publish the telcalevents!
+            telcal_events.sendTelCalEvents();
             
             Thread.sleep(1000*90);
             
             test.testGetStatus();
             
+            test.testNothingToSchedule();
+
             test.testStopScheduling();
+            
+            telcal_events.disconnect(); 
 
             test.release();
         } catch(Exception e) {

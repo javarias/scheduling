@@ -1,0 +1,21 @@
+#! /bin/bash
+
+# Run test
+#echo " Starting Activator"
+#maciActivate Activator &
+#sleep 10
+
+#echo " Starting Container"
+#acsStartContainer hugoActivator >& sched_hugoActivator.log &
+#sleep 20
+
+#echo " Running almaOTBatchMode"
+almaOTBatchMode.sh targets.txt  >&  sched_almaOT.log
+#sleep 20
+
+#echo " Running test"
+abeansStart -endorsed ALMA.scheduling.test.SchedSystemTest
+
+#maciActivatorShutdown Activator >& /dev/null
+#acsStopContainer hugoActivator >&  /dev/null
+

@@ -1,0 +1,5 @@
+#! /bin/bash
+
+abeansStart -endorsed ALMA.scheduling.define.Status
+
+

@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.14 2003/08/28 20:00:31 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.15 2003/09/17 14:32:10 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -57,11 +57,14 @@ schedulingTest_EXTRAS =
 # ----------------------------
 SCRIPTS         = 
 SCRIPTS_L       = prologue \
-                   TestDriver \
+                   testschedsystem teststime teststatus \
+                   testalmaarchive testtimeinterval \
+                   testschedmessages testweathercondition \
+                   testschedreceivers testcomponentstate \
+                   testpipelinestatus  \
+                   testsbsubqueue \
+                   testpriority \
                   epilogue
-#                  testscript1 testscript2 testscript3 \
-#                  testscript4 testscript5 testscript6 \
-#                  testscript7 testscript8 testscript9 
 
 #>>>>> END OF standard rules
 
@@ -89,7 +92,7 @@ endif
 # -------
 
 all:	do_all
-	@cp -f ref/ECCS/*.ref .
+#	@cp -f ref/ECCS/*.ref .
 	@echo " . . . 'all' done" 
 
 clean : clean_all 
