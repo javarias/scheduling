@@ -6,14 +6,14 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.8 2005/01/25 18:38:00 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.9 2005/02/28 19:42:11 sslucero Exp $"
 
 Documents:
 
 
 Configuration Requirements:
-    - ACS-4.0.1
-    - MicroArchive that was released with ACS-4.0.1
+    - ACS-4.0.2
+    - MicroArchive that was released with ACS
     - All other subsystems that are installed before scheduling in the build 
       process must be installed.
     - A full ALMA-CDB  must be present.Especially needed are 
@@ -26,12 +26,12 @@ Configuration Requirements:
     
 Scheduling's CDB requirements:
     * Components.xml
-      <_ Name="SCHEDULINGMASTERCOMPONENT"
+      <_ Name="SCHEDULING_MASTER_COMP"
             Code="alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper"
             Type="IDL:alma/ACS/MasterComponent:1.0"
             Container="java"/>
 
-      <_ Name="MasterScheduler"
+      <_ Name="SCHEDULING_MASTERSCHEDULER"
             Code="alma.scheduling.AlmaScheduling.MasterSchedulerIFHelper"
             Type="IDL:alma/scheduling/MasterSchedulerIF:1.0"
             Container="java" 
@@ -87,10 +87,13 @@ Cost:
 
 
 Changes:
-   Big Changes:
+    - Name changes for channel names and CDB stuff required by ITS
+    - Now sending pipeline the PPR xml string in ProcessRequest
+
+    Old:
    	- PlanningModeSim and RealMode modules have been merged into one, Scheduling. 
     - Updated CDB
-
+    
 
    New Structure
    
@@ -111,5 +114,6 @@ Changes:
      - ExecBlockEvent problem found in R1.1 integration has been corrected for
        future integrations
 
-     - 
+     - Problem with the StartSesion and EndSession events. Parameter was null, which corba didn't like but didnt complain about.
+
                           ___oOo___
