@@ -3,41 +3,52 @@ RELEASE_NOTES
 Module: SCHEDULING 
 
 From: 
-   sohaila
+   Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.3 2004/08/10 16:17:01 sroberts Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.4 2004/08/31 21:06:05 sroberts Exp $"
 
 Documents:
 
 
 Configuration Requirements:
-    - ACS-3.1.1
-    - MicroArchive that was released with ACS-3.1.1
-    - All other subsystems that are installed before scheduling in the build process must be installed.
-  	- CDB that contains all other ALMA subsystems, especially needed are 
+    - ACS-3.1.2
+    - MicroArchive that was released with ACS-3.1.2
+    - All other subsystems that are installed before scheduling in the build 
+      process must be installed.
+    - A full ALMA-CDB  must be present.Especially needed are 
   			OBSPREP
   			CORR
   			CONTROL
   			PIPELINE
   			TELCAL
   			and of course SCHEDULING
+    
+
+
+Tested:
+    - JUnit tests have been written for some of the classes. Alot of the 
+      functionality cannot be tested as it is now without extreme interaction 
+      with other ALMA subsystems. In the future scheduling simulators will be
+      completed to avoid this interaction in testing.
   			  
 
 
-Tests:
-testschedmessages
-testpipelinestatus
-testsbsubqueue
-testpriority
-teststime
-testtimeinterval
-testweathercondition
-teststatus
-testcomponentstate
-testppr
-testprojectqueue
-
+Tests: all run as a suite, AllTests.java
+    Tests include:
+        TestAntenna
+        TestDateTime
+        TestALMAArchive
+        TestALMAControl
+        TestStatus
+        TestTime
+    
+Known problems/bugs:
+    - In interactive scheduling when the observing tool is used (when sb is 
+      added or updated..) problems occur with the acs container. This due to 
+      the way the OT shuts down or something.. killACS seems to be the only way
+      to restart without errors. Problem is still under investigation.
+      
 Cost:
 
 
@@ -45,11 +56,22 @@ Changes:
    Big Changes:
    	- PlanningModeSim and RealMode modules have been merged into one, Scheduling. 
 
+   New Structure
+   
+     - Scheduling now has one module. SCHEDULING/Scheduling
+    
+     
    New Features:
    
-     -
+     - Interactive Scheduling is up and running in a very elementary way.
+     - New entity, Session, has been implemented 
+     - New Events, start session and end session, have been implemented.
+        
      
    Fixed Problems:
 
-     -
+     - ExecBlockEvent problem found in R1.1 integration has been corrected for
+       future integrations
+
+     - 
                           ___oOo___
