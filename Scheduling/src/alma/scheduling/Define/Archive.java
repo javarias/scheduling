@@ -30,31 +30,67 @@ package alma.scheduling.Define;
  * The Archive interface defines the interface to the archive needed
  * by the scheduling subsystem. 
  * 
- * @version $Id: Archive.java,v 1.6 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Archive.java,v 1.7 2004/12/21 21:37:01 sslucero Exp $
  * @author Allen Farris
  */
 public interface Archive {
 	
 	// Project
+    /**
+      * @throws SchedulingException
+      */
 	public Project[] getAllProject() throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public Project[] getNewProject(DateTime time) throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public Project getProject(String id) throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public void updateProject(Project p) throws SchedulingException;
 
 	// Program
+    /**
+      * @throws SchedulingException
+      */
 	public Program getProgram(String id) throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public void updateProgram(Program s) throws SchedulingException;
 
 	// SB
+    /**
+      * @throws SchedulingException
+      */
 	public SB[] getAllSB() throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public SB[] getNewSB(DateTime time) throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public SB getSB(String id) throws SchedulingException;
+    /**
+      * @throws SchedulingException
+      */
 	public void updateSB(SB sb) throws SchedulingException;
 
 	// SchedulingPolicy
+    /**
+      * @throws SchedulingException
+      */
 	public Policy[] getPolicy() throws SchedulingException;
 
     //PipelineProcessingRequest
+    /**
+      *
+      */
     public void storePipelineProcessingRequest(SciPipelineRequest ppr);
     
     //Session

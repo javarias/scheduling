@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.16 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.17 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -92,9 +92,13 @@ public class ALMAMasterScheduler extends MasterScheduler
     //MOVED TO ALMAProjectManager
     //private ALMAPipeline pipeline;
 
+    // receiver for control nc
     private Receiver control_nc;
+    // receiver for telcal nc
     private Receiver telcal_nc;
+    // receiver for pipeline nc
     private Receiver pipeline_nc;
+    // event receiver for all events
     private ALMAReceiveEvent eventreceiver;
     
     /** 
@@ -110,6 +114,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     
     /**
      * From ComponentLifecycle interface
+     * @throws ComponentLifecycleException
      */
     public void initialize(ContainerServices cs) 
         throws ComponentLifecycleException {
@@ -137,6 +142,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     /**
      * From ComponentLifecycle interface
+     * @throws ComponentLifecycleException
      */
     public void execute() throws ComponentLifecycleException {
         //Start the project manager's thread!
@@ -201,6 +207,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
     /**
      * Needed from ACSComponentOperations (MasterSchedulerIFOperations)
+     * @return String
      */
     public String name() {
         return instanceName;
@@ -278,6 +285,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     
     /**
      * Starts scheduling using a specific Scheduling Policy
+     * @param XmlEntityStruct
+     * @throws InvalidOperation
      */
     public void startScheduling(XmlEntityStruct schedulingPolicy) 
         throws InvalidOperation {
@@ -314,6 +323,9 @@ public class ALMAMasterScheduler extends MasterScheduler
         destroySubarray(subarrayId);
     }
 
+    /**
+      * @throws InvalidOperation
+      */
     public void startInteractiveScheduling() throws InvalidOperation {
         Policy s_policy = createPolicy();
         //logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
@@ -348,6 +360,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     
     /**
      * Stops all scheduling
+     * @throws InvalidOperation
      */
     public void stopScheduling() throws InvalidOperation {
         try {
@@ -360,6 +373,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     /**
      * Returns true if the scheduling subsystem is functional.
+     * @return boolean 
      */
     public boolean getStatus() {
         return true;
@@ -367,6 +381,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     /**
      * Returns the schedulingInfo object
+     * @return SchedulingInfo
      */
     public SchedulingInfo getSchedulingInfo() {
         return null;
@@ -374,6 +389,9 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     /**
      * 
+     * @param String
+     * @param String
+     * @throws UnidentifiedResponse
      */
     public void response(String messageId, String reply) 
         throws UnidentifiedResponse {
@@ -402,15 +420,18 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     /**
-     *
-     */
+      * @return SchedulingInfo
+      */
     public SchedulingInfo getSubarrayInfo() {
         return null;
     }
 
     /**
-     *
-     */
+      * @param short[]
+      * @param String
+      * @return short
+      * @throws InvalidOperation
+      */
     public short createSubarray(short[] antennaIdList, String schedulingMode)
         throws InvalidOperation {
         
@@ -426,8 +447,9 @@ public class ALMAMasterScheduler extends MasterScheduler
 
 
     /**
-     *
-     */
+      * @param short
+      * @throws InvalidOperation
+      */
     public void destroySubarray(short subarrayId) throws InvalidOperation {
         try {
             control.destroySubarray(subarrayId);
@@ -437,16 +459,22 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     /**
-     *
-     */
+      * @param String
+      * @param short
+      * @throws InvalidOperation
+      */
     public void executeProject(String projectId, short subarrayId)
         throws InvalidOperation {
     }
 
     /**
-     *
-     */
+      * @param String
+      * @param short
+      * @param String
+      */
     public void executeSB(String sbId, short subarrayId, String when) {
+        logger.info ("SCHEDULING: executing SB "+sbId+" on subarray "
+                +subarrayId+" at time "+when);
     }
 
     /**
@@ -468,20 +496,22 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     /**
-     *
-     */
+      * @param short
+      */
     public void resumeScheduling(short subarrayId) {
     }
 
     /**
-     *
-     */
+      * @param short
+      * @throws InvalidOperation
+      */
     public void manualMode(short antennaId) throws InvalidOperation{
     }
 
     /**
-     *
-     */
+      * @param short
+      * @throws InvalidOperation
+      */
     public void activeMode(short antennaId) throws InvalidOperation {
     }
      

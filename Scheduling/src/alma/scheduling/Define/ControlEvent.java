@@ -33,20 +33,39 @@ package alma.scheduling.Define;
  * it will be created by the Scheduling Subsystem's ControlSimulator.
  *
  * @author Sohaila Lucero
- * @version $Id: ControlEvent.java,v 1.6 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ControlEvent.java,v 1.7 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ControlEvent {
+    /**
+      *
+      */
     private String ebId;
+    /**
+      *
+      */
     private String sbId;
     //private String saId;
+    /**
+      *
+      */
     private short saId;
+    /**
+      *
+      */
     private int eventType;
-    //private String eventType;
+    /**
+      *
+      */
     private int eventStatus;
-    //private String eventStatus;
+    /**
+      *
+      */
     private DateTime startTime;
     
 
+    /**
+      *
+      */
     public ControlEvent(String execblockId, String schedblockId, 
                         short subarrayId, int type, int status, 
                         DateTime st) {
@@ -61,21 +80,39 @@ public class ControlEvent {
     }
 
 
+    /**
+      * @return String
+      */
     public String getSBId() {
         return sbId;
     }
+    /**
+      * @return String
+      */
     public String getEBId() {
         return ebId;
     }
+    /**
+      * @return short
+      */
     public short getSAId() {
         return saId;
     }
+    /**
+      * @return int
+      */
     public int getEventType() {
         return eventType;
     }
+    /**
+      * @return int
+      */
     public int getStatus() {
         return eventStatus;
     }
+    /**
+      * @return DateTime
+      */
     public DateTime getStartTime() {
         return startTime;
     }

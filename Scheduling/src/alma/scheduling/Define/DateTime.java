@@ -50,22 +50,42 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version $Id: DateTime.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: DateTime.java,v 1.5 2004/12/21 21:37:01 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {
 	
+    /**
+      *
+      */
     private static final long CONVERSION = 12219292800L;
-	// The longitude in degrees West (i.e., degrees west of Greenwich are positive).
+    /**
+      * The longitude in degrees West (i.e., degrees west of Greenwich are positive).
+      */
 	static private double longitudeInDegrees = 0.0;
+    /**
+      *
+      */
 	static private double longitudeInHours = 0.0;
+    /**
+      *
+      */
 	static private double longitude = 0.0;
-	// The latitude in degrees North.
+    /**
+	  * The latitude in degrees North.
+      */
 	static private double latitudeInDegrees = 0.0;
+    /**
+      *
+      */
 	static private double latitude = 0.0;
-	// The number of hours between the local time zone and UT, i.e., localTime - UT.
+	/**
+      * The number of hours between the local time zone and UT, i.e., localTime - UT.
+      */
 	static private int timeZone = 0;
-	// The factor, in units of fractions of a day, that must be added to local time to get UT.
+	/**
+      * The factor, in units of fractions of a day, that must be added to local time to get UT.
+      */
 	static private double convertToUT = 0.0;
 
 	/**
@@ -97,10 +117,12 @@ public class DateTime {
 	 * @return true if the specified year is a leap year.
 	 */
 	static public boolean isLeapYear(int year) {
-		if (year % 4 != 0)
+		if (year % 4 != 0) {
 			return false;
-		if (year % 100 == 0 && year % 400 != 0)
+        }
+		if (year % 100 == 0 && year % 400 != 0) {
 			return false;
+        }
 		return true;
 	}
 
@@ -219,14 +241,16 @@ public class DateTime {
 	private void init(int year, int month, double day) {
 		// For this algorithm see Meeus, chapter 7, p. 61.
 		int iday = (int)day;
-		if (month < 1 || month > 12)
+		if (month < 1 || month > 12) {
 			throw new IllegalArgumentException ("Illegal value of month: " 
 				+ year + "-" + month + "-" + day);
+        }
 		if ( (iday < 1 || iday > 31) ||
 			 ((month == 4 || month == 6 || month == 9 || month == 11) && iday > 30) ||
-			 (month == 2 && (iday > ((isLeapYear(year) ? 29 : 28)))) )
+			 (month == 2 && (iday > ((isLeapYear(year) ? 29 : 28)))) ) {
 			throw new IllegalArgumentException ("Illegal value of day: "
 				+ year + "-" + month + "-" + day);
+        }
 		if (month <= 2) {
 			--year;
 			month += 12;
@@ -238,7 +262,8 @@ public class DateTime {
 		jd = (int)(365.25 * (year + 4716)) + (int)(30.6001 * (month + 1)) + day + B - 1524.5;
 	}
 	private void init(int year, int month, int day, int hour, int minute, double second) {
-		if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0.0 || second >= 60.0) {
+		if (hour < 0 || hour > 23 || minute < 0 
+                || minute > 59 || second < 0.0 || second >= 60.0) {
 			throw new IllegalArgumentException("Invalid time: " + hour + ":" + minute + ":" + second);
 		}
 		init(year,month,(double)(day + (((((second / 60.0) + minute) / 60.0) + hour) / 24.0)));
@@ -302,8 +327,10 @@ public class DateTime {
 	public DateTime(String t) {
 		if (t.length() < 19 || t.charAt(4) != '-' || t.charAt(7) != '-' || 
 			(t.charAt(10) != 'T' && t.charAt(10) != ' ') || 
-			t.charAt(13) != ':' || t.charAt(16) != ':')
+			t.charAt(13) != ':' || t.charAt(16) != ':') {
+
 			throw new IllegalArgumentException("Invalid time format: " + t);
+        }
 		int yyyy = 0;
 		int mm = 0;
 		int dd = 0;
@@ -383,10 +410,12 @@ public class DateTime {
 	 * greater than the specified time.
 	 */
 	public int compareTo(DateTime dt) {
-		if (jd < dt.jd)
+		if (jd < dt.jd) {
 			return -1;
-		if (jd > dt.jd)
+        }
+		if (jd > dt.jd) {
 			return 1;
+        }
 		return 0;
 	}
 	
@@ -581,11 +610,30 @@ public class DateTime {
 			}
 		}
 		StringBuffer s = new StringBuffer(yy + "-");
-		if (mm < 10) s.append('0'); s.append(mm); s.append('-');
-		if (dd < 10) s.append('0'); s.append(dd); s.append('T');
-		if (hh < 10) s.append('0'); s.append(hh); s.append(':');
-		if (min < 10) s.append('0'); s.append(min);  s.append(':');
-		if (sec < 10.0) s.append('0'); s.append(sec);
+		if (mm < 10)  {
+            s.append('0'); 
+            s.append(mm); 
+            s.append('-');
+        }
+		if (dd < 10) {
+            s.append('0'); 
+            s.append(dd); 
+            s.append('T');
+        }
+		if (hh < 10) { 
+            s.append('0'); 
+            s.append(hh); 
+            s.append(':');
+        }
+		if (min < 10) { 
+            s.append('0'); 
+            s.append(min);  
+            s.append(':');
+        }
+		if (sec < 10.0) { 
+            s.append('0'); 
+            s.append(sec);
+        }
 		return s.toString();
 	}
 

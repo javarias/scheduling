@@ -34,9 +34,13 @@ import alma.scheduling.Define.Subarray;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMATelescope.java,v 1.6 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMATelescope.java,v 1.7 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ALMATelescope extends Telescope  {
+
+    /**
+      *
+      */
     public ALMATelescope () {
         super();
         setupSiteInfo();

@@ -57,14 +57,18 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.18 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.19 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
+    // container services
     private ContainerServices containerServices;
+    // the alma project manager
     private ALMAProjectManager manager;
     //private ALMAPipeline pipeline;
+    //publish event class
     private ALMAPublishEvent publisher;
-    private Vector currentEB; //a list of the ExecBlock that are currently started but not finished.
+    //a list of the ExecBlock that are currently started but not finished.
+    private Vector currentEB; 
 
     /**
       *
@@ -184,6 +188,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     //  Util functions 
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+      * @param ExecBlockEvent
+      * @return ExecBlock Internal obj to scheduling, contains the info we want from control
+      */
     private ExecBlock createExecBlock(ExecBlockEvent event) {
         ExecBlock eb = new ExecBlock(event.execID, event.saId);
         // do this to get SB id over to PM, will be replaced with proper SB
@@ -194,6 +202,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     /**
      * Updates the scheduling block with the info gotten from the control
      * event. If the SB is complete
+     * @param ControlEvent
      */
     private void updateSB(ControlEvent e) {
         logger.info("SCHEDULING: updating the SB after event from control received");
@@ -253,7 +262,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     }
 
     /**
-      *
+      * @param ExecBlock
       */
     private void sbCompleted(ExecBlock eb){
         logger.info("SCHEDULING: setting SB to complete.");
@@ -263,6 +272,8 @@ public class ALMAReceiveEvent extends ReceiveEvent {
 
     /**
       * Returns the ObsUnitSet part ID which is what the pipeline needs
+      * @param ExecBlock
+      * @return String[]
       */
     private String[] updateProjectStatus(ExecBlock eb) {
         String[] id_info=null;

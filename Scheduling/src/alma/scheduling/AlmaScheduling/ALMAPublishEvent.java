@@ -44,14 +44,20 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.3 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.4 2004/12/21 21:37:01 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
 
+    /**
+      *
+      */
     private ContainerServices container;
 
 
+    /**
+      *
+      */
     public ALMAPublishEvent(ContainerServices cs) {
         super();
         this.container = cs;
@@ -128,6 +134,9 @@ public class ALMAPublishEvent extends PublishEvent {
         sched_nc.publish(event);
     }
 
+    /**
+      * @param Object
+      */
     public void publish(Object event) {
         logger.info("SCHEDULING: event's class == "+
             event.getClass().getName());
@@ -143,6 +152,9 @@ public class ALMAPublishEvent extends PublishEvent {
 
     
 
+    /**
+      *
+      */
     public void disconnect() {
         logger.info("SCHEDULING: Disconnecting from Scheduling NC");
         sched_nc.deactivate();

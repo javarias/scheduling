@@ -43,14 +43,19 @@ import alma.ControlExceptions.*;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.16 2004/12/21 14:24:00 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.17 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
+    //container services
     private ContainerServices containerServices;
+    // control system component
     private ControlSystem control_system;
+    //list of current array controllers
     private Vector controllers;
+    //logger
     private Logger logger;
+    //list of current observing sessions
     private Vector observedSessions;
 
     public ALMAControl(ContainerServices cs) {
@@ -69,6 +74,7 @@ public class ALMAControl implements Control {
     }
     /**
      *
+     * @throws SchedulingException
      */
     public void execSB(short subarrayId, BestSB best, DateTime time) 
         throws SchedulingException {
@@ -80,6 +86,7 @@ public class ALMAControl implements Control {
      * Executes the sb that was selected by the telescope operator
      * @param subarrayId
      * @param bestSBId
+     * @throws SchedulingException
      */
     public void execSB(short subarrayId, BestSB best) 
         throws SchedulingException {
@@ -91,6 +98,7 @@ public class ALMAControl implements Control {
      * Executes the sb that was selected by the telescope operator
      * @param subarrayId
      * @param sbId
+     * @throws SchedulingException
      */
     public void execSB(short subarrayId, String sbId) 
         throws SchedulingException {
@@ -110,6 +118,7 @@ public class ALMAControl implements Control {
 
     /**
      *
+     * @throws SchedulingException
      */
     public void stopSB(short subarrayId, String id) throws SchedulingException {
     }
@@ -151,6 +160,7 @@ public class ALMAControl implements Control {
 
     /**
      *
+     * @throws SchedulingException
      */
     public void destroySubarray(short subarrayId) throws SchedulingException {
         try {
@@ -161,14 +171,16 @@ public class ALMAControl implements Control {
     }
 
     /**
-     *
+     * @return short[]
+     * @throws SchedulingException
      */
     public short[] getActiveSubarray() throws SchedulingException {
         return null;
     }
     
     /** 
-     *
+     * @return String[]
+     * @throws SchedulingException
      */
     public String[] getIdleAntennas() throws SchedulingException {
             String[] antennas = control_system.availableAntennas();
@@ -177,12 +189,16 @@ public class ALMAControl implements Control {
     }
 
     /**
-     *
+     * @return String[]
      */
     public String[] getSubarrayAntennas(short subarrayId) {
         return null;
     }
     
+    /**
+      * @return ArrayController
+      * @throws SchedulingException
+      */
     private ArrayController getArrayController(short subarrayId) throws SchedulingException {
         logger.info("SCHEDULING: looking for subarray with id = "+ subarrayId);
         for(int i=0; i < controllers.size(); i++){

@@ -30,13 +30,22 @@ package alma.scheduling.Define;
  * Record the date as year, month, and day.
  * The main use of this class is in conjunction with the DateTime class.
  * 
- * @version $Id: Date.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Date.java,v 1.5 2004/12/21 21:37:01 sslucero Exp $
  * @author Allen Farris
  */
 public class Date {
 	
+    /**
+      * The year
+      */
 	private int year;
+    /**
+      * The month
+      */
 	private int month;
+    /**
+      * The Day
+      */
 	private int day;
 
 	/**
@@ -48,14 +57,16 @@ public class Date {
 	 * 		out of bounds.
 	 */
 	public Date(int year, int month, int day) {
-		if (month < 1 || month > 12)
+		if (month < 1 || month > 12) {
 			throw new IllegalArgumentException ("Illegal value of month: " 
 				+ year + "-" + month + "-" + day);
-		if ( (day < 1 || day > 31) ||
+        }
+		if ( (day < 1 || day > 31) || 
 			 ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) ||
-		     (month == 2 && (day > ((DateTime.isLeapYear(year) ? 29 : 28)))) )
+		     (month == 2 && (day > ((DateTime.isLeapYear(year) ? 29 : 28)))) ) {
 			throw new IllegalArgumentException ("Illegal value of day: "
 				+ year + "-" + month + "-" + day);
+        }
 		this.year = year;
 		this.month = month;
 		this.day = day;
@@ -87,6 +98,7 @@ public class Date {
 
 	/**
 	 * Return this date as a string in the format "year-month-day".
+     * @return String
 	 */
 	public String toString() {
 		return year + "-" + month + "-" + day; 

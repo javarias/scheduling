@@ -40,10 +40,16 @@ import alma.entities.commonentity.EntityT;
  * @author Sohaila Lucero
  */
 public class ALMAOperator implements Operator {
+    // container services 
     private ContainerServices containerServices;
+    // queue to hold all messages
     private MessageQueue messageQueue;
+    //logger
     private Logger logger;
     
+    /**
+      *
+      */
     public ALMAOperator(ContainerServices cs, MessageQueue queue) {
         this.containerServices = cs;
         this.logger = cs.getLogger();
@@ -51,22 +57,23 @@ public class ALMAOperator implements Operator {
     }
 
     /**
-     *
-     * @author Sohaila Roberts
-     */
+      *
+      * @param int
+      */
     public void setWaitTime(int seconds) {
     }
 
     /** 
-     *
-     */
+      * @param String
+      */
     public void send(String message) {
     }
 
     /**
      * Given the list of all the possible best SBs the operator selects
      * which SB is best to schedule now! 
-     * @param best The selection of possible best SBs
+     * @param BestSB The selection of possible best SBs
+     * @param Message
      * @return String The id of the selected SB.
      */
     //public String selectSB(BestSB best, Message message) {
@@ -118,19 +125,33 @@ public class ALMAOperator implements Operator {
     }
     
     /**
-     *
-     */
+      *
+      * @param String
+      * @return boolean 
+      */
     public boolean confirmAntennaActive(String antennaId) {
         return true;
     }
 
+    /**
+      *
+      * @param String[]
+      * @return boolean
+      */
     public boolean confirmSubarrayCreation(String[] antennaId) {
         return true;
     }
 
+     /**
+       * Internal nested class which runs a timer for how long it takes
+       * for the operator to select the sb before its automatically selected
+       */
      class SelectSBTimer implements Runnable {
         private long delay;
         
+        /**
+          * @param long
+          */
         public SelectSBTimer(long delay) {
             this.delay = delay;
         }

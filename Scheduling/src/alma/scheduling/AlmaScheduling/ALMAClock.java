@@ -32,10 +32,14 @@ import alma.scheduling.Define.ClockAlarmListener;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAClock.java,v 1.4 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAClock.java,v 1.5 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ALMAClock implements Clock {
+    //The time
     private DateTime time;
+    /**
+      *
+      */
     public ALMAClock() {
         this.time = new DateTime(System.currentTimeMillis());
     }
@@ -93,40 +97,40 @@ public class ALMAClock implements Clock {
         return 0.0;
     }
     /**
-     *
+     * @return double
      */
     public double getLatitudeInDegrees() {
         return 0.0;
     }
     /**
-     *
+     * @return double
      */
     public double getLongitude() {
         return 0.0;
     }
 
     /**
-     *
+     * @return double
      */
     public double getLongitudeInDegrees() {
         return 0.0;
     }
     /**
-     *
+     * @return double
      */
     public double getLongitudeInHours() {
         return 0.0;
     }
 
     /**
-     *
+     * @return int
      */
     public int getTimeZone() {
         return 0;
     }
 
     /**
-     *
+     * @return double
      */
     public double getConvertToUT() {
         return 0.0;

@@ -61,7 +61,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.30 2004/12/21 14:24:00 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.31 2004/12/21 21:37:01 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -81,6 +81,9 @@ public class ALMAArchive implements Archive {
     private DateTime lastSBquery;
     
 
+    /**
+      *
+      */
     public ALMAArchive(ContainerServices cs){
         this.containerServices = cs;
         this.logger = cs.getLogger();

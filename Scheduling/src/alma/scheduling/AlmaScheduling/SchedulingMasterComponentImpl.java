@@ -43,20 +43,27 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.11 2004/12/21 14:24:00 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.12 2004/12/21 21:37:01 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
     
 
+    //Masterscheduler component
     private MasterSchedulerIF masterScheduler;
 
+    /**
+      *
+      */
     public SchedulingMasterComponentImpl() {
         super();
     }
 
     ////////////////////////////////////////////////////////////////
     
+    /**
+      *
+      */
     protected AlmaSubsystemActions getActionHandler() {
         m_logger.info("SCHEDULING MC: getActionHandler() method called");
         return this;
@@ -112,6 +119,9 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         }
     }
 
+    /**
+      *
+      */
     public void reinitSubsystem() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: reinitSubsystem() method called");
     }

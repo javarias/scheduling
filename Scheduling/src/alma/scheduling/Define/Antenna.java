@@ -43,23 +43,35 @@ package alma.scheduling.Define;
  * <li> its standby frequency band and standby frequency.
  * </ul>
  * 
- * @version $Id: Antenna.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Antenna.java,v 1.5 2004/12/21 21:37:01 sslucero Exp $
  * @author Allen Farris
  */
 public class Antenna {
 
+    // antenna's id
 	private String antennaId;
+    // antenna's location
 	private int locationId;
+    //if antenna has a nutator
 	private boolean nutator;
 
+    //subarray id it belongs to
 	private short subarrayId;
+    // if its been allocated
 	private boolean allocated;
+    // is it idle?
 	private boolean idle;
+    //is it in manual mode?
 	private boolean manual;
+    //is it online?
 	private boolean online;
+    // its current frequency band
 	private FrequencyBand currentFrequencyBand;
+    // its current frequency
 	private double currentFrequency;
+    //its stand by frequency band
 	private FrequencyBand standbyFrequencyBand;
+    // its standby frequence
 	private double standbyFrequency;
 
 	/**

@@ -37,7 +37,7 @@ package alma.scheduling.Define;
  * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
  * object that designates why nothing could be scheduled.
  * 
- * @version $Id: BestSB.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: BestSB.java,v 1.6 2004/12/21 21:37:01 sslucero Exp $
  * @author Allen Farris
  */
 public class BestSB {
@@ -57,9 +57,21 @@ public class BestSB {
 	 */
 	private String[] scoreString;
 	
+    /**
+      *
+      */
 	private double[] score;
+    /**
+      *
+      */
 	private double[] success;
+    /**
+      *
+      */
 	private double[] rank;
+    /**
+      *
+      */
 	private int selection;
 
 	/**
@@ -99,14 +111,18 @@ public class BestSB {
 	 */
 	public BestSB(String[] sbId, String[] scoreString, double[] score, double[] success, 
 			double[] rank, DateTime time) {
-		if (scoreString.length != sbId.length)
+		if (scoreString.length != sbId.length) {
 			throw new IllegalArgumentException ("The sbId and scoreString arrays do not have the same number of dimensions.");
-		if (score.length != sbId.length)
+        }
+		if (score.length != sbId.length) {
 			throw new IllegalArgumentException ("The sbId and score arrays do not have the same number of dimensions.");
-		if (success.length != sbId.length)
+        }
+		if (success.length != sbId.length) {
 			throw new IllegalArgumentException ("The sbId and success arrays do not have the same number of dimensions.");
-		if (rank.length != sbId.length)
+        }
+		if (rank.length != sbId.length) {
 			throw new IllegalArgumentException ("The sbId and rank arrays do not have the same number of dimensions.");
+        }
 		numberReturned = sbId.length;		
 		this.sbId = sbId;
 		this.scoreString = scoreString;

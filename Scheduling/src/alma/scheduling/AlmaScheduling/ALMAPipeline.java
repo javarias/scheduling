@@ -46,14 +46,21 @@ import alma.pipelinescience.SciencePipeline;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.8 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.9 2004/12/21 21:37:01 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
+    //container services
     private ContainerServices containerServices;
+    //logger
     private Logger logger;
+    //science pipeline component
     private SciencePipeline pipelineComp;
+    //entity serializer
     private EntitySerializer entitySerializer;
     
+    /**
+      *
+      */
     public ALMAPipeline(ContainerServices cs) {
         this.containerServices = cs;
         this.logger = cs.getLogger();
@@ -93,16 +100,24 @@ public class ALMAPipeline implements SciPipeline {
         return  requestResult;
     }
 
+    /**
+      * @param SciPipelineRequest
+      * @throws SchedulingException
+      */
     public void start(SciPipelineRequest ppr) throws SchedulingException {
     }
-
+    /**
+      * @param String
+      * @throws SchedulingException
+      */
     public void start(String pprString) throws SchedulingException {
         
         logger.info("SCHEDULING: Starting the science pipeline");
         //processRequest();
     }
     /**
-      *
+      * @param SciPipelineRequest
+      * @return Status
       */
     public Status getStatus(SciPipelineRequest ppr) 
         throws SchedulingException {
