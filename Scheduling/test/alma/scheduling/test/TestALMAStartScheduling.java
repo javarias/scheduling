@@ -61,6 +61,7 @@ public class TestALMAStartScheduling {
     }
 
     public void receive(ScienceProcessingRequestEnd event) {
+        logger.info("SCHED_TEST: got pipeline end event. ");
         stopCommand = true;
     }
 
