@@ -42,7 +42,8 @@ import alma.entity.xmlbinding.execblock.*;
  * 
  * @author Sohaila Roberts
  */
-public class ControlSimulator extends BasicComponent implements ControlProxy {
+public class ControlSimulator implements ControlProxy {
+//public class ControlSimulator extends BasicComponent implements ControlProxy {
 
 	private ClockSimulator clock;
 	private WeatherModel weather;
