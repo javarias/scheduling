@@ -27,8 +27,19 @@
 package ALMA.scheduling.define;
 
 // Only to get this to compile.
-class SchedBlock { String dummy; }
+//class SchedBlock { String dummy; }
+//import alma.bo.SchedBlock;
+import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.obsproject.*;
 
+import alma.acs.entityutil.EntityException;
+import alma.acs.entityutil.EntitySerializer;
+import alma.acs.entityutil.EntityDeserializer;
+
+import alma.xmlentity.XmlEntityStruct;
+import alma.entities.commonentity.EntityT;
+
+import java.util.logging.Logger;
 /**
  * An SUnit is the lowest-level, atomic scheduling unit. 
  * 
@@ -37,6 +48,7 @@ class SchedBlock { String dummy; }
  */
 public class SUnit {
 
+    private alma.entity.xmlbinding.schedblock.SchedBlock schedBlock;
 	private String schedBlockId;
 	private int name;
 		
@@ -50,14 +62,25 @@ public class SUnit {
 	private SkyCoordinates coordinates;
 	private boolean isStandardScript;
 	private Status unitStatus;
-	
+
+    private EntitySerializer serializer;
+    private EntityDeserializer deserializer;
+    //////////////////////// Constructors ////////////////////////////////
+    
 	/**
 	 * Create an SUnit object from a SchedBlock object.
 	 */
 	public SUnit(SchedBlock sb) {
+        this.schedBlock = sb;
+        this.serializer = EntitySerializer.getEntitySerializer(
+            Logger.getAnonymousLogger());
+        this.deserializer = EntityDeserializer.getEntityDeserializer(
+            Logger.getAnonymousLogger());
 	}
 
 
+    //////////////////////// Get Methods ////////////////////////////////
+    
 	/**
 	 * @return
 	 */
@@ -128,6 +151,15 @@ public class SUnit {
 		return weatherConstraint;
 	}
 
+    public String getSchedBlockId() {
+        return schedBlockId;
+    }
+
+    public SchedBlock getSBEntityObject() {
+        return schedBlock;
+    }
+    //////////////////////// Set Methods /////////////////////////////////
+    
 	/**
 	 * @param coordinates
 	 */
@@ -198,4 +230,35 @@ public class SUnit {
 		weatherConstraint = condition;
 	}
 
+    public void setSchedBlockId(String id) {
+        this.schedBlockId = id;
+    }
+
+    public void setSBEntityObject(SchedBlock sb) {
+        this.schedBlock = sb;
+        updateFields();
+    }
+
+    //////////////////////// Other Public Methods ////////////////////////////////
+
+    public XmlEntityStruct serializeSUnit() throws EntityException {
+        return serializer.serializeEntity(schedBlock);
+    }
+    
+    public void updateSUnit(XmlEntityStruct xml) 
+      throws EntityException, ClassNotFoundException {
+        SchedBlock sb = (SchedBlock)deserializer.deserializeEntity(xml.xmlString, 
+            Class.forName("alma.entity.xmlbinding.schedblock.SchedBlock"));
+        this.setSBEntityObject(sb);
+        updateFields();
+    }
+    //////////////////////// Other Private Methods ////////////////////////////////
+
+    /*
+     *  Updates all the fields when the entity has been updated or set.
+     */
+    private void updateFields() {
+        setSchedBlockId(((EntityT)schedBlock.getSchedBlockEntity()).getEntityId());
+        setUnitStatus(new Status(schedBlock.getObsUnitControl().getSchedStatus()));
+    }
 }
