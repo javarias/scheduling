@@ -1,3 +1,40 @@
+ Starting ORB Services
+==> Starting CORBA Services
+--> Starting Naming Service
+--> Starting Notify Service
+
+Starting up the Notification Service...
+Loaded Event Manager factory...
+Registered with the naming service as: NotifyEventChannelFactory
+--> Starting Logging Service
+
+Starting up the ACS Centralized Logger...
+Resolving Naming Service...
+Resolving Notify Service...
+Creating Event Channels...
+Creating Supplier Admins...
+Creating Suppliers...
+Creating Log Factory...
+Creating Log...
+ACS Centralized Logger is initialized.
+ACS Centralized Logger is running...
+--> Starting Interface Repository
+      using numeric option
+acsIrfeed - Loading IDL interfaces in Interface Repository
+           ORBInitRef: InterfaceRepository=corbaloc::solar-vml:4001/DefaultRepository
+--> Starting ACS Configuration Database
+--> Starting ACS Log service
+DALfs will use ORBacus ORB
+DAL root is: /users/sroberts/tmp_cvs/SCHEDULING/test/CDB/
+DALfs is listening on localhost:5000/DAL
+DALfs is ready and waiting ...
+ Starting Manager
+DALReference generated using localhost address: 'corbaloc::solar-vml:5000/DAL'Returning XML record for: MACI/Managers/Manager
+Returning XML record for: MACI/Managers/Manager
+ Starting hugoActivator
+m_loggingSwitchers != null
+Returning XML record for: MACI/COBs
+ Running test
 Started
 <?xml version="1.0" encoding="UTF-8"?>
 <ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
@@ -11,6 +48,11 @@ SchedBlock created: <?xml version="1.0" encoding="UTF-8"?>
         entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
 </ns1:SchedBlock>
 
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+
 SchedBlock Stored
 <?xml version="1.0" encoding="UTF-8"?>
 <ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
@@ -18,6 +60,9 @@ SchedBlock Stored
         entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
 </ns1:SchedBlock>
 UID://X----------------/X--------
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+</ns1:SchedBlock>
 <?xml version="1.0"?>
 <ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
     <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
@@ -30,6 +75,12 @@ SchedBlock retrieved
     <ns1:ObsProcedure/>
 </ns1:SchedBlock>
 UID://X----------------/X--------SchedBlock 1.0
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+    <ns1:ObsProcedure/>
+</ns1:SchedBlock>
+
 SchedBlock updated: <?xml version="1.0" encoding="UTF-8"?>
 <ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
     <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
@@ -37,10 +88,18 @@ SchedBlock updated: <?xml version="1.0" encoding="UTF-8"?>
     <ns1:ObsProcedure/>
 </ns1:SchedBlock>
 
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+    <ns1:ObsProcedure />
+</ns1:SchedBlock>
 <?xml version="1.0"?>
 <ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
     <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
     <ns1:ObsProcedure />
 </ns1:SchedBlock> UID://X----------------/X--------
 SchedBlock retrieved
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+    <ns1:ObsProcedure />
+</ns1:SchedBlock>
 SchedBlock removed
