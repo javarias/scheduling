@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.1 2003/11/06 16:32:09 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.2 2003/11/07 22:51:05 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -29,7 +29,7 @@
 
 SUBSYSTEM = SCHEDULING
 
-MODULES =  RealMode
+MODULES =  PlanningModeSim RealMode 
 
 
 MAKE_FLAGS = "-k"
