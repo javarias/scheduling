@@ -346,10 +346,10 @@ public class GUI extends JFrame {
         return pane;
     }
 
-    private JPanel ff_p;
-    private JLabel ff_l;
-    private JTextField ff_tf;
     private void addFreqFields(int total) {
+        JPanel ff_p;
+        JLabel ff_l;
+        JTextField ff_tf;
         try {
             System.out.println("Removing!");
             freqFields.removeAll();
