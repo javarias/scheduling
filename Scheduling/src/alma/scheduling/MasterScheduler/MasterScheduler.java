@@ -77,12 +77,6 @@ public class MasterScheduler implements Runnable {
      */
     public void run() {
         while(!stopCommand) {
-            try {
-                System.out.println("MS Sleeping");
-                Thread.sleep(2*60*1000);
-            } catch(InterruptedException e) {
-                System.out.println("MS Interrupted");
-            }
         }
     }
 

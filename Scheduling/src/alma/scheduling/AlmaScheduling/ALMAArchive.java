@@ -113,41 +113,6 @@ public class ALMAArchive implements Archive {
             projects[i] = (Project)tmp_projects.elementAt(i);
         }
         return projects;
-        /*
-        String query = new String("/prj:ObsProject");
-        String schema = new String("ObsProject");
-        String className = new String(
-            "alma.entity.xmlbinding.obsproject.ObsProject");
-        try {
-            Cursor cursor = archOperationComp.queryDirty(query,schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying ObsProjects");
-                return null;
-            } else {
-                logger.info("SCHEDULING: cursor not null!");
-            }
-            while(cursor.hasNext()) {
-                //logger.info("SCHED: NEXT!");
-                QueryResult res = cursor.next();
-                try {
-                    //logger.info("SCHED: convert to proj");
-                    tmp_projects.add(convertToProject1(res));
-                }catch(Exception e) {
-                    logger.severe("SCHEDULING: "+e.toString());
-                    e.printStackTrace();
-                    throw new SchedulingException (e);
-                }
-            }
-            projects = new Project[tmp_projects.size()];
-            for(int i=0; i < tmp_projects.size();i++) {
-                projects[i] = (Project)tmp_projects.elementAt(i);
-            }
-        return projects;
-            //logger.info("SCHEDULING: Projects available = "+tmp_projects.size());
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
-        }*/
     }
 
     private ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
@@ -338,7 +303,7 @@ public class ALMAArchive implements Archive {
                 QueryResult res = cursor.next();
                 try {
                     XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
-                    //System.out.println("PROJECT: "+ xml.xmlString);
+                    System.out.println("PROJECT: "+ xml.xmlString);
                     ObsProject obsProj= (ObsProject)
                         entityDeserializer.deserializeEntity(xml, Class.forName(
                             "alma.entity.xmlbinding.obsproject.ObsProject"));
@@ -400,7 +365,7 @@ public class ALMAArchive implements Archive {
     private SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
             System.out.println("SCHEDULING: no sbs stuff available in project");
-            throw new SchedulingException("Not SB info in ObsProject");
+            throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
             SchedBlock[] sbs = new SchedBlock[sbs_refs.length];
@@ -888,42 +853,6 @@ public class ALMAArchive implements Archive {
         return proj;
     }
 
-    /*Program
-    private Program convertToProgram1(QueryResult res) throws Exception{
-        String prog_id = res.identifier;
-        Program prog = null;
-        try {
-            XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(prog_id);
-            System.out.println(xml_struct.xmlString);
-            proj = convertToProgram2(xml_struct);
-        } catch (MalformedURI e) { 
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        } catch (ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        } catch (NotFound e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        //} catch (DirtyEntity e) {
-        //    throw new Exception (e);
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        }
-        return prog;
-    }
-    private Program convertToProgram2(XmlEntityStruct xml) throws Exception{
-        ALMAProgram prog = null;
-        try {
-            ObsProgram obsProg = (ObsProgram)
-                entityDeserializer.deserializeEntity(xml.Class.forName(
-                    "alma.entity.xmlbinding.
-        } catch (Exception e){
-        }
-        return prog;
-    }
-    */
 
     private Session convertToSession1(QueryResult res) throws Exception {
         String session_id = res.identifier;
@@ -993,46 +922,7 @@ public class ALMAArchive implements Archive {
         return ps;
     }
 
-    /*
-    private ProjectStatus convertToProjectStatus2(XmlEntityStruct xml) throws Exception {
-        ProjectStatus almaps = null;
-        try {
-            alma.entity.xmlbinding.projectstatus.ProjectStatus ps =
-                (alma.entity.xmlbinding.projectstatus.ProjectStatus)
-                    entityDeserializer.deserializeEntity(xml, Class.forName(
-                        "alma.entity.xmlbinding.projectstatus.ProjectStatus"));
-            almaps = new ALMAProjectStatus(ps);
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        }
-        return almaps;
-    }
-    */
 
-    /**
-     * Temporary function for updating the sb in the archive.
-     */
-    /*private SchedBlock getSBfromArchive(String id) {
-        SchedBlock sb =null;
-        try {
-            XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
-            //logger.info(xml.xmlString); //not poll archive
-            sb = (SchedBlock) 
-                entityDeserializer.deserializeEntity(xml, Class.forName(
-                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(NotFound e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        }
-        return sb;
-    }
-    */
     /**
      * Updates the SB with the information obtained from the Event received from
      * from Control.
@@ -1079,45 +969,4 @@ public class ALMAArchive implements Archive {
     }
 
     
-    /*
-    private XmlEntityStruct modifyRetrievedSB(XmlEntityStruct oldSBstruct, SB newSB) {
-        XmlEntityStruct newSBstruct = null;
-        try {
-            SchedBlock oldSB = (SchedBlock) 
-                entityDeserializer.deserializeEntity(oldSBstruct, Class.forName(
-                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
-            ////////////////////////
-            // update the status
-            ////////////////////////
-            ObsUnitControl ouc = oldSB.getObsUnitControl();
-            if(ouc == null) {
-                ouc = new ObsUnitControl();
-            }
-            switch(newSB.getStatus().getStatusAsInt()) {
-                case 0://exec block status = processing
-                    ouc.setSchedStatus(SchedStatusT.RUNNING);
-                    break;
-                case 1: //exec block status = ok
-                    ouc.setSchedStatus(SchedStatusT.COMPLETED);
-                    break;
-                case 2://exec block status = failed
-                    ouc.setSchedStatus(SchedStatusT.ABORTED);
-                    break;
-                case 3://exec block status = timeout
-                    ouc.setSchedStatus(SchedStatusT.ABORTED);
-                    break;
-                default://exec block status kooky.. 
-                    break;
-            }            
-            oldSB.setObsUnitControl(ouc);
-            ////////////////////////
-            // Add the exec block reference
-            ////////////////////////
-
-            newSBstruct = entitySerializer.serializeEntity(oldSB);
-        } catch(Exception e) {
-        }
-        return newSBstruct;
-    }
-    */
 }

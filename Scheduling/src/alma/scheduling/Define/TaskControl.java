@@ -196,7 +196,7 @@ public class TaskControl {
 	 * Set the commanded time when the subordinate thread will end.
 	 * @param time the commanded time when the subordinate thread will end.
 	 */
-	public synchronized void setComamndedEndTime(DateTime time) {
+	public synchronized void setCommandedEndTime(DateTime time) {
 		checkTime(time);
 		commandedEndTime = time;
 	}
@@ -205,7 +205,7 @@ public class TaskControl {
 	 * Set the commanded time when the subordinate thread will end.
 	 * @param time the commanded time when the subordinate thread will end.
 	 */
-	public synchronized void setComamndedStartTime(DateTime time) {
+	public synchronized void setCommandedStartTime(DateTime time) {
 		checkTime(time);
 		commandedStartTime = time;
 	}

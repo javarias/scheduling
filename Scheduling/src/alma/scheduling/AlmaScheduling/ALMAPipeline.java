@@ -95,10 +95,11 @@ public class ALMAPipeline implements SciPipeline {
      * Creates a pipeline processing request entity, ready for the archive, using
      * the given SchedBlock id. 
      *
-     * @param String The SchedBlock id
+     * @param ps_id The ProjectStatus id for the Reduction unit's entityId
+     * @param oucs_id The ObsUnitSetStatus id for the Reduction unit's partId 
      * @return XmlEntityStruct The PipelineProcessingRequest converted to a struct
      */
-    public XmlEntityStruct createPipelineProcessingRequest(String sb_id) {
+    public XmlEntityStruct createPipelineProcessingRequest(String ps_id, String oucs_id) {
         XmlEntityStruct ppr_struct = null;
         try { 
             PipelineProcessingRequest ppr = new PipelineProcessingRequest();
@@ -107,7 +108,8 @@ public class ALMAPipeline implements SciPipeline {
             ppr.setPipelineProcessingRequestEntity(ppr_entity);
             logger.info("SCHEDULING: PPR created with id = "+ppr_entity.getEntityId());
             ReductionUnitT ru = new ReductionUnitT();
-            ru.setEntityId(sb_id);
+            ru.setEntityId(ps_id);
+            ru.setPartId(oucs_id);
             ppr.setReductionUnit(ru);
             ppr_struct = entitySerializer.serializeEntity(ppr);
         } catch(Exception e) {

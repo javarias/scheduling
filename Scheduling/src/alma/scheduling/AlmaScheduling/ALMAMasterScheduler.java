@@ -43,14 +43,17 @@ import alma.scheduling.MasterSchedulerIFOperations;
 
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.PolicyFactor;
+import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.MasterScheduler;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
-import alma.scheduling.Scheduler.Scheduler;
+import alma.scheduling.Scheduler.DynamicScheduler;
+import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 /**
  * @author Sohaila Lucero
@@ -279,12 +282,14 @@ public class ALMAMasterScheduler extends MasterScheduler
         //TODO Eventually populate s_policy with info from the schedulingPolicy
         Policy s_policy = createPolicy();
         //logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
-        short subarrayId=createSubarray(new short[0], "dynamic");
+        
+        short subarrayId = createSubarray(new short[0], "dynamic");
+        
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 0, 
             subarrayId, clock, control, operator, telescope, manager, s_policy, 
             logger);
-        Scheduler scheduler = new Scheduler(config);
+        DynamicScheduler scheduler = new DynamicScheduler(config);
         Thread scheduler_thread = new Thread(scheduler);
         scheduler_thread.start();
         while(!stopCommand) {
@@ -300,19 +305,38 @@ public class ALMAMasterScheduler extends MasterScheduler
         if(!config.isOperational()) {
             logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
         }
+        destroySubarray(subarrayId);
     }
 
     public void startInteractiveScheduling() throws InvalidOperation {
         Policy s_policy = createPolicy();
-        logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
+        //logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
+        SB[] sbs = sbQueue.getAll();
+        for(int i=0; i < sbs.length; i++){
+            sbs[i].setType(SB.INTERACTIVE);
+        }
+        sbQueue = new SBQueue(sbs);
+        
+        short subarrayId = createSubarray(new short[0], "interactive");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), false, true, sbQueue, sbQueue.size(), 0, 
-            (short)0, clock, control, operator, telescope, manager, s_policy, 
+            subarrayId, clock, control, operator, telescope, manager, s_policy, 
             logger);
-        Scheduler scheduler = new Scheduler(config);
-        Thread scheduler_thread = new Thread(scheduler);
+        System.out.println("subarray id == "+subarrayId);
+        GUIController interactiveGUI = new GUIController(config);
+        Thread scheduler_thread = new Thread(interactiveGUI);
         scheduler_thread.start();
+        /*
+        try{
+            InteractiveScheduler scheduler = new InteractiveScheduler(config);
+        }catch(Exception e){
+            throw new InvalidOperation();
+        }
+        */
+        //Scheduler scheduler = new Scheduler(config);
+        //Thread scheduler_thread = new Thread(scheduler);
+        //scheduler_thread.start();
         
     }
     

@@ -71,6 +71,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SchedulingException;
 
 /**
  * A Gui that lets a PI interact with a scheduler to do interactive
@@ -283,7 +284,10 @@ public class GUI extends JFrame {
                     mustLogin();
                     return;
                 }
-                controller.setLogin("");
+                //controller.setLogin("");
+                try{
+                    controller.endSession();
+                } catch(Exception ex){}
                 //do other things to insure user is logged out.
                 //ie: close scheduler, etc
             }
@@ -431,6 +435,7 @@ public class GUI extends JFrame {
      */
     private void addSB(){
         //openObservingTool();
+        //project id will only ever be shown in the sbOutputView..
         String projID = sbOutputView.getSelectedText();
         if(projID != null) {
             controller.openObservingTool(projID);
@@ -452,10 +457,12 @@ public class GUI extends JFrame {
             controller.executeSB(selectedSB);
             //outputView.append("SB "+selectedSB+" is now executing.\n");
         } else {
-            selectedSB = JOptionPane.showInputDialog(this,"Enter SB id" ,"Execute SB", 
-                JOptionPane.PLAIN_MESSAGE);
+            selectedSB = sbOutputView.getSelectedText();
             if(selectedSB != null) {
                 controller.executeSB(selectedSB);
+            } else {
+                selectedSB = JOptionPane.showInputDialog(this,"Enter SB id" ,"Execute SB", 
+                    JOptionPane.PLAIN_MESSAGE);
             }
         }
     }
@@ -497,9 +504,14 @@ public class GUI extends JFrame {
      * entered. 
      */
     private void login(){
-        String login = JOptionPane.showInputDialog(this,"Please log in.");
-        controller.setLogin(login);
-        outputView.append("Welcome " +controller.getLogin() +"\n");
+        try{
+            String login = JOptionPane.showInputDialog(this,"Please log in.");
+            controller.setLogin(login);
+            outputView.append("Welcome " +controller.getLogin() +"\n");
+        } catch(SchedulingException e) {
+            JOptionPane.showMessageDialog(this, e.toString(), "", 
+                JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     /**

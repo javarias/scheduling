@@ -25,7 +25,7 @@
  */
 package alma.scheduling.PlanningModeSim.MasterScheduler;
 
-import alma.scheduling.Scheduler.Scheduler;
+import alma.scheduling.Scheduler.DynamicScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 
 import alma.scheduling.Define.SBQueue;
@@ -62,7 +62,7 @@ public class MasterScheduler extends BasicComponent {
 	private ArchiveSimulator archive;
 	private ControlSimulator control;
 	private ClockSimulator clock;
-	private Scheduler scheduler;
+	private DynamicScheduler scheduler;
 	private Policy policy;
 	private SB[] sbList;
 	private int advanceTheClock;
@@ -143,15 +143,15 @@ public class MasterScheduler extends BasicComponent {
                     telescope, projectManager,policy,logger);			
 			
 			// Create a scheduler.
-			scheduler = new Scheduler(config);		
+			scheduler = new DynamicScheduler(config);		
 			
 			// Create a thread for this scheduler
 			Thread task = new Thread (scheduler);
 			
 			// Set paramaters in the config object.
 			config.setTask(task);
-			config.setComamndedStartTime(data.getBeginTime());
-			config.setComamndedEndTime(data.getEndTime());
+			config.setCommandedStartTime(data.getBeginTime());
+			config.setCommandedEndTime(data.getEndTime());
 			
 			// Start the scheduler.
 			task.start();

@@ -35,7 +35,10 @@ import java.net.URL;
 //import alma.obsprep.bo.*;
 //import alma.obsprep.bo.Target;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.TimeInterval;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 /**
  * A controller for the Interactive Scheduling GUI. 
@@ -49,13 +52,21 @@ public class GUIController implements Runnable {
     private SchedulerConfiguration config;
     private String userlogin="";
     private GUI gui;
+    private InteractiveScheduler scheduler;
 
     public GUIController(SchedulerConfiguration s) {
         this.config = s;
+        try {
+            this.scheduler = new InteractiveScheduler(config);
+        } catch(SchedulingException e) {
+        }
     }
 
     public GUIController() {}
 
+    /**
+      *
+      */
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(
             "alma/scheduling/Image/"+name);
@@ -63,6 +74,9 @@ public class GUIController implements Runnable {
 
     ////////////////////////////////////////////////////
 
+    /**
+      *
+      */
     public String getLogin() {
         return userlogin;
     }
@@ -100,11 +114,15 @@ public class GUIController implements Runnable {
         config.getQueue().remove(sb_id);
      }
 
+     /**
+       *
+       */
      public void executeSB(String sb_id) {
         try {
-            String[] antennas = config.getControl().getIdleAntennas();
-            short subarray = config.getControl().createSubarray(antennas);
-            config.getControl().execSB(subarray, sb_id);
+            //Set the start time
+            SB selectedSB = config.getQueue().get(sb_id);
+            selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
+            config.getControl().execSB(config.getSubarrayId(), sb_id);
         } catch(SchedulingException e) {
             System.out.println("SCHEDULING: error in executing the sb.");
             e.printStackTrace();
@@ -112,6 +130,9 @@ public class GUIController implements Runnable {
 
     }
 
+    /**
+      *
+      */
     public void openObservingTool(String projectID) {
         //SB sb = config.getQueue().get(sbid);
         //String projectID = (sb.getProject()).getId();
@@ -126,20 +147,44 @@ public class GUIController implements Runnable {
 
     ////////////////////////////////////////////////////
     
-    public void setLogin(String id) {
+    /**
+      *
+      */
+    public void setLogin(String id) throws SchedulingException {
         userlogin = id;
+        SB[] sbs = config.getQueue().getAll();
+        //sbs[0].setRequiredStart(new TimeInterval(new DateTime(System.currentTimeMillis()), 3600));
+        config.setCommandedEndTime(DateTime.add(new DateTime(System.currentTimeMillis()),3600 ));
+        scheduler.login(userlogin, sbs[0]);
     }
 
+    /**
+      *
+      */
+    public void endSession() throws SchedulingException {
+        userlogin = "";
+        scheduler.logout();
+    }
+
+    /**
+      *
+      */
     public void refreshSBQueue() {
         config.getProjectManager().getProjectManagerTaskControl().interruptTask();
     }
     
     ////////////////////////////////////////////////////
 
+    /**
+      *
+      */
     public void run() {
         this.gui = new GUI(this);
     }
 
+    /**
+      *
+      */
     public static void main(String[] args) {
         GUIController c = new GUIController();
         c.run();

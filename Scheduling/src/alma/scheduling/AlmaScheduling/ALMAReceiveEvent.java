@@ -98,7 +98,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
                     e.type.value(), e.status.value(), new DateTime(e.startTime));
                 endSession(e);
-                /*
                 updateSB(ce);
                 startPipeline(ce);
                 ExecBlock eb = new ExecBlock(e.execID, e.saId);
@@ -106,7 +105,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 eb.setStartTime(new DateTime(e.startTime));
                 eb.setEndTime(new DateTime(System.currentTimeMillis()),Status.COMPLETE);
                 sbCompleted(eb);
-                */
                 break;
             default: 
                 logger.severe("SCHEDULING: Event reason = error");
@@ -239,7 +237,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private void startPipeline(ControlEvent e) {
         String result = null;
         try {
-            XmlEntityStruct ppr = pipeline.createPipelineProcessingRequest(e.getSBId());
+            XmlEntityStruct ppr = pipeline.createPipelineProcessingRequest(e.getSBId(),"");
             archive.storePipelineProcessingRequest(new ALMAPipelineProcessingRequest(ppr));
             ppr = archive.retrievePPR(ppr.entityId);
             result = pipeline.processRequest(ppr);
