@@ -43,59 +43,19 @@ import org.omg.CosEventComm.Disconnected;
  */
 public class CorbaPublisher extends alma.acs.nc.Supplier {
 	
-	private String channelName;
-	private String subsystemName;
-	private String[] eventType;
 	private StructuredEvent corbaEvent;
 	
 	/**
 	 * The parameters are:
 	 * 		channelName	the name of the channel -- e.g., Progress
-	 * 		subsystemName		the subsystem name -- e.g., ALMA_Control
 	 * 		eventType		an array that indicates the types of events
 	 * 						this channel is publishing.  These should be 
 	 * 						the names of the IDL structures defining those 
 	 * 						types.
 	 */
-	public CorbaPublisher (String channelName, String subsystemName, String[] eventType) {
-		super (CorbaNotificationChannel.mapToCorbaChannel(channelName,subsystemName));
-		this.channelName = channelName;
-		this.subsystemName = subsystemName;
-		this.eventType = new String [eventType.length];
-		for (int i = 0; i < eventType.length; ++i)
-			this.eventType[i] = eventType[i];
+	public CorbaPublisher (String channelName) {
+		super (channelName);
 		corbaEvent = new StructuredEvent ();
-		// Let the SupplierAdmin know all the event types.
-		EventType[] corbaType = new EventType [eventType.length];
-		for (int i = 0; i < eventType.length; ++i)
-			corbaType[i] = new EventType (CorbaNotificationChannel.ALMA_DOMAIN,
-										  eventType[i]);
-		try {
-			m_supplierAdmin.offer_change(corbaType,new EventType [0]);
-		} catch (InvalidEventType err) {
-			err.printStackTrace(System.err);
-			throw new IllegalArgumentException(err.toString());
-		}
-	}
-	public CorbaPublisher (String channelName, String subsystemName, String[] eventType, String actualChannelName) {
-		super (actualChannelName);
-		this.channelName = channelName;
-		this.subsystemName = subsystemName;
-		this.eventType = new String [eventType.length];
-		for (int i = 0; i < eventType.length; ++i)
-			this.eventType[i] = eventType[i];
-		corbaEvent = new StructuredEvent ();
-		// Let the SupplierAdmin know all the event types.
-		EventType[] corbaType = new EventType [eventType.length];
-		for (int i = 0; i < eventType.length; ++i)
-			corbaType[i] = new EventType (CorbaNotificationChannel.ALMA_DOMAIN,
-										  eventType[i]);
-		try {
-			m_supplierAdmin.offer_change(corbaType,new EventType [0]);
-		} catch (InvalidEventType err) {
-			err.printStackTrace(System.err);
-			throw new IllegalArgumentException(err.toString());
-		}
 	}
 	
 	/**
@@ -106,17 +66,10 @@ public class CorbaPublisher extends alma.acs.nc.Supplier {
 	public final void publish(IDLEntity event) {
 		// Get the event's class name.
 		String className = event.getClass().getName();
-		// And, make sure it is in the list of event types.
-		int i = 0;
-		for (; i < eventType.length; ++i)
-			if (eventType[i].equals(className))
-				break;
-		if (i == eventType.length)
-			throw new IllegalArgumentException("Invalid event type!  No such event as " + className);
 		
 		// Populate the CORBA event object.
         String eventName = new String("");
-        EventType corbaEventType = new EventType("ALMA",eventType[i]);
+        EventType corbaEventType = new EventType("ALMA",className);
         FixedEventHeader fixedHeader = new FixedEventHeader(corbaEventType, eventName);         
         Property[] variableHeader = new Property[0];
         corbaEvent.header = new EventHeader(fixedHeader, variableHeader);        
@@ -183,21 +136,7 @@ public class CorbaPublisher extends alma.acs.nc.Supplier {
 	 * @return The channel name.
 	 */
 	public String getChannelName() {
-		return channelName;
-	}
-
-	/**
-	 * @return The Java names of the event types.
-	 */
-	public String[] getEventType() {
-		return eventType;
-	}
-
-	/**
-	 * @return the subsystem name.
-	 */
-	public String getSubsystemName() {
-		return subsystemName;
+		return m_channelName;
 	}
 
 }

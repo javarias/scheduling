@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 /**
- * LocalReceiver.java
- * 
  * The LocalReceiver class is an internal class used by the local
  * notification channel.  Only the Receiver methods are public.
  * Such an object is created by static methods in the LocalNotificationChannel
@@ -42,9 +40,22 @@ import java.util.ListIterator;
  *
  */
 class LocalReceiver implements Receiver {
+	
+	/**
+	 * The local notification channel to which this receiver belongs.
+	 */
 	private LocalNotificationChannel channel;
 	
+	/**
+	 * The list of receiver objects that process received events.
+	 * The items on this list are all of type EventReceiver.
+	 */
 	private ArrayList receivers;
+	
+	/**
+	 * Designates whether a begin() method has been called or not.
+	 */
+	private boolean isBegin;
 	
 	/**
 	 * Create a local receiver object.  Only the LocalNotificationChannel
@@ -54,6 +65,7 @@ class LocalReceiver implements Receiver {
 	LocalReceiver(LocalNotificationChannel channel) {
 		this.channel = channel;
 		receivers = new ArrayList ();
+		isBegin = false;
 	}
 
 	/**
@@ -79,20 +91,25 @@ class LocalReceiver implements Receiver {
 	 * 							parameter in the method signature is the name 
 	 * 							of an IDL structure that defines the event.
 	 */
-	public void attach (String eventTypeName, Object receiver) {		
+	public void attach (String eventTypeName, Object receiver) {
+
+		// CheckEventType
+		// This check has been disabled for now.
 		// Make sure this event name is legal.
+		/*
 		if (!channel.checkEventName(eventTypeName))
 			throw new IllegalArgumentException(
 			"Invalid receiver!  Method receive(" + eventTypeName + ")" + 
 			" in Class " + receiver.getClass().getName() + " is not accessible.");
-
+		*/
+				
 		// Make sure the receiver object has the proper method.
-		String err = channel.checkReceiver(eventTypeName,receiver);
+		String err = AbstractNotificationChannel.checkReceiver(eventTypeName,receiver);
 		if (err != null)
 			throw new IllegalArgumentException(err);
 
 		// Add this eventTypeName/receiver to the list of receivers.
-		synchronized (this) {
+		synchronized (receivers) {
 			// Make sure the eventTypeName/receiver is not already in the list.
 			ListIterator iter = receivers.listIterator();
 			EventReceiver item = null;
@@ -115,33 +132,41 @@ class LocalReceiver implements Receiver {
 	 * 							receives.
 	 * @param receiver			The object that receives and processes this event.
 	 */
-	public synchronized void detach (String eventTypeName, Object receiver) {
-		// Find the eventTypeName/receiver in the list and remove it.
-		int n = 0;
-		ListIterator iter = receivers.listIterator();
-		EventReceiver item = null;
-		while (iter.hasNext()) {
-			item = (EventReceiver)iter.next();
-			if (item.eventTypeName.equals(eventTypeName) &&
-				item.receiver == receiver) {
-				receivers.remove(n);
-				break;
+	public void detach (String eventTypeName, Object receiver) {
+		synchronized (receivers) {
+			// Find the eventTypeName/receiver in the list and remove it.
+			int n = 0;
+			ListIterator iter = receivers.listIterator();
+			EventReceiver item = null;
+			while (iter.hasNext()) {
+				item = (EventReceiver)iter.next();
+				if (item.eventTypeName.equals(eventTypeName) &&
+					item.receiver == receiver) {
+					receivers.remove(n);
+					break;
+				}
+				++n;
 			}
-			++n;
+			return;
 		}
-		return;
 	}
 	
 	public void begin() {
-		// Add this local receiver to the list of channel receivers.
-		channel.addLocalReceiver(this);
+		if (!isBegin) {
+			// Add this local receiver to the list of channel receivers.
+			channel.addLocalReceiver(this);
+			isBegin = true;
+		}
 	}
 	
 	public void end() {
-		// Remove this local receiver from the list of channel receivers.
-		channel.removeLocalReceiver(this);
-		// clear the list of event recievers.
-		receivers.clear();
+		if (isBegin) {
+			// Remove this local receiver from the list of channel receivers.
+			channel.removeLocalReceiver(this);
+			// clear the list of event recievers.
+			receivers.clear();
+			isBegin = false;
+		}
 	}
 
 }

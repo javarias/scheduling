@@ -28,8 +28,6 @@ package ALMA.scheduling.define.nc;
 
 import java.lang.reflect.*;
 
-import org.omg.CORBA.portable.IDLEntity;
-
 /**
  * The AbstractNotificationChannel class forms the base class
  * from which Local and CORBA Notification Channel classes are
@@ -53,47 +51,41 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 	 * Create a Notification Channel.
 	 * @param type Either LOCAL or CORBA.
 	 * @param channelName	The name of this channel.
-	 * @param subsystemName	The subsystem to which this channel belongs.
 	 * @param eventType	The names of the events that are published on 
 	 * 						this channel.
 	 */
-	static public AbstractNotificationChannel createNotificationChannel(int type,
-		String channelName, String subsystemName, String[] eventType) {
+	static public AbstractNotificationChannel createNotificationChannel(int type,String channelName) {
 		switch (type) {
-			case LOCAL: return new LocalNotificationChannel(channelName,subsystemName,eventType);
-			case CORBA: return new CorbaNotificationChannel(channelName,subsystemName,eventType);
+			case LOCAL: return new LocalNotificationChannel(channelName);
+			case CORBA: return new CorbaNotificationChannel(channelName);
 		}
 		throw new IllegalArgumentException("Illeagl type value (" + type + 
 			").  Must be LOCAL or CORBA.");
 	}
+	
+	// Alternative code WITH the check of event type is designated with CheckEventType.
+	// CheckEventType
+	/*
 	static public AbstractNotificationChannel createNotificationChannel(int type,
-		String channelName, String subsystemName, String[] eventType, String actualChannelName) {
+		String channelName, String[] eventType) {
 		switch (type) {
-			case LOCAL: return new LocalNotificationChannel(channelName,subsystemName,eventType);
-			case CORBA: return new CorbaNotificationChannel(channelName,subsystemName,eventType, actualChannelName);
+			case LOCAL: return new LocalNotificationChannel(channelName,eventType);
+			case CORBA: return new CorbaNotificationChannel(channelName,eventType);
 		}
 		throw new IllegalArgumentException("Illeagl type value (" + type + 
 			").  Must be LOCAL or CORBA.");
 	}
+	*/
 
 	/**
 	 * Get the Receiver interface to a currently created channel.
 	 * @param type Either LOCAL or CORBA.
 	 * @param channelName	The name of the requested channel.
-	 * @param subsystemName	The subsystem of the requested channel.
 	 */
-	static public Receiver getReceiver(int type, String channelName, String subsystemName) {
+	static public Receiver getReceiver(int type, String channelName) {
 		switch (type) {
-			case LOCAL: return LocalNotificationChannel.getLocalReceiver(channelName,subsystemName);
-			case CORBA: return CorbaNotificationChannel.getCorbaReceiver(channelName,subsystemName);
-		}
-		throw new IllegalArgumentException("Illeagl type value (" + type + 
-			").  Must be LOCAL or CORBA.");
-	}
-	static public Receiver getReceiver(int type, String channelName, String subsystemName, String actualChannelName) {
-		switch (type) {
-			case LOCAL: return LocalNotificationChannel.getLocalReceiver(channelName,subsystemName);
-			case CORBA: return CorbaNotificationChannel.getCorbaReceiver(channelName,subsystemName,actualChannelName);
+			case LOCAL: return LocalNotificationChannel.getLocalReceiver(channelName);
+			case CORBA: return CorbaNotificationChannel.getCorbaReceiver(channelName);
 		}
 		throw new IllegalArgumentException("Illeagl type value (" + type + 
 			").  Must be LOCAL or CORBA.");
@@ -103,57 +95,45 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 	 * The name of this channel.
 	 */
 	protected String channelName;
-	/**
-	 * The name of the subsystem to which this channel belongs.
-	 */
-	protected String subsystemName;
-	/**
-	 * The type of events that are published on this channel.
-	 */
-	protected String[] eventType;
 
+	// CheckEventType
+	// * The type of events that are published on this channel.
+	// protected String[] eventType;
+	
+	
 	/**
 	 * Create an AbstractNotification Channel.
 	 * @param channelName	The name of this channel.
-	 * @param subsystemName	The subsystem to which this channel belongs.
 	 * @param eventType	The names of the events that are published on 
 	 * 						this channel.
 	 */
-	protected AbstractNotificationChannel (String channelName, String subsystemName, 
-			String[] eventType) {
+	protected AbstractNotificationChannel (String channelName) {
+		// Make sure the argument is legal.
+		if (channelName == null || channelName.length() == 0)
+			throw new IllegalArgumentException("channelName cannot be null");
+		// Save the argument.
+		this.channelName = channelName;
+	}
+	// CheckEventType
+	/*
+	protected AbstractNotificationChannel (String channelName, String[] eventType) {
 		// Make sure the arguments are legal.
 		if (channelName == null || channelName.length() == 0)
 			throw new IllegalArgumentException("channelName cannot be null");
-		if (subsystemName == null || subsystemName.length() == 0)
-			throw new IllegalArgumentException("subsystemName cannot be null");
 		// Save the arguments.
 		this.channelName = channelName;
-		this.subsystemName = subsystemName;
 		setEventType(eventType);
 	}
-
-	/**
-	 * Create an AbstractNotification Channel.  This constructor is used by the
-	 * CORBANotificationChannel when constructing a receiver interface.
-	 * @param channelName	The name of this channel.
-	 * @param subsystemName	The subsystem to which this channel belongs.
-	 */
-	protected AbstractNotificationChannel (String channelName, String subsystemName) {
+	protected AbstractNotificationChannel (String channelName) {
 		// Make sure the arguments are legal.
 		if (channelName == null || channelName.length() == 0)
 			throw new IllegalArgumentException("channelName cannot be null");
-		if (subsystemName == null || subsystemName.length() == 0)
-			throw new IllegalArgumentException("subsystemName cannot be null");
 		// Save the arguments.
 		this.channelName = channelName;
-		this.subsystemName = subsystemName;
 		eventType = null;
-	}
-	
-	/**
-	 * Set the event types that are published on this channel.
-	 * @param eventType The event types that are published on this channel.
-	 */
+	}	
+	// * Set the event types that are published on this channel.
+	// * @param eventType The event types that are published on this channel.
 	protected void setEventType(String[] eventType) {
 		if (eventType == null || eventType.length == 0)
 			throw new IllegalArgumentException("eventType cannot be null.");
@@ -177,7 +157,9 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 		for (int i = 0; i < eventType.length; ++i)
 			this.eventType[i] = eventType[i];
 	}
+	*/
 
+	
 	/**
 	 * Get the Publisher interface to a currently created channel.
 	 * @return A Publisher interface to the specified channel.
@@ -196,43 +178,30 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 	public String getChannelName() {
 		return channelName;
 	}
-
-	/**
-	 * Get the subsystemName.
-	 * @return String The name of the subsystem.
-	 */
-	public String getSubsystemName() {
-		return subsystemName;
-	}
-
-	/**
+	
+	//	CheckEventType
+	/*
 	 * Get the event types.
 	 * @return String[] The names of the event types.
-	 */
 	public String[] getEventType() {
 		return eventType;
 	}
-	
-	// The following are helper methods used by the implementing classes. 
-	
-	/**
 	 * Return true if the event name is in the list of events that can
 	 * be published on this channel; otherwise, return false.
-	 */
 	protected boolean checkEventName(String eventTypeName) {
 		for (int i = 0; i < eventType.length; ++i)
 			if (eventType[i].equals(eventTypeName))
 				return true;;
 		return false;	
 	}
-	
-	/**
 	 * Return true if this event can be published on this channel; 
 	 * otherwise, return false.
-	 */
 	protected boolean checkEvent(IDLEntity event) {
 		return checkEventName(event.getClass().getName());
 	}
+	*/
+
+	// The following are helper methods used by the implementing classes. 
 	
 	/**
 	 * Return an error message if the receiver object does not contain
@@ -245,7 +214,7 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 	 * 							parameter in the method signature is the name 
 	 * 							of an IDL structure that defines the event.
 	 */
-	protected String checkReceiver(String eventTypeName, Object receiver) {
+	static String checkReceiver(String eventTypeName, Object receiver) {
 		// Make sure the receiver object has the proper method.
 		Class receiverClass = receiver.getClass();
 		Method receiveMethod = null;

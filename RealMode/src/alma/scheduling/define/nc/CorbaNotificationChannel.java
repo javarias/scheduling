@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import org.omg.CORBA.portable.IDLEntity;
-import org.omg.CosNotification.*;
 
 /**
  * The CorbaNotificationChannel class implements the notification
@@ -44,71 +43,15 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 
 	/**
 	 * Get the Receiver interface to a currently created CORBA channel.
-	 * <p>
-	 * This method uses the "obtain_offered_types" method that is part of the
-	 * the ProxySupplier interface in the CORBA consumer.  The full 
-	 * description of this method may be found in the OMG CORBA 
-	 * Notification Services specification.  It is described as follows:
-	 * <p>
-	 * 		EventType[] obtain_offered_Types(ObtainInfoMode mode)
-	 * <p>
-	 * where, the ObtainInfoMode is an enumeration of:
-	 * <ul>
-	 * 	<li>	ALL_NOW_UPDATES_OFF,
-	 * 	<li>	ALL_NOW_UPDATES_ON,
-	 * 	<li>	NONE_NOW_UPDATES_OFF,
-	 * 	<li>	NONE_NOW_UPDATES_ON.
-	 * </ul>
-	 * The mode setting in this method that we employ is
-	 * ALL_NOW_UPDATES_OFF.
 	 * 
 	 * @param channelName	The name of the requested channel.
 	 * @param subsystemName	The subsystem of the requested channel.
 	 * @return A Receiver interface to the specified channel or 
 	 * 			null if the channel does not exist.
 	 */
-	static public Receiver getCorbaReceiver(String channelName, String subsystemName) {
-		CorbaNotificationChannel x = new CorbaNotificationChannel (channelName,subsystemName);
-		CorbaReceiver r = new CorbaReceiver(channelName,subsystemName);
-		x.setReceiver(r);
-		r.setChannel(x);
-		EventType[] e = r.getProxySupplier().obtain_offered_types
-			(org.omg.CosNotifyChannelAdmin.ObtainInfoMode.ALL_NOW_UPDATES_OFF);
-		if (e.length == 0)
-			throw new IllegalArgumentException ("There are no events published on channel " +
-				channelName + " of subsystem " + subsystemName);
-		String[] typeName = new String [e.length];
-		for (int i = 0; i < e.length; ++i)
-			typeName[i] = e[i].type_name;
-		x.setEventType(typeName);
-		return x;
-	}
-	static public Receiver getCorbaReceiver(String channelName, String subsystemName, String actualChannelName) {
-		CorbaNotificationChannel x = new CorbaNotificationChannel (channelName,subsystemName);
-		CorbaReceiver r = new CorbaReceiver(channelName,subsystemName,actualChannelName);
-		x.setReceiver(r);
-		r.setChannel(x);
-		EventType[] e = r.getProxySupplier().obtain_offered_types
-			(org.omg.CosNotifyChannelAdmin.ObtainInfoMode.ALL_NOW_UPDATES_OFF);
-		if (e.length == 0)
-			throw new IllegalArgumentException ("There are no events published on channel " +
-				channelName + " of subsystem " + subsystemName);
-		String[] typeName = new String [e.length];
-		for (int i = 0; i < e.length; ++i)
-			typeName[i] = e[i].type_name;
-		x.setEventType(typeName);
-		return x;
-	}
-	
-	/**
-	 * The mapToCorbaChannel method maps a channel name and subsystem name to a 
-	 * properly specified CORBA notification channel name.
-	 * @param channelName The name of the channel.
-	 * @param subsystemName The subsystem of the channel.
-	 * @return The CORBA notification channel name as a string.
-	 */
-	static public String mapToCorbaChannel(String channelName, String subsystemName) {
-		return subsystemName + "_" + channelName;
+	static public Receiver getCorbaReceiver(String channelName) {
+		CorbaReceiver r = new CorbaReceiver(channelName);
+		return r;
 	}
 	
 	/**
@@ -131,32 +74,16 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 
 
 	/**
-	 * The list of receivers that are registered to recieve events
-	 * on this channel.  The items in this list are all objects
-	 * of type EventReceiver.
-	 */
-	ArrayList receivers;
-
-	/**
 	 * Create a CORBA Notification Channel.
 	 * @param channelName	The name of this channel.
 	 * @param subsystemName	The subsystem to which this channel belongs.
 	 * @param eventType	The names of the events that are published on 
 	 * 						this channel.
 	 */
-	public CorbaNotificationChannel (String channelName, String subsystemName, 
-			String[] eventType) {
-		super(channelName,subsystemName,eventType);
-		corbaPublisher = new CorbaPublisher(channelName, subsystemName, eventType);
-		corbaReceiver = null;
-		receivers = new ArrayList ();
-	}
-	public CorbaNotificationChannel (String channelName, String subsystemName, 
-			String[] eventType, String actualChannelName) {
-		super(channelName,subsystemName,eventType);
-		corbaPublisher = new CorbaPublisher(channelName, subsystemName, eventType, actualChannelName);
-		corbaReceiver = null;
-		receivers = new ArrayList ();
+	public CorbaNotificationChannel (String channelName) {
+		super(channelName);
+		corbaPublisher = new CorbaPublisher(channelName);
+		corbaReceiver = new CorbaReceiver(channelName);
 	}
 	
 	/**
@@ -165,29 +92,9 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 	 * @param corbaPublisher	The CORBA publisher object.
 	 */
 	public CorbaNotificationChannel (CorbaPublisher corbaPublisher) {
-		super(corbaPublisher.getChannelName(),
-			  corbaPublisher.getSubsystemName(),
-			  corbaPublisher.getEventType());
+		super(corbaPublisher.getChannelName());
 		this.corbaPublisher = corbaPublisher;
-		this.corbaReceiver = null;
-		receivers = new ArrayList ();
-	}
-	
-	/**
-	 * This method is used by the static method that creates a CORBA
-	 * notification channel for a CORBA receiver. 
-	 */
-	private CorbaNotificationChannel (String channelName, String subsystemName) {
-		super(channelName,subsystemName);
-		corbaPublisher = null;
-		receivers = new ArrayList ();
-	}
-	/**
-	 * This method is used by the static method that creates a CORBA
-	 * notification channel for a CORBA receiver. 
-	 */
-	private void setReceiver(CorbaReceiver corbaReceiver) {
-		this.corbaReceiver = corbaReceiver;
+		this.corbaReceiver = new CorbaReceiver(channelName);
 	}
 	
 	/**
@@ -214,32 +121,7 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 	 * 							of an IDL structure that defines the event.
 	 */
 	public void attach (String eventTypeName, Object receiver) {
-		// Make sure this event name is legal.
-		if (!checkEventName(eventTypeName))
-			throw new IllegalArgumentException(
-			"Invalid receiver!  Method receive(" + eventTypeName + ")" + 
-			" in Class " + receiver.getClass().getName() + " is not accessible.");
-
-		// Make sure the receiver object has the proper method.
-		String err = checkReceiver(eventTypeName,receiver);
-		if (err != null)
-			throw new IllegalArgumentException(err);
-
-		// Add this eventTypeName/receiver to the list of receivers.
-		synchronized (this) {
-			// Make sure the eventTypeName/receiver is not already in the list.
-			ListIterator iter = receivers.listIterator();
-			EventReceiver item = null;
-			while (iter.hasNext()) {
-				item = (EventReceiver)iter.next();
-				if (item.eventTypeName.equals(eventTypeName) &&
-					item.receiver == receiver)
-					return;
-			}
-			// OK, then add it.
-			EventReceiver x = new EventReceiver(eventTypeName,receiver);
-			receivers.add(x);
-		}
+		corbaReceiver.attach(eventTypeName,receiver);
 	}
 	
 	/**
@@ -250,20 +132,7 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 	 * @param receiver			The object that receives and processes this event.
 	 */
 	public void detach (String eventTypeName, Object receiver) {
-		// Find the eventTypeName/receiver in the list and remove it.
-		int n = 0;
-		ListIterator iter = receivers.listIterator();
-		EventReceiver item = null;
-		while (iter.hasNext()) {
-			item = (EventReceiver)iter.next();
-			if (item.eventTypeName.equals(eventTypeName) &&
-				item.receiver == receiver) {
-				receivers.remove(n);
-				break;
-			}
-			++n;
-		}
-		return;
+		corbaReceiver.detach(eventTypeName,receiver);
 	}
 
 	/**
@@ -272,9 +141,7 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 	 * This method must be called or no events will be recieved.
 	 */
 	public void begin() {
-		if (corbaReceiver == null)
-			return;
-		corbaReceiver.connect();
+		corbaReceiver.begin();
 	}
 	
 	/**
@@ -283,10 +150,7 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 	 * events are received.
 	 */
 	public void end() {
-		if (corbaReceiver == null)
-			return;
-		corbaReceiver.disconnect();
-		receivers.clear();
+		corbaReceiver.end();
 	}
 
 	/**
@@ -294,11 +158,6 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 	 * @param event The event must be an IDL structure.
 	 */
 	public void publish(IDLEntity event) {
-		// Make sure the event is legal.
-		if (!checkEvent(event))
-			throw new IllegalArgumentException(
-			"Invalid event type!  No such event as " + event.getClass().getName());
-
 		// Publish the event.		
 		corbaPublisher.publish(event);
 	}

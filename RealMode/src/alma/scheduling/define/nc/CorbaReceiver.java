@@ -43,11 +43,19 @@ import org.omg.CosNotifyChannelAdmin.StructuredProxyPushSupplier;
  * @version 1.00 Apr 10, 2003
  * @author Allen Farris
  */
-public class CorbaReceiver extends alma.acs.nc.Consumer {
+public class CorbaReceiver extends alma.acs.nc.Consumer implements Receiver {
 
-	private String channelName;
-	private String subsystemName;
-	private CorbaNotificationChannel channel;
+	/**
+	 * The list of receiver objects that process received events.
+	 * The items on this list are all of type EventReceiver.
+	 */
+	private ArrayList receivers;
+	
+	/**
+	 * Designates whether a begin() method has been called or not.
+	 */
+	private boolean isBegin;
+	
 	
 	/**
 	 * Create a CORBA receiver object.  The CORBA receiver object is only 
@@ -56,7 +64,6 @@ public class CorbaReceiver extends alma.acs.nc.Consumer {
 	 * the CorbaNotificationChannel class to create such an object.
 	 * 
 	 * @param channelName	The name of the channel to which we are going to listen.
-	 * @param subsystemName	The subsystem of the channel to which we are going to listen.
 	 * @param eventType	The name of the type of event we are going to process.
 	 * @param processor	This is an object that processes the specified event to which 
 	 * 						we are going to listen.  It is required to have a method of
@@ -64,35 +71,74 @@ public class CorbaReceiver extends alma.acs.nc.Consumer {
 	 * 						eventType is an IDL struct that represents the event data being
 	 * 						processed.
 	 */
-	CorbaReceiver (String channelName, String subsystemName) {
-		super (CorbaNotificationChannel.mapToCorbaChannel(channelName,subsystemName));
-		this.channelName = channelName;
-		this.subsystemName = subsystemName;
-		this.channel = null;
+	CorbaReceiver (String channelName) {
+		super (channelName);
+		receivers = new ArrayList ();
+		isBegin = false;
 	}
-	CorbaReceiver (String channelName, String subsystemName, String actualChannelName) {
-		super (actualChannelName);
-		this.channelName = channelName;
-		this.subsystemName = subsystemName;
-		this.channel = null;
-	}
-	
-	void setChannel (CorbaNotificationChannel channel) {
-		this.channel = channel;
-	}
-	
+		
 	StructuredProxyPushSupplier getProxySupplier() {
 		return m_proxySupplier;
 	}
+	public String getChannelName() {
+		return m_channelName; 
+	}
+	
+	String[] getEventType() {
+		EventReceiver item = null;
+		synchronized (receivers) {
+			String[] types = new String [receivers.size()];
+			ListIterator iter = receivers.listIterator();
+			int i = 0;
+			while (iter.hasNext()) {
+				item = (EventReceiver)iter.next();
+				types[i++] = item.eventTypeName;
+			}
+			return types;
+		}
+	}
+
+	// CheckEventType
+	// The following method gets the types of events that are published on this channel.
+	// It is disabled at this time.
+	/*
+	 * Return the typename of events that are published on this channel.
+	 * 
+	 * This method uses the "obtain_offered_types" method that is part of the
+	 * the ProxySupplier interface in the CORBA consumer.  The full 
+	 * description of this method may be found in the OMG CORBA 
+	 * Notification Services specification.  It is described as follows:
+	 * <p>
+	 * 		EventType[] obtain_offered_Types(ObtainInfoMode mode)
+	 * <p>
+	 * where, the ObtainInfoMode is an enumeration of:
+	 * <ul>
+	 * 	<li>	ALL_NOW_UPDATES_OFF,
+	 * 	<li>	ALL_NOW_UPDATES_ON,
+	 * 	<li>	NONE_NOW_UPDATES_OFF,
+	 * 	<li>	NONE_NOW_UPDATES_ON.
+	 * </ul>
+	 * The mode setting in this method that we employ is
+	 * ALL_NOW_UPDATES_OFF.
+	 *
+	public String[] getChannelEventType() {
+		EventType[] e = getProxySupplier().obtain_offered_types
+			(org.omg.CosNotifyChannelAdmin.ObtainInfoMode.ALL_NOW_UPDATES_OFF);
+		String[] typename = new String [e.length];
+		for (int i = 0; i < e.length; ++i)
+			typename[i] = e[i].type_name;
+		return typename;
+	}
+	*/
 	
 	/**
 	 * Connect this CORBA receiver to its CORBA channel to begin
 	 * receiving events.
 	 *
 	 */
-	public void connect() {
+	public void connect() { 
 		try {
-			String [] types = channel.getEventType();
+			String [] types = getEventType();
 			for (int i = 0; i < types.length; ++i) {
 				addSubscription(types[i]);
 			}
@@ -110,7 +156,7 @@ public class CorbaReceiver extends alma.acs.nc.Consumer {
 	 */
 	public void disconnect() {
 		try {
-			String [] types = channel.getEventType();
+			String [] types = getEventType();
 			for (int i = 0; i < types.length; ++i) {
 				removeSubscription(types[i]);
 			}
@@ -157,45 +203,166 @@ public class CorbaReceiver extends alma.acs.nc.Consumer {
 		}
 
 		String className = idlStruct.getClass().getName();
+		
+		// CheckEventType
+		/*
 		if (!channel.checkEventName(className))
 			throw new IllegalArgumentException(
 			"Invalid event type!  No such event as " + className);
-
+		*/
+		
 		// Execute the "receive(<EventType>)" methods of all receivers
 		// registered to receive this event.
-		ListIterator iter = channel.receivers.listIterator();
 		EventReceiver item = null;
 		Class receiverClass = null;
 		Method receiveMethod = null;
 		Class[] parm = new Class [1];
 		Object[] arg = new Object [1];
-		while (iter.hasNext()) {
-			item = (EventReceiver)iter.next();
-			if (item.eventTypeName.equals(className)) {
-				try {
-					receiverClass = item.receiver.getClass();
-					parm[0] = idlStruct.getClass();
-					receiveMethod = receiverClass.getMethod("receive",parm);
-					arg[0] = idlStruct;
-					receiveMethod.invoke(item.receiver,arg);
-				// If we've done the type checking properly, we should get
-				// no exceptions at this point.
-				} catch (NoSuchMethodException ex) {
-					throw new IllegalArgumentException (
-					"Internal Error! Cannot find method receive(" + 
-					item.eventTypeName + ") in class " + receiverClass.getName());
-				} catch (InvocationTargetException ex) {
-					throw new IllegalArgumentException (
-					"Internal Error! Cannot invoke method receive(" + 
-					item.eventTypeName + ") in class " + receiverClass.getName());
-				} catch (IllegalAccessException ex) {
-					throw new IllegalArgumentException (
-					"Internal Error! Cannot access method receive(" + 
-					item.eventTypeName + ") in class " + receiverClass.getName());
+		synchronized (receivers) {
+			ListIterator iter = receivers.listIterator();
+			while (iter.hasNext()) {
+				item = (EventReceiver)iter.next();
+				if (item.eventTypeName.equals(className)) {
+					try {
+						receiverClass = item.receiver.getClass();
+						parm[0] = idlStruct.getClass();
+						receiveMethod = receiverClass.getMethod("receive",parm);
+						arg[0] = idlStruct;
+						receiveMethod.invoke(item.receiver,arg);
+						// If we've done the type checking properly, we should get
+						// no exceptions at this point.
+					} catch (NoSuchMethodException ex) {
+						throw new IllegalArgumentException (
+						"Internal Error! Cannot find method receive(" + 
+						item.eventTypeName + ") in class " + receiverClass.getName());
+					} catch (InvocationTargetException ex) {
+						throw new IllegalArgumentException (
+						"Internal Error! Cannot invoke method receive(" + 
+						item.eventTypeName + ") in class " + receiverClass.getName());
+					} catch (IllegalAccessException ex) {
+						throw new IllegalArgumentException (
+						"Internal Error! Cannot access method receive(" + 
+						item.eventTypeName + ") in class " + receiverClass.getName());
+					}
 				}
 			}
 		}
+	}
 
+	/**
+	 * Attach an event receiver object to this notification 
+	 * channel.  The receiver is required to have a public method called
+	 * "receive(EventType)", that receives and processes the event.  The 
+	 * EventType parameter in the method signature is the name of an IDL 
+	 * structure that defines the event.
+	 * @param eventTypeName 	The full path name of the event type that 
+	 * 							this receiver wishes to receive.
+	 * @param receiver			An object that receives and processes this event.
+	 * 							It must have a public method of the form 
+	 * 							"receive(EventType)", where the EventType 
+	 * 							parameter in the method signature is the name 
+	 * 							of an IDL structure that defines the event.
+	 */
+	public void attach (String eventTypeName, Object receiver) {
+		// CheckEventType
+		// This check has been disabled for now.
+		// Make sure this event name is legal.
+		/*
+		if (!channel.checkEventName(eventTypeName))
+			throw new IllegalArgumentException(
+			"Invalid receiver!  Method receive(" + eventTypeName + ")" + 
+			" in Class " + receiver.getClass().getName() + " is not accessible.");
+		*/
+				
+		// Make sure the receiver object has the proper method.
+		String err = AbstractNotificationChannel.checkReceiver(eventTypeName,receiver);
+		if (err != null)
+			throw new IllegalArgumentException(err);
+
+		// Add this eventTypeName/receiver to the list of receivers.
+		synchronized (receivers) {
+			// Make sure the eventTypeName/receiver is not already in the list.
+			ListIterator iter = receivers.listIterator();
+			EventReceiver item = null;
+			while (iter.hasNext()) {
+				item = (EventReceiver)iter.next();
+				if (item.eventTypeName.equals(eventTypeName) &&
+					item.receiver == receiver)
+					return;
+			}
+			// OK, then add it.
+			EventReceiver x = new EventReceiver(eventTypeName,receiver);
+			receivers.add(x);
+			if (isBegin) {
+				try {
+					addSubscription(eventTypeName);
+				} catch (alma.acs.nc.ncExcept ex) {
+					ex.printStackTrace(System.err);
+					throw new IllegalStateException(ex.toString());
+				}
+			}
+		}
+		
+	}
+	
+	/**
+	 * Detach an eventType/Receiver from this notification channel.  Only the 
+	 * specified event type is detached for the specified receiver.
+	 * @param eventTypeName 	The name of the event type that this receiver 
+	 * 							receives.
+	 * @param receiver			The object that receives and processes this event.
+	 */
+	public void detach (String eventTypeName, Object receiver) {
+		synchronized (receivers) {
+			// Find the eventTypeName/receiver in the list and remove it.
+			int n = 0;
+			ListIterator iter = receivers.listIterator();
+			EventReceiver item = null;
+			while (iter.hasNext()) {
+				item = (EventReceiver)iter.next();
+				if (item.eventTypeName.equals(eventTypeName) &&
+					item.receiver == receiver) {
+					receivers.remove(n);
+					break;
+				}
+				++n;
+			}
+			if (isBegin) {
+				try {
+					removeSubscription(eventTypeName);
+				} catch (alma.acs.nc.ncExcept ex) {
+					ex.printStackTrace(System.err);
+					throw new IllegalStateException(ex.toString());
+				}
+			}
+			return;
+		}
+	}
+	
+	/**
+	 * The begin() method must be called to initiate the process of receiving 
+	 * events.  At this point the objects that have been attached begin 
+	 * receiving events.  This method must be called or no events will be 
+	 * recieved.
+	 */
+	public void begin() {
+		if (!isBegin) {
+			connect();
+			isBegin = true;
+		}		
+	}
+	
+	/**
+	 * Stop all events from being processed by the attached Receiver objects.
+	 * All objects that have been recieving events are removed and no further
+	 * events are received.
+	 */
+	public void end() {
+		if (isBegin) {
+			disconnect();
+			receivers.clear();
+			isBegin = false;
+		}		
 	}
 
 }
