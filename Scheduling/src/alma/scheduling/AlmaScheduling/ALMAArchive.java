@@ -60,7 +60,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.34 2005/02/16 21:25:33 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.35 2005/02/24 14:53:24 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -769,7 +769,8 @@ public class ALMAArchive implements Archive {
             }
             while(cursor.hasNext()){
                 QueryResult res = cursor.next();
-                System.out.println("PPR xml= "+res.xml);
+                logger.info("PPR xml (in archive)= "+res.xml);
+                result = res.xml;
             }
 
             //query the archive for the pipelineprocessing requestthe pipelineprocessing request..
