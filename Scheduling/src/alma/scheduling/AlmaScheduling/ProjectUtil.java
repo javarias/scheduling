@@ -88,7 +88,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.16 2005/02/28 19:12:38 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.17 2005/03/10 22:42:14 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -357,6 +357,7 @@ public class ProjectUtil {
 	 */
 	static private void validate(SciPipelineRequest req, Project project, Program parent) throws SchedulingException {
 		// TODO
+        System.out.println("Validating SciPipelineRequest..");
 	}
 
 	/**
@@ -545,7 +546,14 @@ public class ProjectUtil {
 		program.setScientificPriority(Priority.MEDIUM); // Where is this in ObsPrep?
 		program.setUserPriority(Priority.MEDIUM);
 		program.setDataReductionProcedureName(set.getScienceProcessingScript());
-		program.setDataReductonParameters(null);
+        //System.out.println("DataProcessingParameters.. "+ set.getDataProcessingParameters().getProjectType().toString());
+        Object[] params = new Object[5];
+        params[0] = set.getDataProcessingParameters().getAngularResolution();
+        params[1] = set.getDataProcessingParameters().getVelocityResolution();
+        params[2] = set.getDataProcessingParameters().getTBSensitivityGoal();
+        params[3] = set.getDataProcessingParameters().getRMSGoal();
+        params[4] = set.getDataProcessingParameters().getProjectType();
+		program.setDataReductonParameters(params);
 		program.setFlowControl(null);
 		program.setNotify(null);
 		program.setScienceGoal(null);
@@ -808,6 +816,20 @@ public class ProjectUtil {
 		return pstatus;
 		
 	}
+
+    /**
+      * Updates the project status.
+      *
+      */
+    static public ProjectStatus updateProjectStatus(Project p) throws SchedulingException{
+        try {
+            return ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
+        } catch(Exception e){
+            System.out.println("SCHEDULING: Error updating ProjectStatus.");
+            e.printStackTrace();
+            return null;
+        }
+    }
 	
 	//////////////////////////////////////////////////////////////
 	// The following private methods are used to support the 	//
@@ -976,12 +998,10 @@ public class ProjectUtil {
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
         if(parm != null) {
-//    		String[] s = new String [parm.length];//hso
             PipelineParameterT[] pparams = new PipelineParameterT[parm.length];//hso
 		    for (int i = 0; i < parm.length; ++i){//hso
-//                s[i] = parm[i].toString();//hso
                 pparams[i] = new PipelineParameterT();//hso
-                pparams[i].setName("???"); //hso:todo
+                pparams[i].setName(parm[i].getClass().getName());
                 pparams[i].setValue(parm[i].toString()); //hso:todo
             }
     		target.setPipelineParameter(pparams);//hso

@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.29 2005/02/28 19:12:38 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.30 2005/03/10 22:42:14 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -130,7 +130,7 @@ public class ALMAProjectManager extends ProjectManager {
                     } else {
                         ProjectStatus ps;
                         try {
-                            ps = ProjectUtil.map(projs[i], new DateTime(System.currentTimeMillis()));
+                            ps = ProjectUtil.updateProjectStatus(projs[i]);
                             psQueue.add(ps);
                             archive.updateProjectStatus(ps);
                         } catch(Exception e) {
@@ -267,7 +267,19 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
 
+    /*
+    public SBStatusT[] parseObsUnitStatusT(ObsUnitSetStatusT unit) {
+        ObsUnitSetStatusTChoice choice = unit.getObsUnitSetStatusTChoice();
+        ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
+        for(int i=0; i<sets.length; i++){
+            if(sets[i] instanceof SBStatusT[]) {
+            }
+        }
+    }
+    */
 
+
+     //TODO: Rename this method.
     public SBStatusT[] parseObsUnitSetStatus(ObsUnitSetStatusT set) {
         logger.info("SCHEDULING: Set PartID = "+set.getEntityPartId());
         SBStatusT[] sbs = null;
@@ -325,7 +337,8 @@ public class ALMAProjectManager extends ProjectManager {
         proj.setProgram(p);
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
-            ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            //ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
@@ -349,7 +362,8 @@ public class ALMAProjectManager extends ProjectManager {
                     ses.setEndTime(new DateTime(endTime));
                 }
             }
-            ps = ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
+           // ps = ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
+            ps = ProjectUtil.updateProjectStatus(p);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(Exception e){
@@ -457,7 +471,8 @@ public class ALMAProjectManager extends ProjectManager {
         proj.setProgram(prog);
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
-            ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            //ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
@@ -472,7 +487,7 @@ public class ALMAProjectManager extends ProjectManager {
         Program prog = ppr.getProgram();
         Project proj = prog.getProject();
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
-        archive.updateProjectStatus(ps);
+        //archive.updateProjectStatus(ps);
 
         logger.info("SCHEDULING: Starting Pipeline");
         String pprString = archive.getPPRString(ps, ppr.getId());

@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.21 2005/02/28 17:09:59 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.22 2005/03/10 22:42:14 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -129,8 +129,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 //send out an end session event
                 endSession(eb);
                 //sbCompleted(eb);
-                //workaround.. will be using the ps to replace the 'ids' stuff...
-                //String[] ids = updateProjectStatus(eb);
                 startPipeline(ce);
                 deleteFinishedEB(eb);
                 break;
@@ -270,18 +268,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         manager.setSBComplete(eb);
     }
     
-
-    /**
-      * Returns the ObsUnitSet part ID which is what the pipeline needs
-      * @param ExecBlock
-      * @return String[]
-    private String[] updateProjectStatus(ExecBlock eb) {
-        String[] id_info=null;
-        logger.info("SCHEDULING: Updating the projectStatus");
-        id_info = manager.updateProjectStatus(eb);
-        return id_info;
-    }
-      */
 
     /**
       * Retrieves the exec block with the given id from the exec block queue.
