@@ -28,6 +28,9 @@ package alma.scheduling.Define;
 
 import java.util.Vector;
 
+/**
+ * @author Sohaila Lucero
+ */
 public class Session {
     private String sessionId;
     private String startTime;
@@ -36,10 +39,16 @@ public class Session {
     private String sbId;
     private Vector execBlockIds;
     
+    /**
+     * 
+     */
     public Session() {
         execBlockIds = new Vector();
     }
 
+    /**
+     * 
+     */
     public Session(String id, String sTime, String eTime, String oucId, String sbId){
         this();
         this.sessionId = id;
@@ -49,31 +58,51 @@ public class Session {
         this.sbId = sbId;
     }
 
+    /**
+     * Add an exec block to this session
+     */
     public void addExecBlockId(String id) {
         execBlockIds.add(id);
     }
 
+    /**
+     * Set the id of this session
+     */
     public void setId(String s) {
         sessionId = s;
     }
     
+    /**
+     * Set the start time of this session
+     */
     public void setStartTime(String s) {
         startTime = s;
     }
-
+    /**
+     * Set the end time of this session 
+     */
     public void setEndTime(String s) {
         endTime = s;
     }
 
+    /**
+     * Set the obs unit set id
+     */
     public void setObsUnitSetId(String s) {
         obsUnitSetId =s;
     }
     
+    /**
+     * set the SB id
+     */
     public void setSbId(String s) {
         sbId = s;
     }
   
 
+    /**
+     *  Get the session id
+     */
     public String getSessionId() {
         if(sessionId != null) {
             return sessionId;
@@ -81,6 +110,9 @@ public class Session {
             return "Session ID is null";
         }
     }
+    /**
+     * Get the start time
+     */
     public String getStartTime(){
         if(startTime !=null) {
             return startTime;
@@ -88,6 +120,9 @@ public class Session {
             return "Start time is null";
         }
     }
+    /**
+     * Get the end time
+     */
     public String getEndTime(){
         if(endTime != null) {
             return endTime;
@@ -95,6 +130,9 @@ public class Session {
             return "End Time is null";
         }
     }
+    /**
+     * Get the obs unit set id
+     */
     public String getObsUnitSetId() {
         if(obsUnitSetId != null) {
             return obsUnitSetId;
@@ -102,6 +140,9 @@ public class Session {
             return "ObsUnitSet id is null";
         }
     }
+    /**
+     * get the sb id
+     */
     public String getSbId() {
         if(sbId == null) {
             return sbId;
@@ -110,6 +151,9 @@ public class Session {
         }
     }
 
+    /**
+     * Get a list of all the exec blocks from this session
+     */
     public String[] getExecBlockIds() {
         String[] ids = new String[execBlockIds.size()];
         for(int i=0; i < execBlockIds.size(); i++){

@@ -55,6 +55,12 @@ public interface Control {
 	public void execSB(short subarrayId, BestSB best)
 		throws SchedulingException;
 
+	/**
+	 * Execute the selected SB with the specified identifier on the specified 
+	 * sub-array immediately.
+	 * @param subarrayId The subarray on which to execute the SB.
+	 * @param bestSB The string id of the best sb to schedule now
+	 */
 	public void execSB(short subarrayId, String bestSB)
 		throws SchedulingException;
 
