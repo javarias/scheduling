@@ -80,6 +80,11 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
 	public String selectSB(String[] sbIdList, String messageId) {
         
         
+        if(sbIdList == null || sbIdList.length == 0) {
+            logger.info("SCHEDULING: There are no SBs to select from!");
+            logger.info("SCHEDULING: Put some in the archive and try again.");
+            return null;
+        }
         Thread timer = new Thread(new SelectSBTimer(1000)); 
         //5 minutes in milliseconds
         timer.start();

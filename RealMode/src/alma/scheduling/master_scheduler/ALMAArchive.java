@@ -192,7 +192,7 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public void updateSchedBlock(ExecBlockEvent execblockevent) {
         logger.info("SCHEDULING: sb id="+execblockevent.sbId);
-        logger.info("SCHEDULING: ** This is where the sb will be linked to its sxecblock **");
+        logger.info("SCHEDULING: ** This is where the sb will be linked to its execblock **");
         XmlEntityStruct sb_xml = retrieve(execblockevent.sbId);
         //convert to SchedBlock
         SchedBlock sb_obj = (SchedBlock)convertToObject(sb_xml.xmlString, 
@@ -203,6 +203,9 @@ public class ALMAArchive implements ArchiveProxy {
         if(ouc == null) {
             ouc = new ObsUnitControl();
         }
+        //System.out.println("##############################");
+        //System.out.println(execblockevent.status.value());
+        //System.out.println("##############################");
         switch(execblockevent.status.value()) {
             case 0://exec block status = processing
                 ouc.setSchedStatus(SchedStatusT.RUNNING);
