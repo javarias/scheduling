@@ -44,6 +44,7 @@ public class PipelineEventListener extends Consumer {
     public PipelineEventListener(ALMAPipeline p){
         super(alma.pipelinescience.CHANNELNAME.value);
         this.pipeline = p;
+        System.out.println("PipelineEventListener created.");
     }
 
     public void push_structured_event(StructuredEvent structuredEvent) 
@@ -55,6 +56,7 @@ public class PipelineEventListener extends Consumer {
                     structuredEvent.filterable_data[0].value);
             sendNCBSEvent();
         } catch (Exception e) {
+            System.out.println("something NULL in push pipeline thing");
             System.err.println(e);
         }
     }
@@ -72,6 +74,7 @@ public class PipelineEventListener extends Consumer {
         try {
             supplier.publishEvent(ncbs);
         } catch(Exception e) {
+            System.out.println("error when sending ncbs: "+e.toString());
         }
     }
 }
