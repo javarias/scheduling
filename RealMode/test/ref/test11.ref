@@ -1,15 +1,18 @@
 1 - FINE: ready to talk with components!
+1 - Consumer.getNotificationChannel(...): the 'SCHEDULING_CHANNEL' channel doesn't exist
 1 - FINE: component MASTER_SCHEDULER retrieved successfully.
 1 - FINE: SCHED_TEST: MS Component created
+1 - Got scheduling channel
+1 - SCHED_TEST: SchedConsumer created
 1 - SCHED_TEST: sup1 created
 1 - SCHED_TEST: sup2 created
+1 - INFO: SCHED_TEST: MasterScheduler's status = executing!
 1 - INFO: SCHED_TEST: About to call startScheduling
 1 - FINE: SCHED_TEST: MasterScheduler startScheduling called.
 1 - FINE: SCHED_TEST: Scheduling started
-1 - Got scheduling channel
-1 - SCHED_TEST: SchedConsumer created
 1 - SCHED_TEST: Published TelCalEvents
-1 - INFO: SCHED_TEST: MasterScheduler's status = executing!
-1 - Got scheduling channel
-1 - SCHED_TEST: SchedConsumer created
-1 - INFO: SCHED_TEST: About to call stopScheduling
+1 - INFO: SCHED_TEST: *******************************
+1 - INFO: SCHED_TEST: Got NothingCanBeScheduledEvent!
+1 - INFO: SCHED_TEST: *******************************
+1 - SCHED_TEST: Got NothingCanBeScheduledEvent
+1 - SCHED_TEST: alma.scheduling.NothingCanBeScheduledEnum@16e1fb1
