@@ -3,7 +3,7 @@ FINE: SCHEDULING: The ALMAArchive has been constructed.
 INFO: SCHED_TEST: function getSchedBlock() 
 INFO: SCHED_TEST: function getSchedBlock(String id) 
 INFO: SCHED_TEST: sb with id=uid://X----------------/X-------- has version=1
-INFO: SCHED_TEST: function updateSchedBlock(ExecBlockEvent event) 
+INFO: SCHED_TEST: function updateSchedBlock(ExecBlockEvent e) 
 INFO: SCHEDULING: sb id=uid://X----------------/X--------
 INFO: SCHEDULING: ** This is where the sb will be linked to its sxecblock **
 INFO: SCHED_TEST: sb with id=uid://X----------------/X-------- has version=1

@@ -78,7 +78,7 @@ public class TestALMAArchive {
                 sb.getSchedBlockEntity().getEntityId()+" has version="+
                     sb.getSchedBlockEntity().getDocumentVersion());//xml_entity.schemaVersion);
 
-            logger.info("SCHED_TEST: function updateSchedBlock(ExecBlockEvent event) ");
+            logger.info("SCHED_TEST: function updateSchedBlock(ExecBlockEvent e) ");
             ExecBlockEvent event = new ExecBlockEvent();
             event.sbId = id;
             event.status = ALMA.Control.CompletionStatus.COMPLETED_OK;
