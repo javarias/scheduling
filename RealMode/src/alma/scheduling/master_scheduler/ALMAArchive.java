@@ -29,32 +29,31 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.StringReader;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.lang.Class;
 
-import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
-import alma.xmlstore.Operational;
 import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
+
 import alma.entity.xmlbinding.schedblock.SchedBlock;
-//import alma.bo.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
 import alma.entity.xmlbinding.obsproject.ObsUnitControl;
-//import alma.bo.ObsUnitControl;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 import alma.entity.xmlbinding.obsproject.types.SchedStatusT;
 import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
 
+import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerException;
 import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 
-import alma.xmlstore.OperationalPackage.MalformedURI;
-import alma.xmlstore.OperationalPackage.NotFound;
+import alma.xmlstore.ArchiveConnection;
+import alma.xmlstore.ArchiveConnectionPackage.*;
+import alma.xmlstore.Operational;
+import alma.xmlstore.OperationalPackage.*;
 import alma.xmlstore.ArchiveInternalError;
 import alma.xmlstore.Cursor;
 import alma.xmlstore.CursorPackage.QueryResult;
@@ -70,6 +69,7 @@ import alma.Control.ExecBlockEvent;
  */
 public class ALMAArchive implements ArchiveProxy {
     private ContainerServices containerServices;
+    private ArchiveConn connArchiveComp;
     private Operational operArchiveComp;
     private boolean isSimulation;
     private EntitySerializer entitySerializer;
@@ -86,21 +86,28 @@ public class ALMAArchive implements ArchiveProxy {
         this.isSimulation = isSimulation;
         this.logger = containerServices.getLogger();
         try {
-            this.operArchiveComp = alma.xmlstore.OperationalHelper.narrow(
-                container.getComponent("OPERATIONAL_ARCHIVE"));
+            this.connArchiveComp = alma.xmlstore.ArchiveConnectionHelper.narrow(
+                container.getComponent("ARHCIVE_CONNECTION"));
+            this.operArchiveComp = connArchiveComp.getOperational("SCHEDULING");
         } catch(ContainerException e) {
-            logger.log(Level.SEVERE, "SCHEDULING: Could not get archive!");
+            logger.severe("SCHEDULING: ContainerException: "+e.toString());
+        } catch (ArchiveException e) {
+            logger.severe("SCHEDULING: Archive error: "+e.toString());
+        } catch(UserDoesNotExistException e) {
+            logger.severe("SCHEDULING: Archive error: "+e.toString());
+        } catch (PermissionException e) {
+            logger.severe("SCHEDULING: Archive error: "+e.toString());
         }
         entitySerializer = EntitySerializer.getEntitySerializer(container.getLogger());
         entityDeserializer = EntityDeserializer.getEntityDeserializer(container.getLogger());
-        logger.log(Level.FINE, "SCHEDULING: The ALMAArchive has been constructed.");
+        logger.fine("SCHEDULING: The ALMAArchive has been constructed.");
     }
 
     /**
      *  Release the archive's component.
      */
     public void release() {
-        containerServices.releaseComponent("OPERATIONAL_ARCHIVE");
+        //containerServices.releaseComponent("OPERATIONAL_ARCHIVE");
     }
 
     /**
@@ -108,29 +115,27 @@ public class ALMAArchive implements ArchiveProxy {
      *  @return SchedBlock[] The array of scheduling blocks.
      */
     public SchedBlock[] getSchedBlock() {
-        //String query = "/SchedBlock";
         String query = "/*";
         String schema = "SchedBlock";
         String className = "alma.entity.xmlbinding.schedblock.SchedBlock";
-        //String className = "alma.bo.SchedBlock";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
-            sbCount = cursor.count();
             if(cursor == null) {
                 logger.severe("SCHEDULING: cursor is null..");
             }
-            SchedBlock[] sbs = new SchedBlock[cursor.count()];
-            //logger.log(Level.FINE, "SCHEDULING: Cursor's count = "+ cursor.count());
-            int i=0;
+            Vector tmpSBs = new Vector();
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
-                //logger.log(Level.FINE, "XML::::"+ res.xml);
-                //sbs[i++] = (SchedBlock)convertToObject(res.xml, schema);
-                sbs[i++] = (SchedBlock)convertToObject(res, className);
+                tmpSBs.add((SchedBlock)convertToObject(res, className));
+            }
+            sbCount = tmpSBs.size();
+            SchedBlock[] sbs = new SchedBlock[sbCount];
+            for(int i=0; i<sbCount; i++) {
+                sbs[i] = (SchedBlock)tmpSBs.elementAt(i);
             }
             return sbs;
         } catch(ArchiveInternalError e){
-            logger.log(Level.SEVERE, "SCHEDULING:"+ e.toString());
+            logger.severe("SCHEDULING:"+ e.toString());
         }
         return null;
     }
@@ -171,17 +176,6 @@ public class ALMAArchive implements ArchiveProxy {
         /*
         String query = "/SchedBlock/SchedBlockEntityT[@entityId=\""+id+"\"]";
         String schema = "SchedBlock";
-        try { 
-            Cursor cursor = operArchiveComp.query(query, schema);
-            if(cursor.count() > 1) { //error coz there should only be one!! 
-                return null;
-            }
-            QueryResult res = cursor.next();
-            sb = (SchedBlock) convertToObject(res, schema);
-            //sb = (SchedBlock) convertToObject(res.xml, schema);
-        } catch (ArchiveInternalError e){
-            logger.log(Level.SEVERE, e.toString());
-        }
         */
         return sb;
     }
@@ -203,9 +197,6 @@ public class ALMAArchive implements ArchiveProxy {
         if(ouc == null) {
             ouc = new ObsUnitControl();
         }
-        //System.out.println("##############################");
-        //System.out.println(execblockevent.status.value());
-        //System.out.println("##############################");
         switch(execblockevent.status.value()) {
             case 0://exec block status = processing
                 ouc.setSchedStatus(SchedStatusT.RUNNING);
@@ -233,37 +224,41 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public void updateSchedBlock(SchedBlock sb) {
         try {
-            XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(sb);
-            operArchiveComp.update(xmlEntity);
+            XmlEntityStruct newSBentity = entitySerializer.serializeEntity(sb);
+            XmlEntityStruct retrievedSBentity = operArchiveComp.retrieve(newSBentity.entityId);
+            retrievedSBentity.xmlString = newSBentity.xmlString;
+            operArchiveComp.update(retrievedSBentity);
         } catch(EntityException e){
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(InternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         }
     }
 
 
     public ObsProject[] getProject() {
-        //String query = "/ObsProject";
         String query = "/*";
         String schema = "ObsProject";
         String className = "alma.entity.xmlbinding.obsproject.ObsProject";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
-            projectCount = cursor.count();
-            ObsProject[] obsProject = new ObsProject[cursor.count()];
-            int i=0;
+            Vector tmpProj = new Vector();
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
-                obsProject[i++] = (ObsProject)convertToObject(res, className);
+                tmpProj.add((ObsProject)convertToObject(res, className));
+            }
+            projectCount = tmpProj.size();
+            ObsProject[] obsProject = new ObsProject[projectCount];
+            for(int i=0; i < projectCount; i++) {
+                obsProject[i] = (ObsProject)tmpProj.elementAt(i);
             }
             return obsProject;
         } catch (ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return null;
     }
@@ -303,56 +298,59 @@ public class ALMAArchive implements ArchiveProxy {
             XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(p);
             operArchiveComp.update(xmlEntity);
         } catch(EntityException e){
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(InternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
     }
 
     public SchedulingPolicy[] getSchedulingPolicy() {
-        //String query = "/SchedulingPolicy";
         String query = "/*";
         String schema = "SchedulingPolicy";
         String className = "alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
-            policyCount = cursor.count();
-            SchedulingPolicy[] schedulingPolicy = new SchedulingPolicy[cursor.count()];
-            int i=0;
+            Vector tmpSP = new Vector();
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
-                schedulingPolicy[i++] = (SchedulingPolicy)convertToObject(res, className);
-                //schedulingPolicy[i++] = (SchedulingPolicy)convertToObject(res.xml, schema);
+                tmpSP.add((SchedulingPolicy)convertToObject(res, className));
+            }
+            policyCount =tmpSP.size();
+            SchedulingPolicy[] schedulingPolicy = new SchedulingPolicy[policyCount];
+            for(int i=0; i< policyCount; i++){
+                schedulingPolicy[i] = (SchedulingPolicy)tmpSP.elementAt(i);
             }
             return schedulingPolicy;
         } catch (ArchiveInternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return null;
     }
 
     public PipelineProcessingRequest[] getPipelineProcessingRequest() {
         String query = "/*";
-        //String query = "/PipelineProcessingRequest";
         String schema = "PipelineProcessingRequest";
         String className = "alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest";
         
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
-            PipelineProcessingRequest[] ppr = new PipelineProcessingRequest[cursor.count()];
-            int i = 0;
+            Vector tmpPPR = new Vector();
             while(cursor.hasNext()){
                 QueryResult res = cursor.next();
-                ppr[i++] = (PipelineProcessingRequest)convertToObject(res, className);
-                //ppr[i++] = (PipelineProcessingRequest)convertToObject(res.xml, schema);
+                tmpPPR.add((PipelineProcessingRequest)convertToObject(res, className));
+            }
+            pprCount = tmpPPR.size();
+            PipelineProcessingRequest[] ppr = new PipelineProcessingRequest[pprCount];
+            for(int i=0; i<pprCount; i++) {
+                ppr[i] = (PipelineProcessingRequest)tmpPPR.elementAt(i);
             }
             return ppr;
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE, e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         
         return null;
@@ -394,13 +392,13 @@ public class ALMAArchive implements ArchiveProxy {
             XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(ppr);
             operArchiveComp.update(xmlEntity);
         } catch(EntityException e){
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(InternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
     }
     
@@ -427,15 +425,15 @@ public class ALMAArchive implements ArchiveProxy {
     public void store(Object obj, EntityT entityT) {
         try {
             XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(obj, entityT);
-            operArchiveComp.update(xmlEntity);
+            operArchiveComp.store(xmlEntity);
         } catch(EntityException e){
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(InternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
     }
     
@@ -449,13 +447,13 @@ public class ALMAArchive implements ArchiveProxy {
             XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(obj, entityT);
             operArchiveComp.update(xmlEntity);
         } catch(EntityException e){
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(InternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
     }
     
@@ -469,11 +467,12 @@ public class ALMAArchive implements ArchiveProxy {
         try {
             entity = operArchiveComp.retrieve(uri, -1);
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(NotFound e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return entity;
     }
@@ -489,11 +488,11 @@ public class ALMAArchive implements ArchiveProxy {
         try {
             entity = operArchiveComp.retrieve(uri, version);
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(NotFound e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return entity;
     }
@@ -505,13 +504,13 @@ public class ALMAArchive implements ArchiveProxy {
     public void delete(String uri) {
         try {
         //set to false coz it apparantly doesn't do anything yet
-            operArchiveComp.delete(uri, -1, false);
+            operArchiveComp.delete(uri);
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(NotFound e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
     }
 
@@ -522,13 +521,13 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public void undelete(String uri, int version) {
         try {
-            operArchiveComp.undelete(uri, version, false);
+            operArchiveComp.undelete(uri);
         } catch(ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(NotFound e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
      }
     
@@ -546,7 +545,7 @@ public class ALMAArchive implements ArchiveProxy {
                 objects.add(  convertToObject(result, schema) );
             }
         } catch (ArchiveInternalError e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return objects;
     }
@@ -558,9 +557,9 @@ public class ALMAArchive implements ArchiveProxy {
         try {
             obj = entityDeserializer.deserializeEntity(xml, Class.forName(className)); 
         } catch( EntityException e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return obj;
     }
@@ -569,9 +568,9 @@ public class ALMAArchive implements ArchiveProxy {
         try {
             obj = entityDeserializer.deserializeEntity(res.xml, Class.forName(className)); 
         } catch( EntityException e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         } catch(ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return obj;
     }
@@ -594,7 +593,7 @@ public class ALMAArchive implements ArchiveProxy {
                 sbs.add( (SchedBlock) convertToObject(result, "SchedBlock" ));
             }
         }catch (ArchiveInternalError e) {
-            logger.log(Level.SEVERE,"SCHEDULING: "+ e.toString());
+            logger.severe("SCHEDULING: "+e.toString());
         }
         return sbs;
     }

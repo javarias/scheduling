@@ -34,7 +34,6 @@ import alma.acs.container.ContainerException;
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
 
-import alma.scheduling.define.nc.*;
 import alma.scheduling.NothingCanBeScheduledEvent;
 
 /**
@@ -43,7 +42,9 @@ import alma.scheduling.NothingCanBeScheduledEvent;
  */
 public class SchedulingPublisher {
     private Logger logger;
-    //private sched_channel
+    private NotificationChannel sched_nc;
+    private SimpleSupplier supplier;
+
 	/**
 	 * Create a clock object.
 	 * @param isSimulation	True, if this a simulation.
@@ -56,16 +57,48 @@ public class SchedulingPublisher {
         String[] eventType = new String[1];
         eventType[0] = "alma.scheduling.NothingCanBeScheduledEvent";
         if(isSimulation) { //create local channel
-            LocalNotificationChannel sched = 
-                new LocalNotificationChannel(
+            sched_nc = new LocalNotificationChannel(
                     alma.scheduling.CHANNELNAME.value);
         } else { //create corba channel
-            CorbaNotificationChannel sched = 
-                new CorbaNotificationChannel(
+            sched_nc = new CorbaNotificationChannel(
                    alma.scheduling.CHANNELNAME.value);
         }
+        String[] names = new String[3];
+        names[SimpleSupplier.CHANNELPOS] = ALMA.scheduling.CHANNELNAME.value;
+        names[SimpleSupplier.TYPEPOS] = 
+            new String("ALMA.scheduling.NothingCanBeScheduledEvent");
+        names[SimpleSupplier.HELPERPOS] = 
+            new String("ALMA.scheduling.NothingCanBeScheduledEventHelper");
+
+        supplier = new SimpleSupplier(names);
         
 	}
+
+    public void publish() {
+        try {
+            NothingCanBeScheduledEvent e = new NothingCanBeScheduledEvent(
+                "nothing to schedule");
+            supplier.publishEvent(e);
+            logger.info("SCHEDULING: Event sent.");
+        } catch(Exception ex) {
+            logger.severe("SCHEDULING: Event not published!");
+        }
+    }
+
+    public void publishEvent(String reason) {
+        try {
+            NothingCanBeScheduledEvent event = 
+                        new NothingCanBeScheduledEvent(reason);
+            //sched_nc.publishEvent()
+            sched_nc.publish(event);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Could not publish event. "+e.toString());
+        }
+    }
+    
+    public void publishEvent() {
+        publishEvent("Nothing could be scheduled.");
+    }
 	
 	public static void main(String[] args) {
 	}
