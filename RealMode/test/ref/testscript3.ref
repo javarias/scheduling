@@ -13,7 +13,7 @@ Exec created
 exec set in operator
 Message queue set in operator
 The MasterScheduler has been initialized.
-SBs returned
+Getting noncomplete sbs from archive
 sbs not null storing into queue
 MB Action started
 The MasterScheduler is executing.
