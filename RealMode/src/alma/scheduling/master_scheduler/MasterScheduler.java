@@ -477,7 +477,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
     private void pollArchive() {
         // get non-complete SBs from archive, right now it gets ALL sbs.
         SchedBlock[] sbs = archive.getSchedBlock();
-        logger.info("SCHEDULING: Getting SBs from archive");
+        logger.info("SCHEDULING: Getting SBs from archive. There are "+sbs.length);
 
         // place SBs in master SB queue
         if(sbs != null) {
@@ -495,7 +495,9 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
     public void run() {
         while(!stopCommand) {
             try {
-                pollArchive();
+                
+                //pollArchive(); need a fix for this..... !!!!!!!!!
+
                 logger.info("MSsleeping!");
                 Thread.sleep(msSleepTime); 
                 logger.log(Level.INFO,"SCHEDULING: MS Thread woken up.");
@@ -517,6 +519,20 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 		throws InvalidOperation {
 
         startScheduler("dynamic");
+        //get scheduling policy from schedulingPolicy arraylist then set it to start scheduling
+	}
+    
+    /**
+     * An alternative startScheduling method. Where the user can enter
+     * which ever type of scheduling mode they want, either dynamic, 
+     * interactive or manual.
+     */
+	//public void startInteractiveScheduling(XmlEntityStruct schedulingPolicy, 
+     //   String schedulingMode) throws InvalidOperation {
+	public void startInteractiveScheduling() throws InvalidOperation {
+
+        //startScheduler(schedulingMode);
+        startScheduler("interactive");
         //get scheduling policy from schedulingPolicy arraylist then set it to start scheduling
 	}
 
@@ -801,6 +817,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
      *  @param mode Either dynamic or interactive
      */
     public void startScheduler(String mode) {
+        logger.info("SCHEDULING: MODE == "+mode);
         if(!mode.equals("dynamic") && !mode.equals("interactive") ) {
             logger.severe("SCHEDULING: Scheduler not started. Invalid mode: "+mode);
             return;
@@ -820,6 +837,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
         schedThread.start();
         scheduler.add(s);
         // let scheduler listen to the control channel.
+        /*
         try {
             SchedulerEventReceiver sched_listener = 
                 new SchedulerEventReceiver(s);
@@ -830,6 +848,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
             logger.severe("SCHEDULING: Problem with scheduler event listener");
             logger.severe("SCHEDULING: "+e.toString());
         }
+        */
     }
 
 	public static void main(String[] args) {

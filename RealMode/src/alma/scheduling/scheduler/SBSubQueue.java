@@ -95,12 +95,25 @@ public class SBSubQueue {
      */
     public synchronized String[] getIds() {
         String[] tmp = new String[queue.size()];
+        System.out.println("SCHEDULING SUB QUEUE size = "+queue.size());
         for(int i =0; i < queue.size(); i++) {
             tmp[i] = (String)((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId();
         }
         return tmp;
     }
 
+    /////////////////////////////////////////////////////
+
+    public synchronized SchedBlock getSchedBlock(String uid) {
+        SchedBlock sb = null;
+        for(int i=0; i< queue.size(); i++) {
+            sb=(SchedBlock)queue.elementAt(i);
+            if(sb.getSchedBlockEntity().getEntityId().equals(uid)) {
+                return sb;
+            }
+        }
+        return null;
+    }
     /////////////////////////////////////////////////////
 	public static void main(String[] args) {
 	}

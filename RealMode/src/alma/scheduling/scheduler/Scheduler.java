@@ -28,6 +28,7 @@ package alma.scheduling.scheduler;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.lang.Thread;
 import java.lang.InterruptedException;
 
 import alma.scheduling.define.STime;
@@ -38,7 +39,8 @@ import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
 import alma.entity.xmlbinding.schedblock.SchedBlock;
-//import alma.bo.SchedBlock;
+//import alma.obsprep.bo.ObjectFactory;
+
 
 /**
  * Scheduler.java
@@ -74,6 +76,7 @@ public class Scheduler implements Runnable {
     private ALMAClock clock;
     private PIProxy piproxy;
     private SchedulingPublisher s_publisher;
+    private GUIController controller;
     
     public Scheduler(boolean isSimulation, 
                       ContainerServices c, 
@@ -108,11 +111,14 @@ public class Scheduler implements Runnable {
     
 
     public void run() {
-    //eventually needs to be put in a while loop.
-        boolean moreSBs = true;
         schedulerState = State.EXECUTING;
         logger.info("SCHEDULING: Scheduler is running in "+mode+" mode!");
         String[] ids = queue.getIds();
+        if(mode.equals("interactive")) {
+            startInteractiveSession();
+            return;
+        }
+        boolean moreSBs = true;
         while(moreSBs) { // will need to change ethis when there is more than 
                          // one project being executed.
             Message m = new Message();
@@ -168,6 +174,24 @@ public class Scheduler implements Runnable {
         return queue.isInSubQueue(id);
     }
 
+    ////////////////////////////////////////////////////////
+    // Functions used for interactive scheduling
+    ////////////////////////////////////////////////////////
+    private void startInteractiveSession() {
+        controller = new GUIController(this);
+        Thread t = new Thread(controller);
+        t.start();
+    }
+    public String[] getSBs() {
+        return queue.getIds();
+    }
+/*
+    public alma.obsprep.bo.SchedBlock getSB(String uid) {
+        SchedBlock sb = queue.getSchedBlock(uid);
+        ObjectFactory of = ObjectFactory.getFactory();
+        return of.getSchedBlock(sb);
+    }
+*/
 
     ///////////////////////////////////////////////////////
 

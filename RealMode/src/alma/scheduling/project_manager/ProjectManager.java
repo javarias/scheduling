@@ -107,8 +107,8 @@ public class ProjectManager implements Runnable {
         */
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
-        control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
-        pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
+        //control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
+        //pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
         //pointing_event = new PointingReducedEventReceiver(cs);
         //focus_event = new FocusReducedEventReceiver(cs);
         if(isSimulation) {
@@ -131,7 +131,7 @@ public class ProjectManager implements Runnable {
         } else {
             //its the real thing! create corba channels.
             logger.info("SCHEDULING: Trying to get NCs");
-            
+        /*    
             try {
                 control_event.addSubscription(alma.Control.EXECEVENTS.class);
                 control_event.consumerReady();
@@ -140,7 +140,6 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: Could not get control channel");
                 logger.severe(e.toString());
             }
-           
             try {
                 //pipeline_event.addSubscription(alma.acsnc.DEFAULTTYPE.value);
                 pipeline_event.addSubscription(
@@ -169,6 +168,7 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
+          */ 
             /*
             try {
             } catch(Exception e) {
@@ -212,8 +212,8 @@ public class ProjectManager implements Runnable {
     /** Runnable method */
     public void run() {
         // Set pmTaskControl before it enters run loop!
-        control_event.setProjectManagerTaskControl(pmTaskControl);
-        pipeline_event.setProjectManagerTaskControl(pmTaskControl);
+        //control_event.setProjectManagerTaskControl(pmTaskControl);
+        //pipeline_event.setProjectManagerTaskControl(pmTaskControl);
         while(pmFlag) {
             //check for completed projects/ObsUnitSets if there are
             //new ones which the pipeline are not dealing with, start
@@ -236,11 +236,12 @@ public class ProjectManager implements Runnable {
      */
     public void stop() {
         pmFlag = false;
-        /* Disconnect from all notification channels. */
+        /* Disconnect from all notification channels. 
         pipeline_event.disconnect();
         control_event.disconnect();
         pointing_event.disconnect();
         focus_event.disconnect();
+        */
         logger.info("SCHEDULING: PM Stopped!");
     }
 
