@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.10 2003/07/23 22:44:49 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.11 2003/07/28 15:16:16 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -16,7 +16,7 @@
 #    None
 #------------------------------------------------------------------------
 
-#DEBUG = on
+DEBUG = on
 #COMPONENT_HELPERS=on
 USER_JFLAGS= -deprecation
 
@@ -87,6 +87,9 @@ man   : do_man
 	@echo " . . . man page(s) done"
 
 install : install_all
+	@echo " . . . copying required CDB (schedulingCDB) in ACSDATA"
+	-@cp -r ../config/schedulingCDB $(ACSDATA)/config;\
+	          chmod -R ug+rw $(ACSDATA)/config/schedulingCDB;
 	@echo " . . . installation done"
 
 db : db_all
