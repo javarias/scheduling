@@ -109,8 +109,8 @@ public class ProjectManager implements Runnable {
         //Receiver objects
         control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
         pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
-        pointing_event = new PointingReducedEventReceiver(cs);
-        focus_event = new FocusReducedEventReceiver(cs);
+        //pointing_event = new PointingReducedEventReceiver(cs);
+        //focus_event = new FocusReducedEventReceiver(cs);
         if(isSimulation) {
             //its a simulation, so create local channels
             
@@ -131,25 +131,32 @@ public class ProjectManager implements Runnable {
         } else {
             //its the real thing! create corba channels.
             logger.info("SCHEDULING: Trying to get NCs");
+            
             try {
                 control_event.addSubscription(ALMA.Control.EXECEVENTS.value);
                 control_event.consumerReady();
+                logger.info("SCHEDULING: Subscribed to CONTROL");
             } catch(Exception e) {
                 logger.severe("SCHEDULING: Could not get control channel");
                 logger.severe(e.toString());
             }
+           
             try {
                 //pipeline_event.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
                 pipeline_event.addSubscription(
                     "ALMA.pipelinescience.ScienceProcessingRequestEnd");
                 pipeline_event.consumerReady();
+                logger.info("SCHEDULING: Subscribed to PIPELINE");
             } catch(Exception e) {
                 logger.severe("SCHEDULING: Could not get pipeline channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
+            //Listen for TELCAL events
+            /*
             try {
                 pointing_event.addSubscription("PointingReducedEvent");
                 pointing_event.consumerReady();
+                logger.info("SCHEDULING: Subscribed to TELCAL PointingReducedEvent");
             } catch(Exception e) {
                 logger.severe("SCHEDULING: Could not get PointingReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
@@ -157,10 +164,12 @@ public class ProjectManager implements Runnable {
             try {
                 focus_event.addSubscription("FocusReducedEvent");
                 focus_event.consumerReady();
+                logger.info("SCHEDULING: Subscribed to TELCAL FocusReducedEvent");
             } catch(Exception e) {
                 logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
+            */
             /*
             try {
             } catch(Exception e) {

@@ -81,7 +81,7 @@ public class TestALMAArchive {
             logger.info("SCHED_TEST: function updateSchedBlock(ExecBlockEvent event) ");
             ExecBlockEvent event = new ExecBlockEvent();
             event.sbId = id;
-            event.blockStatus = ALMA.Control.CompletionStatus.OK;
+            event.status = ALMA.Control.CompletionStatus.COMPLETED_OK;
             archive.updateSchedBlock(event);
             //retreive it to see that it updated
             sb = archive.getSchedBlock(id);

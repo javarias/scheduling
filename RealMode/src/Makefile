@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.13 2003/08/05 15:22:27 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.14 2003/09/30 23:45:56 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -36,6 +36,14 @@ XML_IDL="SchedBlock=alma.entity.xmlbinding.schedblock.SchedBlock; \
 IDL_FILES = SchedulingInterfaces
 #IDL_TAO_FLAGS =
 #USER_IDL =
+
+#
+# Libraries (public and local)
+#
+LIBRARIES       = SchedulingInterfaces
+LIBRARIES_L     =
+
+SchedulingInterfaces_OBJECTS = SchedulingInterfacesC SchedulingInterfacesS
 
 #
 # Jarfiles and their directories

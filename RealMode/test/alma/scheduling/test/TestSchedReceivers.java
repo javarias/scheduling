@@ -28,6 +28,7 @@ package ALMA.scheduling.test;
 
 import ALMA.scheduling.receivers.*;
 import ALMA.scheduling.master_scheduler.ALMAArchive;
+import ALMA.scheduling.master_scheduler.MasterSBQueue;
 import ALMA.scheduling.project_manager.ALMAPipeline;
 
 import ALMA.Control.ExecBlockEvent;
@@ -96,7 +97,7 @@ public class TestSchedReceivers {
             telcal2.addSubscription("FocusReducedEvent");
             telcal2.consumerReady();
             control1 = new ControlEventReceiver(container, new ALMAPipeline(true, container),
-                    new ALMAArchive(true, container));
+                    new ALMAArchive(true, container), new MasterSBQueue());
             control1.addSubscription(ALMA.Control.EXECEVENTS.value);
             control1.consumerReady();
             //control2 = new SchedulerEventReceiver();
@@ -114,7 +115,7 @@ public class TestSchedReceivers {
             ExecBlockEvent c_event = new ExecBlockEvent(
                     ALMA.Control.EventReason.START, 
                         "block id", "sb id",(short)1,
-                            ALMA.Control.CompletionStatus.OK, 
+                            ALMA.Control.CompletionStatus.COMPLETED_OK, 
                                 System.currentTimeMillis());
             controlSup.publishEvent(c_event);
             ScienceProcessingRequestEnd p_event = 

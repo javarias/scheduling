@@ -800,7 +800,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
                                         dispatcher, subQueue, messageQueue, 
                                             clock, pi, mode); 
         logger.info("SCHEDULING: New scheduler started.");
-        logger.info("SCHEDULING: Start if new project.");
+        logger.info("SCHEDULING: Start of new project.");
         Thread schedThread = new Thread(s);
         SchedulerTaskControl stc = 
             new SchedulerTaskControl(msThread,schedThread);
