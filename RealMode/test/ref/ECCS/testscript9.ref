@@ -1,0 +1,247 @@
+1 - Starting Activate...
+4 - FINE: ready to talk with components!
+3 - Input was: 27.3 -46.0 15.0 385.0 100.0 0.01 2.0
+3 - Input was: 25.0 4.0 15.0 385.0 100.0 0.01 2.0
+4 - FINE: component MASTER_SCHEDULER retrieved successfully.
+3 - FINE: switching to central logger...
+4 - FINE: SCHED_TEST: MS Component created
+3 - FINE: ready to talk with components!
+3 - TargetSpace.getOrCalculateObservationTime()
+3 - 	Calculating...
+3 - 		RegionOfInterest.getOrCalculateObservationTime()
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 1", 385.0 GHz, 100.0 MHz)
+3 - 					Correlator Setup =  Correlator("CorrSetup # 1", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (100.0 * 9.999999776482582E-6)
+3 - 					Result = 2000.0000447034845
+3 - 			Beam Radius   = 0.2
+3 - 			Num Exposures = 9004
+4 - FINE: SCHED_TEST: MasterScheduler startScheduling called.
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 1", 385.0 GHz, 100.0 MHz)
+4 - FINE: Scheduling started
+3 - 					Correlator Setup =  Correlator("CorrSetup # 1", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (100.0 * 9.999999776482582E-6)
+3 - 					Result = 2000.0000447034845
+3 - 			Exposure Time = 2000.0000447034845
+3 - 		time = 1.8008000402510174E7
+3 - 	time = 1.8008000402510174E7
+3 - 		RegionOfInterest.getOrCalculateObservationTime()
+4 - Got scheduling channel
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 2", 385.0 GHz, 100.0 MHz)
+4 - INFO: client 'alma.acs.component.client.ComponentClient' attempts to retrieve component 'MASTER_SCHEDULER' more than once; will return existing reference.
+3 - 					Correlator Setup =  Correlator("CorrSetup # 2", 2.0 GHz, 9.999999776482582E-6 Jy)
+4 - SCHED_TEST: SchedConsumer created
+3 - 					Calculation = 2.0 / (100.0 * 9.999999776482582E-6)
+3 - 					Result = 2000.0000447034845
+3 - 			Beam Radius   = 0.2
+3 - 			Num Exposures = 9004
+4 - FINE: component PUBLISHTELCALEVENTS1 retrieved successfully.
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 2", 385.0 GHz, 100.0 MHz)
+4 - INFO: SCHED_TEST: TelCal Component Created!
+3 - 					Correlator Setup =  Correlator("CorrSetup # 2", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (100.0 * 9.999999776482582E-6)
+3 - 					Result = 2000.0000447034845
+3 - 			Exposure Time = 2000.0000447034845
+3 - 		time = 1.8008000402510174E7
+3 - 	time = 3.601600080502035E7
+3 - INFO: NOMINAL_LENGTH = 30.0
+3 - INFO: obsTime        = 3.601600080502035E7 s min = targetSpace.getOrCalculateObservationTime().inDefaultUnits()
+3 - INFO: observingTime  = 600266.7 = (float) (obsTime.getContent()/60.0)
+3 - INFO: numSBs         = 20009 = Math.round(observingTime / NOMINAL_LENGTH)
+3 - INFO: fracSB         = 27 = Math.round(observingTime % NOMINAL_LENGTH)
+3 - Input was: 127.3 -62.0 15.0 870.0 100.0 0.01 2.0
+3 - Input was: 15.0 45.0 15.0 385.0 660.0 0.01 2.0
+3 - TargetSpace.getOrCalculateObservationTime()
+3 - 	Calculating...
+3 - 		RegionOfInterest.getOrCalculateObservationTime()
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 1", 870.0 GHz, 100.0 MHz)
+3 - 					Correlator Setup =  Correlator("CorrSetup # 1", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (100.0 * 9.999999776482582E-6)
+3 - 					Result = 2000.0000447034845
+3 - 			Beam Radius   = 0.2
+3 - 			Num Exposures = 9004
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 1", 870.0 GHz, 100.0 MHz)
+3 - 					Correlator Setup =  Correlator("CorrSetup # 1", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (100.0 * 9.999999776482582E-6)
+3 - 					Result = 2000.0000447034845
+3 - 			Exposure Time = 2000.0000447034845
+3 - 		time = 1.8008000402510174E7
+3 - 	time = 1.8008000402510174E7
+3 - 		RegionOfInterest.getOrCalculateObservationTime()
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 2", 385.0 GHz, 660.0 MHz)
+3 - 					Correlator Setup =  Correlator("CorrSetup # 2", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (660.0 * 9.999999776482582E-6)
+3 - 					Result = 303.0303098035583
+3 - 			Beam Radius   = 0.2
+3 - 			Num Exposures = 9004
+3 - 				SpectralSetupElement.getExposureTime()
+3 - 					Frequency  Setup = Frequency("FreqSetup # 2", 385.0 GHz, 660.0 MHz)
+3 - 					Correlator Setup =  Correlator("CorrSetup # 2", 2.0 GHz, 9.999999776482582E-6 Jy)
+3 - 					Calculation = 2.0 / (660.0 * 9.999999776482582E-6)
+3 - 					Result = 303.0303098035583
+3 - 			Exposure Time = 303.0303098035583
+3 - 		time = 2728484.909471239
+3 - 	time = 2.0736485311981414E7
+3 - INFO: NOMINAL_LENGTH = 30.0
+3 - INFO: obsTime        = 2.0736485311981414E7 s min = targetSpace.getOrCalculateObservationTime().inDefaultUnits()
+3 - INFO: observingTime  = 345608.1 = (float) (obsTime.getContent()/60.0)
+3 - INFO: numSBs         = 11520 = Math.round(observingTime / NOMINAL_LENGTH)
+3 - INFO: fracSB         = 8 = Math.round(observingTime % NOMINAL_LENGTH)
+3 - getSBEntities(ObsProject)
+3 - 	getSBEntities(ObsUnitSet)
+3 - 		Adding SB uid://X----------------/X--------
+3 - 		Adding SB uid://X----------------/X--------
+3 - 	getSBEntities(ObsUnitSet)
+3 - 		Adding SB uid://X----------------/X--------
+3 - 		Adding SB uid://X----------------/X--------
+3 - FINE: component OBS_PROJ_REP retrieved successfully.
+3 - FINER: creating xml binding class aware wrapper around component implementing alma.ProjectRepositoryIF.LightweightProjectRepositoryOperations...
+2 - INFO: SCIENCE_PIPELINE: initialize() method called
+2 - INFO: SCIENCE_PIPELINE: execute() method called
+3 - FINER: will try to translate from 'alma.ProjectRepositoryIF.ObsProjectTreeJ' to 'alma.ProjectRepositoryIF.ObsProjectTree'.
+2 - Attempting to create the sciencepipeline channel.
+2 - INFO: initialize() called...
+2 - Attempting to create the CONTROLSYSTEM channel.
+3 - FINER: will try to translate from 'alma.ProjectRepositoryIF.ObsProjectTree' to 'alma.ProjectRepositoryIF.ObsProjectTreeJ'.
+3 - FINE: will disconnect ACS stuff...
+2 - INFO: execute() called...
+2 - FINE: component ADMINISTRATIVE_ARCHIVE retrieved successfully.
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINER: deactivating component 'OBS_PROJ_REP' with handle xxxxxxxxx
+2 - FINER: about to deactivate component OBS_PROJ_REP
+2 - FINER: deactivating component 'ADMINISTRATIVE_ARCHIVE' with handle xxxxxxxxx
+2 - FINER: about to deactivate component ADMINISTRATIVE_ARCHIVE
+2 - FINER: done deactivating component ADMINISTRATIVE_ARCHIVE
+2 - FINER: done deactivating component OBS_PROJ_REP
+2 - SCHEDULING: The MasterScheduler has been constructed.
+2 - SCHEDULING: Message queue created
+2 - FINE: SCHEDULING: The ALMAArchive has been constructed.
+2 - SCHEDULING: The ALMATelescopeOperator has been constructed.
+2 - SCHEDULING: The PIProxy has been constructed.
+2 - INFO: SCHEDULING: The Dispatcher has been constructed.
+2 - Attempting to create the SCHEDULING_CHANNEL channel.
+2 - FINE: Querying: /*
+2 - SCHEDULING: The PipelineProxy has been constructed.
+2 - SCHEDULING: PipelineEventListener created.
+2 - INFO: SCHEDULING: Trying to get NCs
+2 - Suppler.subscription_change(...): override to do something useful.
+2 - Suppler.subscription_change(...): override to do something useful.
+2 - Suppler.subscription_change(...): override to do something useful.
+2 - Suppler.subscription_change(...): override to do something useful.
+2 - INFO: SCHEDULING: Got NCs
+2 - SCHEDULING: The Clock has been constructed.
+2 - INFO: SCHEDULING: The MasterScheduler has been initialized.
+2 - INFO: SCHEDULING: starting execute
+2 - FINE: Querying: /*
+2 - INFO: SCHEDULING: Getting SBs from archive
+2 - INFO: SCHEDULING: sbs not null storing into queue
+2 - SCHEDULING: Message queue set in operator
+2 - INFO: SCHEDULING: The MasterScheduler is executing.
+2 - SCHEDULING: Scheduler is running in dynamic mode!
+2 - INFO: SCHEDULING: in TO. reply =uid://X----------------/X--------
+2 - FINE: component MASTER_SCHEDULER retrieved successfully.
+2 - INFO: SCHEDULING: in TO. ms response about to be called
+2 - INFO: SCHEDULING: in MS. MessageID = uid://X----------------/X--------
+2 - INFO: SCHEDULING: in MS. Reply = uid://X----------------/X--------
+2 - INFO: SCHEDULING: in MS. messageQueue size = 1
+2 - INFO: SCHEDULING: in MS. Got message with id=uid://X----------------/X--------
+2 - INFO: SCHEDULING: in MS. message = uid://X----------------/X-------- gotten and reply = uid://X----------------/X-------- sent.
+2 - INFO: SCHEDULING: in TO. ms response called
+2 - INFO: SCHEDULING: in TO. timer.join()
+2 - INFO: SCHEDULING: in scheduler. selectedSB = uid://X----------------/X--------
+2 - INFO: SCHEDULING: Message uid://X----------------/X-------- removed from queue.
+2 - INFO: SCHEDULING: Sending SB with id = uid://X----------------/X-------- to controller.
+2 - FINE: component ArrayController1 retrieved successfully.
+2 - INFO: SCHEDULING: Got array controller
+2 - INFO: processSchedBlock() called...
+2 - FINEST: Getting URI: uid://X----------------/X-------- Version: -1
+2 - Suppler.subscription_change(...): override to do something useful.
+2 - SCHEDULING: Got PointingScanReduced event
+2 - SCHEDULING: Starting to process the PointingScanReduced event
+2 - SCHEDULING: Got FocusScanReduced event
+2 - SCHEDULING: Starting to process the FocusScanReduced event
+2 - INFO: No targets to process in SB
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - SCHEDULING: Got event from control
+2 - SCHEDULING: Starting to process the control event
+2 - SCHEDULING: process control event started
+2 - FINEST: Getting URI: uid://X----------------/X-------- Version: -1
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - SCHEDULING: Got event from control
+2 - SCHEDULING: Starting to process the control event
+2 - SCHEDULING: process control event started
+2 - FINEST: Getting URI: uid://X----------------/X-------- Version: -1
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - INFO: SCHEDULING: request result
+2 - FINE: component SCIENCE_PIPELINE retrieved successfully.
+2 - INFO: SCIENCE_PIPELINE: processRequest() method initiated
+2 - INFO: SCIENCE_PIPELINE: identifier archive accessed
+2 - INFO: SCIENCE_PIPELINE: listobject created
+2 - uid://X----------------/X-------- uid://X----------------/X-------- queued
+2 - uid://X----------------/X-------- uid://X----------------/X-------- queued
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - INFO: SCHEDULING: request result
+2 - INFO: client 'MASTER_SCHEDULER' attempts to retrieve component 'SCIENCE_PIPELINE' more than once; will return existing reference.
+2 - INFO: SCIENCE_PIPELINE: processRequest() method initiated
+2 - INFO: SCIENCE_PIPELINE: identifier archive accessed
+2 - INFO: SCIENCE_PIPELINE: listobject created
+2 - uid://X----------------/X-------- uid://X----------------/X-------- queued
+2 - uid://X----------------/X-------- uid://X----------------/X-------- queued
+2 - uid://X----------------/X-------- uid://X----------------/X-------- running
+2 - uid://X----------------/X-------- uid://X----------------/X-------- running
+2 - uid://X----------------/X-------- uid://X----------------/X-------- completed
+2 - uid://X----------------/X-------- uid://X----------------/X-------- completed
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - SCHEDULING: PipelineEnd event received!
+2 - SCHEDULING: Got event from Pipeline
+2 - INFO: SCIENCE_PIPELINE: completion event issued
+2 - FINEST: Updating: uid://X----------------/X--------
+2 - SCHEDULING: PipelineEnd event received!
+2 - SCHEDULING: Got event from Pipeline
+2 - INFO: SCIENCE_PIPELINE: completion event issued
+1 - ----------T--:--:--.--- Activator 'Activator' activated.
+1 - ----------T--:--:--.--- Local file logger: Cache saved to '/alma/ACS-2.1/acsdata/tmp/acs_local_log_maciActivate_xxxx'.
+1 - ----------T--:--:--.--- Request to load 'baci'.
+1 - ----------T--:--:--.--- Full path '/----/libbaci.so'
+1 - ----------T--:--:--.--- Loaded '/----/libbaci.so'.
+1 - ----------T--:--:--.--- Activator 'Activator' initialized successfuly
+1 - ----------T--:--:--.--- Connected to the InterfaceRepository.
+1 - ----------T--:--:--.--- Connecting to the Centralized Logger...
+1 - ----------T--:--:--.--- Connected to the Centralized Logger.
+1 - ----------T--:--:--.--- Set Naming Context to Logger.
+1 - ----------T--:--:--.--- Activate running...
+1 - ----------T--:--:--.--- Request to load 'PublishTelCalEvents'.
+1 - TelCal trace : ::PublishTelCalEvents::PublishTelCalEventsHelper::Helper(...): channel=TelCalPublisherEventNC, type=AmpCurveReducedEvent!
+1 - ----------T--:--:--.--- Creating Notification Channel...
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=AmpliCalReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=AntennaPositionsReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=AtmosphereReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=BandPassReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=DelayReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=FocusScanReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=HolographyReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=PathCorrectionReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=PhaseCalReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=PhaseCurveReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=PointingScanReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=PointingModelReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=PrimaryBeamReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=SideBandRatioReducedEvent!
+1 - Helper::Helper(...): channel=TelCalPublisherEventNC, type=SkydipReducedEvent!
+1 - ----------T--:--:--.--- Thread name: 'PUBLISHTELCALEVENTS1::actionThread'
+1 - ----------T--:--:--.--- Thread name: 'PUBLISHTELCALEVENTS1::monitorThread'
+1 - ----------T--:--:--.--- Request to load 'GetTelCalResults'.
+1 - ----------T--:--:--.--- Thread name: 'GETTELCALRESULTS1::monitorThread'
+1 - ----------T--:--:--.--- Subscri
