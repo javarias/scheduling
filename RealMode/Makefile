@@ -1,9 +1,6 @@
 #*******************************************************************************
-# E.S.O. - ACS project#
 #
-# "@(#) $Id$"
-#
-# Makefile of ........
+# Makefile of Scheduling module
 #
 # who       when      what
 # --------  --------  ----------------------------------------------
@@ -118,12 +115,7 @@ checkModuleTree:
 
 
 #
-# Before being able to cleanly build and install SCHEDULING I need to have available
-# - the directory trre
-# - the Kit modules: vlt doc acs acstempl
-#   Nodice that vlt and doc have a circular dependency
-#   and therefore they are built "ad hoc" by the prepare kit script
-# - doxygen
+#
 prepare:	
 	@$(ECHO) "############ Prepare installation areas      #################" | tee -a build.log
 	@sh acsBUILD/src/acsBUILDPrepareKit.sh >> build.log 2>& 1
