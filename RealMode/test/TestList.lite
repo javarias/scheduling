@@ -10,6 +10,6 @@ PROLOGUE prologue
 9 test9 testcomponentstate
 10 test10 testppr
 11 test11 testschedsystem
-12 test12 testppr
+12 test12 testalmaarchive
 13 test13 testschedreceivers
 EPILOGUE epilogue
