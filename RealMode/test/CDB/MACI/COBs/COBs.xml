@@ -24,8 +24,8 @@
                              Type="IDL:alma/archiveinternal/Database:1.0"
                              Activator="hugoActivator"/>            
       <_ Name="MASTER_SCHEDULER"
-                             Code="alma.scheduling.master_scheduler.MSHelper"
-                             Type="IDL:alma/scheduling/MS:1.0"
+                             Code="ALMA.scheduling.master_scheduler.MSHelper"
+                             Type="IDL:ALMA/scheduling/MS:1.0"
                              Activator="hugoActivator"/>            
       <_ Name="OBS_PROJ_REP"
                              Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"

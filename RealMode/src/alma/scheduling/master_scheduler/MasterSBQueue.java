@@ -44,11 +44,10 @@ public class MasterSBQueue {
 	}
 
     public synchronized void addSchedBlock(SchedBlock sb) {
-    System.out.println("Adding sbs to queue");
+        //System.out.println("Adding sbs to queue");
         queue.add(sb);
     }
 
-    //public void addNonCompleteSBsToQueue(Vector sbs) {
     public synchronized void addSchedBlock(SchedBlock[] sbs) {
         //int len = sbs.size();
         for(int i=0; i < sbs.length; i++) {
@@ -62,6 +61,7 @@ public class MasterSBQueue {
     public synchronized SchedBlock getSchedBlock(int i) {
         return (SchedBlock)queue.elementAt(i);
     }
+
     /**
      *  Returns the first SB in the queue
      */
@@ -76,7 +76,6 @@ public class MasterSBQueue {
         Vector uid = new Vector();
         for(int i = 0; i< size; i++) {
         
-        //    System.out.println( ((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId() );
             uid.add( (String)((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId() );
             //uid.add( (String)((SchedBlock)queue.elementAt(i)).getId());
         }

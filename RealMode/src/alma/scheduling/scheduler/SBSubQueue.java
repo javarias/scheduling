@@ -46,12 +46,12 @@ public class SBSubQueue {
         queue = q;
     }
 
-    public void addSchedBlock(SchedBlock sb) {
+    public synchronized void addSchedBlock(SchedBlock sb) {
         System.out.println("Adding sbs to queue");
         queue.add(sb);
     }
 
-    public void addSchedBlock(SchedBlock[] sbs) {
+    public synchronized void addSchedBlock(SchedBlock[] sbs) {
         //int len = sbs.size();
         for(int i=0; i < sbs.length; i++) {
             queue.add(sbs[i]);
@@ -64,20 +64,20 @@ public class SBSubQueue {
     /**
      *  Returns the SchedBlock at location i
      */
-    public SchedBlock getSchedBlock(int i) {
+    public synchronized SchedBlock getSchedBlock(int i) {
         return (SchedBlock)queue.elementAt(i);
     }
     /**
      *  Returns the first SB in the queue
      */
-    public SchedBlock getSchedBlock() {
+    public synchronized SchedBlock getSchedBlock() {
         return (SchedBlock) queue.firstElement();
     }
 
     /**
      *  Return a list of all the ids
      */
-    public String[] getIds() {
+    public synchronized String[] getIds() {
         String[] tmp = new String[queue.size()];
         for(int i =0; i < queue.size(); i++) {
             tmp[i] = (String)((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId();

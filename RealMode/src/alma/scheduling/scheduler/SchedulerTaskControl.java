@@ -50,39 +50,39 @@ public class SchedulerTaskControl extends TaskControlInfo {
 	/**
 	 * Increment the number of schedblocks completed.
 	 */
-	public void incrementSbsCompleted() {
+	public synchronized void incrementSbsCompleted() {
 		++sbsCompleted;
 	}
 	/**
 	 * Decrement the number of schedblocks completed.
 	 */
-	public void decrementSbsCompleted() {
+	public synchronized void decrementSbsCompleted() {
 		--sbsCompleted;
 	}
 
 	/**
 	 * Increment the number of schedblocks not started.
 	 */
-	public void incrementSbsNotStarted() {
+	public synchronized void incrementSbsNotStarted() {
 		++sbsNotStarted;
 	}
 	/**
 	 * Decrement the number of schedblocks not started.
 	 */
-	public void decrementSbsNotStarted() {
+	public synchronized void decrementSbsNotStarted() {
 		--sbsNotStarted;
 	}
 	
 	/**
 	 * Increment the number of scheduling blocks failed.
 	 */
-	public void incrementSbsFailed() {
+	public synchronized void incrementSbsFailed() {
 		++sbsFailed;
 	}
 	/**
 	 * Decrement the number of scheduling blocks failed.
 	 */
-	public void decrementSbsFailed() {
+	public synchronized void decrementSbsFailed() {
 		--sbsFailed;
 	}
 
@@ -90,7 +90,7 @@ public class SchedulerTaskControl extends TaskControlInfo {
 	 * Return the number of scheduling blocks completed.
 	 * @return the number of scheduling blocks completed.
 	 */
-	public int getSbsCompleted() {
+	public synchronized int getSbsCompleted() {
 		return sbsCompleted;
 	}
 
@@ -98,11 +98,11 @@ public class SchedulerTaskControl extends TaskControlInfo {
 	 * Return the number of scheduling blocks failed.
 	 * @return the number of scheduling blocks failed.
 	 */
-	public int getSbsFailed() {
+	public synchronized int getSbsFailed() {
 		return sbsFailed;
 	}
 
-	public static void main(String[] args) {
+	public synchronized static void main(String[] args) {
 	}
 
 }

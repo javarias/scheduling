@@ -73,20 +73,9 @@ public class ProcessControlEvent implements Runnable {
     public void startPipeline(String id) {
         PipelineProcessingRequest ppr = 
             pipeline.createPipelineProcessingRequest();
-        EntityRefT ref = new EntityRefT();
-        ref.setEntityId(id);
         ReductionUnitT ru = new ReductionUnitT();
-        ru.setReductionUnitReference( ref );
-        PipelineProcessingRequestSequenceItem pprsi = 
-            new PipelineProcessingRequestSequenceItem();
-        pprsi.setReductionUnit( ru );
-        PipelineProcessingRequestSequence pprs = 
-            new PipelineProcessingRequestSequence();
-        pprs.setPipelineProcessingRequestSequenceItem( pprsi );
-        int pprs_count = ppr.getPipelineProcessingRequestSequenceCount();
-        ppr.addPipelineProcessingRequestSequence( pprs );
-        //ppr.setStatus(StatusType.VALUE_0);
-
+        ru.setEntityId(id);
+        ppr.setReductionUnit(ru);
         //Store the ppr in the archive.
         archive.addPipelineProcessingRequest(ppr);
         try {

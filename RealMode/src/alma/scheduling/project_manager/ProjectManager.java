@@ -143,13 +143,12 @@ public class ProjectManager implements Runnable {
         eventType[0] = "ALMA.scheduling.NothingCanBeScheduledEvent";
         if(isSimulation) { //create local channel
             LocalNotificationChannel sched = 
-                new LocalNotificationChannel("NothingCanBeScheduled",
-                    "scheduling", eventType); 
+                new LocalNotificationChannel(
+                    ALMA.scheduling.CHANNELNAME.value);
         } else { //create corba channel
             CorbaNotificationChannel sched = 
-                new CorbaNotificationChannel("NothingCanBeScheduled",
-                    "scheduling", eventType, 
-                            ALMA.scheduling.CHANNELNAME.value);
+                new CorbaNotificationChannel(
+                   ALMA.scheduling.CHANNELNAME.value);
         }
     }
 
