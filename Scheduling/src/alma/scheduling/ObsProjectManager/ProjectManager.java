@@ -34,6 +34,7 @@ import alma.scheduling.Define.Program;
 import alma.scheduling.Define.ObservedSession;
 
 /**
+ * @version $Id: ProjectManager.java,v 1.8 2004/11/23 21:13:30 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,

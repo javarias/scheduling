@@ -28,6 +28,10 @@ package alma.scheduling.ObsProjectManager;
 
 import alma.scheduling.Define.TaskControl;
 
+/**
+  * @version $Id: ProjectManagerTaskControl.java,v 1.2 2004/11/23 21:13:30 sslucero Exp $  
+  * @author Sohaila Lucero
+  */
 public class ProjectManagerTaskControl extends TaskControl {
     
     public ProjectManagerTaskControl(Thread msThread, Thread pmThread){
