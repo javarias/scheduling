@@ -747,10 +747,10 @@ public class ProjectUtil {
 	//////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * Create a ProjectStructure object that acurately reflects the current status of the specified Project.
-	 * @param project The Project used as a basis for creating the ProjectStructure
+	 * Create a ProjectStatus object that acurately reflects the current status of the specified Project.
+	 * @param project The Project used as a basis for creating the ProjectStatus
 	 * @param now The current time.
-	 * @return A ProjectStructure object that acurately reflects the current status of the specified Project.
+	 * @return A ProjectStatus object that acurately reflects the current status of the specified Project.
 	 * @throws SchedulingException If any error is found in the process of mapping.
 	 */
 	static public ProjectStatus map(Project project, DateTime now) throws SchedulingException {

@@ -71,7 +71,8 @@ public class ALMAProjectManager extends ProjectManager {
         this.archive = a;
         this.sbQueue = q;
         this.psQueue = new ProjectStatusQueue();
-        this.pQueue = new ProjectQueue(pollArchive());
+        this.pQueue = new ProjectQueue();
+        pQueue.add(pollArchive());
     }
 
     /**
@@ -109,30 +110,30 @@ public class ALMAProjectManager extends ProjectManager {
             projs = archive.getAllProject();
             logger.info("SCHEDULING: getting projectstatus'");
             for(int i=0; i < projs.length;i++){
-                ProjectStatus ps;
-                try {
-                    ps = ProjectUtil.map(projs[i], new DateTime(System.currentTimeMillis()));
-                } catch(Exception e) {
-                    ps = archive.queryProjectStatus(projs[i].getId());
-                }
-                //check if its in queue, if it is add it, if not don't or update.
-                if(psQueue.size() == 0) { //nothing in queue so ps definitely isnt in it.
-                    psQueue.add(ps);
-                    archive.updateProjectStatus(ps);
-                }
-                for(int k=0; k < psQueue.size(); k++){
-                    ProjectStatus ps_tmp = null;
-                    if( (ps_tmp = psQueue.get(ps.getProjectStatusEntity().getEntityId())) == null) {
-                        logger.info ("PS not in queue, adding..");
-                        psQueue.add(ps);
-                        archive.updateProjectStatus(ps);
+                if(pQueue.isExists(projs[i].getId())){
+                    //don't do anything coz the project already exists in the queue! 
+                    logger.info("SCHEDULING: Project already in queue");
+                } else {
+
+                    //get the projectStatus of each project. if its in the queue don't map!
+                    String psId = projs[i].getProjectStatusId();
+                    if(psQueue.isExists(psId)) {
+                        logger.info("SCHEDULING: PS already exists in queue. Not Mapping");
                     } else {
-                        logger.info ("ps already in queue not adding..");
+                        ProjectStatus ps;
+                        try {
+                            ps = ProjectUtil.map(projs[i], new DateTime(System.currentTimeMillis()));
+                            psQueue.add(ps);
+                            archive.updateProjectStatus(ps);
+                        } catch(Exception e) {
+                        //    ps = archive.queryProjectStatus(projs[i].getId());
+                        }
                     }
                 }
             }
             logger.info("SCHEDULING: Number of PS in queue = "+psQueue.size());
-            logger.info("SCHEDULING: Number of projects = "+projs.length);
+            logger.info("SCHEDULING: Number of projects = "+pQueue.size());
+            logger.info("SCHEDULING: Number of projects returned = "+projs.length);
             for(int i=0; i < projs.length;i++) {
                 logger.info("SCHEDULING: sched blocks in Project ( "+projs[i].getId()+" ) = "+
                         projs[i].getTotalSBs());

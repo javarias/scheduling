@@ -71,6 +71,7 @@ public class ALMAArchive implements Archive {
     // The archive's components
     private ArchiveConnection archConnectionComp;
     private Operational archOperationComp;
+    //TODO should check project queue.. if project exists don't map a new one.
     //The logger
     private Logger logger;
     //Entity deserializer - makes entities from the archive human readable
@@ -102,13 +103,20 @@ public class ALMAArchive implements Archive {
         ObsProject[] obsProj = getAllObsProjects();
         for(int i=0; i < obsProj.length; i++) {
             ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
+            //ProjectStatus ps = ProjectUtil.map(obsProj[i], new DateTime(System.currentTimeMillis()));
             if(ps == null) { //no project status for this project. so create one
-                 System.out.println("no ps for this project");
+                 logger.info("SCHEDULING: no ps for this project");
                  //TODO ps = createProjectStatus(obsProject[i]);
+            } else if(ps.getTimeOfUpdate() != null) {
+                 logger.info("SCHEDULING: PS already updated for project.");
+            } else {
+            //TODO should check project queue.. if project exists don't map a new one.
+                SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
+                Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
+                        new DateTime(System.currentTimeMillis()));
+                tmp_projects.add(p);
             }
-            SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
-            tmp_projects.add(ProjectUtil.map(obsProj[i], sbs, ps, 
-                        new DateTime(System.currentTimeMillis())));
+                
         }
         projects = new Project[tmp_projects.size()];
         for(int i=0; i < tmp_projects.size();i++) {
@@ -385,7 +393,7 @@ public class ALMAArchive implements Archive {
       */
     private SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
-            System.out.println("SCHEDULING: no sbs stuff available in project");
+            logger.info("SCHEDULING: no sbs stuff available in project");
             throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
@@ -395,7 +403,7 @@ public class ALMAArchive implements Archive {
                 sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
                 
             }
-            System.out.println("SCHEDULING: (in archive) project has "+sbs.length+" sbs");
+            logger.info("SCHEDULING: (in archive) project has "+sbs.length+" sbs");
             return sbs;
         }
 
@@ -405,7 +413,7 @@ public class ALMAArchive implements Archive {
       */
     private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) {
         if(choice == null) {
-            System.out.println("SCHEDULING: choice is null..");
+            logger.info("SCHEDULING: choice is null..");
         }
         if(choice.getObsUnitSetCount() == 0) {
             return choice.getSchedBlockRef();
@@ -454,7 +462,7 @@ public class ALMAArchive implements Archive {
     public void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
         try {
             XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
-            System.out.println("updated PS: "+xml.xmlString);
+            logger.info("SCHEDULING: updated PS: "+xml.xmlString);
             XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
             xml2.xmlString = xml.xmlString;
             archOperationComp.update(xml2);
