@@ -34,7 +34,8 @@
       <_ Name="MasterScheduler"
             Code="alma.scheduling.AlmaScheduling.MasterSchedulerIFHelper"
             Type="IDL:alma/scheduling/MasterSchedulerIF:1.0"
-            Container="java" />
+            Container="java" 
+            Default="true" />
       <_ Name="OBS_PROJ_REP"
             Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
             Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
