@@ -1,3 +1,5 @@
+DAL
+ORBInitRef
 SUP.
 lcuboot: open
 maci::HeartbeatHandler::handle_timeout
