@@ -81,11 +81,14 @@ public class ALMAMasterScheduler extends MasterScheduler
     // Information that scheduling wants to know about 
     // all the alma telescopes
     private ALMATelescope telescope;
+    //Interface to the pipeline subsystem
+    private ALMAPipeline pipeline;
 
     private Receiver control_nc;
     private Receiver telcal_nc;
     private Receiver pipeline_nc;
     private ALMAReceiveEvent eventreceiver;
+    //private ALMAReceiveControlEvent control_event;
     
     /** 
      * Constructor
@@ -116,7 +119,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.messageQueue = new MessageQueue();
         this.operator = new ALMAOperator(containerServices, messageQueue);
         this.telescope = new ALMATelescope();
-        this.publisher = new ALMASchedPublisher(containerServices);
+        this.pipeline = new ALMAPipeline(containerServices);
+        this.publisher = new ALMAPublishEvent(containerServices);
         
         logger.config("SCHEDULING: MasterScheduler initialized");
     }
@@ -125,9 +129,13 @@ public class ALMAMasterScheduler extends MasterScheduler
      * From ComponentLifecycle interface
      */
     public void execute() throws ComponentLifecycleException {
+        //Start the project manager's thread!
+        Thread pm_thread = new Thread(manager);
+        pm_thread.start();
 
         // Connect to the Control NC
-        eventreceiver = new ALMAReceiveEvent(containerServices);
+        eventreceiver = new ALMAReceiveEvent(containerServices, archive, 
+                                             pipeline, (ALMAPublishEvent)publisher);
         control_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.Control.CHANNELNAME.value,
                 containerServices);
@@ -135,22 +143,20 @@ public class ALMAMasterScheduler extends MasterScheduler
         control_nc.begin();
         // Connect to the TelCal NC
         /*
-        telcalreceiver = new ALMATelcalReceiver(containerServices);
         telcal_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.TelCalPublisher.CHANNELNAME.value,
                 containerServices);
-        telcal_nc.attach("alma.TelCalPublisher.FocusReducedEvent", telcalreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.PointingReducedEvent", telcalreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.FocusReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.PointingReducedEvent", eventreceiver);
         telcal_nc.begin();
+        */
         
         // Connect to the Pipeline NC
-        pipelinereceiver = new ALMAPipelineReceiver(containerServices);
         pipeline_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.pipelinescience.CHANNELNAME.value,
                 containerServices);
-        pipeline_nc.attach("alma.pipelinescience.ScienceProcessingRequestEnd",pipelinereceiver);
+        pipeline_nc.attach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
         pipeline_nc.begin();
-        */
     }
 
     /**
@@ -158,6 +164,7 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public void cleanUp() {
         super.setStopCommand(true);
+        publisher.disconnect();
     }
 
     /**
@@ -371,16 +378,21 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     /**
-     *
+     * Stops the scheduling block's activities.
+     * @param String The Scheduling Block's id
+     * @throws InvalidOperation
+     * @throws NoSuchSB
      */
     public void stopSB(String sbId) throws InvalidOperation, NoSuchSB {
     
     }
 
     /**
-     * 
+     * Pauses all scheduling activity on the given subarray.
+     * @param short The Subarray ID
      */
     public void pauseScheduling(short subarrayId) {
+        logger.info("SCHEDULING: Pause Scheduling not implemented yet.");
     }
 
     /**

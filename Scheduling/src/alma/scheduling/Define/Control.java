@@ -55,6 +55,10 @@ public interface Control {
 	public void execSB(short subarrayId, BestSB best)
 		throws SchedulingException;
 
+	public void execSB(short subarrayId, String bestSB)
+		throws SchedulingException;
+
+       
 	/**
 	 * Stop the currently executing SB.
 	 * @param subarrayId The subarray on which the SB is currently executing.

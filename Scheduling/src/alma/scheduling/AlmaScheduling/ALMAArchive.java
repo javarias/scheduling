@@ -48,6 +48,7 @@ import alma.xmlstore.CursorPackage.QueryResult;
 
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.obsproject.*;
+import alma.entity.xmlbinding.obsproject.types.*;            
 import alma.entities.generalincludes.*;
 //
 
@@ -58,7 +59,7 @@ import alma.entities.generalincludes.*;
  * the container services to the real archive used by all of alma.
  *
  * @version 1.0
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
     //The container services
@@ -80,7 +81,6 @@ public class ALMAArchive implements Archive {
         this.containerServices = cs;
         this.logger = cs.getLogger();
         getArchiveComponents();
-        //this.lastSBquery = 
     }
 
     // Project
@@ -199,7 +199,7 @@ public class ALMAArchive implements Archive {
             while (cursor.hasNext()){
                 QueryResult res = cursor.next();
                 try {
-                    tmp_sbs.add(convertToSB(res));
+                    tmp_sbs.add(convertToSB1(res));
                 } catch (Exception e) {
                     throw new SchedulingException (e);
                 }
@@ -220,10 +220,51 @@ public class ALMAArchive implements Archive {
 	public SB[] getNewSB(DateTime time) throws SchedulingException {
         return null;
     }
+
+    /**
+     * Retrieves a SchedBlock from the archive given the 'id' and converts it
+     * to a SB object.
+     * 
+     * @param String The id of the SB to be retrieved
+     * @return SB The converted SchedBlock to the scheduling's SB
+     * @throws SchedulingException
+     */
 	public SB getSB(String id) throws SchedulingException{
-        return null;
+        SB sb = null;
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            sb = convertToSB2(xml);
+            //XmlEntityStruct xml = archOperationComp.retrieve(id);
+            //XmlEntityStruct xml = archOperationComp.updateRetrieve(id);
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        //} catch(DirtyEntity e) {
+        //    logger.severe("SCHEDULING: "+e.toString());
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        }
+        return sb;
     }
+
 	public void updateSB(SB sb) throws SchedulingException{
+        try {
+            XmlEntityStruct retrieved_sb = archOperationComp.retrieveDirty(sb.getId());
+            //retrieved_sb = modifyRetrievedSB(retrieved_sb, sb);
+            archOperationComp.update(retrieved_sb);
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        }
+        
     }
 
 	// SchedulingPolicy
@@ -231,6 +272,102 @@ public class ALMAArchive implements Archive {
         return null;
     }
 
+    // PipelineProcessingRequest
+
+    public void storePipelineProcessingRequest(PipelineProcessingRequest p) {
+        try {
+            ALMAPipelineProcessingRequest ppr = (ALMAPipelineProcessingRequest)p;
+            XmlEntityStruct ppr_struct = ppr.getPipelineProcessingRequestStruct();
+            //System.out.println(ppr_struct.xmlString);
+            archOperationComp.store(ppr_struct);
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: illegal entity error");
+            e.printStackTrace();
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: ArchiveInternalError");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * TEMPORARY Function. Retrieves the PipelineProcessingRequest and
+     * returns it as an XmlEntityStruct.
+     * @param String PPR's ID
+     * @return XmlEntityStruct The PPR's struct
+     */
+    public XmlEntityStruct retrievePPR(String ppr_id) {
+        XmlEntityStruct ppr=null;
+        try {
+            ppr = archOperationComp.retrieveDirty(ppr_id);
+        } catch (MalformedURI e) { 
+            logger.severe("SCHEDULING: MalformedURI ");
+            e.printStackTrace();
+        } catch (ArchiveInternalError e) {
+            logger.severe("SCHEDULING: ArchiveInternalError");
+            e.printStackTrace();
+        } catch (NotFound e) {
+            logger.severe("SCHEDULING: Entity not found");
+            e.printStackTrace();
+        } //catch(EntityException e) {
+            //logger.severe("SCHEDULING: error getting entity's ID");
+          //  e.printStackTrace();
+       // }
+        return ppr;
+    }
+
+    //Session
+    public String storeSession(Session s) {
+        String id = null;
+        try {
+            ALMASession session = (ALMASession)s;
+            containerServices.assignUniqueEntityId(session.getSession().getSessionEntity());
+            XmlEntityStruct sessionStruct = entitySerializer.serializeEntity(
+                session.getSession(), session.getSession().getSessionEntity());
+            archOperationComp.store(sessionStruct);
+            id = session.getSession().getSessionEntity().getEntityId();
+            //System.out.println(sessionStruct.xmlString);
+        } catch(ContainerException e) {
+            logger.severe("SCHEDULING: error getting entity's ID");
+            e.printStackTrace();
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: error serializing session");
+            e.printStackTrace();
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: illegal entity error");
+            e.printStackTrace();
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: ArchiveInternalError");
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    public void updateSession(String sbid) {
+        String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
+        String schema = "Session"; 
+        String className = new String("alma.entity.xmlbinding.session.Session");
+        try {
+            Cursor cursor = archOperationComp.queryDirty(query,schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying Sessions!");
+                return ;
+            } 
+            while(cursor.hasNext()) {
+                QueryResult res = cursor.next();
+               /*
+                try {
+                //    tmp_projects.add(convertToProject1(res));
+                }catch(Exception e) {
+                    logger.severe("SCHEDULING: "+e.toString());
+                //    throw new SchedulingException (e);
+                }
+                */
+            }
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            e.printStackTrace();
+        }
+    }
     ///////////////////////////////////////////////////////////////////////////
     
     /**
@@ -264,19 +401,15 @@ public class ALMAArchive implements Archive {
      * @param res The ResultQuery from the archive
      * @return SB 
      */
-    private SB convertToSB(QueryResult res) throws Exception {
+    private SB convertToSB1(QueryResult res) throws Exception {
         String sb_id = res.identifier;
-        ALMASB sb = null;
+        SB sb = null;
         try {
             //XmlEntityStruct xml_struct = archOperationComp.updateRetrieve(sb_id);
             //XmlEntityStruct xml_struct = archOperationComp.retrieve(sb_id);
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(sb_id);
+            sb = convertToSB2(xml_struct);
             //System.out.println(xml_struct.xmlString);
-            SchedBlock schedblock = (SchedBlock) 
-                entityDeserializer.deserializeEntity(xml_struct, Class.forName(
-                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
-            //additionalInfo(schedblock);
-            sb = new ALMASB(schedblock, sb_id);
             //String proj_id = schedblock.getObsProjectRef().getEntityId();
             //if(proj_id == null) {
             //    System.out.println("dammit its null");
@@ -297,15 +430,34 @@ public class ALMAArchive implements Archive {
         return sb;
     }
 
+    /** 
+     * Given the retrieved XmlEntityStruct it is converted into an SB object
+     * @param XmlEntityStruct
+     * @return SB
+     * @throws Exception
+     */
+    private SB convertToSB2(XmlEntityStruct xml) throws Exception {
+        ALMASB sb = null;
+        try {
+            SchedBlock schedblock = (SchedBlock) 
+                entityDeserializer.deserializeEntity(xml, Class.forName(
+                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
+            sb = new ALMASB(schedblock, schedblock.getSchedBlockEntity().getEntityId());
+            sb.setParent(new Program(sb.getId()));
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        }
+        return sb;
+    }
+
     private Project convertToProject1(QueryResult res)throws Exception {
-        System.out.println("First conversion!");
         String proj_id = res.identifier;
         Project proj = null;
         try {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
             //System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
-            System.out.println("First conversion DONE!");
         } catch (MalformedURI e) { 
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
@@ -334,17 +486,164 @@ public class ALMAArchive implements Archive {
     private Project convertToProject2(XmlEntityStruct xml) throws Exception {
         ALMAProject proj = null;
         //System.out.println("Printing!" +xml.xmlString);
-        System.out.println("Second conversion!");
         try {
             ObsProject obsProj= (ObsProject)
                 entityDeserializer.deserializeEntity(xml, Class.forName(
                     "alma.entity.xmlbinding.obsproject.ObsProject"));
             proj = new ALMAProject(obsProj); 
-            System.out.println("Second conversion DONE!");
         } catch(EntityException e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
         }
         return proj;
     }
+
+    private Session convertToSession1(QueryResult res) throws Exception {
+        String session_id = res.identifier;
+        Session session=null;
+        try {
+            XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(session_id);
+            session = convertToSession2(xml_struct);
+        } catch (MalformedURI e) { 
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        } catch (ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        } catch (NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        //} catch (DirtyEntity e) {
+        //    throw new Exception (e);
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        }
+        return session;
+    }
+
+    private Session convertToSession2(XmlEntityStruct xml) throws Exception {
+        ALMASession session=null;
+        try {
+            alma.entity.xmlbinding.session.Session s = (alma.entity.xmlbinding.session.Session) 
+                entityDeserializer.deserializeEntity(xml, Class.forName(
+                    "alma.entity.xmlbinding.session.Session"));
+
+            session = new ALMASession(s);
+            
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new Exception (e);
+        }
+        return session;
+    }
+
+    /**
+     * Temporary function for updating the sb in the archive.
+     */
+    private SchedBlock getSBfromArchive(String id) {
+        SchedBlock sb =null;
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            sb = (SchedBlock) 
+                entityDeserializer.deserializeEntity(xml, Class.forName(
+                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+        }
+        return sb;
+    }
+    
+    /**
+     * Updates the SB with the information obtained from the Event received from
+     * from Control.
+     *
+     * @param ControlEvent The event from control.
+     * @throws SchedulingException
+     */
+    public void updateSB(ControlEvent ce) throws SchedulingException{
+        try {
+            SB sb = getSB(ce.getSBId());
+            ExecBlock eb = new ExecBlock(ce.getEBId(), ce.getSAId());
+            //sb.execEnd(eb, ce.getStartTime(), 5);
+            //sb.getStatus().setEnded(ce.getStartTime(), 5);
+            SchedBlock schedblock = getSBfromArchive(ce.getSBId());
+            ObsUnitControl ouc = schedblock.getObsUnitControl();
+            if(ouc == null) {
+                ouc = new ObsUnitControl();
+            }
+            switch(ce.getStatus()) {
+                case 0://exec block status = processing
+                    ouc.setSchedStatus(SchedStatusT.RUNNING);
+                    //sb.setRunning();
+                    break;
+                case 1: //exec block status = ok
+                    ouc.setSchedStatus(SchedStatusT.COMPLETED);
+                    break;
+                case 2://exec block status = failed
+                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    break;
+                case 3://exec block status = timeout
+                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    break;
+                default://exec block status kooky.. 
+                    break;
+            }
+            XmlEntityStruct newsb = entitySerializer.serializeEntity(schedblock);
+            archOperationComp.update(newsb);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Could not update the SB after the "+
+                "exec block event was received!");
+            e.printStackTrace();
+        }
+    }
+
+    
+    /*
+    private XmlEntityStruct modifyRetrievedSB(XmlEntityStruct oldSBstruct, SB newSB) {
+        XmlEntityStruct newSBstruct = null;
+        try {
+            SchedBlock oldSB = (SchedBlock) 
+                entityDeserializer.deserializeEntity(oldSBstruct, Class.forName(
+                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
+            ////////////////////////
+            // update the status
+            ////////////////////////
+            ObsUnitControl ouc = oldSB.getObsUnitControl();
+            if(ouc == null) {
+                ouc = new ObsUnitControl();
+            }
+            switch(newSB.getStatus().getStatusAsInt()) {
+                case 0://exec block status = processing
+                    ouc.setSchedStatus(SchedStatusT.RUNNING);
+                    break;
+                case 1: //exec block status = ok
+                    ouc.setSchedStatus(SchedStatusT.COMPLETED);
+                    break;
+                case 2://exec block status = failed
+                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    break;
+                case 3://exec block status = timeout
+                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    break;
+                default://exec block status kooky.. 
+                    break;
+            }            
+            oldSB.setObsUnitControl(ouc);
+            ////////////////////////
+            // Add the exec block reference
+            ////////////////////////
+
+            newSBstruct = entitySerializer.serializeEntity(oldSB);
+        } catch(Exception e) {
+        }
+        return newSBstruct;
+    }
+    */
 }

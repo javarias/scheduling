@@ -33,7 +33,7 @@ import alma.scheduling.Define.Antenna;
 import alma.scheduling.Define.Subarray;
 
 /**
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMATelescope extends Telescope  {
     public ALMATelescope () {

@@ -210,7 +210,7 @@ public class SchedulerConfiguration extends TaskControl {
     ////////////////////////
 	
 	/**
-	 * Create a SchedulerTaskControl object for the PlanningModeSim.
+	 * Create a Scheduler Configuration object for the PlanningModeSim.
 	 */
 	public SchedulerConfiguration(Thread masterScheduler,
 			boolean dynamic, boolean synchronous, SBQueue queue, int bestNumber,
@@ -223,9 +223,7 @@ public class SchedulerConfiguration extends TaskControl {
             policy,log,null);
     }
 	/**
-	 * Create a SchedulerTaskControl object.
-	 * @param masterScheduler
-	 * @param task
+	 * Create a Scheduler Configuration object.
 	 */
 	public SchedulerConfiguration(Thread masterScheduler,
 			boolean dynamic, boolean synchronous, SBQueue queue, int bestNumber,

@@ -35,6 +35,7 @@ import java.net.URL;
 //import alma.obsprep.bo.*;
 //import alma.obsprep.bo.Target;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 /**
  * A controller for the Interactive Scheduling GUI. 
@@ -42,7 +43,7 @@ import alma.scheduling.Scheduler.SchedulerConfiguration;
  * is implemented here.
  *
  *  @version 1.00 Dec 18, 2003
- *  @author sroberts 
+ *  @author Sohaila Lucero 
  */
 public class GUIController implements Runnable {
     private SchedulerConfiguration config;
@@ -98,8 +99,16 @@ public class GUIController implements Runnable {
      }
 
      public void executeSB(String sb_id) {
-       // config.getControl().execSB(subarray, sb_id);
-     }
+        try {
+            short[] antennas = config.getControl().getIdleAntennas();
+            short subarray = config.getControl().createSubarray(antennas);
+            config.getControl().execSB(subarray, sb_id);
+        } catch(SchedulingException e) {
+            System.out.println("SCHEDULING: error in executing the sb.");
+            e.printStackTrace();
+        }
+
+    }
 
      //public short[] selectAntennasForSubarray() {
      

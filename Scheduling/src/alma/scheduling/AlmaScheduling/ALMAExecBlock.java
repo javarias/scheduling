@@ -38,6 +38,8 @@ public class ALMAExecBlock extends alma.scheduling.Define.ExecBlock {
     
     // Reference to the execblock created by the control system
     private ExecBlock ctrl_execblock;
+    private String eb_id;
+    private String sb_id;
 
     public ALMAExecBlock(ExecBlock eb, String id, int subarray) {
         super(id, subarray);

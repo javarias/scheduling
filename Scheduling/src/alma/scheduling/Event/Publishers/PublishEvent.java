@@ -49,4 +49,7 @@ public class PublishEvent {
     public void publish(String s) {
     }
 
+    public void disconnect() {
+    }
+
 }

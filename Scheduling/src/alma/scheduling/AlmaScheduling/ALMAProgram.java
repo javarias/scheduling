@@ -35,7 +35,7 @@ import alma.scheduling.Define.Program;
  * "Real Scheduling Mode" is extracted from the obs unit set
  * and used to populate the contents of the Program.
  *
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAProgram extends Program {
     //Copy of the obs unit set that came out of the archive.

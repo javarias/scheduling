@@ -31,30 +31,12 @@ public class ControlEventReceiver {
     protected Logger logger;
 
     public ControlEventReceiver() {
-//        this.logger = new Logger();
+    }
+    public void setLogger(Logger log) {
+        this.logger = log;
     }
     
     public void receive(ControlEvent e) {
         logger.info("SCHEDULING: Starting to process the control event");
-        /*
-        String sb_id = e.sbId;
-        switch(e.type.value()) {
-            case 0:
-                logger.info("SCHEDULING: Event reason = started");
-                logger.info("SCHEDULING: Received sb start event from control.");
-                break;
-            case 1:
-                logger.info("SCHEDULING: Event reason = end");
-                logger.info("SCHEDULING: Received sb end event from control.");
-                ProcessControlEvent pce = new ProcessControlEvent(pmTaskControl,
-                                         archive, pipeline, e, sbQueue);
-                Thread t = new Thread(pce);
-                t.start();
-                break;
-            default: 
-                logger.severe("SCHEDULING: Event reason = error");
-                break;
-        }
-        */
     }
 }    

@@ -39,14 +39,17 @@ import alma.scheduling.Event.Receivers.ReceiveEvent;
 public class ControlEvent extends ReceiveEvent {
     private String ebId;
     private String sbId;
-    private String saId;
-    private String eventType;
-    private String eventStatus;
+    //private String saId;
+    private short saId;
+    private int eventType;
+    //private String eventType;
+    private int eventStatus;
+    //private String eventStatus;
     private DateTime startTime;
     
 
     public ControlEvent(String execblockId, String schedblockId, 
-                        String subarrayId, String type, String status, 
+                        short subarrayId, int type, int status, 
                         DateTime st) {
 
         this.ebId = execblockId;
@@ -55,6 +58,7 @@ public class ControlEvent extends ReceiveEvent {
         this.eventType = type;
         this.eventStatus = status;
         this.startTime = new DateTime(st);
+        System.out.println("SCHEDULING: time is : "+ startTime.toString());
     }
 
 
@@ -64,13 +68,13 @@ public class ControlEvent extends ReceiveEvent {
     public String getEBId() {
         return ebId;
     }
-    public String getSAId() {
+    public short getSAId() {
         return saId;
     }
-    public String getEventType() {
+    public int getEventType() {
         return eventType;
     }
-    public String getStatus() {
+    public int getStatus() {
         return eventStatus;
     }
     public DateTime getStartTime() {

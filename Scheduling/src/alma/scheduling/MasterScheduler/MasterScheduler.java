@@ -33,7 +33,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 
 /** 
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class MasterScheduler implements Runnable {
 

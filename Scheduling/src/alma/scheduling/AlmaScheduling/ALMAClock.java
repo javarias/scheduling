@@ -31,7 +31,7 @@ import alma.scheduling.Define.ArrayTime;
 import alma.scheduling.Define.ClockAlarmListener;
 
 /**
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAClock implements Clock {
     private DateTime time;

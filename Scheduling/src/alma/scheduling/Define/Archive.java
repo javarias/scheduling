@@ -54,4 +54,15 @@ public interface Archive {
 	// SchedulingPolicy
 	public Policy[] getPolicy() throws SchedulingException;
 
+    //PipelineProcessingRequest
+    public void storePipelineProcessingRequest(PipelineProcessingRequest ppr);
+    
+    //Session
+    public String storeSession(Session s);
+    public void updateSession(String id);
+    
+    
+    
+    
+
 }

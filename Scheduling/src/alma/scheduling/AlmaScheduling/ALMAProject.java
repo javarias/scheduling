@@ -40,7 +40,7 @@ import alma.entity.xmlbinding.schedblock.*;
  * from the obsproject and used to populate the contents of 
  * the Project. 
  *
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAProject extends Project {
     //Copy of the obs project that came out of the archive.
@@ -65,12 +65,14 @@ public class ALMAProject extends Project {
         obsProgram = obsProject.getObsProgram();
         
         sbs = obsProgram.getObsUnitSetTChoice().getSchedBlockRef();
+        /*
         if(sbs == null ){
             System.out.println("sbs null");
         }
         if(sbs.length ==0) {
             System.out.println("sbs 0 length");
         }
+        */
         for(int i=0; i < sbs.length; i++ ) {
             String id = sbs[i].getEntityId();
             System.out.println("In ALMAProject: "+id);
@@ -80,6 +82,7 @@ public class ALMAProject extends Project {
         Vector tmp_sbs=new Vector();
         
         obsUnitSets = obsProgram.getObsUnitSetTChoice().getObsUnitSet();
+        /*
         if(obsUnitSets == null ){
             System.out.println("obsUnitSets null");
         }
@@ -88,16 +91,17 @@ public class ALMAProject extends Project {
         } else {
             System.out.println("obsUnitSets length="+ obsUnitSets.length);
         }
+        */
         for(int i=0; i < obsUnitSets.length; i++) {
             //check and see if it has more obsUnitSets or sbs
             ObsUnitSetT[] tmp1 = obsUnitSets[i].getObsUnitSetTChoice().getObsUnitSet();
-            System.out.println("tmp1 size = "+tmp1.length);
+            //System.out.println("tmp1 size = "+tmp1.length);
             SchedBlockRefT[] tmp2 = obsUnitSets[i].getObsUnitSetTChoice().getSchedBlockRef();
-            System.out.println("tmp2 size = "+tmp2.length);
+            //System.out.println("tmp2 size = "+tmp2.length);
             for(int x=0; x<tmp2.length; x++){
                 tmp_sbs.add(tmp2[x]);
             }
-            System.out.println(tmp_sbs.size());
+            //System.out.println(tmp_sbs.size());
         }
         
     }

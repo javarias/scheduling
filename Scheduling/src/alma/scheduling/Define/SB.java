@@ -272,7 +272,7 @@ public class SB implements ProgramMember {
 	 * @param ex The UnitExec object that was produced as a result of its execution.
 	 * 			 This object may be null, which means that the execution produced no
 	 * 			 results that should be attached to this unit.
-	 * @param time The time at which this Unit ended.
+	 * @param time The time at which this Unit ended. The startTime of the ExecBlockEvent
 	 * @param int The state to which this unit should be changed.
 	 */
 	public void execEnd(ExecBlock ex, DateTime time, int state) {
@@ -299,7 +299,7 @@ public class SB implements ProgramMember {
 					// produce some results that are attached to the unit.  The time 
 					// used is not updated.  We still have to inform the parent.
 					// The ony possible state change is to "ready".
-					parent.execEnd(this,time,0,Status.READY);
+					//parent.execEnd(this,time,0,Status.READY);
 					status.setReady();
 				}
 			} else {

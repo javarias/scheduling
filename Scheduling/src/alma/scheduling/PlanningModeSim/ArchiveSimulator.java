@@ -26,6 +26,7 @@
  
 package alma.scheduling.PlanningModeSim;
 
+import alma.scheduling.Define.Session;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 import alma.scheduling.Define.Project;
@@ -35,6 +36,7 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Archive;
+import alma.scheduling.Define.PipelineProcessingRequest;
 import alma.scheduling.Define.SchedulingException;
 
 import java.util.ArrayList;
@@ -274,4 +276,8 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 		return x;
 	}
 	
+    public void storePipelineProcessingRequest(PipelineProcessingRequest ppr) {}
+    public String storeSession(Session s) { return null; }
+    public void updateSession(String id) {}
+    
 }

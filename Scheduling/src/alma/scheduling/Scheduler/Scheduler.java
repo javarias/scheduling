@@ -25,6 +25,7 @@
  */
 package alma.scheduling.Scheduler;
 
+
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Clock;
@@ -362,17 +363,25 @@ public class Scheduler implements Runnable {
                     + config.getAction() + ")"); 
     		}
     	} else {
-            SB selectedSB = config.getQueue().get(bestSBId);
-    		// We've got somthing to schedule.
-            //set its status to started now.
-            selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
+            short[] idleantennas = config.getControl().getIdleAntennas();
+            try {
+                SB selectedSB = config.getQueue().get(bestSBId);
+        		// We've got somthing to schedule.
+                // try and create a sub array
+                short subarrayid = config.getControl().createSubarray(idleantennas);
+                //got a subarray now set the sb's start time and execute it!
+                selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
+      		    config.getControl().execSB(subarrayid, bestSBId);
+                //finished executing, get rid of the subarray
+                config.getControl().destroySubarray(subarrayid);
+            } catch (Exception e) {
+                logger.severe("SCHEDULING: error!");
+                e.printStackTrace();
+                return true;
+            }
     		//config.getOperator().selectSB(best);
     		// ... and execute the selected scheduling unit.
     		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
-            short[] idleantennas = config.getControl().getIdleAntennas();
-            short subarrayid = config.getControl().createSubarray(idleantennas);
-    		config.getControl().execSB(subarrayid,best);
-            config.getControl().destroySubarray(subarrayid);
     	}
         config.getQueue().remove(best.getBestSelection());
    	

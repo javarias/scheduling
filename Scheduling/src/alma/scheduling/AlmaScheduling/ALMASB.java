@@ -40,7 +40,7 @@ import alma.entities.generalincludes.*;
  * scheduling subsystem in "Real Scheduling Mode" is extracted
  * from the schedblock and used to populate the contents of 
  * the SB. 
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMASB extends SB {
     //Copy of the schedblock that came out of the archive.

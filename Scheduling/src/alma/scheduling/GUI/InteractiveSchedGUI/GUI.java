@@ -72,7 +72,7 @@ import alma.scheduling.Define.SB;
  * scheduling.
  * 
  * @version 1.00 Dec 18, 2003
- * @author sroberts
+ * @author Sohaila Lucero
  */
 public class GUI extends JFrame {
     private GUIController controller;

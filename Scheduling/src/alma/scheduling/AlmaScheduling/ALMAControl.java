@@ -46,7 +46,7 @@ import alma.Control.ArrayNotIdleException;
 
 
 /**
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAControl implements Control {
     
@@ -82,21 +82,33 @@ public class ALMAControl implements Control {
      * @param subarrayId
      * @param bestSBId
      */
-    public void execSB(short subarrayId, String bestSBId) 
+    public void execSB(short subarrayId, BestSB best) 
         throws SchedulingException {
         
-        
+        execSB(subarrayId, best.getBestSelection());
+    }
+    
+    /**
+     * Executes the sb that was selected by the telescope operator
+     * @param subarrayId
+     * @param sbId
+     */
+    public void execSB(short subarrayId, String sbId) 
+        throws SchedulingException {
+    
         logger.info("SCHEDULING: Sending BestSBs to Control!");
         logger.info("SCHEDULING: Subarray being used has id = "+subarrayId);
         
         ArrayController ctrl = getArrayController(subarrayId);
         try{
-            ctrl.observeNow(bestSBId);
+            ctrl.observeNow(sbId);
         } catch(ArrayNotIdleException e1) {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();
         }
+    
     }
+
 
     /**
      *
@@ -162,11 +174,22 @@ public class ALMAControl implements Control {
      *
      */
     public short[] getIdleAntennas() throws SchedulingException {
+        try {
+            short[] antennas = control_system.availableAntennas();
+            logger.info("SCHEDULING: Got "+ antennas.length +" antennas");
+            return antennas;
+        } catch(CSInactiveException e) {
+            logger.severe("SCHEDULING: Control System == INACTIVE!");
+            e.printStackTrace();
+            return null;
+        }
+        /*
         short[] tmp_antennas = new short[64];
         for (int i=0; i < 64; i++) {
             tmp_antennas[i] = (short)i;
         }
         return tmp_antennas;
+        */
     }
 
     /**
@@ -177,7 +200,7 @@ public class ALMAControl implements Control {
     }
     
     private ArrayController getArrayController(short subarrayId) throws SchedulingException {
-        logger.info("SCHEDULING: looking for subaray with id = "+ subarrayId);
+        logger.info("SCHEDULING: looking for subarray with id = "+ subarrayId);
         for(int i=0; i < controllers.size(); i++){
             if( ((ArrayController)controllers.elementAt(i)).id() == subarrayId) {
                 logger.info("SCHEDULING: found subarray with id = "+ subarrayId);

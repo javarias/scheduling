@@ -55,6 +55,7 @@ package alma.scheduling.Define;
  */
 public class DateTime {
 	
+    private static final long CONVERSION = 12219292800L;
 	// The longitude in degrees West (i.e., degrees west of Greenwich are positive).
 	static private double longitudeInDegrees = 0.0;
 	static private double longitudeInHours = 0.0;
@@ -184,6 +185,19 @@ public class DateTime {
 	static public DateTime currentSystemTime() {
 		return new DateTime(System.currentTimeMillis());
 	}
+
+    /**
+     * Given a unix time as a long, converts it to ACS Time using
+     * the constant '12219292800'.
+     *
+     * @param long The unix time to convert.
+     * @return long The acs time.
+     */
+    static public long unixToAcs(long unixTime) {
+        long acsTime = (unixTime + (CONVERSION * 1000) * 10000);
+        System.out.println("SCHEDULING: ACS TIME = "+acsTime);
+        return acsTime;
+    }
 	
 	/**
 	 * Internally, time is kept in the form of the Julian day, 
@@ -338,6 +352,7 @@ public class DateTime {
 		// 2440587.5 is the Julian date of Jan. 1, 1970, midnight UTC.
 		this(millisec / 86400000.0 + 2440587.5);	
 	}
+
 
 	/**
 	 * Return the Julian day.

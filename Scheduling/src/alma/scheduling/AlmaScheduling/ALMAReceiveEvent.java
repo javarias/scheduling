@@ -25,25 +25,49 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import alma.xmlentity.XmlEntityStruct;
+import alma.entities.commonentity.EntityT;
+//import alma.entity.xmlbinding.session.*;
+
 import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerException;
 
 import alma.Control.ExecBlockEvent;
 import alma.TelCalPublisher.FocusReducedEvent;
 import alma.TelCalPublisher.PointingReducedEvent;
 import alma.pipelinescience.ScienceProcessingRequestEnd;
 
+import alma.scheduling.StartSession;
+import alma.scheduling.EndSession;
 import alma.scheduling.Event.Receivers.*;
+//import alma.scheduling.Define.ArrayTime;
+import alma.scheduling.Define.Session;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ControlEvent;
+import alma.scheduling.Define.SchedulingException;
 
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
  */
-public class ALMAReceiveEvent extends ControlEventReceiver {
+public class ALMAReceiveEvent extends ReceiveEvent {
+    private ContainerServices containerServices;
+    private ALMAArchive archive;
+    private ALMAPipeline pipeline;
+    private ALMAPublishEvent publisher;
 
-    public ALMAReceiveEvent(ContainerServices cs){
+    public ALMAReceiveEvent(ContainerServices cs, ALMAArchive a, ALMAPipeline p, ALMAPublishEvent pub) {
+        
+        this.containerServices = cs;    
         this.logger = cs.getLogger();
+        this.archive = a;
+        this.pipeline = p;
+        this.publisher = pub;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    //  Receive functions for each event type
+    ///////////////////////////////////////////////////////////////////////////
     /**
      * When an ExecBlockEvent is received by the scheduling subsystem it is
      * received here and the type is determined. Once the type is determined 
@@ -53,19 +77,21 @@ public class ALMAReceiveEvent extends ControlEventReceiver {
      */ 
     public void receive(ExecBlockEvent e) {
         logger.info("SCHEDULING: Starting to process the control event");
-        String sb_id = e.sbId;
         switch(e.type.value()) {
             case 0:
                 logger.info("SCHEDULING: Event reason = started");
                 logger.info("SCHEDULING: Received sb start event from control.");
+                startSession(e);
                 break;
             case 1:
                 logger.info("SCHEDULING: Event reason = end");
                 logger.info("SCHEDULING: Received sb end event from control.");
-                //ProcessControlEvent pce = new ProcessControlEvent(pmTaskControl,
-                //                         archive, pipeline, e, sbQueue);
-                //Thread t = new Thread(pce);
-                //t.start();
+                //ArrayTime time = new ArrayTime(e.startTime);
+                ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
+                    e.type.value(), e.status.value(), new DateTime(e.startTime));
+                endSession(e);
+                updateSB(ce);
+                startPipeline(ce);
                 break;
             default: 
                 logger.severe("SCHEDULING: Event reason = error");
@@ -104,6 +130,83 @@ public class ALMAReceiveEvent extends ControlEventReceiver {
         logger.info("SCHEDULING: Starting to process the pointing reduced event");
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    //  Util functions 
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Updates the scheduling block with the info gotten from the control
+     * event.
+     */
+    private void updateSB(ControlEvent e) {
+        try {
+            logger.info("SCHEDULING: updating the SB after event from control received");
+            archive.updateSB(e);
+        } catch(SchedulingException ex) {
+            logger.severe("SCHEDULING: error updating sb");
+            ex.printStackTrace();
+        }
+    }
 
 
+    /**
+     * Creates a Session object for the start of this SB execution session. 
+     * Stores the session object in the archive and sends out a start session
+     * event.
+     * @param ExecBlockEvent The event which tells us that the SB has started
+     *                       its execution.
+     */
+    private void startSession(ExecBlockEvent e) {
+      try {
+        logger.info("SCHEDULING: Start of a Session!");
+        //create a session object 
+        ALMASession s = new ALMASession();
+        s.addExecBlockId(e.execID);
+        //s.setStartTime(e.startTime);
+        //ouc & sb == same thing right now!
+        s.setObsUnitSetId(e.sbId);
+        s.setSbId(e.sbId);
+        //store session obj in the archive
+        String sessionID = archive.storeSession(s);
+        //send out the session start event
+        StartSession start_event = new StartSession (e.startTime, 
+            sessionID, e.sbId, e.sbId); //NOTE: for now last 2 are the same..
+        publisher.publish(start_event);       
+      }catch(Exception ex) {
+        logger.severe("SCHEDULING: error! ");
+        ex.printStackTrace();
+      }
+    }
+    
+    /**
+     * Updates an existing session object in the archive to say that the SB has 
+     * finished its execution. Then sends out an event saying that the session 
+     * has ended.
+     * @param ExecBlockEvent The event to tell us that the event has ended.
+     */
+    private void endSession(ExecBlockEvent e) {
+    //query session object from the archive
+    //update session object and update it in the archive
+    //archive.updateSession
+    //send out the session end event
+    }
+
+
+    /** 
+     * Starts the Science Pipeline given the SB which completed with this control
+     * event.
+     * @param ControlEvent The event from control
+     */
+    private void startPipeline(ControlEvent e) {
+        String result = null;
+        try {
+            XmlEntityStruct ppr = pipeline.createPipelineProcessingRequest(e.getSBId());
+            archive.storePipelineProcessingRequest(new ALMAPipelineProcessingRequest(ppr));
+            ppr = archive.retrievePPR(ppr.entityId);
+            result = pipeline.processRequest(ppr);
+        } catch(Exception ex) {
+            logger.severe("SCHEDULING: error starting the science pipeline");
+            ex.printStackTrace();
+        }
+    }
 }

@@ -62,7 +62,7 @@ import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;
  *    A PipelineProcessingRequest has one Reduction Unit that is a  
  *  reference to an ObsUnitSet. It is an EntityRefT object.
  * 
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class PipelineProcessingRequest {
     

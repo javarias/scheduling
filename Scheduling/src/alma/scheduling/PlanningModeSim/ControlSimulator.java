@@ -149,6 +149,8 @@ public class ControlSimulator extends BasicComponent implements Control {
 		}
 	}
 
+    public void execSB(short subarrayId, String id) throws SchedulingException {
+    }
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String, ALMA.scheduling.define.DateTime)
 	 */

@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import alma.scheduling.Define.SB;
 
 /**
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
     alma.scheduling.Define.ProjectManager {

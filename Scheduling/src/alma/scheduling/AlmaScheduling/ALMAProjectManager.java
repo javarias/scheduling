@@ -37,7 +37,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 
 /**
  *
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -68,9 +68,15 @@ public class ALMAProjectManager extends ProjectManager {
      */
     public void run() {
         super.run();
-        //while(!stopCommand) {
-        //    pollArchive();
-        //}
+        while(!stopCommand) {
+            try {
+                //Thread.sleep(5*60*1000);
+                Thread.sleep(60*1000);
+            }catch(InterruptedException e) {
+                logger.info("SCHEDULING: ProjectManager Interrupted!");
+            }
+            pollArchive();
+        }
     }
 
     /** 
@@ -80,16 +86,6 @@ public class ALMAProjectManager extends ProjectManager {
      *
      */
     private void pollArchive() {
-        /*
-        try {
-            Project[] projs = archive.getAllProject();
-                
-        } catch (Exception e) {
-            logger.severe("SCHEDULING: Error polling the archvie.");
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
-        }*/
-
         
         try {
             SB[] sbs = archive.getAllSB();

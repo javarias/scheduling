@@ -1,18 +1,17 @@
 /*
- * ALMA - Atacama Large Millimeter Array
+ * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
- * Copyright by ESO (in the framework of the ALMA collaboration),
  * Copyright by AUI (in the framework of the ALMA collaboration),
- * All rights reserved.
+ * All rights reserved
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free software Foundation; either
+ * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  * 
  * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  * 
@@ -20,28 +19,28 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
- *
- * File ReceiveEvent.java
- */
-package alma.scheduling.Event.Receivers;
-
-import java.util.logging.Logger;
-/**
- * The ReceiveEvent class contains basic methods of a generic nature to
- * handle receiving events.  It is an abstract class that forms the basis
- * for classes that handle events of specific types. 
  * 
- * @version 1.00 Jun 10, 2004
- * @author Allen Farris
+ * File ALMAPipelineProcessingRequest.java
+ * 
  */
-abstract public class ReceiveEvent {
-    protected Logger logger;
-	/**
-	 * 
-	 */
-	public ReceiveEvent() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+package alma.scheduling.AlmaScheduling;
 
+import alma.xmlentity.XmlEntityStruct;
+
+import alma.scheduling.Define.PipelineProcessingRequest;
+
+/**
+ * 
+ * @author Sohaila Lucero
+ */
+public class ALMAPipelineProcessingRequest extends PipelineProcessingRequest {
+    XmlEntityStruct ppr_struct;
+    
+    public ALMAPipelineProcessingRequest(XmlEntityStruct ppr) throws Exception {
+        ppr_struct = ppr;
+    }
+
+    public XmlEntityStruct getPipelineProcessingRequestStruct() {
+        return ppr_struct;
+    }
 }

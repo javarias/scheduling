@@ -35,24 +35,24 @@ package alma.scheduling.Define;
  * @author Allen Farris
  */
 public class ArrayTime {
-
+    //ACSTime in seconds when unix time is at 0.
+    private final long conversion = 12219292800L; //in seconds
+    //The array time
 	private long time;
+    //Arraytime converted to unix time.
+    private long unixTime;
 
 	/**
-	 * Create an ArrayTime from a long.
+	 * Create an ArrayTime from a long. The long representing ACSTime
 	 */
-	public ArrayTime(long time) {
-		this.time = time;
+	public ArrayTime(long t) {
+		this.time = t; //in 100ns units
+        System.out.println("ACS Time = "+time);
 	}
 
-	/**
-	 * Return the value of this array time as an STime object.
-	 * @return
-	 */
-/*	public STime asSTime() {
-		return null;
-	}
-*/
-
-
+    public DateTime arrayTimeToDateTime() {
+        unixTime = (time / 10000) - (conversion * 1000);
+        System.out.println("Unixtime = "+unixTime);
+        return  new DateTime(unixTime);
+    }
 }

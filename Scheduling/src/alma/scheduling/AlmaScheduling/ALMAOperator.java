@@ -36,7 +36,7 @@ import alma.scheduling.MasterScheduler.MessageQueue;
 
 import alma.entities.commonentity.EntityT;
 /**
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAOperator implements Operator {
     private ContainerServices containerServices;
