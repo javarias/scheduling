@@ -43,7 +43,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.13 2005/01/25 18:09:40 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.14 2005/02/02 22:12:59 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -76,7 +76,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: initSubsysPass1() method called");
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                m_containerServices.getComponent("MasterScheduler"));
+                m_containerServices.getComponent("SCHEDULING_MASTERSCHEDULER"));
         } catch (ContainerException e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass1.");
             //set the ms to null just to be safe..
