@@ -5,7 +5,7 @@ ACS_CDB=$PWD
 
 # Clean archive
 archiveCleanXindice >& sched_archive1.log
-archiveLoadSchema >& sched_archive2.log
+archiveLoadSchema $ACSROOT/idl $INTROOT/idl >& sched_archive2.log
 
 # Start acs processes
 acsdataClean >& /dev/null 
@@ -22,4 +22,4 @@ acsStartContainer -java frodoContainer -b 0 >& sched_frodoContainer.log &
 sleep 20
 
 #otprotoBatch targets.txt >& sched_almaOT.log
-ALMA-OT -batch otproto.py targets-list.txt >& sched_almaOT.log
+ALMA-OT -batch otproto.py targets.txt >& sched_almaOT.log
