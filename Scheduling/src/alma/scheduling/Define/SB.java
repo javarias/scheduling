@@ -354,6 +354,7 @@ public class SB implements ProgramMember {
 				// Add the exec block reference to the SB.
 				addExec(ex);
 				if (ex.getStatus().isComplete()) {
+                    System.out.println("Exec is complete");
 					// This is the "normal" case; the execution was successful.
 					// Increment the amount of time used in this Unit ...
 					totalUsedTimeInSeconds += maximumTimeInSeconds;

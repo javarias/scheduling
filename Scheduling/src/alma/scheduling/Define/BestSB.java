@@ -154,12 +154,21 @@ public class BestSB {
 		return nothing;
 	}
 	
+    /**
+      * Returns the SB that is the best one to schedule now!
+      */
 	public String getBestSelection() {
-		if (numberReturned == 0)
+		if (numberReturned == 0) {
+            System.out.println("BEST SB: num returned == 0");
 			return null;
+        }
+        //numberReturned--;
 		return sbId[selection];
 	}
 	
+    /**
+      *
+      */
 	public String toString() {
 		if (numberReturned == 0) {
 			return nothing.toString();

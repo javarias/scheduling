@@ -31,9 +31,10 @@ import alma.acs.container.ContainerServices;
 
 import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.NothingCanBeScheduled;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
-
 import alma.entities.commonentity.EntityT;
 /**
  * @author Sohaila Lucero
@@ -68,7 +69,8 @@ public class ALMAOperator implements Operator {
      * @param best The selection of possible best SBs
      * @return String The id of the selected SB.
      */
-    public String selectSB(BestSB best, Message message) {
+    //public String selectSB(BestSB best, Message message) {
+    public void selectSB(BestSB best, Message message) {
         // Temporary solution to giving the messages unique IDs!
         EntityT entity = new EntityT();
         try { 
@@ -86,7 +88,12 @@ public class ALMAOperator implements Operator {
             logger.severe(e.toString());
             e.printStackTrace();
         }
-        String bestSBId= best.getBestSelection();
+        //best.setSelection(0); //for now set the first one to be the best one!
+        String bestSBId= best.getBestSelection(); //used when Exec's operator times out
+        if(bestSBId == null) {
+            best = new BestSB(new NothingCanBeScheduled(new DateTime(System.currentTimeMillis()),
+                            NothingCanBeScheduled.NoVisibleTargets, ""));
+        } else {
         //bestSBId is the reply
         //got best SB selection so now we respond via the MasterScheduler
         try {
@@ -99,14 +106,15 @@ public class ALMAOperator implements Operator {
             logger.severe(e.toString());
             e.printStackTrace();
         }
+        }
         try {
             timer.join();
             logger.info("SCHEDULING: timer joined!");
         } catch(InterruptedException e) {
-            logger.info("SCHEDULING: timer was interrupted!");
+            //logger.info("SCHEDULING: timer was interrupted!");
         }
-        System.out.println("best sb id = "+bestSBId);
-        return bestSBId;
+        System.out.println("best sb id = "+message.getReply());
+        //return message.getReply();
     }
     
     /**
@@ -131,6 +139,8 @@ public class ALMAOperator implements Operator {
             try {
                 Thread.sleep(delay);
             }catch(InterruptedException e) {
+                //System.out.println("interrupted in selected SB timer");
+                //e.printStackTrace();
             }
         }
     }

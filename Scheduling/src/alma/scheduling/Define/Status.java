@@ -139,8 +139,14 @@ public class Status {
         ///
 		if (startTime != null )
 			throw new UnsupportedOperationException("Cannot set start time!  Component has already been started.");
-		if (readyTime == null || readyTime.gt(time))
-			throw new UnsupportedOperationException("Cannot set 'started' before setting 'ready'.");
+        if(readyTime == null) {
+            System.out.println("SCHED: in status, readyTime == null");
+        }
+        if(readyTime.gt(time)){
+            System.out.println("SCHED: in status, readyTime > time");
+        }
+		//if (readyTime == null )  //|| readyTime.gt(time))
+		//	throw new UnsupportedOperationException("Cannot set 'started' before setting 'ready'.");
             ////
 		startTime = new DateTime (time);
 		status = RUNNING;

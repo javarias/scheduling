@@ -45,6 +45,7 @@ import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.PolicyFactor;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.MasterScheduler;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
@@ -277,11 +278,12 @@ public class ALMAMasterScheduler extends MasterScheduler
 
         //TODO Eventually populate s_policy with info from the schedulingPolicy
         Policy s_policy = createPolicy();
-        logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
+        //logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
+        short subarrayId=createSubarray(new short[0], "dynamic");
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 0, 
-            (short)0, clock, control, operator, telescope, manager, s_policy, 
-            logger, publisher);
+            subarrayId, clock, control, operator, telescope, manager, s_policy, 
+            logger);
         Scheduler scheduler = new Scheduler(config);
         Thread scheduler_thread = new Thread(scheduler);
         scheduler_thread.start();
@@ -290,13 +292,15 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void startInteractiveScheduling() throws InvalidOperation {
         Policy s_policy = createPolicy();
         logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
+        
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), false, true, sbQueue, sbQueue.size(), 0, 
             (short)0, clock, control, operator, telescope, manager, s_policy, 
-            logger, publisher);
+            logger);
         Scheduler scheduler = new Scheduler(config);
         Thread scheduler_thread = new Thread(scheduler);
         scheduler_thread.start();
+        
     }
     
     /**
@@ -367,7 +371,14 @@ public class ALMAMasterScheduler extends MasterScheduler
     public short createSubarray(short[] antennaIdList, String schedulingMode)
         throws InvalidOperation {
         
-        return 0;
+        short subarrayId=0;
+        try {             
+            String[] idleAntennas = control.getIdleAntennas();
+            subarrayId = control.createSubarray(idleAntennas);
+        } catch(SchedulingException e) {
+            throw new InvalidOperation();
+        }
+        return subarrayId;
     }
 
 
@@ -375,6 +386,11 @@ public class ALMAMasterScheduler extends MasterScheduler
      *
      */
     public void destroySubarray(short subarrayId) throws InvalidOperation {
+        try {
+            control.destroySubarray(subarrayId);
+        } catch(SchedulingException e) {
+            throw new InvalidOperation();
+        }
     }
 
     /**

@@ -113,6 +113,7 @@ public class MasterScheduler implements Runnable {
      * @param value 
      */
     public void setStopCommand(boolean value) {
+        System.out.println("SCHEDULING: in MS stop command set.");
         this.stopCommand = value;
     }
 }

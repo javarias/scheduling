@@ -55,7 +55,11 @@ public class ProjectManager implements Runnable,
     public void run() {
     }
 
+    /**
+      *
+      */
     public void setStopCommand(boolean stop) {
+        System.out.println("SCHEDULING: in PM stop command set");
         this.stopCommand = stop;
     }
     public boolean getStopCommand() {

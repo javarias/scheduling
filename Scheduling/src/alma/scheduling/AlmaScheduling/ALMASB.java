@@ -55,8 +55,8 @@ public class ALMASB extends SB {
         this.almaSchedBlock = sb;
         setParent(new ALMAProgram());
         extractInfoFromSB();
-        setReady(new DateTime(System.currentTimeMillis()));
-        //System.out.println("in ALMASB: "+ getStatus().isReady());
+       // super.setReady(new DateTime(System.currentTimeMillis()));
+       // System.out.println("in ALMASB: "+ getStatus().isReady());
     }
 
     private void extractInfoFromSB() {

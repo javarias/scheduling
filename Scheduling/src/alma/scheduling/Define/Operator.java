@@ -54,9 +54,8 @@ public interface Operator {
 	 * If there is no reply within the timeout period, entityId[0] is assumed.
 	 * 
 	 * @param best The list of SBs under consideration to be executed.
-	 * @return The SB from the specified list that is to be executed.
 	 */	
-	public String selectSB (BestSB best, Message m);
+	public void selectSB (BestSB best, Message m);
 	
 	/**
 	 * Reply true if and only if the specified antenna is in manual mode and
@@ -79,22 +78,5 @@ public interface Operator {
 	 * list of antennas.
 	 */
 	public boolean confirmSubarrayCreation (String[] antennaId);
-
-    /*
-   class SelectSBTimer implements Runnable {
-        private long delay;
-        
-        public SelectSBTimer(long delay) {
-            this.delay = delay;
-        }
-        
-        public void run() {
-            try {
-                Thread.sleep(delay);
-            }catch(InterruptedException e) {
-            }
-        }
-    }
-   */
 
 }

@@ -241,10 +241,11 @@ public class ProjectUtil {
 		if ((s.length() != 33) || (!s.startsWith("uid://X")) ||
 				(s.charAt(23) != '/' || s.charAt(24) != 'X'))
 			throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
-		for (int i = 7; i < 23; ++i) {
+		/*for (int i = 7; i < 23; ++i) {
 			if (s.charAt(i) < '0' || s.charAt(i) > '9')
 				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
 		}
+        */
 		for (int i = 25; i < 33; ++i) {
 			if (s.charAt(i) < '0' || s.charAt(i) > '9')
 				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
@@ -429,7 +430,7 @@ public class ProjectUtil {
 		project.setProjectStatusId(projectStatusEntityId);
 		project.setTimeOfCreation(now);
 		project.setTimeOfUpdate(now);
-		project.setBreakpoint(null);
+		//project.setBreakpoint(null); Sohaila: Took out coz in Define/Project this throws an error!
 		
 		// To check if all SchedBlocks are used, we will create an array
 		// of booleans and check them off as we use them.
@@ -606,10 +607,21 @@ public class ProjectUtil {
 		if (targetList == null || targetList.length == 0)
 			throw new SchedulingException("There is no ObsTargetT object in the scheduling block with id " + 
 					sb.getSchedBlockId());
-		if (targetList[0].getSpectralSpecCount() < 1)
-			throw new SchedulingException("There is no SpectralSpec object in the scheduling block with id " + 
-					sb.getSchedBlockId());
-		SpectralSpecT setup = targetList[0].getSpectralSpec(0);
+        
+        //Sohaila: modified coz of errors.
+        SpectralSpecT setup;
+		if (targetList[0].getSpectralSpecCount() < 1){
+		//	throw new SchedulingException("There is no SpectralSpec object in the scheduling block with id " + 
+		//			sb.getSchedBlockId());
+            
+            SpectralSpecT[] setups = new SpectralSpecT[1];
+            setup = new SpectralSpecT();
+            setups[0] = setup;
+            targetList[0].setSpectralSpec(setups);
+        } else {
+    		setup = targetList[0].getSpectralSpec(0);
+        }
+        //////
 		alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
 		if (freqSetup == null) {
 			sb.setCenterFrequency(0.0);

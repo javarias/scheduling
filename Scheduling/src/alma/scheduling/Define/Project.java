@@ -65,7 +65,9 @@ public class Project implements ProjectMember {
 	/**
 	 * Construct an Project.
 	 */
-	public Project(String obsProjectId, String proposalId, String projectName, String projectVersion, String PI) {
+	public Project(String obsProjectId, String proposalId, 
+            String projectName, String projectVersion, String PI) {
+
 		this.obsProjectId  = obsProjectId;
 		this.proposalId = proposalId;
 		this.projectName = projectName;

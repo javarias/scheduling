@@ -140,7 +140,7 @@ public class SchedulerConfiguration extends TaskControl {
 	// The logger.
 	private Logger log;
     //The scheduling notification channel publisher
-    private PublishEvent publisher;
+    //private PublishEvent publisher;
 
 	// The message when nothing can be scheduled.
 	private NothingCanBeScheduled nothing;
@@ -190,16 +190,36 @@ public class SchedulerConfiguration extends TaskControl {
 	
 	// The currently executiong SB.
 	private String currentSB;
+    // The previously executed SB.
+    private String previousSB;
+
 	
 	public synchronized void startExecSB(String sbId) {
 		currentSB = sbId;
 	}
 	public synchronized void endExecSB(String sbId) {
+        if (sbId != currentSB) {
+            throw new IllegalArgumentException("Ending SB-id (" + sbId + 
+                    ") does not match currently executing SB (" + currentSB + ")!");
+        }
+        SB sb = queue.get(sbId);
+        if (sb == null)
+            throw new IllegalArgumentException ("The SB with id " + sbId +
+                    "is not in the configuration queue.");
+        if (sb.getStatus().isComplete()) {
+            incrementSbsCompleted();
+        } else if (sb.getStatus().isAborted()) {
+            incrementSbsFailed();
+        }
+        previousSB = currentSB;
+        currentSB = null;
+        /*
 		if (sbId != currentSB) {
 			throw new IllegalArgumentException("Ending SB-id (" + sbId + 
 				") does not match currently executing SB (" + currentSB + ")!");
 		}
 		currentSB = "";
+        */
 	}
     ////////////////////////	
     // TEMPORARY 
@@ -218,20 +238,21 @@ public class SchedulerConfiguration extends TaskControl {
 			Operator operator, Telescope telescope, 
 			ProjectManager projectManager, Policy policy, Logger log) {
            
-        this(masterScheduler,dynamic, synchronous,queue,bestNumber,sleepTime,
+      /*  this(masterScheduler,dynamic, synchronous,queue,bestNumber,sleepTime,
             subarrayId,clock,control,operator,telescope,projectManager,
-            policy,log,null);
-    }
+            policy,log,null);*/
+    //}
 	/**
 	 * Create a Scheduler Configuration object.
 	 */
+    /*
 	public SchedulerConfiguration(Thread masterScheduler,
 			boolean dynamic, boolean synchronous, SBQueue queue, int bestNumber,
             int sleepTime, short subarrayId, Clock clock, Control control,
 			Operator operator, Telescope telescope, 
 			ProjectManager projectManager, Policy policy, Logger log,
             PublishEvent p) {
-
+*/
 		super(masterScheduler);
 		this.dynamic = dynamic;
 		this.synchronous = synchronous;
@@ -260,15 +281,21 @@ public class SchedulerConfiguration extends TaskControl {
 		this.action = NOTHING;
 		this.sbToDo = null;
 		this.currentSB = "";
-        this.publisher = p;
+        //this.publisher = p;
 	}
 	
+    /**
+      *
+      */
 	public synchronized void normalEnd(DateTime time) {
 		super.normalEnd(time);
 		sleeping = false;
 		nothingToSchedule = false;
 		failure = false;
 	}
+    /**
+      *
+      */
 	public synchronized void errorEnd(String err, DateTime time) {
 		super.errorEnd(err,time);
 		sleeping = false;
@@ -276,31 +303,56 @@ public class SchedulerConfiguration extends TaskControl {
 		failure = true;
 	}
 	
+    /**
+      *
+      */
 	public synchronized boolean isSleeping() {
 		return sleeping;
 	}
+    /**
+      *
+      */
 	public synchronized boolean isNothingToSchedule() {
 		return nothingToSchedule;
 	}
+    /**
+      *
+      */
 	public synchronized boolean isError() {
 		return failure;
 	}
+    /**
+      *
+      */
 	public synchronized void sleepingOn() {
 		sleeping = true;
 	}
+    /**
+      *
+      */
 	public synchronized void sleepingOff() {
 		sleeping = false;
 	}
-	
+
+    /**
+      *
+      */
 	public synchronized int getAction() {
 		return action;
 	}
+    
+    /**
+      *
+      */
 	public synchronized SB getSBToDo() {
 		return sbToDo;
 	}
 
-	// Enter the nothing-to-schedule state and wait for a response.
+    /**
+      *	Enter the nothing-to-schedule state and wait for a response.
+      */
 	public synchronized void nothingToDo(NothingCanBeScheduled x) {
+        try {
 		nothing = x;
 		nothingToSchedule = true;
 		interruptMasterScheduler();
@@ -308,15 +360,27 @@ public class SchedulerConfiguration extends TaskControl {
 			try {
 				wait();
 			} catch (InterruptedException e) {
+                System.out.println("interrupted in SchedConfig");
 			}
 		}
+        }catch(Exception e) {
+            System.out.println("broken in SchedConfig");
+        }
 	}
+
+    /**
+      *
+      */
 	public synchronized void respondContinue() {
 		action = CONTINUE;
 		sbToDo = null;
 		nothingToSchedule = false;
 		notify();
 	}
+
+    /**
+      *
+      */
 	public synchronized void respondStop() {
 		action = STOP;
 		stopTask();
@@ -324,12 +388,20 @@ public class SchedulerConfiguration extends TaskControl {
 		nothingToSchedule = false;
 		notify();
 	}
+
+    /**
+      *
+      */
 	public synchronized void respondFiller(SB sb) {
 		action = FILLER;
 		sbToDo = sb;
 		nothingToSchedule = false;
 		notify();
 	}
+
+    /**
+      *
+      */
 	public synchronized void respondSB(SB sb) {
 		action = SB;
 		sbToDo = sb;
@@ -496,9 +568,10 @@ public class SchedulerConfiguration extends TaskControl {
 		return projectManager;
 	}
 
+    /*
     public PublishEvent getSchedulingPublisher() {
         return publisher;
-    }
+    }*/
 
 	/**
 	 * @return
@@ -514,4 +587,26 @@ public class SchedulerConfiguration extends TaskControl {
 		return synchronous;
 	}
 	
+
+    /**
+     * @return Returns the currentSB.
+     */
+    public String getCurrentSBId() {
+        return currentSB;
+    }
+
+    /**
+      *
+      */
+    public boolean isSBExecuting() {
+        return currentSB == null;
+    }
+
+    /**
+      *
+      */
+    public String getPreviousSBId() {
+        return previousSB;
+    }
+
 }

@@ -53,15 +53,15 @@ import java.util.logging.Logger;
 public class Scheduler implements Runnable {
 	
     // All the configuration info needed by this scheduler
-    private SchedulerConfiguration config = null;
+    protected SchedulerConfiguration config = null;
     //Initial subarrayId
-    private short subarrayId = -1;
+    protected short subarrayId = -1;
     //The logger
-    private Logger logger = null;
+    protected Logger logger = null;
     //The clock for this scheduler
-    private Clock clock = null;
+    protected Clock clock = null;
     //The dynamic scheduling algorithm that controls this scheduler
-    private DynamicSchedulingAlgorithm dsa = null;
+    protected DynamicSchedulingAlgorithm dsa = null;
     //If this scheduler is for Interactive mode this controller is
     //the controlling object for its GUI.
     private GUIController controller;
@@ -111,6 +111,7 @@ public class Scheduler implements Runnable {
             logger.info("SCHEDULING: Running in INTERACTIVE mode");
     		runInteractive();
         }
+        
     }
     
     /**
@@ -268,7 +269,7 @@ public class Scheduler implements Runnable {
     			logger.info("SCHEDULING: "+name() + ": Stopping because there are no more "+
                     "scheduling units.");
                 logger.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in scheduler.");
-                config.getSchedulingPublisher().publish("No more SBs to schedule");
+                //config.getSchedulingPublisher().publish("No more SBs to schedule");
 
                 //NothingCanBeScheduled.NoResources
 				break;
@@ -329,51 +330,59 @@ public class Scheduler implements Runnable {
     	}
     	
     	// Log the best list.
-    	logger.info("SCHEDULING: "+name() + ": " + best.toString());
+    	logger.info("SCHEDULING: ** "+name() + ": " + best.toString());
         // create a message to correspond to this selectSB request
-        Message m = new Message();
         // Submit the list to the operator to get the id of the best SB from 
         //the list
-        String bestSBId = config.getOperator().selectSB(best, m);
-    	//if (best.getNumberReturned() == 0) {
-        if(bestSBId == null) {
+        //String bestSBId = config.getOperator().selectSB(best, m);
+        System.out.println("SCHEUDLING: best selection will be.. "+ best.getBestSelection());
+        if(best.getBestSelection() == null) {
     		// Nothing can be scheduled at this time.
     		// Call config's nothingToDo method and wait.
     		config.nothingToDo(best.getNothingCanBeScheduled());
     		// Get response.
     		switch (config.getAction()) {
-    		case SchedulerConfiguration.CONTINUE:
-    			return false;
-    		case SchedulerConfiguration.STOP:
-    			return true;
-    		case SchedulerConfiguration.FILLER:
-    			logger.severe("SCHEDULING: "+name() + ": Invalid action response! Fillers "+
-                    "cannot run in synchronous mode.");
-    			throw new SchedulingException("Invalid action response! "+
-                    "Fillers cannot run in synchronous mode.");
-    		case SchedulerConfiguration.SB:
-    			logger.severe("SCHEDULING: "+name() + ": Invalid action response! SBs cannot "+
-                    "run at this time.");
-    			throw new SchedulingException("Invalid action response! SBs "+
-                    "cannot run at this time.");
-    		default:
-    			logger.severe("SCHEDULING: "+name() + ": Invalid action parameter! (" 
-                    + config.getAction() + ")"); 
-    			throw new SchedulingException("Invalid action parameter! (" 
-                    + config.getAction() + ")"); 
-    		}
+     		    case SchedulerConfiguration.CONTINUE:
+                    logger.info("SCHEDULING: continue");
+    			    return false;
+        		case SchedulerConfiguration.STOP:
+                    logger.info("SCHEDULING: stop");
+        			return true;
+    	    	case SchedulerConfiguration.FILLER:
+    		    	logger.severe("SCHEDULING: "+name() + ": Invalid action response! Fillers "+
+                        "cannot run in synchronous mode.");
+        			throw new SchedulingException("Invalid action response! "+
+                        "Fillers cannot run in synchronous mode.");
+    	    	case SchedulerConfiguration.SB:
+    		    	logger.severe("SCHEDULING: "+name() + ": Invalid action response! SBs cannot "+
+                        "run at this time.");
+        			throw new SchedulingException("Invalid action response! SBs "+
+                        "cannot run at this time.");
+    	    	default:
+    		    	logger.severe("SCHEDULING: "+name() + ": Invalid action parameter! (" 
+                        + config.getAction() + ")"); 
+        			throw new SchedulingException("Invalid action parameter! (" 
+                        + config.getAction() + ")"); 
+    	    }
     	} else {
             try {
-                String[] idleantennas = config.getControl().getIdleAntennas();
-                SB selectedSB = config.getQueue().get(bestSBId);
+                Message m = new Message();
+                config.getOperator().selectSB(best, m);
         		// We've got somthing to schedule.
-                // try and create a sub array
-                short subarrayid = config.getControl().createSubarray(idleantennas);
-                //got a subarray now set the sb's start time and execute it!
-                selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
-      		    config.getControl().execSB(subarrayid, bestSBId);
+                SB selectedSB = config.getQueue().get(best.getBestSelection());
+                if(selectedSB.getStatus().isReady()) {
+                    logger.info("SCHEDULING: About to schedule sb = "+selectedSB.getId());
+                    selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
+                    logger.info("SB is now "+selectedSB.getStatus().getStatus());
+      		        config.getControl().execSB(config.getSubarrayId(), best);
+                } else {
+                    logger.info("SCHEDULING: SB is not ready to be executed.");
+                    //do something else here eventually...
+                }
+                    
+
                 //finished executing, get rid of the subarray
-                config.getControl().destroySubarray(subarrayid);
+                //config.getControl().destroySubarray(subarrayid);
             } catch (Exception e) {
                 //clear queue! 
                 config.getQueue().clear();
@@ -382,11 +391,10 @@ public class Scheduler implements Runnable {
                 e.printStackTrace();
                 return true;
             }
-    		//config.getOperator().selectSB(best);
-    		// ... and execute the selected scheduling unit.
     		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
     	}
-        config.getQueue().remove(best.getBestSelection());
+        //logger.info("SCHEDULING: removing sb "+best.getBestSelection()+" from queue now..");
+        //config.getQueue().remove(best.getBestSelection());
    	
     	return false;
     }

@@ -42,8 +42,11 @@ import alma.scheduling.StartSession;
 import alma.scheduling.EndSession;
 import alma.scheduling.Event.Receivers.*;
 //import alma.scheduling.Define.ArrayTime;
+import alma.scheduling.Define.SB;
 import alma.scheduling.Define.Session;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.ControlEvent;
 import alma.scheduling.Define.SchedulingException;
 
@@ -80,6 +83,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ExecBlockEvent The event sent out by the control subsystem.
      */ 
     public void receive(ExecBlockEvent e) {
+        try {
         logger.info("SCHEDULING: Starting to process the control event");
         switch(e.type.value()) {
             case 0:
@@ -94,12 +98,23 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
                     e.type.value(), e.status.value(), new DateTime(e.startTime));
                 endSession(e);
+                /*
                 updateSB(ce);
                 startPipeline(ce);
+                ExecBlock eb = new ExecBlock(e.execID, e.saId);
+                eb.setParent(new SB(e.sbId)); // do this to get SB id over to PM, will be replaced with proper SB
+                eb.setStartTime(new DateTime(e.startTime));
+                eb.setEndTime(new DateTime(System.currentTimeMillis()),Status.COMPLETE);
+                sbCompleted(eb);
+                */
                 break;
             default: 
                 logger.severe("SCHEDULING: Event reason = error");
                 break;
+        }
+        } catch(Exception ex) {
+            logger.severe("DAMMIT");
+            ex.printStackTrace();
         }
 
     }
@@ -200,17 +215,19 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private void endSession(ExecBlockEvent e) {
         //query session object from the archive
         try {
-        Session s = archive.querySession(e.execID);
-        if(s != null) {
-            logger.info("non-null session! ");
-        }
+            Session s = archive.querySession(e.execID);
+            if(s != null) {
+                logger.info("non-null session! ");
+            }
         } catch(Exception ex) {
+            logger.severe("SCHEDULING: error in ALMAReceiveEvent:endSession");
             ex.printStackTrace();
         }
     //update session object and update it in the archive
     //archive.updateSession
     //send out the session end event
         manager.sessionEnd(e.sbId);
+
     }
 
 
@@ -230,5 +247,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.severe("SCHEDULING: error starting the science pipeline");
             ex.printStackTrace();
         }
+    }
+
+    /**
+      *
+      */
+    private void sbCompleted(ExecBlock eb){
+        logger.info("SCHEDULING: setting SB to complete.");
+        manager.setSBComplete(eb);
     }
 }

@@ -63,10 +63,10 @@ public class SciPipelineRequest {
 		this.program = program;
 		this.comment = comment;
 		status = new Status ();
-		if (program.getDataReductionProcedureName() == null || 
-			program.getDataReductionProcedureName().length() == 0)
-			throw new SchedulingException("DataReduction procedure name is null.");
-		reductionProcedureName = program.getDataReductionProcedureName();
+		//if (program.getDataReductionProcedureName() == null || 
+		//	program.getDataReductionProcedureName().length() == 0)
+		//	throw new SchedulingException("DataReduction procedure name is null.");
+		//reductionProcedureName = program.getDataReductionProcedureName();
 		parms = program.getDataReductionParameters();
 	}
 	
