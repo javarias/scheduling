@@ -7,7 +7,7 @@
 #
 # who       when      what
 # --------  --------  ----------------------------------------------
-# NNNNNNNN  dd/mm/yy  created
+# sroberts  03/03/03  created
 #
 #*******************************************************************************
 # This Makefile follows ACS Standards (see Makefile(5) for more).

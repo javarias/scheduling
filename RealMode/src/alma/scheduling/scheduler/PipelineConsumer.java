@@ -25,7 +25,46 @@
  */
 package alma.scheduling.scheduler;
 
-public class PipelineConsumer {
+import org.omg.CosNotification.*;
+import ALMA.acsnc.*;
+import alma.acs.nc.*;
+import alma.pipelinescience.ScienceProcessingRequestEnd;
+import alma.pipelinescience.ScienceProcessingRequestEndHelper;
+
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.NothingCanBeScheduledEventHelper;
+
+public class PipelineConsumer extends Consumer {
     public PipelineConsumer(){
+        super(alma.pipelinescience.CHANNELNAME.value);
+    }
+
+    public void push_structured_event(StructuredEvent structuredEvent) 
+            throws org.omg.CosEventComm.Disconnected {
+
+        try {
+            ScienceProcessingRequestEnd spre = 
+                ScienceProcessingRequestEndHelper.extract(
+                    structuredEvent.filterable_data[0].value);
+            sendNCBSEvent();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
+
+    public void sendNCBSEvent() {
+        NothingCanBeScheduledEvent ncbs = new NothingCanBeScheduledEvent(
+            "Pipeline is done, Shut down scheduling system for R0+!");
+
+        String[] names = new String[3];
+        names[SimpleSupplier.CHANNELPOS] = alma.scheduling.CHANNELNAME.value;
+        names[SimpleSupplier.TYPEPOS] = ALMA.acsnc.DEFAULTTYPE.value;
+        names[SimpleSupplier.HELPERPOS] = new 
+            String("alma.scheduling.NothingCanBeScheduledEventHelper");
+        SimpleSupplier supplier = new SimpleSupplier(names);
+        try {
+            supplier.publishEvent(ncbs);
+        } catch(Exception e) {
+        }
     }
 }

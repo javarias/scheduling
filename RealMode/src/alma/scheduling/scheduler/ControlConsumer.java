@@ -27,10 +27,53 @@ package alma.scheduling.scheduler;
 
 import org.omg.CosNotification.*;
 import ALMA.acsnc.*;
-import alma.pipelinescience.ScienceProcessingRequestEnd;
-import alma.pipelinescience.ScienceProcessingRequestEndHelper;
+import alma.acs.nc.*;
 
-public class ControlConsumer /*extends Consumer*/ {
-    public ControlConsumer() {
+import alma.entity.xmlbinding.execblock.*;
+import alma.entity.xmlbinding.schedblock.*;
+import alma.acs.container.ContainerServices;
+
+import alma.scheduling.master_scheduler.ALMAArchive;
+
+//import ALMA.Control.ExecBlockEndEvent;
+//import ALMA.Control.ExecBlockEndEventHelper;
+
+/**
+ *  @author Sohaila Roberts
+ */
+public class ControlConsumer /*extends Consumer */{
+
+    private ContainerServices container;
+
+    public ControlConsumer(ContainerServices cs) {
+        this.container = cs;
+        //super( control's channel name here .value);
     }
+
+    public void push_structured_event(StructuredEvent structuredEvent) 
+            throws org.omg.CosEventComm.Disconnected {
+       /* 
+        try {
+            ExecBlockEndEvent execBlockEnd = 
+                ExecBlockEndEventHelper.extract(
+                    structuredEvent.filterable_data[0].value);
+            updateSBStatus(execBlockEnd);
+        } catch(Exception e) {
+        }
+        */
+    }
+
+    /* This will have to be done in a different way most likely!
+     * mainly done like this to make R0+ happy ;)
+     */
+     /*
+    public void updateSBStatus(ExecBlockEndEvent event) {
+        ALMAArchive archive = new ALMAArchive(false, container);
+        ExecBlock execBlock = (ExecBlock)archive.getExecBlock(event.execID);
+        String sb_id = execBlock.getSchedBlockId();
+        SchedBlock sb = (SchedBlock) archive.getSchedBlock(sb_id);
+    }
+    */
+    
+    
 }
