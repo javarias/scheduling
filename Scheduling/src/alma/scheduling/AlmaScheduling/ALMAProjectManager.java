@@ -88,7 +88,7 @@ public class ALMAProjectManager extends ProjectManager {
     private Project[] pollArchive() {
         logger.info("SCHEDULING: Polling ARCHIVE");
         boolean sb_present = false;
-        Project[] projs = null;
+        Project[] projs = new Project[0];
         try {
             String[] ids;
             projs = archive.getAllProject();
