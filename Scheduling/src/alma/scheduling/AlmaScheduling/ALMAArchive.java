@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import java.util.Vector;
 
 import alma.scheduling.Define.*;
-import alma.scheduling.ProjectStatusUtil;
 
 import alma.Control.ExecBlockEvent;
 import alma.xmlentity.XmlEntityStruct;
@@ -61,7 +60,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.32 2005/01/19 19:14:43 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.33 2005/02/03 23:31:41 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -232,7 +231,16 @@ public class ALMAArchive implements Archive {
     private ProjectStatus createDummyProjectStatus(ObsProject p) throws SchedulingException {
         logger.info("SCHEDULING: creating a project status for a project");
         //project doesn't have a ProjectStatus, so create one for it now and archive it
-        ProjectStatus newPS = alma.scheduling.ProjectStatusUtil.createProjectStatus(p.getObsProjectEntity().getEntityId());
+        String proj_id = p.getObsProjectEntity().getEntityId();
+        ProjectStatus newPS = new ProjectStatus();
+        ProjectStatusEntityT ps_entity = new ProjectStatusEntityT();
+        newPS.setProjectStatusEntity(ps_entity);
+
+        // Create the entity reference object for the ObsProject
+        ObsProjectRefT obsProjRef = new ObsProjectRefT();
+        obsProjRef.setEntityId(proj_id);
+        newPS.setObsProjectRef(obsProjRef);
+
         logger.info("ps-sched: creating ps for project "+ p.getObsProjectEntity().getEntityId() );
 
         try {
