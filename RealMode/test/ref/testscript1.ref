@@ -1,5 +1,4 @@
  Running test
-ACS Name Service: corbaloc::solar-vml:4000/NameService
 Started
 SchedBlock created: <?xml version="1.0" encoding="UTF-8"?>
 <ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">

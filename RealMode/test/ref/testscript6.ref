@@ -1,5 +1,4 @@
  Running test
-ACS Name Service: corbaloc::solar-vml:4000/NameService
 The MasterScheduler has been constructed.
 The ALMATelescopeOperator has been constructed.
 The PIProxy has been constructed.
@@ -18,12 +17,7 @@ sbs not null storing into queue
 MB Action started
 The MasterScheduler is executing.
 Scheduler is running in dynamic mode!
-java.lang.NullPointerException
-java.lang.NullPointerException
-Helper.run(): orb stopped
 Scheduler is running in interactive mode!
-java.lang.NullPointerException
-java.lang.NullPointerException
 MB Action stopped
 java.lang.NullPointerException
 Scheduler is stopped
