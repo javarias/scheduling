@@ -1,33 +1,5 @@
- Starting ORB Services
-==> Starting CORBA Services
---> Starting Naming Service
---> Starting Notify Service
-
-Starting up the Notification Service...
-Loaded Event Manager factory...
-Registered with the naming service as: NotifyEventChannelFactory
---> Starting Logging Service
-
-Starting up the ACS Centralized Logger...
-Resolving Naming Service...
-Resolving Notify Service...
-Creating Event Channels...
-Creating Supplier Admins...
-Creating Suppliers...
-Creating Log Factory...
-Creating Log...
-ACS Centralized Logger is initialized.
-ACS Centralized Logger is running...
---> Starting Interface Repository
-      using numeric option
-acsIrfeed - Loading IDL interfaces in Interface Repository
---> Starting ACS Configuration Database
---> Starting ACS Log service
- Starting Manager
-Returning XML record for: MACI/Managers/Manager
  Starting hugoActivator
 m_loggingSwitchers != null
-Returning XML record for: MACI/COBs
  Running test
 Started
 <?xml version="1.0" encoding="UTF-8"?>
@@ -97,49 +69,3 @@ SchedBlock retrieved
     <ns1:ObsProcedure />
 </ns1:SchedBlock>
 SchedBlock removed
-----------T--:--:--.--- Local file logger: Cache saved to '/alma/ACS-2.0/acsdata/tmp/acs_local_log_maciActivatorShutdown_xxxx'.
-----------T--:--:--.--- ManagerReference generated using localhost address: 'corbaloc::solar-vml:3000/Manager'
-----------T--:--:--.--- Calling maci::Activator::shutdown() on 'hugoActivator'
-----------T--:--:--.--- Done.
-----------T--:--:--.--- Done all.
-
-----------T--:--:--.--- Starting Manager...
-----------T--:--:--.--- Local file logger: Cache saved to '/alma/ACS-2.0/acsdata/tmp/acs_local_log_maciManager_xxxx'.
-----------T--:--:--.--- Connecting to the Naming Service...
-----------T--:--:--.--- multicast_query: unable to accept: Connection timed out
-
-----------T--:--:--.--- NameService reference generated using localhost address: 'corbaloc::solar-vml:4000/NameService'
-----------T--:--:--.--- NamingContext successfully initialized.
-----------T--:--:--.--- Creating or loading recovery file
-----------T--:--:--.--- Getting Log.
-----------T--:--:--.--- Connected to the Centralized Logger.
-----------T--:--:--.--- Manager is now waiting for requests.
-----------T--:--:--.--- Getting Log.
-----------T--:--:--.--- Activator 'hugoActivator' logged in
-----------T--:--:--.--- DAO:'MACI/COBs' Unable to return field: 'MOUNT1/Activator'
-
-----------T--:--:--.--- COB 'MOUNT1' is misconfigured, failed to read Activator field.
-----------T--:--:--.--- Activator hugoActivator startup statistics: 0 COBs queued to be exported.
-----------T--:--:--.--- Activator hugoActivator startup statistics: 0 of 0 COBs exported.
-----------T--:--:--.--- Client 'SchedulingTestClient' logged in
-----------T--:--:--.--- Getting OPERATIONAL_ARCHIVE.
-----------T--:--:--.--- Getting IDENTIFIER_ARCHIVE.
-----------T--:--:--.--- Activator 'hugoActivator' logged out
-----------T--:--:--.--- Manager is shutting down...
-----------T--:--:--.--- Releasing immortal COBs...
-----------T--:--:--.--- Notifying clients to disconnect...
-----------T--:--:--.--- (----|----) EXCEPTION, (maci::ManagerImpl::shutdown) Calling disconnect() client's method.
-system exception, ID 'IDL:omg.org/CORBA/TRANSIENT:1.0'
-OMG minor code (2), described as 'No usable profile in IOR.', completed = NO
-
-
-----------T--:--:--.--- (----|----) EXCEPTION, (maci::ManagerImpl::shutdown) Calling disconnect() client's method.
-system exception, ID 'IDL:omg.org/CORBA/TRANSIENT:1.0'
-OMG minor code (2), described as 'No usable profile in IOR.', completed = NO
-
-
-----------T--:--:--.--- Local file logger: Cache saved to '/alma/ACS-2.0/acsdata/tmp/acs_local_log_maciManagerShutdown_xxxx'.
-----------T--:--:--.--- ManagerReference generated using localhost address: 'corbaloc::solar-vml:3000/Manager'
-----------T--:--:--.--- Calling maci::Manager::shutdown()...
-----------T--:--:--.--- Done.
-----------T--:--:--.--- Manager stopped.
