@@ -61,7 +61,8 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
         this.logger = container.getLogger();
         this.isSimulation = isSimulation;
         this.archive = a;
-        System.out.println("SCHEDULING: The ALMATelescopeOperator has been constructed.");
+        this.logger = container.getLogger();
+        logger.info("SCHEDULING: The ALMATelescopeOperator has been constructed.");
 	}
 
 
@@ -169,7 +170,7 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
     
     public void setMessageQueue(MessageQueue mq) {
         this.messageQueue = mq;
-        System.out.println("SCHEDULING: Message queue set in operator");
+        logger.info("SCHEDULING: Message queue set in operator");
     }
 
 	public static void main(String[] args) {

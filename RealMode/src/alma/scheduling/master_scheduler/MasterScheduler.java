@@ -301,7 +301,6 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		// OK, we're done.
 		schedulingState.setState(State.INITIALIZED);
 		logger.info("SCHEDULING: The MasterScheduler has been initialized.");
-		//System.out.println("SCHEDULING: The MasterScheduler has been initialized.");
 	}
 
 	/**
@@ -334,7 +333,6 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		// Set the state to executing.
 		schedulingState.setState(State.EXECUTING);
         logger.info("SCHEDULING: starting execute");
-        //System.out.println("SCHEDULING: starting execute");
         
         
         // get non-complete SBs from archive, right now it gets ALL sbs.
@@ -750,23 +748,6 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		return null;
 	}
 
-    /**
-     *  Sends a string, as the reason to create a NothingCanBeScheduledEvent,
-     *  to the ALMANothingCanBeScheduledSupplier which then sends out the event
-     *  on the ALMA notification channel.
-     *  @param reason The reason why nothing can be scheduled.
-     */
-     /*
-    public void sendEvent(String reason) {
-        try {
-            //simpleSupplier.publishEvent(ncbs);
-            nothingCanBeScheduled.sendEvent(reason);
-        } catch(Exception e) {
-            logger.log(Level.SEVERE, "NothingCanBeScheduledEvent Not Sent!");
-            logger.log(Level.SEVERE, e.toString());
-        }
-    }
-    */
 
     /* Methods for testing, not sure if they'll be needed later */
 
@@ -802,16 +783,6 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         }
     }
     
-    /**
-     *  Creates a NothingCanBeScheduled event.
-     *  @param s The reason why nothing can be scheduled
-     *  @return NothingCanBeScheduled
-     */
-    public NothingCanBeScheduledEvent createNothingCanBeScheduledEvent(String s) 
-    {
-        return new NothingCanBeScheduledEvent(s);
-    }
-
     /**
      *  Creates a scheduler in the mode submitted by the input parameter.
      *  @param mode Either dynamic or interactive

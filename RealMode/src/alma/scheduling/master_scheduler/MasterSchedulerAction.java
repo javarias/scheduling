@@ -25,7 +25,6 @@
  */
 package ALMA.scheduling.master_scheduler;
 
-//import ALMA.scheduling.NothingCanBeScheduledEvent;
 
 /**
  * The MasterSchedulerAction class encapsulates periodic actions that

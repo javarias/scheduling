@@ -130,7 +130,6 @@ public class ALMAArchive implements ArchiveProxy {
             }
             return sbs;
         } catch(ArchiveInternalError e){
-            //System.out.println(e.toString());
             logger.log(Level.SEVERE, "SCHEDULING:"+ e.toString());
         }
         return null;
@@ -641,7 +640,7 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public ArrayList getSchedPolicy() {
         ArrayList list = new ArrayList();
-        System.out.println("SCHEDULING: get scheduling policy");
+        logger.info("SCHEDULING: get scheduling policy");
         return list;
     }
 
@@ -651,7 +650,7 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public ArrayList getAntennas() {
         ArrayList list = new ArrayList();
-        System.out.println("SCHEDULING: get antenna info from archive");
+        logger.info("SCHEDULING: get antenna info from archive");
         return list;
     }
     
