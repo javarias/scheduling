@@ -49,6 +49,26 @@ public class MasterSBQueue {
         suQueue = new Vector();
 	}
 
+    /** 
+     * Checks the queue to see if the given schedblock is already in
+     * the queue.
+     * @param sb The schedblock to check.
+     * @return boolean True if the sb is in the queue. False if its not.
+     */
+    public boolean isSBinQueue(SchedBlock sb) {
+        boolean res = false;
+        String id = sb.getSchedBlockEntity().getEntityId();
+        SchedBlock tmpSB;
+        for(int i=0; i < sbQueue.size(); i++) {
+            tmpSB = (SchedBlock)sbQueue.elementAt(i);
+            if (tmpSB.getSchedBlockEntity().getEntityId().equals(id)) {
+                //sb already in queue!
+                res = true;
+            }
+        }
+        return res;
+    }
+
     public synchronized void addSchedBlock(SchedBlock sb) {
         //System.out.println("Adding sbs to queue");
         sbQueue.add(sb);

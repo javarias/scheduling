@@ -1,6 +1,5 @@
 /*
  * ALMA - Atacama Large Millimiter Array
- * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved
@@ -32,7 +31,7 @@ import alma.scheduling.InvalidObject;
 import alma.scheduling.InvalidOperation;
 */
 import java.net.URL;
-//import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.schedblock.*;
 //import alma.obsprep.bo.*;
 //import alma.obsprep.bo.Target;
 
@@ -71,7 +70,7 @@ public class GUIController implements Runnable {
      * Returns a list of the schedblock ids.
      * 
      */
-    public String[] getSBs() {
+    public SchedBlock[] getSBs() {
         return scheduler.getSBs();
     }
 /*
@@ -92,6 +91,17 @@ public class GUIController implements Runnable {
         return contents;
     }
     */
+
+    /**
+     *  Deletes the SB from the schedulers subqueue.
+     */
+     public void deleteSB(String sb_id) {
+        scheduler.removeSBfromQueue(sb_id, "aborted");
+     }
+
+     public void executeSB(String sb_id) {
+        scheduler.dispatchSB(sb_id);
+     }
 
     ////////////////////////////////////////////////////
     

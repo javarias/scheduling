@@ -109,8 +109,10 @@ public class ProjectManager implements Runnable {
         //Receiver objects
         control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
         pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
+        /*
         pointing_event = new PointingReducedEventReceiver(cs);
         focus_event = new FocusReducedEventReceiver(cs);
+        */
         if(isSimulation) {
             //its a simulation, so create local channels
             
@@ -151,6 +153,7 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             //Listen for TELCAL events
+            /*
             try {
                 //pointing_event.addSubscription("PointingReducedEvent");
                 pointing_event.addSubscription(alma.TelCalPublisher.PointingReducedEvent.class);
@@ -168,6 +171,7 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
+            */
             /*
             try {
             } catch(Exception e) {

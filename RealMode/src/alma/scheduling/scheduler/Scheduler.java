@@ -107,6 +107,9 @@ public class Scheduler implements Runnable {
 
     public void initialize() {
         schedulerState = State.INITIALIZED;
+        for(int i=0; i < queue.size(); i++){
+        //    schedulerTaskControl.incrementSbsNotStarted();
+        }
     }
     
 
@@ -182,9 +185,20 @@ public class Scheduler implements Runnable {
         Thread t = new Thread(controller);
         t.start();
     }
+
+    /*
     public String[] getSBs() {
         return queue.getIds();
     }
+    */
+    public SchedBlock[] getSBs() {
+        return queue.getAllSBs();
+    }
+
+    public boolean isSBComplete(String sb_id) {
+        return operator.isCompletedSb(sb_id);
+    }
+
 /*
     public alma.obsprep.bo.SchedBlock getSB(String uid) {
         SchedBlock sb = queue.getSchedBlock(uid);
@@ -207,10 +221,12 @@ public class Scheduler implements Runnable {
         String sb = operator.selectSB(ids, m_id);
         return sb;
     }
+    /*
     public SchedBlock getSB() {
         SchedBlock sb = queue.getSchedBlock();
         return sb;
     }
+    */
     public SchedulerTaskControl getSchedulerTaskControl() {
         return schedulerTaskControl;
     }
@@ -232,6 +248,10 @@ public class Scheduler implements Runnable {
         this.pipeline = p;
     }
     */
+    ///////////////////////////////////////////////////////
+    public void removeSBfromQueue(String sb_id, String reason) {
+        queue.removeFromQueue(sb_id, reason);                   
+    }
     ///////////////////////////////////////////////////////
 
 	public static void main(String[] args) {

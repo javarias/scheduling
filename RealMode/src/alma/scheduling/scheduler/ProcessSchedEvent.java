@@ -61,10 +61,16 @@ public class ProcessSchedEvent implements Runnable {
         }
         if(scheduler.isInQueue(event.sbId)) {
             System.out.println("SCHEDULING: id is in queue.. do something");
+            //right now we assume the sb completed. but later we must check
+            //increment completed & decrement not-completed
+            scheduler.getSchedulerTaskControl().incrementSbsCompleted();
+            scheduler.getSchedulerTaskControl().decrementSbsNotStarted();
+            
+            //wake up scheduler to start another sb!
             scheduler.getSchedulerTaskControl().getTask().interrupt();
         }
         // if yes check to see if its the last one in its project
-                //this will change to be obsunitset
+        //this will change to be obsunitset
         //if not the last complete one select a new sb
         //if last one call pipeline!
     }

@@ -27,6 +27,8 @@ package alma.scheduling.scheduler;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.entity.xmlbinding.obsproject.ObsUnitControl;
+import alma.entity.xmlbinding.obsproject.types.SchedStatusT;
 //import alma.bo.SchedBlock;
 
 /**
@@ -46,10 +48,13 @@ public class SBSubQueue {
         queue = q;
     }
     
+    public synchronized int size() {
+        return queue.size();
+    }
     /**
      * Checks to see if the given id is in this queue of schedblocks
      */
-    public boolean isInSubQueue(String id) {
+    public synchronized boolean isInSubQueue(String id) {
         boolean result = false;
         SchedBlock tmp;
         for(int i = 0; i< queue.size(); i++) {
@@ -113,6 +118,38 @@ public class SBSubQueue {
             }
         }
         return null;
+    }
+
+    public synchronized SchedBlock[] getAllSBs() {
+        SchedBlock[] sbs = new SchedBlock[queue.size()];
+        for (int i=0; i<queue.size(); i++) {
+            sbs[i] = (SchedBlock)queue.elementAt(i);
+        }
+        return sbs;
+    }
+    
+    /////////////////////////////////////////////////////
+    public synchronized void removeFromQueue(String sb_id, String reason) {
+        SchedBlock tmp;
+        for(int i = 0; i< queue.size(); i++) {
+            tmp = (SchedBlock)queue.elementAt(i);
+            if(sb_id.equals(tmp.getSchedBlockEntity().getEntityId())){
+                //update status of sb
+                if(reason.equals("aborted")) {
+                    //change status of sb to aborted
+                    ObsUnitControl ouc = tmp.getObsUnitControl();
+                    if(ouc==null) {
+                        ouc = new ObsUnitControl();
+                    } 
+                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    tmp.setObsUnitControl(ouc);
+                }
+                //update sb in archive before removing it from the queue
+                //queue.remove(i);
+
+            }
+        }
+        
     }
     /////////////////////////////////////////////////////
 	public static void main(String[] args) {

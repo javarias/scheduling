@@ -140,7 +140,7 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
         return messageQueue.getMessage(messageId).getReply();
 	}
 
-    private boolean isCompletedSb(String id) {
+    public boolean isCompletedSb(String id) {
         String completed = "completed";
         boolean result = false;
         try {
@@ -176,6 +176,10 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
         this.messageQueue = mq;
         logger.info("SCHEDULING: Message queue set in operator");
     }
+
+    ////////////////////////////////////////////////////////////////
+    // for interactive scheduling
+    ////////////////////////////////////////////////////////////////
 
 	public static void main(String[] args) {
 	}

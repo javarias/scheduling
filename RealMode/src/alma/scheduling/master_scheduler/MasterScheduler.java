@@ -519,8 +519,9 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 	public void startScheduling(XmlEntityStruct schedulingPolicy)
 		throws InvalidOperation {
 
-        startScheduler("dynamic");
         //get scheduling policy from schedulingPolicy arraylist then set it to start scheduling
+        if(schedulingPolicy == null) {} //ignore it for now
+        startScheduler("dynamic");
 	}
     
     /**

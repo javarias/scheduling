@@ -1,6 +1,5 @@
 /*
  * ALMA - Atacama Large Millimiter Array
- * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
  * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved
@@ -61,9 +60,15 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import alma.entity.xmlbinding.schedblock.SchedBlock;
+/*
 import java.lang.Process;
 import java.lang.Runtime;
 import java.io.IOException;
+
+import alma.obsprep.util.PropertyHandler;
+import alma.obsprep.editors.ObservingToolController;
+*/
 /**
  * A Gui that lets a PI interact with a scheduler to do interactive
  * scheduling.
@@ -398,13 +403,14 @@ public class GUI extends JFrame {
         String selectedSB = outputView.getSelectedText();
         if(selectedSB != null) {
             clear();
+            controller.executeSB(selectedSB);
             outputView.append("SB "+selectedSB+" is now executing.\n");
         } else {
             GridBagLayout gridbag = new GridBagLayout();
             GridBagConstraints c = new GridBagConstraints();
             JPanel panel = new JPanel(gridbag);
             panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-            JLabel label = new JLabel("  Enter SB id or cancel and select it from list  ");
+            JLabel label = new JLabel("  Enter SB id or cancel and highlight it from list  ");
             JTextField tf = new JTextField();
             JButton ok = new JButton("Ok");
             ok.addActionListener(new ActionListener() {
@@ -419,6 +425,7 @@ public class GUI extends JFrame {
                             String selectedSB = ((JTextField)tmpC[i]).getText();
                             outputView.append("SB "+selectedSB+" is now executing.\n");
                             // Do something with the selected SB
+                            controller.executeSB(selectedSB);
                         }
                     }
                     executePopup.hide();
@@ -455,13 +462,13 @@ public class GUI extends JFrame {
         String selectedSB = outputView.getSelectedText();
         if(selectedSB != null) {
             clear();
-            outputView.append("SB "+selectedSB+" is now executing.\n");
+            outputView.append("SB "+selectedSB+" is now deleted.\n");
         } else {
             GridBagLayout gridbag = new GridBagLayout();
             GridBagConstraints c = new GridBagConstraints();
             JPanel panel = new JPanel(gridbag);
             panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-            JLabel label = new JLabel("  Enter SB id or cancel and select it from list  ");
+            JLabel label = new JLabel("  Enter SB id or cancel and highlight it from list  ");
             JTextField tf = new JTextField();
             JButton ok = new JButton("Ok");
             ok.addActionListener(new ActionListener() {
@@ -475,7 +482,10 @@ public class GUI extends JFrame {
                             
                             String selectedSB = ((JTextField)tmpC[i]).getText();
                             outputView.append("SB "+selectedSB+" is now deleted from session list.\n");
-                            // Do something with the selected SB
+                            // deletes the SB from the scheduler's subqueue. 
+                            // mark it as aborted
+                            // update it in the archive.
+                            controller.deleteSB(selectedSB);
                         }
                     }
                     deletePopup.hide();
@@ -586,6 +596,9 @@ public class GUI extends JFrame {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(cancel, c);
         panel.add(cancel);
+        panel.requestFocus();
+        tf.requestFocus();
+        tf.setCaretPosition(0);
         PopupFactory pf = PopupFactory.getSharedInstance();
         Point p = this.getLocationOnScreen();
         int x = p.x + 350; int y = p.y + 250;
@@ -594,10 +607,52 @@ public class GUI extends JFrame {
     }
 
     private void getSBs() {
-        String[] s = controller.getSBs();
+        SchedBlock[] s = controller.getSBs();
         outputView.append("SchedBlocks: \n");
+        sbOutputView.append("SchedBlock Contents: \n");
+        sbOutputView.append("/////////////////////////////////////// \n");
         for(int i=0; i < s.length; i++) {
-            outputView.append(s[i] +"\n");
+            outputView.append(s[i].getSchedBlockEntity().getEntityId() +"\n");
+            sbOutputView.append("SchedBlock ID: " +
+                s[i].getSchedBlockEntity().getEntityId() +"\n");
+            try {
+                sbOutputView.append("SB's project id: "+
+                    s[i].getObsProjectRef().getEntityId()+"\n");
+            } catch (Exception e) {
+                sbOutputView.append("SB's project id: not set to a project! this is bad!\n");
+            }
+            sbOutputView.append("SchedBlock Observing Procedure: "+
+                s[i].getObsProcedure() +"\n");
+            try {
+                sbOutputView.append("SchedBlock Status: "+
+                   s[i].getObsUnitControl().getSchedStatus().toString() +"\n");
+            } catch (Exception e) {
+                sbOutputView.append("SchedBlock Status: no status set. \n");
+            }
+            sbOutputView.append("SchedBlock Performance Goal: "+
+                s[i].getObsUnitControl().getPerformanceGoal() +"\n");
+            sbOutputView.append("SchedBlock Weather Constraints: \n"); 
+            try {
+                sbOutputView.append("Opacity: "+s[i].getPreconditions().getWeatherConstraints().getOpacity() +"\n");
+            } catch(Exception e) {
+                sbOutputView.append("Opacity: no opacity set.\n");
+            }
+            try {
+                sbOutputView.append("Phase Stability:"+s[i].getPreconditions().getWeatherConstraints().getPhaseStability() +"\n");
+            }catch(Exception e) {
+                sbOutputView.append("Phase Stability: no phase stability set.\n");
+            }
+            try {
+                sbOutputView.append("Seeing:"+s[i].getPreconditions().getWeatherConstraints().getSeeing() +"\n");
+            } catch(Exception e) {
+                sbOutputView.append("Seeing: no seeing set.\n");
+            }
+            /*
+            project it comes from & name 
+            sbOutputView.append(s[i].() +"\n");
+            sbOutputView.append(s[i].() +"\n");
+            */
+            sbOutputView.append("/////////////////////////////////////// \n");
         }
     }
 
@@ -634,12 +689,22 @@ public class GUI extends JFrame {
     }
 
     public void openObservingTool(){ 
+            /*
         try {
-            Process process = Runtime.getRuntime().exec("otproto &");
+            //String displayName = System.getProperty("$HOSTNAME") + 
+            //    System.getProperty("$DISPLAY") + ".0";
+            String displayName = "solar-vml:0.0";
+            System.out.println(displayName);
+            String[] tmp = { "DISPLAY", displayName }; 
+            //Process process = Runtime.getRuntime().exec("otproto &", tmp);
+            Process process = Runtime.getRuntime().exec("acsStartJava -endorsed -DotData.dir=$ACSDATA/config/otData alma.ot.ptt.gui.ObservingTool$1 $2 $3 $4 $5 $6 $7 $8 &");
+            //Process process = Runtime.getRuntime().exec("otproto &");
+            
         } catch(IOException e) {
             System.out.println("Observing tool didn't pop up..");
             System.out.println(e.toString());
         }
+            */
     }
 
     private void clear() {
@@ -649,6 +714,6 @@ public class GUI extends JFrame {
         dispose();
     }
     public static void main(String[] args) {
-        //GUI gui = new GUI(new GUIController());
+        //GUI gui = new GUI(null);
     }
 }
