@@ -1,4 +1,4 @@
 #! /bin/bash
 
-abeansStart -endorsed alma.scheduling.planning_mode_sim.test.TestA
+acsStartJava alma.scheduling.planning_mode_sim.test.TestA
 
