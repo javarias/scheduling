@@ -90,7 +90,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.18 2005/03/11 16:06:19 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.19 2005/03/16 16:57:09 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -549,13 +549,17 @@ public class ProjectUtil {
 		program.setUserPriority(Priority.MEDIUM);
 		program.setDataReductionProcedureName(set.getScienceProcessingScript());
         //System.out.println("DataProcessingParameters.. "+ set.getDataProcessingParameters().getProjectType().toString());
-        Object[] params = new Object[5];
-        params[0] = set.getDataProcessingParameters().getAngularResolution();
-        params[1] = set.getDataProcessingParameters().getVelocityResolution();
-        params[2] = set.getDataProcessingParameters().getTBSensitivityGoal();
-        params[3] = set.getDataProcessingParameters().getRMSGoal();
-        params[4] = set.getDataProcessingParameters().getProjectType();
-		program.setDataReductonParameters(params);
+        try {
+            Object[] params = new Object[5];
+            params[0] = set.getDataProcessingParameters().getAngularResolution();
+            params[1] = set.getDataProcessingParameters().getVelocityResolution();
+            params[2] = set.getDataProcessingParameters().getTBSensitivityGoal();
+            params[3] = set.getDataProcessingParameters().getRMSGoal();
+            params[4] = set.getDataProcessingParameters().getProjectType();
+    		program.setDataReductonParameters(params);
+        } catch(Exception e) {
+		    program.setDataReductonParameters(null);
+        }
 		program.setFlowControl(null);
 		program.setNotify(null);
 		program.setScienceGoal(null);
