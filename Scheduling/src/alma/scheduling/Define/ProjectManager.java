@@ -24,7 +24,7 @@
  * File ProjectManager.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The ProjectManager interface defines public methods needed by various

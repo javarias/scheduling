@@ -24,7 +24,7 @@
  * File GUIAntennas.java
  */
 
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import javax.swing.JComboBox;
 

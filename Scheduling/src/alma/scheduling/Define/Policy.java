@@ -24,7 +24,7 @@
  * File Policy.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * A Policy is a scheduling policy.  This object includes:

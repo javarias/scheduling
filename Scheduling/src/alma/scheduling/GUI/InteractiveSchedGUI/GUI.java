@@ -22,7 +22,7 @@
  * File GUI.java
  * 
  */
-package alma.Scheduling.GUI.InteractiveSchedGUI;
+package alma.scheduling.GUI.InteractiveSchedGUI;
 
 import alma.xmlentity.XmlEntityStruct;
 
@@ -62,7 +62,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-import alma.Scheduling.Define.SB;
+import alma.scheduling.Define.SB;
 //import alma.entity.xmlbinding.schedblock.SchedBlock;
 /*
 */

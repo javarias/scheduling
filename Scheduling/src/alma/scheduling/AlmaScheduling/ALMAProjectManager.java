@@ -23,17 +23,17 @@
  * File ALMAProjectManager.java
  * 
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 //import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.SBQueue;
-import alma.Scheduling.Define.Project;
-import alma.Scheduling.ObsProjectManager.ProjectManager;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.Project;
+import alma.scheduling.ObsProjectManager.ProjectManager;
 
 /**
  *

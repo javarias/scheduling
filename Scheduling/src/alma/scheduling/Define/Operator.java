@@ -24,7 +24,7 @@
  * File Operator.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Operator interface defines those methods needed by the Scheduling

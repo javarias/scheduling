@@ -24,7 +24,7 @@
  *
  */
 
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 //import java.util.logging.Logger;
 
@@ -35,19 +35,19 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
 import alma.ACS.ComponentStates;
 
-import alma.Scheduling.InvalidOperation;
-import alma.Scheduling.NoSuchSB;
-import alma.Scheduling.SchedulingInfo;
-import alma.Scheduling.UnidentifiedResponse;
-import alma.Scheduling.MasterSchedulerIFOperations;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.NoSuchSB;
+import alma.scheduling.SchedulingInfo;
+import alma.scheduling.UnidentifiedResponse;
+import alma.scheduling.MasterSchedulerIFOperations;
 
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Define.PolicyFactor;
-import alma.Scheduling.Define.SBQueue;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.MasterScheduler.MasterScheduler;
-import alma.Scheduling.Scheduler.Scheduler;
-import alma.Scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.PolicyFactor;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.MasterScheduler.MasterScheduler;
+import alma.scheduling.Scheduler.Scheduler;
+import alma.scheduling.Scheduler.SchedulerConfiguration;
 
 /**
  * @author Sohaila Roberts

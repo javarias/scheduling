@@ -24,7 +24,7 @@
  * File Subarray.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Subarray class identifies a subarray of antennas.  Included in

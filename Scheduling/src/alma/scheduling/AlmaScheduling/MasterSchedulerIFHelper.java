@@ -21,13 +21,13 @@
  *    MA 02111-1307  USA
  */
 
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 
-import alma.Scheduling.MasterSchedulerIFPOATie;
-import alma.Scheduling.MasterSchedulerIFOperations;
-import alma.Scheduling.AlmaScheduling.ALMAMasterScheduler;
+import alma.scheduling.MasterSchedulerIFPOATie;
+import alma.scheduling.MasterSchedulerIFOperations;
+import alma.scheduling.AlmaScheduling.ALMAMasterScheduler;
 
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;

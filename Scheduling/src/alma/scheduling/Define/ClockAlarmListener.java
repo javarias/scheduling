@@ -23,7 +23,7 @@
  * File ClockAlarmListener.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 //import alma.scheduling.define.STime;
 

@@ -24,10 +24,10 @@
  * File Container.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.PlanningModeSim.Define.ContainerServices;
-import alma.Scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
+import alma.scheduling.PlanningModeSim.Define.ContainerServices;
+import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
 
 import java.util.logging.Logger;
 

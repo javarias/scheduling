@@ -24,7 +24,7 @@
  * File TelcalSimulator.java
  */
  
-package alma.Scheduling.FullModeSim;
+package alma.scheduling.FullModeSim;
 
 public class TelcalSimulator{
 }

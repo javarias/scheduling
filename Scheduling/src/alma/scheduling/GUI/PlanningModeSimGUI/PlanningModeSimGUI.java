@@ -24,7 +24,7 @@
  * File PlanningModeSimGUI.java
  */
 
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import java.awt.Font;
 import java.awt.Toolkit;

@@ -24,7 +24,7 @@
  * File WeatherTrend.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The WeatherTrend class create a structure for housing weather 

@@ -23,13 +23,13 @@
  *
  * File ALMASchedPublisher.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 
-import alma.Scheduling.NothingCanBeScheduledEvent;
-import alma.Scheduling.NothingCanBeScheduledEnum;
-import alma.Scheduling.Event.Publishers.PublishEvent;
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.Event.Publishers.PublishEvent;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.nc.AbstractNotificationChannel;
@@ -53,11 +53,11 @@ public class ALMASchedPublisher extends PublishEvent {
         this.logger = cs.getLogger();
         this.sched_nc = AbstractNotificationChannel.createNotificationChannel(
             AbstractNotificationChannel.CORBA, 
-                alma.Scheduling.CHANNELNAME.value, 
+                alma.scheduling.CHANNELNAME.value, 
                     container);
         /*
         try {
-        sup = new SimpleSupplier(alma.Scheduling.CHANNELNAME.value, cs);
+        sup = new SimpleSupplier(alma.scheduling.CHANNELNAME.value, cs);
         } catch(Exception e) {}
         */
     }

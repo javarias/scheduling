@@ -24,7 +24,7 @@
  * File SchedulingException.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * Define an exception thrown by the Scheduling Subsystem. 

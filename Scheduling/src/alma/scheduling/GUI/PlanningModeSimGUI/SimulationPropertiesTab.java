@@ -23,7 +23,7 @@
  *
  * File SimulationPropertiestTab.java
  */
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;

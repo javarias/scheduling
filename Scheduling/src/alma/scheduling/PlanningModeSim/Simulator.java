@@ -24,13 +24,13 @@
  * File Simulator.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.Expression;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Expression;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;

@@ -24,7 +24,7 @@
  * File ControlEvent.java
  */
 
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * This class contains all the information from the ExecBlockEvent which in

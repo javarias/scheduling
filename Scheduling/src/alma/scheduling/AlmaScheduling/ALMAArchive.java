@@ -23,12 +23,12 @@
  * File ALMAArchive.java
  * 
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 import java.util.Vector;
 
-import alma.Scheduling.Define.*;
+import alma.scheduling.Define.*;
 
 import alma.xmlentity.XmlEntityStruct;
 

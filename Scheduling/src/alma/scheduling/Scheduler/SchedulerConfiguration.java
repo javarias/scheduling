@@ -24,22 +24,22 @@
  * File SchedulerConfiguration.java
  */
  
-package alma.Scheduling.Scheduler;
+package alma.scheduling.Scheduler;
 
 import java.util.logging.Logger;
 
-import alma.Scheduling.Define.TaskControl;
-import alma.Scheduling.Define.NothingCanBeScheduled;
-import alma.Scheduling.Define.SBQueue;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.Clock;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.Control;
-import alma.Scheduling.Define.Operator;
-import alma.Scheduling.Define.Telescope;
-import alma.Scheduling.Define.ProjectManager;
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Event.Publishers.PublishEvent;
+import alma.scheduling.Define.TaskControl;
+import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Clock;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Control;
+import alma.scheduling.Define.Operator;
+import alma.scheduling.Define.Telescope;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Event.Publishers.PublishEvent;
 
 /**
  * The SchedulerConfiguration is an extension of TaskControlInfo and

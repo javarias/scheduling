@@ -24,7 +24,7 @@
  * File ControlSimulator.java
  */
  
-package alma.Scheduling.FullModeSim;
+package alma.scheduling.FullModeSim;
 
 public class ControlSimulator {
 }

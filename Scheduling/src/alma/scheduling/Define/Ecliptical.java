@@ -23,7 +23,7 @@
  *
  * File Ecliptical.java
  */
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * Ecliptical coordinates -- clestial longitude, latitude, and the equinox.

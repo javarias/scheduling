@@ -24,7 +24,7 @@
  * File Tag.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
 /**
  * The Tag class is a collection of static strings that are the names

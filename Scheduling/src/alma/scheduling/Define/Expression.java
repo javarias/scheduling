@@ -24,7 +24,7 @@
  * File Expression.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 import java.lang.reflect.*;
 import java.util.*;

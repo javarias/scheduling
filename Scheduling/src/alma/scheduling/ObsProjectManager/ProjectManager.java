@@ -24,17 +24,17 @@
  * 
  */
 
-package alma.Scheduling.ObsProjectManager;
+package alma.scheduling.ObsProjectManager;
 
 import java.util.logging.Logger; 
 
-import alma.Scheduling.Define.SB;
+import alma.scheduling.Define.SB;
 
 /**
  * @author Sohaila Roberts
  */
 public class ProjectManager implements Runnable,
-    alma.Scheduling.Define.ProjectManager {
+    alma.scheduling.Define.ProjectManager {
 
     //The logger
     protected Logger logger;

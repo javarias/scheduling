@@ -23,11 +23,11 @@
  * File PipelineEventReceiver.java
  * 
  */
-package alma.Scheduling.Event.Receivers;
+package alma.scheduling.Event.Receivers;
 
 import java.util.logging.Logger;
 
-import alma.Scheduling.Define.PipelineEvent;
+import alma.scheduling.Define.PipelineEvent;
 
 /** 
  *  Listens to the pipeline for events

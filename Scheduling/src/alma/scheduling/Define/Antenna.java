@@ -24,7 +24,7 @@
  * File Antenna.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Antenna class captures information about the current state of

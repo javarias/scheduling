@@ -24,7 +24,7 @@
  * File BestSB.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The BestSB class is information that is returned by a dynamic scheduling

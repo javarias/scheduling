@@ -23,12 +23,12 @@
  *
  * File R1Unit.java
  */
-package alma.Scheduling.Scheduler.DSA;
+package alma.scheduling.Scheduler.DSA;
 
-import alma.Scheduling.Define.Equatorial;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.Equatorial;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SiteCharacteristics;
 
 import java.text.NumberFormat;
 
@@ -323,13 +323,13 @@ class R1Unit extends SchedulingUnit {
 	}
 
 	public static void main (String[] arg) {
-		alma.Scheduling.Define.Project p = new alma.Scheduling.Define.Project ("AF1","","","","");
+		alma.scheduling.Define.Project p = new alma.scheduling.Define.Project ("AF1","","","","");
 		SB sb = new SB ("af04");
 		SiteCharacteristics site = new SiteCharacteristics (0.0, 0.0, 0, 0.0, 0.0, 1, null);
 		sb.setProject(p);
-		sb.setScientificPriority(alma.Scheduling.Define.Priority.MEDIUM);
-		alma.Scheduling.Define.Equatorial coord = new Equatorial(3.2,47.0);
-		alma.Scheduling.Define.Target t = new alma.Scheduling.Define.Target (coord,2.0);
+		sb.setScientificPriority(alma.scheduling.Define.Priority.MEDIUM);
+		alma.scheduling.Define.Equatorial coord = new Equatorial(3.2,47.0);
+		alma.scheduling.Define.Target t = new alma.scheduling.Define.Target (coord,2.0);
 		sb.setTarget(t);
 		sb.setFrequency(68.0);
 		R1Unit unit = new R1Unit(sb,site);

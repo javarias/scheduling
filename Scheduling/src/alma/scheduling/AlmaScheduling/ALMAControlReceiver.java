@@ -23,13 +23,13 @@
  *
  * File ALMAControlReceiver.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import alma.acs.container.ContainerServices;
 
 import alma.Control.ExecBlockEvent;
 
-import alma.Scheduling.Event.Receivers.ControlEventReceiver;
+import alma.scheduling.Event.Receivers.ControlEventReceiver;
 
 /**
  * This Class receives the ExecBlockEvent sent out by control. 

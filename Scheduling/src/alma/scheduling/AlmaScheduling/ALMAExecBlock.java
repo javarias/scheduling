@@ -24,12 +24,11 @@
  * File ALMAExecBlock.java
  */
 
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import alma.entity.xmlbinding.execblock.ExecBlock;
 
-public class ALMAExecBlock extends 
-    alma.Scheduling.Define.ExecBlock {
+public class ALMAExecBlock extends alma.scheduling.Define.ExecBlock {
     
     private ExecBlock ctrl_execblock;
 

@@ -23,16 +23,16 @@
  * File Scheduler.java
  * 
  */
-package alma.Scheduling.Scheduler;
+package alma.scheduling.Scheduler;
 
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.BestSB;
-import alma.Scheduling.Define.Clock;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.SBQueue;
-import alma.Scheduling.Define.SchedulingException;
-import alma.Scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
-import alma.Scheduling.GUI.InteractiveSchedGUI.GUIController;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Clock;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
+import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
 
 import java.util.logging.Logger;
 

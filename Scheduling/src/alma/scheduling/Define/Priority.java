@@ -24,7 +24,7 @@
  * File Priority.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Priority class implements a priority that varies

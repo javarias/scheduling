@@ -23,7 +23,7 @@
  *
  * File SchedulingUnit.java
  */
-package alma.Scheduling.Scheduler.DSA;
+package alma.scheduling.Scheduler.DSA;
 
 /**
  * The SchedulingUnit class is an abstract class that contains methods that

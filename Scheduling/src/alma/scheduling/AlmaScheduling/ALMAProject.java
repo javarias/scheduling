@@ -23,12 +23,12 @@
  *
  * File ALMAProject.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
-import alma.Scheduling.Define.Project;
+import alma.scheduling.Define.Project;
 
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.schedblock.*;

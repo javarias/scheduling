@@ -23,7 +23,7 @@
  *
  * File PublishEvent.java
  */
-package alma.Scheduling.Event.Publishers;
+package alma.scheduling.Event.Publishers;
 
 import java.util.logging.Logger;
 import alma.acs.nc.AbstractNotificationChannel;

@@ -23,7 +23,7 @@
  * File PipelineProcessingRequest.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 import org.exolab.castor.xml.ValidationException;
 import java.util.logging.Logger;
@@ -563,9 +563,9 @@ public class PipelineProcessingRequest {
     public static void main(String[] args) {
         //try {
             System.out.println("SCHEDULING: function PipelineProcessingRequest()");
-            alma.Scheduling.Define.PipelineProcessingRequest ppr1=null; 
+            alma.scheduling.Define.PipelineProcessingRequest ppr1=null; 
             try {
-                ppr1=new alma.Scheduling.Define.PipelineProcessingRequest();
+                ppr1=new alma.scheduling.Define.PipelineProcessingRequest();
             } catch(Exception e) {
                 System.out.println("SCHEDULING: error="+e.toString());
             }

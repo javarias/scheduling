@@ -24,7 +24,7 @@
  * File Mode.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
 /**
  * The Mode class merely enumerates the various simulation modes that

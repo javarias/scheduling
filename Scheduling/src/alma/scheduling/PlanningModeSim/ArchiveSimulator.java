@@ -24,18 +24,18 @@
  * File ArchiveSimulator.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
-import alma.Scheduling.Define.Project;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.Program;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Define.ExecBlock;
-import alma.Scheduling.Define.Archive;
-import alma.Scheduling.Define.SchedulingException;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.Archive;
+import alma.scheduling.Define.SchedulingException;
 
 import java.util.ArrayList;
 import java.util.logging.Level;

@@ -24,7 +24,7 @@
  * File NothingCanBeScheduled.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The NothingCanBeScheduled class captures data when a dynamic

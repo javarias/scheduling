@@ -23,14 +23,14 @@
  *
  * File ALMATelcalReceiver.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import alma.acs.container.ContainerServices;
 
 import alma.TelCalPublisher.FocusReducedEvent;
 import alma.TelCalPublisher.PointingReducedEvent;
 
-import alma.Scheduling.Event.Receivers.TelcalEventReceiver;
+import alma.scheduling.Event.Receivers.TelcalEventReceiver;
 
 /**
  * This Class receives the ExecBlockEvent sent out by telcal. 

@@ -24,7 +24,7 @@
  * File PlanningModeSimGUIController.java
  */
 
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -49,8 +49,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
-import alma.Scheduling.PlanningModeSim.Tag;
-import alma.Scheduling.PlanningModeSim.Simulator;
+import alma.scheduling.PlanningModeSim.Tag;
+import alma.scheduling.PlanningModeSim.Simulator;
 
 /**
  * This class has all the functionality that is required by the PlanningModeSimGUI. It

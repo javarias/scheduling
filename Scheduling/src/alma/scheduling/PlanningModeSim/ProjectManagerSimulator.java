@@ -24,16 +24,16 @@
  * File ProjectManagerSimulator.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.ExecBlock;
-import alma.Scheduling.Define.Project;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.Status;
-import alma.Scheduling.Define.SchedulingException;
-import alma.Scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 import java.util.logging.Level;
 
@@ -45,7 +45,7 @@ import java.util.logging.Level;
  */
 public class ProjectManagerSimulator
 	extends BasicComponent
-	implements alma.Scheduling.Define.ProjectManager {
+	implements alma.scheduling.Define.ProjectManager {
 		
 	private ArchiveSimulator archive;
 	private Reporter reporter;

@@ -24,7 +24,7 @@
  * File Archive.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Archive interface defines the interface to the archive needed

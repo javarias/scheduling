@@ -24,7 +24,7 @@
  * File Status.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Status class defines the state model for components

@@ -24,7 +24,7 @@
  * File SimulationException.java
  */
  
-package alma.Scheduling.PlanningModeSim.Define;
+package alma.scheduling.PlanningModeSim.Define;
 
 import java.util.logging.Level;
 

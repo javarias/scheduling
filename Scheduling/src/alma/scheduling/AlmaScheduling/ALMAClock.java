@@ -23,12 +23,12 @@
  *
  * File ALMACLock.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
-import alma.Scheduling.Define.Clock;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.ArrayTime;
-import alma.Scheduling.Define.ClockAlarmListener;
+import alma.scheduling.Define.Clock;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ArrayTime;
+import alma.scheduling.Define.ClockAlarmListener;
 
 /**
  * @author Sohaila Roberts

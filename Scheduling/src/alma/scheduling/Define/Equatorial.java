@@ -23,7 +23,7 @@
  *
  * File Equatorial.java
  */
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * Equatorial coordinates -- right ascension, declination, and the equinox.

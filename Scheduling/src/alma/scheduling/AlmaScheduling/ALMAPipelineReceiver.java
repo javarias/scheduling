@@ -23,13 +23,13 @@
  *
  * File ALMAPipelineReceiver.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import alma.acs.container.ContainerServices;
 
 import alma.pipelinescience.ScienceProcessingRequestEnd;
 
-import alma.Scheduling.Event.Receivers.PipelineEventReceiver;
+import alma.scheduling.Event.Receivers.PipelineEventReceiver;
 
 /**
  * This Class receives the ScienceProcessingRequestEnd event sent out 

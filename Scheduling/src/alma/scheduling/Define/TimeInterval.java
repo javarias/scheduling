@@ -24,7 +24,7 @@
  * File TimeInterval.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The TimeInterval is a utility class used to define an interval of time

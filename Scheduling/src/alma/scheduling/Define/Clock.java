@@ -24,10 +24,10 @@
  * File CLock.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.ArrayTime;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ArrayTime;
 
 /**
  * The Clock interface provides the current time, the precise geographical

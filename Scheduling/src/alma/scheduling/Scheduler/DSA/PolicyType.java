@@ -23,7 +23,7 @@
  *
  * File PolicyType.java
  */
-package alma.Scheduling.Scheduler.DSA;
+package alma.scheduling.Scheduler.DSA;
 
 /**
  * The PolicyType class is an abstract class that contains methods that

@@ -24,7 +24,7 @@
  * File ExecBlock.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 import java.io.PrintStream;
 

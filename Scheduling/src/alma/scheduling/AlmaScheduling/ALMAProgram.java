@@ -23,9 +23,9 @@
  *
  * File ALMAProgram.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
-import alma.Scheduling.Define.Program;
+import alma.scheduling.Define.Program;
 
 //import alma.entity.xmlbinding.obsproject.ObsProject;
 

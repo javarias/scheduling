@@ -22,7 +22,7 @@
  * MA 02111-1307  USA
  * File ProjectsTab.java
  */
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import java.awt.Component;
 import java.awt.GridLayout;

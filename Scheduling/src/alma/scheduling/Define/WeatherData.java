@@ -24,7 +24,7 @@
  * File WeatherData.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The WeatherData class captures data related to weather conditions averaged

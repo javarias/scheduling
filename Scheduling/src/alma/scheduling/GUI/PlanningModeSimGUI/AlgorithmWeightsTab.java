@@ -24,7 +24,7 @@
  * File AlgorithmWeightsTab.java
  */
 
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import java.util.Vector;
 import java.awt.GridLayout;

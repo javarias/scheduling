@@ -23,24 +23,24 @@
  *
  * File SimulationInput.java
  */
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.PlanningModeSim.Define.ComponentLifecycle;
-import alma.Scheduling.PlanningModeSim.Define.ContainerServices;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
+import alma.scheduling.PlanningModeSim.Define.ContainerServices;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.FrequencyBand;
-import alma.Scheduling.Define.SiteCharacteristics;
-import alma.Scheduling.Define.Project;
-import alma.Scheduling.Define.Program;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Define.PolicyFactor;
-import alma.Scheduling.Define.Priority;
-import alma.Scheduling.Define.WeatherCondition;
-import alma.Scheduling.Define.Target;
-import alma.Scheduling.Define.Equatorial;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.PolicyFactor;
+import alma.scheduling.Define.Priority;
+import alma.scheduling.Define.WeatherCondition;
+import alma.scheduling.Define.Target;
+import alma.scheduling.Define.Equatorial;
 
 import java.util.Properties;
 import java.util.logging.Logger;

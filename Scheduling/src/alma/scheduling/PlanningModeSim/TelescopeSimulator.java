@@ -23,12 +23,12 @@
  *
  * File TelescopeSimulator.java
  */
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.Define.Telescope;
-import alma.Scheduling.PlanningModeSim.Define.ComponentLifecycle;
-import alma.Scheduling.PlanningModeSim.Define.ContainerServices;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Define.Telescope;
+import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
+import alma.scheduling.PlanningModeSim.Define.ContainerServices;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 import java.util.logging.Logger;
 

@@ -23,7 +23,7 @@
  *
  * File ReceiveEvent.java
  */
-package alma.Scheduling.Event.Receivers;
+package alma.scheduling.Event.Receivers;
 
 /**
  * The ReceiveEvent class contains basic methods of a generic nature to

@@ -24,7 +24,7 @@
  * File Control.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Control interface specifies those methods needed by Scheduling

@@ -24,7 +24,7 @@
  * File FrequencyBand.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The FrequencyBand class specifies the name and the range of frequencies

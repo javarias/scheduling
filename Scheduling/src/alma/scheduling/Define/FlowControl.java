@@ -24,7 +24,7 @@
  * File FlowControl.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * Flow control expressions are used to constrain the order in which members of 

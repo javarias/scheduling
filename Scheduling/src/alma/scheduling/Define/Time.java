@@ -24,7 +24,7 @@
  * File Time.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The current time based on a 24-hour clock.

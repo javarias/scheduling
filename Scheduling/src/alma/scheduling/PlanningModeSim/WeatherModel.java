@@ -24,9 +24,9 @@
  * File WeatherModel.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 
 import java.util.ArrayList;
 

@@ -24,10 +24,10 @@
  * File DiurnalModel.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
 import java.io.PrintStream;
-import alma.Scheduling.Define.Clock;
+import alma.scheduling.Define.Clock;
 
 /**
  * DiurnalModel is a class that allows one to craft a function that

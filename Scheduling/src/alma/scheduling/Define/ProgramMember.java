@@ -23,7 +23,7 @@
  *
  * File ProgramMember.java
  */
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The ProgramMember interface is merely a tag that flags a class

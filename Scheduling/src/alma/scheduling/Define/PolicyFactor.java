@@ -24,7 +24,7 @@
  * File PolicyFactor.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * An PolicyFactor defines a factor used in a dynamic scheduling

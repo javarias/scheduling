@@ -24,13 +24,13 @@
  * File OperatorSimulator.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.Define.Operator;
-import alma.Scheduling.Define.Antenna;
-import alma.Scheduling.Define.BestSB;
-import alma.Scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Define.Operator;
+import alma.scheduling.Define.Antenna;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 /**
  * Description 

@@ -23,30 +23,30 @@
  * File MasterScheduler.java
  * 
  */
-package alma.Scheduling.PlanningModeSim.MasterScheduler;
+package alma.scheduling.PlanningModeSim.MasterScheduler;
 
-import alma.Scheduling.Scheduler.Scheduler;
-import alma.Scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.Scheduler.Scheduler;
+import alma.scheduling.Scheduler.SchedulerConfiguration;
 
-import alma.Scheduling.Define.SBQueue;
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.Project;
-import alma.Scheduling.Define.NothingCanBeScheduled;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.SchedulingException;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SchedulingException;
 
-import alma.Scheduling.PlanningModeSim.TelescopeSimulator;
-import alma.Scheduling.PlanningModeSim.OperatorSimulator;
-import alma.Scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
-import alma.Scheduling.PlanningModeSim.Container;
-import alma.Scheduling.PlanningModeSim.ArchiveSimulator;
-import alma.Scheduling.PlanningModeSim.ControlSimulator;
-import alma.Scheduling.PlanningModeSim.ProjectManagerSimulator;
-import alma.Scheduling.PlanningModeSim.Reporter;
-import alma.Scheduling.PlanningModeSim.ClockSimulator;
-import alma.Scheduling.PlanningModeSim.SimulationInput;
+import alma.scheduling.PlanningModeSim.TelescopeSimulator;
+import alma.scheduling.PlanningModeSim.OperatorSimulator;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.PlanningModeSim.Container;
+import alma.scheduling.PlanningModeSim.ArchiveSimulator;
+import alma.scheduling.PlanningModeSim.ControlSimulator;
+import alma.scheduling.PlanningModeSim.ProjectManagerSimulator;
+import alma.scheduling.PlanningModeSim.Reporter;
+import alma.scheduling.PlanningModeSim.ClockSimulator;
+import alma.scheduling.PlanningModeSim.SimulationInput;
 
 import java.util.logging.Level;
 

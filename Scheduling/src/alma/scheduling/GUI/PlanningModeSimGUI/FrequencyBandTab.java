@@ -24,7 +24,7 @@
  * File FrequencyBandTab.java
  */
 
-package alma.Scheduling.GUI.PlanningModeSimGUI;
+package alma.scheduling.GUI.PlanningModeSimGUI;
 
 import java.awt.Component;
 import java.awt.GridLayout;

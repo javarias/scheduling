@@ -23,10 +23,10 @@
  *
  * File ALMAOperator.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
-import alma.Scheduling.Define.Operator;
-import alma.Scheduling.Define.BestSB;
+import alma.scheduling.Define.Operator;
+import alma.scheduling.Define.BestSB;
 
 /**
  * @author Sohaila Roberts

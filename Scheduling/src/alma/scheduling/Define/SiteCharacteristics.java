@@ -24,7 +24,7 @@
  * File SiteCharacteristics.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The SiteCharacteristics class defines characteristics of the telescope

@@ -23,9 +23,9 @@
  *
  * File GenProject.java
  */
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.FrequencyBand;
 
 import java.io.*;
 import java.util.Properties;

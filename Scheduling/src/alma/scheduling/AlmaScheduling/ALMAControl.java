@@ -23,7 +23,7 @@
  * File ALMAControl.java
  * 
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 import java.util.Vector;
@@ -31,10 +31,10 @@ import java.util.Vector;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
-import alma.Scheduling.Define.Control;
-import alma.Scheduling.Define.BestSB;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Control;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SchedulingException;
 
 import alma.Control.ControlSystem;
 import alma.Control.ArrayController;

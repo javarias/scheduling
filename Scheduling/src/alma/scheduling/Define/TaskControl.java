@@ -24,7 +24,7 @@
  * File TaskControl.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * TaskControl is an informational object that is used by the

@@ -24,7 +24,7 @@
  * File DateTime.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 
 /**

@@ -22,10 +22,10 @@
  * 
  * File ControlEventReceiver.java
  */
-package alma.Scheduling.Event.Receivers;
+package alma.scheduling.Event.Receivers;
 
 import java.util.logging.Logger;
-import alma.Scheduling.Define.ControlEvent;
+import alma.scheduling.Define.ControlEvent;
 
 public class ControlEventReceiver {
     protected Logger logger;

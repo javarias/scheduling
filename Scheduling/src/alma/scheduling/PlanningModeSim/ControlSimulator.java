@@ -24,21 +24,21 @@
  * File ControlSimulator.java
  */
  
-package alma.Scheduling.PlanningModeSim;
+package alma.scheduling.PlanningModeSim;
 
-import alma.Scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.Scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.BestSB;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.ExecBlock;
-import alma.Scheduling.Define.Control;
-import alma.Scheduling.Define.Status;
-import alma.Scheduling.Define.SchedulingException;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.Control;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.SchedulingException;
 
-import alma.Scheduling.Define.Antenna;
-import alma.Scheduling.Define.Subarray;
+import alma.scheduling.Define.Antenna;
+import alma.scheduling.Define.Subarray;
 
 import java.util.logging.Level;
 

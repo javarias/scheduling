@@ -24,7 +24,7 @@
  * File SBSetup.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The SBSetup class defines the initial setup that is required

@@ -24,7 +24,7 @@
  * File SB.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 import java.util.ArrayList;
 import java.io.PrintStream;

@@ -23,12 +23,12 @@
  *
  * File ALMASB.java
  */
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.Target;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.Equatorial;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Target;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Equatorial;
 
 //import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.*;

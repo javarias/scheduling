@@ -23,7 +23,7 @@
  * File OpenOT.java
  * 
  */
-package alma.Scheduling.GUI.InteractiveSchedGUI;
+package alma.scheduling.GUI.InteractiveSchedGUI;
 
 /**
  * This Class starts the observing tool from inside the scheduling

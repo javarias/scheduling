@@ -24,13 +24,13 @@
  * File ALMATelescope.java
  */
 
-package alma.Scheduling.AlmaScheduling;
+package alma.scheduling.AlmaScheduling;
 
-import alma.Scheduling.Define.Telescope;
-import alma.Scheduling.Define.SiteCharacteristics;
-import alma.Scheduling.Define.FrequencyBand;
-import alma.Scheduling.Define.Antenna;
-import alma.Scheduling.Define.Subarray;
+import alma.scheduling.Define.Telescope;
+import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.Antenna;
+import alma.scheduling.Define.Subarray;
 
 /**
  * @author Sohaila Roberts

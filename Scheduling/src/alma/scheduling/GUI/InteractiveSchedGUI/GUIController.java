@@ -22,7 +22,7 @@
  * File GUIController.java
  * 
  */
-package alma.Scheduling.GUI.InteractiveSchedGUI;
+package alma.scheduling.GUI.InteractiveSchedGUI;
 /*
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.SBExists;
@@ -34,8 +34,8 @@ import java.net.URL;
 //import alma.entity.xmlbinding.schedblock.*;
 //import alma.obsprep.bo.*;
 //import alma.obsprep.bo.Target;
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Scheduler.SchedulerConfiguration;
 /**
  * A controller for the Interactive Scheduling GUI. 
  * All the functionality that is required from the the GUI
@@ -55,7 +55,7 @@ public class GUIController implements Runnable {
 
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(
-            "alma/Scheduling/Image/"+name);
+            "alma/scheduling/Image/"+name);
     }
 
     ////////////////////////////////////////////////////

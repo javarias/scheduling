@@ -24,7 +24,7 @@
  * File WeatherCondition.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The WeatherCondition class defines a measure of the favorable conditions 

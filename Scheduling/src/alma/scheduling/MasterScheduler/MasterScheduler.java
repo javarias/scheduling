@@ -24,13 +24,13 @@
  *
  */
 
-package alma.Scheduling.MasterScheduler;
+package alma.scheduling.MasterScheduler;
 
 import java.util.logging.Logger;
 
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Event.Publishers.PublishEvent;
-import alma.Scheduling.ObsProjectManager.ProjectManager;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Event.Publishers.PublishEvent;
+import alma.scheduling.ObsProjectManager.ProjectManager;
 
 /** 
  * @author Sohaila Roberts

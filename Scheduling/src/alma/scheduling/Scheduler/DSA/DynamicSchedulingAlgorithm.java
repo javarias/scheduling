@@ -23,23 +23,23 @@
  *
  * File DynamicSchedulingAlgorithm.java
  */
-package alma.Scheduling.Scheduler.DSA;
+package alma.scheduling.Scheduler.DSA;
 
-import alma.Scheduling.Define.SB;
-import alma.Scheduling.Define.SBQueue;
-import alma.Scheduling.Define.Clock;
-import alma.Scheduling.Define.Telescope;
-import alma.Scheduling.Define.ProjectManager;
-import alma.Scheduling.Define.SiteCharacteristics;
-import alma.Scheduling.Define.DateTime;
-import alma.Scheduling.Define.Policy;
-import alma.Scheduling.Define.PolicyFactor;
-import alma.Scheduling.Define.Subarray;
-import alma.Scheduling.Define.FrequencyBand;
-import alma.Scheduling.Define.WeatherCondition;
-import alma.Scheduling.Define.SchedulingException;
-import alma.Scheduling.Define.BestSB;
-import alma.Scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.Clock;
+import alma.scheduling.Define.Telescope;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.PolicyFactor;
+import alma.scheduling.Define.Subarray;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.WeatherCondition;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.NothingCanBeScheduled;
 
 import java.util.logging.Logger;
 

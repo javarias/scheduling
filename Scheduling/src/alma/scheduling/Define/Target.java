@@ -24,7 +24,7 @@
  * File Target.java
  */
  
-package alma.Scheduling.Define;
+package alma.scheduling.Define;
 
 /**
  * The Target class defines a target area of the sky, including equatorial
