@@ -11,4 +11,5 @@ testtimeinterval
 testweathercondition
 teststatus
 testcomponentstate
+testppr
 EPILOGUE epilogue
