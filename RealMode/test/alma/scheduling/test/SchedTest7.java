@@ -72,10 +72,11 @@ public class SchedTest7 {
     private EntityDeserializer entityDeserializer;
     private ContainerServices containerServices;
     private MS masterSchedulerComp;
-    private MasterScheduler masterSchedulerObj;
+    //private MasterScheduler masterSchedulerObj;
     private ProjectManager projectManager;
     private SchedBlock[] sbs;
     private Logger logger;
+    private TestSchedConsumer consumer;
 
     
     /**
@@ -110,15 +111,16 @@ public class SchedTest7 {
         entitySerializer = EntitySerializer.getEntitySerializer(logger);
         entityDeserializer = EntityDeserializer.getEntityDeserializer(logger);
         // Get the masterSchedulerObj to test how scheduling uses everything internally
+        /*
         masterSchedulerObj = new MasterScheduler();
         masterSchedulerObj.setComponentName("MasterSchedulerObj");
         masterSchedulerObj.setContainerServices(containerServices);
         masterSchedulerObj.initialize();
         masterSchedulerObj.execute();
         logger.log(Level.FINE, "MS Object created");
+        */
         // Get the MS interface as a component to test how the Exec will use it
         try {
-            //this.masterSchedulerComp = alma.scheduling.master_scheduler.MSHelper.narrow(
             this.masterSchedulerComp = alma.scheduling.MSHelper.narrow(
                 containerServices.getComponent("MASTER_SCHEDULER"));
             logger.log(Level.FINE, "MS Component created");
@@ -132,6 +134,7 @@ public class SchedTest7 {
      *  identifier.
      *  @return PipelineProcessingRequest
      */
+    /*
     public PipelineProcessingRequest createPipelineProcessingRequest() {
         PipelineProcessingRequest ppr = new PipelineProcessingRequest();
         PipelineProcessingRequestEntityT ppr_entity = 
@@ -145,6 +148,7 @@ public class SchedTest7 {
         }
         return ppr;
     }
+    */
     
     /**
      *  Calles the scheduling's startScheduling method using an
@@ -172,8 +176,9 @@ public class SchedTest7 {
             logger.log(Level.SEVERE, "InvalidOperation: "+ e.toString());
         }
         logger.log(Level.FINE, "Scheduling started"); 
+        testNothingToSchedule();
     }
-
+/*
     public void testQueryArchive() {
         ALMAArchive archive = masterSchedulerObj.getArchive();
         SchedBlock[] sbs = archive.getSchedBlock();
@@ -184,17 +189,22 @@ public class SchedTest7 {
             logger.log(Level.FINE, "Continuing, SBs not null.");
         }
     }
-/*
-    public void testSelectSB() {
-        masterSchedulerObj.selectSB();
-        logger.log(Level.FINE, "SB selected.");
-    }
-*/
+    */
+
     public void testNothingToSchedule() {
-        masterSchedulerObj.sendEvent(
-            masterSchedulerObj.createNothingCanBeScheduledEvent(
-                "Testing NothingCanBeScheduledEvent!"));
-        logger.log(Level.FINE, "EVENT SENT");
+        consumer = new TestSchedConsumer(containerServices);
+        System.out.println("SchedConsumer created");
+        try {
+            consumer.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
+            consumer.consumerReady();
+        } catch(Exception e) {
+            consumer.disconnect();
+            alma.acs.nc.Helper.disconnect();
+        }
+    }
+
+    public void release() {
+        containerServices.releaseComponent("MASTER_SCHEDULER");
     }
 
     public static void main(String[] args) {
@@ -203,14 +213,17 @@ public class SchedTest7 {
             String managerLoc = System.getProperty("ACS.manager");
             ComponentClient client = new ComponentClient(null, managerLoc, name);
             ContainerServices cs = client.getContainerServices();
-            SchedTest7.populateArchive(cs);
-            Thread.sleep(5000);
+            //SchedTest7.populateArchive(cs);
+            //Thread.sleep(5000);
             SchedTest7 test7 = new SchedTest7(cs);
             test7.testStartScheduling();
+            //cs.releaseComponent("MASTER_SCHEDULER");
             //test7.testQueryArchive();
             //test7.testSelectSB();
-            test7.testNothingToSchedule();
-            cs.releaseComponent("MASTER_SCHEDULER");
+            //test7.testNothingToSchedule();
+            //System.out.println("Sleeping for 90 sec before releasing MS");
+            Thread.sleep(1000*300);
+            test7.release();
         } catch(Exception e) {
             System.out.println("Exception: " +e.toString() );
             //cs.releaseComponent("MASTER_SCHEDULER");
