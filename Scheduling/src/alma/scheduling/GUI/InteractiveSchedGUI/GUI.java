@@ -543,6 +543,7 @@ public class GUI extends JFrame {
             //sbOutputView.append("SchedBlock Performance Goal: "+
             //    s[i].getObsUnitControl().getPerformanceGoal() +"\n");
             sbOutputView.append("SchedBlock Weather Constraints: \n"); 
+            /*
             try {
                 //sbOutputView.append("Opacity: "+s[i].getPreconditions().getWeatherConstraints().getOpacity() +"\n");
             } catch(Exception e) {
@@ -558,6 +559,7 @@ public class GUI extends JFrame {
             } catch(Exception e) {
                 sbOutputView.append("Seeing: no seeing set.\n");
             }
+            */
             /*
             project it comes from & name 
             sbOutputView.append(s[i].() +"\n");
