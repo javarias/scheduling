@@ -94,10 +94,10 @@ public class ProjectManager implements Runnable {
         projects = convertToVector(archive.getProject());
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
-        control_event = new ControlEventReceiver(pipeline, archive);
-        pipeline_event = new PipelineEventReceiver(pipeline, archive);
-        pointingScan_event = new PointingScanReducedEventReceiver();
-        focusScan_event = new FocusScanReducedEventReceiver();
+        control_event = new ControlEventReceiver(cs, pipeline, archive);
+        pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
+        pointingScan_event = new PointingScanReducedEventReceiver(cs);
+        focusScan_event = new FocusScanReducedEventReceiver(cs);
         if(isSimulation) {
             //its a simulation, so create local channels
             

@@ -24,6 +24,10 @@
  */
 package ALMA.scheduling.receivers;
 
+import java.util.logging.Logger;
+
+import alma.acs.container.ContainerServices;
+
 import ALMA.Control.ExecBlockEvent;
 import ALMA.Control.ExecBlockEventHelper;
 
@@ -40,22 +44,29 @@ import alma.acs.nc.*;
 public class ControlEventReceiver extends Consumer {
     private ALMAPipeline pipeline;
     private ALMAArchive archive;
+    private ContainerServices containerServices;
+    private Logger logger;
     private ProjectManagerTaskControl pmTaskControl;
     
-    public ControlEventReceiver(ALMAPipeline p, ALMAArchive a){
+    public ControlEventReceiver(ContainerServices cs, ALMAPipeline p, 
+        ALMAArchive a){
+        
         super(ALMA.Control.CHANNELNAME.value);
+        this.containerServices = cs;
+        this.logger = cs.getLogger();
         this.pipeline = p;
         this.archive = a;
         //System.out.println("#########ControlEventReceiver created######");
     }
+    /*
     public ControlEventReceiver(ProjectManagerTaskControl pmtc,
                                     ALMAPipeline p, ALMAArchive a){
         this(p,a);
         this.pmTaskControl = pmtc;
     }
-
+*/
     public void receive(ExecBlockEvent e) {
-        System.out.println("SCHEDULING: Starting to process the control event");
+        logger.info("SCHEDULING: Starting to process the control event");
         String sb_id = e.sbId;
         ProcessControlEvent pce = new ProcessControlEvent(pmTaskControl,
                                         archive, pipeline, e);
@@ -70,30 +81,24 @@ public class ControlEventReceiver extends Consumer {
             ExecBlockEvent e = 
                 ExecBlockEventHelper.extract(
                     structuredEvent.filterable_data[0].value);
-            System.out.println("SCHEDULING: Got event from control");
+            logger.info("SCHEDULING: Got event from control");
             switch(e.reason.value()) {
                 case 0:
-                    System.out.println("SCHEDULING: Event reason = started");
+                    logger.info("SCHEDULING: Event reason = started");
+                    logger.info("SCHEDULING: Received sb start event from control.");
                     break;
                 case 1:
-                    System.out.println("SCHEDULING: Event reason = end");
+                    logger.info("SCHEDULING: Event reason = end");
+                    logger.info("SCHEDULING: Received sb end event from control.");
                     receive(e);
                     break;
-                /*
-                case 2:
-                    System.out.println("SCHEDULING: Event Status = failed");
-                    break;
-                case 3:
-                    System.out.println("SCHEDULING: Event Status = timeout");
-                    break;
-                    */
                 default: 
-                    System.out.println("SCHEDULING: Event reason = error");
+                    logger.severe("SCHEDULING: Event reason = error");
                     break;
             }
                 
         } catch(Exception e) {
-            System.out.println("SCHEDULING: got something else "+e.toString());
+            logger.severe("SCHEDULING: got something else "+e.toString());
             e.printStackTrace();
         }
     }

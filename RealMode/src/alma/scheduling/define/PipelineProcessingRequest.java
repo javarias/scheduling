@@ -143,6 +143,20 @@ public class PipelineProcessingRequest {
         return getEntity().getEntityId();
     }
     /**
+     * Returns the document version.
+     * @return String The document version in string form
+     */
+    public String getDocumentVersion() {
+        return getEntity().getDocumentVersion();
+    }
+    /**
+     * Returns the schema version.
+     * @return String The schema version in string form
+     */
+    public String getSchemaVersion() {
+        return getEntity().getSchemaVersion();
+    }
+    /**
      * Returns the EntityRefT object for the ProjectReference of this object.
      * @return EntityRefT The entity object.
      */
@@ -203,7 +217,7 @@ public class PipelineProcessingRequest {
      * representation of the CompletionStatusT object. 
      */
     public String getCompletionStatusString() {
-        return ppr.getCompletionStatus().toString();
+        return ppr.getCompletionStatus().getCompletionStatus().toString();
     }
     /**
      * Returns the completion status object.
@@ -218,14 +232,14 @@ public class PipelineProcessingRequest {
      * @return String
      */
     public String getRequestStatusString(){
-        return ppr.getRequestStatus().toString();
+        return ppr.getRequestStatus().getRequestStatus().toString();
     }
     /**
      * Returns the status of the request.
-     * @return RequestStatusT
+     * @return RequestStatusType
      */
-    public RequestStatusT getRequestStatusObject() {
-        return ppr.getRequestStatus();
+    public RequestStatusType getRequestStatusObject() {
+        return ppr.getRequestStatus().getRequestStatus();
     }
     /**
      * Gets the reduction unit for this request.
@@ -291,9 +305,9 @@ public class PipelineProcessingRequest {
      *
      * @param s The encrypted id.
      */
-    public void setEncryptedId(String s) {
+    public void setEncryptedId(String s) throws NullPointerException {
         if(s.equals("") || s == null) {
-            //throw an error
+            throw new NullPointerException("Can not set a null id!");
         }
         getEntity().setEntityIdEncrypted(s);
     }
@@ -303,7 +317,7 @@ public class PipelineProcessingRequest {
      * @throws Exception Throws an exception if there is already a uid set.
      */
     public void setId(String id) throws Exception {
-        if(getEntity() != null) {
+        if(getId() == null) {
             getEntity().setEntityId(id);
         } else {
             throw new Exception("Can not change the UID!");
@@ -475,6 +489,39 @@ public class PipelineProcessingRequest {
             //throw an error, can't be null
             throw new NullPointerException("CompletionStatus must not be null!");
         }
+        CompletionStatusT tmp = new CompletionStatusT();
+        tmp.setCompletionStatus(s);
+        ppr.setCompletionStatus(tmp);
+    }
+
+    /**
+     * Since the reduction unit is always going to be an ObsUnitSet 
+     * it is easier to just give the PipelineProcessingRequest the id 
+     * of this obs unit set and let this wrapper class take care of 
+     * the creation on the ReductionUnitT object! The functionality
+     * to set that object is still there tho.
+     */
+
+    /**
+     * Creates a Reduction unit with the given id. The document and schema
+     * versions are set to 1.0 and the type name is fixed as ObsUnitSet
+     * @param id The uid of the obsunitset
+     */
+    public void setReductionUnit(String id) {
+        ReductionUnitT ru = new ReductionUnitT();
+        EntityT entity = new EntityT();
+        entity.setEntityId(id);
+        entity.setDocumentVersion("1.0"); // dont know if this should be different?
+        entity.setSchemaVersion("1.0");
+        entity.setEntityTypeName("ObsUnitSet");
+    }
+    /**
+     * To make life more coherent this function was added but does the same thing 
+     * as the one above!.
+     * @param id The uid of the obsunitset
+     */ 
+    public void setObsUnitSet(String id) {
+        setReductionUnit(id);
     }
     /**
      * Sets the reduction unit for this request.
@@ -512,6 +559,137 @@ public class PipelineProcessingRequest {
      */
     public boolean isValid() {
         return ppr.isValid();
+    }
+
+    public static void main(String[] args) {
+        //try {
+            System.out.println("SCHEDULING: function PipelineProcessingRequest()");
+            ALMA.scheduling.define.PipelineProcessingRequest ppr1=null; 
+            try {
+                ppr1=new ALMA.scheduling.define.PipelineProcessingRequest();
+            } catch(Exception e) {
+                System.out.println("SCHEDULING: error="+e.toString());
+            }
+                /*
+            System.out.println("SCHEDULING: function PipelineProcessingRequest(alma.entity.xmlbinding.pipelineprocessingrequest.PipelinePrococessingRequest)");
+            ALMA.scheduling.define.PipelineProcessingRequest ppr2 = 
+                new ALMA.scheduling.define.PipelineProcessingRequest(
+                    new alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest());
+                    */
+            System.out.println("SCHEDULING: function createEntity()");
+            System.out.println("SCHEDULING: function setEntity()");
+            ppr1.setEntity(ppr1.createEntity());
+            System.out.println("SCHEDULING: function setComment(string)");
+            ppr1.setComment("This is a test");
+            System.out.println("SCHEDULING: function getComment()");
+            System.out.println("SCHEDULING: comment = "+ ppr1.getComment());
+            System.out.println("SCHEDULING: function setImagingProcedureName(string)");
+            ppr1.setImagingProcedureName("test");
+            System.out.println("SCHEDULING: function getImagingProcedureName()");
+            System.out.println("SCHEDULING: Image procedure name = "+ppr1.getImagingProcedureName());
+            System.out.println("SCHEDULING: function setEncryptedId(string)");
+            try {
+                ppr1.setEncryptedId("Something encrypted here!");
+            } catch(NullPointerException e) {
+                System.out.println("SCHEDULING: error="+e.toString());
+            }
+            System.out.println("SCHEDULING: function setId() with 'ppr1 id'");
+            try {
+                ppr1.setId("ppr1 id");
+            } catch (Exception ex) {
+                System.out.println("SCHEDULING: error="+ex.toString());
+            }
+            System.out.println("SCHEDULING: function setId() 'another id'");
+            System.out.println("SCHEDULING: should get error coz we've already set the id");
+            try { 
+                ppr1.setId("another id");
+            } catch (Exception ex) {
+                System.out.println("SCHEDULING: error="+ex.toString());
+            }
+            System.out.println("SCHEDULING: function getId()");
+            System.out.println("SCHEDULING: ppr1's id ="+ppr1.getId());
+            System.out.println("SCHEDULING: function setDocumentVersion(string)");
+            try {
+                ppr1.setDocumentVersion("1.0");
+            } catch(Exception e) {
+                System.out.println("SCHEDULING: error="+e.toString());
+            }
+            System.out.println("SCHEDULING: function getDocumentVersion()");
+            System.out.println("SCHEDULING: version="+ppr1.getDocumentVersion());
+            System.out.println("SCHEDULING: function setSchemaVersion(string)");
+            try {
+                ppr1.setSchemaVersion("1.0");
+            } catch(Exception e) {
+                System.out.println("SCHEDULING: error="+e.toString());
+            }
+            System.out.println("SCHEDULING: function getSchemaVersion()");
+            System.out.println("SCHEDULING: version="+ppr1.getSchemaVersion());
+            System.out.println("SCHEDULING: function setProjectReference(EntityT)");
+            EntityRefT p_ent_ref = new EntityRefT();
+            ppr1.setProjectReference(p_ent_ref);
+            System.out.println("SCHEDULING: function setProjectReferenceId(string)");
+            ppr1.setProjectReferenceId("proj id");
+            System.out.println("SCHEDULING: function setProjectReferenceTypeName(string)");
+            ppr1.setProjectReferenceTypeName("TestProjectName");
+            System.out.println("SCHEDULING: function getProjectReferenceTypeName()");
+            System.out.println("SCHEDULING: name="+ ppr1.getProjectReferenceTypeName());
+            System.out.println("SCHEDULING: function setProjectReferenceDocumentVersion(string)");
+            ppr1.setProjectReferenceDocumentVersion("1.0");
+            System.out.println("SCHEDULING: function getProjectReferenceDocumentVersion()");
+            System.out.println("SCHEDULING: name="+ ppr1.getProjectReferenceDocumentVersion());
+            //System.out.println("SCHEDULING: function setProjectReferenceSchemaVersion(string)");
+            //ppr1.setProjectReferenceSchemaVersion("1.0");
+            //System.out.println("SCHEDULING: function getProjectReferenceSchemaVersion()");
+            //System.out.println("SCHEDULING: name="+ ppr1.getProjectReferenceSchemaVersion());
+           
+
+            //ResultsReference stuff..
+
+            System.out.println("SCHEDULING: function setRequestStatus(string) with 'queued'");
+            ppr1.setRequestStatus("queued");
+            System.out.println("SCHEDULING: getRequestStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getRequestStatusString());
+            
+            System.out.println("SCHEDULING: function setRequestStatus(string) with 'running'");
+            ppr1.setRequestStatus("running");
+            System.out.println("SCHEDULING: getRequestStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getRequestStatusString());
+
+            System.out.println("SCHEDULING: function setRequestStatus(string) with 'completed'");
+            ppr1.setRequestStatus("completed");
+            System.out.println("SCHEDULING: getRequestStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getRequestStatusString());
+
+            System.out.println("SCHEDULING: function setCompletionStatus(string) with 'submitted'");
+            ppr1.setCompletionStatus("submitted");
+            System.out.println("SCHEDULING: getCompletionStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getCompletionStatusString());
+
+            System.out.println("SCHEDULING: function setCompletionStatus(string) with 'incomplete'");
+            ppr1.setCompletionStatus("incomplete");
+            System.out.println("SCHEDULING: getCompletionStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getCompletionStatusString());
+
+            System.out.println("SCHEDULING: function setCompletionStatus(string) with 'complete-failed'");
+            ppr1.setCompletionStatus("complete-failed");
+            System.out.println("SCHEDULING: getCompletionStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getCompletionStatusString());
+
+            System.out.println("SCHEDULING: function setCompletionStatus(string) with 'complete-succeeded'");
+            ppr1.setCompletionStatus("complete-succeeded");
+            System.out.println("SCHEDULING: getCompletionStatusString()");
+            System.out.println("SCHEDULING: status="+ppr1.getCompletionStatusString());
+/*            
+            System.out.println("SCHEDULING: function setReductionUnit(string)");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+            System.out.println("SCHEDULING: function ()");
+*/
     }
     
 }

@@ -25,9 +25,12 @@
  */
 package ALMA.scheduling.receivers;
 
+import java.util.logging.Logger;
 import org.omg.CosNotification.*;
 import ALMA.acsnc.*;
 import alma.acs.nc.*;
+
+import alma.acs.container.ContainerServices;
 
 import ALMA.pipelinescience.ScienceProcessingRequestEnd;
 import ALMA.pipelinescience.ScienceProcessingRequestEndHelper;
@@ -49,22 +52,30 @@ public class PipelineEventReceiver extends Consumer {
     private ALMAPipeline pipeline;
     private ALMAArchive archive;
     private ProjectManagerTaskControl pmTaskControl;
+    private Logger logger;
+    private ContainerServices containerServices;
 
-    public PipelineEventReceiver(ALMAPipeline p, ALMAArchive a) {
+    public PipelineEventReceiver(ContainerServices cs, ALMAPipeline p, 
+        ALMAArchive a) {
+        
         super(ALMA.pipelinescience.CHANNELNAME.value);
         this.pipeline = p;
         this.archive = a;
-        System.out.println("SCHEDULING: PipelineEventListener created.");
+        this.containerServices = cs;
+        this.logger = cs.getLogger();
+        logger.info("SCHEDULING: PipelineEventListener created.");
     }
+    /*
     public PipelineEventReceiver(ProjectManagerTaskControl pmtc,
                                     ALMAPipeline p, ALMAArchive a) {
 
         this(p, a);
         this.pmTaskControl = pmtc;
     }
+    */
 
     public void receive(ScienceProcessingRequestEnd e) {
-        System.out.println("SCHEDULING: PipelineEnd event received!");
+        logger.info("SCHEDULING: PipelineEnd event received!");
         //create a new ProcessPipelineEvent thread/class
     }
 
@@ -76,10 +87,10 @@ public class PipelineEventReceiver extends Consumer {
                 ScienceProcessingRequestEndHelper.extract(
                     structuredEvent.filterable_data[0].value);
             receive(e);
-            System.out.println("SCHEDULING: Got event from Pipeline");
+            logger.info("SCHEDULING: Got event from Pipeline");
         } catch(Exception e) {
-            System.out.println("SCHEDULING: Got something else from Pipeline");
-            System.out.println("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: Got something else from Pipeline");
+            logger.severe("SCHEDULING: "+e.toString());
         }
     }
     
