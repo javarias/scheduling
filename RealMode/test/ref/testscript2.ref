@@ -1,0 +1,17 @@
+ Running test
+The MasterScheduler has been constructed.
+The ArchiveProxy has been constructed.
+The PipelineProxy has been constructed.
+The TelescopeOperatorProxy has been constructed.
+The PIProxy has been constructed.
+The Dispatcher has been constructed.
+The Clock has been constructed.
+get scheduling policy
+get antenna info from archive
+The MasterScheduler has been initialized.
+Lockfile created! master_scheduler_lockfile
+Getting noncomplete sbs from archive
+MB Action started
+The MasterScheduler is executing.
+MB Action stopped
+The MasterScheduler has been cleaned up and is now stopped.

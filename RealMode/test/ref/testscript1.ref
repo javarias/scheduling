@@ -1,0 +1,47 @@
+ Running test
+Started
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+UID://X----------------/X--------SchedBlock 1.0
+SchedBlock created: <?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+
+SchedBlock Stored
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+UID://X----------------/X--------
+<?xml version="1.0"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+</ns1:SchedBlock> UID://X----------------/X--------
+SchedBlock retrieved
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+    <ns1:ObsProcedure/>
+</ns1:SchedBlock>
+UID://X----------------/X--------SchedBlock 1.0
+SchedBlock updated: <?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+    <ns1:ObsProcedure/>
+</ns1:SchedBlock>
+
+<?xml version="1.0"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X----------------/X--------" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+    <ns1:ObsProcedure />
+</ns1:SchedBlock> UID://X----------------/X--------
+SchedBlock retrieved
+SchedBlock removed
