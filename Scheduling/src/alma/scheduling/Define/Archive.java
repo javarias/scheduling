@@ -58,8 +58,8 @@ public interface Archive {
     public void storePipelineProcessingRequest(SciPipelineRequest ppr);
     
     //Session
-    public String storeSession(Session s);
-    public void updateSession(String id);
+    //public String storeSession(Session s);
+    //public void updateSession(String id);
     
     
     /*

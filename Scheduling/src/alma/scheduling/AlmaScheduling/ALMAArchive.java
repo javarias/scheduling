@@ -924,7 +924,8 @@ public class ALMAArchive implements Archive {
      * @throws Exception
      */
     private SB convertToSB2(XmlEntityStruct xml) throws Exception {
-        ALMASB sb = null;
+        SB sb = null;
+        /*
         //System.out.println(xml.xmlString);
         try {
             SchedBlock schedblock = (SchedBlock) 
@@ -939,6 +940,7 @@ public class ALMAArchive implements Archive {
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
         }
+        */
         return sb;
     }
 

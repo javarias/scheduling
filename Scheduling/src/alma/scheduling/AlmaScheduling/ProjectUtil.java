@@ -31,7 +31,10 @@ import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproposal.*;
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.execblock.*;
-import alma.entity.xmlbinding.valuetypes.*;
+import alma.entity.xmlbinding.valuetypes.TimeT;
+import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
+import alma.entity.xmlbinding.valuetypes.LongitudeT;
+import alma.entity.xmlbinding.valuetypes.LatitudeT;
 import alma.entities.commonentity.*;
 
 import alma.scheduling.Define.SchedulingException;

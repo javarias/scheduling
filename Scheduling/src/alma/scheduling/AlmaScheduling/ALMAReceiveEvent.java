@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
     private ALMAProjectManager manager;
-    private ALMAArchive archive;
+    //private ALMAArchive archive;
     private ALMAPipeline pipeline;
     private ALMAPublishEvent publisher;
 
@@ -68,7 +68,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.containerServices = cs;    
         this.logger = cs.getLogger();
         this.manager = m;
-        this.archive = a;
+        //this.archive = a;
         this.pipeline = p;
         this.publisher = pub;
     }
@@ -166,14 +166,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * event. If the SB is complete
      */
     private void updateSB(ControlEvent e) {
-        try {
+        //try {
             logger.info("SCHEDULING: updating the SB after event from control received");
             //archive.updateSB(e);
             manager.updateSB(e);
-        } catch(SchedulingException ex) {
-            logger.severe("SCHEDULING: error updating sb");
-            ex.printStackTrace();
-        }
+        //} catch(SchedulingException ex) {
+        //    logger.severe("SCHEDULING: error updating sb");
+        //    ex.printStackTrace();
+        //}
     }
 
 

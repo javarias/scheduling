@@ -17,8 +17,7 @@
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, * MA 02111-1307  USA
  * 
  * File OpenOT.java
  * 
@@ -58,7 +57,7 @@ public class OpenOT implements Runnable {
         } catch(Exception e) {
             e.printStackTrace();
         }*/
-       alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
+//       alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
     }
     
 }

@@ -38,12 +38,15 @@ import alma.scheduling.Define.SchedulingException;
 
 import alma.Control.ControlSystem;
 import alma.Control.ArrayController;
+
+import alma.ControlExceptions.*;
+/*
 import alma.Control.CSInactiveException;
 import alma.Control.InvalidAntennaIDException;
 import alma.Control.InvalidSubArrayIDException;
 import alma.Control.TooLateException;
 import alma.Control.ArrayNotIdleException;
-
+*/
 
 /**
  * @author Sohaila Lucero
@@ -63,8 +66,8 @@ public class ALMAControl implements Control {
         //alma/Control/ControlSystemHelper
             control_system = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("ControlSystem1"));
-            control_system.start();
-            control_system.initSys();
+            //control_system.start();
+            //control_system.initSys();
             logger.info("SCHEDULING: Got ControlSystem Component");
         } catch (Exception ce) {
             logger.severe("SCHEDULING: error getting ControlSystem Component.");
@@ -105,7 +108,7 @@ public class ALMAControl implements Control {
         ArrayController ctrl = getArrayController(subarrayId);
         try{
             ctrl.observeNow(sbId);
-        } catch(ArrayNotIdleException e1) {
+        } catch(ABSYErrorEx e1) {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();
         }
@@ -145,10 +148,10 @@ public class ALMAControl implements Control {
             controllers.add(ctrl);
             System.out.println("SCHEDULING: array controller id = "+ ctrl.id());
             return ctrl.id();
-        } catch(CSInactiveException e1) {
+        } catch(ANTErrorEx e1) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e1.toString());
-        } catch(InvalidAntennaIDException e2) {
+        } catch(INACTErrorEx e2) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e2.toString());
         }
@@ -161,8 +164,8 @@ public class ALMAControl implements Control {
         try {
             //ArrayController ctrl = getArrayController(subarrayId);
             control_system.destroySubArray(subarrayId);
-        } catch(CSInactiveException e1) {
-        } catch(InvalidSubArrayIDException e2){
+        } catch(INACTErrorEx e1) {
+        } catch(SUBAErrorEx e2){
         }
     }
 
