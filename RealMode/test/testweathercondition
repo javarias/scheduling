@@ -1,5 +1,6 @@
 #! /bin/bash
 
-abeansStart -endorsed ALMA.scheduling.define.WeatherCondition
+abeansStart -endorsed alma.scheduling.define.WeatherCondition
+#abeansStart -endorsed ALMA.scheduling.define.WeatherCondition
 
 

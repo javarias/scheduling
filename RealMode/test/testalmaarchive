@@ -1,6 +1,7 @@
 #! /bin/bash
 
 #echo " Running test"
-abeansStart -endorsed ALMA.scheduling.test.TestALMAArchive
+abeansStart -endorsed alma.scheduling.test.TestALMAArchive
+#abeansStart -endorsed ALMA.scheduling.test.TestALMAArchive
 
 

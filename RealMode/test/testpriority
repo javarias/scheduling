@@ -1,5 +1,6 @@
 #! /bin/bash
 
-abeansStart -endorsed ALMA.scheduling.define.Priority
+abeansStart -endorsed alma.scheduling.define.Priority
+#abeansStart -endorsed ALMA.scheduling.define.Priority
 
 

@@ -1,5 +1,6 @@
 #! /bin/bash
 
-abeansStart -endorsed ALMA.scheduling.define.STime
+abeansStart -endorsed alma.scheduling.define.STime
+#abeansStart -endorsed ALMA.scheduling.define.STime
 
 
