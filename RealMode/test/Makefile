@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.13 2003/08/28 14:42:05 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.14 2003/08/28 20:00:31 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -57,7 +57,7 @@ schedulingTest_EXTRAS =
 # ----------------------------
 SCRIPTS         = 
 SCRIPTS_L       = prologue \
-                   testscript9\
+                   TestDriver \
                   epilogue
 #                  testscript1 testscript2 testscript3 \
 #                  testscript4 testscript5 testscript6 \
@@ -89,6 +89,7 @@ endif
 # -------
 
 all:	do_all
+	@cp -f ref/ECCS/*.ref .
 	@echo " . . . 'all' done" 
 
 clean : clean_all 
