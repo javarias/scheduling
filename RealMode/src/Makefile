@@ -1,43 +1,31 @@
-#*************************************************************************
-# ALMA - Atacama Large Millimiter Array
-# (c) European Southern Observatory, 2002
-# Copyright by ESO (in the framework of the ALMA collaboration),
-# All rights reserved
+#*******************************************************************************
+# E.S.O. - ACS project
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
-# MA 02111-1307  USA
-#
-# "@(#) $Id: Makefile,v 1.1 2003/03/05 15:10:09 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.2 2003/03/05 21:45:48 sroberts Exp $"
 #
 # Makefile of ........
 #
 # who       when      what
 # --------  --------  ----------------------------------------------
-# sroberts  04/03/03 created
+# hsommer  26/11/02  created
 #
 
+#*******************************************************************************
+# This Makefile follows VLT Standards (see Makefile(5) for more).
+#*******************************************************************************
+# REMARKS
+#    None
+#------------------------------------------------------------------------
 
 DEBUG = on
+
 
 # 
 # IDL Files and flags
 # 
-IDL_FILES =
+IDL_FILES = 
 IDL_TAO_FLAGS =
 USER_IDL =
-
 
 #
 # Jarfiles and their directories
@@ -47,20 +35,9 @@ scheduling_DIRS =  alma
 scheduling_EXTRAS = 
 
 
-#
-# Scripts (public and local)
-# ----------------------------
-SCRIPTS         =
-SCRIPTS_L       = 
-
-#
-# Install Files
-#
-INSTALL_FILES = ../lib/master_scheduler.jar ../lib/simulator.jar ../lib/project_manager.jar ../lib/scheduler.jar
-
+INSTALL_FILES = ../lib/master_scheduler.jar ../lib/scheduler.jar ../lib/simulator.jar ../lib/project_manager.jar
 
 #>>>>> END OF standard rules
-
 
 
 #
@@ -82,6 +59,7 @@ else
     include $(MAKEDIR)/vltMakefile
 endif
 
+
 #
 # TARGETS
 # -------
@@ -102,5 +80,6 @@ install : install_all
 
 db : db_all
 	@echo " . . . ../DB done"
+
 
 #___oOo___
