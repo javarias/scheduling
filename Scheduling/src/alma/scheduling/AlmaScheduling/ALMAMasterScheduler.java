@@ -50,7 +50,7 @@ import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.scheduling.Scheduler.Scheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
-
+import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 /**
  * @author Sohaila Lucero
  */
@@ -107,6 +107,9 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void initialize(ContainerServices cs) 
         throws ComponentLifecycleException {
     
+        //Start the MasterScheduler Thread! 
+        this.msThread.start();
+        
         this.containerServices = cs;
         this.instanceName = containerServices.getComponentInstanceName();
         this.logger = containerServices.getLogger();
@@ -130,8 +133,9 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public void execute() throws ComponentLifecycleException {
         //Start the project manager's thread!
-        Thread pm_thread = new Thread(manager);
-        pm_thread.start();
+        Thread pmThread = new Thread(manager);
+        manager.setProjectManagerTaskControl(new ProjectManagerTaskControl(msThread, pmThread));
+        pmThread.start();
 
         // Connect to the Control NC
         eventreceiver = new ALMAReceiveEvent(containerServices, archive, 

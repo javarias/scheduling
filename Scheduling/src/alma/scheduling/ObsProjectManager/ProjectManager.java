@@ -29,6 +29,7 @@ package alma.scheduling.ObsProjectManager;
 import java.util.logging.Logger; 
 
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.TaskControl;
 
 /**
  * @author Sohaila Lucero
@@ -40,6 +41,8 @@ public class ProjectManager implements Runnable,
     protected Logger logger;
     // True if the scheduling subsystem has been stopped
     protected boolean stopCommand;
+
+    protected ProjectManagerTaskControl pmTaskControl;
 
     public ProjectManager() {
         System.out.println("I'm created!");
@@ -66,6 +69,22 @@ public class ProjectManager implements Runnable,
         return 0;
     }
      
+    /** 
+     * Sets the TaskControl object for the PM
+     *
+     * @param pmtc The ProjectManagerTaskControlObject
+     */
+    public void setProjectManagerTaskControl(ProjectManagerTaskControl pmtc) {
+        this.pmTaskControl = pmtc;
+    }
 
+    /**
+     * Returns the TaskControl object of the PM
+     * 
+     * @return ProjectManagerTaskControl
+     */
+    public TaskControl getProjectManagerTaskControl() {
+        return pmTaskControl;
+    }
     
 }

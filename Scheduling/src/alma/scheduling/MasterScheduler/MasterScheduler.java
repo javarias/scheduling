@@ -29,6 +29,7 @@ package alma.scheduling.MasterScheduler;
 import java.util.logging.Logger;
 
 import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Event.Publishers.PublishEvent;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 
@@ -46,11 +47,16 @@ public class MasterScheduler implements Runnable {
     //The scheduling notification channel
     protected PublishEvent publisher;
 
+    protected Thread msThread;
+    protected TaskControl msTaskControl;
+
     /**
      * Constructor
      */
     public MasterScheduler() {
         this.stopCommand = false;
+        this.msThread = new Thread(this);
+        this.msTaskControl = new TaskControl(msThread);
     }
     
     /**

@@ -31,6 +31,7 @@ import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Status;
+import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
@@ -141,5 +142,9 @@ public class ProjectManagerSimulator
 			error(err.toString());
 		}
 	}
+
+    public TaskControl getProjectManagerTaskControl() {
+        return null;
+    }
 	
 }

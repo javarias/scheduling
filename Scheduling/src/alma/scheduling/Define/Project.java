@@ -39,26 +39,26 @@ import java.io.PrintStream;
 public class Project implements ProjectMember {
 	
 	// The ObsProject-id that identifies this Project.
-	private String obsProjectId;
+	protected String obsProjectId;
 	// The proposal-id that is associated with this Project. 
-	private String proposalId;
+	protected String proposalId;
 	// The name of this Project.
-	private String projectName;
+	protected String projectName;
 	// The PI that is associated with this Project.
-	private String PI;
+	protected String PI;
 	// The time this project component was created. 
-	private DateTime timeOfCreation;
+	protected DateTime timeOfCreation;
 	// The time this project component was last updated.
-	private DateTime timeOfUpdate;
+	protected DateTime timeOfUpdate;
 	// The status of this project component.
 	protected Status status;
 	
 	// A reference to the obsProgram that belongs to this Project.
-	private Program program;
+	protected Program program;
 		
 	// The time at which a breakpoint was entered.  If the Project is not
 	// in a breakpoint, then breakpointTime is null.
-	private DateTime breakpointTime;
+	protected DateTime breakpointTime;
 
 	/**
 	 * Construct an Project.

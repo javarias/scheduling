@@ -21,37 +21,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File ProjectManager.java
+ * File ProjectManagerTaskControl.java
  */
- 
-package alma.scheduling.Define;
 
-/**
- * The ProjectManager interface defines public methods needed by various
- * components, both real and simulated.
- * 
- * @version 1.30 May 10, 2004
- * @author Allen Farris
- */
-public interface ProjectManager {
+package alma.scheduling.ObsProjectManager;
 
-	/**
-	 * Return true if and only if the project to which the specified SB
-	 * belongs is a new project, i.e., one that has no SBs that have ever 
-	 * been executed. 
-	 * @param unit
-	 * @return
-	 */
-	public boolean newProject(SB unit);
-	
-	/**
-	 * Return the number of SBs that remain to be executed in the project
-	 * to which the specified SB belongs.
-	 * @param unit
-	 * @return
-	 */
-	public int numberRemaining(SB unit);
-	
+import alma.scheduling.Define.TaskControl;
 
-    public TaskControl getProjectManagerTaskControl();
+public class ProjectManagerTaskControl extends TaskControl {
+    
+    public ProjectManagerTaskControl(Thread msThread, Thread pmThread){
+        super(msThread);
+        super.setTask(pmThread);
+    }
+    
 }
+

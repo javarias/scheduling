@@ -28,7 +28,9 @@ package alma.scheduling.AlmaScheduling;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import alma.scheduling.Define.SB;
 import alma.scheduling.Define.Project;
+import alma.scheduling.Define.Program;
 
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.schedblock.*;
@@ -57,32 +59,62 @@ public class ALMAProject extends Project {
                     obs.getVersion(), 
                         obs.getPI() );
         this.obsProject = obs;
-        getSbsInProject();
+        this.sbs = getSBRefs(obsProject.getObsProgram().getObsUnitSetTChoice());
+        //System.out.println("SB Ref size in project ="+sbs.length);
         System.out.println("In ALMAProject constructor");
+
+        createProgram();
     }
 
-    private void getSbsInProject() {
-        obsProgram = obsProject.getObsProgram();
-        
-        sbs = obsProgram.getObsUnitSetTChoice().getSchedBlockRef();
-        /*
-        if(sbs == null ){
-            System.out.println("sbs null");
+    private void createProgram() {
+        Program p = new Program("No ID available yet");
+        p.setProject(this);
+        for(int i=0; i < sbs.length; i++) {
+            p.addMember(new SB(sbs[i].getEntityId()));
         }
-        if(sbs.length ==0) {
-            System.out.println("sbs 0 length");
-        }
-        */
-        for(int i=0; i < sbs.length; i++ ) {
-            String id = sbs[i].getEntityId();
-            System.out.println("In ALMAProject: "+id);
-            //get sbs from archive & create ALMASBs
-        }
+        setProgram(p);
+    }
 
+    private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) {
+        if(choice.getObsUnitSetCount() == 0) {
+            return choice.getSchedBlockRef();
+        } else {
+            Vector tmpSBRefs = new Vector();
+            ObsUnitSetT[] sets = choice.getObsUnitSet();
+            for(int i=0; i < sets.length; i++) {
+                tmpSBRefs.add(getSBRefs(sets[i].getObsUnitSetTChoice()));
+            }
+            Vector tmpsbs = new Vector();
+            for(int j=0; j < tmpSBRefs.size(); j++){
+                SchedBlockRefT[] refs = (SchedBlockRefT[])tmpSBRefs.elementAt(j);
+                for(int k=0; k < refs.length; k++) {
+                    tmpsbs.add(refs[k]);
+                }
+            }
+            SchedBlockRefT[] sbRefs = new SchedBlockRefT[tmpsbs.size()];
+            for(int l=0; l < tmpsbs.size(); l++){
+                sbRefs[l] = (SchedBlockRefT)tmpsbs.elementAt(l);
+            }
+            return sbRefs;
+        }
+    }
+
+    public String[] getSBIds() {
+        String[] ids = new String[sbs.length];
+        for(int i=0; i< sbs.length; i++) {
+            ids[i] = sbs[i].getEntityId();
+        }
+        return ids;
+    }
+
+    /*
+    private void getSbsInProject() {
+        //Vector sbRefs = new Vector();
+        obsProgram = obsProject.getObsProgram();
         Vector tmp_sbs=new Vector();
         
         obsUnitSets = obsProgram.getObsUnitSetTChoice().getObsUnitSet();
-        /*
+        System.out.println("Project has "+obsUnitSets.length+" ObsUnitSets");
         if(obsUnitSets == null ){
             System.out.println("obsUnitSets null");
         }
@@ -91,7 +123,6 @@ public class ALMAProject extends Project {
         } else {
             System.out.println("obsUnitSets length="+ obsUnitSets.length);
         }
-        */
         for(int i=0; i < obsUnitSets.length; i++) {
             //check and see if it has more obsUnitSets or sbs
             ObsUnitSetT[] tmp1 = obsUnitSets[i].getObsUnitSetTChoice().getObsUnitSet();
@@ -101,8 +132,9 @@ public class ALMAProject extends Project {
             for(int x=0; x<tmp2.length; x++){
                 tmp_sbs.add(tmp2[x]);
             }
-            //System.out.println(tmp_sbs.size());
+            System.out.println("tmp_sbs size == "+tmp_sbs.size());
         }
         
     }
+    */
 }

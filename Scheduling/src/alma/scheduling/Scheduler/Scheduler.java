@@ -363,8 +363,8 @@ public class Scheduler implements Runnable {
                     + config.getAction() + ")"); 
     		}
     	} else {
-            short[] idleantennas = config.getControl().getIdleAntennas();
             try {
+                short[] idleantennas = config.getControl().getIdleAntennas();
                 SB selectedSB = config.getQueue().get(bestSBId);
         		// We've got somthing to schedule.
                 // try and create a sub array
@@ -375,6 +375,9 @@ public class Scheduler implements Runnable {
                 //finished executing, get rid of the subarray
                 config.getControl().destroySubarray(subarrayid);
             } catch (Exception e) {
+                //clear queue! 
+                config.getQueue().clear();
+                config.getProjectManager().getProjectManagerTaskControl().interruptTask();
                 logger.severe("SCHEDULING: error!");
                 e.printStackTrace();
                 return true;

@@ -27,6 +27,7 @@ package alma.scheduling.AlmaScheduling;
 
 //import java.util.logging.Logger;
 
+import java.util.Vector;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
@@ -34,6 +35,7 @@ import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Project;
 import alma.scheduling.ObsProjectManager.ProjectManager;
+import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  *
@@ -52,14 +54,6 @@ public class ALMAProjectManager extends ProjectManager {
         this.archive = a;
         this.sbQueue = q;
         pollArchive();
-        //temporary!
-        try {
-            System.out.println("Getting all projects in PM");
-            Project[] projs = archive.getAllProject();
-            System.out.println("projs length = "+projs.length);
-        }catch(Exception e) {
-            e.toString();
-        }
     }
 
     /**
@@ -86,33 +80,65 @@ public class ALMAProjectManager extends ProjectManager {
      *
      */
     private void pollArchive() {
-        
+        logger.info("SCHEDULING: Polling ARCHIVE");
+        boolean sb_present = false;
         try {
-            SB[] sbs = archive.getAllSB();
-            System.out.println("sbs length = "+ sbs.length);
             String[] ids = sbQueue.getAllIds();
-            boolean sb_present = false;
-            for(int i=0; i< sbs.length; i++){
+            logger.info("SCHEDULING: sb # in queue = "+ids.length);
+            Project[] projs = archive.getAllProject();
+            logger.info("SCHEDULING: projects = "+projs.length);
+            ALMASB[] sbs = getSBsFromProjects(projs);
+            logger.info("SCHEDULING: total SBs = "+sbs.length);
+            for(int i=0; i< sbs.length; i++) {
                 String tmp_id = sbs[i].getId();
-                if(ids.length == 0) {
+                if(ids.length == 0) { //nothing in the SBQueue
                     sb_present = false;
                 }
                 for(int j=0; j< ids.length; j++) {
-                    if(tmp_id.equals(ids[j])) {
+                    if(tmp_id.equals(ids[j])) { // SB already in queue
                         sb_present = true;
                     } else {
-                        sb_present = false;
+                        sb_present = false; //not in queue
                     }
                 }
-                if(!sb_present) {
+                if(!sb_present) { //not already in queue so add it to queue.
+                    System.out.println("SCHEDULING: sb false; adding to queue");
                     sbQueue.add(sbs[i]);
                 }
             }
-        } catch (Exception e) {
-            logger.severe("SCHEDULING: Error polling the archvie.");
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
+        }catch(Exception e) {
+            e.toString();
         }
-        
     }
+
+
+    /** 
+     * Get the SB ids from all the projects and retrieve the SB objects from 
+     * the archive.
+     *
+     * @param ALMAProject[]
+     * @return ALMASB[]
+     */
+    private ALMASB[] getSBsFromProjects(Project[] projects) {
+        logger.info("SCHEDULING: Getting SBs from projects");
+        Vector tmpsbs = new Vector();
+        for(int i=0; i< projects.length; i++) {
+            String[] ids = ((ALMAProject)projects[i]).getSBIds();
+            //TODO Eventaully change the above so that I get the SBs from
+            //     the 'Project' using project.getProgram().getAllSBs()
+            for(int j=0; j < ids.length; j++){
+                try {
+                    tmpsbs.add(archive.getSB(ids[j]));
+                }catch(Exception e) {}
+            }
+        }
+        System.out.println("SB total from all projects = "+tmpsbs.size());
+        ALMASB[] schedblocks = new ALMASB[tmpsbs.size()];
+        for(int i=0; i < tmpsbs.size();i++){
+            schedblocks[i] = (ALMASB)tmpsbs.elementAt(i);
+        }
+        return schedblocks;
+    }
+
+    //public void setProjectManagerTaskControl
 }

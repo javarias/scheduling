@@ -126,6 +126,7 @@ public class ALMAArchive implements Archive {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
         }
+        logger.info("RETURNING with projects");
         return projects;
     }
 
@@ -490,7 +491,7 @@ public class ALMAArchive implements Archive {
      */
     private Project convertToProject2(XmlEntityStruct xml) throws Exception {
         ALMAProject proj = null;
-        //System.out.println("Printing!" +xml.xmlString);
+        //System.out.println(xml.xmlString);
         try {
             ObsProject obsProj= (ObsProject)
                 entityDeserializer.deserializeEntity(xml, Class.forName(
