@@ -93,17 +93,7 @@ public class ALMAPipeline implements PipelineProxy {
             try {
                 sciencePipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
                     containerServices.getComponent("SCIENCE_PIPELINE"));
-                //XmlEntityStruct entity = EntitySerializer.getEntitySerializer(logger).serializeEntity(request);
-                //entity.timeStamp = timeStamp;
-                //logger.info("ALMAPipeline:"+ entity.xmlString);
-                //logger.info("ALMAPipeline:"+ entity.timeStamp);
-                /*
-                logger.info("ALMAPipeline:"+ request.xmlString);
-                logger.info("ALMAPipeline:"+ request.timeStamp);
-                logger.info("ALMAPipeline:"+ requestRes);
-                */
                 requestRes =sciencePipelineComp.processRequest(request);
-                //requestRes = sciencePipelineComp.processRequest(entity);
                     
             } catch (Exception e) {
                 logger.severe("SCHEDULING: Error connecting to PIPELINE!");

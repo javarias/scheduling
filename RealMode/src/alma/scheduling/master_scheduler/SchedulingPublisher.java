@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
+import alma.acs.component.client.ComponentClient;
 
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
@@ -51,22 +52,17 @@ public class SchedulingPublisher {
 	 * @param container The object that implements the container services.
 	 */
 	public SchedulingPublisher (boolean isSimulation, ContainerServices container) {
+        /*
+        this.supplier = new SimpleSupplier(alma.scheduling.CHANNELNAME.value,
+                alma.scheduling.NothingCanBeScheduledEvent.class);
+        */
         this.logger = container.getLogger();
 		logger.info("SCHEDULING: Scheduling Publisher has been created");
         /* Scheduling NC stuff */
         sched_nc = AbstractNotificationChannel.createNotificationChannel(
                 AbstractNotificationChannel.CORBA,
                     alma.scheduling.CHANNELNAME.value);
-        /*
-        String[] names = new String[3];
-        names[SimpleSupplier.CHANNELPOS] = alma.scheduling.CHANNELNAME.value;
-        names[SimpleSupplier.TYPEPOS] = 
-            new String("alma.scheduling.NothingCanBeScheduledEvent");
-        names[SimpleSupplier.HELPERPOS] = 
-            new String("alma.scheduling.NothingCanBeScheduledEventHelper");
-
-        supplier = new SimpleSupplier(names);
-        */
+                
 	}
 
     /** 
@@ -88,8 +84,7 @@ public class SchedulingPublisher {
             NothingCanBeScheduledEvent event = 
                         new NothingCanBeScheduledEvent(
                             NothingCanBeScheduledEnum.OTHER, 0, reason);
-            //sched_nc.publishEvent()
-            sched_nc.publish(event);
+            //sched_nc.publish(event);
             logger.info("SCHEDULING: Event sent.");
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not publish event. "+e.toString());
@@ -100,8 +95,8 @@ public class SchedulingPublisher {
         try {
             NothingCanBeScheduledEvent event = 
                         new NothingCanBeScheduledEvent(sched_enum, 0 , comment);
-            //sched_nc.publishEvent()
             sched_nc.publish(event);
+            //supplier.publishEvent(event);
             logger.info("SCHEDULING: Event sent.");
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not publish event. "+e.toString());
@@ -119,11 +114,37 @@ public class SchedulingPublisher {
      * Shuts down the scheduling notification channel.
      */
     public void shutdown() {
+        logger.info("SCHEDULING: Shutting down SCHEDULING notification channel.");
+        //supplier.disconnect();
         sched_nc.deactivate();
     }
 	
 	public static void main(String[] args) {
-        
+        /*
+        try {
+            ComponentClient client = new ComponentClient(null,
+                System.getProperty("ACS.manager"), 
+                    "Scheduling publisher test");
+            ContainerServices cs = client.getContainerServices();
+            SchedulingPublisher sp = new SchedulingPublisher(false, cs);
+            sp.publishEvent(NothingCanBeScheduledEnum.NOTHING_VISIBLE,
+                "nothing to see!");
+            Thread.sleep(2000);
+            sp.publishEvent(NothingCanBeScheduledEnum.BAD_WEATHER,
+                "Thunder Storms!");
+            Thread.sleep(2000);
+            sp.publishEvent(NothingCanBeScheduledEnum.INSUFFICIENT_RESOURCES,
+                "all antennas in maintence!");
+            Thread.sleep(2000);
+            sp.publishEvent(NothingCanBeScheduledEnum.NOT_OPTIMAL,
+                "wait 2 hours and it'll be better!");
+            Thread.sleep(2000);
+            sp.publishEvent("Unknown Reason!");
+            
+            sp.shutdown();
+            alma.acs.nc.Helper.disconnect();
+        } catch(Exception e){}
+        */
 	}
 }
 

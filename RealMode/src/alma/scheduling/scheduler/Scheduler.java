@@ -39,8 +39,6 @@ import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
 import alma.entity.xmlbinding.schedblock.SchedBlock;
-//import alma.obsprep.bo.ObjectFactory;
-
 
 /**
  * Scheduler.java

@@ -60,7 +60,6 @@ public class ALMADispatcher implements ControlProxy {
     private ArrayController arrayControllerComp;
     private ControlSystem controlSysComp;
     private Logger logger;
-    //private ControlReceiverEvent c_event;
     private ProjectManagerTaskControl pmtc;
 
 	//private Vector schedBlocks;

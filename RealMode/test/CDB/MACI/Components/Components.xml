@@ -39,6 +39,11 @@
                             Code="ReceivingDataManager"
                             Type="IDL:alma/TelCalReceivedNC/ReceivingDataManager:1.0"
                              Container="bilboContainer"/>
+
+     <_ Name="TELCAL_ARCHIVE"
+                            Code="alma.telcal.TelCalArchiveImpl.TelCalArchiveHelper"
+                            Type="IDL:alma/telcal/TelCalArchive:1.0"
+                            Contianer="frodoContainer"/>
                              
 
       <_ Name="SohailaTestComp"  

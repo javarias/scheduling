@@ -59,7 +59,7 @@ public class FocusReducedEventReceiver extends Consumer {
             FocusReducedEvent e = 
                 FocusReducedEventHelper.extract(
                     structuredEvent.filterable_data[0].value);
-            logger.info("SCHEDULING: Got FocusReduced event");
+            logger.info("SCHEDULING: Got FocusReducedEvent event");
             receive(e);
         } catch(Exception e) {
             logger.severe("SCHEDULING: got something else "+e.toString());

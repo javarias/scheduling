@@ -13,4 +13,6 @@ PROLOGUE prologue
 12 test12 testalmaarchive
 13 test13 testschedreceivers
 14 test14 testprojectqueue
+15 test15 testschedpublisher
+16 test16 testcontrolsimulator
 EPILOGUE epilogue

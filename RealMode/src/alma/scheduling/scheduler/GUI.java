@@ -144,7 +144,7 @@ public class GUI extends JFrame {
         picturePanel.add(new JLabel());
         ImageIcon almaImage = new ImageIcon(controller.getImage("alma_logo.jpg"));
         JLabel pl = new JLabel(almaImage);
-        pl.setBackground(Color.blue);
+        //pl.setBackground(Color.blue);
         picturePanel.add(pl, BorderLayout.EAST);
         ////////////////////////////
         mainPanel.add(picturePanel, BorderLayout.NORTH);

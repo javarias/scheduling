@@ -82,7 +82,7 @@ public class ControlSimulator implements ControlProxy {
         }
         eb.setExecBlockEntityT(eb_entity);
         eb.setSchedBlockId(id);
-                            
+        logger.info("SCHEDULING SIMULATOR: about to create control start event");
         // create a control event to say sb has started 
         // and then an event to say its completed
         control_event = new ExecBlockEvent(EventReason.START,
