@@ -28,7 +28,7 @@
                 -->
 
       <!-- ********* MASTER COMPONENTS *********** -->                
-
+<!--
       <_ Name="SCHEDULINGMASTERCOMPONENT"
             Code="alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper"
             Type="IDL:alma/ACS/MasterComponent:1.0"
@@ -46,6 +46,7 @@
             Type="IDL:alma/archive/ArchiveSubsystemMasterIF:1.0"
             Container="java"
             Default="true"/>
+-->            
             
       <!-- ************ ACS & ARCHIVE *********** -->
       
@@ -72,9 +73,8 @@
             Type="IDL:alma/acsnc/ACSEventAdmin:1.0" 
             Container="python"
 			Default="true"/>    
-
       <!-- ************ EXEC COMPS ************** -->
-
+<!--
       <_ Name="EXEC_OPERATORSERVER"
 	    	Code="alma.exec.OperatorServerImpl.OperatorServerHelper"
 		    Type="IDL:alma/exec/Operator:1.0"
@@ -104,44 +104,53 @@
 	    	Code="alma.exec.UserAdminImpl.UserAdminHelper"
     		Type="IDL:alma/exec/UserAdmin:1.0"
 		    Container="java"/>  
-      
+--> 
       <!-- ************************************** -->
       <_ Name="MasterScheduler"
             Code="alma.scheduling.AlmaScheduling.MasterSchedulerIFHelper"
             Type="IDL:alma/scheduling/MasterSchedulerIF:1.0"
             Container="java" 
             Default="true" />
-
+<!--
       <_ Name="OBS_PROJ_REP"
             Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
             Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
             Container="java"/>
-
+-->
       <_ Name="SCIENCE_PIPELINE" 
+            Code="Acssim.Servants.Simulator"
+            Type="IDL:alma/pipelinescience/SciencePipeline:1.0"
+            Container="python"/>
+      <!--
             Code="alma.pipelinescience.components.SciencePipelineHelper"
             Type="IDL:alma/pipelinescience/SciencePipeline:1.0"
-            Container="java"/>
-
+            Container="java"
+-->
+<!--      
       <_ Name="ControlStatus1" 
+            Code="Acssim.Servants.Simulator"
+            Type="IDL:alma/Control/ControlStatus:1.0"
+            Container="python" />
+            
             Code="alma.Control.masterController.ControlStatusHelper"
             Type="IDL:alma/Control/ControlStatus:1.0"
             Container="java" />
-            
+-->            
       <_ Name="ControlSystem1" 
-            Code="alma.Control.masterController.ControlSystemHelper"
+            Code="Acssim.Servants.Simulator"
             Type="IDL:alma/Control/ControlSystem:1.0"
-            Container="java" />
+            Container="python" />
             
       <_ Name="ArrayController1" 
-            Code="alma.Control.arrayInterfaces.ArrayControllerHelper"
+            Code="Acssim.Servants.Simulator"
             Type="IDL:alma/Control/ArrayController:1.0"
-            Container="java"/>
+            Container="python"/>
 
+ <!--
       <_ Name="DelayServer" 
             Code="alma.Control.DelayServerImpl.DelayServerHelper"
             Type="IDL:alma/Control/DelayServer:1.0"
             Container="java"/>
- <!--
      <_ Name="OBSERVATION_CONTROL_SIM"
              Code="alma.Correlator.ObservationControl"
              Type="IDL:alma/Correlator/ObservationControl:1.0"
