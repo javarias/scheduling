@@ -285,7 +285,27 @@ public class SimulationPropertiesTab extends JScrollPane {
     //////////////////////////////////////////////////
     
     public void setBeginTime(String s) { 
-        beginTime.setText(s);
+        if(s.charAt(4) != '-') {
+            System.out.println("ERROR at 4");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(7) != '-') {
+            System.out.println("ERROR at 7");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(10) != 'T') {
+            System.out.println("ERROR at 10");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(13) != ':') {
+            System.out.println("ERROR at 13");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(16) != ':') {
+            System.out.println("ERROR at 16");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.length() != 19) {
+            System.out.println("ERROR: wrong size ");
+            System.out.println("xxxx-xx-xxTxx:xx:xx");
+        } else {
+           beginTime.setText(s);
+        }
     }
     public void setEndTime(String s) { 
         endTime.setText(s);
