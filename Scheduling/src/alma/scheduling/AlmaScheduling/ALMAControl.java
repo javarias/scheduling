@@ -62,7 +62,7 @@ public class ALMAControl implements Control {
         try {
         //alma/Control/ControlSystemHelper
             control_system = alma.Control.ControlSystemHelper.narrow(
-                containerServices.getComponent("ControlSystem"));
+                containerServices.getComponent("ControlSystem1"));
             control_system.start();
             control_system.initSys();
             logger.info("SCHEDULING: Got ControlSystem Component");

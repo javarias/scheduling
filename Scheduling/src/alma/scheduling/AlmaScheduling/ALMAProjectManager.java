@@ -38,10 +38,12 @@ import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.ControlEvent;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.ProjectQueue;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
@@ -234,12 +236,17 @@ public class ALMAProjectManager extends ProjectManager {
         /**
           * For R2 there is the assumption that there is only one SB inside one ObsUnitSet
           * which is inside one ObsProgram.
+          * Need something recursive here!
           */
         
         //top level obs unit set which is actually the ObsProgram.
         ObsUnitSetStatusTChoice choice = ps.getObsProgramStatus().getObsUnitSetStatusTChoice(); 
         //ObsUnitSet
-        ObsUnitSetStatusT[] sets = choice.getObsUnitSet();
+        ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
+        for(int i=0; i < sets.length; i++) {
+            SBStatusT[] sbs = parseObsUnitSetStatus(sets[i]);
+        }
+        /*
         for(int i=0; i< sets.length; i++){
             System.out.println("ObsUnitSet part id = "+sets[i].getEntityPartId());
             SBStatusT[] sbs = sets[i].getObsUnitSetStatusTChoice().getSB();
@@ -258,11 +265,10 @@ public class ALMAProjectManager extends ProjectManager {
                     e_ref.setEntityId(eb.getId());
                     exec.setExecBlockRef(e_ref);
                     exec.setSubarrayId(eb.getSubarrayId());
-                    /*
                     if(eb.getStatus().isComplete()) {
                         exec.setStatus.setState(StateType.COMPLETE);
                     }
-                    */
+                    
                     ExecStatusT[] execs = new ExecStatusT[1];
                     execs[0] = exec;
                     SBStatusTSequence seq = new SBStatusTSequence();
@@ -272,11 +278,31 @@ public class ALMAProjectManager extends ProjectManager {
                 }
             }
         }
+        */
         try {
             archive.updateProjectStatus(ps);
         } catch(Exception e) {
         }
         return ids;
+    }
+
+
+
+    public SBStatusT[] parseObsUnitSetStatus(ObsUnitSetStatusT set) {
+        logger.info("SCHEDULING: Set PartID = "+set.getEntityPartId());
+        SBStatusT[] sbs = null;
+        ObsUnitSetStatusT[] obs = null;
+        if(set.getObsUnitSetStatusTChoice().getObsUnitSetStatusCount() > 0) {
+            logger.info("SCHEDULING: more than one obs unit set status in PS");
+            obs = set.getObsUnitSetStatusTChoice().getObsUnitSetStatus();
+            for(int i=0; i< obs.length; i++) {
+                sbs = parseObsUnitSetStatus(obs[i]);
+            }
+        }
+        if(set.getObsUnitSetStatusTChoice().getSBStatusCount() > 0) {
+            sbs = set.getObsUnitSetStatusTChoice().getSBStatus();
+        }
+        return sbs;
     }
 
     /**
@@ -286,6 +312,20 @@ public class ALMAProjectManager extends ProjectManager {
         NothingCanBeScheduledEvent event = new NothingCanBeScheduledEvent(
                 reason, (new DateTime(System.currentTimeMillis())).toString(), "");
         publisher.publish(event);
+    }
+
+
+    /**
+     * Updates the scheduling block with the info gotten from the control
+     * event. If the SB is complete
+     */
+    public void updateSB(ControlEvent e) {
+        try {
+            archive.updateSB(e);
+        }catch(SchedulingException ex) {
+            logger.severe("SCHEDULING: error updating sb");
+            ex.printStackTrace();
+        }
     }
 
     

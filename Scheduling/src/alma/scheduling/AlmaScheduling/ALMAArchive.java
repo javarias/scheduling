@@ -151,7 +151,7 @@ public class ALMAArchive implements Archive {
             throw new SchedulingException(e);
         }
         */
-        String ps_id = p.getProjectStatusRefIdWorkaround();
+        String ps_id = p.getProjectStatusRef().getEntityId();
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
             //System.out.println("PROJECT STATUS: "+ xml.xmlString);
@@ -660,6 +660,7 @@ public class ALMAArchive implements Archive {
     // PipelineProcessingRequest
 
     public void storePipelineProcessingRequest(SciPipelineRequest p) {
+        /*
         try {
             ALMAPipelineProcessingRequest ppr = (ALMAPipelineProcessingRequest)p;
             XmlEntityStruct ppr_struct = ppr.getPipelineProcessingRequestStruct();
@@ -672,6 +673,7 @@ public class ALMAArchive implements Archive {
             logger.severe("SCHEDULING: ArchiveInternalError");
             e.printStackTrace();
         }
+        */
     }
 
     /**
@@ -701,6 +703,7 @@ public class ALMAArchive implements Archive {
     }
 
     //Session
+    /*
     public String storeSession(Session s) {
         String id = null;
         try {
@@ -727,10 +730,9 @@ public class ALMAArchive implements Archive {
         }
         return id;
     }
-
+*/
     /**
       * Session store function for R2
-      */
     public String storeSession(alma.entity.xmlbinding.session.Session s) {
         String id = null;
         try{
@@ -754,10 +756,10 @@ public class ALMAArchive implements Archive {
         }
         return id;
     }
+      */
 
     /**
       * Query for R2
-      */ 
     public alma.entity.xmlbinding.session.Session querySession(ExecBlockEvent ebe) {
         String query = "/se:Session/se:Execution/se:ExecBlockReference[@entityId='"+ebe.execID+"']";
         String schema = "Session"; 
@@ -817,10 +819,10 @@ public class ALMAArchive implements Archive {
         }
         return session;
     }
+      */ 
     
     /**
       * update session for R2
-      */
     public void updateSession(alma.entity.xmlbinding.session.Session s) {
         try {
             XmlEntityStruct xml1 = archOperationComp.retrieve(s.getSessionEntity().getEntityId());
@@ -846,20 +848,13 @@ public class ALMAArchive implements Archive {
             } 
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
-               /*
-                try {
-                //    tmp_projects.add(convertToProject1(res));
-                }catch(Exception e) {
-                    logger.severe("SCHEDULING: "+e.toString());
-                //    throw new SchedulingException (e);
-                }
-                */
             }
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             e.printStackTrace();
         }
     }
+      */
     ///////////////////////////////////////////////////////////////////////////
     
     /**
@@ -997,6 +992,7 @@ public class ALMAArchive implements Archive {
     }
 
 
+    /*
     private Session convertToSession1(QueryResult res) throws Exception {
         String session_id = res.identifier;
         Session session=null;
@@ -1037,7 +1033,7 @@ public class ALMAArchive implements Archive {
         }
         return session;
     }
-
+*/
     private ProjectStatus convertToProjectStatus1(QueryResult res) throws Exception {
         String ps_id = res.identifier;
         ProjectStatus ps = null;

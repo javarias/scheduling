@@ -27,12 +27,12 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
-import alma.entity.xmlbinding.session.*;
 import alma.entity.xmlbinding.obsproject.*;
+import alma.entity.xmlbinding.obsproposal.*;
 import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.execblock.*;
 import alma.entity.xmlbinding.valuetypes.*;
-import alma.entities.commonentity.EntityT;
-import alma.entities.commonentity.EntityRefT;
+import alma.entities.commonentity.*;
 
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.Project;
@@ -82,7 +82,7 @@ import java.util.ArrayList;
  * 		</ul>  
  * </ul> 
  * 
- * @version 1.00 Sep 13, 2004
+ * @version 2.2 Oct 15, 2004
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -95,7 +95,8 @@ public class ProjectUtil {
 	 * @param source The specified ObservedSession object from which the Session object is derived.
 	 * @return The new created Session object.
 	 */
-	static public Session createSession(ObservedSession source) {
+		/*
+	 static public Session createSession(ObservedSession source) {
 		Session target = new Session ();
 
 		// Create the entityId and add it to the session.
@@ -140,7 +141,9 @@ public class ProjectUtil {
 			target.addSessionSequence(seq);
 		}
 		return target;
+		return null;
 	}
+		*/
 	
 	/**
 	 * Check the specified project for internal consistency.
@@ -224,11 +227,11 @@ public class ProjectUtil {
 			return;
 		if (s.length() != 9 || s.charAt(0) != 'X')
 			throw new SchedulingException ("Invalid format for EntityPartId (" + s + ")");
-        //Sohaila: commented out coz of error 
-		//for (int i = 1; i < 9; ++i) {
-		//	if (s.charAt(i) < '0' || s.charAt(i) > '9')
-		//		throw new SchedulingException ("Invalid format for EntityPartId (" + s + ")");
-		//}
+		for (int i = 1; i < 9; ++i) {
+			if (!((s.charAt(i) >= '0' && s.charAt(i) <= '9') ||
+				  (s.charAt(i) >= 'a' && s.charAt(i) <= 'f')))
+				throw new SchedulingException ("Invalid format for EntityPartId (" + s + ")");
+		}
 	}
 	
 	/**
@@ -242,14 +245,14 @@ public class ProjectUtil {
 		if ((s.length() != 33) || (!s.startsWith("uid://X")) ||
 				(s.charAt(23) != '/' || s.charAt(24) != 'X'))
 			throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
-        //Sohaila: commented out coz of error 
-		/*for (int i = 7; i < 23; ++i) {
-			if (s.charAt(i) < '0' || s.charAt(i) > '9')
+		for (int i = 7; i < 23; ++i) {
+			if (!((s.charAt(i) >= '0' && s.charAt(i) <= '9') ||
+				  (s.charAt(i) >= 'a' && s.charAt(i) <= 'f')))
 				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
 		}
-        */
 		for (int i = 25; i < 33; ++i) {
-			if (s.charAt(i) < '0' || s.charAt(i) > '9')
+			if (!((s.charAt(i) >= '0' && s.charAt(i) <= '9') ||
+					(s.charAt(i) >= 'a' && s.charAt(i) <= 'f')))
 				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
 		}
 	}
@@ -402,9 +405,7 @@ public class ProjectUtil {
 		}
 		
 		// Now, we apply the ProjectStatus data.
-        try {
 		update(project,s,now);
-        } catch(Exception e) {}
 		validate(project);
 		return project;
 	}
@@ -478,12 +479,11 @@ public class ProjectUtil {
 				setProgramMember((Program)m[i]);
 			} else {
 				((SB)m[i]).setSbStatusId(genPartId());
-				setSBPartId((SB)m[i]);
+				setSBMember((SB)m[i]);
 			}
 		}
 	}
-	static private void setSBPartId(SB sb) {
-		sb.setSbStatusId(genPartId());
+	static private void setSBMember(SB sb) {
 		ExecBlock[] x = sb.getExec();
 		for (int i = 0; i < x.length; ++i) {
 			x[i].setExecStatusId(genPartId());
@@ -517,8 +517,9 @@ public class ProjectUtil {
 	 * @return
 	 * @throws SchedulingException
 	 */
-	static private Program initialize(ObsUnitSetT set, SchedBlock[] sched, boolean[] schedUsed, Project project, Program parent,  
-		DateTime now) throws SchedulingException {
+	static private Program initialize(ObsUnitSetT set, SchedBlock[] sched, 
+			boolean[] schedUsed, Project project, Program parent,  
+			DateTime now) throws SchedulingException {
 		
 		Program program = new Program (set.getEntityPartId());
 		program.setProject(project);
@@ -755,49 +756,42 @@ public class ProjectUtil {
 		validate(project);
 		
 		// Create a new project status.
-		ProjectStatus status = new ProjectStatus();
+		ProjectStatus pstatus = new ProjectStatus();
 		
 		// Create the entityId and add it to the new status.
-		EntityT entity = new EntityT ();
+		ProjectStatusEntityT entity = new ProjectStatusEntityT ();
 		entity.setEntityId(project.getProjectStatusId());
 		entity.setEntityIdEncrypted("none");
 		entity.setDocumentVersion("1");
-		entity.setEntityTypeName("ProjectStatus");
 		entity.setSchemaVersion("1");
-		status.setProjectStatusEntity(entity);
+		pstatus.setProjectStatusEntity(entity);
 		
 		// Create the project reference and add it to the status.
-		EntityRefT obsProjectRef = new EntityRefT ();
+		ObsProjectRefT obsProjectRef = new ObsProjectRefT ();
 		obsProjectRef.setEntityId(project.getObsProjectId());
 		obsProjectRef.setPartId(nullPartId);
-		obsProjectRef.setEntityTypeName("ObsProject");
 		obsProjectRef.setDocumentVersion("1");
-		status.setObsProjectRef(obsProjectRef);
+		pstatus.setObsProjectRef(obsProjectRef);
 		
 		// Create the proposal reference and add it to the status.
-		EntityRefT obsProposalRef = new EntityRefT ();
+		ObsProposalRefT obsProposalRef = new ObsProposalRefT ();
 		obsProposalRef.setEntityId(project.getProposalId());
 		obsProposalRef.setPartId(nullPartId);
-		obsProposalRef.setEntityTypeName("ObsProposal");
 		obsProposalRef.setDocumentVersion("1");
-		status.setObsProposalRef(obsProposalRef);
+		pstatus.setObsProposalRef(obsProposalRef);
 		
 		// Fill in the remaining values from the project.
-		status.setName(project.getProjectName());
-		status.setPI(project.getPI());
-		status.setTimeOfUpdate(now.toString());
+		pstatus.setName(project.getProjectName());
+		pstatus.setPI(project.getPI());
+		pstatus.setTimeOfUpdate(now.toString());
 		// The state of the project.
-		StatusT state = new StatusT ();
-		assignState(project.getStatus(),state);
-		status.setStatus(state);
-		status.setBreakpointTime(project.getBreakpointTime() == null ? "" : project.getBreakpointTime().toString());
+		pstatus.setStatus(assignState(project.getStatus()));
+		pstatus.setBreakpointTime(project.getBreakpointTime() == null ? "" : project.getBreakpointTime().toString());
 		// The obsProgram status.
-		ObsUnitSetStatusT obsProgramStatus = new ObsUnitSetStatusT ();
-		assignObsProgramStatus(project.getProgram(),obsProgramStatus,now);
-		status.setObsProgramStatus(obsProgramStatus);
+		pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
 		
 		// Return the newly created project status.
-		return status;
+		return pstatus;
 		
 	}
 	
@@ -806,7 +800,8 @@ public class ProjectUtil {
 	// "map(Project project, DateTime now)" method.				//
 	//////////////////////////////////////////////////////////////
 	
-	static private void assignState(Status source, StatusT target) {
+	static private StatusT assignState(Status source) {
+		StatusT target = new StatusT ();
 		switch (source.getStatusAsInt()) {
 			case Status.NOTDEFINED: target.setState(StateType.NOTDEFINED); break;
 			case Status.WAITING: target.setState(StateType.WAITING); break;
@@ -818,22 +813,21 @@ public class ProjectUtil {
 		target.setReadyTime(source.getReadyTime() == null ? "" : source.getReadyTime().toString());
 		target.setStartTime(source.getStartTime() == null ? "" : source.getStartTime().toString());
 		target.setEndTime(source.getEndTime() == null ? "" : source.getEndTime().toString());
+		return target;
 	}
 	
-	static private void assignObsProgramStatus(Program source, ObsUnitSetStatusT target, DateTime now) {
+	static private ObsUnitSetStatusT assignObsProgramStatus(Program source, DateTime now) {
+		ObsUnitSetStatusT target = new ObsUnitSetStatusT ();
 		target.setEntityPartId(source.getObsUnitSetStatusId());
-		EntityRefT obsUnitSetRef = new EntityRefT ();
+		ObsProjectRefT obsUnitSetRef = new ObsProjectRefT ();
 		obsUnitSetRef.setEntityId(source.getProject().getObsProjectId());
 		obsUnitSetRef.setPartId(source.getProgramId());
-		obsUnitSetRef.setEntityTypeName("ObsUnitSet");
 		obsUnitSetRef.setDocumentVersion("1");
 		target.setObsUnitSetRef(obsUnitSetRef);
 		target.setTimeOfUpdate(now.toString());
 		
 		// Set the state of this program.
-		StatusT state = new StatusT ();
-		assignState(source.getStatus(),state);
-		target.setStatus(state);
+		target.setStatus(assignState(source.getStatus()));
 		
 		// Set the totals.
 		target.setTotalRequiredTimeInSec(source.getTotalRequiredTimeInSeconds());
@@ -846,166 +840,223 @@ public class ProjectUtil {
 		target.setNumberSBsFailed(source.getNumberSBsFailed());
 		
 		// Set the session list.
-		ObsUnitSetStatusTSequence sessionList = new ObsUnitSetStatusTSequence ();
-		assignSession(source.getAllSession(),sessionList);
-		target.setObsUnitSetStatusTSequence(sessionList);
+		target.setSession(assignSession(source.getAllSession()));
 		
 		// Set the PipelineProcessingRequest.
-		EntityRefT pipelineProcessingRequestRef = new EntityRefT ();
-		if (source.getSciPipelineRequest() == null)
-			pipelineProcessingRequestRef.setEntityId("");
-		else
-			pipelineProcessingRequestRef.setEntityId(source.getSciPipelineRequest().getId());
-		pipelineProcessingRequestRef.setPartId(nullPartId);
-		pipelineProcessingRequestRef.setEntityTypeName("PipelineReq");
-		pipelineProcessingRequestRef.setDocumentVersion("1");
-		target.setPipelineProcessingRequestRef(pipelineProcessingRequestRef);
+		target.setPipelineProcessingRequest(assignPPR(source.getSciPipelineRequest()));
 		
 		// Set the members of this program.
 		ProgramMember[] member = source.getMember();
 		Program pgm = null;
 		SB sb = null;
-		ObsUnitSetStatusT obsProgramStatus = null;
-		SBStatusT sbStatus = null;
 		ObsUnitSetStatusTChoice set = new ObsUnitSetStatusTChoice ();
 		if (member[0] instanceof Program) {
 			for (int i = 0; i < member.length; ++i) {
 				pgm = (Program)member[i];
-				obsProgramStatus = new ObsUnitSetStatusT ();
-				assignObsProgramStatus(pgm,obsProgramStatus,now);
-				set.addObsUnitSet(obsProgramStatus);
+				set.addObsUnitSetStatus(assignObsProgramStatus(pgm,now));
 			}			
 		} else {
 			for (int i = 0; i < member.length; ++i) {
 				sb = (SB)member[i];
-				sbStatus = new SBStatusT ();
-				assignSBStatus(sb,sbStatus,now);
-				set.addSB(sbStatus);
+				set.addSBStatus(assignSBStatus(sb,now));
 			}
 		}
 		target.setObsUnitSetStatusTChoice(set);
+		return target;
 	}
 	
-	static private void assignSession(ObservedSession[] session, ObsUnitSetStatusTSequence list) {
-		EntityRefT sessionRef = null;
+	static private SessionT[] assignSession(ObservedSession[] session) {
+		SessionT[] list = new SessionT [session.length];
+		SessionT x = null; 
 		for (int i = 0; i < session.length; ++i) {
-			sessionRef = new EntityRefT ();
-			sessionRef.setEntityId(session[i].getSessionId());
-			sessionRef.setPartId(nullPartId);
-			sessionRef.setEntityTypeName("Session");
-			sessionRef.setDocumentVersion("1");
-			list.addSessionRef(sessionRef);
+			x = new SessionT ();
+			// Set the part id.
+			x.setEntityPartId(session[i].getSessionId());
+			// Set the start time.
+			x.setStartTime(session[i].getStartTime().toString());
+			// Set the end time.
+			x.setEndTime(session[i].getEndTime().toString());
+			// Set the reference to the ObsUnitSetStatus.
+			ProjectStatusRefT pRef = new ProjectStatusRefT ();
+			pRef.setEntityId(session[i].getProgram().getProject().getProjectStatusId());
+			pRef.setDocumentVersion("1");
+			pRef.setPartId(session[i].getSessionId());
+			// This isn't there but should be. <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+			//x.setObsUnitSetStatusRef(pRef);
+			// Set the list of exec block references.
+			ExecBlock[] s = session[i].getExec();
+			ExecBlockEntityRefT[] execRef = new ExecBlockEntityRefT [s.length];
+			for (int j = 0; j < s.length; ++j) {
+				execRef[i] = new ExecBlockEntityRefT ();
+				execRef[i].setEntityId(s[i].getExecId());
+				execRef[i].setPartId(nullPartId);
+				execRef[i].setDocumentVersion("1");
+			}
+			x.setExecBlockRef(execRef);
+			list[i] = x;
 		}
+		return list;
 	}
 	
-	static private void assignSBStatus(SB sb, SBStatusT target, DateTime now) {
+	static private PipelineProcessingRequestT assignPPR(SciPipelineRequest ppr) {
+		if (ppr == null)
+			return null;
+		PipelineProcessingRequestT target = new PipelineProcessingRequestT ();
+		// Set the entity part id.
+		target.setEntityPartId(ppr.getId());
+		// Set the time of creation.
+		target.setTimeOfCreation(ppr.getStatus().getReadyTime().toString());
+		// Set the time of update.
+		if (ppr.getStatus().getEndTime() != null)
+			target.setTimeOfUpdate(ppr.getStatus().getEndTime().toString());
+		else if (ppr.getStatus().getStartTime() != null)
+			target.setTimeOfUpdate(ppr.getStatus().getStartTime().toString());
+		else if (ppr.getStatus().getReadyTime() != null)
+			target.setTimeOfUpdate(ppr.getStatus().getReadyTime().toString());
+		else
+			target.setTimeOfUpdate("");
+		// Set the reference to the ObsUnitSetStatus.
+		ProjectStatusRefT pRef = new ProjectStatusRefT ();
+		pRef.setEntityId(ppr.getProgram().getProject().getProjectStatusId());
+		pRef.setDocumentVersion("1");
+		pRef.setPartId(ppr.getId());
+		target.setObsUnitSetStatusRef(pRef);
+		// Set the request status.
+		if (ppr.getStatus().getStartTime() == null)
+			target.setRequestStatus(RequestStatusType.QUEUED);
+		else if (ppr.getStatus().getEndTime() == null)
+			target.setRequestStatus(RequestStatusType.RUNNING);
+		else
+			target.setRequestStatus(RequestStatusType.COMPLETED);
+		// Set the completion status.
+		if (ppr.getStatus().getEndTime() == null) {
+			if (ppr.getStatus().getReadyTime() != null)
+				target.setCompletionStatus(CompletionStatusType.SUBMITTED);
+			else 
+				target.setCompletionStatus(CompletionStatusType.INCOMPLETE);
+		} else if (ppr.getStatus().isAborted())
+			target.setCompletionStatus(CompletionStatusType.COMPLETE_FAILED);
+		else if (ppr.getStatus().isComplete())
+			target.setCompletionStatus(CompletionStatusType.COMPLETE_SUCCEEDED);
+		// Set the reference to the processing results.
+		EntityRefT pprResult = new EntityRefT ();
+		pprResult.setEntityId(ppr.getResults());
+		pprResult.setDocumentVersion("1");
+		pprResult.setEntityTypeName("");
+		pprResult.setPartId(nullPartId);
+		target.setPPResultsRef(pprResult);
+		// Set the comment.
+		target.setComment(ppr.getComment());
+		// Set the imaging procedure name.
+		target.setImagingProcedureName(ppr.getReductionProcedureName());
+		// Set the processing parameters.
+		Object[] parm = ppr.getParms();
+		String[] s = new String [parm.length];
+		for (int i = 0; i < s.length; ++i)
+			s[i] = parm[i].toString();
+		target.setParm(s);
+		// OK, we're done.
+		return target;
+	}
+		
+	static private SBStatusT assignSBStatus(SB sb, DateTime now) {
+		SBStatusT target = new SBStatusT ();
+		
 		// Set the status part-id.
 		target.setEntityPartId(sb.getSbStatusId());
 		
 		// Set the reference to the SchedBlock.
-		EntityRefT sbRef = null;
-		sbRef = new EntityRefT ();
+		SchedBlockRefT sbRef = null;
+		sbRef = new SchedBlockRefT ();
 		sbRef.setEntityId(sb.getSchedBlockId());
 		sbRef.setPartId(nullPartId);
-		sbRef.setEntityTypeName("SchedBlock");
 		sbRef.setDocumentVersion("1");
-		target.setSBRef(sbRef);
+		target.setSchedBlockRef(sbRef);
 		
 		// set remaining variables.
 		target.setTimeOfUpdate(now.toString());
-		StatusT state = new StatusT ();
-		assignState(sb.getStatus(),state);
-		target.setStatus(state);
+		target.setStatus(assignState(sb.getStatus()));
 		target.setTotalRequiredTimeInSec(sb.getTotalRequiredTimeInSeconds());
 		target.setTotalUsedTimeInSec(sb.getTotalUsedTimeInSeconds());
 
 		// Set the ExecBlock list.
-		SBStatusTSequence xList = new SBStatusTSequence ();
-		assignExec(sb.getExec(),xList,now);
-		target.setSBStatusTSequence(xList);
+		target.setExecStatus(assignExec(sb.getExec(),now));
+		
+		return target;
 	}
 	
-	static private void assignExec(ExecBlock[] ex, SBStatusTSequence list, DateTime now) {
+	static private ExecStatusT[] assignExec(ExecBlock[] ex, DateTime now) {
+		ExecStatusT[] list = new ExecStatusT [ex.length];
 		ExecStatusT exStatus = null;
-		EntityRefT execRef = null;
+		ExecBlockEntityRefT execRef = null;
 		StatusT state = null;
 		BestSBT bestSB = null;
 		for (int i = 0; i < ex.length; ++i) {
-			// Set entity part-id.
 			exStatus = new ExecStatusT ();
-			// Set execblock reference.
+			// Set entity part-id.
 			exStatus.setEntityPartId(ex[i].getExecStatusId());
-			execRef = new EntityRefT ();
+			// Set execblock reference.
+			execRef = new ExecBlockEntityRefT ();
 			execRef.setEntityId(ex[i].getExecId());
 			execRef.setPartId(nullPartId);
-			execRef.setEntityTypeName("ExecBlock");
 			execRef.setDocumentVersion("1");
 			exStatus.setExecBlockRef(execRef);
 			// Set times.
 			exStatus.setTimeOfCreation(ex[i].getTimeOfCreation().toString());
 			exStatus.setTimeOfUpdate(now.toString());
 			// Set state.
-			state = new StatusT ();
-			assignState(ex[i].getStatus(),state);
-			exStatus.setStatus(state);
+			exStatus.setStatus(assignState(ex[i].getStatus()));
 			// Set subarray-id.
 			exStatus.setSubarrayId(ex[i].getSubarrayId());
 			// Set BestSB.
-			// There is only one BestSB, not a sequence.  Mistake in model! <---
-			bestSB = new BestSBT ();
-			assignBestSB(ex[i].getBest(),bestSB);
-			ExecStatusTSequence seq = new ExecStatusTSequence ();
-			seq.addBestSB(bestSB);
-			exStatus.setExecStatusTSequence(seq);
-			list.addExecStatus(exStatus);
+			exStatus.setBestSB(assignBestSB(ex[i].getBest()));
+			list[i] = exStatus;
 		}
+		return list;
 	}
 	
-	static private void assignBestSB(BestSB best, BestSBT target) {
+	static BestSBT assignBestSB(BestSB best) {
+		BestSBT target = new BestSBT ();
+		
 		// Set the number of units.
 		target.setNumberUnits(best.getNumberReturned());
 		
 		// Set the array of SB-ids.
-		BestSBTSequence seq1 = new BestSBTSequence (); 
 		String[] s = best.getSbId();
-		EntityRefT sbRef = null;
+		SchedBlockRefT[] sbRef = new SchedBlockRefT [s.length];
+		// The above really should be SchedBlockRefT.
 		for (int i = 0; i < s.length; ++i) {
-			sbRef = new EntityRefT ();
-			sbRef.setEntityId(s[i]);
-			sbRef.setPartId(nullPartId);
-			sbRef.setEntityTypeName("SchedBlock");
-			sbRef.setDocumentVersion("1");
-			seq1.addSBId(sbRef);
+			sbRef[i] = new SchedBlockRefT ();
+			sbRef[i].setEntityId(s[i]);
+			sbRef[i].setPartId(nullPartId);
+			sbRef[i].setDocumentVersion("1");
 		}
-		target.setBestSBTSequence(seq1);
+		target.setSBId(sbRef);
 		
 		// Set the array of score strings.
-		BestSBTSequence2 seq2 = new BestSBTSequence2 ();
-		s = best.getScoreString();
-		for (int i = 0; i < s.length; ++i) {
-			seq2.addScore(s[i]);
-		}
-		target.setBestSBTSequence2(seq2);
+		target.setScore(best.getScoreString());
 		
 		// Set the array of success strings.
-		BestSBTSequence3 seq3 = new BestSBTSequence3 ();
-		double[] d = best.getSuccess(); 
+		double[] d = best.getSuccess();
+		s = new String [d.length];
 		for (int i = 0; i < d.length; ++i) {
-			seq3.addSuccess(Double.toString(d[i]));
+			s[i] = Double.toString(d[i]);
 		}
-		target.setBestSBTSequence3(seq3);
+		target.setSuccess(s);
 		
 		// Set the array of rank strings.
-		BestSBTSequence4 seq4 = new BestSBTSequence4 ();
 		d = best.getRank(); 
+		s = new String [d.length];
 		for (int i = 0; i < d.length; ++i) {
-			seq4.addRank(Double.toString(d[i]));
+			s[i] = Double.toString(d[i]);
 		}
-		target.setBestSBTSequence4(seq4);
+		target.setRank(s);
 		
 		// Set selection and time of selection.
 		target.setSelection(best.getSelection());
 		target.setTimeOfSelection(best.getTime().toString());
+		
+		return target;
 	}
 	
 	//////////////////////////////////////////////////////////////

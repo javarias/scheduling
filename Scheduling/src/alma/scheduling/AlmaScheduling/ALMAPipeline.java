@@ -29,7 +29,8 @@ package alma.scheduling.AlmaScheduling;
 import java.util.logging.Logger;
 
 import alma.xmlentity.XmlEntityStruct;
-import alma.entity.xmlbinding.pipelineprocessingrequest.*;
+import alma.entity.xmlbinding.projectstatus.*;
+//import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -65,7 +66,7 @@ public class ALMAPipeline implements SciPipeline {
     private void getPipelineComponents() {
         try {
             pipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
-                containerServices.getComponent("PIPELINE_SCIENCE"));
+                containerServices.getComponent("SCIENCE_PIPELINE"));
             
         } catch(ContainerException e) {
             logger.severe("SCHEDULING: Error getting pipeline component");
@@ -76,10 +77,10 @@ public class ALMAPipeline implements SciPipeline {
 
     /**
      * Send the pipeline processing request to the pipeline subsystem.
-     * @param ppr The xmlentitystruct reprenesentation of the pipeline processing request
+     * @param ppr The xml string which represents the Pipeline Processing Request in the project status
      * @return String The result from the pipeline subsystem
      */
-    public String processRequest(XmlEntityStruct ppr) {
+    public String processRequest(String ppr) {
         String requestResult = null;
         try { 
             requestResult = pipelineComp.processRequest(ppr);
@@ -99,26 +100,21 @@ public class ALMAPipeline implements SciPipeline {
      * @param oucs_id The ObsUnitSetStatus id for the Reduction unit's partId 
      * @return XmlEntityStruct The PipelineProcessingRequest converted to a struct
      */
-    public XmlEntityStruct createPipelineProcessingRequest(String ps_id, String oucs_id) {
-        XmlEntityStruct ppr_struct = null;
+    public PipelineProcessingRequestT createPipelineProcessingRequest(String ps_id, String oucs_id) {
+        PipelineProcessingRequestT ppr=null;
         try { 
-            PipelineProcessingRequest ppr = new PipelineProcessingRequest();
-            PipelineProcessingRequestEntityT ppr_entity = new PipelineProcessingRequestEntityT();
-            containerServices.assignUniqueEntityId(ppr_entity);
-            ppr.setPipelineProcessingRequestEntity(ppr_entity);
-            logger.info("SCHEDULING: PPR created with id = "+ppr_entity.getEntityId());
-            ReductionUnitT ru = new ReductionUnitT();
-            ru.setEntityId(ps_id);
-            ru.setPartId(oucs_id);
-            ppr.setReductionUnit(ru);
-            ppr_struct = entitySerializer.serializeEntity(ppr);
-            System.out.println("PPR: "+ppr_struct.xmlString);
+            ppr = new PipelineProcessingRequestT();
+            //PipelineProcessingRequestEntityT ppr_entity = new PipelineProcessingRequestEntityT();
+            //containerServices.assignUniqueEntityId(ppr_entity);
+            //ppr.setPipelineProcessingRequestEntity(ppr_entity);
+            logger.info("SCHEDULING: PPR created");
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error creating PPR");
             e.printStackTrace();
         }
-        return ppr_struct;
+        return ppr;
     }
+//    public String createPipelineProcessingRequest
 
     /**
       *
@@ -126,9 +122,9 @@ public class ALMAPipeline implements SciPipeline {
     public void start(SciPipelineRequest ppr)
         throws SchedulingException {
 
+            //TODO
         logger.info("SCHEDULING: Starting the science pipeline");
-        processRequest(((ALMAPipelineProcessingRequest)
-                ppr).getPipelineProcessingRequestStruct());
+        //processRequest();
     }
     /**
       *

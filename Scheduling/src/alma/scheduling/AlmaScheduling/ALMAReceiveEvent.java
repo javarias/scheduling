@@ -28,7 +28,7 @@ package alma.scheduling.AlmaScheduling;
 import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
 import alma.entities.commonentity.EntityRefT;
-import alma.entity.xmlbinding.session.*;
+import alma.entity.xmlbinding.projectstatus.*;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -168,7 +168,8 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private void updateSB(ControlEvent e) {
         try {
             logger.info("SCHEDULING: updating the SB after event from control received");
-            archive.updateSB(e);
+            //archive.updateSB(e);
+            manager.updateSB(e);
         } catch(SchedulingException ex) {
             logger.severe("SCHEDULING: error updating sb");
             ex.printStackTrace();
@@ -185,15 +186,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void startSession(ExecBlockEvent e) {
       try {
-        logger.info("SCHEDULING: Start of a Session!");
+        logger.info("SCHEDULING: Start of a Session! MUST BE FIXED");
+
+        /*
         //create a session object 
-        //ALMASession s = new ALMASession();
-        //s.addExecBlockId(e.execID);
-        //s.setStartTime(e.startTime);
-        //ouc & sb == same thing right now!
-        //s.setObsUnitSetId(e.sbId);
-        //s.setSbId(e.sbId);
-        //store session obj in the archive
         Session s = createSession(e);
         String sessionID = archive.storeSession(s);
         //send out the session start event
@@ -201,13 +197,15 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             sessionID, "ous_partid", e.sbId, e.execID); 
         publisher.publish(start_event);       
         manager.sessionStart(sessionID,e.sbId);
+       */
       }catch(Exception ex) {
         logger.severe("SCHEDULING: error! ");
         ex.printStackTrace();
       }
     }
 
-    private Session createSession(ExecBlockEvent e) {
+    private SessionT createSession(ExecBlockEvent e) {
+        /*
         Session s = new Session();
         SessionEntityT  s_entity = new SessionEntityT();
         s.setSessionEntity(s_entity);
@@ -223,8 +221,8 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         SessionSequence[] seqArray = new SessionSequence[1];
         seqArray[0] = seq;
         s.setSessionSequence(seqArray);
-        
-        return s;
+        */
+        return null;
     }
     
     /**
@@ -235,8 +233,8 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void endSession(ExecBlockEvent e) {
         //query session object from the archive
-        logger.info("SCHEDULING: End of a Session!");
-        try {
+        logger.info("SCHEDULING: End of a Session! MUST BE FIXED");
+        /*try {
             //Get Session from the archive.
             //ALMASession session = (ALMASession)archive.querySession(e.execID);
             //update session object and update it in the archive
@@ -256,10 +254,11 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.severe("SCHEDULING: error in ALMAReceiveEvent:endSession");
             ex.printStackTrace();
         }
+        */
 
     }
 
-    private void updateSession(alma.entity.xmlbinding.session.Session s, ExecBlockEvent e) {
+    private void updateSession(SessionT s, ExecBlockEvent e) {
         //s.setEndTime(""+e.startTime);
     }
 
@@ -272,10 +271,12 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private void startPipeline(ControlEvent e, String[] ids) {
         String result = null;
         try {
-            XmlEntityStruct ppr = pipeline.createPipelineProcessingRequest(ids[0], ids[1]); //temporary for R2
+            PipelineProcessingRequestT ppr = pipeline.createPipelineProcessingRequest(ids[0], ids[1]); //temporary for R2
+            /*
             archive.storePipelineProcessingRequest(new ALMAPipelineProcessingRequest(ppr));
             ppr = archive.retrievePPR(ppr.entityId);
-            result = pipeline.processRequest(ppr);
+            result = pipeline.processRequest(ppr.xmlString);
+            */
         } catch(Exception ex) {
             logger.severe("SCHEDULING: error starting the science pipeline");
             ex.printStackTrace();
