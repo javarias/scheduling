@@ -123,6 +123,9 @@ build:
 #
 # Test target
 #
+
+.PHONY: test
+
 Test = test
 $(Test):
 	@$(ECHO) "############ Clean Test Log File: test.log #################"
