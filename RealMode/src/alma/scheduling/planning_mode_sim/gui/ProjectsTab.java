@@ -1,3 +1,27 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * File ProjectsTab.java
+ */
 package alma.scheduling.planning_mode_sim.gui;
 
 import java.awt.Component;
@@ -21,7 +45,13 @@ import javax.swing.JViewport;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
-
+/**
+ * This class extends the JScrollPane and includes everything required for the
+ * PlanningModeSim gui project tab. The Tab in the gui where all the information
+ * specific to the projects/sets/targets are displayed. 
+ *
+ * @author Sohaila Roberts
+ */
 public class ProjectsTab extends JScrollPane {
 
     private Vector v;
@@ -35,6 +65,11 @@ public class ProjectsTab extends JScrollPane {
         setViewportView(createView());
     }
 
+    /**
+     * Creates in initial display.
+     *
+     * @return JPanel
+     */
     public JPanel createView() {
 
         projectPane = new JTabbedPane();
@@ -104,6 +139,12 @@ public class ProjectsTab extends JScrollPane {
         return panelFive_main;
     }
     
+    /**
+     * A new Tab is created for each project the user wants to create.
+     * This function creates that tab.
+     *
+     * @return JScrollPane
+     */
     private JScrollPane addProjectTab() {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -165,6 +206,12 @@ public class ProjectsTab extends JScrollPane {
         return pane;
     }
 
+    /**
+     * A new tab is created for each set in each project. This function 
+     * creates that display.
+     *
+     * @return JScrollPane
+     */
     public JScrollPane addSetPanel() {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -255,6 +302,11 @@ public class ProjectsTab extends JScrollPane {
         
     }
 
+    /**
+     * The targets of each set are displayed in the fields created in this 
+     * function.
+     * @return JPanel
+     */
     private JPanel addTargetsField() {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -348,6 +400,12 @@ public class ProjectsTab extends JScrollPane {
     //////////////////////////////////////////////////////
     
     
+    /**
+     * Collects all the information out of the textfields and panels that 
+     * display all the information entered about the project. It is stored 
+     * in a vector in the order that it was collected.
+     * @return Vector
+     */
     public Vector getProjects() {
         Vector v = new Vector(); //projects vector
         try {
@@ -376,6 +434,11 @@ public class ProjectsTab extends JScrollPane {
         return v;
     }
 
+    /** 
+     * Collects all the information about the targets and stores it in a vector.
+     *
+     * @return Vector
+     */
     public Vector getTargetsInfo(Component[] comp) throws Exception {
         int totaltargets = comp.length;
         Vector targets = new Vector(totaltargets);
@@ -411,18 +474,23 @@ public class ProjectsTab extends JScrollPane {
         return targets;
     }
 
+    /**
+     * Returns the total number of projects.
+     *
+     * @return int
+     */
     public int getTotalProjectCount() {
         return totalProjects;
     }
 
-
-
-
-    
     //////////////////////////////////////////////////////
     // Set Methods
     //////////////////////////////////////////////////////
 
+    /**
+     * Sets the number of projects.
+     * @param s The string representation of the number of projects.
+     */
     public void setTotalProjects(String s) {
         totalProjects = Integer.parseInt(s.trim());
         totalproj_tf.setText(s);
@@ -431,6 +499,13 @@ public class ProjectsTab extends JScrollPane {
     
     //////////////////////////////////////////////////////
 
+    /**
+     * A vector containing all information regarding the projects, its sets
+     * and its targets are submitted in a vector. The vector is parsed and the 
+     * values are then displayed
+     *
+     * @param values The vector containing all info.
+     */
     public void loadValuesFromFile(Vector values) {
         v = values;
         setTotalProjects((String)v.elementAt(0));
@@ -489,10 +564,19 @@ public class ProjectsTab extends JScrollPane {
         panelFive_main.validate();
     }
 
+    /**
+     * Creates a JScrollPane with all the updated project information.
+     * 
+     * @param projInfo A vector containing the main project information
+     * @param setsInfo A vector containing the main info about the sets
+     * @param targetsInfo A vector containing the information about the targets.
+     *
+     * @return JScrollPane
+     */
     public JScrollPane updateProjectTab(String projInfo, Vector setsInfo, Vector targetsInfo) {
-    for(int i=0; i< targetsInfo.size(); i++){
-        System.out.println(targetsInfo.elementAt(i));
-    }
+        for(int i=0; i< targetsInfo.size(); i++){
+            System.out.println(targetsInfo.elementAt(i));
+        }
         StringTokenizer token = new StringTokenizer(projInfo,";");
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -546,7 +630,12 @@ public class ProjectsTab extends JScrollPane {
         return pane;
     }
 
-    //public void updateSetsTab(String setString, int setNum, JScrollPane projectTab) {
+    /**
+     *
+     * @param setString A String that has the set information.
+     * @param targets A Vector containing the information about all the targets in this set.
+     * @return JScrollPane
+     */
     public JScrollPane updateSetPanel(String setString, Vector targets) {
         StringTokenizer st = new StringTokenizer(setString,";");
         GridBagLayout gridbag = new GridBagLayout();
@@ -641,6 +730,11 @@ public class ProjectsTab extends JScrollPane {
     }
 
 
+    /**
+     * @param targetSize The number of targets.
+     * @param targets A vector containing all the targets specifics
+     * @return JPanel
+     */
     public JPanel updateTargetsField(int targetSize, Vector targets) {
         if(targetSize != targets.size()) {
             System.out.println("target sizes don't match!");
@@ -737,11 +831,13 @@ public class ProjectsTab extends JScrollPane {
             p.add(tf);
             targetPanel.add(p);
         }
-        //
         return targetPanel;
-
     }
 
+    /** 
+     * I don't know why I have this function...
+     * @param s The string that has lowercase info about the weather condition
+     * @return String The weather condition starting with a capatial letter..
     public String getWeatherCondition(String s) {
 
         if(s.equals("exceptional") ){
@@ -764,5 +860,6 @@ public class ProjectsTab extends JScrollPane {
             return "Any";   
         }
     }
+     */
     
 }

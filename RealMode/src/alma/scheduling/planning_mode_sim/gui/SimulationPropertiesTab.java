@@ -1,4 +1,28 @@
-
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File SimulationPropertiestTab.java
+ */
 package alma.scheduling.planning_mode_sim.gui;
 
 import java.awt.GridLayout;
@@ -12,6 +36,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 
+/** 
+ * Extends JScrollPane to contain all the information required
+ * to specify all the main information of the planning mode simulation.
+ *
+ *@author Sohaila Roberts
+ */
 public class SimulationPropertiesTab extends JScrollPane {
     private Vector v;    
 
@@ -29,6 +59,10 @@ public class SimulationPropertiesTab extends JScrollPane {
         setViewportView(createView());
     }
 
+    /** 
+     * Creates the initial view for this pane.
+     * @return JPanel
+     */
     private JPanel createView() {
         JPanel p = new JPanel();
         JPanel gridPanel = new JPanel();
@@ -230,51 +264,112 @@ public class SimulationPropertiesTab extends JScrollPane {
     //  Get Methods
     //////////////////////////////////////////////////
 
+    /**
+     * Gets the begin time of this simulation
+     * @return String The string representation of the simulation start time
+     */
     public String getBeginTime() { 
         return beginTime.getText();
     }
+    /**
+     * Gets the end time of this simulation
+     * @return String The string representation of the simulation end time
+     */
     public String getEndTime() { 
         return endTime.getText();
     }
+
+    /**
+     * Gets the frequency band.
+     * @return String The string representation of the frequency band.
+     */
     public String getFreqBandSetup() { 
         return freqBandSetup.getText();
     }
+    /**
+     * Gets the Project setup time
+     * @return String The string representation of the Project setup time
+     */
     public String getProjSetup() { 
         return projSetup.getText();
     }
+    /**
+     * Gets the amount of time to advance the clock
+     * @return String The string representation of the amount of time to advance the clock
+     */
     public String getClockAdvance() {
         return advanceClockBy.getText();
     }
+    /**
+     * Gets the longitude
+     * @return String The string representation of the longitude
+     */
     public String getLongitude() { 
         return longitude.getText();
     }
+    /**
+     * Gets the latitude
+     * @return String The string representation of the latitude
+     */
     public String getLatitude() { 
         return latitude.getText();
     }
+    /**
+     * Gets the altitude
+     * @return String The string representation of the altitude
+     */
     public String getAltitude() { 
         return altitude.getText();
     }
+    /**
+     * Gets the minimum elevation angle
+     * @return String The string representation of the minimum elevation angle
+     */
     public String getMinElevationAngle() { 
         return minElevAngle.getText();
     }
 
+    /**
+     * Gets the log level
+     * @return String The string representation of the log level
+     */
     public String getLoglevel() {
         return (String)loglevel.getSelectedItem();
     }
+    /**
+     * Gets the frequency band setup units
+     * @return String The string representation of the  frequency band setup units
+     */
     public String getFrequencySetupUnits() {
         return (String)freq_cb.getSelectedItem();
     }
+    /**
+     * Gets the project setup time units
+     * @return String The string representation of the project setup time units
+     */
     public String getProjectSetupUnits() {
         return (String)proj_cb.getSelectedItem();
     }
+    /**
+     * Gets the clock advance time units
+     * @return String The string representation of the clock advance time units
+     */
     public String getClockAdvanceUnits() {
         return (String)clock_cb.getSelectedItem();
     }
 
+    /**
+     * Gets the timezone
+     * @return String The string representation of the timezone
+     */
     public String getTimezone() {
         return timezone.getValue();
     }
 
+    /**
+     * Gets the number of antennas
+     * @return String The string representation of the number of antennas
+     */
     public String getAntennas() {
         return antennas.getValue();
     }
@@ -284,6 +379,12 @@ public class SimulationPropertiesTab extends JScrollPane {
     //  Set Methods
     //////////////////////////////////////////////////
     
+    /** 
+     * Sets the begin time of the simulation.
+     * @param s The string representation of the begin time
+     *          It must be in the following format.
+     *          xxxx-xx-xxTxx:xx:xx where x = numbers
+     */
     public void setBeginTime(String s) { 
         if(s.charAt(4) != '-') {
             System.out.println("ERROR at 4");
@@ -307,34 +408,92 @@ public class SimulationPropertiesTab extends JScrollPane {
            beginTime.setText(s);
         }
     }
+    /** 
+     * Sets the end time of the simulation.
+     * @param s The string representation of the end time
+     *          It must be in the following format.
+     *          xxxx-xx-xxTxx:xx:xx where x = numbers
+     */
     public void setEndTime(String s) { 
-        endTime.setText(s);
+        if(s.charAt(4) != '-') {
+            System.out.println("ERROR at 4");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(7) != '-') {
+            System.out.println("ERROR at 7");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(10) != 'T') {
+            System.out.println("ERROR at 10");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(13) != ':') {
+            System.out.println("ERROR at 13");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.charAt(16) != ':') {
+            System.out.println("ERROR at 16");
+            System.out.println("Wrong Format: xxxx-xx-xxTxx:xx:xx");
+        } else if(s.length() != 19) {
+            System.out.println("ERROR: wrong size ");
+            System.out.println("xxxx-xx-xxTxx:xx:xx");
+        } else {
+           beginTime.setText(s);
+        }
     }
+    /**
+     * Sets the frequency band setup time. Its units will always be in seconds.
+     * @param s The string representation of the frequency band setup time.
+     */
     public void setFreqBandSetup(String s) { 
         freqBandSetup.setText(s);
         setFrequencySetupUnits("sec");
     }
+    /**
+     * Sets the project setup time. Its units will always be in seconds.
+     * @param s The string representation of the project setup time.
+     */
     public void setProjSetup(String s) { 
         projSetup.setText(s);
         setProjectSetupUnits("sec");
     }
+    /**
+     * Sets the clock advance time. Its units will always be in seconds.
+     * @param s The string representation of the clock advance time.
+     */
     public void setClockAdvance(String s) {
         advanceClockBy.setText(s);
         setClockAdvanceUnits("sec");
     }
+    /**
+     * Sets the longitude
+     * @param s The string representation of the longitude
+     */
     public void setLongitude(String s) { 
         longitude.setText(s);
     }
+    /**
+     * Sets the latitude
+     * @param s The string representation of the latitude
+     */
     public void setLatitude(String s) { 
         latitude.setText(s);
     }
+    /**
+     * Sets the Altitude
+     * @param s The string representation of the Altitude
+     */
     public void setAltitude(String s) { 
         altitude.setText(s);
     }
+    /**
+     * Sets the minimum elevation angle
+     * @param s The string representation of the minimum elevation angle
+     */
     public void setMinElevationAngle(String s) { 
         minElevAngle.setText(s);
     }
 
+    /**
+     * Sets the log level
+     * @param s The string representation of the log level
+     */
     public void setLoglevel(String s) {
         if(s.equals("CONFIG")) {
            loglevel.setSelectedItem("CONFIG");
@@ -353,6 +512,10 @@ public class SimulationPropertiesTab extends JScrollPane {
         }
         
     }
+    /**
+     * Sets the frequency band units
+     * @param s The string representation of the frequency band units
+     */
     public void setFrequencySetupUnits(String s) {
         if(s.equals("sec")){
             freq_cb.setSelectedItem("sec");
@@ -367,6 +530,10 @@ public class SimulationPropertiesTab extends JScrollPane {
             System.out.println("\thour");
         }
     }
+    /**
+     * Sets the project setup units
+     * @param s The string representation of the project setup units
+     */
     public void setProjectSetupUnits(String s) {
         if(s.equals("sec")){
             proj_cb.setSelectedItem("sec");
@@ -381,6 +548,10 @@ public class SimulationPropertiesTab extends JScrollPane {
             System.out.println("\thour");
         }
     }
+    /**
+     * Sets the clock advance units
+     * @param s The string representation of the clock advance units
+     */
     public void setClockAdvanceUnits(String s) {
         if(s.equals("sec")){
             clock_cb.setSelectedItem("sec");
@@ -397,14 +568,27 @@ public class SimulationPropertiesTab extends JScrollPane {
     }
 
 
+    /**
+     * Sets the timezone
+     * @param s The string representation of the timezone
+     */
     public void setTimezone(String s) {
         timezone.setValue(s);
     }
 
+    /**
+     * Sets the number of antennas
+     * @param s The string representation of the number of antennas
+     */
     public void setAntennas(String s) {
         antennas.setValue(s);
     }
 
+    /**
+     * Gets the values from the vector and creates the tab with all the 
+     * simulation's properties
+     * @param Vector All the properties in this vector.
+     */
     public void loadValuesFromFile(Vector values) {
         v = values;
         setBeginTime((String)v.elementAt(0));
