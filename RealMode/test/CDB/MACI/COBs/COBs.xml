@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COBs  xmlns="urn:schemas-cosylab-com:COBs:1.0"
+       xmlns:cdb="urn:schemas-cosylab-com:CDB:1.0" 
+       xmlns:baci="urn:schemas-cosylab-com:BACI:1.0" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <_ Name="OPERATIONAL_ARCHIVE"     
+			     Code="alma.archive.components.OperationalHelper" 
+                             Type="IDL:alma/xmlstore/Operational:1.0" 
+                             Activator="hugoActivator"/>
+      <_ Name="IDENTIFIER_ARCHIVE"     
+			     Code="alma.archive.components.IdentifierHelper"
+                             Type="IDL:alma/xmlstore/Identifier:1.0" 
+                             Activator="hugoActivator"/>
+</COBs>
