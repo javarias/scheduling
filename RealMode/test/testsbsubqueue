@@ -1,5 +1,5 @@
 #! /bin/bash
 
-abeansStart -endorsed alma.scheduling.test.TestSBSubQueue
+abeansStart -endorsed ALMA.scheduling.test.TestSBSubQueue
 
 
