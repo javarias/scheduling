@@ -802,21 +802,10 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
         SchedulerTaskControl stc = 
             new SchedulerTaskControl(msThread,schedThread);
         s.setSchedulerTaskControl(stc);
+        s.startSchedEventReceiver();
         schedThread.start();
+
         scheduler.add(s);
-        // let scheduler listen to the control channel.
-        /*
-        try {
-            SchedulerEventReceiver sched_listener = 
-                new SchedulerEventReceiver(s);
-            //sched_listener.addSubscription(alma.Control.EXECEVENTS.value);
-            sched_listener.addSubscription(ExecBlockEvent.class);
-            sched_listener.consumerReady();
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: Problem with scheduler event listener");
-            logger.severe("SCHEDULING: "+e.toString());
-        }
-        */
     }
 
 	public static void main(String[] args) {

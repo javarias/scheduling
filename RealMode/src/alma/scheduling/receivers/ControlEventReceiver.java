@@ -60,13 +60,7 @@ public class ControlEventReceiver extends Consumer {
         this.sbQueue = q;
         System.out.println("#########ControlEventReceiver created######");
     }
-    /*
-    public ControlEventReceiver(ProjectManagerTaskControl pmtc,
-                                    ALMAPipeline p, ALMAArchive a){
-        this(p,a);
-        this.pmTaskControl = pmtc;
-    }
-*/
+    
     public void receive(ExecBlockEvent e) {
         logger.info("SCHEDULING: Starting to process the control event");
         String sb_id = e.sbId;

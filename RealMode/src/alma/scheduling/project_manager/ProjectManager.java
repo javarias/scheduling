@@ -93,22 +93,7 @@ public class ProjectManager implements Runnable {
         // create the scheduling notification channel.
         createSchedulingNC();
         projects = new ProjectQueue();
-        // TOOK OUT FOR TESTING!!!
-        //projects.addProject(archive.getProject());
-        
-        // TEMPORARY!!
-        //Link sbs to their projects!
-        /*
-        for(int i=0; i < projects.getQueueSize(); i++) {
-            for(int j=0; j < sbQueue.getSUnitSize(); j++) {
-                if(sbQueue.getSUnit(j).getProjectId().equals(projects.getProject(i).getId())){
-                    projects.getProject(i).linkSUnitToProject(sbQueue.getSUnit(j));
-                    System.out.println("SCHEDULING: sunit project id = "+sbQueue.getSUnit(j).getProjectId());
-                    System.out.println("SCHEDULING: project id = "+projects.getProject(i).getId());
-                }
-            }
-        }
-        */
+
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
         control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);

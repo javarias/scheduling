@@ -90,15 +90,11 @@ public class ProcessControlEvent implements Runnable {
         //Store the ppr1 in the archive.
         archive.addPipelineProcessingRequest(ppr1);
         
-        //PipelineProcessingRequest ppr2 = archive.getPipelineProcessingRequest(
-        //        ppr1.getPipelineProcessingRequestEntity().getEntityId());
-        
         XmlEntityStruct ppr_struct = archive.getPipelineProcessingRequest(
                 ppr1.getPipelineProcessingRequestEntity().getEntityId());
         
         try {
             String res = pipeline.processRequest(ppr_struct);
-            //String res = pipeline.processRequest(ppr1);
             System.out.println("SCHEDULING: "+res);
         } catch (SchedulingException se) {
             se.printStackTrace();

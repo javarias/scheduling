@@ -34,6 +34,7 @@ import java.lang.InterruptedException;
 import alma.scheduling.define.STime;
 import alma.scheduling.master_scheduler.*;
 import alma.scheduling.project_manager.PIProxy;
+import alma.scheduling.receivers.SchedulerEventReceiver;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -76,6 +77,8 @@ public class Scheduler implements Runnable {
     private SchedulingPublisher s_publisher;
     private GUIController controller;
     
+    private SchedulerEventReceiver schedEventReceiver; //rename this oneday
+    
     public Scheduler(boolean isSimulation, 
                       ContainerServices c, 
                         ALMATelescopeOperator o, 
@@ -107,6 +110,16 @@ public class Scheduler implements Runnable {
         schedulerState = State.INITIALIZED;
         for(int i=0; i < queue.size(); i++){
         //    schedulerTaskControl.incrementSbsNotStarted();
+        }
+    }
+
+    public void startSchedEventReceiver() {
+        schedEventReceiver = new SchedulerEventReceiver(    
+                                    schedulerTaskControl, this);
+        try {
+            schedEventReceiver.addSubscription(alma.Control.EXECEVENTS.class);
+            schedEventReceiver.consumerReady();
+        } catch(Exception e) {
         }
     }
     
