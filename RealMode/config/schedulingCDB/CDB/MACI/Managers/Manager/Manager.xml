@@ -11,11 +11,12 @@
   MaxCachePriority="31"
   CentralizedLogger="Log">
   <Startup>
+    <cdb:_ string="OBSERVATION_CONTROL_SIM"/>
     <cdb:_ string="GETTELCALRESULTS1"/>
 	<cdb:_ string="IDENTIFIER_ARCHIVE"/>
 	<cdb:_ string="OPERATIONAL_ARCHIVE"/>
 	<cdb:_ string="SCIENCE_PIPELINE"/>
-	<cdb:_ string="ArrayController1"/>
+	<cdb:_ string="ControlSystem1"/>
   </Startup>
   <Execute>
 	<cdb:_ string=""/>

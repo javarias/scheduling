@@ -63,6 +63,9 @@
                              Code="ALMA.Control.antennaInterfaces.AntennaMonitorHelper"
                              Type="IDL:ALMA/Control/AntennaMonitor:1.0"
                              Activator="hugoActivator"/>            
+      <_ Name="OBSERVATION_CONTROL_SIM"  Code="ObservationControl"
+                             Type="IDL:ALMA/Correlator/ObservationControl:1.0"
+                             Activator="simCCCAct"/>
       <_ Name="GETTELCALRESULTS1"  Code="GetTelCalResults"
                              Type="IDL:ALMA/TelCalPublisher/GetTelCalResults:1.0"
                              Activator="Activator"/>
