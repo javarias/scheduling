@@ -39,7 +39,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 public class MasterScheduler implements Runnable {
 
     // Is the master scheduler stopped?
-    private boolean stopCommand;
+    protected boolean stopCommand;
     // The obs project manager
     protected ProjectManager manager;
     //The logger
@@ -77,6 +77,12 @@ public class MasterScheduler implements Runnable {
      */
     public void run() {
         while(!stopCommand) {
+            try {
+                System.out.println("MS Sleeping");
+                Thread.sleep(2*60*1000);
+            } catch(InterruptedException e) {
+                System.out.println("MS Interrupted");
+            }
         }
     }
 

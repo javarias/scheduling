@@ -287,6 +287,19 @@ public class ALMAMasterScheduler extends MasterScheduler
         Scheduler scheduler = new Scheduler(config);
         Thread scheduler_thread = new Thread(scheduler);
         scheduler_thread.start();
+        while(!stopCommand) {
+            try {
+                scheduler_thread.join();
+                break;
+            } catch(InterruptedException e) {
+                if(config.isNothingToSchedule()){
+                    config.respondStop();
+                }
+            }
+        }
+        if(!config.isOperational()) {
+            logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
+        }
     }
 
     public void startInteractiveScheduling() throws InvalidOperation {
