@@ -34,7 +34,7 @@ import alma.acs.component.client.ComponentClient;
 
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.NothingCanBeScheduledEvent;
-import alma.pipelinescience.ScienceProcessingRequestEnd;
+import alma.pipelinescience.ScienceProcessingDoneEvent;
 import alma.xmlentity.XmlEntityStruct;
 
 /**
@@ -54,13 +54,13 @@ public class TestALMAStartScheduling {
         this.logger = cs.getLogger();
         stopCommand = false;
         r = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.pipelinescience.CHANNELNAME.value,
+            AbstractNotificationChannel.CORBA, alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
                 container);
-        r.attach("alma.pipelinescience.ScienceProcessingRequestEnd",this);
+        r.attach("alma.pipelinescience.ScienceProcessingDoneEvent",this);
         r.begin();
     }
 
-    public void receive(ScienceProcessingRequestEnd event) {
+    public void receive(ScienceProcessingDoneEvent event) {
         logger.info("SCHED_TEST: got pipeline end event. ");
         stopCommand = true;
     }
@@ -79,7 +79,7 @@ public class TestALMAStartScheduling {
             TestALMAStartScheduling test = new TestALMAStartScheduling(client.getContainerServices());
             
             MasterSchedulerIF ms = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                client.getContainerServices().getComponent("MasterScheduler"));
+                client.getContainerServices().getComponent("SCHEDULING_MASTERSCHEDULER"));
 
             ms.startScheduling(new XmlEntityStruct());                    
             
@@ -89,9 +89,9 @@ public class TestALMAStartScheduling {
                     Thread.sleep(1000);
                 }catch(Exception e) {}
             }
-            client.getContainerServices().releaseComponent("ControlSystem");
+            client.getContainerServices().releaseComponent("CONTROL_ControlSystem");
             client.getContainerServices().releaseComponent("PIPELINE_SCIENCE");
-            client.getContainerServices().releaseComponent("MasterScheduler");
+            client.getContainerServices().releaseComponent("SCHEDULING_MASTERSCHEDULER");
 
         } catch(Exception e) {
         }

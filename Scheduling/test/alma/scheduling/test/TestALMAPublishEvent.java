@@ -33,8 +33,8 @@ import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.component.client.ComponentClient;
 
-import alma.scheduling.EndSession;
-import alma.scheduling.StartSession;
+import alma.scheduling.EndSessionEvent;
+import alma.scheduling.StartSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.DateTime;
@@ -53,32 +53,32 @@ public class TestALMAPublishEvent {
         this.container = cs;
         this.logger = cs.getLogger();
         r1 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME.value,
+            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
         r1.attach("alma.scheduling.NothingCanBeScheduledEvent", this);
         r1.begin();
 
         r2 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME.value,
+            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
-        r2.attach("alma.scheduling.StartSession", this);
+        r2.attach("alma.scheduling.StartSessionEvent", this);
         r2.begin();
        
         r3 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME.value,
+            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
-        r3.attach("alma.scheduling.EndSession", this);
+        r3.attach("alma.scheduling.EndSessionEvent", this);
         r3.begin();
     }
 
     public void receive(NothingCanBeScheduledEvent event) {
         logger.info("SCHED_TEST: Received NothingCanBeScheduledEvent");
     }
-    public void receive(StartSession event) {
-        logger.info("SCHED_TEST: received StartSession Event");
+    public void receive(StartSessionEvent event) {
+        logger.info("SCHED_TEST: received StartSessionEvent Event");
     }
-    public void receive(EndSession event) {
-        logger.info("SCHED_TEST: received EndSession Event");
+    public void receive(EndSessionEvent event) {
+        logger.info("SCHED_TEST: received EndSessionEvent Event");
     }
 
     public static void main(String[] args) {
@@ -93,7 +93,7 @@ public class TestALMAPublishEvent {
             Thread.sleep(5000);
             
             long startTime = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
-            StartSession event1 = new StartSession(startTime, "session id", "ous part id", "sb id", "eb id");
+            StartSessionEvent event1 = new StartSessionEvent(startTime, "session id", "ous part id", "sb id", "eb id");
             
             publisher.publish(event1);
 
@@ -103,7 +103,7 @@ public class TestALMAPublishEvent {
             publisher.publish(event2);       
 
             long endTime = UTCUtility.utcJavaToOmg(System.currentTimeMillis()); 
-            EndSession event3 = new EndSession(endTime, "session id", "ous id", "eb id");
+            EndSessionEvent event3 = new EndSessionEvent(endTime, "session id", "ous id", "eb id");
 
             publisher.publish(event3);
 

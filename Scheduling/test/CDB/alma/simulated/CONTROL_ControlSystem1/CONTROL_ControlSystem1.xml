@@ -7,7 +7,7 @@
         Value="print 'Control Started'\nNone" />
 
     <_method Name="createSubArray" 
-        Value="from Acssim.Servants.Components import getComponent\ncomponent=getComponent('ControlSystem1').getComponent('ArrayController1')\nprint 'Subarray created'\ncomponent"/>
+        Value="from Acssim.Servants.Components import getComponent\ncomponent=getComponent('CONTROL_ControlSystem1').getComponent('CONTROL_ArrayController1')\nprint 'Subarray created'\ncomponent"/>
         
     <_method Name="destroySubArray" 
         Value="print 'Subarray destroyed'\nNone" />
