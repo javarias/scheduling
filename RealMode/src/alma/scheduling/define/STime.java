@@ -87,7 +87,7 @@ public class STime {
 		} catch (NumberFormatException err) {
 			throw new IllegalArgumentException("Invalid time format: " + t);
 		}
-		if (yyyy < 2002 || mm < 1 || mm > 12 || dd < 1 || dd > 31 || 
+		if (yyyy < 1970 || mm < 1 || mm > 12 || dd < 1 || dd > 31 || 
 			hh < 0 || hh >= 24 || min < 0 || min >= 60 || sec < 0 || 
 			sec >= 60) {
 			throw new IllegalArgumentException("Invalid time format: " + t);
@@ -101,6 +101,11 @@ public class STime {
 	 * The value for months ranges from 1 to 12.
 	 */
 	public STime(int year, int month, int day, int hour, int minute) {
+		if (year < 1970 || month < 1 || month > 12 || day < 1 || day > 31 || 
+		hour < 0 || hour >= 24 || minute < 0 || minute >= 60) {
+			throw new IllegalArgumentException("Invalid time format: " + 
+			year + "-" + month + "-" + day + " " + hour + ":" + minute);
+		}
 		datetime = new GregorianCalendar(year,(month - 1),day,hour,
 										 minute).getTime().getTime();
 	}
@@ -111,6 +116,12 @@ public class STime {
 	 */
 	public STime(int year, int month, int day, int hour, int minute, 
 				 int second) {
+		if (year < 1970 || month < 1 || month > 12 || day < 1 || day > 31 || 
+			hour < 0 || hour >= 24 || minute < 0 || minute >= 60 || second < 0 || 
+			second >= 60) {
+			throw new IllegalArgumentException("Invalid time format: " +
+			year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second);
+		}
 		datetime = new GregorianCalendar(year,(month - 1),day,hour,minute,
 										 second).getTime().getTime();
 	}
