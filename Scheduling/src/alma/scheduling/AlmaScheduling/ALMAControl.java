@@ -174,7 +174,6 @@ public class ALMAControl implements Control {
      *
      */
     public short[] getIdleAntennas() throws SchedulingException {
-        /*
         try {
             short[] antennas = control_system.availableAntennas();
             logger.info("SCHEDULING: Got "+ antennas.length +" antennas");
@@ -184,13 +183,14 @@ public class ALMAControl implements Control {
             e.printStackTrace();
             return null;
         }
-        */
+        /*
         
         short[] tmp_antennas = new short[64];
         for (int i=0; i < 64; i++) {
             tmp_antennas[i] = (short)i;
         }
         return tmp_antennas;
+        */
         
     }
 
