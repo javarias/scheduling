@@ -27,7 +27,8 @@
 package ALMA.scheduling.define;
 
 import java.util.ArrayList;
-
+import alma.entity.xmlbinding.obsproject.*;
+import alma.entity.xmlbinding.schedblock.*;
 /**
  * A SUnitSet is a hierarchical tree whose leaves are SUnit objects. 
  * 
@@ -65,6 +66,7 @@ public class SUnitSet implements HasMembers, MemberOf {
 	private SystemSetup requiredInitialSetup;
 	private int maximumTimeInSeconds;
 	private Status unitSetStatus;
+    private ObsUnitSetT[] obsUnitSet;
 
 	/**
 	 * Create an SUnitSet object.
@@ -88,6 +90,26 @@ public class SUnitSet implements HasMembers, MemberOf {
 		maximumTimeInSeconds = 0;
 		unitSetStatus = new Status (Status.NOTDEFINED);
 	}
+
+    public SUnitSet(ObsUnitSetT[] ous) {
+        this();
+        this.obsUnitSet = ous;
+        /*
+        ObsUnitSetTChoice tmp = ous.getObsUnitSetTChoice();
+        SchedBlockRefT[] tmp1 = tmp.getSchedBlockRef();
+        ObsUnitSetT[] tmp2 = tmp.getObsUnitSet();
+        */
+        /*
+        for(int i=0; i< obsUnitSet.length; i++) {
+            //this will have to change!!!!
+            if(obsUnitSet[i] instanceof ObsUnitSetT) {
+                for(inf j=0; j<obsUnitSet[i].length(
+            }
+            for(int j=0; j<obsUnitSet[i].
+            members.add(obsUnitSet[i]);
+        }
+        */
+    }
 
 	public void setMemberLink(SUnitSet parent) {
 		MemberOf x = null;

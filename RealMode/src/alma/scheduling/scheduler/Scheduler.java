@@ -122,6 +122,7 @@ public class Scheduler implements Runnable {
             //all sbs have been processed!
             //should send out nothingCanBeScheduled but
             //for now this is the end of the project and we start the pipeline
+                logger.info("SCHEDULING: SB WAS NULL");
                 moreSBs = false;
                 break;
             }

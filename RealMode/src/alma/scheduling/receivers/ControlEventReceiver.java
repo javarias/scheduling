@@ -32,6 +32,7 @@ import ALMA.Control.ExecBlockEvent;
 import ALMA.Control.ExecBlockEventHelper;
 
 import ALMA.scheduling.master_scheduler.ALMAArchive;
+import ALMA.scheduling.master_scheduler.MasterSBQueue;
 import ALMA.scheduling.master_scheduler.ProcessControlEvent;
 import ALMA.scheduling.project_manager.ALMAPipeline;
 import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
@@ -47,15 +48,17 @@ public class ControlEventReceiver extends Consumer {
     private ContainerServices containerServices;
     private Logger logger;
     private ProjectManagerTaskControl pmTaskControl;
+    private MasterSBQueue sbQueue;
     
     public ControlEventReceiver(ContainerServices cs, ALMAPipeline p, 
-        ALMAArchive a){
+        ALMAArchive a, MasterSBQueue q){
         
         super(ALMA.Control.CHANNELNAME.value);
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.pipeline = p;
         this.archive = a;
+        this.sbQueue = q;
         //System.out.println("#########ControlEventReceiver created######");
     }
     /*
@@ -69,7 +72,7 @@ public class ControlEventReceiver extends Consumer {
         logger.info("SCHEDULING: Starting to process the control event");
         String sb_id = e.sbId;
         ProcessControlEvent pce = new ProcessControlEvent(pmTaskControl,
-                                        archive, pipeline, e);
+                                        archive, pipeline, e, sbQueue);
         Thread t = new Thread(pce);
         t.start();
     }
@@ -82,7 +85,7 @@ public class ControlEventReceiver extends Consumer {
                 ExecBlockEventHelper.extract(
                     structuredEvent.filterable_data[0].value);
             logger.info("SCHEDULING: Got event from control");
-            switch(e.reason.value()) {
+            switch(e.type.value()) {
                 case 0:
                     logger.info("SCHEDULING: Event reason = started");
                     logger.info("SCHEDULING: Received sb start event from control.");

@@ -28,6 +28,7 @@ package ALMA.scheduling.project_manager;
 import java.util.Vector;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 
+import ALMA.scheduling.define.*;
 /**
  * The ProjectQueue class is the collection of Projects
  * currently under consideration by the scheduling system.
@@ -41,33 +42,49 @@ public class ProjectQueue {
         queue = new Vector();
 	}
 
-    public synchronized void addProject(ObsProject proj) {
+    //public synchronized void addProject(ObsProject proj) {
+    public synchronized void addProject(SProject proj) {
         queue.add(proj);
     }
 
     public synchronized void addProject(ObsProject[] projs) {
+    //public synchronized void addProject(SProject[] projs) {
         for(int i=0; i < projs.length; i++) {
-            queue.add(projs[i]);
+            queue.add(new SProject(projs[i]));
         }
     }
 
     /**
      *  Returns the SchedBlock at location i
      */
-    public synchronized ObsProject getProject(int i) {
-        return (ObsProject)queue.elementAt(i);
+    public synchronized SProject getProject(int i) {
+        return (SProject)queue.elementAt(i);
     }
 
     /**
      *  Returns the first SB in the queue
      */
-    public synchronized ObsProject getProject() {
-        return (ObsProject) queue.firstElement();
+    public synchronized SProject getProject() {
+        return (SProject) queue.firstElement();
     }
 
 
     public synchronized Vector queueToVector() {
         return queue;
+    }
+
+    public boolean isProjectComplete() {
+        boolean res = false;
+        for(int i=0; i< queue.size(); i++) {
+            
+        }
+        return res;
+    }
+    public String[] getCompletedProjects() {
+        return null;
+    }
+    public int getQueueSize() {
+        return queue.size();
     }
 	public static void main(String[] args) {
 	}

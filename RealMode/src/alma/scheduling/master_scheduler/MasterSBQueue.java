@@ -26,7 +26,11 @@
 package ALMA.scheduling.master_scheduler;
 
 import java.util.Vector;
-import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.obsproject.*;
+import alma.entity.xmlbinding.obsproject.types.*;
+import ALMA.scheduling.define.SUnit;
+import ALMA.Control.ExecBlockEvent;
 //import alma.bo.SchedBlock;
 
 /**
@@ -37,21 +41,25 @@ import alma.entity.xmlbinding.schedblock.SchedBlock;
  * @author Allen Farris
  */
 public class MasterSBQueue {
-	private Vector queue;
+	private Vector sbQueue;
+    private Vector suQueue;
 
 	public MasterSBQueue () {
-        queue = new Vector();
+        sbQueue = new Vector();
+        suQueue = new Vector();
 	}
 
     public synchronized void addSchedBlock(SchedBlock sb) {
         //System.out.println("Adding sbs to queue");
-        queue.add(sb);
+        sbQueue.add(sb);
+        suQueue.add(new SUnit(sb));
     }
 
     public synchronized void addSchedBlock(SchedBlock[] sbs) {
         //int len = sbs.size();
         for(int i=0; i < sbs.length; i++) {
-            queue.add(sbs[i]);
+            sbQueue.add(sbs[i]);
+            suQueue.add(new SUnit(sbs[i]));
         }
     }
 
@@ -59,24 +67,36 @@ public class MasterSBQueue {
      *  Returns the SchedBlock at location i
      */
     public synchronized SchedBlock getSchedBlock(int i) {
-        return (SchedBlock)queue.elementAt(i);
+        return (SchedBlock)sbQueue.elementAt(i);
+    }
+    /**
+     *  Returns the SUnit at location i
+     */
+    public synchronized SUnit getSUnit(int i) {
+        return (SUnit)suQueue.elementAt(i);
     }
 
     /**
      *  Returns the first SB in the queue
      */
     public synchronized SchedBlock getSchedBlock() {
-        return (SchedBlock) queue.firstElement();
+        return (SchedBlock) sbQueue.firstElement();
+    }
+    /**
+     *  Returns the first SUnit in the queue
+     */
+    public synchronized SUnit getSUnit() {
+        return (SUnit) suQueue.firstElement();
     }
 
 
     public synchronized Vector getAllUid() {
-        int size = queue.size();
+        int size = sbQueue.size();
         //String[] uid = new String[size];
         Vector uid = new Vector();
         for(int i = 0; i< size; i++) {
         
-            uid.add( (String)((SchedBlock)queue.elementAt(i)).getSchedBlockEntity().getEntityId() );
+            uid.add( (String)((SchedBlock)sbQueue.elementAt(i)).getSchedBlockEntity().getEntityId() );
             //uid.add( (String)((SchedBlock)queue.elementAt(i)).getId());
         }
         return uid;
@@ -93,9 +113,69 @@ public class MasterSBQueue {
         result = false;
         return result;
     }
+
+    public void updateSUnit(ExecBlockEvent e) {
+        SchedBlock tmpsb;
+        String id;
+        for(int i =0; i < sbQueue.size(); i++) {
+            tmpsb =(SchedBlock)sbQueue.elementAt(i) ;
+            id = tmpsb.getSchedBlockEntity().getEntityId();
+            if(e.sbId.equals(id)) {
+                ObsUnitControl ouc = tmpsb.getObsUnitControl(); 
+                if(ouc == null) {
+                    ouc = new ObsUnitControl();
+                }
+                switch(e.status.value()) {
+                    case 0://exec block status = processing
+                        ouc.setSchedStatus(SchedStatusT.RUNNING);
+                        break;
+                    case 1: //exec block status = ok
+                        ouc.setSchedStatus(SchedStatusT.COMPLETED);
+                        break;
+                    case 2://exec block status = failed
+                        ouc.setSchedStatus(SchedStatusT.ABORTED);
+                        break;
+                    case 3://exec block status = timeout
+                        ouc.setSchedStatus(SchedStatusT.ABORTED);
+                        break;
+                    default://exec block status kooky.. 
+                        break;
+                }
+                tmpsb.setObsUnitControl(ouc);
+                SUnit tmpsu = matchSUnit(id);
+                tmpsu.updateSB(tmpsb);
+            }
+        }
+    }
+    private SchedBlock matchSB(String id) {
+        SchedBlock tmp=null;
+        for(int i=0; i<sbQueue.size();i++){
+            tmp = (SchedBlock)sbQueue.elementAt(i);
+            if(id.equals(tmp.getSchedBlockEntity().getEntityId()) ){
+                return tmp;
+            }
+        }
+        return tmp;
+    }
+    private SUnit matchSUnit(String id) {
+        SUnit tmp=null;
+        for(int i=0; i<suQueue.size(); i++) {
+            tmp = (SUnit)suQueue.elementAt(i);
+            if(id.equals(tmp.getId()) ){
+                return tmp;
+            }
+        }
+        return tmp;
+    }
+    public int getSUnitSize(){
+        return suQueue.size();
+    }
+    public int getSBSize() {
+        return sbQueue.size();
+    }
     
     public synchronized Vector queueToVector() {
-        return queue;
+        return sbQueue;
     }
 	public static void main(String[] args) {
 	}

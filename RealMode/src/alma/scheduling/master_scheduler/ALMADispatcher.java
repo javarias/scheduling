@@ -90,13 +90,15 @@ public class ALMADispatcher implements ControlProxy {
             logger.log(Level.INFO, "SCHEDULING: Got array controller");
             //tell control to process the schedblock
             //arrayControllerComp.processSchedBlock(id, time.getTime());
+            arrayControllerComp.observeNow(id);
+            /*
             try {
-                arrayControllerComp.observeNow(id);
             } catch(ArrayNotIdleException e){
                 logger.severe("SCHEDULING: "+e.toString());
             } catch(TooLateException e) {
                 logger.severe("SCHEDULING: "+e.toString());
             }
+            */
         } catch (Exception e) {
             logger.severe("SCHEDULING: error getting array controller");
             logger.severe("SCHEDULING: "+e.toString());

@@ -27,7 +27,7 @@
 package ALMA.scheduling.define;
 
 import java.util.ArrayList;
-
+import alma.entity.xmlbinding.schedblock.*;
 /**
  * An SUnit is the lowest-level, atomic scheduling unit. 
  * 
@@ -72,6 +72,7 @@ public class SUnit implements HasMembers, MemberOf {
 	private double frequency;
 	
 	private Status unitStatus;
+    private SchedBlock schedBlock;
 	
 	/**
 	 * Create an SUnit object.
@@ -100,9 +101,19 @@ public class SUnit implements HasMembers, MemberOf {
 		frequency = 0.0;
 		unitStatus = new Status (Status.WAITING);
 	}
+    public SUnit(SchedBlock sb) {
+        this();
+        this.schedBlock = sb;
+        this.schedBlockId = sb.getSchedBlockEntity().getEntityId();
+        this.projectId = sb.getObsProjectRef().getEntityId();
+    }
 
 	public void setMemberLink(SUnitSet parent) {
 	}
+
+    public void updateSB(SchedBlock sb) {
+        this.schedBlock = sb;
+    }
 
 	////////////////////////////////////////////////////
 	// Implementation of the ArchiveEntity interface. //
@@ -336,6 +347,10 @@ public class SUnit implements HasMembers, MemberOf {
 	// Getter methods //
 	////////////////////
 
+    public SchedBlock getSchedBlock() {
+        return schedBlock;
+    }
+
 	/**
 	 * @return
 	 */
@@ -439,6 +454,9 @@ public class SUnit implements HasMembers, MemberOf {
 	// Setter methods //
 	////////////////////
 
+    public void setSchedBlock(SchedBlock sb) {
+        this.schedBlock = sb;
+    }
 	/**
 	 * @param b
 	 */

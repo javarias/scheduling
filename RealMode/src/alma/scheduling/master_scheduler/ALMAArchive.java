@@ -203,7 +203,7 @@ public class ALMAArchive implements ArchiveProxy {
         if(ouc == null) {
             ouc = new ObsUnitControl();
         }
-        switch(execblockevent.blockStatus.value()) {
+        switch(execblockevent.status.value()) {
             case 0://exec block status = processing
                 ouc.setSchedStatus(SchedStatusT.RUNNING);
                 break;

@@ -26,6 +26,9 @@
  
 package ALMA.scheduling.define;
 
+import java.util.Vector;
+import alma.entity.xmlbinding.obsproject.*;
+import alma.entity.xmlbinding.schedblock.*;
 
 /**
  * An SProject is an observing project as viewed by the
@@ -35,6 +38,7 @@ package ALMA.scheduling.define;
  * @author Allen Farris
  */
 public class SProject implements ArchiveEntity {
+    private ObsProject proj;
 	private String id;
 	private STime timeOfCreation;
 	private STime timeOfUpdate;
@@ -55,6 +59,8 @@ public class SProject implements ArchiveEntity {
 	private int numberUnitsFailed;
 	private Status projectStatus;
 	private boolean breakpoint;
+    /********TEMPORARY!!!**********/
+    private Vector sbs;
 
 	/**
 	 * Construct an SProject.
@@ -77,6 +83,21 @@ public class SProject implements ArchiveEntity {
 		breakpoint = false;
 	}
 
+    public SProject(ObsProject p) {
+        this();
+        this.proj = p;
+        this.obsProjectId = p.getObsProjectEntity().getEntityId();
+        this.id = obsProjectId;
+        ObsUnitSetT[] tmp = proj.getObsProgram().getObsUnitSetTChoice().getObsUnitSet();
+        /********TEMPORARY!!!**********/
+        sbs = new Vector();
+        
+    }
+
+    public void linkSUnitToProject(SUnit sb) {
+        sbs.add(sb);
+    }
+
 	public void setMemberLink() {
 		program.setMemberIndex(0);
 		program.setId(getId() + ".0");
@@ -90,6 +111,11 @@ public class SProject implements ArchiveEntity {
 		// program's parent is null, because it has no UnitSetMember parent.
 		program.setMemberLink(program);
 	}
+
+    ////////////////////////////////////////////////////
+    //  Stuff to see if project is completed or not.  //
+    ////////////////////////////////////////////////////
+
 
 	////////////////////////////////////////////////////
 	// Implementation of the ArchiveEntity interface. //

@@ -35,8 +35,6 @@ import alma.acs.container.ContainerServices;
 import ALMA.pipelinescience.ScienceProcessingRequestEnd;
 import ALMA.pipelinescience.ScienceProcessingRequestEndHelper;
 
-import ALMA.scheduling.NothingCanBeScheduledEvent;
-import ALMA.scheduling.NothingCanBeScheduledEventHelper;
 import ALMA.scheduling.master_scheduler.ALMAArchive;
 import ALMA.scheduling.define.nc.*;
 import ALMA.scheduling.project_manager.ALMAPipeline;
@@ -95,11 +93,6 @@ public class PipelineEventReceiver extends Consumer {
     }
     
     
-    public void sendNCBSEvent() {
-        NothingCanBeScheduledEvent ncbs = new NothingCanBeScheduledEvent(
-            "Pipeline is done, Shut down scheduling system for R0+!");
-        //pipeline.sendNothingCanBeScheduledEvent(ncbs);
-    }
     //////////////////////////////////////////
     /* Get Methods */
 

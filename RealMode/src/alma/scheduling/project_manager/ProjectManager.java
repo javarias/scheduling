@@ -92,9 +92,22 @@ public class ProjectManager implements Runnable {
         createSchedulingNC();
         projects = new ProjectQueue();
         projects.addProject(archive.getProject());
+        // TEMPORARY!!
+        //Link sbs to their projects!
+        /*
+        for(int i=0; i < projects.getQueueSize(); i++) {
+            for(int j=0; j < sbQueue.getSUnitSize(); j++) {
+                if(sbQueue.getSUnit(j).getProjectId().equals(projects.getProject(i).getId())){
+                    projects.getProject(i).linkSUnitToProject(sbQueue.getSUnit(j));
+                    System.out.println("SCHEDULING: sunit project id = "+sbQueue.getSUnit(j).getProjectId());
+                    System.out.println("SCHEDULING: project id = "+projects.getProject(i).getId());
+                }
+            }
+        }
+        */
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
-        control_event = new ControlEventReceiver(cs, pipeline, archive);
+        control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
         pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
         pointing_event = new PointingReducedEventReceiver(cs);
         focus_event = new FocusReducedEventReceiver(cs);
@@ -194,11 +207,15 @@ public class ProjectManager implements Runnable {
         control_event.setProjectManagerTaskControl(pmTaskControl);
         pipeline_event.setProjectManagerTaskControl(pmTaskControl);
         while(pmFlag) {
+            //check for completed projects/ObsUnitSets if there are
+            //new ones which the pipeline are not dealing with, start
+            //the pipeline and note in project/ObsUnitSets that pipeline
+            //is processing it!
+            if(projects.isProjectComplete()) {
+                String[] completed = projects.getCompletedProjects();
+                //start pipeline for each one of these projects.
+            }
             try {
-                //check for completed projects/ObsUnitSets if there are
-                //new ones which the pipeline are not dealing with, start
-                //the pipeline and note in project/ObsUnitSets that pipeline
-                //is processing it!
                 Thread.sleep(pmSleepTime); //5 minute sleep.
                 logger.info("SCHEDULING: PM woken up");
             }catch(InterruptedException e) {

@@ -29,6 +29,7 @@ package ALMA.scheduling.master_scheduler;
 import ALMA.Control.ExecBlockEvent;
 import ALMA.Control.CompletionStatus;
 
+import ALMA.scheduling.master_scheduler.MasterSBQueue;
 import ALMA.scheduling.project_manager.ALMAPipeline;
 import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
 
@@ -47,30 +48,38 @@ public class ProcessControlEvent implements Runnable {
     private ALMAArchive archive;
     private ALMAPipeline pipeline;
     private ExecBlockEvent event;
+    private MasterSBQueue sbQueue;
     
     public ProcessControlEvent(ProjectManagerTaskControl pmtc,
                                 ALMAArchive a, ALMAPipeline p,
-                                    ExecBlockEvent e) {
+                                    ExecBlockEvent e, MasterSBQueue q) {
 
         this.pmTaskControl = pmtc;
         this.archive = a;
         this.pipeline =p;
         this.event = e;
+        this.sbQueue = q;
     }                                
 
     public void run() {
         System.out.println("SCHEDULING: process control event started");
         updateSB(event);
+        startPipeline(event.sbId);
+        // interrupt project manager so that it can check to see if thats 
+        //the last SB in the ObsUnitSet to be processed! (actually checks 
+        //project now)
+        //System.out.println("SCHEDULING: about to interrupt PM");
+        //pmTaskControl.getTask().interrupt();
     }
 
     private void updateSB(ExecBlockEvent event) {
         try {
             archive.updateSchedBlock(event);
+            sbQueue.updateSUnit(event);
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
-/*
     public void startPipeline(String id) {
         PipelineProcessingRequest ppr = 
             pipeline.createPipelineProcessingRequest();
@@ -85,6 +94,5 @@ public class ProcessControlEvent implements Runnable {
             se.printStackTrace();
         }
     }
-    */
     
 }
