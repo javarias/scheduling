@@ -38,6 +38,7 @@ import ALMA.scheduling.NothingCanBeScheduledEvent;
 import ALMA.scheduling.master_scheduler.ALMAArchive;
 import ALMA.scheduling.master_scheduler.ALMADispatcher;
 import ALMA.scheduling.master_scheduler.MasterSBQueue;
+import ALMA.scheduling.master_scheduler.SchedulingPublisher;
 import ALMA.scheduling.define.nc.*;
 
 import ALMA.scheduling.receivers.*;
@@ -79,8 +80,8 @@ public class ProjectManager implements Runnable {
     //private Receiver controlReceiver;
     private boolean pmFlag=true;
     private int pmSleepTime = 300000; //5 minute sleep
-    private SimpleSupplier supplier;
-    
+    private SchedulingPublisher sp;
+
     public ProjectManager(boolean isSimulation, ContainerServices cs, 
                     ALMAArchive a, MasterSBQueue q, ALMADispatcher d ) {
         this.isSimulation = isSimulation;
@@ -172,18 +173,11 @@ public class ProjectManager implements Runnable {
         }
     }
 
+    /** 
+     * Creates the scheduling notification channel.
+     */
     public void createSchedulingNC() {
-        String[] eventType = new String[1];
-        eventType[0] = "ALMA.scheduling.NothingCanBeScheduledEvent";
-        if(isSimulation) { //create local channel
-            LocalNotificationChannel sched = 
-                new LocalNotificationChannel(
-                    ALMA.scheduling.CHANNELNAME.value);
-        } else { //create corba channel
-            CorbaNotificationChannel sched = 
-                new CorbaNotificationChannel(
-                   ALMA.scheduling.CHANNELNAME.value);
-        }
+        sp = new SchedulingPublisher(isSimulation, containerServices);
     }
 
     private Vector convertToVector(Object[] obj) {
@@ -202,6 +196,10 @@ public class ProjectManager implements Runnable {
         pipeline_event.setProjectManagerTaskControl(pmTaskControl);
         while(pmFlag) {
             try {
+                //check for completed projects/ObsUnitSets if there are
+                //new ones which the pipeline are not dealing with, start
+                //the pipeline and note in project/ObsUnitSets that pipeline
+                //is processing it!
                 Thread.sleep(pmSleepTime); //5 minute sleep.
                 logger.info("SCHEDULING: PM woken up");
             }catch(InterruptedException e) {
@@ -234,10 +232,6 @@ public class ProjectManager implements Runnable {
     }
     
     //////////////////////////////////////////////////////////////////////////
-
-    public void sendNothingCanBeScheduledEvent(NothingCanBeScheduledEvent e) {
-        //action.sendNothingCanBeScheduledEvent(e);
-    }
 
     public static void main(String[] args) {
 	}

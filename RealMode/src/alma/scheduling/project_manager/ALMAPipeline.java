@@ -38,7 +38,6 @@ import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;
 
 import ALMA.pipelinescience.SciencePipeline;
 
-import ALMA.scheduling.NothingCanBeScheduledEvent;
 import ALMA.scheduling.master_scheduler.SchedulingException;
 
 /**
@@ -113,10 +112,6 @@ public class ALMAPipeline implements PipelineProxy {
     */
 		return null;
 	}
-
-    public void sendNothingCanBeScheduledEvent(NothingCanBeScheduledEvent e) {
-        //projectManager.sendNothingCanBeScheduledEvent(e);
-    }
 
 	public static void main(String[] args) {
 	}
