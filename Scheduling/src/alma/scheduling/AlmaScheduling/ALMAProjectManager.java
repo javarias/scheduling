@@ -374,6 +374,7 @@ public class ALMAProjectManager extends ProjectManager {
                 break;
             }
         }
+        //updateSession(
         try {
             EndSession end_event = new EndSession(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),

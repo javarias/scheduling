@@ -314,7 +314,6 @@ public class ALMAArchive implements Archive {
         }catch(Exception e){
             throw new SchedulingException (e);
         }
-
         return sb;
     }
 

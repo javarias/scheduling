@@ -37,7 +37,6 @@ import alma.acs.container.ContainerException;
 import alma.acs.component.ComponentLifecycleException;
 
 import alma.scheduling.MasterSchedulerIF;
-//import alma.scheduling.SchedulingMasterComponentOperations;
 
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
