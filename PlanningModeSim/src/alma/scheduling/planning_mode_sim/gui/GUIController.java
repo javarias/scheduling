@@ -1,11 +1,15 @@
 package alma.scheduling.planning_mode_sim.gui;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.awt.Component;
 import java.lang.Integer;
 import java.util.Vector;
+import java.util.Properties;
+import java.util.StringTokenizer;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import javax.swing.JPanel;
@@ -19,6 +23,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import alma.scheduling.planning_mode_sim.simulator.Tag;
 import alma.scheduling.planning_mode_sim.simulator.Simulator;
 
 /**
@@ -315,6 +320,80 @@ public class GUIController implements Runnable {
      */
     public void loadFile(String filename) {
         System.out.println("Opening "+filename);
+        Vector tab1 = new Vector();
+        Vector tab2 = new Vector();
+        Vector tab3 = new Vector();
+        Vector tab4 = new Vector();
+        Vector tab5 = new Vector();
+        Properties fileproperties = new Properties();
+        try {
+            FileInputStream file = new FileInputStream(filename);
+            fileproperties.load(file);
+            ////////////////////////////////////////////////////////////
+            tab1.add(fileproperties.getProperty(Tag.beginTime));
+            tab1.add(fileproperties.getProperty(Tag.endTime));
+            tab1.add(fileproperties.getProperty(Tag.logLevel));
+            tab1.add(fileproperties.getProperty(Tag.setUpTime));
+            tab1.add(fileproperties.getProperty(Tag.changeProjectTime));
+            tab1.add(fileproperties.getProperty(Tag.advanceClock));
+            tab1.add(fileproperties.getProperty(Tag.longitude));
+            tab1.add(fileproperties.getProperty(Tag.latitude));
+            tab1.add(fileproperties.getProperty(Tag.timeZone));
+            tab1.add(fileproperties.getProperty(Tag.altitude));
+            tab1.add(fileproperties.getProperty(Tag.minimumElevationAngle));
+            tab1.add(fileproperties.getProperty(Tag.numberAntennas));
+            ////////////////////////////////////////////////////////////
+            int totalbands = Integer.parseInt(
+                (String)fileproperties.getProperty(Tag.numberOfBands));
+            tab2.add(fileproperties.getProperty(Tag.numberOfBands));
+            for(int i = 0; i < totalbands; i++) {
+                tab2.add(fileproperties.getProperty(Tag.band+"."+i));
+            }
+            ////////////////////////////////////////////////////////////
+            tab3.add(fileproperties.getProperty(Tag.numberWeatherFunctions));
+            int totalWeatherFuncs = Integer.parseInt(
+                (String)fileproperties.getProperty(Tag.numberWeatherFunctions));
+            for(int i=0; i<totalWeatherFuncs; i++) {
+                tab3.add(fileproperties.getProperty(Tag.weather+"."+i));
+            }
+            ////////////////////////////////////////////////////////////
+            tab4.add(fileproperties.getProperty(Tag.weightPositionElevation));
+            tab4.add(fileproperties.getProperty(Tag.weightPositionMaximum));
+            tab4.add(fileproperties.getProperty(Tag.weightWeather));
+            tab4.add(fileproperties.getProperty(Tag.weightSameProjectSameBand));
+            tab4.add(fileproperties.getProperty(Tag.weightSameProjectDifferentBand));
+            tab4.add(fileproperties.getProperty(Tag.weightDifferentProjectSameBand));
+            tab4.add(fileproperties.getProperty(Tag.weightDifferentProjectDifferentBand));
+            tab4.add(fileproperties.getProperty(Tag.weightNewProject));
+            tab4.add(fileproperties.getProperty(Tag.weightOneSBRemaining));
+            tab4.add(fileproperties.getProperty(Tag.weightPriority));
+
+            ////////////////////////////////////////////////////////////
+            tab5.add(fileproperties.getProperty(Tag.numberProjects));
+            int totalprojects = Integer.parseInt(
+                (String)fileproperties.getProperty(Tag.numberProjects));
+            for(int i=0; i<totalprojects; i++) {
+                String s = fileproperties.getProperty(Tag.project+"."+i);
+                StringTokenizer token = new StringTokenizer(s,";");
+                int tokencount = token.countTokens();
+                if(tokencount != 4) {
+                    throw new Exception("Incorrect input data file.");
+                } else if (tokencount == 4) {
+                    while(token.hasMoreElements()) {
+                        s = token.nextToken();
+                    }
+                    
+                }
+                System.out.println(s);
+                s = s.trim();
+                int totaltargets = Integer.parseInt(s);
+                tab5.add(fileproperties.getProperty(Tag.project+"."+i));
+            }
+            ////////////////////////////////////////////////////////////
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
     }
     
     //////////////////////////////////////////////

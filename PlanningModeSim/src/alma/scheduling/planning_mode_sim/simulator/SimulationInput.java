@@ -340,7 +340,7 @@ public class SimulationInput extends Properties {
 		factor[5].setName("sameProjectDifferentBand");
 		factor[5].setDefinition("SB belongs to same project as current but has a different frequency band, value: 1/0");
 		factor[6].setName("differentProjectSameBand");
-		factor[6].setDefinition("SB belongs to a different project but has same frequency band as current, value: 1/0");
+		factor[6].setDefinition("SB belongs to a difObservingToolferent project but has same frequency band as current, value: 1/0");
 		factor[7].setName("differentProjectDifferentBand");
 		factor[7].setDefinition("SB belongs to a different project and has different frequency band from current, value: 1/0");
 		factor[8].setName("newProject");
