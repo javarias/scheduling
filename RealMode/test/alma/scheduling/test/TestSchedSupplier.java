@@ -39,27 +39,11 @@ public class TestSchedSupplier { // extends Supplier {
     private SimpleSupplier sup2;
 
     public TestSchedSupplier() {
-        /*
-        String[] names = new String[3];
-        names[SimpleSupplier.CHANNELPOS] = alma.TelCalPublisher.CHANNELNAME.value;
-        names[SimpleSupplier.TYPEPOS] = new String(
-            "PointingReducedEvent");
-        //    "alma.TelCalPublisher.PointingReducedEvent");
-        names[SimpleSupplier.HELPERPOS] = new String(
-            "alma.TelCalPublisher.PointingReducedEventHelper");
-        */
         //create a supplier for the PointingReducedEvent
         sup1 = new SimpleSupplier ( alma.TelCalPublisher.CHANNELNAME.value,
                 alma.TelCalPublisher.PointingReducedEvent.class );
                 
         System.out.println("SCHED_TEST: sup1 created"); 
-        /*
-        names[SimpleSupplier.TYPEPOS] = new String(
-            "FocusReducedEvent");
-            //"alma.TelCalPublisher.FocusReducedEvent");
-        names[SimpleSupplier.HELPERPOS] = new String(
-            "alma.TelCalPublisher.FocusReducedEventHelper");
-        */
         //create a supplier for the FocusReducedEvent
         sup2 = new SimpleSupplier ( alma.TelCalPublisher.CHANNELNAME.value,
                 alma.TelCalPublisher.FocusReducedEvent.class );
@@ -67,12 +51,10 @@ public class TestSchedSupplier { // extends Supplier {
     }
 
     public void sendTelCalEvents() {
-
-
-        //send out a PointingReducedEvent
+        //create a PointingReducedEvent
         PointingReducedEvent p_event = new PointingReducedEvent(
             "TestingPointingReduced",1,"1","1");
-        //send out a FocusReducedEvent
+        //create a FocusReducedEvent
         FocusReducedEvent f_event = new FocusReducedEvent(
             "TestingFocusReduced",1,"1","1");
 
