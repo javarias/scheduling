@@ -1,0 +1,330 @@
+Components have been constructed.
+Component names and services have been set.
+INFO: Simulation.title: Scheduling simulation run at -4679-11-06T11:58:57.
+INFO: Simulation.mode: PLANNING
+INFO: Simulation.logLevel: CONFIG
+INFO: Simulation.beginTime: null
+INFO: Simulation.endTime: null
+INFO: Site.longitude: 1.878283678389046
+INFO: Site.latitude: 0.5947863779196076
+INFO: Site.altitude: 2124.0
+INFO: Site.timeZone: -6
+INFO: Site.minimumElevationAngle: 0.13962634015954636
+INFO: Site.numberAntennas: 64
+INFO: clock.initialized
+INFO: clock.executing
+INFO: weatherModel.initialized
+INFO: weatherModel.executing
+Background
+bk00 1.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk01 2.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk02 3.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk03 4.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk04 5.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk05 6.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk06 7.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk07 8.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk08 9.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+bk09 10.0 hrs 50.0 degs 40.0 Ghz 300 secs weather is any
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+TARGET: null repeat 5
+AF1
+af01 0.2 hrs 50.0 degs 68.0 Ghz 1800 secs weather is excellent
+af02 1.2 hrs 49.0 degs 68.0 Ghz 1500 secs weather is good
+af03 2.2 hrs 48.0 degs 68.0 Ghz 2100 secs weather is average
+af04 3.2 hrs 47.0 degs 68.0 Ghz 1200 secs weather is average
+af05 4.2 hrs 46.0 degs 68.0 Ghz 1500 secs weather is good
+af06 5.2 hrs 45.0 degs 68.0 Ghz 2100 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF2
+af07 6.2 hrs 45.0 degs 100.0 Ghz 900 secs weather is excellent
+af08 7.2 hrs 44.0 degs 100.0 Ghz 1800 secs weather is good
+af09 8.2 hrs 43.0 degs 100.0 Ghz 1200 secs weather is average
+af10 9.2 hrs 42.0 degs 100.0 Ghz 2100 secs weather is average
+af11 10.2 hrs 41.0 degs 100.0 Ghz 2400 secs weather is good
+af12 11.2 hrs 40.0 degs 100.0 Ghz 1800 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF3
+af13 12.2 hrs 39.0 degs 80.0 Ghz 1800 secs weather is excellent
+af14 13.2 hrs 38.0 degs 80.0 Ghz 1800 secs weather is good
+af15 14.2 hrs 37.0 degs 80.0 Ghz 1800 secs weather is average
+af16 15.2 hrs 36.0 degs 80.0 Ghz 1800 secs weather is average
+af17 16.2 hrs 35.0 degs 80.0 Ghz 1800 secs weather is good
+af18 17.2 hrs 34.0 degs 80.0 Ghz 1800 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF4
+af19 18.2 hrs 33.0 degs 200.0 Ghz 1800 secs weather is excellent
+af20 19.2 hrs 32.0 degs 200.0 Ghz 1500 secs weather is good
+af21 20.2 hrs 31.0 degs 200.0 Ghz 2100 secs weather is average
+af22 21.2 hrs 30.0 degs 200.0 Ghz 1200 secs weather is average
+af23 22.2 hrs 29.0 degs 200.0 Ghz 1500 secs weather is good
+af24 23.2 hrs 28.0 degs 200.0 Ghz 2100 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF5
+af25 0.2 hrs 50.0 degs 300.0 Ghz 1800 secs weather is excellent
+af26 1.2 hrs 49.0 degs 300.0 Ghz 1500 secs weather is good
+af27 2.2 hrs 48.0 degs 300.0 Ghz 2100 secs weather is average
+af28 3.2 hrs 47.0 degs 300.0 Ghz 1200 secs weather is average
+af29 4.2 hrs 46.0 degs 300.0 Ghz 1500 secs weather is good
+af30 5.2 hrs 45.0 degs 300.0 Ghz 2100 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF6
+af31 6.2 hrs 45.0 degs 500.0 Ghz 900 secs weather is excellent
+af32 7.2 hrs 44.0 degs 500.0 Ghz 1800 secs weather is good
+af33 8.2 hrs 43.0 degs 500.0 Ghz 1200 secs weather is average
+af34 9.2 hrs 42.0 degs 500.0 Ghz 2100 secs weather is average
+af35 10.2 hrs 41.0 degs 500.0 Ghz 2400 secs weather is good
+af36 11.2 hrs 40.0 degs 500.0 Ghz 1800 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF7
+af37 12.2 hrs 39.0 degs 900.0 Ghz 1800 secs weather is excellent
+af38 13.2 hrs 38.0 degs 900.0 Ghz 1800 secs weather is good
+af39 14.2 hrs 37.0 degs 900.0 Ghz 1800 secs weather is average
+af40 15.2 hrs 36.0 degs 900.0 Ghz 1800 secs weather is average
+af41 16.2 hrs 35.0 degs 900.0 Ghz 1800 secs weather is good
+af42 17.2 hrs 34.0 degs 900.0 Ghz 1800 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+AF8
+af43 18.2 hrs 33.0 degs 300.0 Ghz 1800 secs weather is excellent
+af44 19.2 hrs 32.0 degs 300.0 Ghz 1500 secs weather is good
+af45 20.2 hrs 31.0 degs 300.0 Ghz 2100 secs weather is average
+af46 21.2 hrs 30.0 degs 300.0 Ghz 1200 secs weather is average
+af47 22.2 hrs 29.0 degs 300.0 Ghz 1500 secs weather is good
+af48 23.2 hrs 28.0 degs 300.0 Ghz 2100 secs weather is poor
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+TARGET: null repeat 0
+INFO: archive.initialized
+INFO: Archive.load Scheduling policy data loaded.
+INFO: Archive.load Scheduling block data loaded.
+INFO: Archive.load ObsUnitSet data loaded.
+INFO: Archive.load Project data loaded.
+INFO: archive.executing
+INFO: control.initialized
+INFO: control.executing
+INFO: master_scheduler.initialized
+INFO: master_scheduler.executing
+>>> Components have been created, initialized, and are ready.
+The simulation is running now.
+INFO: DynamicSchedulingAlgorithm policy R1Policy
+INFO: DynamicSchedulingAlgorithm position 0.25
+INFO: DynamicSchedulingAlgorithm position 0.25
+INFO: DynamicSchedulingAlgorithm weather 0.5
+INFO: DynamicSchedulingAlgorithm priority 10.0
+INFO: DynamicSchedulingAlgorithm sameProjectSameBand 10.0
+INFO: DynamicSchedulingAlgorithm sameProjectDifferentBand -5.0
+INFO: DynamicSchedulingAlgorithm differentProjectSameBand 5.0
+INFO: DynamicSchedulingAlgorithm differentProjectDifferentBand -10.0
+INFO: DynamicSchedulingAlgorithm newProject -15.0
+INFO: DynamicSchedulingAlgorithm oneSBRemaining 20.0
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 2.3984435786976452 4.241150082346221 2.3984435786976452
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 1.2851421902861822 3.193952531149623 1.2851421902861822
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 1.5641662442150417 3.455751918948773 1.5641662442150417
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 1.2851421902861822 3.193952531149623 1.2851421902861822
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 1.5641662442150417 3.455751918948773 1.5641662442150417
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 1.8426998215171924 3.717551306747922 1.8426998215171924
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 2.1207807763827744 3.979350694547071 2.1207807763827744
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 1.8426998215171924 3.717551306747922 1.8426998215171924
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 2.1207807763827744 3.979350694547071 2.1207807763827744
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 2.675719728613676 4.50294947014537 2.675719728613676
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 2.675719728613676 4.50294947014537 2.675719728613676
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 10 false false false true true false 2.3984435786976452 4.241150082346221 2.3984435786976452
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 3.5055058142851467 5.288347633542818 3.5055058142851467
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 3.2292252978461313 5.026548245743669 3.2292252978461313
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 2.9526381106544406 4.764748857944519 2.9526381106544406
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 4.332726429770457 6.073745796940266 4.332726429770457
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 3.7815023629382596 5.550147021341967 3.7815023629382596
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 4.057236024204873 5.811946409141117 4.057236024204873
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 4.332726429770457 6.073745796940266 4.332726429770457
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 3.5055058142851467 5.288347633542818 3.5055058142851467
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 3.7815023629382596 5.550147021341967 3.7815023629382596
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 4.057236024204873 5.811946409141117 4.057236024204873
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 3.2292252978461313 5.026548245743669 3.2292252978461313
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 9 false false false true true false 2.9526381106544406 4.764748857944519 2.9526381106544406
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false -0.4019932860418216 1.6231562043547265 -0.4019932860418216
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 1.0055859330132937 2.9321531433504737 1.0055859330132937
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 0.16323562523374147 2.146754979953025 0.16323562523374147
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 0.44468695553931736 2.408554367752175 0.44468695553931736
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 0.72545129455141 2.670353755551324 0.72545129455141
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 0.72545129455141 2.670353755551324 0.72545129455141
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false -0.11896696404030305 1.8849555921538759 -0.11896696404030305
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 1.0055859330132937 2.9321531433504737 1.0055859330132937
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false -0.11896696404030305 1.8849555921538759 -0.11896696404030305
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false -0.4019932860418216 1.6231562043547265 -0.4019932860418216
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 0.16323562523374147 2.146754979953025 0.16323562523374147
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 8 false false false true true false 0.44468695553931736 2.408554367752175 0.44468695553931736
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -0.663792673840971 1.3613568165555772 -0.663792673840971
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -0.9477249254310496 1.0995574287564276 -0.9477249254310496
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -2.0946187739671305 0.05235987755982988 -2.0946187739671305
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -1.232656918900692 0.8377580409572781 -1.232656918900692
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -2.0946187739671305 0.05235987755982988 -2.0946187739671305
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -1.8059684555326756 0.3141592653589793 -1.8059684555326756
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -1.518696470522462 0.5759586531581287 -1.518696470522462
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -0.9477249254310496 1.0995574287564276 -0.9477249254310496
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -1.8059684555326756 0.3141592653589793 -1.8059684555326756
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -1.518696470522462 0.5759586531581287 -1.518696470522462
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -0.663792673840971 1.3613568165555772 -0.663792673840971
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 6 false false false true true false -1.232656918900692 0.8377580409572781 -1.232656918900692
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -1.6233798759286615 0.5235987755982988 -1.6233798759286615
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -1.361580488129512 0.7853981633974483 -1.361580488129512
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -0.05258354913376495 2.0943951023931953 -0.05258354913376495
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false 0.20921583866538462 2.356194490192345 0.20921583866538462
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false 0.4710152264645342 2.6179938779914944 0.4710152264645342
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -1.0997811003303626 1.0471975511965976 -1.0997811003303626
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -0.837981712531213 1.3089969389957472 -0.837981712531213
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -0.5761823247320637 1.5707963267948966 -0.5761823247320637
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -0.3143829369329141 1.8325957145940461 -0.3143829369329141
+INFO: DSA: [0.0,0.0,0.0] 0.0 0.0 0.0 4 false false false true true false -1.8851792637278109 0.2617993877991494 -1.8851792637278109
+INFO: SB Best Score: 58.447559669067125 Rank: 65.0 Success: 0.8991932256779558 Time: 2003-08-24T21:01:55
+INFO: SB Best Score: 79.08481638495132 Rank: 85.0 Success: 0.930409604528839 Time: 2003-08-24T21:28:55
+INFO: SB Best Score: 62.76307255112869 Rank: 65.0 Success: 0.9655857315558259 Time: 2003-08-24T22:03:55
+INFO: SB Best Score: 74.0098299449568 Rank: 85.0 Success: 0.8707038817053743 Time: 2003-08-24T22:55:55
+INFO: SB Best Score: 54.657997866853556 Rank: 65.0 Success: 0.8408922748746701 Time: 2003-08-24T23:20:55
+INFO: SB Best Score: 33.615566794079335 Rank: 35.0 Success: 0.9604447655451238 Time: 2003-08-25T00:02:55
+INFO: SB Best Score: 51.172546324121306 Rank: 55.0 Success: 0.930409933165842 Time: 2003-08-25T00:34:55
+INFO: SB Best Score: 51.490048159652396 Rank: 55.0 Success: 0.9361826938118617 Time: 2003-08-25T01:09:55
+INFO: SB Best Score: 51.283257904974526 Rank: 55.0 Success: 0.9324228709995368 Time: 2003-08-25T01:39:55
+INFO: SB Best Score: 34.73624867167013 Rank: 35.0 Success: 0.9924642477620038 Time: 2003-08-25T01:59:55
+INFO: SB Best Score: 54.58500246179123 Rank: 55.0 Success: 0.992454590214386 Time: 2003-08-25T02:41:55
+INFO: SB Best Score: 52.961407382405866 Rank: 55.0 Success: 0.9629346796801066 Time: 2003-08-25T03:01:55
+INFO: SB Best Score: 51.169161084924674 Rank: 55.0 Success: 0.9303483833622668 Time: 2003-08-25T03:26:55
+INFO: SB Best Score: 34.80641045247063 Rank: 35.0 Success: 0.9944688700705895 Time: 2003-08-25T04:01:55
+INFO: SB Best Score: 74.50913412003814 Rank: 75.0 Success: 0.9934551216005085 Time: 2003-08-25T04:33:55
+INFO: SB Best Score: 47.57280819681144 Rank: 55.0 Success: 0.8649601490329352 Time: 2003-08-25T05:08:55
+INFO: SB Best Score: 69.90046981673751 Rank: 75.0 Success: 0.9320062642231669 Time: 2003-08-25T05:30:55
+INFO: SB Best Score: 47.52846024238963 Rank: 55.0 Success: 0.8641538225889023 Time: 2003-08-25T06:00:55
+INFO: SB Best Score: 70.07946442326117 Rank: 75.0 Success: 0.9343928589768157 Time: 2003-08-25T06:37:55
+INFO: SB Best Score: 51.65225792001313 Rank: 55.0 Success: 0.9391319621820569 Time: 2003-08-25T06:57:55
+INFO: SB Best Score: 62.33403379236573 Rank: 75.0 Success: 0.8311204505648764 Time: 2003-08-25T07:24:55
+INFO: SB Best Score: 47.5786034890294 Rank: 55.0 Success: 0.8650655179823526 Time: 2003-08-25T07:59:55
+INFO: SB Best Score: 14.849935895117987 Rank: 15.0 Success: 0.9899957263411991 Time: 2003-08-25T08:41:55
+INFO: SB Best Score: 34.66270492852758 Rank: 35.0 Success: 0.9903629979579309 Time: 2003-08-25T08:53:55
+INFO: SB Best Score: 34.664294589411696 Rank: 35.0 Success: 0.9904084168403341 Time: 2003-08-25T08:58:55
+INFO: SB Best Score: 34.66366707942704 Rank: 35.0 Success: 0.9903904879836298 Time: 2003-08-25T09:03:55
+INFO: SB Best Score: 34.660822697234366 Rank: 35.0 Success: 0.990309219920982 Time: 2003-08-25T09:08:55
+INFO: SB Best Score: 34.65576279660537 Rank: 35.0 Success: 0.9901646513315822 Time: 2003-08-25T09:13:55
+INFO: SB Best Score: 33.714692824587196 Rank: 35.0 Success: 0.9632769378453485 Time: 2003-08-25T09:18:55
+INFO: SB Best Score: 33.731722512944195 Rank: 35.0 Success: 0.963763500369834 Time: 2003-08-25T09:23:55
+INFO: SB Best Score: 51.30890108554915 Rank: 55.0 Success: 0.9328891106463482 Time: 2003-08-25T09:28:55
+INFO: SB Best Score: 53.19145328877807 Rank: 55.0 Success: 0.9671173325232376 Time: 2003-08-25T10:05:55
+INFO: SB Best Score: 14.446248660840443 Rank: 15.0 Success: 0.9630832440560295 Time: 2003-08-25T10:42:55
+INFO: SB Best Score: 63.40848020464667 Rank: 75.0 Success: 0.8454464027286223 Time: 2003-08-25T10:54:55
+INFO: SB Best Score: 62.77282091546358 Rank: 75.0 Success: 0.8369709455395145 Time: 2003-08-25T11:41:55
+INFO: SB Best Score: 85.4054890055687 Rank: 95.0 Success: 0.8990051474270389 Time: 2003-08-25T12:18:55
+INFO: SB Best Score: 89.19803157163925 Rank: 95.0 Success: 0.9389266481225185 Time: 2003-08-25T12:48:55
+INFO: SB Best Score: 74.95053574895073 Rank: 75.0 Success: 0.9993404766526763 Time: 2003-08-25T13:18:55
+INFO: SB Best Score: 94.93046088950324 Rank: 95.0 Success: 0.999268009363192 Time: 2003-08-25T13:55:55
+INFO: SB Best Score: 92.29098443761607 Rank: 95.0 Success: 0.9714840467117482 Time: 2003-08-25T14:25:55
+INFO: SB Best Score: 89.367079907714 Rank: 95.0 Success: 0.9407061042917263 Time: 2003-08-25T14:55:55
+INFO: SB Best Score: 74.96630854304286 Rank: 75.0 Success: 0.9995507805739048 Time: 2003-08-25T15:25:55
+INFO: SB Best Score: 94.98427131296917 Rank: 95.0 Success: 0.9998344348733597 Time: 2003-08-25T16:02:55
+INFO: SB Best Score: 114.71358571431395 Rank: 115.0 Success: 0.9975094409940344 Time: 2003-08-25T16:32:55
+INFO: SB Best Score: 74.98986796646086 Rank: 75.0 Success: 0.9998649062194781 Time: 2003-08-25T17:02:55
+INFO: SB Best Score: 60.83028064517266 Rank: 65.0 Success: 0.9358504714641948 Time: 2003-08-25T17:39:55
+INFO: SB Best Score: 56.47428222231212 Rank: 65.0 Success: 0.8688351111124941 Time: 2003-08-25T18:11:55
+INFO: SB Best Score: 79.61867528812961 Rank: 85.0 Success: 0.9366902975074072 Time: 2003-08-25T18:43:55
+INFO: SB Best Score: 56.54344407440567 Rank: 65.0 Success: 0.8698991396062411 Time: 2003-08-25T19:18:55
+INFO: SB Best Score: 54.65264384712217 Rank: 65.0 Success: 0.8408099053403411 Time: 2003-08-25T20:00:55
+INFO: SB Best Score: 33.61556666604183 Rank: 35.0 Success: 0.9604447618869094 Time: 2003-08-26T00:02:55
+INFO: SB Best Score: 64.8558867213209 Rank: 75.0 Success: 0.8647451562842787 Time: 2003-08-26T00:34:55
+INFO: SB Best Score: 14.855689513731463 Rank: 15.0 Success: 0.9903793009154308 Time: 2003-08-26T01:04:55
+INFO: SB Best Score: 34.651664390832316 Rank: 35.0 Success: 0.9900475540237805 Time: 2003-08-26T01:16:55
+INFO: SB Best Score: 34.64306511559102 Rank: 35.0 Success: 0.9898018604454578 Time: 2003-08-26T01:21:55
+INFO: SB Best Score: 34.63225877355951 Rank: 35.0 Success: 0.9894931078159861 Time: 2003-08-26T01:26:55
+INFO: SB Best Score: 34.629412269502865 Rank: 35.0 Success: 0.9894117791286532 Time: 2003-08-26T01:31:55
+INFO: SB Best Score: 34.64073430797383 Rank: 35.0 Success: 0.9897352659421095 Time: 2003-08-26T01:36:55
+INFO: SB Best Score: 34.64985038899265 Rank: 35.0 Success: 0.9899957253997899 Time: 2003-08-26T01:41:55
+INFO: SB Best Score: 34.65675617379898 Rank: 35.0 Success: 0.9901930335371139 Time: 2003-08-26T01:46:55
+INFO: SB Best Score: 34.661448375613695 Rank: 35.0 Success: 0.9903270964461055 Time: 2003-08-26T01:51:55
+INFO: SB Best Score: 34.66392476120309 Rank: 35.0 Success: 0.9903978503200884 Time: 2003-08-26T01:56:55
+INFO: SB Best Score: 33.64052980899508 Rank: 35.0 Success: 0.9611579945427167 Time: 2003-08-26T02:01:55
+INFO: SB Best Score: 33.66493789184995 Rank: 35.0 Success: 0.9618553683385701 Time: 2003-08-26T02:06:55
+INFO: SB Best Score: 33.68718799088191 Rank: 35.0 Success: 0.9624910854537689 Time: 2003-08-26T02:11:55
+INFO: SB Best Score: 33.70726951625014 Rank: 35.0 Success: 0.9630648433214327 Time: 2003-08-26T02:16:55
+INFO: SB Best Score: 33.725172910237326 Rank: 35.0 Success: 0.9635763688639235 Time: 2003-08-26T02:21:55
+INFO: SB Best Score: 33.74088965179857 Rank: 35.0 Success: 0.9640254186228163 Time: 2003-08-26T02:26:55
+INFO: SB Best Score: 32.57448533051659 Rank: 35.0 Success: 0.9306995808719025 Time: 2003-08-26T02:31:55
+INFO: SB Best Score: 32.6115618286408 Rank: 35.0 Success: 0.9317589093897372 Time: 2003-08-26T02:36:55
+INFO: SB Best Score: 32.64656524027725 Rank: 35.0 Success: 0.9327590068650643 Time: 2003-08-26T02:41:55
+INFO: SB Best Score: 32.67947890569977 Rank: 35.0 Success: 0.9336993973057077 Time: 2003-08-26T02:46:55
+INFO: SB Best Score: 32.71028715978807 Rank: 35.0 Success: 0.9345796331368021 Time: 2003-08-26T02:51:55
+INFO: SB Best Score: 32.738975339483545 Rank: 35.0 Success: 0.9353992954138156 Time: 2003-08-26T02:56:55
+INFO: SB Best Score: 32.57448530326016 Rank: 35.0 Success: 0.9306995800931475 Time: 2003-08-26T03:31:55
+INFO: SB Best Score: 32.61156180286097 Rank: 35.0 Success: 0.9317589086531705 Time: 2003-08-26T03:36:55
+INFO: SB Best Score: 32.646565215986286 Rank: 35.0 Success: 0.9327590061710367 Time: 2003-08-26T03:41:55
+INFO: SB Best Score: 32.67947888290922 Rank: 35.0 Success: 0.9336993966545493 Time: 2003-08-26T03:46:55
+INFO: SB Best Score: 32.710287138508804 Rank: 35.0 Success: 0.9345796325288229 Time: 2003-08-26T03:51:55
+INFO: SB Best Score: 32.73897531972567 Rank: 35.0 Success: 0.9353992948493048 Time: 2003-08-26T03:56:55
+INFO: SB Best Score: 32.574485276003735 Rank: 35.0 Success: 0.9306995793143924 Time: 2003-08-26T04:31:55
+INFO: SB Best Score: 51.31776608880185 Rank: 55.0 Success: 0.9330502925236699 Time: 2003-08-26T04:36:55
+INFO: SB Best Score: 14.410651655688516 Rank: 15.0 Success: 0.9607101103792345 Time: 2003-08-26T04:58:55
+INFO: SB Best Score: 33.68291108947196 Rank: 35.0 Success: 0.9623688882706274 Time: 2003-08-26T05:10:55
+INFO: SB Best Score: 33.703427131655395 Rank: 35.0 Success: 0.9629550609044399 Time: 2003-08-26T05:15:55
+INFO: SB Best Score: 33.72176687122453 Rank: 35.0 Success: 0.963479053463558 Time: 2003-08-26T05:20:55
+INFO: SB Best Score: 33.73792157945764 Rank: 35.0 Success: 0.9639406165559326 Time: 2003-08-26T05:25:55
+INFO: SB Best Score: 32.566822718639216 Rank: 35.0 Success: 0.9304806491039777 Time: 2003-08-26T05:30:55
+INFO: SB Best Score: 32.60431175206721 Rank: 35.0 Success: 0.9315517643447774 Time: 2003-08-26T05:35:55
+INFO: SB Best Score: 32.639731149650814 Rank: 35.0 Success: 0.9325637471328805 Time: 2003-08-26T05:40:55
+INFO: SB Best Score: 32.67306405367711 Rank: 35.0 Success: 0.9335161158193459 Time: 2003-08-26T05:45:55
+INFO: SB Best Score: 32.70429459949096 Rank: 35.0 Success: 0.934408417128313 Time: 2003-08-26T05:50:55
+INFO: SB Best Score: 32.733407923045775 Rank: 35.0 Success: 0.9352402263727364 Time: 2003-08-26T05:55:55
+INFO: SB Best Score: 32.56682269108901 Rank: 35.0 Success: 0.9304806483168288 Time: 2003-08-26T06:30:55
+INFO: SB Best Score: 32.60431172599105 Rank: 35.0 Success: 0.9315517635997443 Time: 2003-08-26T06:35:55
+INFO: SB Best Score: 32.639731125061125 Rank: 35.0 Success: 0.9325637464303178 Time: 2003-08-26T06:40:55
+INFO: SB Best Score: 32.673064030585586 Rank: 35.0 Success: 0.9335161151595881 Time: 2003-08-26T06:45:55
+INFO: SB Best Score: 32.70429457790859 Rank: 35.0 Success: 0.9344084165116741 Time: 2003-08-26T06:50:55
+INFO: SB Best Score: 32.73340790298284 Rank: 35.0 Success: 0.9352402257995097 Time: 2003-08-26T06:55:55
+INFO: SB Best Score: 32.56682263598858 Rank: 35.0 Success: 0.9304806467425308 Time: 2003-08-26T08:30:55
+INFO: SB Best Score: 32.60431167383873 Rank: 35.0 Success: 0.931551762109678 Time: 2003-08-26T08:35:55
+INFO: SB Best Score: 32.639731075881734 Rank: 35.0 Success: 0.9325637450251925 Time: 2003-08-26T08:40:55
+INFO: SB Best Score: 63.39885067649096 Rank: 75.0 Success: 0.8453180090198794 Time: 2003-08-26T10:55:55
+INFO: SB Best Score: 85.40043759395591 Rank: 95.0 Success: 0.8989519746732202 Time: 2003-08-26T12:02:55
+INFO: SB Best Score: 79.30591924103426 Rank: 85.0 Success: 0.933010814600403 Time: 2003-08-26T16:29:55
+INFO: SB Best Score: 73.7799898656713 Rank: 85.0 Success: 0.8679998807726035 Time: 2003-08-26T17:06:55
+The simulation has ended.

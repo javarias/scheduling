@@ -1,0 +1,219 @@
+# R1 Simulation Input September 30, 2003
+# Properties of the simulation.
+
+# The beginning and ending time of the simulation.
+Simulation.beginTime = 2003-08-25T00:00:00
+Simulation.endTime = 2003-08-27T00:00:00
+
+# Simulation mode: FULL, PLANNING, or CONFLICT
+Simulation.mode = PLANNING
+# The logging level: CONFIG, FINE, FINER, or FINEST
+Simulation.logLevel = CONFIG
+# The time, in seconds, that is required to change to a different
+# observing setup, for example, to change frequency bands.
+Simulation.setUpTime = 120
+# The time, in seconds, that is required to change from one project
+# to a different project.
+Simulation.changeProjectTime = 300
+# The time, in seconds, to advance the clock when nothing can be 
+# scheduled.
+Simulation.advanceClock = 300
+
+# Site Characteristics
+
+# Site longitude in degrees.
+Site.longitude = 107.6177275
+# Site latitude in degrees.
+Site.latitude = 34.0787491666667
+# The time zone of the site.
+Site.timeZone = -6
+# Site altitude in meters.
+Site.altitude = 2124.0
+# Site minimum elevation angle above the horizon.
+Site.minimumElevationAngle = 8.0
+# Number of antennas.
+Site.numberAntennas = 64
+
+# Frequency Bands
+
+#     Syntax:
+#         FrequencyBand.numberOfBands = N
+#         FrequencyBand.<i> = nameOfBand; minimumFrequency; maximumFrequency
+# where 0 <= i < N, and N is the number of frequency bands.  
+# Frequencies are in GHz.
+FrequencyBand.numberOfBands = 10
+FrequencyBand.0 = 1;   31.3;  45.0
+FrequencyBand.1 = 2;   67.0;  90.0
+FrequencyBand.2 = 3;   84.0; 116.0
+FrequencyBand.3 = 4;  125.0; 168.0
+FrequencyBand.4 = 5;  163.0; 211.0
+FrequencyBand.5 = 6;  211.0; 275.0
+FrequencyBand.6 = 7;  275.0; 373.0
+FrequencyBand.7 = 8;  385.0; 500.0
+FrequencyBand.8 = 9;  602.0; 720.0
+FrequencyBand.9 = 10; 787.0; 950.0
+
+# Weather model parameters
+
+#     Weather.numberFunctions = N
+#     Weather.<i> = functionName; units; p0; p1; p2; s0; s1; t0; t1
+# where 0 <= i < N.  The formula used is:
+#		f(T) = p0*sin(t0*T + s0) + p1*cos(t1*T + s1) + p2;		
+# where T is the time of day in radians.
+# For the R1 simulation, there is only one weather function.
+Weather.numberFunctions = 1
+Weather.0 = quality; ; 0.15; -0.03; 0.7; 0.0; 6.0; 2.0; 2.0
+
+# The dynamic scheduling algorithm
+
+# For the R1 simulation, there is one dynamic scheduling algorithm.
+# For it, one can specify the weights on the various factors computed
+# in the algorithm.  The definitions of the factors are given below.
+#
+# positionElevation
+#     sin of the current elevation or 0.0 if the source is not visible, 
+#         max = 1.0 min = 0.0
+# positionMaximum
+#     Returns 1.0 if the current LST is close to the LST at the maximum
+#     elevation of the source and diminishes as it is further away.   
+#         max = 1.0 min = 0.0
+# weather
+#     weather expression evaluation, max = 1.0 min = 0.0
+# priority
+#     the scientific priority, value: 10(high)/9/8/7/6/5/4/3/2/1
+# sameProjectSameBand
+#     SB belongs to same project and frequency band as current, value: 1/0
+# sameProjectDifferentBand
+#     SB belongs to same project as current but has a different frequency band, 
+#         value: 1/0
+# differentProjectSameBand
+#     SB belongs to a different project but has same frequency band as current, 
+#         value: 1/0
+# differentProjectDifferentBand
+#     SB belongs to a different project and has different frequency band from 
+#         current, value: 1/0
+# newProject
+#     the cost of starting a new project, value: 1/0
+# oneSBRemaining
+#     only one SB remains in the project, value: 1/0
+# The success calculation is:
+#     positionWeight * positionFactor + weatherWeight * weatherFactor
+# The ranking calculation is:
+#     priorityWeight * priorityFactor + 
+#     sameProjectSameBandWeight * sameProjectSameBandFactor +
+#     sameProjectDifferentBandWeight * sameProjectDifferentBandFactor +
+#     differentProjectSameBandWeight * differentProjectSameBandFactor +
+#     differentProjectDifferentBandWeight * differentProjectDifferentBandFactor +
+#     newProjectWeight * newProjectFactor +
+#     oneSBRemainingWeight * oneSBRemainingFactor
+# The final score is:
+#     success * ranking
+
+Weight.positionElevation = 0.25
+Weight.positionMaximum = 0.25
+Weight.weather = 0.5
+Weight.priority = 10.0
+Weight.sameProjectSameBand = 10.0
+Weight.sameProjectDifferentBand = -5.0
+Weight.differentProjectSameBand = 5.0
+Weight.differentProjectDifferentBand = -10.0
+Weight.newProject = -15.0
+Weight.oneSBRemaining = 20.0
+
+
+# Project data with target lists
+
+# Project data is entered in the form of data identifying the project
+# followed by a list of targets that belong to that project.  One
+# scheuling block is created for each target entry.
+# Syntax:
+#     numberProjects = N
+#     project.<i> = projectName; PI; priority; numberTargets
+#     target.<i>.<j> = targetName; ra; dec; frequency; total-time; 
+#                      weather-condition; repeat-count
+# where 0 <= i < N and 0 <= j <= numberTargets-i.
+# Units: ra hours, dec degrees, frequency GHz, total-time minutes
+# The "repeat-count" is optional and may be omitted (in which case it is 0).
+# The priority is: highest, higher, high, mediumPlus, medium, mediumMinus, low, 
+#     lower, lowest, background
+# The weather-condition is: exceptional, excellent, good, average, 
+#     belowAverage, poor, dismal, any
+
+numberProjects = 9
+
+project.0 = Background; Allen Farris; low; 10
+target.0.0 = bk00; 1.0; 50.0; 40.0; 5.0; any; 5
+target.0.1 = bk01; 2.0; 50.0; 40.0; 5.0; any; 5
+target.0.2 = bk02; 3.0; 50.0; 40.0; 5.0; any; 5
+target.0.3 = bk03; 4.0; 50.0; 40.0; 5.0; any; 5
+target.0.4 = bk04; 5.0; 50.0; 40.0; 5.0; any; 5
+target.0.5 = bk05; 6.0; 50.0; 40.0; 5.0; any; 5
+target.0.6 = bk06; 7.0; 50.0; 40.0; 5.0; any; 5
+target.0.7 = bk07; 8.0; 50.0; 40.0; 5.0; any; 5
+target.0.8 = bk08; 9.0; 50.0; 40.0; 5.0; any; 5
+target.0.9 = bk09; 10.0; 50.0; 40.0; 5.0; any; 5
+
+project.1  = AF1; Allen Farris; medium; 6
+target.1.0 = af01;   0.2; 50.0; 68.0; 30.0; excellent
+target.1.1 = af02;   1.2; 49.0; 68.0; 25.0; good
+target.1.2 = af03;   2.2; 48.0; 68.0; 35.0; average
+target.1.3 = af04;   3.2; 47.0; 68.0; 20.0; average
+target.1.4 = af05;   4.2; 46.0; 68.0; 25.0; good
+target.1.5 = af06;   5.2; 45.0; 68.0; 35.0; poor
+
+project.2  = AF2; Allen Farris; high; 6
+target.2.0 = af07;   6.2; 45.0; 100.0; 15.0; excellent
+target.2.1 = af08;   7.2; 44.0; 100.0; 30.0; good
+target.2.2 = af09;   8.2; 43.0; 100.0; 20.0; average
+target.2.3 = af10;  9.2; 42.0; 100.0; 35.0; average
+target.2.4 = af11; 10.2; 41.0; 100.0; 40.0; good
+target.2.5 = af12; 11.2; 40.0; 100.0; 30.0; poor
+
+project.3  = AF3; Allen Farris; highest; 6
+target.3.0 = af13; 12.2; 39.0; 80.0; 30.0; excellent
+target.3.1 = af14; 13.2; 38.0; 80.0; 30.0; good
+target.3.2 = af15; 14.2; 37.0; 80.0; 30.0; average
+target.3.3 = af16; 15.2; 36.0; 80.0; 30.0; average
+target.3.4 = af17; 16.2; 35.0; 80.0; 30.0; good
+target.3.5 = af18; 17.2; 34.0; 80.0; 30.0; poor
+
+project.4  = AF4; Allen Farris; higher; 6
+target.4.0 = af19; 18.2; 33.0; 200.0; 30.0; excellent
+target.4.1 = af20; 19.2; 32.0; 200.0; 25.0; good
+target.4.2 = af21; 20.2; 31.0; 200.0; 35.0; average
+target.4.3 = af22; 21.2; 30.0; 200.0; 20.0; average
+target.4.4 = af23; 22.2; 29.0; 200.0; 25.0; good
+target.4.5 = af24; 23.2; 28.0; 200.0; 35.0; poor
+
+project.5  = AF5; Allen Farris; medium; 6
+target.5.0 = af25;   0.2; 50.0; 300.0; 30.0; excellent
+target.5.1 = af26;   1.2; 49.0; 300.0; 25.0; good
+target.5.2 = af27;   2.2; 48.0; 300.0; 35.0; average
+target.5.3 = af28;   3.2; 47.0; 300.0; 20.0; average
+target.5.4 = af29;   4.2; 46.0; 300.0; 25.0; good
+target.5.5 = af30;   5.2; 45.0; 300.0; 35.0; poor
+
+project.6  = AF6; Allen Farris; high; 6
+target.6.0 = af31;   6.2; 45.0; 500.0; 15.0; excellent
+target.6.1 = af32;   7.2; 44.0; 500.0; 30.0; good
+target.6.2 = af33;   8.2; 43.0; 500.0; 20.0; average
+target.6.3 = af34;  9.2; 42.0; 500.0; 35.0; average
+target.6.4 = af35; 10.2; 41.0; 500.0; 40.0; good
+target.6.5 = af36; 11.2; 40.0; 500.0; 30.0; poor
+
+project.7  = AF7; Allen Farris; highest; 6
+target.7.0 = af37; 12.2; 39.0; 900.0; 30.0; excellent
+target.7.1 = af38; 13.2; 38.0; 900.0; 30.0; good
+target.7.2 = af39; 14.2; 37.0; 900.0; 30.0; average
+target.7.3 = af40; 15.2; 36.0; 900.0; 30.0; average
+target.7.4 = af41; 16.2; 35.0; 900.0; 30.0; good
+target.7.5 = af42; 17.2; 34.0; 900.0; 30.0; poor
+
+project.8  = AF8; Allen Farris; higher; 6
+target.8.0 = af43; 18.2; 33.0; 300.0; 30.0; excellent
+target.8.1 = af44; 19.2; 32.0; 300.0; 25.0; good
+target.8.2 = af45; 20.2; 31.0; 300.0; 35.0; average
+target.8.3 = af46; 21.2; 30.0; 300.0; 20.0; average
+target.8.4 = af47; 22.2; 29.0; 300.0; 25.0; good
+target.8.5 = af48; 23.2; 28.0; 300.0; 35.0; poor
+
