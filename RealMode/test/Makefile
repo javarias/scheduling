@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.5 2003/05/23 19:36:17 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.6 2003/05/23 21:52:50 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -55,7 +55,7 @@ DEBUG = on
 # ----------------------------
 SCRIPTS         = 
 SCRIPTS_L       = prologue \
-                  testscript1 testscript2 testscript3 testscript4 \
+                  testscript1 testscript2 testscript3 testscript4 testscript5 \
                   epilogue
 
 #>>>>> END OF standard rules
