@@ -6,7 +6,7 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.9 2005/02/28 19:42:11 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.10 2005/03/30 19:44:39 sslucero Exp $"
 
 Documents:
 
@@ -16,13 +16,7 @@ Configuration Requirements:
     - MicroArchive that was released with ACS
     - All other subsystems that are installed before scheduling in the build 
       process must be installed.
-    - A full ALMA-CDB  must be present.Especially needed are 
-  			OBSPREP
-  			CORR
-  			CONTROL
-  			PIPELINE
-  			TELCAL
-  			and of course SCHEDULING
+    - A full ALMA-CDB  must be present.
     
 Scheduling's CDB requirements:
     * Components.xml
@@ -45,24 +39,9 @@ Tested:
       with other ALMA subsystems. In the future scheduling simulators will be
       completed to avoid this interaction in testing.
   			  
-    - Scheduling has been tested using entities created using the ALMA-OT batchmode. The files
-      used duiring this process are present in the test directory. 
+    - Scheduling has been tested using entities created using the ALMA-OT batchmode. 
 
-Requirements for Scheduling Tests for R2:
-    - All the ALMA Subsystems must already be installed. Especially Control and Pipeline because 
-      their components are actually connected to in one of the scheduling tests.
-    - The following steps must be preformed before running tat/make test on scheduling.
-        - archiveCleanXindice
-        - archiveLoadSchema $ACSROOT/idl
-            (NOTE: I do not know where ITS puts all the schemas but
-             all the schemas must be loaded correctly.)
-        - ACS Started so that the ALMA-OT can be run using the command in the next step.
-        - from the Scheduling's test directory:
-            ALMA-OT -batch import-save.py ExpertTestProject.zip
-            (NOTE: The ITS setup (ObservingTool.properties) might be different than the  
-             file provided by scheduling. Depends on them)
-        - Shutdown ACS 
-        
+   
 
 Tests: 
     - All the tests below run as a suite, AllTests.java
@@ -87,10 +66,12 @@ Cost:
 
 
 Changes:
-    - Name changes for channel names and CDB stuff required by ITS
-    - Now sending pipeline the PPR xml string in ProcessRequest
+    - Alot of fixes to the project status structure manipulation was done.
+    - New functionality to talk to the Operator component from exec. To send a message that the a session has started and stopped.
 
     Old:
+    - Name changes for channel names and CDB stuff required by ITS
+    - Now sending pipeline the PPR xml string in ProcessRequest
    	- PlanningModeSim and RealMode modules have been merged into one, Scheduling. 
     - Updated CDB
     
