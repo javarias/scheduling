@@ -1,0 +1,15 @@
+# Define this ObsProject's name 
+OP, My beautiful project, Magnum P.I., 1.0
+
+   # The first TargetSpace has two TACircles
+   TS, First TargetSpace, 1200
+      #   Name        RA        Dec       Radius Freq FreqRes  Sens Bwidth
+      CI, Pickwick,   21:45:06, 12:41:56,    15,  335,   100, 0.01,    2.0 
+      CI, Stonehenge, 23:06:39, 10,          15,  335,   100, 0.01,    2.0
+
+   # The second TargetSpace has two TACircles as well,
+   # called "YATS 1" and "YATS 2" (notice the empty name field)
+   TS, YATS, 2200
+      #        RA        Dec       Radius Freq FreqRes  Sens Bwidth
+      CIRC,,   00:15:23, -32:02:44,    15,  335,   100, 0.01,    2.0 
+      circle,, 02:37:24, -26:58:39,    15,  335,   100, 0.01,    2.0

@@ -21,4 +21,5 @@ sleep 10
 acsStartContainer -java frodoContainer -b 0 >& sched_frodoContainer.log &
 sleep 20
 
-otprotoBatch targets.txt >& sched_almaOT.log
+#otprotoBatch targets.txt >& sched_almaOT.log
+ALMA-OT -batch otproto.py targets-list.txt >& sched_almaOT.log
