@@ -31,5 +31,7 @@ public class GUIAntennas extends JComboBox {
         addItem("58"); addItem("59"); addItem("60"); 
         addItem("61"); addItem("62"); addItem("63"); 
         addItem("64");
+
+        setSelectedItem("64");
     }
 }

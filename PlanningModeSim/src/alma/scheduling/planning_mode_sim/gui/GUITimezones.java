@@ -41,5 +41,8 @@ public class GUITimezones extends JComboBox {
         addItem("GMT+11:00");
         addItem("GMT+12:00");
         addItem("GMT+13:00");
+
+        setSelectedItem("GMT-06:00");
+
     }
 }
