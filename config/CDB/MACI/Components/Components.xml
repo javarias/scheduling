@@ -44,17 +44,17 @@
             Container="java"/>
 
 <!-- ************ CONTROL **************** -->
-      <_ Name="ControlStatus1" 
+      <_ Name="CONTROL_ControlStatus1" 
             Code="alma.Control.masterController.ControlStatusHelper"
             Type="IDL:alma/Control/ControlStatus:1.0"
             Container="java" />
 
-      <_ Name="ArrayController1"            
+      <_ Name="CONTROL_ArrayController1"            
             Code="alma.Control.arrayInterfaces.ArrayControllerHelper"
             Type="IDL:alma/Control/ArrayController:1.0"
             Container="java" />
 
-      <_ Name="DelayServer"
+      <_ Name="CONTROL_DelayServer"
             Code="alma.Control.DelayServerImpl.DelayServerHelper"
             Type="IDL:alma/Control/DelayServer:1.0"
             Container="java"/>
@@ -65,12 +65,12 @@
             Type="IDL:alma/offline/DataCapturer:1.0" 
             Container="java"/>
 <!-- ************ OBSPREP **************** -->
-      <_ Name="OBS_PROJ_REP"
+      <_ Name="OBSPREP_PROJECT_REPOSITORY"
             Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
             Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
             Container="java"/>
 <!-- ************ CORRELATOR ************* -->
-     <_ Name="OBSERVATION_CONTROL_SIM"
+     <_ Name="CORR_OBSERVATION_CONTROL"
             Code="alma.Correlator.ObservationControl"
             Type="IDL:alma/Correlator/ObservationControl:1.0"
             Container="java"/> 
