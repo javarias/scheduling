@@ -27,6 +27,7 @@
 #pragma prefix "alma"
 
 module scheduling {
+    const string CHANNELNAME = "SCHEDULING_CHANNEL";
 
 	typedef xmlentity::XmlEntityStruct SchedBlock;
 	typedef xmlentity::XmlEntityStruct SchedulingInfo;

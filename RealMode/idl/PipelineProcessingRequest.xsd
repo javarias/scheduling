@@ -36,15 +36,15 @@
 				</xs:element>
 				<xs:element name="Comment" type="xs:string"/>
 				<xs:sequence maxOccurs="unbounded">
-					<xs:element name="ReductionUnit" type="ppr:ReductionUnitType"/>
+					<xs:element name="ReductionUnit" type="ppr:ReductionUnitT"/>
 				</xs:sequence>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:complexType name="ReductionUnitType">
+	<xs:complexType name="ReductionUnitT">
 		<xs:sequence>
 			<xs:element name="ReductionUnitReference" type="ent:EntityRefT"/>
-			<xs:element name="ReductionUnitType">
+			<xs:element name="ReductionUnitT">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
 						<xs:enumeration value="ObsUnitSet"/>
