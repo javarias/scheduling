@@ -43,6 +43,7 @@ public class TestALMAArchive extends ComponentClientTestCase {
         m_logger.info("SCHED_TEST: ALAMArchive created");
     }
     protected void tearDown() throws Exception {
+        super.tearDown();
     }
     
     public void testGetAllProject() {

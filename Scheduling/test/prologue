@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #Set my CDB
-ACS_CDB=../config
+ACS_CDB=.
 
 #Start ACS & the Manager
 acsStart >& sched_acsStart.log
@@ -14,6 +14,8 @@ echo $ACS_INSTANCE > sched_acs_instance.log
 
 #Start a java container named 'java'
 acsStartContainer -java java >& sched_javaContainer.log &
+#Start a python container named 'python'
+acsStartContainer -py python >& sched_pythonContainer.log &
 
 #sleep for 10 seconds to make sure the container comes up! 
 #Hopefully it won't take more than 10 seconds! 
