@@ -6,20 +6,30 @@ From:
    sohaila
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.1 2004/03/31 15:10:34 sroberts Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.2 2004/06/24 20:44:10 sroberts Exp $"
 
 Documents:
 
 
 Configuration Requirements:
-    - ACS-3.0.1
-    - MicroArchive that was released with ACS-3.0.1
+    - ACS-3.1.1
+    - MicroArchive that was released with ACS-3.1.1
     - All other subsystems that are installed before scheduling in the build process must be installed.
     
 
 
-Tested:
-   
+Tests:
+testschedmessages
+testpipelinestatus
+testsbsubqueue
+testpriority
+teststime
+testtimeinterval
+testweathercondition
+teststatus
+testcomponentstate
+testppr
+testprojectqueue
 
 Cost:
 
