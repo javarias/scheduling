@@ -1,6 +1,0 @@
-#! /bin/bash
-
-# Run test
-echo " Running test"
-
-abeansStart -endorsed ALMA.scheduling.test.SchedTest1
