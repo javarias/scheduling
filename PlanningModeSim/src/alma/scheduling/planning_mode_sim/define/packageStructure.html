@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD/>
+<BODY bgColor=white>
+<h1>
+The Scheduling Define Package
+</h1>
+
+<p>
+Within the Scheduling Subsystem, the Define package contains utility classes 
+of a general nature that are used in the other packages that make up the 
+scheduling subsystem.  In addition, it contains the definition of an observing 
+project and its hierarchically structured components, observing unit sets, and 
+scheduling blocks from the Scheduling Subsystem’s perspective.  These latter 
+definitions may be viewed as “wrapper” classes on the ObsProject, ObsUnitSet, 
+and SchedBlock XML entities as defined in the Observing Preparation Subsystem.  
+However, they serve as abstractions, defined from a scheduling perspective.  
+For further information, see 
+<i>
+Definition of Projects and Scheduling Blocks from a Scheduling Perspective.
+</i>
+<p>
+A static UML class diagram for this package is shown below.
+<hr>
+<p>
+<img src = staticUML.gif alt = static UML class diagram />
+<hr>
+<p>
+<strong>
+public class  <font color=red> AntennaProperty </font> 
+</strong>
+<p>
+The AntennaProperty class denotes the properties of an antenna that are relevant to the scheduling subsystem.  At the present time, these include the antennaId and their locations.  Other relevant information will be added later.
+<p>
+
+<strong>
+public class  <font color=red> ArrayTime </font> 
+</strong>
+<p>
+ArrayTime is based on the definition of time from the  OMG Time Service Specification.  It is the time that controls the actual telescope.  Internally, the number that is stored is the number of 100 ns since  1582-10-15 00:00:00. (See  ftp://ftp.omg.org/pub/docs/formal/97-12-21.pdf)
+<p>
+
+<strong>
+public interface  <font color=red> Clock </font> 
+</strong>
+<p>
+The Clock interface provides the current time, the precise geographical location of the clock and time zone information.  It also provides  methods for synchronizing the system time and the array time, as well as  setting alarms, i.e. methods that provide for a notification at a particular  time.
+<p>
+
+<strong>
+public interface  <font color=red> ClockAlarmListener </font> 
+</strong>
+<p>
+The ClockAlarmListener is an interface that is called by the Clock class whenever an alarm expires.  It must  be provided when setting an alarm.
+<p>
+
+<strong>
+public abstract class  <font color=red> ClockBase </font> implements Clock 
+</strong>
+<p>
+The ClockBase class is an abstract class from which actual  implementations, i.e. the ALMAClock and the ClockSimulator,  are extended. 
+<p>
+
+<strong>
+public class  <font color=red> ComponentImplBase </font> implements ComponentLifecycle 
+</strong>
+<p>
+The ComponentImplBase is a variant of the class with the same name in the ACS component directory.  It merely adds the state model concept.
+<p>
+
+<strong>
+public class  <font color=red> ComponentState </font> 
+</strong>
+<p>
+The State class describes the state of the scheduling system.  The states are:  <ul> 		<li> NEW 		<li> INITIALIZED 		<li> EXECUTING 		<li> STOPPED 		<li> ERROR </ul>
+<p>
+
+<strong>
+public class  <font color=red> Expression </font> 
+</strong>
+<p>
+The Expression class accepts a logical expression in the form of a  string, parses and stores it.  There is also a method to evaluate the expression, which yields a boolean.  The logical expression has  the following definition. Syntax: <ul> 	<li>	&lt;logical_expression&gt; :=    <ul> 		<li>	'(' &lt;logical_expression&gt; ')' 		<li>	'!' '(' &lt;logical_expression&gt; ')' 		<li>	&lt;logical_expression&gt; '&&' 	&lt;logical_expression&gt; 		<li>	&lt;logical_expression&gt; '||' &lt;logical_expression&gt; 		<li>	&lt;function_name&gt; &lt;comparison_operator&gt; &lt;numeric_value&gt; 		<li>	&lt;numeric_value&gt; &lt;comparison_operator&gt; &lt;function_name&gt;    </ul>  <li>	&lt;comparison_operator&gt; := '==' | '!=' | '&lt;' | '&lt;=' | '&gt;' | '&gt;=' 	<li>	&lt;numeric_value&gt;  := a valid floating point number </ul>
+<p>
+
+<strong>
+public class  <font color=red> FlowControlExpression </font> 
+</strong>
+<p>
+Flow control expressions are used to constrain the order in which members of  an SUnitSet are executed.  If there are no flow control expressions, the members  are executed in any order.  
+<p>
+
+<strong>
+public class  <font color=red> FrequencyBand </font> 
+</strong>
+<p>
+The FrequencyBand class specifies the name and the range of frequencies in a particular frequency band.  
+<p>
+
+<strong>
+public class  <font color=red> NotifyPI </font> 
+</strong>
+<p>
+A NotifyPI object cantains a logical expression and a mode (either blocking or non-blocking).  If the logical expression is true, the PI is notified.  
+<p>
+
+<strong>
+public class  <font color=red> Priority </font> 
+</strong>
+<p>
+The Priority class implements a priority that varies from 1 (lowest) to 10 (highest).  The priorties have  names: <ul> 		<li> HIGHEST (10) 		<li> HIGHER (9) 		<li> HIGH (8) 		<li> MEDIUMPLUS(7) 		<li> MEDIUM	(6) 		<li> MEDIUMMINUS (5) 		<li> LOW (4) 		<li> LOWER (3) 		<li> LOWEST	 (2) 		<li> BACKGROUND	(1) </ul>
+<p>
+
+<strong>
+public class  <font color=red> SProject </font> 
+</strong>
+<p>
+An SProject is an observing project as viewed by the scheduling subsystem. 
+<p>
+
+<strong>
+public class  <font color=red> STime </font> 
+</strong>
+<p>
+The STime class provides for a moment in time accurate to the nearest second. String input and output are in the FITS date-time format.  The FITS format  is of the form:	 			YYYY-MM-DDThh:mm:ss Leading zeros are required if months, days, hours, minutes, or seconds are  single digits.  The value for months ranges from "01" to "12".
+<p>
+
+<strong>
+public class  <font color=red> SUnit </font> 
+</strong>
+<p>
+An SUnit is the lowest-level, atomic scheduling unit. 
+<p>
+
+<strong>
+public class  <font color=red> SUnitSet </font> 
+</strong>
+<p>
+A SUnitSet is a hierarchical tree whose leaves are SUnit objects. 
+<p>
+
+<strong>
+public class  <font color=red> SiteCharacteristics </font> 
+</strong>
+<p>
+The SiteCharacteristics class defines characteristics of the telescope used that are used by various classes.  It includes the geographical  location, altitude, number of antennas, and minimum angle of elevation. 
+<p>
+
+<strong>
+public class  <font color=red> SkyCoordinates </font> 
+</strong>
+<p>
+The SkyCoordinates class is used to define coordinates of an observable target. 
+<p>
+
+<strong>
+public class  <font color=red> Status </font> 
+</strong>
+<p>
+The Status class is used ot denote the status of an SUnit. A Status can have the following values. <ul> <li>	WAITING <li>	READY <li>	RUNNING <li>	ABORTED <li>	COMPLETE </ul> 
+<p>
+
+<strong>
+public class  <font color=red> SystemSetup </font> 
+</strong>
+<p>
+The SystemSetup class defines the initial setup that is required of a scheduling block.  At the present time this class is undefined.   This class would characterize the system setup, i.e., receivers,  frequencies, correlator setup, etc., needed initially by a  scheduling block.
+<p>
+
+<strong>
+public class  <font color=red> TimeInterval </font> 
+</strong>
+<p>
+The TimeInterval is a utility class used to define an interval of time between two STime objects. 
+<p>
+
+<strong>
+public class  <font color=red> WeatherCondition </font> 
+</strong>
+<p>
+The WeatherCondition class defines a measure of the favorable conditions  under which a block may be executed.  After being created, the principle  method is 'evaluate()'.  This method returns a float that is between 0.0  and 1.0. <ul> 		<li>	1.0 means "it doesn't get better than this".  		<li>	0.0 means "forget it". </ul>   For intermediate values, the higher the value the more favorable are  the conditions.  The constructor takes an array of strings.  Each string  is of the form: <ul> 		<li> &lt;logical_expression&gt; -&gt; &lt;target&gt; </ul> where target is a floating point number between 0.0 and 1.0.  All the environmental variables have names (humidity, temperature, pressure,  windVelocity, windDirection, etc.) and these names may appear in the  logical expression. When the favorable condition 'evaluate()' method is called, the logical expressions are evaluated in the order in which they were defined.  The  first expression that is true, results in the 'target' that is associated  with that condition being returned as the favorable condition indicator.
+<p>
+
+</BODY>
+</HTML>

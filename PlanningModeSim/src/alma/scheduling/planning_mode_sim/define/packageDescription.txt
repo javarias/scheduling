@@ -1,0 +1,12 @@
+Within the Scheduling Subsystem, the Define package contains utility classes 
+of a general nature that are used in the other packages that make up the 
+scheduling subsystem.  In addition, it contains the definition of an observing 
+project and its hierarchically structured components, observing unit sets, and 
+scheduling blocks from the Scheduling Subsystem’s perspective.  These latter 
+definitions may be viewed as “wrapper” classes on the ObsProject, ObsUnitSet, 
+and SchedBlock XML entities as defined in the Observing Preparation Subsystem.  
+However, they serve as abstractions, defined from a scheduling perspective.  
+For further information, see 
+<i>
+Definition of Projects and Scheduling Blocks from a Scheduling Perspective.
+</i>
