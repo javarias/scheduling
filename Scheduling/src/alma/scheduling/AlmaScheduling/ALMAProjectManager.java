@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.21 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.22 2004/11/30 23:36:05 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -189,11 +189,11 @@ public class ALMAProjectManager extends ProjectManager {
     /**
       *
       */
-    public void sessionEnd(String sb_id) {
+    public void sessionEnd(String sessionId, String sb_id) {
         logger.info("sb id = "+sb_id);
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
         logger.info("Proj id= "+proj_id);
-        logger.info("SCHEDULING:(session info) Session has ended.");
+        logger.info("SCHEDULING:(session info) Session ("+sessionId+") has ended.");
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
         logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
     }
@@ -225,6 +225,7 @@ public class ALMAProjectManager extends ProjectManager {
         String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
         logger.info ("in PM, ps update");
         SB sb = eb.getParent();
+        sb = sbQueue.get(sb.getId());
         logger.info("SCHEDULING: SB id = " +sb.getId());
         String proj_id = sb.getProject().getId();
         logger.info("SCHEDULING: project id = " +proj_id);
@@ -312,6 +313,8 @@ public class ALMAProjectManager extends ProjectManager {
         ObservedSession session = new ObservedSession();
         session.setSessionId(ProjectUtil.genPartId());
         session.setProgram(p);
+        session.setStartTime(new DateTime(System.currentTimeMillis()));
+        p.addObservedSession(session);
         Project proj = pQueue.get(p.getProject().getId());
         proj.setProgram(p);
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
@@ -335,7 +338,7 @@ public class ALMAProjectManager extends ProjectManager {
         SB sb = sbQueue.get(sbid);
         //in future will be done in scheduler.
         ObservedSession session = createObservedSession(sb.getParent());
-
+        sessionStart(session.getSessionId(), sbid);
         try {
             StartSession start_event = new StartSession(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
@@ -371,11 +374,15 @@ public class ALMAProjectManager extends ProjectManager {
                     session = sessions[i];
                     break;
                 }
+                logger.info("SCHEDULING: hmmm...");
             }
             if(session != null) {
+                logger.info("SCHEDULING: Session wasn't null.");
                 break;
             }
+            logger.info("SCHEDULING: Session stuff?");
         }
+        sessionEnd(session.getEntityPartId(), sbid);
         try {
             EndSession end_event = new EndSession(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
@@ -402,7 +409,21 @@ public class ALMAProjectManager extends ProjectManager {
 
         //use sbid to get the program 
         SB sb = sbQueue.get(sbid);
-        SciPipelineRequest ppr = new SciPipelineRequest(sb.getParent(), s);
+        Program prog = sb.getParent();
+        SciPipelineRequest ppr = new SciPipelineRequest(prog, s);
+ 		ppr.setReady(ProjectUtil.genPartId(), new DateTime(System.currentTimeMillis()));
+        ppr.setStarted(new DateTime(System.currentTimeMillis()));
+        prog.setSciPipelineRequest(ppr);
+        Project proj = pQueue.get(prog.getProject().getId());
+        proj.setProgram(prog);
+        ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
+        try {
+            ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
+            archive.updateProjectStatus(ps);
+        } catch(SchedulingException e) {
+            logger.severe("SCHEDULING: error mapping PS with PPR");
+            e.printStackTrace();
+        }
         return ppr;
     }
 

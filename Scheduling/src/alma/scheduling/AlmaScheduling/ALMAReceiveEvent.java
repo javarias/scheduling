@@ -25,6 +25,8 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.util.Vector;
+
 import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
 import alma.entities.commonentity.EntityRefT;
@@ -55,13 +57,14 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.16 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.17 2004/11/30 23:36:05 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
     private ALMAProjectManager manager;
     private ALMAPipeline pipeline;
     private ALMAPublishEvent publisher;
+    private Vector currentEB; //a list of the ExecBlock that are currently started but not finished.
 
     /**
       *
@@ -74,6 +77,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.manager = m;
         this.pipeline = p;
         this.publisher = pub;
+        this.currentEB = new Vector();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -100,6 +104,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 //create an execblock internal to scheduling. 
                 eb = createExecBlock(e);
                 eb.setStartTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)));
+                currentEB.add(eb);
                 //send out a start session event.
                 startSession(eb);
                 break;
@@ -113,21 +118,23 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                         UTCUtility.utcOmgToJava(e.startTime)));
                 //update the sb with the new info from the event
                 updateSB(ce);
-                eb = createExecBlock(e);
+                //eb = createExecBlock(e);
+                eb = retrieveExecBlock(e.execID);
                 eb.setEndTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)),Status.COMPLETE);
                 //send out an end session event
                 endSession(eb);
-                sbCompleted(eb);
+                //sbCompleted(eb);
                 //workaround.. will be using the ps to replace the 'ids' stuff...
-                String[] ids = updateProjectStatus(eb);
-                startPipeline(ce, ids);
+                //String[] ids = updateProjectStatus(eb);
+                startPipeline(ce);
+                deleteFinishedEB(eb);
                 break;
             default: 
                 logger.severe("SCHEDULING: Event reason = error");
                 break;
         }
         } catch(Exception ex) {
-            logger.severe("DAMMIT");
+            logger.severe("SCHEDULING: Error receiving and processing ExecBlockEvent.");
             ex.printStackTrace();
         }
 
@@ -232,7 +239,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * event.
      * @param ControlEvent The event from control
      */
-    private void startPipeline(ControlEvent e, String[] ids) {
+    private void startPipeline(ControlEvent e) {
         String result = null;
         SciPipelineRequest ppr=null;
         try {
@@ -260,5 +267,36 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         logger.info("SCHEDULING: Updating the projectStatus");
         id_info = manager.updateProjectStatus(eb);
         return id_info;
+    }
+
+    /**
+      * Retrieves the exec block with the given id from the exec block queue.
+      *
+      * @param ebId The exec block's id
+      * @return ExecBlock The exec block with the given id. Returns null if not in the queue.
+      */
+    private ExecBlock retrieveExecBlock(String ebId) {
+        ExecBlock eb = null;
+        for(int i=0; i < currentEB.size(); i++) {
+            if( ((ExecBlock)currentEB.elementAt(i)).getId().equals(ebId) ){
+                eb = (ExecBlock)currentEB.elementAt(i);
+                break;
+            }
+        }
+        return eb;
+    }
+
+    /**
+      * Deletes the given exec block from the list of current ebs.
+      * @param eb The exec block to delete.
+      */
+    private void deleteFinishedEB(ExecBlock eb) {
+        for(int i=0; i < currentEB.size(); i++) {
+            ExecBlock tmpEB = (ExecBlock)currentEB.elementAt(i);
+            if( tmpEB.getId().equals(eb.getId()) ){
+                currentEB.removeElementAt(i);
+                break;
+            }
+        }
     }
 }

@@ -86,7 +86,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.10 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.11 2004/11/30 23:36:05 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -190,7 +190,8 @@ public class ProjectUtil {
 		checkTime(project.getTimeOfUpdate());
 		checkTime(project.getBreakpointTime());
 		validate(project.getStatus());
-		validate(project.getProgram(),project,null);
+		//sohaila: why validate it to a null??
+        //validate(project.getProgram(),project,null);
 	}
 	
 	/**
@@ -883,7 +884,11 @@ public class ProjectUtil {
 			// Set the start time.
 			x.setStartTime(session[i].getStartTime().toString());
 			// Set the end time.
-			x.setEndTime(session[i].getEndTime().toString());
+            try {
+			    x.setEndTime(session[i].getEndTime().toString());
+            } catch (NullPointerException npe) {
+                System.out.println("SCHEDULING: End time not set.");
+            }
 			// Set the reference to the ObsUnitSetStatus.
 			ProjectStatusRefT pRef = new ProjectStatusRefT ();
 			pRef.setEntityId(session[i].getProgram().getProject().getProjectStatusId());
@@ -959,10 +964,13 @@ public class ProjectUtil {
 		target.setImagingProcedureName(ppr.getReductionProcedureName());
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
-		String[] s = new String [parm.length];
-		for (int i = 0; i < s.length; ++i)
-			s[i] = parm[i].toString();
-		target.setParm(s);
+        if(parm != null) {
+    		String[] s = new String [parm.length];
+		    for (int i = 0; i < s.length; ++i){
+	    		s[i] = parm[i].toString();
+            }
+    		target.setParm(s);
+        }
 		// OK, we're done.
 		return target;
 	}
