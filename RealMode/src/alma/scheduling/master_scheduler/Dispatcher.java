@@ -25,7 +25,8 @@
  */
 package alma.scheduling.master_scheduler;
 
-import java.util.Vector;
+//import alma.control.ArrayController;
+
 import alma.acs.container.ContainerServices;
 
 /**
@@ -40,13 +41,27 @@ import alma.acs.container.ContainerServices;
 public class Dispatcher {
     private boolean isSimulation;
     private ContainerServices containerServices;
-    private Vector schedBlocks;
+    //private Vector schedBlocks;
+    //private ArrayController ac;
     
 	public Dispatcher (boolean isSimulation, ContainerServices container) {
 		System.out.println("The Dispatcher has been constructed.");
         this.isSimulation = isSimulation;
         this.containerServices = container;
+        //this.ac = new ArrayController();
+        
 	}
+
+    /**
+     *  Tells the control system to execute the SB with 'id' and its start
+     *  time is 'time'.
+     *  @param id
+     *  @param time
+     */
+    public void sendToControl(String id, String time) {
+        System.out.println("Sending SB with id = "+id+" to controller.");
+        //ac.observe(id, time);
+    }
 
 	public static void main(String[] args) {
 	}
