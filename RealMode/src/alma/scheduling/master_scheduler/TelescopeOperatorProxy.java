@@ -52,7 +52,7 @@ public class TelescopeOperatorProxy
 	 */
 	public void selectSB(String[] sbIdList, String messageId) {
         Thread timer = new Thread(new SelectSBTimer(5*60*1000)); //5 minutes in milliseconds
-        //messageQueue.add(messageId, timer);
+        messageQueue.add(messageId, timer);
         timer.start();
         //executive.selectSB(sbIdList, messageId);
         try {
@@ -81,15 +81,16 @@ public class TelescopeOperatorProxy
 	}
 
     class SelectSBTimer implements Runnable {
-        private Thread thread;
+        //private Thread thread;
         private long delay;
         public SelectSBTimer(long delay) {
-            this.thread = new Thread("SB select Timer");
+            //this.thread = new Thread("SB select Timer");
             this.delay = delay;
         }
         public void run() {
             try {
-                thread.sleep(delay);
+                Thread.sleep(delay);
+                //thread.sleep(delay);
             }catch(InterruptedException e) {
             }
         }
