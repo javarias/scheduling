@@ -53,14 +53,17 @@ import alma.scheduling.Define.SchedulingException;
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
+    private ALMAProjectManager manager;
     private ALMAArchive archive;
     private ALMAPipeline pipeline;
     private ALMAPublishEvent publisher;
 
-    public ALMAReceiveEvent(ContainerServices cs, ALMAArchive a, ALMAPipeline p, ALMAPublishEvent pub) {
+    public ALMAReceiveEvent(ContainerServices cs, ALMAProjectManager m, ALMAArchive a, 
+        ALMAPipeline p, ALMAPublishEvent pub) {
         
         this.containerServices = cs;    
         this.logger = cs.getLogger();
+        this.manager = m;
         this.archive = a;
         this.pipeline = p;
         this.publisher = pub;
@@ -145,7 +148,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
 
     /**
      * Updates the scheduling block with the info gotten from the control
-     * event.
+     * event. If the SB is complete
      */
     private void updateSB(ControlEvent e) {
         try {
@@ -179,8 +182,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         String sessionID = archive.storeSession(s);
         //send out the session start event
         StartSession start_event = new StartSession (e.startTime, 
-            sessionID, e.sbId, e.sbId, e.execID); //NOTE: for now last 2 are the same..
+            sessionID, e.sbId, e.sbId, e.execID); //NOTE: for now second last 2 are the same..
         publisher.publish(start_event);       
+        manager.sessionStart(sessionID,e.sbId);
       }catch(Exception ex) {
         logger.severe("SCHEDULING: error! ");
         ex.printStackTrace();
@@ -194,10 +198,15 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ExecBlockEvent The event to tell us that the event has ended.
      */
     private void endSession(ExecBlockEvent e) {
-    //query session object from the archive
+        //query session object from the archive
+        Session s = archive.querySession(e.sbId);
+        if(s != null) {
+            logger.info("non-null session! ");
+        }
     //update session object and update it in the archive
     //archive.updateSession
     //send out the session end event
+        manager.sessionEnd(e.sbId);
     }
 
 

@@ -398,6 +398,32 @@ public class ALMAArchive implements Archive {
         return id;
     }
 
+    public Session querySession(String sbid) {
+        String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
+        String schema = "Session"; 
+        String className = new String("alma.entity.xmlbinding.session.Session");
+        Session session = null;
+        try {
+            Cursor cursor = archOperationComp.queryDirty(query,schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying Sessions!");
+                return null ;
+            } 
+            while(cursor.hasNext()) {
+                QueryResult res = cursor.next();
+                try {
+                    session = convertToSession1(res);
+                }catch(Exception e) {
+                    logger.severe("SCHEDULING: "+e.toString());
+                }
+            }
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            e.printStackTrace();
+        }
+        return session;
+    }
+    
     public void updateSession(String sbid) {
         String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
         String schema = "Session"; 
@@ -494,7 +520,7 @@ public class ALMAArchive implements Archive {
      */
     private SB convertToSB2(XmlEntityStruct xml) throws Exception {
         ALMASB sb = null;
-        System.out.println(xml.xmlString);
+        //System.out.println(xml.xmlString);
         try {
             SchedBlock schedblock = (SchedBlock) 
                 entityDeserializer.deserializeEntity(xml, Class.forName(
@@ -515,7 +541,7 @@ public class ALMAArchive implements Archive {
         Project proj = null;
         try {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
-            System.out.println(xml_struct.xmlString);
+            //System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
             //System.out.println(xml_struct.xmlString);
         } catch (MalformedURI e) { 

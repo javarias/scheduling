@@ -90,6 +90,7 @@ public class MasterScheduler implements Runnable {
      *
      */
     public void stopScheduling() throws Exception {
+        this.stopCommand = true;
     }
 
     /////////////////////////////////////////////////////////////////////

@@ -36,6 +36,7 @@ import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.Program;
+import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
@@ -48,6 +49,7 @@ public class ALMAProjectManager extends ProjectManager {
     private ContainerServices containerServices;
     private ALMAArchive archive;
     private SBQueue sbQueue;
+    private ProjectQueue pQueue;
 
     public ALMAProjectManager(ContainerServices cs, ALMAArchive a, SBQueue q) {
         super();
@@ -55,7 +57,7 @@ public class ALMAProjectManager extends ProjectManager {
         this.logger = cs.getLogger();
         this.archive = a;
         this.sbQueue = q;
-        pollArchive();
+        this.pQueue = new ProjectQueue(pollArchive());
     }
 
     /**
@@ -83,12 +85,13 @@ public class ALMAProjectManager extends ProjectManager {
      * projects.
      *
      */
-    private void pollArchive() {
+    private Project[] pollArchive() {
         logger.info("SCHEDULING: Polling ARCHIVE");
         boolean sb_present = false;
+        Project[] projs = null;
         try {
             String[] ids;
-            Project[] projs = archive.getAllProject();
+            projs = archive.getAllProject();
             logger.info("SCHEDULING: projects = "+projs.length);
             SB[] sbs = getSBsFromProjects(projs);
             logger.info("SCHEDULING: total SBs = "+sbs.length);
@@ -117,6 +120,7 @@ public class ALMAProjectManager extends ProjectManager {
         }catch(Exception e) {
             e.toString();
         }
+        return projs;
     }
 
 
@@ -158,6 +162,20 @@ public class ALMAProjectManager extends ProjectManager {
         }
         System.out.println("schedblock[] size == "+schedblocks.length);
         return schedblocks;
+    }
+
+    public void sessionStart(String sessionId, String sb_id) {
+        String proj_id = (sbQueue.get(sb_id)).getProject().getId();
+        logger.info("SCHEDULING:(session info) Session ("+sessionId+") has started.");
+        logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
+        logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
+    }
+
+    public void sessionEnd(String sb_id) {
+        String proj_id = (sbQueue.get(sb_id)).getProject().getId();
+        logger.info("SCHEDULING:(session info) Session has ended.");
+        logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
+        logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
     }
 
 }

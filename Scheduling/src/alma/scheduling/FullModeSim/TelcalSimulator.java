@@ -26,5 +26,8 @@
  
 package alma.scheduling.FullModeSim;
 
+/**
+ * @author Sohaila Lucero
+ */
 public class TelcalSimulator{
 }

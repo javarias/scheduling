@@ -138,7 +138,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         pmThread.start();
 
         // Connect to the Control NC
-        eventreceiver = new ALMAReceiveEvent(containerServices, archive, 
+        eventreceiver = new ALMAReceiveEvent(containerServices, manager, archive, 
                                              pipeline, (ALMAPublishEvent)publisher);
         control_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.Control.CHANNELNAME.value,
@@ -199,6 +199,10 @@ public class ALMAMasterScheduler extends MasterScheduler
     /////////////////////////////////////////////////////////////////////
     // MSOperations methods.
     /////////////////////////////////////////////////////////////////////
+    /**
+     * Temporary method to populate a Policy
+     * @return Policy
+     */
     private Policy createPolicy() {
         Policy policy = new Policy();
         policy.setId("Temp ID");
@@ -299,7 +303,11 @@ public class ALMAMasterScheduler extends MasterScheduler
      * Stops all scheduling
      */
     public void stopScheduling() throws InvalidOperation {
-        //super.stopScheduling();
+        try {
+            super.stopScheduling();
+        } catch(Exception e) {
+            throw new InvalidOperation();
+        }
     }
    
 
