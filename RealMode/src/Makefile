@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.6 2003/03/26 16:41:18 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.7 2003/06/12 16:36:26 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -17,26 +17,31 @@
 #------------------------------------------------------------------------
 
 DEBUG = on
+#COMPONENT_HELPERS=on
 
 #
 # XML schema files and includes
 #
-XSDBIND = SchedulingEntities
-XSDBIND_INCLUDE = systementities
+#XSDBIND = SchedulingEntities
+#XSDBIND_INCLUDE = systementities
+
+XML_IDL="SchedBlock=alma.entity.xmlbinding.schedblock.SchedBlock; \
+         SchedulingInfo=alma.entity.xmlbinding.schedulinginfo.SchedulingInfo; \
+         SchedulingPolicy=alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy"
 
 # 
 # IDL Files and flags
 # 
 IDL_FILES = SchedulingInterfaces
-IDL_TAO_FLAGS =
-USER_IDL =
+#IDL_TAO_FLAGS =
+#USER_IDL =
 
 #
 # Jarfiles and their directories
 #
 JARFILES = scheduling 
 scheduling_DIRS =  alma
-scheduling_EXTRAS = 
+#scheduling_EXTRAS = 
 
 
 INSTALL_FILES = ../lib/scheduling.jar
