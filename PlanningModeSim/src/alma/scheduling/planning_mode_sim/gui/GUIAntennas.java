@@ -34,4 +34,12 @@ public class GUIAntennas extends JComboBox {
 
         setSelectedItem("64");
     }
+
+    public void setValue(String s) {
+        setSelectedItem(s);
+    }
+
+    public String getValue(){
+        return (String)getSelectedItem();
+    }
 }
