@@ -385,9 +385,6 @@ public class GUI extends JFrame {
             ff_p = new JPanel();
             ff_p.setLayout(new GridLayout(2,6));
             ff_l = new JLabel("Name");      ff_p.add(ff_l);
-            ff_l.repaint();
-            ff_l.validate();
-            //System.out.println(ff_l.getText());
             ff_tf = new JTextField();       ff_p.add(ff_tf);
             ff_l = new JLabel("min");       ff_p.add(ff_l);
             ff_tf = new JTextField();       ff_p.add(ff_tf);
@@ -511,10 +508,10 @@ public class GUI extends JFrame {
         l = new JLabel("t1");           weatherFields.add(l);
         tf = new JTextField();          weatherFields.add(tf);
         //////////////////
-        l = new JLabel();               weatherFields.add(l);
-        l = new JLabel();               weatherFields.add(l);
-        l = new JLabel();               weatherFields.add(l);
-        l = new JLabel();               weatherFields.add(l);
+        //l = new JLabel();               weatherFields.add(l);
+        //l = new JLabel();               weatherFields.add(l);
+        //l = new JLabel();               weatherFields.add(l);
+        //l = new JLabel();               weatherFields.add(l);
         //////////////////
         return weatherFields;
     }
@@ -604,6 +601,22 @@ public class GUI extends JFrame {
         c.gridwidth= GridBagConstraints.REMAINDER;
         gridbag.setConstraints(l,c);
         main.add(l);
+        ///
+        l = new JLabel();
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        main.add(l);
+        l = new JLabel("Diff. Proj. Same. Band");
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        main.add(l);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        main.add(tf);
+        l = new JLabel();
+        c.gridwidth= GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(l,c);
+        main.add(l);
         l = new JLabel();
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
@@ -623,6 +636,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
+        ///
         l = new JLabel("New Project");
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
@@ -639,6 +653,21 @@ public class GUI extends JFrame {
         gridbag.setConstraints(l,c);
         main.add(l);
         l = new JLabel("Last SB");
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        main.add(l);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        main.add(tf);
+        l = new JLabel();
+        c.gridwidth= GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(l,c);
+        main.add(l);
+        l = new JLabel();
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        main.add(l);
+        l = new JLabel("Priority");
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
