@@ -159,15 +159,15 @@ public class TestALMAArchive {
                 //logger.info("SCHED_TEST: "+xml_entity.xmlString);
             }
             logger.info("SCHED_TEST: function getPipelineProcessingRequest(String id)");
-            ppr = archive.getPipelineProcessingRequest(xml_entity.entityId);
-            xml_entity = es.serializeEntity(ppr);
+            xml_entity = archive.getPipelineProcessingRequest(xml_entity.entityId);
+            //xml_entity = es.serializeEntity(ppr);
             //logger.info("SCHED_TEST: "+xml_entity.xmlString);
             
             logger.info("SCHED_TEST: function updatePipelineProcessingRequest(PipelineProcessingRequest ppr)");
             archive.updatePipelineProcessingRequest(ppr);
             //retreive it to see that it updated
-            ppr = archive.getPipelineProcessingRequest(xml_entity.entityId);
-            xml_entity = es.serializeEntity(ppr);
+            xml_entity = archive.getPipelineProcessingRequest(xml_entity.entityId);
+            //xml_entity = es.serializeEntity(ppr);
             logger.info("SCHED_TEST: pipelineprocessingrequest with id="+
                xml_entity.entityId+" has version="+
                     ppr.getPipelineProcessingRequestEntity().getDocumentVersion());

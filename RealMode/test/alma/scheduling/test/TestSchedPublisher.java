@@ -2,6 +2,8 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
+import org.omg.CosNotification.*;
+
 import alma.acs.nc.*;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -11,14 +13,24 @@ import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.master_scheduler.SchedulingPublisher;
 
+//public class TestSchedPublisher extends Consumer {
 public class TestSchedPublisher {
     private Logger logger;
     private Receiver receiver; 
 
     public TestSchedPublisher(ContainerServices cs){
+//        super(alma.scheduling.CHANNELNAME.value);
         this.logger = cs.getLogger();
     }
+/*
+    public void push_structured_event(StructuredEvent structuredEvent) 
+            throws org.omg.CosEventComm.Disconnected {
+        
+        logger.info("SCHED_TEST: got event");
 
+    }
+*/    
+    
     public void receive(NothingCanBeScheduledEvent e) {
         logger.fine("SCHED_TEST: Event Received!");
         int i = e.reason.value();
@@ -62,6 +74,7 @@ public class TestSchedPublisher {
         receiver = null;
         System.gc();
     }
+    
     public static void main(String[] args) {
         try {
             ComponentClient client = new ComponentClient(null,
@@ -70,6 +83,12 @@ public class TestSchedPublisher {
             ContainerServices cs = client.getContainerServices();
             SchedulingPublisher sp = new SchedulingPublisher(false, cs);
             TestSchedPublisher tsp = new TestSchedPublisher(cs);
+
+            /*
+            tsp.addSubscription(alma.scheduling.NothingCanBeScheduledEvent.class);
+            tsp.consumerReady();
+            */
+            
             tsp.receiverSetup();
 
             sp.publishEvent(NothingCanBeScheduledEnum.NOTHING_VISIBLE,
@@ -87,19 +106,12 @@ public class TestSchedPublisher {
             sp.publishEvent("Unknown Reason!");
 
             tsp.disconnectReceiver();
-            sp.publishEvent("Another Unknown Reason!");
-            sp.shutdown();
-            client.tearDown();
-            cs = null;
             tsp.stop();
-            tsp = null;
-            sp = null;
-//            System.out.println("hmm1");
+            sp.shutdown();
+            alma.acs.nc.Helper.disconnect();
         } catch(Exception e) {
             System.out.println(e.toString());
             e.printStackTrace();
         }
-//        System.out.println("hmm2");
-        System.exit(0);
     }
 }
