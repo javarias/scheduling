@@ -58,8 +58,8 @@ public class TestSchedReceivers {
     private SimpleSupplier controlSup;
     private SimpleSupplier pipelineSup;
     
-    private PointingScanReducedEventReceiver telcal1;
-    private FocusScanReducedEventReceiver telcal2;
+    private PointingReducedEventReceiver telcal1;
+    private FocusReducedEventReceiver telcal2;
     private ControlEventReceiver control1;
     private SchedulerEventReceiver control2;
     private PipelineEventReceiver pipeline1;
@@ -89,11 +89,11 @@ public class TestSchedReceivers {
     }
     public void createReceivers() {
         try {
-            telcal1 = new PointingScanReducedEventReceiver(container);
-            telcal1.addSubscription("PointingScanReducedEvent");
+            telcal1 = new PointingReducedEventReceiver(container);
+            telcal1.addSubscription("PointingReducedEvent");
             telcal1.consumerReady();
-            telcal2 = new FocusScanReducedEventReceiver(container);
-            telcal2.addSubscription("FocusScanReducedEvent");
+            telcal2 = new FocusReducedEventReceiver(container);
+            telcal2.addSubscription("FocusReducedEvent");
             telcal2.consumerReady();
             control1 = new ControlEventReceiver(container, new ALMAPipeline(true, container),
                     new ALMAArchive(true, container));

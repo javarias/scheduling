@@ -28,10 +28,10 @@ package ALMA.scheduling.test;
 import ALMA.acsnc.*;
 import alma.acs.nc.*;
 import org.omg.CosNotification.StructuredEvent;
-import ALMA.TelCalPublisher.PointingScanReducedEvent_t;
-import ALMA.TelCalPublisher.PointingScanReducedEvent_tHelper;
-import ALMA.TelCalPublisher.FocusScanReducedEvent_t;
-import ALMA.TelCalPublisher.FocusScanReducedEvent_tHelper;
+import ALMA.TelCalPublisher.PointingReducedEvent;
+import ALMA.TelCalPublisher.PointingReducedEventHelper;
+import ALMA.TelCalPublisher.FocusReducedEvent;
+import ALMA.TelCalPublisher.FocusReducedEventHelper;
 
 public class TestSchedSupplier { // extends Supplier {
 
@@ -42,21 +42,21 @@ public class TestSchedSupplier { // extends Supplier {
         String[] names = new String[3];
         names[SimpleSupplier.CHANNELPOS] = ALMA.TelCalPublisher.CHANNELNAME.value;
         names[SimpleSupplier.TYPEPOS] = new String(
-            "PointingScanReducedEvent");
-        //    "ALMA.TelCalPublisher.PointingScanReducedEvent_t");
+            "PointingReducedEvent");
+        //    "ALMA.TelCalPublisher.PointingReducedEvent");
         names[SimpleSupplier.HELPERPOS] = new String(
-            "ALMA.TelCalPublisher.PointingScanReducedEvent_tHelper");
-        //create a supplier for the PointingScanReducedEvent
+            "ALMA.TelCalPublisher.PointingReducedEventHelper");
+        //create a supplier for the PointingReducedEvent
         sup1 = new SimpleSupplier(names);
         System.out.println("SCHED_TEST: sup1 created"); 
 
         names[SimpleSupplier.TYPEPOS] = new String(
-            "FocusScanReducedEvent");
-            //"ALMA.TelCalPublisher.FocusScanReducedEvent_t");
+            "FocusReducedEvent");
+            //"ALMA.TelCalPublisher.FocusReducedEvent");
         names[SimpleSupplier.HELPERPOS] = new String(
-            "ALMA.TelCalPublisher.FocusScanReducedEvent_tHelper");
+            "ALMA.TelCalPublisher.FocusReducedEventHelper");
 
-        //create a supplier for the FocusScanReducedEvent
+        //create a supplier for the FocusReducedEvent
         sup2 = new SimpleSupplier(names);
         System.out.println("SCHED_TEST: sup2 created"); 
     }
@@ -64,12 +64,12 @@ public class TestSchedSupplier { // extends Supplier {
     public void sendTelCalEvents() {
 
 
-        //send out a PointingScanReducedEvent
-        PointingScanReducedEvent_t p_event = new PointingScanReducedEvent_t(
-            "TestingPointingScanReduced",1,1,1);
-        //send out a FocusScanReducedEvent
-        FocusScanReducedEvent_t f_event = new FocusScanReducedEvent_t(
-            "TestingFocusScanReduced",1,1,1);
+        //send out a PointingReducedEvent
+        PointingReducedEvent p_event = new PointingReducedEvent(
+            "TestingPointingReduced",1,"1","1");
+        //send out a FocusReducedEvent
+        FocusReducedEvent f_event = new FocusReducedEvent(
+            "TestingFocusReduced",1,"1","1");
 
         //Publish the events
         try {
