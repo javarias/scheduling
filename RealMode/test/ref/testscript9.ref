@@ -1,9 +1,7 @@
 Starting Activate...
-FINE: about to initialize component SCIENCE_PIPELINE
 INFO: SCIENCE_PIPELINE: initialize() method called
 INFO: SCIENCE_PIPELINE: execute() method called
 Attempting to create the sciencepipeline channel.
-FINE: about to initialize component ArrayController1
 INFO: initialize() called...
 Attempting to create the CONTROLSYSTEM channel.
 INFO: execute() called...
@@ -98,8 +96,6 @@ getSBEntities(ObsProject)
 	getSBEntities(ObsUnitSet)
 		Adding SB uid://X----------------/X--------
 		Adding SB uid://X----------------/X--------
-FINE: about to initialize component OBS_PROJ_REP
-FINE: about to initialize component ADMINISTRATIVE_ARCHIVE
 FINE: component ADMINISTRATIVE_ARCHIVE retrieved successfully.
 FINE: component OBS_PROJ_REP retrieved successfully.
 FINER: creating xml binding class aware wrapper around component implementing alma.ProjectRepositoryIF.LightweightProjectRepositoryOperations...
@@ -112,21 +108,14 @@ FINEST: Updating: uid://X----------------/X--------
 FINEST: Updating: uid://X----------------/X--------
 FINER: will try to translate from 'alma.ProjectRepositoryIF.ObsProjectTree' to 'alma.ProjectRepositoryIF.ObsProjectTreeJ'.
 FINE: will disconnect ACS stuff...
-FINE: about to release component OBS_PROJ_REP
 FINER: deactivating component 'OBS_PROJ_REP' with handle xxxxxxxxx
 FINER: about to deactivate component OBS_PROJ_REP
-FINE: about to release component ADMINISTRATIVE_ARCHIVE
 FINER: deactivating component 'ADMINISTRATIVE_ARCHIVE' with handle xxxxxxxxx
 FINER: about to deactivate component ADMINISTRATIVE_ARCHIVE
 FINER: done deactivating component ADMINISTRATIVE_ARCHIVE
-FINER: released 'ADMINISTRATIVE_ARCHIVE' with the manager. Remaining clients: 0
-INFO: client 'OBS_PROJ_REP' has successfully released  a component with curl=ADMINISTRATIVE_ARCHIVE
 FINER: done deactivating component OBS_PROJ_REP
-FINER: released 'OBS_PROJ_REP' with the manager. Remaining clients: 0
-INFO: client 'alma.acs.component.client.ComponentClient' has successfully released  a component with curl=OBS_PROJ_REP
 FINE: ready to talk with components!
 SCHEDULING: The MasterScheduler has been constructed.
-FINE: about to initialize component MASTER_SCHEDULER
 SCHEDULING: Message queue created
 FINE: SCHEDULING: The ALMAArchive has been constructed.
 SCHEDULING: The ALMATelescopeOperator has been constructed.
@@ -173,13 +162,8 @@ Helper::Helper(...): channel=TelCalPublisherEventNC, type=SideBandRatioReducedEv
 Helper::Helper(...): channel=TelCalPublisherEventNC, type=SkydipReducedEvent!
 ----------T--:--:--.--- Thread name: 'PUBLISHTELCALEVENTS1::actionThread'
 ----------T--:--:--.--- Thread name: 'PUBLISHTELCALEVENTS1::monitorThread'
-----------T--:--:--.--- COB 'PUBLISHTELCALEVENTS1' activated.
 ----------T--:--:--.--- Request to load 'GetTelCalResults'.
-TelCal trace : GetTelCalResults:Loaded all COBs----------T--:--:--.--- Thread name: 'GETTELCALRESULTS1::actionThread'
 ----------T--:--:--.--- Thread name: 'GETTELCALRESULTS1::monitorThread'
-----------T--:--:--.--- COB 'GETTELCALRESULTS1' activated.
-----------T--:--:--.--- Message from manager received. Type: 20. Message: Startup statistics: 2 COBs queued to be activated.
-----------T--:--:--.--- Message from manager received. Type: 20. Message: Startup statistics: 2 of 2 COBs activated.
 INFO: SCHEDULING: Got NCs
 SCHEDULING: The Clock has been constructed.
 INFO: SCHEDULING: The MasterScheduler has been initialized.
@@ -217,16 +201,11 @@ SCHED_TEST: SchedConsumer created
 Suppler.subscription_change(...): override to do something useful.
 FINE: component PUBLISHTELCALEVENTS1 retrieved successfully.
 INFO: SCHED_TEST: TelCal Component Created!
-SCHEDULING: Got PointingScanReduced event
-SCHEDULING: Starting to process the PointingScanReduced event
 SCHEDULING: Got FocusScanReduced event
 SCHEDULING: Starting to process the FocusScanReduced event
+SCHEDULING: Got PointingScanReduced event
+SCHEDULING: Starting to process the PointingScanReduced event
 INFO: No targets to process in SB
-FINEST: Updating: uid://X----------------/X--------
-SCHEDULING: Got event from control
-SCHEDULING: Starting to process the control event
-SCHEDULING: process control event started
-FINEST: Getting URI: uid://X----------------/X-------- Version: -1
 FINEST: Updating: uid://X----------------/X--------
 SCHEDULING: Got event from control
 SCHEDULING: Starting to process the control event
@@ -241,6 +220,11 @@ INFO: SCIENCE_PIPELINE: identifier archive accessed
 INFO: SCIENCE_PIPELINE: listobject created
 uid://X----------------/X-------- uid://X----------------/X-------- queued
 uid://X----------------/X-------- uid://X----------------/X-------- queued
+SCHEDULING: Got event from control
+SCHEDULING: Starting to process the control event
+SCHEDULING: process control event started
+FINEST: Getting URI: uid://X----------------/X-------- Version: -1
+FINEST: Updating: uid://X----------------/X--------
 FINEST: Updating: uid://X----------------/X--------
 INFO: SCHEDULING: request result
 INFO: client 'MASTER_SCHEDULER' attempts to retrieve component 'SCIENCE_PIPELINE' more than once; will return existing reference.
@@ -261,13 +245,6 @@ FINEST: Updating: uid://X----------------/X--------
 SCHEDULING: PipelineEnd event received!
 SCHEDULING: Got event from Pipeline
 INFO: SCIENCE_PIPELINE: completion event issued
-FINE: about to release component MASTER_SCHEDULER
-FINER: released 'MASTER_SCHEDULER' with the manager. Remaining clients: 1
-INFO: client 'alma.acs.component.client.ComponentClient' has successfully released  a component with curl=MASTER_SCHEDULER
-FINE: about to release component PUBLISHTELCALEVENTS1
-FINER: released 'PUBLISHTELCALEVENTS1' with the manager. Remaining clients: 2
-INFO: client 'alma.acs.component.client.ComponentClient' has successfully released  a component with curl=PUBLISHTELCALEVENTS1
-ption added for domain: ALMA!
 
 
 
@@ -300,5 +277,4 @@ ption added for domain: ALMA!
 
 
 
-----------T--:--:--.--- Activate stopped.
 
