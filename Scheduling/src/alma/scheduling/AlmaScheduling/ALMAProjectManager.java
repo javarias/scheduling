@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.30 2005/03/10 22:42:14 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.31 2005/03/17 21:41:05 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -320,6 +320,37 @@ public class ALMAProjectManager extends ProjectManager {
         }
     }
 
+    /*private Project addProgram(Program p) {
+        // get program's parent. If it doesnt have a parent its the project then add program 
+        // and return project but if its another program add it to the program and 
+        // call this function again with the new program
+        Project proj=null;
+        Object parent = p.getParent();
+        if(parent instanceof Program) {
+            //its parent is another program, add to program and try again
+            System.out.println("Its not the project. Another program.");
+            ((Program)parent).updateMember(p);
+            addProgram((Program)parent);
+        } 
+        //its parent is the top level project. add it to the project and 
+        //return the project.
+        System.out.println("Its the top project. Setting program and returning project.");
+        proj = p.getProject();
+        proj.setProgram(p);
+        return proj;
+    }*/
+
+    
+    private Program addProgram(Program p) {
+        Program parent = p.getParent();
+        if(parent != null) {
+            parent.updateMember(addProgram(parent));
+            //addProgram(parent);
+        }
+        return p;
+        
+    }
+
     /**
       * Creates an Observed session and maps it to the ProjectStatus. The ProjectStatus then 
       * gets updated in the archive. 
@@ -333,8 +364,13 @@ public class ALMAProjectManager extends ProjectManager {
         //System.out.println("EXEC BLOCK: eb id ="+eb.getId());
         session.addExec(eb);
         p.addObservedSession(session);
-        Project proj = pQueue.get(p.getProject().getId());
-        proj.setProgram(p);
+        
+        //Project proj = pQueue.get(p.getProject().getId());
+        Program prog =  addProgram(p);
+        Project proj = prog.getProject();
+        if(proj == null) {
+            System.out.println("program was null!!!");
+        }
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
             //ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
@@ -416,13 +452,12 @@ public class ALMAProjectManager extends ProjectManager {
         ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
         SessionT[] sessions = obsProgram.getSession();
-        SessionT session = null;
+        
+        SessionT session = null; //= getSession(eb);
         logger.info("SCHEDULING: in PM sessions length = "+sessions.length);
         for(int i=0; i < sessions.length; i++) {
             ExecBlockRefT[] execblocks = sessions[i].getExecBlockRef();
-            //ExecBlockEntityRefT[] execblocks = sessions[i].getExecBlockRef();
             for(int j=0; j < execblocks.length; j++) {
-                //if(execblocks[j].getEntityId().equals(execid)){
                 if(execblocks[j].getExecBlockId().equals(execid)){
                     logger.info("SCHEDULING: session found!");
                     session = sessions[i];
@@ -447,7 +482,79 @@ public class ALMAProjectManager extends ProjectManager {
                 logger.info("SCHEDULING: hmmm...");
             }
         }
-                        
+    }
+
+    private SessionT getSession(ExecBlock eb) {
+        /*
+         get the obsprogram (= prog1) (very top program), it shouldn't have any sessions but double check.
+         choice = prog1.getObsUnitSetStatusTChoice(); 
+         //check if theres any obs unit sets
+         prog2 = choice.getObsUnitSetStatus(); 
+         //might have sessions so check.
+         // might also have more obsunitsets
+         choice = prog2.getObsUnitSetStatusTChoice();
+         */
+        boolean gotSession = false;
+        String endTime = (new DateTime(System.currentTimeMillis())).toString();
+        String execid = eb.getExecId();
+        String sbid = ((SB)eb.getParent()).getId();
+        SB sb = sbQueue.get(sbid);
+        Project proj = (Project)sb.getProject();
+        String projectid = proj.getId();
+        ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
+        ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
+        SessionT[] sessions = obsProgram.getSession();
+        if(sessions.length != 0) {//shouldn't ever have any sessions, but double check!
+            gotSession = sessionExists(eb, sessions);
+            if(gotSession) {
+                return retrieveSession(eb, sessions);
+            }
+        }
+        
+        return null;
+        
+    }
+
+   // private ObsUnitSetStatusT getObsUnitSetStatus(ObsUnitSetStatusTCh
+
+    /**
+      * Returns true if a session in this group is the one associated with
+      * this exec block!
+      */
+    private boolean sessionExists(ExecBlock eb, SessionT[] all) {
+        boolean result=false;
+        String execid = eb.getExecId();
+        for(int i=0; i < all.length; i++) {
+            ExecBlockRefT[] execblocks = all[i].getExecBlockRef();
+            for(int j=0; j < execblocks.length; j++){
+                if (execblocks[j].getExecBlockId().equals(execid)){
+                    System.out.println("Session found! returning true");
+                    return true;
+                }
+            }
+            
+        }
+        return result;
+    }
+
+    /**
+      * This function should NEVER return null...
+      */
+    private SessionT retrieveSession(ExecBlock eb, SessionT[] all){
+        SessionT session=null;
+        String execid = eb.getExecId();
+        for(int i=0; i < all.length; i++) {
+            session = all[i];
+            ExecBlockRefT[] execblocks = session.getExecBlockRef();
+            for(int j=0; j < execblocks.length; j++){
+                if (execblocks[j].getExecBlockId().equals(execid)){
+                    System.out.println("Session found! returning session");
+                    return session;
+                }
+            }
+            
+        }
+        return session;
     }
     
     /**
@@ -461,14 +568,17 @@ public class ALMAProjectManager extends ProjectManager {
         throws SchedulingException {
 
         //use sbid to get the program 
+            System.out.println("CReateing PPR in PM");
         SB sb = sbQueue.get(sbid);
         Program prog = sb.getParent();
         SciPipelineRequest ppr = new SciPipelineRequest(prog, s);
  		ppr.setReady(ProjectUtil.genPartId(), new DateTime(System.currentTimeMillis()));
         ppr.setStarted(new DateTime(System.currentTimeMillis()));
         prog.setSciPipelineRequest(ppr);
-        Project proj = pQueue.get(prog.getProject().getId());
-        proj.setProgram(prog);
+        Program prog2 = addProgram(prog);
+        Project proj = prog2.getProject();
+        //Project proj = pQueue.get(prog.getProject().getId());
+        //proj.setProgram(prog2);
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
             //ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));

@@ -90,69 +90,13 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.19 2005/03/16 16:57:09 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.20 2005/03/17 21:41:05 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
 	
 	static private final String nullPartId = "X00000000";
 
-	/**
-	 * Create a Session object from an ObservedSession object.  This method assumes that the
-	 * ObservedSession object is a part of a valid Project.
-	 * @param source The specified ObservedSession object from which the Session object is derived.
-	 * @return The new created Session object.
-	 */
-		/*
-	 static public Session createSession(ObservedSession source) {
-		Session target = new Session ();
-
-		// Create the entityId and add it to the session.
-		EntityT entity = new EntityT ();
-		entity.setEntityId(source.getSessionId());
-		entity.setEntityIdEncrypted("none");
-		entity.setDocumentVersion("1");
-		entity.setEntityTypeName("Session");
-		entity.setSchemaVersion("1");
-		target.setSessionEntity(entity);
-		
-		// Set the ObsUnitSetStatusId.
-		EntityRefT obsUnitSetStatusRef = new EntityRefT ();
-		obsUnitSetStatusRef.setEntityId(source.getProgram().getProject().getProjectStatusId());
-		obsUnitSetStatusRef.setPartId(source.getProgram().getObsUnitSetStatusId());
-		obsUnitSetStatusRef.setEntityTypeName("ProjectStatus");
-		obsUnitSetStatusRef.setDocumentVersion("1");
-		target.setObsUnitsetReference(obsUnitSetStatusRef);
-		
-		// Set the times.
-		target.setStartTime(source.getStartTime().toString());
-		target.setEndTime(source.getEndTime().toString());
-		
-		// Add the execution blocks.
-		ExecBlock[] x = source.getExec();
-		SessionSequence seq = null;
-		SessionSequenceItem item = null;
-		ExecutionT ex = null;
-		EntityRefT exRef = null;
-		for (int i = 0; i < x.length; ++i) {
-			seq = new SessionSequence();
-			item = new SessionSequenceItem ();
-			ex = new ExecutionT ();
-			exRef = new EntityRefT ();
-			exRef.setEntityId(x[i].getExecId());
-			exRef.setPartId(nullPartId);
-			exRef.setEntityTypeName("ProjectStatus");
-			exRef.setDocumentVersion("1");
-			ex.setExecBlockReference(exRef);
-			item.setExecution(ex);
-			seq.setSessionSequenceItem(item);
-			target.addSessionSequence(seq);
-		}
-		return target;
-		return null;
-	}
-		*/
-	
 	/**
 	 * Check the specified project for internal consistency.
 	 * <p>
@@ -471,7 +415,8 @@ public class ProjectUtil {
 		
 		// Now, set all the partIds in the project status.
 		Program p = project.getProgram();
-		p.setObsUnitSetStatusId(genPartId());
+        //Program p = intialize(obs.getObsProgram().getObsPlan().getObsUnitSet()
+		//p.setObsUnitSetStatusId(genPartId());
 		setProgramMember(p);
 		
 		project.setProgram(program);
@@ -568,8 +513,13 @@ public class ProjectUtil {
 		program.setFrequencyBand(null);
 		program.setRequiredInitialSetup(null);
 	
+        System.out.println("Now check sbs and obs unit sets");
+        System.out.println( set.getObsUnitSetTChoice().getObsUnitSetCount() );
+        System.out.println( set.getObsUnitSetTChoice().getSchedBlockRefCount());
+
 		// Assign the members of this set: either Program or SB objects.
 		if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
+            System.out.println("More than one obs unit sets");
 			ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
 			Program memberProgram = null;
 			for (int i = 0; i < setMember.length; ++i) {
@@ -861,7 +811,8 @@ public class ProjectUtil {
 	static private ObsUnitSetStatusT assignObsProgramStatus(Program source, DateTime now) {
         System.out.println("Assigning obs program status");
 		ObsUnitSetStatusT target = new ObsUnitSetStatusT ();
-		target.setEntityPartId(source.getObsUnitSetStatusId());
+		//target.setEntityPartId(source.getObsUnitSetStatusId());
+		target.setEntityPartId(source.getId());
 		ObsProjectRefT obsUnitSetRef = new ObsProjectRefT ();
 		obsUnitSetRef.setEntityId(source.getProject().getObsProjectId());
 		obsUnitSetRef.setPartId(source.getProgramId());
@@ -890,6 +841,7 @@ public class ProjectUtil {
 		
 		// Set the members of this program.
 		ProgramMember[] member = source.getMember();
+        System.out.println("Number of members = "+ member.length);
 		Program pgm = null;
 		SB sb = null;
 		ObsUnitSetStatusTChoice set = new ObsUnitSetStatusTChoice ();
@@ -1033,10 +985,13 @@ public class ProjectUtil {
                              ((DoubleWithUnitT)parm[i]).getUnit());
                     
                 } else if(parm[i].getClass().getName().equals(
-                            "alma.entity.xmlbinding.valuetypes.types.DataProcessingParametersTProjectTypeType")){
+                            "alma.entity.xmlbinding.obsproject.types.DataProcessingParametersTProjectTypeType")){
+                            //"alma.entity.xmlbinding.obsproject.types.DataProcessingParametersTProjectTypeType
 
                     pparams[i].setName("ProjectType");
                     pparams[i].setValue(parm[i].toString());
+                } else {
+                    System.out.println("Class type for data processing param is: "+parm[i].getClass().getName());
                 }
             }
     		target.setPipelineParameter(pparams);
