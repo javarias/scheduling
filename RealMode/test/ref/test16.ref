@@ -1,9 +1,0 @@
-1 - FINE: ready to talk with components!
-1 - FINE: SCHEDULING SIMULATOR: NCs created.
-1 - INFO: SCHED_TEST: TestControlSimulator created
-1 - INFO: SCHED_TEST: about to call control
-1 - INFO: SCHED_TEST: Received a Start Event from control!
-1 - FINE: SCHEDULING SIMULATOR: Control started....
-1 - INFO: SCHED_TEST: Received an End Event from control!
-1 - FINE: SCHEDULING SIMULATOR: ....Control ended
-1 - INFO: SCHED_TEST: done!

@@ -104,6 +104,7 @@ public class ALMAArchive implements Archive {
             ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
             if(ps == null) { //no project status for this project. so create one
                  System.out.println("no ps for this project");
+                 //TODO ps = createProjectStatus(obsProject[i]);
             }
             SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
             tmp_projects.add(ProjectUtil.map(obsProj[i], sbs, ps, 
@@ -118,39 +119,6 @@ public class ALMAArchive implements Archive {
 
     public ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
         ProjectStatus ps = null;
-        /*
-        String query = new String("/ps:ProjectStatus/ps:ObsProjectRef[@entityId='"+
-                p.getObsProjectEntity().getEntityId()+"']");
-        String schema = new String("ProjectStatus");
-        String className = new String(
-                "alma.entity.xmlbinding.projectstatus.ProjectStatus");
-        try {
-            Cursor cursor = archOperationComp.queryDirty(query,schema);
-            if(cursor == null){
-            } 
-            boolean one = true;
-            while(cursor.hasNext()) { //should be only one.
-                if(one) {
-                    QueryResult res = cursor.next();
-                    XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
-                    //System.out.println("PROJECT STATUS: "+xml.xmlString);
-                    ps = (alma.entity.xmlbinding.projectstatus.ProjectStatus)
-                        entityDeserializer.deserializeEntity(xml, Class.forName(
-                            "alma.entity.xmlbinding.projectstatus.ProjectStatus"));
-                } else {
-                    throw new SchedulingException("More than one PS for project.");
-                }
-                one = false;
-            }
-            if(ps == null) {
-                logger.info("SCHEDULING: Creating a PS for project.");
-                ps = createDummyProjectStatus(p);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new SchedulingException(e);
-        }
-        */
         String ps_id = p.getProjectStatusRef().getEntityId();
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
@@ -203,6 +171,7 @@ public class ALMAArchive implements Archive {
       * @return An array of all the project status objects
       * @throws SchedulingException
       */
+    /*
     public ProjectStatus[] getAllProjectStatus() throws SchedulingException {
         ProjectStatus[] projectStatus = null;
         Vector tmp_ps = new Vector();
@@ -241,12 +210,12 @@ public class ALMAArchive implements Archive {
                     + " belongs to project "+
                         ((ProjectStatus)tmp_ps.elementAt(i)).getObsProjectRef().getEntityId());
         }
-        /**
-          * Temporary:
-          *     For R2, check to see if there is a project status for each
-          *     project. If there exists a project that doesn't have a project
-          *     status a new one is created and stored in the archive. 
-          */
+        //
+         //  Temporary:
+         //      For R2, check to see if there is a project status for each
+          //     project. If there exists a project that doesn't have a project
+          //     status a new one is created and stored in the archive. 
+          /
         //Project[] tmpProjects = getAllProject();
         ObsProject[] tmpProjects = getAllObsProjects();
         if(tmpProjects.length < tmp_ps.size()) {
@@ -331,6 +300,7 @@ public class ALMAArchive implements Archive {
         }
         return projectStatus;
     }
+*/
 
     /**
       * retruns all the ObsProjects in the archive.
@@ -425,6 +395,7 @@ public class ALMAArchive implements Archive {
                 sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
                 
             }
+            System.out.println("SCHEDULING: (in archive) project has "+sbs.length+" sbs");
             return sbs;
         }
 

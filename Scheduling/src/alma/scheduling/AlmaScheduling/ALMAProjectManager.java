@@ -246,42 +246,10 @@ public class ALMAProjectManager extends ProjectManager {
         for(int i=0; i < sets.length; i++) {
             SBStatusT[] sbs = parseObsUnitSetStatus(sets[i]);
         }
-        /*
-        for(int i=0; i< sets.length; i++){
-            System.out.println("ObsUnitSet part id = "+sets[i].getEntityPartId());
-            SBStatusT[] sbs = sets[i].getObsUnitSetStatusTChoice().getSB();
-            for(int j=0; j<sbs.length; j++) {
-                if(sbs[j].getSBRef().getEntityId().equals (sb.getId())) {
-                    //this is the sb which just finished!
-                    sbs[j].getStatus().setState(StateType.COMPLETE);
-                    //set obs unit set to complete too
-                    sets[i].getStatus().setState(StateType.COMPLETE);
-                    sets[i].setNumberSBSCompleted(1);
-                    sets[i].setNumberObsUnitSetsCompleted(1);
-                    ids[1] =  sets[i].getEntityPartId(); //for pipeline back in ALMAReceiveEvent
-                    //add exec block ref
-                    ExecStatusT exec = new ExecStatusT();
-                    EntityRefT e_ref = new EntityRefT();
-                    e_ref.setEntityId(eb.getId());
-                    exec.setExecBlockRef(e_ref);
-                    exec.setSubarrayId(eb.getSubarrayId());
-                    if(eb.getStatus().isComplete()) {
-                        exec.setStatus.setState(StateType.COMPLETE);
-                    }
-                    
-                    ExecStatusT[] execs = new ExecStatusT[1];
-                    execs[0] = exec;
-                    SBStatusTSequence seq = new SBStatusTSequence();
-                    seq.setExecStatus(execs);
-                    sbs[j].setSBStatusTSequence(seq);
-                    break;
-                }
-            }
-        }
-        */
         try {
             archive.updateProjectStatus(ps);
         } catch(Exception e) {
+            logger.severe("SCHEDULING: Could not update project status in archive!");
         }
         return ids;
     }

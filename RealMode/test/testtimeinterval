@@ -1,5 +1,0 @@
-#! /bin/bash
-
-acsStartJava -endorsed alma.scheduling.define.TimeInterval
-
-
