@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.27 2005/02/28 17:09:59 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.28 2005/02/28 17:52:46 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -189,7 +189,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     /**
-      *
+      * Log that the session has ended
       */
     public void sessionEnd(String sessionId, String sb_id) {
         logger.info("sb id = "+sb_id);
@@ -335,6 +335,12 @@ public class ALMAProjectManager extends ProjectManager {
         return session;
     }
 
+    /**
+      * Updates the observng session information.
+      */
+    public void updateObservedSession(){
+    }
+
 
     /* Will be this way in future
     public void sendStartSessionEvent(ObservedSession session) {
@@ -352,21 +358,22 @@ public class ALMAProjectManager extends ProjectManager {
             long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
             logger.info("SCHEDULING: "+time+", "+session.getSessionId()+", "+session.getProgram().getId()+", "+
                     sbid+", "+eb.getId()+"."); 
-            StartSessionEvent start_event = new StartSessionEvent(0L, "a", "b", "c", "d");
-/*
+            StartSessionEvent start_event = // new StartSessionEvent(0L, "a", "b", "c", "d");
+
                 new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                     session.getSessionId(),
                     session.getProgram().getId(),
                     sbid,
                     eb.getId());
-                    */
+                    
             publisher.publish(start_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send start session event!");
             e.printStackTrace();
         }
     }
+
 
     /* will change eventually to this
     public void sendEndSessionEvent(ObservedSession session) {
@@ -408,13 +415,6 @@ public class ALMAProjectManager extends ProjectManager {
                 }
                 logger.info("SCHEDULING: hmmm...");
             }
-            /*
-            if(session != null) {
-                logger.info("SCHEDULING: Session wasn't null.");
-                break;
-            }
-            logger.info("SCHEDULING: Session stuff?");
-            */
         }
                         
     }
