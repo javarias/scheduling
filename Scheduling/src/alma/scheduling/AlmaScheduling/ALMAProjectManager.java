@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.34 2005/03/29 23:45:28 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.35 2005/03/30 19:28:50 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -69,12 +69,14 @@ public class ALMAProjectManager extends ProjectManager {
     private ProjectStatusQueue psQueue;
     private ALMAPublishEvent publisher;
     private ALMAPipeline pipeline;
+    private ALMAOperator oper;
 
-    public ALMAProjectManager(ContainerServices cs, ALMAArchive a, SBQueue q, PublishEvent p) {
+    public ALMAProjectManager(ContainerServices cs, ALMAOperator o, ALMAArchive a, SBQueue q, PublishEvent p) {
         super();
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.publisher =(ALMAPublishEvent)p;
+        this.oper = o;
         this.archive = a;
         this.sbQueue = q;
         this.psQueue = new ProjectStatusQueue();
@@ -179,16 +181,19 @@ public class ALMAProjectManager extends ProjectManager {
 
     /**
       *
+      * Log that the session has started and send a message to the Operator
       */
     public void sessionStart(String sessionId, String sb_id) {
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
         logger.info("SCHEDULING:(session info) Session ("+sessionId+") has started.");
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
         logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
+        //send message to operator
+        oper.send("Session ("+sessionId+") has started for Sb ("+sb_id+").");
     }
 
     /**
-      * Log that the session has ended
+      * Log that the session has ended and send a message to the Operator
       */
     public void sessionEnd(String sessionId, String sb_id) {
         logger.info("sb id = "+sb_id);
@@ -197,6 +202,8 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("SCHEDULING:(session info) Session ("+sessionId+") has ended.");
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
         logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
+        //send message to operator
+        oper.send("Session ("+sessionId+") has ended for Sb ("+sb_id+").");
     }
 
     /**

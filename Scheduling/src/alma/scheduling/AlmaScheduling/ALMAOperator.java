@@ -36,6 +36,8 @@ import alma.scheduling.Define.NothingCanBeScheduled;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.entities.commonentity.EntityT;
+
+
 /**
  * @author Sohaila Lucero
  */
@@ -46,7 +48,8 @@ public class ALMAOperator implements Operator {
     private MessageQueue messageQueue;
     //logger
     private Logger logger;
-    
+    //The Operator Component.
+    private alma.exec.Operator execOperator;
     /**
       *
       */
@@ -64,9 +67,20 @@ public class ALMAOperator implements Operator {
     }
 
     /** 
+      * Sends a message to the Telescope Operator
       * @param String
       */
     public void send(String message) {
+        try{
+            execOperator = alma.exec.OperatorHelper.narrow(
+                    containerServices.getComponent("EXEC_OPERATOR"));
+            boolean reply = execOperator.askOperator(message, (short)0, 0,
+                    true, "SCHEDULING", "");
+            containerServices.releaseComponent("EXEC_OPERATOR");
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: error sending message to Telescope Operator");
+            e.printStackTrace();
+        }
     }
 
     /**
