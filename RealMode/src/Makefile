@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.12 2003/07/31 23:09:03 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.13 2003/08/05 15:22:27 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -41,7 +41,7 @@ IDL_FILES = SchedulingInterfaces
 # Jarfiles and their directories
 #
 JARFILES = scheduling 
-scheduling_DIRS =  alma
+scheduling_DIRS =  ALMA
 #scheduling_EXTRAS = 
 
 

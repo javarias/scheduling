@@ -24,7 +24,7 @@
 #define _SCHEDULINGINTERFACES_IDL_
 
 #include <xmlentity.idl> 
-#pragma prefix "alma"
+#pragma prefix "ALMA"
 
 module scheduling {
     const string CHANNELNAME = "SCHEDULING_CHANNEL";
