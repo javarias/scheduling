@@ -50,7 +50,7 @@ public class SchedTest3 {
     }
 
     public void createEvent() {
-        System.out.println("Creating Event...");
+        System.out.println("Creating 'NothingCanBeScheduled' Event...");
         NothingCanBeScheduledEvent e = masterScheduler.createNothingCanBeScheduledEvent("TestingEvent");
         System.out.println("Event Created!");
         System.out.println("Event Reason = "+ e.reason);

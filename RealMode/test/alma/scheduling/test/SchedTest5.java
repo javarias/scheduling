@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import alma.acs.component.client.ComponentClient;
 import alma.scheduling.master_scheduler.MasterScheduler;
 import alma.scheduling.master_scheduler.ALMADispatcher;
-import alma.scheduling.master_scheduler.STime;
+import alma.scheduling.define.STime;
 import alma.scheduling.scheduler.Scheduler;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 //import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;

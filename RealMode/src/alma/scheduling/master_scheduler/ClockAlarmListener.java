@@ -26,6 +26,7 @@
  
 package alma.scheduling.master_scheduler;
 
+import alma.scheduling.define.STime;
 /**
  * The ClockAlarmListener is an interface that is called
  * by the Clock class whenever an alarm expires. 

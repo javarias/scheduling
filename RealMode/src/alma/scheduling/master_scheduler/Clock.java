@@ -26,6 +26,8 @@
  
 package alma.scheduling.master_scheduler;
 
+import alma.scheduling.define.STime;
+import alma.scheduling.define.ArrayTime;
 /**
  * Description 
  * 

@@ -28,8 +28,8 @@ package alma.scheduling.master_scheduler;
 import java.util.logging.Logger;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;
-import alma.scheduling.MasterSchedulerInterfaceOperations;
-import alma.scheduling.MasterSchedulerInterfacePOATie;
+import alma.scheduling.MSOperations;
+import alma.scheduling.MSPOATie;
 
 public class MasterSchedulerHelper extends ComponentHelper {
 
@@ -53,7 +53,7 @@ public class MasterSchedulerHelper extends ComponentHelper {
 	 */
 	protected Class _getPOATieClass()
 	{
-		return MasterSchedulerInterfacePOATie.class;
+		return MSPOATie.class;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class MasterSchedulerHelper extends ComponentHelper {
 	 */
 	protected Class _getOperationsInterface()
 	{
-		return MasterSchedulerInterfaceOperations.class;
+		return MSOperations.class;
 	}
 }
 

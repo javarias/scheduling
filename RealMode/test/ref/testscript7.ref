@@ -22,7 +22,7 @@ Scheduler is running in dynamic mode!
 got scheduler
 got SB
 got dispatcher
-Sending SB with id = UID://X----------------/X-------- to controller.
+Sending SB with id = uid://X----------------/X-------- to controller.
 MB Action stopped
 Scheduler is stopped
 The MasterScheduler has been cleaned up and is now stopped.

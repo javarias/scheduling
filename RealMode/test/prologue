@@ -10,7 +10,7 @@ acsStartORBSRVC >& /dev/null &
 sleep 60
 
 echo " Starting Manager"
-maciManager >& /dev/null&
+maciManagerJ >& /dev/null&
 sleep 20
 
 echo " Starting hugoActivator"
