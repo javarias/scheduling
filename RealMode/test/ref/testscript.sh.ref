@@ -21,15 +21,9 @@ ACS Centralized Logger is running...
 --> Starting Interface Repository
       using numeric option
 acsIrfeed - Loading IDL interfaces in Interface Repository
-           ORBInitRef: InterfaceRepository=corbaloc::solar-vml:4001/DefaultRepository
 --> Starting ACS Configuration Database
 --> Starting ACS Log service
-DALfs will use ORBacus ORB
-DAL root is: /users/sroberts/tmp_cvs/SCHEDULING/test/CDB/
-DALfs is listening on localhost:5000/DAL
-DALfs is ready and waiting ...
  Starting Manager
-DALReference generated using localhost address: 'corbaloc::solar-vml:5000/DAL'Returning XML record for: MACI/Managers/Manager
 Returning XML record for: MACI/Managers/Manager
  Starting hugoActivator
 m_loggingSwitchers != null
