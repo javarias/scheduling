@@ -48,7 +48,7 @@ import alma.Control.ArrayNotIdleException;
 /**
  * @author Sohaila Roberts
  */
-public class ALMAControl  implements Control {
+public class ALMAControl implements Control {
     
     private ContainerServices containerServices;
     private ControlSystem control_system;
@@ -78,9 +78,11 @@ public class ALMAControl  implements Control {
     }
 
     /**
-     *
+     * Executes the sb that was selected by the telescope operator
+     * @param subarrayId
+     * @param bestSBId
      */
-    public void execSB(short subarrayId, BestSB best) 
+    public void execSB(short subarrayId, String bestSBId) 
         throws SchedulingException {
         
         
@@ -89,7 +91,7 @@ public class ALMAControl  implements Control {
         
         ArrayController ctrl = getArrayController(subarrayId);
         try{
-            ctrl.observeNow(best.getBestSelection());
+            ctrl.observeNow(bestSBId);
         } catch(ArrayNotIdleException e1) {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();

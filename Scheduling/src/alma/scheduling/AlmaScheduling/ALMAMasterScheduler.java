@@ -85,9 +85,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Receiver control_nc;
     private Receiver telcal_nc;
     private Receiver pipeline_nc;
-    private ALMAControlReceiver controlreceiver;
-    //private ALMATelcalReceiver telcalreceiver;
-    //private ALMAPipelineReceiver pipelinereceiver;
+    private ALMAReceiveEvent eventreceiver;
     
     /** 
      * Constructor
@@ -129,11 +127,11 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void execute() throws ComponentLifecycleException {
 
         // Connect to the Control NC
-        controlreceiver = new ALMAControlReceiver(containerServices);
+        eventreceiver = new ALMAReceiveEvent(containerServices);
         control_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.Control.CHANNELNAME.value,
                 containerServices);
-        control_nc.attach("alma.Control.ExecBlockEvent", controlreceiver);
+        control_nc.attach("alma.Control.ExecBlockEvent", eventreceiver);
         control_nc.begin();
         // Connect to the TelCal NC
         /*

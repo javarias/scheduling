@@ -28,8 +28,15 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.entity.xmlbinding.execblock.ExecBlock;
 
+/**
+ * This class extends the scheduling's defined execblock. It contains a reference
+ * to the execblock created by the control system.
+ *
+ * @author Sohaila Lucero
+ */
 public class ALMAExecBlock extends alma.scheduling.Define.ExecBlock {
     
+    // Reference to the execblock created by the control system
     private ExecBlock ctrl_execblock;
 
     public ALMAExecBlock(ExecBlock eb, String id, int subarray) {

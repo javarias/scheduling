@@ -21,23 +21,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File ALMAControlReceiver.java
+ * File ALMAReceiveEvent.java
  */
 package alma.scheduling.AlmaScheduling;
 
 import alma.acs.container.ContainerServices;
 
 import alma.Control.ExecBlockEvent;
+import alma.TelCalPublisher.FocusReducedEvent;
+import alma.TelCalPublisher.PointingReducedEvent;
+import alma.pipelinescience.ScienceProcessingRequestEnd;
 
-import alma.scheduling.Event.Receivers.ControlEventReceiver;
+import alma.scheduling.Event.Receivers.*;
 
 /**
- * This Class receives the ExecBlockEvent sent out by control. 
+ * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
  */
-public class ALMAControlReceiver extends ControlEventReceiver {
+public class ALMAReceiveEvent extends ControlEventReceiver {
 
-    public ALMAControlReceiver(ContainerServices cs){
+    public ALMAReceiveEvent(ContainerServices cs){
         this.logger = cs.getLogger();
     }
 
@@ -70,4 +73,37 @@ public class ALMAControlReceiver extends ControlEventReceiver {
         }
 
     }
+
+    /**
+     * When the scheduling subsystem receives the ScienceProcessingRequestEnd event
+     * from the pipeline subsystem it is received here and processed accordingly
+     *
+     * @param ScienceProcessingRequestEnd The event sent by the Pipeline subsystem
+     */
+    public void receive(ScienceProcessingRequestEnd e) {
+        logger.info("SCHEDULING: Starting to process the pipeline event");
+    }
+
+    /**
+     * When the scheduling subsystem receives the FocusReducedEvent event
+     * from the telcal subsystem it is received here and processed accordingly.
+     *
+     * @param FocusReducedEvent The event sent by the Telcal subsystem
+     */
+    public void receive(FocusReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the focus reduced event");
+    }
+
+    /**
+     * When the scheduling subsystem receives the PointingReducedEvent event
+     * from the telcal subsystem it is received here and processed accordingly.
+     *
+     * @param PointingReducedEvent The event sent by the Telcal subsystem
+     */
+    public void receive(PointingReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the pointing reduced event");
+    }
+
+
+
 }
