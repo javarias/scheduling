@@ -1,0 +1,24 @@
+ Running test
+The MasterScheduler has been constructed.
+The ArchiveProxy has been constructed.
+The PipelineProxy has been constructed.
+The TelescopeOperatorProxy has been constructed.
+The PIProxy has been constructed.
+The Dispatcher has been constructed.
+The Clock has been constructed.
+get scheduling policy
+get antenna info from archive
+Message queue created
+Exec created
+exec set in operator
+Message queue set in operator
+The MasterScheduler has been initialized.
+Getting noncomplete sbs from archive
+SBs returned
+sbs not null storing into queue
+MB Action started
+The MasterScheduler is executing.
+Scheduler is running in dynamic mode!
+MB Action stopped
+Scheduler is stopped
+The MasterScheduler has been cleaned up and is now stopped.

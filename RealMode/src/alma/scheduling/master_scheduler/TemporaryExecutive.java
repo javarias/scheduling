@@ -27,6 +27,7 @@
 package alma.scheduling.master_scheduler;
 
 import alma.entity.xmlbinding.schedblock.SchedBlock;
+//import alma.bo.SchedBlock;
 import alma.scheduling.UnidentifiedResponse;
 
 
@@ -58,6 +59,7 @@ public class TemporaryExecutive {
         }
         SchedBlock sb = queue.getSchedBlock(pos);
         String reply = sb.getSchedBlockEntity().getEntityId();
+        //String reply = sb.getId();
         System.out.println("Reply="+reply);
         try {
             ms.response(messageId, reply);
