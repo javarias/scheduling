@@ -1,7 +1,7 @@
 #*******************************************************************************
 # E.S.O. - ACS project
 #
-# "@(#) $Id: Makefile,v 1.2 2003/03/05 21:45:48 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.3 2003/03/06 17:28:07 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -35,7 +35,7 @@ scheduling_DIRS =  alma
 scheduling_EXTRAS = 
 
 
-INSTALL_FILES = ../lib/master_scheduler.jar ../lib/scheduler.jar ../lib/simulator.jar ../lib/project_manager.jar
+INSTALL_FILES = ../lib/scheduling.jar
 
 #>>>>> END OF standard rules
 
