@@ -1,3 +1,0 @@
-#!/bin/bash
-
-acsStartJava -endorsed alma.scheduling.planning_mode_sim.gui.GUIController
