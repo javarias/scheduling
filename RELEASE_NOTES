@@ -1,0 +1,36 @@
+RELEASE_NOTES
+
+Module: SCHEDULING 
+
+From: 
+   sohaila
+
+Version: 
+   "@(#) $Id: RELEASE_NOTES,v 1.1 2004/03/31 15:10:34 sroberts Exp $"
+
+Documents:
+
+
+Configuration Requirements:
+    - ACS-3.0.1
+    - MicroArchive that was released with ACS-3.0.1
+    - All other subsystems that are installed before scheduling in the build process must be installed.
+    
+
+
+Tested:
+   
+
+Cost:
+
+
+Changes:
+
+   New Features:
+   
+     -
+     
+   Fixed Problems:
+
+     -
+                          ___oOo___
