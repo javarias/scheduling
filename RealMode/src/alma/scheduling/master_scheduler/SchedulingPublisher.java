@@ -46,7 +46,7 @@ public class SchedulingPublisher {
     private SimpleSupplier supplier;
 
 	/**
-	 * Create a clock object.
+	 * Create a Publisher object.
 	 * @param isSimulation	True, if this a simulation.
 	 * @param container The object that implements the container services.
 	 */
