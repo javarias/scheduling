@@ -112,6 +112,7 @@ public class ALMAPipeline implements SciPipeline {
             ru.setPartId(oucs_id);
             ppr.setReductionUnit(ru);
             ppr_struct = entitySerializer.serializeEntity(ppr);
+            System.out.println("PPR: "+ppr_struct.xmlString);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error creating PPR");
             e.printStackTrace();

@@ -359,16 +359,18 @@ public class SB implements ProgramMember {
 					// Increment the amount of time used in this Unit ...
 					totalUsedTimeInSeconds += maximumTimeInSeconds;
 					// If the maximum number of repeats has been reached ...
-					if (getNumberExec() > maximumNumberOfRepeats) {
+				//Sohaila: removed temporarily if (getNumberExec() > maximumNumberOfRepeats) {
 						// ... then mark it complete and set its end time.
 						status.setEnded(time,Status.COMPLETE);
 						// ... and inform the parent.
 						parent.execEnd(this,time,maximumTimeInSeconds,Status.COMPLETE);
-					} else {
+                        //System.out.println("sb repeat count met.");
+				//Sohaila: removed temporarily 	} else {
 						// The only possible state change in this case is to "ready".
-						parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
-						status.setReady();
-					}
+                        //System.out.println("sb repeat count not met.");
+				//Sohaila: removed temporarily 		parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
+				//Sohaila: removed temporarily 		status.setReady();
+				//Sohaila: removed temporarily 	}
 				} else {
 					// In this case, the execution failed; however, the execution did
 					// produce some results that are attached to the unit.  The time 

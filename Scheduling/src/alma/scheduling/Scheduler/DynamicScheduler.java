@@ -368,7 +368,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                 config.getOperator().selectSB(best, m);
         		// We've got somthing to schedule.
                 SB selectedSB = config.getQueue().get(best.getBestSelection());
-                if(selectedSB.getStatus().isReady()) {
+                if(selectedSB.getStatus().isReady() ){ //&& selectedSB.getStartTime() == null) {
                     logger.info("SCHEDULING: About to schedule sb = "+selectedSB.getId());
                     selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
                     logger.info("SB is now "+selectedSB.getStatus().getStatus());

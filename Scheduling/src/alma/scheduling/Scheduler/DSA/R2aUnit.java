@@ -126,7 +126,7 @@ class R2aUnit extends SchedulingUnit {
         cosDec=1.0;
 		//sinDec = Math.sin(sb.getTarget().getCenter().getDec());
 		//cosDec = Math.cos(sb.getTarget().getCenter().getDec());
-		computeTimes(sb,site);
+		//computeTimes(sb,site);
 		// Set thenumber format.
 		dform = NumberFormat.getInstance();
 		dform.setMaximumFractionDigits(2);

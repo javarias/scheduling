@@ -99,12 +99,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                     e.type.value(), e.status.value(), new DateTime(e.startTime));
                 endSession(e);
                 updateSB(ce);
-                startPipeline(ce);
                 ExecBlock eb = new ExecBlock(e.execID, e.saId);
                 eb.setParent(new SB(e.sbId)); // do this to get SB id over to PM, will be replaced with proper SB
                 eb.setStartTime(new DateTime(e.startTime));
                 eb.setEndTime(new DateTime(System.currentTimeMillis()),Status.COMPLETE);
                 sbCompleted(eb);
+                String[] ids = updateProjectStatus(eb);
+                startPipeline(ce, ids);
                 break;
             default: 
                 logger.severe("SCHEDULING: Event reason = error");
@@ -195,7 +196,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         String sessionID = archive.storeSession(s);
         //send out the session start event
         StartSession start_event = new StartSession (e.startTime, 
-            sessionID, e.sbId, e.sbId, e.execID); //NOTE: for now second last 2 are the same..
+            sessionID, "ous_partid", e.sbId, e.execID); 
         publisher.publish(start_event);       
         manager.sessionStart(sessionID,e.sbId);
       }catch(Exception ex) {
@@ -214,9 +215,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         //query session object from the archive
         try {
             Session s = archive.querySession(e.execID);
-            if(s != null) {
-                logger.info("non-null session! ");
-            }
         } catch(Exception ex) {
             logger.severe("SCHEDULING: error in ALMAReceiveEvent:endSession");
             ex.printStackTrace();
@@ -234,10 +232,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * event.
      * @param ControlEvent The event from control
      */
-    private void startPipeline(ControlEvent e) {
+    private void startPipeline(ControlEvent e, String[] ids) {
         String result = null;
         try {
-            XmlEntityStruct ppr = pipeline.createPipelineProcessingRequest(e.getSBId(),"");
+            XmlEntityStruct ppr = pipeline.createPipelineProcessingRequest(ids[0], ids[1]); //temporary for R2
             archive.storePipelineProcessingRequest(new ALMAPipelineProcessingRequest(ppr));
             ppr = archive.retrievePPR(ppr.entityId);
             result = pipeline.processRequest(ppr);
@@ -253,5 +251,16 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private void sbCompleted(ExecBlock eb){
         logger.info("SCHEDULING: setting SB to complete.");
         manager.setSBComplete(eb);
+    }
+    
+
+    /**
+      * Returns the ObsUnitSet part ID which is what the pipeline needs
+      */
+    private String[] updateProjectStatus(ExecBlock eb) {
+        String[] id_info=null;
+        logger.info("SCHEDULING: Updating the projectStatus");
+        id_info = manager.updateProjectStatus(eb);
+        return id_info;
     }
 }

@@ -41,7 +41,10 @@ import alma.scheduling.Define.Program;
 import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
-import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+
+import alma.entities.commonentity.EntityRefT;
+import alma.entity.xmlbinding.projectstatus.*;
+import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
@@ -98,13 +101,31 @@ public class ALMAProjectManager extends ProjectManager {
             logger.info("SCHEDULING: getting projects");
             projs = archive.getAllProject();
             logger.info("SCHEDULING: getting projectstatus'");
-            //psQueue.add(archive.getAllProjectStatus());
             for(int i=0; i < projs.length;i++){
-                ProjectStatus ps = ProjectUtil.map(projs[i], new DateTime(System.currentTimeMillis()));
-                psQueue.add(ps);
-                archive.updateProjectStatus(ps);
+                ProjectStatus ps;
+                try {
+                    ps = ProjectUtil.map(projs[i], new DateTime(System.currentTimeMillis()));
+                } catch(Exception e) {
+                    ps = archive.queryProjectStatus(projs[i].getId());
+                }
+                //check if its in queue, if it is add it, if not don't or update.
+                if(psQueue.size() == 0) { //nothing in queue so ps definitely isnt in it.
+                    psQueue.add(ps);
+                    archive.updateProjectStatus(ps);
+                }
+                for(int k=0; k < psQueue.size(); k++){
+                    ProjectStatus ps_tmp = null;
+                    if( (ps_tmp = psQueue.get(ps.getProjectStatusEntity().getEntityId())) == null) {
+                        logger.info ("PS not in queue, adding..");
+                        psQueue.add(ps);
+                        archive.updateProjectStatus(ps);
+                    } else {
+                        logger.info ("ps already in queue not adding..");
+                    }
+                }
             }
-            logger.info("SCHEDULING: projects = "+projs.length);
+            logger.info("SCHEDULING: Number of PS in queue = "+psQueue.size());
+            logger.info("SCHEDULING: Number of projects = "+projs.length);
             for(int i=0; i < projs.length;i++) {
                 logger.info("SCHEDULING: sched blocks in Project ( "+projs[i].getId()+" ) = "+
                         projs[i].getTotalSBs());
@@ -236,7 +257,7 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public void setSBComplete(ExecBlock eb) {
         SB completed = sbQueue.get(eb.getParent().getId());
-        eb.setParent(completed);// replace so exec block has full sb
+        eb.setParent(completed);// replaced its sb-parent so exec block has full sb
         completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
     }
@@ -247,4 +268,79 @@ public class ALMAProjectManager extends ProjectManager {
     public void removeCompletedProjectFromQueue(String proj_id){
     }
 
+
+    
+    /**
+      * Returns two strings. Ons is the id of the ProjectStatus and the second is
+      * the id of the obs unit set that just completed.
+      * NOTE: this is temporary
+      */
+    public String[] updateProjectStatus(ExecBlock eb) {
+        String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
+        logger.info ("in PM, ps update");
+        SB sb = eb.getParent();
+        logger.info("SCHEDULING: SB id = " +sb.getId());
+        String proj_id = sb.getProject().getId();
+        logger.info("SCHEDULING: project id = " +proj_id);
+        
+        ProjectStatus[] allPS = psQueue.getAll();
+        ProjectStatus ps = null;
+        for(int i=0; i < allPS.length; i++){
+            if(allPS[i].getObsProjectRef().getEntityId().equals(proj_id)) {
+                ps = allPS[i];
+                break;
+            }
+        }
+        ids[0] = ps.getProjectStatusEntity().getEntityId(); //for pipeline back in ALMAReceiveEvent
+        logger.info("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
+
+        /**
+          * For R2 there is the assumption that there is only one SB inside one ObsUnitSet
+          * which is inside one ObsProgram.
+          */
+        
+        //top level obs unit set which is actually the ObsProgram.
+        ObsUnitSetStatusTChoice choice = ps.getObsProgramStatus().getObsUnitSetStatusTChoice(); 
+        //ObsUnitSet
+        ObsUnitSetStatusT[] sets = choice.getObsUnitSet();
+        for(int i=0; i< sets.length; i++){
+            System.out.println("ObsUnitSet part id = "+sets[i].getEntityPartId());
+            SBStatusT[] sbs = sets[i].getObsUnitSetStatusTChoice().getSB();
+            for(int j=0; j<sbs.length; j++) {
+                if(sbs[j].getSBRef().getEntityId().equals (sb.getId())) {
+                    //this is the sb which just finished!
+                    sbs[j].getStatus().setState(StateType.COMPLETE);
+                    //set obs unit set to complete too
+                    sets[i].getStatus().setState(StateType.COMPLETE);
+                    sets[i].setNumberSBSCompleted(1);
+                    sets[i].setNumberObsUnitSetsCompleted(1);
+                    ids[1] =  sets[i].getEntityPartId(); //for pipeline back in ALMAReceiveEvent
+                    //add exec block ref
+                    ExecStatusT exec = new ExecStatusT();
+                    EntityRefT e_ref = new EntityRefT();
+                    e_ref.setEntityId(eb.getId());
+                    exec.setExecBlockRef(e_ref);
+                    exec.setSubarrayId(eb.getSubarrayId());
+                    /*
+                    if(eb.getStatus().isComplete()) {
+                        exec.setStatus.setState(StateType.COMPLETE);
+                    }
+                    */
+                    ExecStatusT[] execs = new ExecStatusT[1];
+                    execs[0] = exec;
+                    SBStatusTSequence seq = new SBStatusTSequence();
+                    seq.setExecStatus(execs);
+                    sbs[j].setSBStatusTSequence(seq);
+                    break;
+                }
+            }
+        }
+        try {
+            archive.updateProjectStatus(ps);
+        } catch(Exception e) {
+        }
+        return ids;
+    }
+
+    
 }

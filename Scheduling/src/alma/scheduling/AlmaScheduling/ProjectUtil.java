@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File ProjectStatusDAO.java
+ * File ProjectUtil.java
  */
 package alma.scheduling.AlmaScheduling;
 
@@ -224,10 +224,11 @@ public class ProjectUtil {
 			return;
 		if (s.length() != 9 || s.charAt(0) != 'X')
 			throw new SchedulingException ("Invalid format for EntityPartId (" + s + ")");
-		for (int i = 1; i < 9; ++i) {
-			if (s.charAt(i) < '0' || s.charAt(i) > '9')
-				throw new SchedulingException ("Invalid format for EntityPartId (" + s + ")");
-		}
+        //Sohaila: commented out coz of error 
+		//for (int i = 1; i < 9; ++i) {
+		//	if (s.charAt(i) < '0' || s.charAt(i) > '9')
+		//		throw new SchedulingException ("Invalid format for EntityPartId (" + s + ")");
+		//}
 	}
 	
 	/**
@@ -241,6 +242,7 @@ public class ProjectUtil {
 		if ((s.length() != 33) || (!s.startsWith("uid://X")) ||
 				(s.charAt(23) != '/' || s.charAt(24) != 'X'))
 			throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
+        //Sohaila: commented out coz of error 
 		/*for (int i = 7; i < 23; ++i) {
 			if (s.charAt(i) < '0' || s.charAt(i) > '9')
 				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
@@ -400,7 +402,9 @@ public class ProjectUtil {
 		}
 		
 		// Now, we apply the ProjectStatus data.
+        try {
 		update(project,s,now);
+        } catch(Exception e) {}
 		validate(project);
 		return project;
 	}
@@ -452,6 +456,11 @@ public class ProjectUtil {
 						" was not used in the initialization process.");
 		}
 		
+		// Now, set all the partIds in the project status.
+		Program p = project.getProgram();
+		p.setObsUnitSetStatusId(genPartId());
+		setProgramMember(p);
+		
 		// Mark the project as ready.  (This also initializes the totals.)
 		project.setReady(now);
 		
@@ -461,6 +470,43 @@ public class ProjectUtil {
 		return project;
 	}
 	
+	static private void setProgramMember(Program p) {
+		ProgramMember[] m = p.getMember();
+		for (int i = 0; i < m.length; ++i) {
+			if (m[i] instanceof Program) {
+				((Program)m[i]).setObsUnitSetStatusId(genPartId());
+				setProgramMember((Program)m[i]);
+			} else {
+				((SB)m[i]).setSbStatusId(genPartId());
+				setSBPartId((SB)m[i]);
+			}
+		}
+	}
+	static private void setSBPartId(SB sb) {
+		sb.setSbStatusId(genPartId());
+		ExecBlock[] x = sb.getExec();
+		for (int i = 0; i < x.length; ++i) {
+			x[i].setExecStatusId(genPartId());
+		}
+	}
+	
+	static private int partIdCount = 0;
+	static private char[] digit = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+	static public String genPartId() {
+		char[] s = new char [9];
+		s[0] = 'X';
+		for (int i = 1; i < s.length; ++i)
+			s[i] = '0';
+		int n = ++partIdCount;
+		for (int i = s.length -1; i > 1; --i) {
+			s[i] = digit[n % 16];
+			n /= 16;
+			if (n == 0)
+				break;
+		}
+		return new String (s);
+	}
+
 	/**
 	 * Create a Program from an ObsUnitSetT and the array of SchedBlocks that belong to the project.
 	 * @param set

@@ -115,7 +115,7 @@ public class ALMAArchive implements Archive {
         return projects;
     }
 
-    private ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
+    public ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
         ProjectStatus ps = null;
         /*
         String query = new String("/ps:ProjectStatus/ps:ObsProjectRef[@entityId='"+
@@ -153,7 +153,7 @@ public class ALMAArchive implements Archive {
         String ps_id = p.getProjectStatusRefIdWorkaround();
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
-            System.out.println("PROJECT STATUS: "+ xml.xmlString);
+            //System.out.println("PROJECT STATUS: "+ xml.xmlString);
             ps = (ProjectStatus) entityDeserializer.deserializeEntity(xml, 
                    Class.forName("alma.entity.xmlbinding.projectstatus.ProjectStatus"));
         } catch(Exception e) {
@@ -162,6 +162,41 @@ public class ALMAArchive implements Archive {
         }
         return ps;
     }
+
+    /**
+      * Querys the ProjectStatus for the project with the given proj_id.
+      */
+    public ProjectStatus queryProjectStatus(String proj_id) throws SchedulingException {
+        ProjectStatus ps = null;
+        String query = new String("/ps:ProjectStatus/ps:ObsProjectRef[@entityId='"+proj_id+"']");
+        String schema = new String("ProjectStatus");
+        String className = new String(
+                "alma.entity.xmlbinding.projectstatus.ProjectStatus");
+        try {
+            Cursor cursor = archOperationComp.queryDirty(query,schema);
+            if(cursor == null){
+            } 
+            boolean one = true;
+            while(cursor.hasNext()) { //should be only one.
+                if(one) {
+                    QueryResult res = cursor.next();
+                    XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
+                    //System.out.println("PROJECT STATUS: "+xml.xmlString);
+                    ps = (alma.entity.xmlbinding.projectstatus.ProjectStatus)
+                        entityDeserializer.deserializeEntity(xml, Class.forName(
+                            "alma.entity.xmlbinding.projectstatus.ProjectStatus"));
+                } else {
+                    throw new SchedulingException("More than one PS for project.");
+                }
+                one = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SchedulingException(e);
+        }
+        return ps;
+    }
+    
     /**
       * Gets all the project status objects from the archive.
       * @return An array of all the project status objects
@@ -224,9 +259,10 @@ public class ALMAArchive implements Archive {
             for(int i=0; i < tmpProjects.length; i++){
                 for(int j=0; j < tmp_ps.size(); j++){
                     System.out.println("project id = "+ tmpProjects[i].getObsProjectEntity().getEntityId());
-                    System.out.println("ps project id = "+ ((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId());
-                    if(tmpProjects[i].getObsProjectEntity().getEntityId().equals(((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId())) {
-                            //WRONG! ((ProjectStatus)tmp_ps.elementAt(j)).getProjectStatusEntity().getEntityId()) 
+                    System.out.println("ps project id = "+ 
+                            ((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId());
+                    if(tmpProjects[i].getObsProjectEntity().getEntityId().equals(
+                                ((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId())) {
                         //yes this project has a Project status!
                         //break this for loop and go to next project now
                         System.out.println("yes they are equal!");
@@ -265,11 +301,13 @@ public class ALMAArchive implements Archive {
                         if(tmpProjects[i].getObsProjectEntity().getEntityId().equals(
                                     ((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId())) {
                             //project has a projectStatus already
-                            logger.info("PS-sched: project "+tmpProjects[i].getObsProjectEntity().getEntityId()+" has a PS");
+                            logger.info("PS-sched: project "+
+                                    tmpProjects[i].getObsProjectEntity().getEntityId()+" has a PS");
                             ok = true;
                             break;
                         } else {
-                            logger.info("PS-sched: project "+tmpProjects[i].getObsProjectEntity().getEntityId()+" doesn't have a PS");
+                            logger.info("PS-sched: project "+
+                                    tmpProjects[i].getObsProjectEntity().getEntityId()+" doesn't have a PS");
                             ok = false;
                         }
                     }
@@ -444,7 +482,10 @@ public class ALMAArchive implements Archive {
     public void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
         try {
             XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
-            System.out.println("PS: "+xml.xmlString);
+            System.out.println("updated PS: "+xml.xmlString);
+            XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
+            xml2.xmlString = xml.xmlString;
+            archOperationComp.update(xml2);
         } catch(Exception e){
             e.printStackTrace();
             throw new SchedulingException (e);
