@@ -24,18 +24,16 @@
  * File ProjectStatusQueue.java
  */
  
-package alma.scheduling.Define;
+package alma.scheduling.AlmaScheduling;
 
 import java.util.ArrayList;
-
-import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.*;
 
 /**
  * The ProjectStatusQueue class is a queue of project status', held in memory,
  * that can be accessed and updated by multiple threads, viz., the 
  * MasterScheduler and Scheduler objects.
  * 
- * @version 1.30 May 10, 2004
  * @author Sohaila Lucero
  */
 public class ProjectStatusQueue {
