@@ -31,11 +31,13 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.JFileChooser;
+import java.awt.Container;
 
 public class GUI extends JFrame {
     private GUIController controller; 
     private int totalSelected=0;
     private JFileChooser chooser;
+    private Container contentpane;
 
     public GUI(GUIController c) {
         this.controller = c;
@@ -65,6 +67,14 @@ public class GUI extends JFrame {
         file.setMnemonic(KeyEvent.VK_F);
         menuBar.add(file);
 
+        JMenuItem newSim = new JMenuItem("New Simulation");
+        newSim.setMnemonic(KeyEvent.VK_N);
+        newSim.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        file.add(newSim);
+        
         JMenuItem save = new JMenuItem("Save As");
         save.setMnemonic(KeyEvent.VK_S);
         save.addActionListener(new ActionListener() {
@@ -132,7 +142,6 @@ public class GUI extends JFrame {
                 exit();
             }
         });
-        
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(createGUIHeader(),BorderLayout.NORTH);
         getContentPane().add(createContentPanels(),BorderLayout.CENTER);
