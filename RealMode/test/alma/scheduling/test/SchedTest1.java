@@ -60,6 +60,10 @@ public class SchedTest1 {
         archive = masterScheduler.getArchive();
     }
 
+    /**
+     *  Creates a SchedBlock, assigns it a unique id, creates an ObsUnitControl
+     *  then sets the status of the SchedBlock and stores it in the archive.
+     */
     public void storeSB() {
         sb = new SchedBlock();
         sb_entity = new SchedBlockEntityT();
@@ -72,17 +76,32 @@ public class SchedTest1 {
         System.out.println("SB Stored");
     }
 
+    /**
+     *  Returns the status of the SchedBlock
+     *  @return String The status of the scheduling block.
+     */
     public String getSBStatus() {
         String res = "";
         res = sb.getObsUnitControl().getSchedStatus().toString();
         return res;
     }
+
+    /**
+     *  Sets the status of the SchedBlock
+     *  @param block The SchedBlock that will have its status changed.
+     *  @param s The status type that will be set to the SchedBlock.
+     */
     public void setSBStatus(SchedBlock block, SchedStatusT s) {
         ObsUnitControl ouc = block.getObsUnitControl();
         ouc.setSchedStatus(s);
         block.setObsUnitControl(ouc);
     }
 
+    /**
+     *  Creates an ExecBlock, assigns it to a particular scheduling block,
+     *  stores the execblock in the archive and updates the corresponding 
+     *  scheduling block in the archive.
+     */
     public void storeExecRec() {
         exec = new ExecBlock();
         exec_entity = new ExecBlockEntityT();
