@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * description
  * 
  * @version 1.5 September 16, 2004
- * @author Sohaila Lucero
+ * @author Allen Farris
  */
 public class ObservedSession {
 	// The entity-ID that identifies this observed session.
@@ -149,4 +149,6 @@ public class ObservedSession {
 		this.startTime = startTime;
 	}
 
+    public boolean execExists(String id) {
+    }
  }
