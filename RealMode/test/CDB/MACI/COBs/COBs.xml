@@ -23,4 +23,13 @@
 			     Code="alma.archive.database.xindice.XindiceDatabaseHelper"
                  Type="IDL:alma/archiveinternal/Database:1.0" 
                  Activator="hugoActivator"/>
+      <_ Name="MASTER_SCHEDULER"     
+			     Code="alma.scheduling.master_scheduler.MSHelper"
+                 Type="IDL:alma/scheduling/MS:1.0" 
+                 Activator="hugoActivator"/>
+      <_ Name="OBS_PROJ_REP"
+			     Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
+                 Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
+                 Activator="hugoActivator"/>
+
 </COBs>

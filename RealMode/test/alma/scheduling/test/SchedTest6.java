@@ -1,4 +1,4 @@
-/**
+/*
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
@@ -66,6 +66,7 @@ public class SchedTest6 {
                 containerServices.getComponent("OPERATIONAL_ARCHIVE"));
             for(int i=0; i < 5; i++) {
                 archive.update( createSB() );
+                System.out.println("Stored in archive");
             }
         } catch(ContainerException e) {
             System.out.println(e.toString());
@@ -94,6 +95,7 @@ public class SchedTest6 {
     public void getSBs() {
         System.out.println("Getting SchedBlocks out of the archive.");
         SchedBlock[] sbs = archive.getSchedBlock(); //queries the archive for all SchedBlock
+        System.out.println("number of sbs "+sbs.length);
         for(int i=0; i<sbs.length; i++) {
             System.out.println(((SchedBlock)sbs[i]).toString());
         }
@@ -101,9 +103,10 @@ public class SchedTest6 {
 
     public static void main(String[] args) {
         try {
-            ComponentClient client = new ComponentClient(Logger.getLogger("SchedTest5"), 
-                    "corbaloc::" + InetAddress.getLocalHost().getHostName() + ":3000/Manager",
-                        "SchedTest5");
+            ComponentClient client = new ComponentClient(Logger.getLogger("SchedTest6"), 
+                    //"corbaloc::" + InetAddress.getLocalHost().getHostName() + ":3000/Manager",
+                    System.getProperty("ACS.manager"),
+                        "SchedTest6");
             SchedTest6 test6 = new SchedTest6(client.getContainerServices());
             test6.populateArchive();
             test6.getSBs();

@@ -1,4 +1,4 @@
-/**
+/*
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
@@ -27,9 +27,15 @@ package alma.scheduling.test;
 
 import java.net.InetAddress;
 import java.util.logging.Logger;
+import java.util.Vector;
 import java.lang.Thread;
 import alma.acs.component.client.ComponentClient;
+import alma.scheduling.UnidentifiedResponse;
 import alma.scheduling.master_scheduler.MasterScheduler;
+import alma.scheduling.master_scheduler.ALMATelescopeOperator;
+import alma.scheduling.master_scheduler.Message;
+import alma.scheduling.master_scheduler.MasterSBQueue;
+import alma.scheduling.master_scheduler.MessageQueue;
 import alma.entity.xmlbinding.schedblock.SchedBlock; 
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT; 
 
@@ -54,8 +60,10 @@ public class SchedTest2 {
     private SchedBlockEntityT sb_entity;
     private static EntitySerializer entitySerializer;
     
-    public SchedTest2(MasterScheduler ms) {
-        this.masterScheduler = ms;
+    public SchedTest2(ContainerServices c) {
+        this.masterScheduler = new MasterScheduler();
+        masterScheduler.setComponentName("SchedTest2");
+        masterScheduler.setContainerServices(c);
         masterScheduler.initialize();
         masterScheduler.execute();
     }
@@ -65,8 +73,23 @@ public class SchedTest2 {
     }
 
     public void testSelectSB() {
-        masterScheduler.selectSB();
+        ALMATelescopeOperator operator = masterScheduler.getOperator();
+        MasterSBQueue queue = masterScheduler.getSBQueue();
+
+        Vector idList = queue.getAllUid();
+        Message message = new Message();
+        masterScheduler.assignId(message.getMessageEntity());
+        System.out.println("New message = "+message.toString());
+        String m_id = message.getMessageId();
+        int size = idList.size();
+        String[] ids = new String[size];
+        for(int i = 0; i < size; i++) {
+            ids[i] = (String)idList.elementAt(i);
+        }
+        String selectedSB = operator.selectSB(ids, m_id);
+        System.out.println("Selected SB = "+ selectedSB);
     }
+
 
     public static void populateArchive(ContainerServices c) {
         entitySerializer = EntitySerializer.getEntitySerializer(Logger.getLogger("serializer"));
@@ -98,23 +121,23 @@ public class SchedTest2 {
     
     public static void main(String[] args) {
         try {
+            String name = "Test2";
+            String managerLoc = System.getProperty("ACS.manager");
             ComponentClient client = new ComponentClient(
-                Logger.getLogger("SchedTest2"), 
-                    "corbaloc::" + InetAddress.getLocalHost().getHostName() + ":3000/Manager",
-                        "SchedTest2");
+                    null, managerLoc, name);   
             // Bad fix to populate the archive with 5 sched blocks.            
             SchedTest1.populateArchive(client.getContainerServices());
-                        
-            MasterScheduler ms = new MasterScheduler();
-            ms.setComponentName("SchedTest2");
-            ms.setContainerServices(client.getContainerServices());
-            SchedTest2 test2 = new SchedTest2(ms);
-            try {
-                for(int i=0; i < 6; i++) {
+            ContainerServices cs = client.getContainerServices();            
+            //MasterScheduler ms = new MasterScheduler();
+            //ms.setComponentName("SchedTest2");
+            //ms.setContainerServices(client.getContainerServices());
+            SchedTest2 test2 = new SchedTest2(cs);
+            //try {
+                //for(int i=0; i < 6; i++) {
                     test2.testSelectSB();
-                    Thread.sleep(1000*20);
-                }
-            } catch(InterruptedException e) {}
+                  //  Thread.sleep(1000*5);
+                //}
+            //} catch(InterruptedException e) {}
             test2.stop();
         } catch (Exception e) {
             System.err.println("EXCEPTION: "+ e.toString());

@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.10 2003/07/22 14:14:43 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.11 2003/07/23 22:46:13 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -35,20 +35,22 @@
 #    None
 #------------------------------------------------------------------------
 
+#DEBUG = on
+USER_JFLAGS= -deprecation
+
 # 
 # IDL Files and flags
 # 
-IDL_FILES = 
-IDL_TAO_FLAGS =
-USER_IDL =
+#IDL_FILES = 
+#IDL_TAO_FLAGS =
+#USER_IDL =
 #
 # Jarfiles and their directories
 #
 JARFILES = schedulingTest
-schedulingTest_DIRS = alma
+schedulingTest_DIRS = alma/scheduling/test
 schedulingTest_EXTRAS = 
 
-DEBUG = on
 
 #
 # Scripts (public and local)
@@ -57,7 +59,7 @@ SCRIPTS         =
 SCRIPTS_L       = prologue \
                   testscript1 testscript2 testscript3 \
                   testscript4 testscript5 testscript6 \
-                  testscript7 testscript8 \
+                  testscript7 testscript8 testscript9 \
                   epilogue
 
 #>>>>> END OF standard rules
