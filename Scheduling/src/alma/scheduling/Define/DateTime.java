@@ -50,7 +50,7 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version $Id: DateTime.java,v 1.6 2005/01/19 19:14:43 sslucero Exp $
+ * @version $Id: DateTime.java,v 1.7 2005/01/25 18:09:40 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {
@@ -613,28 +613,28 @@ public class DateTime {
 		StringBuffer s = new StringBuffer(yy + "-");
 		if (mm < 10)  {
             s.append('0'); 
-            s.append(mm); 
-            s.append('-');
         }
+        s.append(mm); 
+        s.append('-');
 		if (dd < 10) {
             s.append('0'); 
-            s.append(dd); 
-            s.append('T');
         }
+        s.append(dd); 
+        s.append('T');
 		if (hh < 10) { 
             s.append('0'); 
-            s.append(hh); 
-            s.append(':');
         }
+        s.append(hh); 
+        s.append(':');
 		if (min < 10) { 
             s.append('0'); 
-            s.append(min);  
-            s.append(':');
         }
+        s.append(min);  
+        s.append(':');
 		if (sec < 10.0) { 
             s.append('0'); 
-            s.append(sec);
         }
+        s.append(sec);
 		return s.toString();
 	}
 
