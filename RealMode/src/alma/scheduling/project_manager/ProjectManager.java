@@ -79,6 +79,8 @@ public class ProjectManager implements Runnable {
     private SchedulingPublisher sp;
     private Receiver controlReceiver;
     private Receiver pipelineReceiver;
+    private Receiver focusReceiver;
+    private Receiver pointingReceiver;
 
     public ProjectManager(boolean isSimulation, ContainerServices cs, 
                     ALMAArchive a, MasterSBQueue q, ALMADispatcher d ) {
@@ -111,10 +113,8 @@ public class ProjectManager implements Runnable {
         //Receiver objects
         control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
         pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
-        /*
         pointing_event = new PointingReducedEventReceiver(cs);
         focus_event = new FocusReducedEventReceiver(cs);
-        */
         if(isSimulation) {
             //its a simulation, so create local channels
             
@@ -129,6 +129,18 @@ public class ProjectManager implements Runnable {
                     alma.pipelinescience.CHANNELNAME.value); 
             pipelineReceiver.attach("alma.pipelinescience.ScienceProcessingRequestEnd",pipeline_event);
             pipelineReceiver.begin();
+            
+            pointingReceiver = AbstractNotificationChannel.getReceiver(
+                AbstractNotificationChannel.CORBA, 
+                    alma.TelCalPublisher.CHANNELNAME.value); 
+            pointingReceiver.attach("alma.TelCalPublisher.PointingReducedEvent", pointing_event);
+            pointingReceiver.begin();
+
+            focusReceiver = AbstractNotificationChannel.getReceiver(
+                AbstractNotificationChannel.CORBA, 
+                    alma.TelCalPublisher.CHANNELNAME.value); 
+            focusReceiver.attach("alma.TelCalPublisher.FocusReducedEvent", focus_event);
+            focusReceiver.begin();
         } else {
             //its the real thing! create corba channels.
             logger.info("SCHEDULING: Trying to get NCs");
@@ -152,7 +164,6 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             //Listen for TELCAL events
-            /*
             try {
                 //pointing_event.addSubscription("PointingReducedEvent");
                 pointing_event.addSubscription(alma.TelCalPublisher.PointingReducedEvent.class);
@@ -170,7 +181,6 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
-            */
             /*
             try {
             } catch(Exception e) {

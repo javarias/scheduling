@@ -25,11 +25,19 @@
  
 package alma.scheduling.master_scheduler;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.logging.Logger;
+import java.util.StringTokenizer;
+
 import alma.acs.container.ContainerServices;
 import alma.scheduling.define.STime;
 import alma.scheduling.define.ArrayTime;
 import alma.scheduling.define.ClockBase;
 import alma.scheduling.define.ClockAlarmListener;
+
+import alma.scheduling.define.DateTime;
 
 /**
  * The Clock class gives access to the array time, as implemented by
@@ -41,6 +49,9 @@ import alma.scheduling.define.ClockAlarmListener;
  */
 public class ALMAClock extends ClockBase {
 	int delta;
+    private Logger logger;
+    private ContainerServices container;
+    private String fits_str;
 
 	/**
 	 * Create a clock object.
@@ -50,6 +61,54 @@ public class ALMAClock extends ClockBase {
 	public ALMAClock (boolean isSimulation, ContainerServices container) {
 		System.out.println("SCHEDULING: The Clock has been constructed.");
 		synchronize();
+        this.container = container;
+        this.logger = container.getLogger();
+        try {
+            org.omg.CORBA.Object obj = container.getDefaultComponent("IDL:alma/acstime/Clock:1.0");
+            alma.acstime.Clock acsclock = alma.acstime.ClockHelper.narrow(obj);
+
+            alma.ACS.ROuLongLong now = acsclock.now();
+            alma.ACS.CompletionHolder something = new alma.ACS.CompletionHolder();
+            long now1 = now.get_sync(something);
+            fits_str = acsclock.toISO8601(alma.acstime.TimeSystem.TSUTC,
+                                              new alma.acstime.Epoch(now1));
+            logger.fine("SCHEDULING: time now is "+ fits_str);
+            //DateTime dt = new DateTime(now1);
+            //logger.fine("SCHEDULING: DateTime is now "+ dt.toString());
+            //break it into date and time
+            /*
+            StringTokenizer st = new StringTokenizer(fits_str, "T");
+            if(st.countTokens() != 2) {
+                //fix this..
+                logger.severe("SCHEDULING: error.. more than 2!");
+            }
+            String date = st.nextToken();
+            logger.fine("SCHEDULING: date now is "+ date);
+            String time = st.nextToken();
+            logger.fine("SCHEDULING: time now is "+ time);
+            
+            st = new StringTokenizer(date, "-");
+            String year = st.nextToken();
+            logger.fine("SCHEDULING: year now is "+ year);
+            String month = st.nextToken();
+            logger.fine("SCHEDULING: month now is "+ month);
+            String day = st.nextToken();
+            logger.fine("SCHEDULING: day now is "+ day);
+
+            st = new StringTokenizer(time, ":");
+            String hour = st.nextToken();
+            logger.fine("SCHEDULING: hour now is "+ hour);
+            String min = st.nextToken();
+            logger.fine("SCHEDULING: min now is "+ min);
+            String sec = st.nextToken();
+            logger.fine("SCHEDULING: sec now is "+ sec);
+            */
+            DateTime dt = new DateTime(fits_str);
+            logger.fine("SCHEDULING: date time = "  + dt.toString());
+        }catch(Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            e.printStackTrace();
+        }
 	}
 	
 	
