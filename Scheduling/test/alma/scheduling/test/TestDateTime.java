@@ -34,11 +34,6 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Date;
 import alma.scheduling.Define.Time;
 
-import java.io.File;
-import java.io.PrintStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 /**
  * @author Sohaila Lucero
  */
@@ -53,7 +48,7 @@ public class TestDateTime extends TestCase{
     protected void tearDown() throws Exception {
     }
     
-    public void testLeap() {
+    public void test1Leap() {
         assertFalse(DateTime.isLeapYear(2003));
         assertTrue(DateTime.isLeapYear(2000));
         assertFalse(DateTime.isLeapYear(2001));
@@ -61,7 +56,7 @@ public class TestDateTime extends TestCase{
         assertFalse(DateTime.isLeapYear(1900));
         assertFalse(DateTime.isLeapYear(2100));
 	}
-    public void testJD() {
+    public void test2JD() {
 		//testJD(1957,10,4.81);
         DateTime tmp = new DateTime(1957, 10, 4.81);
         assertEquals(2436116.31, tmp.getJD(), 0.0);
@@ -93,6 +88,46 @@ public class TestDateTime extends TestCase{
         tmp = new DateTime(1600, 12, 31.0);
         assertEquals(2305812.5, tmp.getJD(), 0.0);
     }
+
+    public void test3JD() {
+		//testJD(1957,10,4,19,26,24.0);
+        DateTime tmp = new DateTime(1957,10,4,19,26,24.0);
+        assertEquals(2436116.31, tmp.getJD(), 0.0);
+		//testJD(2000,1,1,12,0,0.0);		
+        tmp = new DateTime(2000,1,1,12,0,0.0);
+        assertEquals(2451545.0, tmp.getJD(), 0.0);
+		//testJD(new Date(1957,10,4),new Time(19,26,24.0));
+        tmp = new DateTime(new Date(1957,10,4),new Time(19,26,24.0));
+        assertEquals(2436116.31, tmp.getJD(), 0.0);
+		//testJD(new Date(2000,1,1),new Time(12,0,0.0));
+        tmp = new DateTime(new Date(2000,1,1),new Time(12,0,0.0));
+        assertEquals(2451545.0, tmp.getJD(), 0.0);
+    }
+
+    public void test4DT() {
+		DateTime x = new DateTime(2436116.31);
+        assertEquals("1957-10-04T19:26:24", x.toString());
+		x = new DateTime(2451545.0);
+        assertEquals("2000-01-01T12:00:00", x.toString());
+		x = new DateTime(2451179.5);
+        assertEquals("1999-01-01T00:00:00", x.toString());
+		x = new DateTime(2446822.5);
+        assertEquals("1987-01-27T00:00:00", x.toString());
+		x = new DateTime(2446966.0);
+        assertEquals("1987-06-19T12:00:00", x.toString());
+		x = new DateTime(2447187.5);
+        assertEquals("1988-01-27T00:00:00", x.toString());
+		x = new DateTime(2447332.0);
+        assertEquals("1988-06-19T12:00:00", x.toString());
+		x = new DateTime(2415020.5);
+        assertEquals("1900-01-01T00:00:00", x.toString());
+		x = new DateTime(2305447.5);
+        assertEquals("1600-01-01T00:00:00", x.toString());
+		x = new DateTime(2305812.5);
+        assertEquals("1600-12-31T00:00:00", x.toString());
+        
+    }
+    
 
     public static void main(String[] args){
         junit.textui.TestRunner.run(TestDateTime.class);

@@ -21,35 +21,48 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File AllTests.java
+ * File TestStatus.java
  */
- 
 package alma.scheduling.test;
 
-import junit.framework.TestSuite;
-import junit.framework.Test;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.DateTime;
+import junit.framework.TestCase;
 
-public class AllTests {//extends TestSuite{
-    /*
-    private static TestDateTime dtTest = new TestDateTime();
-    private static TestAntenna antennaTest = new TestAntenna();
-    */
-    public static Test suite(){
-        TestSuite suite = new TestSuite();
-        try {
-            suite.addTestSuite(alma.scheduling.test.TestAntenna.class);
-            suite.addTestSuite(alma.scheduling.test.TestDateTime.class);
-            suite.addTestSuite(alma.scheduling.test.TestALMAArchive.class);
-            suite.addTestSuite(alma.scheduling.test.TestALMAControl.class);
-            suite.addTestSuite(alma.scheduling.test.TestStatus.class);
-        }catch(Exception e) {
-            System.out.println("hmm");
-        }
-        return suite;
+/**
+ * Test the Status Class from the Define package
+ * 
+ * @author Sohaila Lucero
+ */
+public class TestStatus extends TestCase {
+
+    public TestStatus() throws Exception {
+        super("TestStatus");
+    }
+    protected void setUp() throws Exception {
+    }
+    protected void tearDown() throws Exception {
+    }
+    public void test1Status(){
+        Status s = new Status();
+        assertEquals("notdefined", s.toString());
+    }
+    public void test2Status() {
+        Status s = new Status();
+		DateTime t = new DateTime (2004,03,12,9,0,0);
+		s.setStarted(t); 
+        assertEquals("running", s.getStatus());
+		s.setReady(); 
+        assertEquals("ready", s.getStatus());
+		s.setRunning(); 
+        assertEquals("running", s.getStatus());
+		s.setWaiting();
+        assertEquals("waiting", s.getStatus());
     }
 
     public static void main(String[] args) {
-        //junit.textui.TestRunner.run(AllTests.class);
-        alma.acs.testsupport.tat.TATJUnitRunner.run(AllTests.class);
+        junit.textui.TestRunner.run(TestStatus.class);
     }
 }
+
+
