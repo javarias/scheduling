@@ -61,7 +61,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.29 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.30 2004/12/21 14:24:00 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -543,159 +543,6 @@ public class ALMAArchive implements Archive {
         return ppr;
     }
 
-    //Session
-    /*
-    public String storeSession(Session s) {
-        String id = null;
-        try {
-            ALMASession session = (ALMASession)s;
-            containerServices.assignUniqueEntityId(session.getSession().getSessionEntity());
-            XmlEntityStruct sessionStruct = entitySerializer.serializeEntity(
-                session.getSession(), session.getSession().getSessionEntity());
-            //System.out.println("Storing: "+sessionStruct.xmlString);
-            archOperationComp.store(sessionStruct);
-            id = session.getSession().getSessionEntity().getEntityId();
-            //System.out.println(sessionStruct.xmlString);
-        } catch(ContainerException e) {
-            logger.severe("SCHEDULING: error getting entity's ID");
-            e.printStackTrace();
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: error serializing session");
-            e.printStackTrace();
-        } catch(IllegalEntity e) {
-            logger.severe("SCHEDULING: illegal entity error");
-            e.printStackTrace();
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: ArchiveInternalError");
-            e.printStackTrace();
-        }
-        return id;
-    }
-*/
-    /**
-      * Session store function for R2
-    public String storeSession(alma.entity.xmlbinding.session.Session s) {
-        String id = null;
-        try{
-            containerServices.assignUniqueEntityId(s.getSessionEntity());
-            XmlEntityStruct xml = entitySerializer.serializeEntity(s, s.getSessionEntity());
-            System.out.println("session: "+xml.xmlString); 
-            archOperationComp.store(xml);
-            id = s.getSessionEntity().getEntityId();
-        } catch(ContainerException e) {
-            logger.severe("SCHEDULING: error getting entity's ID");
-            e.printStackTrace();
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: error serializing session");
-            e.printStackTrace();
-        } catch(IllegalEntity e) {
-            logger.severe("SCHEDULING: illegal entity error");
-            e.printStackTrace();
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: ArchiveInternalError");
-            e.printStackTrace();
-        }
-        return id;
-    }
-      */
-
-    /**
-      * Query for R2
-    public alma.entity.xmlbinding.session.Session querySession(ExecBlockEvent ebe) {
-        String query = "/se:Session/se:Execution/se:ExecBlockReference[@entityId='"+ebe.execID+"']";
-        String schema = "Session"; 
-        String className = new String("alma.entity.xmlbinding.session.Session");
-        alma.entity.xmlbinding.session.Session session =null;
-        try{
-            Cursor cursor = archOperationComp.queryDirty(query,schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying Sessions!");
-                return null ;
-            } 
-            while(cursor.hasNext()) {//should be only one..
-                QueryResult res = cursor.next();
-                try {
-                    XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
-                    System.out.println("Session in query: "+xml.xmlString);
-                    session = (alma.entity.xmlbinding.session.Session)
-                            entityDeserializer.deserializeEntity(xml, Class.forName(
-                                "alma.entity.xmlbinding.session.Session"));
-
-                } catch(Exception e) {
-                    logger.severe("SCHEDULING: "+e.toString());
-                }
-            }
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
-        }
-        return session;
-    }
-    
-    public Session querySession(String execid) {
-        //String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
-        String query = "/se:Session/se:Execution/se:ExecBlockReference[@entityId='"+execid+"']";
-        String schema = "Session"; 
-        String className = new String("alma.entity.xmlbinding.session.Session");
-        Session session = null;
-        try {
-            Cursor cursor = archOperationComp.queryDirty(query,schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying Sessions!");
-                return null ;
-            } 
-            while(cursor.hasNext()) {
-                QueryResult res = cursor.next();
-                try {
-                    logger.info("woo getting session!");
-                    session = convertToSession1(res);
-                    logger.info("woo got session!");
-                }catch(Exception e) {
-                    logger.severe("SCHEDULING: "+e.toString());
-                }
-            }
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
-        }
-        return session;
-    }
-      */ 
-    
-    /**
-      * update session for R2
-    public void updateSession(alma.entity.xmlbinding.session.Session s) {
-        try {
-            XmlEntityStruct xml1 = archOperationComp.retrieve(s.getSessionEntity().getEntityId());
-            XmlEntityStruct xml2 = entitySerializer.serializeEntity(s, s.getSessionEntity());
-            xml1.xmlString = xml2.xmlString;
-            System.out.println("updated session: "+xml1.xmlString);
-            archOperationComp.update(xml1);
-            
-        } catch(Exception e){
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
-        }
-    }
-    public void updateSession(String sbid) {
-        String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
-        String schema = "Session"; 
-        String className = new String("alma.entity.xmlbinding.session.Session");
-        try {
-            Cursor cursor = archOperationComp.queryDirty(query,schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying Sessions!");
-                return ;
-            } 
-            while(cursor.hasNext()) {
-                QueryResult res = cursor.next();
-            }
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            e.printStackTrace();
-        }
-    }
-      */
     ///////////////////////////////////////////////////////////////////////////
     
     /**
@@ -835,48 +682,6 @@ public class ALMAArchive implements Archive {
     }
 
 
-    /*
-    private Session convertToSession1(QueryResult res) throws Exception {
-        String session_id = res.identifier;
-        Session session=null;
-        try {
-            XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(session_id);
-            session = convertToSession2(xml_struct);
-        } catch (MalformedURI e) { 
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        } catch (ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        } catch (NotFound e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        //} catch (DirtyEntity e) {
-        //    throw new Exception (e);
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        }
-        return session;
-    }
-
-    private Session convertToSession2(XmlEntityStruct xml) throws Exception {
-        ALMASession session=null;
-        try {
-            //logger.info(xml.xmlString);
-            alma.entity.xmlbinding.session.Session s = (alma.entity.xmlbinding.session.Session) 
-                entityDeserializer.deserializeEntity(xml, Class.forName(
-                    "alma.entity.xmlbinding.session.Session"));
-
-            session = new ALMASession(s);
-            
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        }
-        return session;
-    }
-*/
 
     /**
      * Updates the SB with the information obtained from the Event received from

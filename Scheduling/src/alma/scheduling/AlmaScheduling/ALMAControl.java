@@ -40,17 +40,10 @@ import alma.Control.ControlSystem;
 import alma.Control.ArrayController;
 
 import alma.ControlExceptions.*;
-/*
-import alma.Control.CSInactiveException;
-import alma.Control.InvalidAntennaIDException;
-import alma.Control.InvalidSubArrayIDException;
-import alma.Control.TooLateException;
-import alma.Control.ArrayNotIdleException;
-*/
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.15 2004/11/23 20:40:22 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.16 2004/12/21 14:24:00 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -161,7 +154,6 @@ public class ALMAControl implements Control {
      */
     public void destroySubarray(short subarrayId) throws SchedulingException {
         try {
-            //ArrayController ctrl = getArrayController(subarrayId);
             control_system.destroySubArray(subarrayId);
         } catch(INACTErrorEx e1) {
         } catch(SUBAErrorEx e2){
