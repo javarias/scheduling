@@ -6,7 +6,7 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.6 2004/09/30 21:16:58 sroberts Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.7 2004/09/30 22:19:46 sroberts Exp $"
 
 Documents:
 
@@ -66,7 +66,7 @@ Requirements for Scheduling Tests for R2:
 
 Tests: 
     - TestALMAPublishEvent
-    - TestStartScheduling
+    - TestStartSched
     - All the tests below run as a suite, AllTests.java
         AllTests include:
             TestAntenna
