@@ -35,6 +35,7 @@ import javax.swing.JFileChooser;
 public class GUI extends JFrame {
     private GUIController controller; 
     private int totalSelected=0;
+    private JFileChooser chooser;
 
     public GUI(GUIController c) {
         this.controller = c;
@@ -43,7 +44,22 @@ public class GUI extends JFrame {
 
     }
 
+    public String createFileChooser(String type) {
+        String result = null;
+        int returnVal=0;
+        if(type.equals("save") ) {
+            returnVal = chooser.showSaveDialog(this);
+        } else if(type.equals("load") ) {
+            returnVal = chooser.showOpenDialog(this);
+        }
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            result = chooser.getSelectedFile().getName();
+        }
+        return result;
+    }
+
     private void guiSetup() {
+        chooser = new JFileChooser();
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
@@ -53,15 +69,11 @@ public class GUI extends JFrame {
         save.setMnemonic(KeyEvent.VK_S);
         save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JMenuItem item = (JMenuItem)e.getSource();
-                Component parent = item.getParent();
-                JFileChooser chooser = new JFileChooser();
-                chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-                int returnVal = chooser.showSaveDialog(parent);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    controller.saveToFile(chooser.getSelectedFile().getName());
+                String s = createFileChooser("save");
+                if (s != null) {
+                    controller.saveToFile(chooser.getSelectedFile().getPath());
                 } else {
-                    controller.saveToFile("data.txt");
+                    System.out.println("Canceled Save, s == null");
                 }
             }
         });
@@ -71,7 +83,13 @@ public class GUI extends JFrame {
         load.setMnemonic(KeyEvent.VK_L);
         load.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controller.loadFile();
+                String s = createFileChooser("load");
+                if(s != null) {
+                    controller.loadFile(chooser.getSelectedFile().getPath());
+                } else{
+                    System.out.println("Canceled load, s == null!");
+                }
+
             }
         });
         file.add(load);

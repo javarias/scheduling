@@ -261,22 +261,16 @@ public class ProjectsTab extends JScrollPane {
 
                 Component[] projectInfo = projectInfoPanel.getComponents();
                 v.add( ((JTextField)projectInfo[1]).getText() );//project name
-                System.out.println("adding "+((JTextField)projectInfo[1]).getText() );
                 v.add( ((JTextField)projectInfo[3]).getText() ); //PI
-                System.out.println("adding "+((JTextField)projectInfo[3]).getText() );
                 v.add( ((JTextField)projectInfo[5]).getText() ); //priority
-                System.out.println("adding "+((JTextField)projectInfo[5]).getText() );
                 v.add( ((JTextField)projectInfo[7]).getText() ); //number of targets
-                System.out.println("adding "+((JTextField)projectInfo[7]).getText() );
                 
                 Component[] targetsInfo = targetsInfoPanel.getComponents();
                 v.add(getTargetsInfo(targetsInfo));
             }
         } catch(Exception e) {
-            //System.out.println(e.toSt
             e.printStackTrace();
         }
-        System.out.println(v.size());
         return v;
     }
 
@@ -289,7 +283,6 @@ public class ProjectsTab extends JScrollPane {
         for(int i=0; i < totaltargets; i++ ) {
             p = (JPanel)comp[i];
             c = p.getComponents();
-            //System.out.println(c.length);
             tmp = ((JTextField)c[1]).getText();
             if(tmp == "") throw new Exception("Target must have a name.");
             targets.add(tmp);

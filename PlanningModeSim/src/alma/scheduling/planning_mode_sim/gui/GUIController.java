@@ -53,7 +53,7 @@ public class GUIController implements Runnable {
     private Vector projects;
 
     private Simulator simulator;
-
+    private String data_filename;
 
     public GUIController() {
         weatherfuncvalues = new Vector();
@@ -83,66 +83,33 @@ public class GUIController implements Runnable {
         //Simulation Properties tab
         simPropTab = (SimulationPropertiesTab)comp5[0];
         stuffFromSimulationPropertiesTab();
-        /*
-        JScrollPane pane1 = 
-        Component[] comp5a = pane1.getComponents();
-        Component[] comp5aa= ((JViewport)comp5a[0]).getComponents();
-        JPanel p1 = (JPanel)comp5aa[0];
-        stuffFromTab1(p1);
-        */
         
         //Frequency band tab
         frequencyTab = (FrequencyBandTab)comp5[1];
         stuffFromFrequencyTab();
-        /*
-        JScrollPane pane2 = 
-        Component[] comp5b = pane2.getComponents();
-        Component[] comp5ba= ((JViewport)comp5b[0]).getComponents();
-        JPanel p2 =(JPanel)comp5ba[0];
-        stuffFromTab2(p2);
-        */
-
-        
+       
         //Weather model tab
         weatherTab = (WeatherDataTab)comp5[2];
         stuffFromWeatherTab();
-        /*
-        JScrollPane pane3 = 
-        Component[] comp5c = pane3.getComponents();
-        Component[] comp5ca= ((JViewport)comp5c[0]).getComponents();
-        JPanel p3 =(JPanel)comp5ca[0];
-        */
-
-        
+       
         //Weights tab
         algorithmTab = (AlgorithmWeightsTab)comp5[3];
         stuffFromAlgorithmWeightsTab();
-        /*
-        JScrollPane pane4 = 
-        Component[] comp5d = pane4.getComponents();
-        Component[] comp5da= ((JViewport)comp5d[0]).getComponents();
-        JPanel p4 = (JPanel)comp5da[0];
-        stuffFromTab4(p4);
-        */
-
+              
         //Projects tab
         projTab = (ProjectsTab)comp5[4];
         stuffFromProjectsTab();
-        /*
-        JScrollPane pane5 = 
-        Component[] comp5e = pane5.getComponents();
-        Component[] comp5ea= ((JViewport)comp5e[0]).getComponents();
-        JPanel p5 =(JPanel)comp5ea[0];
-        stuffFromTab5(p5);
-        */
+       
         //save all gathered info to a file
-        createFile(filename);
+        data_filename = filename;
+        createFile(data_filename);
 
     }
 
     private void stuffFromSimulationPropertiesTab(){
         startTime = simPropTab.getBeginTime();
         endTime = simPropTab.getEndTime();
+        logLevel = simPropTab.getLoglevel();
         freqSetupTime = simPropTab.getFreqBandSetup();
         projSetupTime = simPropTab.getProjSetup();
         advanceClock = simPropTab.getClockAdvance();
@@ -266,7 +233,7 @@ public class GUIController implements Runnable {
                     ((String)(projects.elementAt(i+3))) );
                 Vector targets = (Vector)projects.elementAt(i+4);
                 int targetSize = targets.size()/7;
-                System.out.println("total targets = "+(targets.size()/7));
+                //System.out.println("total targets = "+(targets.size()/7));
                 for(int j=0; j < targetSize; j++) {
                     int z = 0;
                     out.println("target."+x+"."+j+" = " +
@@ -303,7 +270,7 @@ public class GUIController implements Runnable {
     public void runSimulation() {
         File f = new File("data.txt");
         if(!f.exists()){
-            System.out.println("A data.txt file must be properly created " 
+            System.out.println("A data file must be properly created " 
                 + "before a simulation can be run.");
         } else {
             clearInputFields();
@@ -346,7 +313,8 @@ public class GUIController implements Runnable {
      * load. The file is then loaded and the contents of the file are
      * displayed in their appropriate fields.
      */
-    public void loadFile() {
+    public void loadFile(String filename) {
+        System.out.println("Opening "+filename);
     }
     
     //////////////////////////////////////////////
