@@ -4,7 +4,7 @@
 ACS_CDB=$PWD
 
 # Clean archive
-archiveCleanMA >& sched_archive1.log
+archiveCleanXindice >& sched_archive1.log
 archiveLoadSchema >& sched_archive2.log
 
 # Start acs processes

@@ -66,7 +66,7 @@ import alma.acs.nc.*;
  *  R1 Test! 
  *  @author Sohaila Roberts
  */
-public class SchedSystemTest {
+public class SchedSystemTest extends Consumer {
     private EntitySerializer entitySerializer;
     private EntityDeserializer entityDeserializer;
     private ContainerServices containerServices;
@@ -77,6 +77,8 @@ public class SchedSystemTest {
     private TestSchedConsumer consumer;
     
     public SchedSystemTest(ContainerServices cs) {
+        super(alma.scheduling.CHANNELNAME.value);
+
         this.containerServices = cs;
         this.logger = cs.getLogger();
         entitySerializer = EntitySerializer.getEntitySerializer(logger);
@@ -90,6 +92,22 @@ public class SchedSystemTest {
             logger.severe("SCHED_TEST: "+e.toString());
         }
     }
+
+    public void push_structured_event(StructuredEvent structuredEvent) 
+        throws org.omg.CosEventComm.Disconnected {
+       
+        try {
+            NothingCanBeScheduledEvent e = 
+                NothingCanBeScheduledEventHelper.extract(
+                    structuredEvent.filterable_data[0].value);
+            
+            logger.info("SCHED_TEST: *******************************");
+            logger.info("SCHED_TEST: Got NothingCanBeScheduledEvent!");
+            logger.info("SCHED_TEST: *******************************");
+            release();
+        } catch(Exception e) {
+        }
+    }
     
     /**
      *  Calles the scheduling's startScheduling method using an
@@ -100,40 +118,20 @@ public class SchedSystemTest {
         logger.info("SCHED_TEST: About to call startScheduling");
         
         try {
-        /*
-            SchedulingPolicy sp = new SchedulingPolicy() ; 
-            SchedulingPolicyEntityT spe = new SchedulingPolicyEntityT();
-            try {
-                containerServices.assignUniqueEntityId(spe);
-                sp.setSchedulingPolicyEntity(spe);
-            } catch (ContainerException e) {
-                logger.severe("SCHED_TEST: ContainerException: "+ e.toString());
-            }
-            sp_struct = entitySerializer.serializeEntity(sp);
-            */
             masterSchedulerComp.startScheduling(sp_struct); 
             logger.fine("SCHED_TEST: MasterScheduler startScheduling called.");
         } catch (Exception e) {
             logger.fine("SCHED_TEST: EXCEPTION!");
             logger.severe("SCHED_TEST: error :"+ e.toString());
-        /*
-        } catch(EntityException e) {
-            logger.fine("SCHED_TEST: EntityException: SchedulingPolicy not serialized!");
-            logger.severe("SCHED_TEST: EntityException: "+ e.toString());
-        } catch(InvalidOperation e) {
-            logger.severe("SCHED_TEST: InvalidOperation: startScheduling failed!");
-            logger.severe("SCHED_TEST: InvalidOperation: "+ e.toString());
-        */
         }
         logger.fine("SCHED_TEST: Scheduling started"); 
-        //testNothingToSchedule();
     }
 
     public void testNothingToSchedule() {
         consumer = new TestSchedConsumer(containerServices);
         System.out.println("SCHED_TEST: SchedConsumer created");
         try {
-            consumer.addSubscription(alma.acsnc.DEFAULTTYPE.value);
+            consumer.addSubscription(alma.scheduling.NothingCanBeScheduledEvent.class);
             consumer.consumerReady();
         } catch(Exception e) {
             consumer.disconnect();
@@ -162,7 +160,7 @@ public class SchedSystemTest {
     public void release() {
         logger.info("SCHED_TEST: About to release components");
         containerServices.releaseComponent("MASTER_SCHEDULER");
-        //containerServices.releaseComponent("PUBLISHTELCALEVENTS1");
+        System.exit(0);
     }
 
 
@@ -174,31 +172,35 @@ public class SchedSystemTest {
             ContainerServices cs = client.getContainerServices();
             
             SchedSystemTest test = new SchedSystemTest(cs);
+            test.addSubscription(alma.scheduling.NothingCanBeScheduledEvent.class);
+            test.consumerReady();
+            test.testNothingToSchedule();
             
             TestSchedSupplier telcal_events = new TestSchedSupplier();
 
+            test.testGetStatus();
+
             test.testStartScheduling();
 
-            test.testNothingToSchedule();
+            //test.testNothingToSchedule();
 
             //Publish the telcalevents!
             telcal_events.sendTelCalEvents();
             
-            Thread.sleep(1000*90);
+            Thread.sleep(1000*10);
             
-            test.testGetStatus();
             
-            test.testNothingToSchedule();
+            //test.testNothingToSchedule();
 
-            test.testStopScheduling();
+            //test.testStopScheduling();
             
             telcal_events.disconnect(); 
 
-            test.release();
+            //test.release();
         } catch(Exception e) {
             System.out.println("SCHED_TEST: Exception: " +e.toString() );
             System.exit(1);
         }
-        System.exit(0);
+        //System.exit(0);
     }
 }
