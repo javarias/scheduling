@@ -25,6 +25,7 @@
  */
 package alma.scheduling.master_scheduler;
 
+import java.util.Vector;
 import alma.acs.container.ContainerServices;
 
 /**
@@ -39,6 +40,7 @@ import alma.acs.container.ContainerServices;
 public class Dispatcher {
     private boolean isSimulation;
     private ContainerServices containerServices;
+    private Vector schedBlocks;
     
 	public Dispatcher (boolean isSimulation, ContainerServices container) {
 		System.out.println("The Dispatcher has been constructed.");
