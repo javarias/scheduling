@@ -1,3 +1,4 @@
 PROLOGUE prologue
-testscript.sh
+testscript1
+testscript2
 EPILOGUE epilogue

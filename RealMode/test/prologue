@@ -12,3 +12,8 @@ sleep 60
 echo " Starting Manager"
 maciManager >& /dev/null&
 sleep 20
+
+echo " Starting hugoActivator"
+acsStartContainer hugoActivator&
+sleep 5
+
