@@ -36,6 +36,8 @@ import alma.entity.xmlbinding.valuetypes.TimeT;
 import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
 import alma.entity.xmlbinding.valuetypes.LongitudeT;
 import alma.entity.xmlbinding.valuetypes.LatitudeT;
+import alma.entity.xmlbinding.valuetypes.VelocityT;
+import alma.entity.xmlbinding.valuetypes.DoubleWithUnitT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.entities.commonentity.*;
 
@@ -88,7 +90,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.17 2005/03/10 22:42:14 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.18 2005/03/11 16:06:19 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -998,17 +1000,47 @@ public class ProjectUtil {
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
         if(parm != null) {
-            PipelineParameterT[] pparams = new PipelineParameterT[parm.length];//hso
-		    for (int i = 0; i < parm.length; ++i){//hso
-                pparams[i] = new PipelineParameterT();//hso
-                pparams[i].setName(parm[i].getClass().getName());
-                pparams[i].setValue(parm[i].toString()); //hso:todo
+            PipelineParameterT[] pparams = new PipelineParameterT[parm.length];
+		    for (int i = 0; i < parm.length; ++i){
+                pparams[i] = new PipelineParameterT();
+                if(parm[i].getClass().getName().equals("alma.entity.xmlbinding.valuetypes.SmallAngleT")){
+                    
+                    pparams[i].setName("AngularResolution");
+                    pparams[i].setValue(""+ ((DoubleWithUnitT)parm[i]).getContent() + " " + 
+                            ((DoubleWithUnitT)parm[i]).getUnit()); 
+                    
+                } else if(parm[i].getClass().getName().equals("alma.entity.xmlbinding.valuetypes.VelocityT")){
+                    
+                    pparams[i].setName("VelocityResolution");
+                    pparams[i].setValue(""+ ((VelocityT)parm[i]).getReferenceSystem().toString() + ": " + 
+                            ((VelocityT)parm[i]).getCenterVelocity().getContent() +" "+ 
+                            ((VelocityT)parm[i]).getCenterVelocity().getUnit()); 
+                    
+                } else if(parm[i].getClass().getName().equals("alma.entity.xmlbinding.valuetypes.TemperatureT")){
+                    
+                    pparams[i].setName("TBSensitivityGoal");
+                    pparams[i].setValue(""+ ((DoubleWithUnitT)parm[i]).getContent() +" "+
+                             ((DoubleWithUnitT)parm[i]).getUnit());
+                    
+                } else if(parm[i].getClass().getName().equals("alma.entity.xmlbinding.valuetypes.SensitivityT")){
+
+                    pparams[i].setName("RMSGoal");
+                    pparams[i].setValue(""+ ((DoubleWithUnitT)parm[i]).getContent() +" "+
+                             ((DoubleWithUnitT)parm[i]).getUnit());
+                    
+                } else if(parm[i].getClass().getName().equals(
+                            "alma.entity.xmlbinding.valuetypes.types.DataProcessingParametersTProjectTypeType")){
+
+                    pparams[i].setName("ProjectType");
+                    pparams[i].setValue(parm[i].toString());
+                }
             }
-    		target.setPipelineParameter(pparams);//hso
+    		target.setPipelineParameter(pparams);
         }
 		// OK, we're done.
 		return target;
 	}
+
 		
 	static private SBStatusT assignSBStatus(SB sb, DateTime now) {
 		SBStatusT target = new SBStatusT ();
