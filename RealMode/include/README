@@ -1,4 +1,0 @@
-Put here so include/ is created when subsystem is checked out of cvs.
-Otherwise makefile gives errors that it can't create include/
-
--Sohaila
