@@ -191,7 +191,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 			
 			// Set the current executing unit and frequency.
 			s.setCurrentSB(sb.getProject().getId(), sb.getParent().getId(), sb.getId());
-			s.setCurrentFrequency(sb.getFrequencyBand(), sb.getFrequency());
+			s.setCurrentFrequency(sb.getFrequencyBand(), sb.getCenterFrequency());
 
 			// Begin the execution.
 			DateTime beg = clock.getDateTime();

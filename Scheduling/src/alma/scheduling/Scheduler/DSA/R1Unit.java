@@ -331,7 +331,7 @@ class R1Unit extends SchedulingUnit {
 		alma.scheduling.Define.Equatorial coord = new Equatorial(3.2,47.0);
 		alma.scheduling.Define.Target t = new alma.scheduling.Define.Target (coord,2.0);
 		sb.setTarget(t);
-		sb.setFrequency(68.0);
+		sb.setCenterFrequency(68.0);
 		R1Unit unit = new R1Unit(sb,site);
 
 		unit.setScore(85.011111111111);

@@ -865,7 +865,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			u = new SB(targetName);
 			t = new Target (new Equatorial(ra,dec),sizeTargetBox,sizeTargetBox);
 			u.setTarget(t);
-			u.setFrequency(frequency);
+			u.setCenterFrequency(frequency);
 			u.setMaximumTimeInSeconds(totalTime);
 			u.setScientificPriority(set.getScientificPriority());
 			if (b > -1.0) {
@@ -884,13 +884,13 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			// Set the frequency band.
 			int j = 0;
 			for (; j < band.length; ++j) {
-				if (u.getFrequency() >= band[j].getLowFrequency() && u.getFrequency() <= band[j].getHighFrequency()) {
+				if (u.getCenterFrequency() >= band[j].getLowFrequency() && u.getCenterFrequency() <= band[j].getHighFrequency()) {
 					u.setFrequencyBand(band[j]);
 					break;
 				}
 			}
 			if (j == band.length)
-				error("Frequency " + u.getFrequency() + " is out of the range of valid frequency bands.");
+				error("Frequency " + u.getCenterFrequency() + " is out of the range of valid frequency bands.");
 			
 			// Anything else we might want to set?
 			
