@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.33 2005/03/29 20:49:16 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.34 2005/03/29 23:45:28 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -266,18 +266,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
 
-    /*
-    public SBStatusT[] parseObsUnitStatusT(ObsUnitSetStatusT unit) {
-        ObsUnitSetStatusTChoice choice = unit.getObsUnitSetStatusTChoice();
-        ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
-        for(int i=0; i<sets.length; i++){
-            if(sets[i] instanceof SBStatusT[]) {
-            }
-        }
-    }
-    */
-
-
+ 
      //TODO: Rename this method.
     public SBStatusT[] parseObsUnitSetStatus(ObsUnitSetStatusT set) {
         logger.info("SCHEDULING: Set PartID = "+set.getEntityPartId());
@@ -318,26 +307,6 @@ public class ALMAProjectManager extends ProjectManager {
             ex.printStackTrace();
         }
     }
-
-    /*private Project addProgram(Program p) {
-        // get program's parent. If it doesnt have a parent its the project then add program 
-        // and return project but if its another program add it to the program and 
-        // call this function again with the new program
-        Project proj=null;
-        Object parent = p.getParent();
-        if(parent instanceof Program) {
-            //its parent is another program, add to program and try again
-            System.out.println("Its not the project. Another program.");
-            ((Program)parent).updateMember(p);
-            addProgram((Program)parent);
-        } 
-        //its parent is the top level project. add it to the project and 
-        //return the project.
-        System.out.println("Its the top project. Setting program and returning project.");
-        proj = p.getProject();
-        proj.setProgram(p);
-        return proj;
-    }*/
 
     
     private Program addProgram(Program p) {
@@ -389,7 +358,8 @@ public class ALMAProjectManager extends ProjectManager {
     public void updateObservedSession(Project p, ProjectStatus ps, String sessionId, String endTime){
         logger.info("SCHEDULING: updating session with end time.");
         try {
-            ObservedSession[] allSes = p.getProgram().getAllSession();
+            ObservedSession[] allSes = searchPrograms(p.getProgram(), sessionId).getAllSession();
+
             ObservedSession ses=null;
             for(int i=0; i < allSes.length; i++){
                 if(allSes[i].getSessionId() == sessionId){
@@ -397,7 +367,6 @@ public class ALMAProjectManager extends ProjectManager {
                     ses.setEndTime(new DateTime(endTime));
                 }
             }
-           // ps = ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
             ps = ProjectUtil.updateProjectStatus(p);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
@@ -406,6 +375,23 @@ public class ALMAProjectManager extends ProjectManager {
             e.printStackTrace();
         }
     }
+
+    private Program searchPrograms(Program p, String sessionId) {
+        ObservedSession[] sessions = p.getAllSession();
+        for(int i=0; i < sessions.length; i++){
+            if( sessions[i].getSessionId().equals(sessionId) ){
+                return p;
+            }
+        }
+        Program[] allPrograms = p.getAllPrograms(); 
+        Program prog = null;
+        for(int i=0;i<allPrograms.length; i++){
+            prog = searchPrograms(allPrograms[i], sessionId);
+        }
+        return prog;
+    }
+    
+    
     /* Will be this way in future
     public void sendStartSessionEvent(ObservedSession session) {
     }

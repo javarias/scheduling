@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.22 2005/03/10 22:42:14 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.23 2005/03/29 23:45:28 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -108,7 +108,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 logger.info("SCHEDULING: Received sb start event from control.");
                 //create an execblock internal to scheduling. 
                 eb = createExecBlock(e);
-                eb.setStartTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)));
+                DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
+                eb.setStartTime(startEb);
+                eb.setTimeOfCreation(startEb);
+                eb.setTimeOfUpdate(startEb);
                 currentEB.add(eb);
                 //send out a start session event.
                 startSession(eb);
@@ -125,10 +128,12 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 updateSB(ce);
                 //eb = createExecBlock(e);
                 eb = retrieveExecBlock(e.execID);
-                eb.setEndTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)),Status.COMPLETE);
+                DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
+                eb.setEndTime(endEb, Status.COMPLETE);
+                eb.setTimeOfUpdate(endEb);
                 //send out an end session event
                 endSession(eb);
-                //sbCompleted(eb);
+                sbCompleted(eb);
                 startPipeline(ce);
                 deleteFinishedEB(eb);
                 break;
