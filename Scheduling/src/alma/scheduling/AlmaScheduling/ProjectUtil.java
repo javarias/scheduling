@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.22 2005/03/29 20:49:16 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.23 2005/03/29 23:25:34 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -414,8 +414,6 @@ public class ProjectUtil {
 		
 		// Now, set all the partIds in the project status.
 		Program p = project.getProgram();
-        //Program p = intialize(obs.getObsProgram().getObsPlan().getObsUnitSet()
-		//p.setObsUnitSetStatusId(genPartId());
 		setProgramMember(p);
 		
 		project.setProgram(program);
@@ -433,11 +431,11 @@ public class ProjectUtil {
 		for (int i = 0; i < m.length; ++i) {
 			if (m[i] instanceof Program) {
 				((Program)m[i]).setObsUnitSetStatusId(genPartId());
-                System.out.println("part id for program member, prog");
+                //System.out.println("part id for program member, prog");
 				setProgramMember((Program)m[i]);
 			} else {
 				((SB)m[i]).setSbStatusId(genPartId());
-                System.out.println("part id for program member, sb");
+                //System.out.println("part id for program member, sb");
 				setSBMember((SB)m[i]);
 			}
 		}
@@ -464,7 +462,7 @@ public class ProjectUtil {
 				break;
 		}
         String tmp = new String (s);
-        System.out.println("Generating another partId: "+tmp);
+        //System.out.println("Generating another partId: "+tmp);
 		//return new String (s);
         return tmp;
 	}
@@ -484,11 +482,11 @@ public class ProjectUtil {
 			DateTime now) throws SchedulingException {
 		
         if(set.getEntityPartId() == null) {
-            System.out.println("generating part it for program");
+            //System.out.println("generating part it for program");
             set.setEntityPartId(genPartId());
         }
 		Program program = new Program (set.getEntityPartId());
-        System.out.println("Program ID = "+program.getId());
+        //System.out.println("Program ID = "+program.getId());
 		program.setProject(project);
 		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
 		program.setTimeOfCreation(now);
@@ -518,13 +516,13 @@ public class ProjectUtil {
 		program.setFrequencyBand(null);
 		program.setRequiredInitialSetup(null);
 	
-        System.out.println("Now check sbs and obs unit sets");
-        System.out.println( set.getObsUnitSetTChoice().getObsUnitSetCount() );
-        System.out.println( set.getObsUnitSetTChoice().getSchedBlockRefCount());
+        //System.out.println("Now check sbs and obs unit sets");
+        //System.out.println( set.getObsUnitSetTChoice().getObsUnitSetCount() );
+        //System.out.println( set.getObsUnitSetTChoice().getSchedBlockRefCount());
 
 		// Assign the members of this set: either Program or SB objects.
 		if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
-            System.out.println("More than one obs unit sets");
+            //System.out.println("More than one obs unit sets");
 			ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
 			Program memberProgram = null;
 			for (int i = 0; i < setMember.length; ++i) {
@@ -536,8 +534,6 @@ public class ProjectUtil {
 			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
 			SB memberSB = null;
 			for (int i = 0; i < setMember.length; ++i) {
-                System.out.println("stupid parent id1 ="+program.getId());
-                System.out.println("stupid parent id2 ="+program.getObsUnitSetStatusId());
 				memberSB = initialize(setMember[i],sched,schedUsed,project,program,now);
 				program.addMember(memberSB);
 			}
@@ -576,7 +572,7 @@ public class ProjectUtil {
 		sb.setProject(project);
 		sb.setTimeOfCreation(now);
 		sb.setTimeOfUpdate(now);
-        System.out.println("SB parent part id (in sb initialize PU)"+parent.getObsUnitSetStatusId());
+        //System.out.println("SB parent part id (in sb initialize PU)"+parent.getObsUnitSetStatusId());
 		sb.setParent(parent);
 
 		// We need to use the entityId to get the SchedBlock from the sched array.
@@ -849,7 +845,7 @@ public class ProjectUtil {
 		
 		// Set the members of this program.
 		ProgramMember[] member = source.getMember();
-        System.out.println("Number of members = "+ member.length);
+        //System.out.println("Number of members = "+ member.length);
 		Program pgm = null;
 		SB sb = null;
 		ObsUnitSetStatusTChoice set = new ObsUnitSetStatusTChoice ();
@@ -1060,7 +1056,7 @@ public class ProjectUtil {
 			// Set subarray-id.
 			exStatus.setSubarrayId(ex[i].getSubarrayId());
 			// Set BestSB.
-			exStatus.setBestSB(assignBestSB(ex[i].getBest()));
+			//exStatus.setBestSB(assignBestSB(ex[i].getBest()));
 			list[i] = exStatus;
 		}
 		return list;
