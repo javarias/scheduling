@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.lang.Thread;
 import java.lang.InterruptedException;
 
+import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.define.STime;
 import alma.scheduling.master_scheduler.*;
 import alma.scheduling.project_manager.PIProxy;
@@ -146,7 +147,9 @@ public class Scheduler implements Runnable {
             //should send out nothingCanBeScheduled but
             //for now this is the end of the project and we start the pipeline
                 logger.info("SCHEDULING: No more SBs to process!");
-                s_publisher.publishEvent();
+                //s_publisher.publishEvent();
+                s_publisher.publishEvent(NothingCanBeScheduledEnum.OTHER,
+                    "No more SBs to process");
                 moreSBs = false;
                 break;
             }

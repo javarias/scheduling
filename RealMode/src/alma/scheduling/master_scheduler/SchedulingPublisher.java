@@ -97,7 +97,7 @@ public class SchedulingPublisher {
                         new NothingCanBeScheduledEvent(sched_enum, 0 , comment);
             sched_nc.publish(event);
             //supplier.publishEvent(event);
-            logger.info("SCHEDULING: Event sent.");
+            logger.info("SCHEDULING: Event sent!");
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not publish event. "+e.toString());
         }
