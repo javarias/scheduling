@@ -41,14 +41,14 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.7 2004/11/23 20:40:22 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.8 2004/11/29 15:13:36 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
     
 
     private MasterSchedulerIF masterScheduler;
-    private ContainerServices cs;
+    //private ContainerServices cs;
 
     public SchedulingMasterComponentImpl() {
         super();
@@ -59,6 +59,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     ////////////////////////////////////////////////////////////////
     
     
+    /*
     public void initialize(ContainerServices containerServices) 
         throws ComponentLifecycleException {
     
@@ -80,7 +81,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         cleanUp();
         m_logger.info("SCHEDULING MC: master component about to abort.");
     }
-    
+    */
     ////////////////////////////////////////////////////////////////
     
     protected AlmaSubsystemActions getActionHandler() {
@@ -88,7 +89,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         return this;
     }
 
-    public void initSubsysPass1() {
+    public void initSubsysPass1() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: initSubsysPass1() method called");
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
@@ -102,21 +103,22 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     /**
       * Nothing to do for the second pass.
       */
-    public void initSubsysPass2() {
+    public void initSubsysPass2() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: initSubsysPass2() method called");
     }
 
-    public void reinitSubsystem() {
+    public void reinitSubsystem() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: reinitSubsystem() method called");
     }
 
     /**
       * Attempt to release the master scheduler component.
       */
-    public void shutDownSubsysPass1() {
+    public void shutDownSubsysPass1() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: shutDownSubsysPass1() method called");
         if(masterScheduler != null) {
             cs.releaseComponent("MasterScheduler");
+            masterScheduler = null;
         }
     }
 
@@ -124,10 +126,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       * Try a second time just incase the first shutdown pass did not release the 
       * master scheduler.
       */
-    public void shutDownSubsysPass2() {
+    public void shutDownSubsysPass2() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: shutDownSubsysPass2() method called");
         if(masterScheduler != null) {
             cs.releaseComponent("MasterScheduler");
+            masterScheduler = null;
         }
     }
 
