@@ -1,6 +1,7 @@
 FINE: ready to talk with components!
 FINE: component MASTER_SCHEDULER retrieved successfully.
 FINE: SCHED_TEST: MS Component created
+Attempting to create the TelCalPublisherEventNC channel.
 SCHED_TEST: sup1 created
 SCHED_TEST: sup2 created
 INFO: SCHED_TEST: About to call startScheduling

@@ -150,6 +150,10 @@ INFO: SCHED_TEST: <?xml version="1.0" encoding="UTF-8"?>
         entityId="uid://X----------------/X--------"
         entityTypeName="PipelineProcessingRequest"
         xsi:type="PipelineProcessingRequestEntityT" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+    <ns1:CompletionStatus>
+        <ns1:completionStatus>complete_succeeded</ns1:completionStatus>
+    </ns1:CompletionStatus>
+    <ns1:ReductionUnit entityId="uid://X----------------/X--------" entityTypeName="ObsUnitSet"/>
 </ns1:PipelineProcessingRequest>
 
 INFO: SCHED_TEST: function updatePipelineProcessingRequest(PipelineProcessingRequest ppr)
