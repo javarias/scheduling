@@ -1,14 +1,49 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File GUITimezones.java
+ */
 
 package alma.scheduling.planning_mode_sim.gui;
 
 import javax.swing.JComboBox;
-
+/**
+ * This class extends the JComboBox from java so that it contains all
+ * timezones. This class is used within the GUI classes that require
+ * timezones to be set and retrieved.
+ * 
+ * @author Sohaila Roberts
+ */
 public class GUITimezones extends JComboBox {
     
     public GUITimezones() {
         super();
         fillTimezones();
     }
+
+    /**
+     * Adds all the timezones.
+     */
     private void fillTimezones() {
         addItem("GMT-12:00");
         addItem("GMT-11:00");
@@ -48,6 +83,12 @@ public class GUITimezones extends JComboBox {
 
     }
 
+    /**
+     * Returns as a string the value of the timezone that is 
+     * currently selected.
+     *
+     * @return String 
+     */
     public String getValue() {
         String value1 = (String)getSelectedItem();
         String substring = value1.substring(3);
@@ -55,6 +96,10 @@ public class GUITimezones extends JComboBox {
     }
 
 
+    /**
+     * Sets the timezone to the given value.
+     * @param s The string representation of what the timezone should be set to.
+     */
     public void setValue(String s) {
         if ( s.equals("-12") || s.equals("-12:00") ) {
             setSelectedItem("GMT-12:00");
@@ -125,6 +170,10 @@ public class GUITimezones extends JComboBox {
         }
     }
 
+    /**
+     * Returns the string representation of the currently set timezone
+     * @return String
+     */
     public String toString() {
         return (String)getSelectedItem();
     }
