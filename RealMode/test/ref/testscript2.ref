@@ -2,6 +2,7 @@
 The MasterScheduler has been constructed.
 The ALMATelescopeOperator has been constructed.
 The PIProxy has been constructed.
+Attempting to create the SCHEDULING_CHANNEL channel.
 The PipelineProxy has been constructed.
 The Clock has been constructed.
 Message queue created

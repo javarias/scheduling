@@ -64,7 +64,8 @@ public class PipelineEventListener extends Consumer {
     public void sendNCBSEvent() {
         NothingCanBeScheduledEvent ncbs = new NothingCanBeScheduledEvent(
             "Pipeline is done, Shut down scheduling system for R0+!");
-
+        pipeline.sendNothingCanBeScheduledEvent(ncbs);
+        /*
         String[] names = new String[3];
         names[SimpleSupplier.CHANNELPOS] = alma.scheduling.CHANNELNAME.value;
         names[SimpleSupplier.TYPEPOS] = ALMA.acsnc.DEFAULTTYPE.value;
@@ -76,5 +77,6 @@ public class PipelineEventListener extends Consumer {
         } catch(Exception e) {
             System.out.println("error when sending ncbs: "+e.toString());
         }
+        */
     }
 }

@@ -147,10 +147,12 @@ public class SchedTest7 {
             logger.log(Level.SEVERE, "InvalidOperation: "+ e.toString());
         }
         logger.log(Level.FINE, "Scheduling started"); 
+        /*
         try {
             System.out.println("Sleeping before getting the SCHEDULING CHANNEL");
             Thread.sleep(50000);
         } catch (Exception e) {}
+        */
         testNothingToSchedule();
     }
 
@@ -178,7 +180,7 @@ public class SchedTest7 {
             ContainerServices cs = client.getContainerServices();
             SchedTest7 test7 = new SchedTest7(cs);
             test7.testStartScheduling();
-            Thread.sleep(1000*180);
+            Thread.sleep(1000*90);
         } catch(Exception e) {
             System.out.println("Exception: " +e.toString() );
             //cs.releaseComponent("MASTER_SCHEDULER");
