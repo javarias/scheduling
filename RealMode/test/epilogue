@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# Shutdown acs and java processes
+maciManagerShutdown >&  /dev/null
+acsStopORBSRVC >&  /dev/null
+killall java

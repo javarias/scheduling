@@ -1,0 +1,14 @@
+#! /bin/bash
+
+# Get required paths
+ACS_CDB=$PWD
+
+
+# Start acs processes
+echo " Starting ORB Services"
+acsStartORBSRVC >& /dev/null
+sleep 60
+
+echo " Starting Manager"
+maciManager >& /dev/null&
+sleep 20
