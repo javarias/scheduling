@@ -128,36 +128,6 @@ public class GUI extends JFrame {
         setVisible(true);
     }
 
-/*    private JPanel createOutputView() {
-        JPanel p = new JPanel(new BorderLayout());
-
-        outputStuff = new Hashtable();
-        JPanel jp = new JPanel();
-        jp.setName("mainpanel");
-        jp.add(new JLabel("Main"));
-        jp.add(new JButton("x"));
-        //outputStuff.put(
-        outputView = new JTextArea();
-        outputView.setEditable(false);
-        JScrollPane pane = new JScrollPane(outputView);
-        pane.setViewportBorder(new BevelBorder(BevelBorder.RAISED));
-        
-        JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        top.add(jp);
-        
-
-        JPanel middle = new JPanel();
-        middle.add(outputView);
-
-        outputStuff.put(jp, outputView);
-        
-        p.add(top, BorderLayout.NORTH);
-        p.add(middle, BorderLayout.CENTER);
-
-        return p;
-    }
-*/
-    
     /**
      *
      */
