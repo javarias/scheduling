@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.20 2005/02/28 17:09:59 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.21 2005/03/15 20:45:36 afarris Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -288,6 +288,15 @@ public class ALMAMasterScheduler extends MasterScheduler
         return policy;
     }
     
+    /**
+     * Starts scheduling using a specific list of scheduling block Ids.
+     * @param sbList
+     * @throws InvalidOperation
+     */
+    public void startQueueScheduling(String[] sbList)
+    	throws InvalidOperation {
+	}
+
     /**
      * Starts scheduling using a specific Scheduling Policy
      * @param XmlEntityStruct
