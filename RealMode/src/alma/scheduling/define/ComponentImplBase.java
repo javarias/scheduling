@@ -1,7 +1,8 @@
 /*
  *    ALMA - Atacama Large Millimiter Array
  *    (c) European Southern Observatory, 2002
- *    Copyright by ESO (in the framework of the ALMA collaboration),
+ *    (c) Associated Universities Inc., 2002
+ *    Copyright by AUI (in the framework of the ALMA collaboration),
  *    All rights reserved
  *
  *    This library is free software; you can redistribute it and/or
@@ -18,7 +19,10 @@
  *    License along with this library; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
  *    MA 02111-1307  USA
+ *  
+ *    File ComponentImplBase.java  
  */
+
 package alma.scheduling.define;
 
 import java.util.logging.Logger;

@@ -2,7 +2,7 @@
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
- * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved
  * 
  * This library is free software; you can redistribute it and/or
@@ -107,10 +107,10 @@ public class ProjectManager implements Runnable {
         */
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
-        //control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
-        //pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
-        //pointing_event = new PointingReducedEventReceiver(cs);
-        //focus_event = new FocusReducedEventReceiver(cs);
+        control_event = new ControlEventReceiver(cs, pipeline, archive, sbQueue);
+        pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
+        pointing_event = new PointingReducedEventReceiver(cs);
+        focus_event = new FocusReducedEventReceiver(cs);
         if(isSimulation) {
             //its a simulation, so create local channels
             
@@ -131,7 +131,7 @@ public class ProjectManager implements Runnable {
         } else {
             //its the real thing! create corba channels.
             logger.info("SCHEDULING: Trying to get NCs");
-        /*    
+            
             try {
                 control_event.addSubscription(alma.Control.EXECEVENTS.class);
                 control_event.consumerReady();
@@ -168,7 +168,6 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
-          */ 
             /*
             try {
             } catch(Exception e) {

@@ -2,7 +2,7 @@
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
- * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved
  * 
  * This library is free software; you can redistribute it and/or
@@ -61,7 +61,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-
+import java.lang.Process;
+import java.lang.Runtime;
+import java.io.IOException;
 /**
  * A Gui that lets a PI interact with a scheduler to do interactive
  * scheduling.
@@ -73,7 +75,12 @@ public class GUI extends JFrame {
     private GUIController controller;
     private JTextArea outputView;
     private JTextArea sbOutputView;
+    private Popup errorPopup;
     private Popup loginPopup;
+    private Popup addSBpopup;
+    private Popup executePopup;
+    private Popup deletePopup;
+    private Popup updatePopup;
 
     public GUI(GUIController c) {
         this.controller = c;
@@ -109,7 +116,8 @@ public class GUI extends JFrame {
         addWindowListener(new WindowAdapter() 
         {
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+                //System.exit(0);
+                exit();
             }
         });
         setVisible(true);
@@ -135,17 +143,13 @@ public class GUI extends JFrame {
     }
     private JPanel createButtonView() {
         JPanel mainPanel = new JPanel(new BorderLayout());
-        //mainPanel.setBorder(new EmptyBorder(0,0,0,0));
         /////////////////////////////
         JPanel picturePanel = new JPanel(new BorderLayout());
         picturePanel.setBackground(new Color(159,3,211));
         picturePanel.add(new JLabel());
-        //picturePanel.add(new JLabel());
         ImageIcon almaImage = new ImageIcon(controller.getImage("alma_logo.jpg"));
-        //ImageIcon almaImage = new ImageIcon("./alma_logo.jpg");
         JLabel pl = new JLabel(almaImage);
         pl.setBackground(Color.blue);
-        //pl.setBorder(new EmptyBorder(0,0,0,0));
         picturePanel.add(pl, BorderLayout.EAST);
         ////////////////////////////
         mainPanel.add(picturePanel, BorderLayout.NORTH);
@@ -164,39 +168,73 @@ public class GUI extends JFrame {
         JButton getSBs = new JButton("Get all SchedBlocks");
         getSBs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
                 getSBs();
             }
         });
         JButton addSB = new JButton("Add SB");
         addSB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                XmlEntityStruct xml = new XmlEntityStruct();
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                addSB();
             }
         });
         JButton deleteSB = new JButton("Delete SB");
         deleteSB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //displayInputBox();
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                deleteSB();
             }
         });
         JButton updateSB = new JButton("Update SB");
         updateSB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                updateSB();
             }
         });
         JButton executeSB = new JButton("Execute SB");
         executeSB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                executeSB();
             }
         });
         JButton stopSB = new JButton("Stop Current SchedBlock");
         stopSB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                stopSB();
             }
         });
         JButton endSession = new JButton("End Interactive Session");
         endSession.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                controller.setLogin("");
+                //do other things to insure user is logged out.
+                //ie: close scheduler, etc
             }
         });
         JButton clearView = new JButton("Clear View");
@@ -325,6 +363,179 @@ public class GUI extends JFrame {
         ////////////////////////////
         return mainPanel;
     }
+
+    private void addSB(){
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel panel = new JPanel(gridbag);
+        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
+        JLabel label = new JLabel("  ObservingTool will popup....");
+        JTextField tf = new JTextField();
+        JButton ok = new JButton("Ok");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addSBpopup.hide();
+            }
+        });
+        c.weightx = 1.0; c.weighty = 1.0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        gridbag.setConstraints(label, c);
+        panel.add(label);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(ok, c);
+        panel.add(ok);
+        PopupFactory pf = PopupFactory.getSharedInstance();
+        Point p = this.getLocationOnScreen();
+        int x = p.x + 350; int y = p.y + 250;
+        addSBpopup = pf.getPopup(this,panel,x,y);
+        addSBpopup.show();
+        
+        openObservingTool();
+    }
+    private void executeSB() {
+        String selectedSB = outputView.getSelectedText();
+        if(selectedSB != null) {
+            clear();
+            outputView.append("SB "+selectedSB+" is now executing.\n");
+        } else {
+            GridBagLayout gridbag = new GridBagLayout();
+            GridBagConstraints c = new GridBagConstraints();
+            JPanel panel = new JPanel(gridbag);
+            panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
+            JLabel label = new JLabel("  Enter SB id or cancel and select it from list  ");
+            JTextField tf = new JTextField();
+            JButton ok = new JButton("Ok");
+            ok.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    JButton tmpB = (JButton)e.getSource();
+                    JPanel tmpP = (JPanel)tmpB.getParent();
+                    Component[] tmpC = tmpP.getComponents();
+                    for(int i=0; i<tmpC.length; i++) {
+                        if((tmpC[i].getClass().getName()).equals(
+                            "javax.swing.JTextField")){
+                            
+                            String selectedSB = ((JTextField)tmpC[i]).getText();
+                            outputView.append("SB "+selectedSB+" is now executing.\n");
+                            // Do something with the selected SB
+                        }
+                    }
+                    executePopup.hide();
+                }
+            });
+            JButton cancel = new JButton("Cancel");
+            cancel.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    executePopup.hide();
+                }
+            });
+            c.weightx = 1.0; c.weighty = 1.0;
+                c.anchor = GridBagConstraints.CENTER;
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            c.fill = GridBagConstraints.BOTH;
+            gridbag.setConstraints(label, c);
+            panel.add(label);
+            gridbag.setConstraints(tf, c);
+            panel.add(tf);
+            c.gridwidth = 1;
+            gridbag.setConstraints(ok, c);
+            panel.add(ok);
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            gridbag.setConstraints(cancel, c);
+            panel.add(cancel);
+            PopupFactory pf = PopupFactory.getSharedInstance();
+            Point p = this.getLocationOnScreen();
+            int x = p.x + 350; int y = p.y + 250;
+            executePopup = pf.getPopup(this,panel,x,y);
+            executePopup.show();
+        }
+    }
+    private void deleteSB() {
+        String selectedSB = outputView.getSelectedText();
+        if(selectedSB != null) {
+            clear();
+            outputView.append("SB "+selectedSB+" is now executing.\n");
+        } else {
+            GridBagLayout gridbag = new GridBagLayout();
+            GridBagConstraints c = new GridBagConstraints();
+            JPanel panel = new JPanel(gridbag);
+            panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
+            JLabel label = new JLabel("  Enter SB id or cancel and select it from list  ");
+            JTextField tf = new JTextField();
+            JButton ok = new JButton("Ok");
+            ok.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    JButton tmpB = (JButton)e.getSource();
+                    JPanel tmpP = (JPanel)tmpB.getParent();
+                    Component[] tmpC = tmpP.getComponents();
+                    for(int i=0; i<tmpC.length; i++) {
+                        if((tmpC[i].getClass().getName()).equals(
+                            "javax.swing.JTextField")){
+                            
+                            String selectedSB = ((JTextField)tmpC[i]).getText();
+                            outputView.append("SB "+selectedSB+" is now deleted from session list.\n");
+                            // Do something with the selected SB
+                        }
+                    }
+                    deletePopup.hide();
+                }
+            });
+            JButton cancel = new JButton("Cancel");
+            cancel.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    deletePopup.hide();
+                }
+            });
+            c.weightx = 1.0; c.weighty = 1.0;
+                c.anchor = GridBagConstraints.CENTER;
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            c.fill = GridBagConstraints.BOTH;
+            gridbag.setConstraints(label, c);
+            panel.add(label);
+            gridbag.setConstraints(tf, c);
+            panel.add(tf);
+            c.gridwidth = 1;
+            gridbag.setConstraints(ok, c);
+            panel.add(ok);
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            gridbag.setConstraints(cancel, c);
+            panel.add(cancel);
+            PopupFactory pf = PopupFactory.getSharedInstance();
+            Point p = this.getLocationOnScreen();
+            int x = p.x + 350; int y = p.y + 250;
+            deletePopup = pf.getPopup(this,panel,x,y);
+            deletePopup.show();
+        }
+    }
+    private void updateSB(){
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel panel = new JPanel(gridbag);
+        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
+        JLabel label = new JLabel("  ObservingTool will popup....");
+        JTextField tf = new JTextField();
+        JButton ok = new JButton("Ok");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                updatePopup.hide();
+            }
+        });
+        c.weightx = 1.0; c.weighty = 1.0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        gridbag.setConstraints(label, c);
+        panel.add(label);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(ok, c);
+        panel.add(ok);
+        PopupFactory pf = PopupFactory.getSharedInstance();
+        Point p = this.getLocationOnScreen();
+        int x = p.x + 350; int y = p.y + 250;
+        updatePopup = pf.getPopup(this,panel,x,y);
+        updatePopup.show();
+    }
     
     /**
      * Creates a login window and returns the contents that the user 
@@ -335,7 +546,7 @@ public class GUI extends JFrame {
         GridBagConstraints c = new GridBagConstraints();
         JPanel panel = new JPanel(gridbag);
         panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-        JLabel label = new JLabel("Login ID: ");
+        JLabel label = new JLabel("  Login ID: ");
         JTextField tf = new JTextField();
         JButton ok = new JButton("Ok");
         ok.addActionListener(new ActionListener() {
@@ -354,6 +565,7 @@ public class GUI extends JFrame {
                 loginPopup.hide();
             }
         });
+
         JButton cancel = new JButton("Cancel");
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -386,6 +598,47 @@ public class GUI extends JFrame {
         outputView.append("SchedBlocks: \n");
         for(int i=0; i < s.length; i++) {
             outputView.append(s[i] +"\n");
+        }
+    }
+
+    private void mustLogin() {
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel panel = new JPanel(gridbag);
+        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
+        JLabel label = new JLabel("  You must log in first!  ");
+        JTextField tf = new JTextField();
+        JButton ok = new JButton("Ok");
+        ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                errorPopup.hide();
+            }
+        });
+        c.weightx = 1.0; c.weighty = 1.0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        gridbag.setConstraints(label, c);
+        panel.add(label);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(ok, c);
+        panel.add(ok);
+        PopupFactory pf = PopupFactory.getSharedInstance();
+        Point p = this.getLocationOnScreen();
+        int x = p.x + 350; int y = p.y + 250;
+        errorPopup = pf.getPopup(this,panel,x,y);
+        errorPopup.show();
+    }
+
+    public void stopSB() {
+    }
+
+    public void openObservingTool(){ 
+        try {
+            Process process = Runtime.getRuntime().exec("otproto &");
+        } catch(IOException e) {
+            System.out.println("Observing tool didn't pop up..");
+            System.out.println(e.toString());
         }
     }
 

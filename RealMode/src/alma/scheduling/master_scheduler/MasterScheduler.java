@@ -2,7 +2,7 @@
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
- * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved
  * 
  * This library is free software; you can redistribute it and/or
@@ -200,13 +200,14 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 	 * Set the object that provides container services -- done by the container.
 	 * @see alma.acs.component.ComponentLifecycle#setContainerServices(ContainerServices)
 	 */
+    /*
 	public void setContainerServices(ContainerServices containerServices) {
 		if (containerServices == null)
 			throw new IllegalArgumentException (
 			"ContainerServices object cannot be a null.");
 		this.container = containerServices;
 	}
-
+    */
 	/**
 	 * The initialize method completely initializes the scheduling subsystem.
 	 * It cannot be called if the scheduling subsystem is in the "executing"

@@ -2,7 +2,7 @@
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
- * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
  * All rights reserved
  * 
  * This library is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ import java.net.URL;
  */
 public class GUIController implements Runnable {
     private Scheduler scheduler;
-    private String userlogin;
+    private String userlogin="";
     private GUI gui;
 
     public GUIController(Scheduler s) {
