@@ -117,6 +117,7 @@ public class ALMAArchive implements Archive {
 
     private ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
         ProjectStatus ps = null;
+        /*
         String query = new String("/ps:ProjectStatus/ps:ObsProjectRef[@entityId='"+
                 p.getObsProjectEntity().getEntityId()+"']");
         String schema = new String("ProjectStatus");
@@ -145,6 +146,17 @@ public class ALMAArchive implements Archive {
                 ps = createDummyProjectStatus(p);
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            throw new SchedulingException(e);
+        }
+        */
+        String ps_id = p.getProjectStatusRefIdWorkaround();
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
+            System.out.println("PROJECT STATUS: "+ xml.xmlString);
+            ps = (ProjectStatus) entityDeserializer.deserializeEntity(xml, 
+                   Class.forName("alma.entity.xmlbinding.projectstatus.ProjectStatus"));
+        } catch(Exception e) {
             e.printStackTrace();
             throw new SchedulingException(e);
         }
@@ -303,7 +315,7 @@ public class ALMAArchive implements Archive {
                 QueryResult res = cursor.next();
                 try {
                     XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
-                    System.out.println("PROJECT: "+ xml.xmlString);
+                    //System.out.println("PROJECT: "+ xml.xmlString);
                     ObsProject obsProj= (ObsProject)
                         entityDeserializer.deserializeEntity(xml, Class.forName(
                             "alma.entity.xmlbinding.obsproject.ObsProject"));
@@ -426,6 +438,18 @@ public class ALMAArchive implements Archive {
     }
 
 
+    /**
+      *
+      */
+    public void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
+        try {
+            XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
+            System.out.println("PS: "+xml.xmlString);
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new SchedulingException (e);
+        }
+    }
     /**
      * Queries the archive for all the new projects stored after the given time,
      * 'time'. They are returned, coverted to the Scheduling's project object.

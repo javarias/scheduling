@@ -41,7 +41,7 @@ import alma.scheduling.Define.Program;
 import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
-
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 /**
  *
  * @author Sohaila Lucero
@@ -99,6 +99,11 @@ public class ALMAProjectManager extends ProjectManager {
             projs = archive.getAllProject();
             logger.info("SCHEDULING: getting projectstatus'");
             //psQueue.add(archive.getAllProjectStatus());
+            for(int i=0; i < projs.length;i++){
+                ProjectStatus ps = ProjectUtil.map(projs[i], new DateTime(System.currentTimeMillis()));
+                psQueue.add(ps);
+                archive.updateProjectStatus(ps);
+            }
             logger.info("SCHEDULING: projects = "+projs.length);
             for(int i=0; i < projs.length;i++) {
                 logger.info("SCHEDULING: sched blocks in Project ( "+projs[i].getId()+" ) = "+
