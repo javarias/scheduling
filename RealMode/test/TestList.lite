@@ -1,4 +1,3 @@
-PROLOGUE prologue
 1 test1 testschedmessages
 2 test2 testpipelinestatus
 3 test3 testsbsubqueue
@@ -9,10 +8,4 @@ PROLOGUE prologue
 8 test8 teststatus
 9 test9 testcomponentstate
 10 test10 testppr
-11 test11 testschedsystem
-12 test12 testalmaarchive
-13 test13 testschedreceivers
-14 test14 testprojectqueue
-15 test15 testschedpublisher
-16 test16 testcontrolsimulator
-EPILOGUE epilogue
+11 test11 testprojectqueue
