@@ -1,0 +1,20 @@
+1 - SCHEDULING: priority is highest
+1 - SCHEDULING: priority is higher
+1 - SCHEDULING: priority is high
+1 - SCHEDULING: priority is mediumPlus
+1 - SCHEDULING: priority is medium
+1 - SCHEDULING: priority is mediumMinus
+1 - SCHEDULING: priority is low
+1 - SCHEDULING: priority is lower
+1 - SCHEDULING: priority is lowest
+1 - SCHEDULING: priority is background
+1 - SCHEDULING: is priority low? false
+1 - SCHEDULING: is priority background? true
+1 - SCHEDULING: priority is low
+1 - SCHEDULING: is priority low? true
+1 - SCHEDULING: is priority background? false
+1 - SCHEDULING: priority is medium
+1 - SCHEDULING: priority is mediumPlus
+1 - SCHEDULING: priority is highest
+1 - SCHEDULING:java.lang.UnsupportedOperationException: Cannot change the state of a constant object.
+1 - SCHEDULING: priority is highest

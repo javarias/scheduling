@@ -1,0 +1,13 @@
+1 - state is waiting
+1 - state is ready
+1 - state is running
+1 - is state running? true
+1 - is state complete? false
+1 - state is complete
+1 - is state RUNNING? false
+1 - is state COMPLETE? true
+1 - state is aborted
+1 - state is ready
+1 - state is waiting
+1 - java.lang.UnsupportedOperationException: Cannot change the state of a constant object.
+1 - state is waiting

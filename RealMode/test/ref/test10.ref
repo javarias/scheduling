@@ -1,0 +1,51 @@
+1 - SCHEDULING: function PipelineProcessingRequest()
+1 - SCHEDULING: function createEntity()
+1 - SCHEDULING: function setEntity()
+1 - SCHEDULING: function setComment(string)
+1 - SCHEDULING: function getComment()
+1 - SCHEDULING: comment = This is a test
+1 - SCHEDULING: function setImagingProcedureName(string)
+1 - SCHEDULING: function getImagingProcedureName()
+1 - SCHEDULING: Image procedure name = test
+1 - SCHEDULING: function setEncryptedId(string)
+1 - SCHEDULING: function setId() with 'ppr1 id'
+1 - SCHEDULING: function setId() 'another id'
+1 - SCHEDULING: should get error coz we've already set the id
+1 - SCHEDULING: error=java.lang.Exception: Can not change the UID!
+1 - SCHEDULING: function getId()
+1 - SCHEDULING: ppr1's id =ppr1 id
+1 - SCHEDULING: function setDocumentVersion(string)
+1 - SCHEDULING: function getDocumentVersion()
+1 - SCHEDULING: version=1.0
+1 - SCHEDULING: function setSchemaVersion(string)
+1 - SCHEDULING: function getSchemaVersion()
+1 - SCHEDULING: version=1.0
+1 - SCHEDULING: function setProjectReference(EntityT)
+1 - SCHEDULING: function setProjectReferenceId(string)
+1 - SCHEDULING: function setProjectReferenceTypeName(string)
+1 - SCHEDULING: function getProjectReferenceTypeName()
+1 - SCHEDULING: name=TestProjectName
+1 - SCHEDULING: function setProjectReferenceDocumentVersion(string)
+1 - SCHEDULING: function getProjectReferenceDocumentVersion()
+1 - SCHEDULING: name=1.0
+1 - SCHEDULING: function setRequestStatus(string) with 'queued'
+1 - SCHEDULING: getRequestStatusString()
+1 - SCHEDULING: status=queued
+1 - SCHEDULING: function setRequestStatus(string) with 'running'
+1 - SCHEDULING: getRequestStatusString()
+1 - SCHEDULING: status=running
+1 - SCHEDULING: function setRequestStatus(string) with 'completed'
+1 - SCHEDULING: getRequestStatusString()
+1 - SCHEDULING: status=completed
+1 - SCHEDULING: function setCompletionStatus(string) with 'submitted'
+1 - SCHEDULING: getCompletionStatusString()
+1 - SCHEDULING: status=submitted
+1 - SCHEDULING: function setCompletionStatus(string) with 'incomplete'
+1 - SCHEDULING: getCompletionStatusString()
+1 - SCHEDULING: status=incomplete
+1 - SCHEDULING: function setCompletionStatus(string) with 'complete-failed'
+1 - SCHEDULING: getCompletionStatusString()
+1 - SCHEDULING: status=complete_failed
+1 - SCHEDULING: function setCompletionStatus(string) with 'complete-succeeded'
+1 - SCHEDULING: getCompletionStatusString()
+1 - SCHEDULING: status=complete_succeeded

@@ -1,0 +1,9 @@
+1 - SCHEDULING: t1 = ----------T--:--:--
+1 - SCHEDULING: t2 = ----------T--:--:--
+1 - SCHEDULING: ------- = -------------
+1 - SCHEDULING: x = -------------
+1 - SCHEDULING: x as FITS is ----------T--:--:--
+1 - SCHEDULING: x2 is ----------T--:--:--
+1 - SCHEDULING: y1 = ----------T--:--:--
+1 - SCHEDULING: y2 = ----------T--:--:--
+1 - SCHEDULING: java.lang.IllegalArgumentException: Invalid time format: ---------T-:--

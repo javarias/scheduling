@@ -75,7 +75,12 @@ public class TestSchedReceivers {
 
     public void createSuppliers() {
         telcalevents = new TestSchedSupplier();
+        controlSup = new SimpleSupplier ( alma.Control.CHANNELNAME.value,
+                    alma.Control.ExecBlockEvent.class);
+        pipelineSup = new SimpleSupplier ( alma.pipelinescience.CHANNELNAME.value,
+                    alma.pipelinescience.ScienceProcessingRequestEnd.class );
         
+        /*
         String[] names = new String[3];
         names[SimpleSupplier.CHANNELPOS] = alma.Control.CHANNELNAME.value;
         names[SimpleSupplier.TYPEPOS] = alma.Control.EXECEVENTS.value;
@@ -86,25 +91,28 @@ public class TestSchedReceivers {
         names[SimpleSupplier.TYPEPOS] = "alma.pipelinescience.ScienceProcessingRequestEnd";
         names[SimpleSupplier.HELPERPOS] = "alma.pipelinescience.ScienceProcessingRequestEndHelper";
         pipelineSup = new SimpleSupplier(names);
+        */
 
     }
     public void createReceivers() {
         try {
             telcal1 = new PointingReducedEventReceiver(container);
-            telcal1.addSubscription("PointingReducedEvent");
+            telcal1.addSubscription(alma.TelCalPublisher.PointingReducedEvent.class);
+            //telcal1.addSubscription("PointingReducedEvent");
             telcal1.consumerReady();
             telcal2 = new FocusReducedEventReceiver(container);
-            telcal2.addSubscription("FocusReducedEvent");
+            telcal2.addSubscription(alma.TelCalPublisher.FocusReducedEvent.class);
+            //telcal2.addSubscription("FocusReducedEvent");
             telcal2.consumerReady();
             control1 = new ControlEventReceiver(container, new ALMAPipeline(true, container),
                     new ALMAArchive(true, container), new MasterSBQueue());
-            control1.addSubscription(alma.Control.EXECEVENTS.value);
+            control1.addSubscription(alma.Control.EXECEVENTS.class);
             control1.consumerReady();
             //control2 = new SchedulerEventReceiver();
             pipeline1 = new PipelineEventReceiver(container, new ALMAPipeline(true, container),
                 new ALMAArchive(true,container));
             pipeline1.addSubscription(
-                "alma.pipelinescience.ScienceProcessingRequestEnd");
+                alma.pipelinescience.ScienceProcessingRequestEnd.class);
             pipeline1.consumerReady();
         } catch (Exception e){
         }
@@ -128,6 +136,7 @@ public class TestSchedReceivers {
     }
     
     public static void main(String[] args) {
+        System.out.println("This is the receivers test.");
         try {
             String name = "TestReceivers";
             String managerLoc = System.getProperty("ACS.manager");

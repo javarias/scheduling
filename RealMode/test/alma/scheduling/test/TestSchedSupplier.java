@@ -39,6 +39,7 @@ public class TestSchedSupplier { // extends Supplier {
     private SimpleSupplier sup2;
 
     public TestSchedSupplier() {
+        /*
         String[] names = new String[3];
         names[SimpleSupplier.CHANNELPOS] = alma.TelCalPublisher.CHANNELNAME.value;
         names[SimpleSupplier.TYPEPOS] = new String(
@@ -46,18 +47,22 @@ public class TestSchedSupplier { // extends Supplier {
         //    "alma.TelCalPublisher.PointingReducedEvent");
         names[SimpleSupplier.HELPERPOS] = new String(
             "alma.TelCalPublisher.PointingReducedEventHelper");
+        */
         //create a supplier for the PointingReducedEvent
-        sup1 = new SimpleSupplier(names);
+        sup1 = new SimpleSupplier ( alma.TelCalPublisher.CHANNELNAME.value,
+                alma.TelCalPublisher.PointingReducedEvent.class );
+                
         System.out.println("SCHED_TEST: sup1 created"); 
-
+        /*
         names[SimpleSupplier.TYPEPOS] = new String(
             "FocusReducedEvent");
             //"alma.TelCalPublisher.FocusReducedEvent");
         names[SimpleSupplier.HELPERPOS] = new String(
             "alma.TelCalPublisher.FocusReducedEventHelper");
-
+        */
         //create a supplier for the FocusReducedEvent
-        sup2 = new SimpleSupplier(names);
+        sup2 = new SimpleSupplier ( alma.TelCalPublisher.CHANNELNAME.value,
+                alma.TelCalPublisher.FocusReducedEvent.class );
         System.out.println("SCHED_TEST: sup2 created"); 
     }
 

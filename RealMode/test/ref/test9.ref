@@ -1,0 +1,12 @@
+1 - SCHEDULING: state is new
+1 - SCHEDULING: state is initialized
+1 - SCHEDULING: state is executing
+1 - SCHEDULING: is state EXECUTING? true
+1 - SCHEDULING: is state STOPPED? false
+1 - SCHEDULING: is state EXECUTING? false
+1 - SCHEDULING: is state STOPPED? true
+1 - SCHEDULING: state is error
+1 - SCHEDULING: state is initialized
+1 - SCHEDULING: state is new
+1 - SCHEDULING:java.lang.UnsupportedOperationException: Cannot change the state of a constant object.
+1 - SCHEDULING: state is new

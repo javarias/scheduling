@@ -1,8 +1,0 @@
-status is complete
-status is running
-status is queued
-is status RUNNING? false
-is status QUEUED? true
-status is complete
-java.lang.UnsupportedOperationException: Cannot change the state of a constant object.
-status is complete

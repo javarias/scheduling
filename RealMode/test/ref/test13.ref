@@ -1,0 +1,13 @@
+1 - This is the receivers test.
+1 - FINE: ready to talk with components!
+1 - INFO: SCHED_TEST: Testing Receivers!
+1 - SCHED_TEST: sup1 created
+1 - SCHED_TEST: sup2 created
+1 - SCHEDULING: The PipelineProxy has been constructed.
+1 - FINE: component ARCHIVE_CONNECTION retrieved successfully.
+1 - FINE: SCHEDULING: The ALMAArchive has been constructed.
+1 - #########ControlEventReceiver created######
+1 - SCHEDULING: The PipelineProxy has been constructed.
+1 - FINE: SCHEDULING: The ALMAArchive has been constructed.
+1 - INFO: SCHEDULING: PipelineEventListener created.
+1 - SCHED_TEST: Published TelCalEvents

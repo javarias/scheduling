@@ -2,8 +2,9 @@
 
 # Shutdown acs
 export ACS_INSTANCE=`cat sched_acs_instance`
-acsStopContainer bilboContainer  >&  /dev/null
-acsStopContainer frodoContainer  >&  /dev/null
-maciManagerShutdown  >&  /dev/null
-acsStopORBSRVC  >&  /dev/null
+#acsStopContainer bilboContainer  >&  /dev/null
+#acsStopContainer frodoContainer  >&  /dev/null
+#maciManagerShutdown  >&  /dev/null
+#acsStopORBSRVC  >&  /dev/null
+acsStop
 acsdataClean

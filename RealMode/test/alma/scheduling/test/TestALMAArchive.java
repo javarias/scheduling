@@ -24,7 +24,6 @@
  * 
  */
 package alma.scheduling.test;
-
 import java.util.logging.Logger;
 
 import alma.acs.entityutil.*;
@@ -49,6 +48,7 @@ import alma.Control.ExecBlockEvent;
 public class TestALMAArchive {
 
     public static void main(String[] args) {
+        System.out.println("This is the archive test.");
         try {
             String name = "Test ALMAArchive";
             String managerLoc = System.getProperty("ACS.manager");
@@ -176,8 +176,6 @@ public class TestALMAArchive {
             System.out.println("SCHED_TEST: Exception: " +e.toString() );
             System.exit(1);
         }
-        System.exit(0);
+        //System.exit(0);
     }
-
-
 }

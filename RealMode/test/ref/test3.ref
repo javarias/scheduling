@@ -1,0 +1,14 @@
+1 - SCHED_TEST: function new SBSubQueue()
+1 - SCHED_TEST: function addSchedBlock(sb)
+1 - SCHEDULING: Adding sbs to queue
+1 - SCHED_TEST: function getSchedBlock()
+1 - SCHED_TEST: function getIds()
+1 - SCHEDULING SUB QUEUE size = 1
+1 - SCHED_TEST: function getSchedBlock(int)
+1 - SCHED_TEST: function isInSubQueue(id) with id=sb2
+1 - SCHED_TEST: should be false!
+1 - SCHED_TEST: false
+1 - SCHED_TEST: function isInSubQueue(id) with id=sb1
+1 - SCHED_TEST: should be true!
+1 - SCHEDULING: Sb ids match!
+1 - SCHED_TEST: true

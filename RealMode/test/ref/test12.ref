@@ -1,0 +1,21 @@
+1 - This is the archive test.
+1 - FINE: ready to talk with components!
+1 - FINE: component ARCHIVE_CONNECTION retrieved successfully.
+1 - FINE: SCHEDULING: The ALMAArchive has been constructed.
+1 - INFO: SCHED_TEST: function getSchedBlock() 
+1 - INFO: SCHED_TEST: function getSchedBlock(String id) 
+1 - INFO: SCHED_TEST: sb with id=uid://X----------------/X-------- has version=1
+1 - INFO: SCHED_TEST: function updateSchedBlock(ExecBlockEvent e) 
+1 - INFO: SCHEDULING: sb id=uid://X----------------/X--------
+1 - INFO: SCHEDULING: ** This is where the sb will be linked to its execblock **
+1 - INFO: SCHED_TEST: sb with id=uid://X----------------/X-------- has version=1
+1 - INFO: SCHED_TEST: function updateSchedBlock(SchedBlock sb) 
+1 - INFO: SCHED_TEST: sb with id=uid://X----------------/X-------- has version=1
+1 - INFO: SCHED_TEST: function getProject() 
+1 - INFO: SCHED_TEST: function getProject(String id)
+1 - INFO: project is null...
+1 - INFO: SCHED_TEST: function addPipelineProcessingRequest(PipelineProcessingRequest)
+1 - INFO: SCHED_TEST: function getPipelineProcessingRequest()
+1 - INFO: SCHED_TEST: function getPipelineProcessingRequest(String id)
+1 - INFO: SCHED_TEST: function updatePipelineProcessingRequest(PipelineProcessingRequest ppr)
+1 - INFO: SCHED_TEST: pipelineprocessingrequest with id=uid://X----------------/X-------- has version=null

@@ -2,11 +2,11 @@
 
 export ACS_INSTANCE=`cat sched_acs_instance`
 
-archiveCleanMA
+#archiveCleanMA
 
-archiveLoadSchema
+#archiveLoadSchema
 
-otprotoBatch targets.txt  >&  sched_almaOT.log
+#otprotoBatch targets.txt  >&  sched_almaOT.log
 
 acsStartJava -endorsed alma.scheduling.test.SchedSystemTest
 

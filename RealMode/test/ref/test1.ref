@@ -1,0 +1,24 @@
+1 - SCHED_TEST: function MessageQueue()
+1 - SCHEDULING: Message queue created
+1 - SCHED_TEST: function Message()
+1 - SCHED_TEST: function MessageQueue.addMessage(Message m)
+1 - SCHED_TEST: Should get error coz it has no entity!
+1 - SCHED_TEST: java.lang.Exception: Cannot add a message that has no id!
+1 - SCHED_TEST: function Message(id, thread)
+1 - SCHED_TEST: function MessageQueue.addMessage(Message m) no error
+1 - SCHED_TEST: function MessageQueue.addMessage(String id, Thread timer)
+1 - SCHED_TEST: function MessageQueue.getMessage(id)
+1 - SCHED_TEST: Message = Reply=null MessageId=tmp id 2
+1 - SCHED_TEST: function MessageQueue.size()
+1 - SCHED_TEST: size=2
+1 - SCHED_TEST: function MessageQueue.removeMessage(id)
+1 - SCHED_TEST: function Message.setReply()
+1 - SCHED_TEST: function Message.setThread()
+1 - SCHED_TEST: Message.getMessageEntity()
+1 - SCHED_TEST: got entity
+1 - SCHED_TEST: Message.getMessageId()
+1 - SCHED_TEST: id = tmp id 2
+1 - SCHED_TEST: function Message.getReply()
+1 - SCHED_TEST: reply = reply 1
+1 - SCHED_TEST: fundtion Message.getThread()
+1 - SCHED_TEST: got thread 
