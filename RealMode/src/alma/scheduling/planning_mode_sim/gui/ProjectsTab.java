@@ -838,6 +838,7 @@ public class ProjectsTab extends JScrollPane {
      * I don't know why I have this function...
      * @param s The string that has lowercase info about the weather condition
      * @return String The weather condition starting with a capatial letter..
+     */
     public String getWeatherCondition(String s) {
 
         if(s.equals("exceptional") ){
@@ -860,6 +861,5 @@ public class ProjectsTab extends JScrollPane {
             return "Any";   
         }
     }
-     */
     
 }
