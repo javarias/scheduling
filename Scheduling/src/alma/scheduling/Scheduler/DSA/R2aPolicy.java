@@ -46,37 +46,93 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R2.
  * 
- * @version $Id: R2aPolicy.java,v 1.3 2004/11/23 21:22:07 sslucero Exp $
+ * @version $Id: R2aPolicy.java,v 1.4 2005/01/10 17:51:27 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R2aPolicy extends PolicyType {
 
+    /**
+      * policy's name
+      */
 	static public final String name = "R2aPolicy"; 
-	
-	// The basic data.
+	/**
+      * queue of sbs
+      */
 	private SBQueue queue;
+    /**
+      * the clock
+      */
 	private Clock clock;
+    /**
+      * the logger
+      */
 	private Logger log;
+    /**
+      * The policy
+      */
 	private Policy policy;
+    /**
+      * Telescope's info
+      */
 	private Telescope telescope;
+    /**
+      * The project manager object
+      */
 	private ProjectManager projectManager;
+    /**
+      * subarray's id
+      */
 	private int subarrayId;
 	
-	// The weighting factors.
+    /**
+      * elevation position weight
+      */
 	private double positionElW;
+    /**
+      * max position weight
+      */
 	private double positionMaxW;
+    /**
+      * weather weight
+      */
 	private double weatherW;
+    /**
+      * priority weight
+      */
 	private double priorityW;
+    /**
+      * same project same band weight
+      */
 	private double samePSameBW;
+    /**
+      * same project diff band weight
+      */
 	private double samePDiffBW;
+    /**
+      * diff project same band weight
+      */
 	private double diffPSameBW;
+    /**
+      * diff project diff band weight
+      */
 	private double diffPDiffBW;
+    /**
+      * new project weight
+      */
 	private double newPW;
+    /**
+      * one sb weight
+      */
 	private double oneSBW;
 	
-	// The array of scheduling units.
+	/**
+      *The array of scheduling units.
+      */
 	private R2aUnit[] unit;
 	
+    /**
+      * The index of the best sb
+      */
 	private int bestNumber;
 	
 	
@@ -267,7 +323,9 @@ class R2aPolicy extends PolicyType {
 		// Do we have visible targets? if not, then done.
 		int i = 0;
 		for (; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
+			if (!unit[i].isReady()) {
+                continue;
+            }
 			if (unit[i].getPositionEl() > 0.0) {
 				break;
 			}
@@ -279,39 +337,60 @@ class R2aPolicy extends PolicyType {
 		// Do we have any favorable weather conditions? if not then done.
 		// But, we only consider visible targets.
 		for (; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
-			if (unit[i].getPositionEl() <= 0.0) continue;
+			if (!unit[i].isReady()){
+                continue;
+            }
+			if (unit[i].getPositionEl() <= 0.0){
+                continue;
+            }
 			if (unit[i].getWeather() > 0.0) {
 				break;
 			}
 		}
-		if (i == unit.length)
+		if (i == unit.length){
 			return NothingCanBeScheduled.BadWeather;		
+        }
 		
 		// Are the targets not in optimal position? if not, then done.
 		for (; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
-			if (unit[i].getPositionEl() <= 0.0) continue;
-			if (unit[i].getWeather() <= 0.0) continue;
+			if (!unit[i].isReady()) {
+                continue;
+            }
+			if (unit[i].getPositionEl() <= 0.0){
+                continue;
+            }
+			if (unit[i].getWeather() <= 0.0){
+                continue;
+            }
 			if (unit[i].getPositionMax() > 0.0) {
 				break;
 			}
 		}
-		if (i == unit.length)
+		if (i == unit.length){
 			return NothingCanBeScheduled.BetterToWait;
+        }
 
 		// Are the scores too low?
 		for (; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
-			if (unit[i].getPositionEl() <= 0.0) continue;
-			if (unit[i].getWeather() <= 0.0) continue;
-			if (unit[i].getPositionMax() <= 0.0) continue;
+			if (!unit[i].isReady()) {
+                continue;
+            }
+			if (unit[i].getPositionEl() <= 0.0) {
+                continue;
+            }
+			if (unit[i].getWeather() <= 0.0) {
+                continue;
+            }
+			if (unit[i].getPositionMax() <= 0.0) {
+                continue;
+            }
 			if (unit[i].getRank() != 0 ) {
 				break;
 			}
 		}
-		if (i == unit.length)
+		if (i == unit.length){
 			return NothingCanBeScheduled.LowScores;		
+        }
 		
 		return NothingCanBeScheduled.Other;
 	}
@@ -325,8 +404,9 @@ class R2aPolicy extends PolicyType {
 			int a;
 			double b;
 		}
-		if (unit.length < 2)
+		if (unit.length < 2) {
 			return unit;
+        }
 		
 		// Get anything that can be scheduled.
 		Pair[] copy = new Pair [unit.length];
@@ -365,8 +445,9 @@ class R2aPolicy extends PolicyType {
 
 		// Return the top N scheduling units.
 		R2aUnit[] out = new R2aUnit [bestSize];
-		for (int i = 0; i < bestSize; ++i)
+		for (int i = 0; i < bestSize; ++i) {
 			out[i] = unit[copy[i].a];
+        }
 		
 		return out;
 	}
@@ -375,7 +456,9 @@ class R2aPolicy extends PolicyType {
 		success();
 		rank();		
 		for (int i = 0; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
+			if (!unit[i].isReady()) {
+                continue;
+            }
 			unit[i].setScore(unit[i].getSuccess() * unit[i].getRank());
 		}
 	}
@@ -391,25 +474,33 @@ class R2aPolicy extends PolicyType {
 		String currentProjectId = array.getCurrentProject();
 		FrequencyBand currentBand = array.getCurrentFrequencyBand();
 		for (int i = 0; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
+			if (!unit[i].isReady()) { 
+                continue;
+            }
 			u = unit[i];
-			if (u.getSuccess() == 0.0)
+			if (u.getSuccess() == 0.0) {
 				u.setRank(0.0);
-			else {
+            } else {
 				setState(u,currentProjectId,currentBand);
 				x = priorityW * u.getPriority();
-				if (u.isSameProjectSameBand())
+				if (u.isSameProjectSameBand()) {
 					x += samePSameBW;
-				if (u.isSameProjectDifferentBand())
+                }
+				if (u.isSameProjectDifferentBand()){
 					x += samePDiffBW;
-				if (u.isDifferentProjectSameBand())
+                }
+				if (u.isDifferentProjectSameBand()){
 					x += diffPSameBW;
-				if (u.isDifferentProjectDifferentBand())
+                }
+				if (u.isDifferentProjectDifferentBand()) {
 					x += diffPDiffBW;
-				if (u.isNewProject())
+                }
+				if (u.isNewProject()){
 					x += newPW;
-				if (u.isOneSBRemaining())
+                }
+				if (u.isOneSBRemaining()){
 					x += oneSBW;
+                }
 				u.setRank(x);
                 System.out.println("Rank == "+x);
 			}
@@ -423,7 +514,9 @@ class R2aPolicy extends PolicyType {
 		SB sb = null;
 		R2aUnit u = null;
 		for (int i = 0; i < unit.length; ++i) {
-			if (!unit[i].isReady()) continue;
+			if (!unit[i].isReady()) {
+                continue;
+            }
 			u = unit[i];
 			sb = u.getSB();
 			pEl = positionEl(u);
@@ -477,20 +570,23 @@ class R2aPolicy extends PolicyType {
 	}
 	
 	private double positionEl(R2aUnit u) {
-		if (u.isVisible(clock.getDateTime()))
+		if (u.isVisible(clock.getDateTime())) {
 			return Math.sin(u.getElevation(clock.getDateTime(),telescope.getSite()));
+        }
 		return 0.0;
 	}
 
 	private double positionMax(R2aUnit u) {
 		// First, we make sure the source is visible.
 		DateTime t = clock.getDateTime();
-		if (!u.isVisible(t))
+		if (!u.isVisible(t)) {
 			return 0.0;
+        }
 		// Second, make sure it is still visible at the end of the observing time.
 		t.add(u.getSB().getMaximumTimeInSeconds());
-		if (!u.isVisible(t))
+		if (!u.isVisible(t)){
 			return 0.0;
+        }
 		// Ok, now the idea is to give a high weight to a position if it is close 
 		// to the maximum elevation of the source.
 		// We compute a delta; its units are hours.  This delta is the absolute value of 
@@ -500,9 +596,15 @@ class R2aPolicy extends PolicyType {
 		double delta = Math.abs((u.getLstMax() * radToHour) - 
 				(u.getSB().getMaximumTimeInSeconds() / 7200.0) - 
 				clock.getTimeOfDay());
-		if (0.0 <= delta && delta < 0.5) return 1.0;
-		if (0.5 <= delta && delta < 1.0) return 0.9;
-		if (1.0 <= delta && delta < 1.5) return 0.8;
+		if (0.0 <= delta && delta < 0.5) {
+            return 1.0;
+        }
+		if (0.5 <= delta && delta < 1.0) {
+            return 0.9;
+        }
+		if (1.0 <= delta && delta < 1.5) {
+            return 0.8;
+        }
 		return 0.0;
 		
 	}
@@ -511,8 +613,9 @@ class R2aPolicy extends PolicyType {
 		double x = 1.0;
 		try {
 			WeatherCondition w = sb.getWeatherConstraint();
-			if (w != null)
+			if (w != null){
 				x =  w.evaluate();
+            }
 		} catch (Exception err) {
 			err.printStackTrace();
 			//System.exit(0);
