@@ -35,7 +35,7 @@ package alma.scheduling.Define;
  * returns all accumulated weather data in the form of an array
  * of increasing times.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: WeatherTrend.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherTrend {

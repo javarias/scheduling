@@ -35,7 +35,7 @@ package alma.scheduling.Define;
  * <p>
  * This class is not implemented at this time.
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: CalibrationData.java,v 1.2 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class CalibrationData {

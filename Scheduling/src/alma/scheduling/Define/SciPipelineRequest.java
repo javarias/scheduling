@@ -40,7 +40,7 @@ package alma.scheduling.Define;
  * <li>	parms -- an array of parameters needed to control the data reduction 
  * </ul>
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: SciPipelineRequest.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class SciPipelineRequest {

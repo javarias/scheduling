@@ -31,7 +31,7 @@ import java.util.ArrayList;
 /**
  * description
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: ObservedSession.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class ObservedSession {

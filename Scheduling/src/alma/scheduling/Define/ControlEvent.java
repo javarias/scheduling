@@ -33,7 +33,7 @@ package alma.scheduling.Define;
  * it will be created by the Scheduling Subsystem's ControlSimulator.
  *
  * @author Sohaila Lucero
- * @version 1.0 Aug 5, 2004
+ * @version $Id: ControlEvent.java,v 1.6 2004/11/23 20:41:21 sslucero Exp $
  */
 public class ControlEvent {
     private String ebId;

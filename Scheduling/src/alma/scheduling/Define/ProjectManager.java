@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The ProjectManager interface defines public methods needed by various
  * components, both real and simulated.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: ProjectManager.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface ProjectManager {

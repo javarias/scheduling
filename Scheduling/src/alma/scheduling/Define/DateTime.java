@@ -50,7 +50,7 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: DateTime.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {

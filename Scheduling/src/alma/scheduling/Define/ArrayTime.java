@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * (See ftp://ftp.omg.org/pub/docs/formal/97-12-21.pdf)
  * It is the number of 100 ns since 1582-10-15 00:00:00.
  * 
- * @version 1.00  Jun 6, 2003
+ * @version $Id: ArrayTime.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class ArrayTime {

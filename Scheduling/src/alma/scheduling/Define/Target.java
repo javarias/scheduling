@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * coordinates of its center.  The area itself may be circular, rectangular,
  * or it may be defined by a list of coordinate positions.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Target.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Target {

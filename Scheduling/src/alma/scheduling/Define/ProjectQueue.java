@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * The ProjectQueue class is a queue of projects, held in memory,
  * that can be accessed and updated by multiple threads,
  *
- * @version 1.0 Sept. 14, 2004
+ * @version $Id: ProjectQueue.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectQueue {

@@ -32,7 +32,7 @@ package alma.scheduling.Define;
  * mode it will be created by the Scheduling Subsystem's PipelineSimulator.
  *
  * @author Sohaila Lucero
- * @version 1.0 Aug 5, 2004
+ * @version $Id: PipelineEvent.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  */
 public class PipelineEvent {
     /*

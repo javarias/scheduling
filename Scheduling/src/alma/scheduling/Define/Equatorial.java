@@ -28,7 +28,7 @@ package alma.scheduling.Define;
 /**
  * Equatorial coordinates -- right ascension, declination, and the equinox.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Equatorial.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Equatorial {

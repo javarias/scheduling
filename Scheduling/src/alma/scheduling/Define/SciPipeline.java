@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * from the Science Pipeline.  These include methods to start the science
  * pipeline and to inquire about the status of an outstanding request. 
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: SciPipeline.java,v 1.2 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface SciPipeline {

@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * (either blocking or non-blocking).  If the logical expression
  * is true, the PI is notified.  
  * 
- * @version 1.00  Jun 4, 2003
+ * @version $Id: NotifyPI.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class NotifyPI {

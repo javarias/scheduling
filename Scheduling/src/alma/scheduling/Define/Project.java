@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An Project is an observing project as viewed by the
  * scheduling subsystem. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Project.java,v 1.6 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Project implements ProjectMember {

@@ -32,7 +32,7 @@ package alma.scheduling.Define;
  * location, altitude, number of antennas, properties of those antennas,
  * minimum angle of elevation and supported frequency bands. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: SiteCharacteristics.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class SiteCharacteristics {

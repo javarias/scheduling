@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The Archive interface defines the interface to the archive needed
  * by the scheduling subsystem. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Archive.java,v 1.6 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface Archive {

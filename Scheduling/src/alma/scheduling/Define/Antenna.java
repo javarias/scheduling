@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * <li> its standby frequency band and standby frequency.
  * </ul>
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Antenna.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Antenna {

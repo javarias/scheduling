@@ -54,7 +54,7 @@ package alma.scheduling.Define;
  * the "ready", "waiting", or "running" state.  If the unit's end time
  * has been set the state is either "complete" or "aborted".  
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Status.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Status {

@@ -37,7 +37,7 @@ package alma.scheduling.Define;
  * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
  * object that designates why nothing could be scheduled.
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: BestSB.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class BestSB {

@@ -82,7 +82,7 @@ package alma.scheduling.Define;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: WeatherCondition.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherCondition {

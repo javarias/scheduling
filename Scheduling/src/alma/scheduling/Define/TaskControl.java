@@ -46,7 +46,7 @@ package alma.scheduling.Define;
  * The subordinate task can be stopped either by setting a hard stop time
  * or by setting the stop flag. All of the indicated times may be null.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: TaskControl.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class TaskControl {

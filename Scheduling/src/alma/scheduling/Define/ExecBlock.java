@@ -36,7 +36,7 @@ import java.io.PrintStream;
  * that executed it. This is a wrapper class for the actual ExecBlock
  * that is defined by the Control system.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: ExecBlock.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class ExecBlock implements ProjectMember {

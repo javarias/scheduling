@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The TimeInterval is a utility class used to define an interval of time
  * between two DateTime objects. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: TimeInterval.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class TimeInterval {

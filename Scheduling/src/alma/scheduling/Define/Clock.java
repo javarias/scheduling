@@ -36,7 +36,7 @@ import alma.scheduling.Define.ArrayTime;
  * setting alarms, i.e. methods that provide for a notification at a particular 
  * time.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Clock.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface Clock {

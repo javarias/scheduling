@@ -31,7 +31,7 @@ import java.io.PrintStream;
  * A ProjectMember is a member of the project tree; it is implemented 
  * by the Project, Program, SB, and ExecBlock classes.  
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: ProjectMember.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface ProjectMember {

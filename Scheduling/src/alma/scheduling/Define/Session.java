@@ -29,6 +29,7 @@ package alma.scheduling.Define;
 import java.util.Vector;
 
 /**
+  * @version $Id: Session.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class Session {

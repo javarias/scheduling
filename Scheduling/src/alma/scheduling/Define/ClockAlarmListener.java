@@ -32,7 +32,7 @@ import alma.scheduling.Define.DateTime;
  * by the Clock class whenever an alarm expires.  The object
  * implementing this interface must be provided when setting an alarm.
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: ClockAlarmListener.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface ClockAlarmListener {

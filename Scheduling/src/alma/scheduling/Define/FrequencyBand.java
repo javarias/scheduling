@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The FrequencyBand class specifies the name and the range of frequencies
  * in a particular frequency band.  
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: FrequencyBand.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class FrequencyBand {

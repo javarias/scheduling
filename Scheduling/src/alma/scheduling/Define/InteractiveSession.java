@@ -41,7 +41,7 @@ package alma.scheduling.Define;
  * <li>startSciPipeline -- start the science pipeline
  * </ul> 
  * 
- * @version 1.5 September 16, 2004
+ * @version $Id: InteractiveSession.java,v 1.2 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface InteractiveSession {

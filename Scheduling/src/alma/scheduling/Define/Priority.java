@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * 		<li> BACKGROUND	(1)
  * </ul>
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Priority.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Priority {

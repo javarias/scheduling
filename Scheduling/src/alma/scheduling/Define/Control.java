@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Control.java,v 1.7 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface Control {

@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The current time based on a 24-hour clock.
  * The main use of this class is in conjunction with the DateTime class.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Time.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Time {

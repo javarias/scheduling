@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * algorithm to make its decisions.  It includes the name, a
  * weighting factor, and a definition.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: PolicyFactor.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class PolicyFactor {

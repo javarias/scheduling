@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * Record the date as year, month, and day.
  * The main use of this class is in conjunction with the DateTime class.
  * 
- * @version 1.00  Jun 11, 2003
+ * @version $Id: Date.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class Date {

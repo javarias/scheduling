@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * data about the telescope, including site characteristics, accumulated 
  * weather data, and the current state of antennas and allocated subarrays.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Telescope.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public abstract class Telescope {

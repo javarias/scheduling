@@ -31,7 +31,7 @@ import alma.scheduling.MasterScheduler.Message;
  * The Operator interface defines those methods needed by the Scheduling
  * Subsystem to communicate with the telescope operator. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: Operator.java,v 1.7 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface Operator {

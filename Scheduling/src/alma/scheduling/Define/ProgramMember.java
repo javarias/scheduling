@@ -29,7 +29,7 @@ package alma.scheduling.Define;
  * The ProgramMember interface is merely a tag that flags a class
  * as being capable of being a member of an Program. 
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: ProgramMember.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public interface ProgramMember extends ProjectMember {

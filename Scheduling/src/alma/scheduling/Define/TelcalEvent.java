@@ -32,7 +32,7 @@ package alma.scheduling.Define;
  * it will be created by the Scheduling Subsystem's TelcalSimulator.
  *
  * @author Sohaila Lucero
- * @version 1.0 Aug 5, 2004
+ * @version $Id: TelcalEvent.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
  */
 public class TelcalEvent {
     /*

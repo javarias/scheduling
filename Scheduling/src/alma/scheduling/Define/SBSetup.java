@@ -35,7 +35,7 @@ package alma.scheduling.Define;
  * <p>
  * This class is not implemented at this time.
  * 
- * @version 1.30 May 10, 2004
+ * @version $Id: SBSetup.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
  * @author Allen Farris
  */
 public class SBSetup {
