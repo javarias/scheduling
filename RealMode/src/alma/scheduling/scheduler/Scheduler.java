@@ -122,7 +122,7 @@ public class Scheduler implements Runnable {
             //all sbs have been processed!
             //should send out nothingCanBeScheduled but
             //for now this is the end of the project and we start the pipeline
-                logger.info("SCHEDULING: SB WAS NULL");
+                logger.info("SCHEDULING: No more SBs to process!");
                 moreSBs = false;
                 break;
             }
@@ -145,13 +145,16 @@ public class Scheduler implements Runnable {
                 logger.info("SCHEDULING: scheduler woken up!");
             }
         }
+        stop();
         
     }
     
     public void stop() {
+        logger.info("SCHEDULING: About to stop scheduler.");
         schedulerTaskControl.stopTask();
+        schedulerTaskControl.interruptMasterScheduler();
         schedulerState = State.STOPPED;
-        System.out.println("SCHEDULING: Scheduler is stopped");
+        logger.info("SCHEDULING: Scheduler is stopped");
     }
 
     public void dispatchSB(String id) {

@@ -334,8 +334,9 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		// Set the state to executing.
 		schedulingState.setState(State.EXECUTING);
         logger.info("SCHEDULING: starting execute");
-        
-        
+
+        pollArchive();
+        /*
         // get non-complete SBs from archive, right now it gets ALL sbs.
         SchedBlock[] sbs = archive.getSchedBlock();
         logger.info("SCHEDULING: Getting SBs from archive");
@@ -348,7 +349,8 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         } else {
             logger.info("SCHEDULING: sbs null will result in error?");
         }
-        
+        */
+
         // form unique list of sb ids from queue
         //Vector uid = queue.getAllUid();
         // give list to project manager - adds them to list of projects 
@@ -479,11 +481,30 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	}
 
     /**
+     * All the functions that deal with checking the archive periodically.
+     */
+    private void pollArchive() {
+        // get non-complete SBs from archive, right now it gets ALL sbs.
+        SchedBlock[] sbs = archive.getSchedBlock();
+        logger.info("SCHEDULING: Getting SBs from archive");
+
+        // place SBs in master SB queue
+        if(sbs != null) {
+            logger.info("SCHEDULING: sbs not null storing into sbQueue");
+            //queue.addNonCompleteSBsToQueue(sbs);   
+            sbQueue.addSchedBlock(sbs);
+        } else {
+            logger.info("SCHEDULING: sbs null will result in error?");
+        }
+    }
+
+    /**
      * MasterScheduler's run method.
      */
     public void run() {
         while(!stopCommand) {
             try {
+                pollArchive();
                 logger.info("MSsleeping!");
                 Thread.sleep(msSleepTime); 
                 logger.log(Level.INFO,"SCHEDULING: MS Thread woken up.");
