@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.12 2003/08/05 16:49:14 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.13 2003/08/28 14:42:05 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -57,10 +57,11 @@ schedulingTest_EXTRAS =
 # ----------------------------
 SCRIPTS         = 
 SCRIPTS_L       = prologue \
-                  testscript1 testscript2 testscript3 \
-                  testscript4 testscript5 testscript6 \
-                  testscript7 testscript8 testscript9 \
+                   testscript9\
                   epilogue
+#                  testscript1 testscript2 testscript3 \
+#                  testscript4 testscript5 testscript6 \
+#                  testscript7 testscript8 testscript9 
 
 #>>>>> END OF standard rules
 

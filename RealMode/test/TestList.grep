@@ -1,6 +1,16 @@
+Subscription added
+:~PublishTelCalEvents
+::GetTelCalResults
+::SimpleSupplier
+proxy to map corba
+same types
+can translate from class
+successfully translated
+trying to access
+entity method
+EntityT with id
 corbaloc
 number of sbs
-alma.entity
 solar-vml
 JacORB
 DAL
@@ -16,13 +26,49 @@ Running the following command:
 java -classpath
 ACS abeans configuration directory
 Time:
-FINEST:
-FINER:
-FINE:
-CONFIG:
-INFO:
-WARNING:
-SEVERE:
+AcsContainerRunner#run 
+ENTRY
+ORB
+RootPOA
+ContainerPOA
+ComponentPOA
+RETURN
+hugoActivator
+IDENTIFIER_ARCHIVE
+ARCHIVE_DATABASE
+OPERATIONAL_ARCHIVE
+Manager
+entering orb loop
+activate_COB
+call to 
+init ACS
+elapsed time 
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+getIdNamespace
+a logger for component
+will retrieve remote component
+offshoot
+Manager reference
+manager narrow
+message from the manager
+creating component helper
+component implementation class
+ping
+POA
+Xindice
+Connected to the database
+ComponentAdapter
+activateComponent
+activated and initialized
+response after
+get_COB_info
+implements operations interface directly;
+returning from
+about to log out from manager
+logged out from manager
+orb loop over
+about to exit the JVM
 Jan
 Feb
 Mar 
