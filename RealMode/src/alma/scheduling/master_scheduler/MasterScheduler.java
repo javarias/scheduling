@@ -50,6 +50,7 @@ import ALMA.scheduling.project_manager.ProjectManager;
 import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
 import ALMA.scheduling.project_manager.PIProxy;
 import ALMA.scheduling.scheduler.*;
+import ALMA.scheduling.receivers.SchedulerEventReceiver;
 
 import java.io.File;
 import java.io.ObjectOutputStream;
@@ -254,7 +255,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
             //logger.log(Level.FINE, "Got archive in MS");
             
 			// Create the telescope operator proxy.
-			operator = new ALMATelescopeOperator(isSimulation,container);
+			operator = new ALMATelescopeOperator(isSimulation,container,archive);
             //logger.log(Level.FINE, "Got operator in MS");
 			
 			// Create the PI proxy.
@@ -435,12 +436,18 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		// If there are any active Schedulers, tell them to stop.
         // i don't really like what i've done below..
         // this is also done in stopScheduling
+        try {
+            stopScheduling();
+        } catch (InvalidOperation e) {
+        }
+        /*
         int size = scheduler.size();
         Scheduler[] tmp = new Scheduler[size];
         for(int i =0; i < size; i++) {
             tmp[i] = (Scheduler) scheduler.get(i);
             tmp[i].stop();
         }
+        */
 		
 		// if there are active MasterScheduler notification channel listeners, deactivate them.
 		
@@ -500,22 +507,6 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 
         startScheduler("dynamic");
         //get scheduling policy from schedulingPolicy arraylist then set it to start scheduling
-        /*
-        Vector uidList = queue.getAllUid();
-        String[] ids = new String[uidList.size()];
-        for(int i = 0; i < uidList.size(); i++) {
-            ids[i] = (String)uidList.elementAt(i);
-        }
-        Message m = new Message();
-        try {
-            container.assignUniqueEntityId(m.getMessageEntity());
-        } catch(Exception e) {}
-        String m_id = m.getMessageId();
-        String selectedSB = operator.selectSB(ids, m_id);
-        logger.log(Level.INFO,"in MS. selectedSB = "+selectedSB);
-        messageQueue.removeMessage(m_id);
-        logger.log(Level.INFO, "Message "+m_id+" removed from queue.");
-        */
 	}
 
 	/**
@@ -526,8 +517,13 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	 */
 	public void stopScheduling() throws InvalidOperation {
         for(int i=0; i < scheduler.size(); i++) {
-            ((Scheduler)scheduler.get(i)).stop();
-            logger.log(Level.INFO,"SCHEDULING: Scheduler stopped.");
+            if( !((Scheduler)scheduler.get(i)).getSchedulerState().getState().equals("stopped")) {
+            
+                ((Scheduler)scheduler.get(i)).stop();
+                logger.info("SCHEDULING: Scheduler stopped.");
+            } else {
+                logger.info("SCHEDULING: Scheduler already stopped.");
+            }
         }
 	}
 
@@ -539,6 +535,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	 * @see alma.scheduling.Executive_to_SchedulingOperations#getStatus()
 	 */
 	public boolean getStatus() {
+        logger.info("SCHEDULING: checking to see if scheduling status is executing!");
 		return schedulingState.equals(State.EXECUTING);
 	}
 
@@ -561,21 +558,12 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
             System.out.println("SCHEDULING: logger is null!");
         }
         logger.log(Level.INFO,"SCHEDULING: in MS. MessageID = "+messageId);
-        logger.log(Level.INFO,"SCHEDULING: in MS. Reply = "+reply);
+        logger.log(Level.INFO,"SCHEDULING: in MS. Reply (sb id) = "+reply);
         logger.log(Level.INFO,"SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
        
        if(messageQueue.size() < 1) {
             logger.log(Level.INFO,"SCHEDULING: in MS. MessageQueue was empty. Try starting with startScheduling function!");
             return;
-            /*
-            Vector tmpIds = queue.getAllUid();
-            String[] ids = new String[tmpIds.size()];
-            for(int i = 0; i < tmpIds.size(); i++) {
-                ids[i] = (String)tmpIds.elementAt(i);
-            }
-            //messageQueue.removeMessage(messageId);
-            operator.selectSB(ids, messageId);
-        */
         } 
         
         Message item = messageQueue.getMessage(messageId);
@@ -830,7 +818,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
      */
     public void startScheduler(String mode) {
         if(!mode.equals("dynamic") && !mode.equals("interactive") ) {
-            logger.log(Level.SEVERE, "Scheduler not started. Invalid mode: "+mode);
+            logger.severe("SCHEDULING: Scheduler not started. Invalid mode: "+mode);
             return;
         }
         Vector subSBQueue = queue.queueToVector();
@@ -845,8 +833,16 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         s.setSchedulerTaskControl(stc);
         schedThread.start();
         scheduler.add(s);
-        //s.initialize();
-        //s.run();
+        // let scheduler listen to the control channel.
+        try {
+            SchedulerEventReceiver sched_listener = 
+                new SchedulerEventReceiver(s);
+            sched_listener.addSubscription(ALMA.Control.EXECEVENTS.value);
+            sched_listener.consumerReady();
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Problem with scheduler event listener");
+            logger.severe("SCHEDULING: "+e.toString());
+        }
     }
 
 	public static void main(String[] args) {
@@ -860,13 +856,12 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
                         "TestScheduler");
 
 		    x.setContainerServices(c.getContainerServices());
+    		x.initialize();
+	    	x.execute();
+		    x.cleanUp();
         } catch(Exception e) {
             System.out.println("Exception! " + e.toString() );
         }
-		//x.setContainerServices(null);
-		x.initialize();
-		x.execute();
-		x.cleanUp();
         
         System.exit(0); // 0 == normal termination
 	}

@@ -102,28 +102,28 @@ public class ComponentState {
 	 */
 	public static void main(String[] args) {
 		ComponentState s = new ComponentState(NEW);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		s.setState(INITIALIZED);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		s.setState(EXECUTING);
-		System.out.println("state is " + s);
-		System.out.println("is state EXECUTING? " + s.equals(EXECUTING));
-		System.out.println("is state STOPPED? " + s.equals(STOPPED));
+		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("SCHEDULING: is state EXECUTING? " + s.equals(EXECUTING));
+		System.out.println("SCHEDULING: is state STOPPED? " + s.equals(STOPPED));
 		s.setState(STOPPED);
-		System.out.println("state is " + s);
-		System.out.println("is state EXECUTING? " + s.equals(EXECUTING));
-		System.out.println("is state STOPPED? " + s.equals(STOPPED));
+		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("SCHEDULING: is state EXECUTING? " + s.equals(EXECUTING));
+		System.out.println("SCHEDULING: is state STOPPED? " + s.equals(STOPPED));
 		s.setState(ERROR);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		s.setState(INITIALIZED);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		try {
-			System.out.println("state is " + NEW);
+			System.out.println("SCHEDULING: state is " + NEW);
 			NEW.setState(STOPPED);
 		} catch (UnsupportedOperationException err) {
-			System.out.println(err.toString());
+			System.out.println("SCHEDULING:"+ err.toString());
 		}
-		System.out.println("state is " + NEW);
+		System.out.println("SCHEDULING: state is " + NEW);
 	}
 }
 

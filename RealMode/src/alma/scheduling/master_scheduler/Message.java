@@ -41,17 +41,20 @@ public class Message {
     public Message() {
         this.messageEntity = new EntityT();
     }
-    
+    /*
     public Message(String id) {
+        this();
         this.messageEntity.setEntityId(id);
     }
-    public Message(Thread t){
-        this();
+    */
+    /*
+    public Message (Thread t) {
         this.thread = t;
     }
-
+    */
     public Message(String id, Thread t) {
-        this(t);
+        this();
+        this.thread = t;
         this.messageEntity.setEntityId(id);
     }
 

@@ -139,28 +139,28 @@ public class Status {
 	 */
 	public static void main(String[] args) {
 		Status s = new Status(Status.WAITING);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		s.setStatus(Status.READY);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		s.setStatus(Status.RUNNING);
-		System.out.println("state is " + s);
-		System.out.println("is state running? " + s.equals(Status.RUNNING));
-		System.out.println("is state complete? " + s.equals(Status.COMPLETE));
+		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("SCHEDULING: is state running? " + s.equals(Status.RUNNING));
+		System.out.println("SCHEDULING: is state complete? " + s.equals(Status.COMPLETE));
 		s.setStatus(Status.COMPLETE);
-		System.out.println("state is " + s);
-		System.out.println("is state RUNNING? " + s.equals(Status.RUNNING));
-		System.out.println("is state COMPLETE? " + s.equals(Status.COMPLETE));
+		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("SCHEDULING: is state RUNNING? " + s.equals(Status.RUNNING));
+		System.out.println("SCHEDULING: is state COMPLETE? " + s.equals(Status.COMPLETE));
 		s.setStatus(Status.ABORTED);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		s.setStatus(Status.READY);
-		System.out.println("state is " + s);
+		System.out.println("SCHEDULING: state is " + s);
 		try {
-			System.out.println("state is " + Status.WAITING);
+			System.out.println("SCHEDULING: state is " + Status.WAITING);
 			WAITING.setStatus(Status.COMPLETE);
 		} catch (UnsupportedOperationException err) {
-			System.out.println(err.toString());
+			System.out.println("SCHEDULING: "+err.toString());
 		}
-		System.out.println("state is " + Status.WAITING);
+		System.out.println("SCHEDULING: state is " + Status.WAITING);
 	}
 }
 

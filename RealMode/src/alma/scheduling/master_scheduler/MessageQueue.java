@@ -45,7 +45,10 @@ public class MessageQueue {
         Message m = new Message(messageId, timer);
         queue.add(m);
     }
-    public synchronized void addMessage(Message m) {
+    public synchronized void addMessage(Message m) throws Exception {
+        if(m.getMessageId() == null) {
+            throw new Exception("Cannot add a message that has no id!");
+        }
         queue.add(m);
     }
 

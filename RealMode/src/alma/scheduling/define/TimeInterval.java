@@ -123,13 +123,13 @@ public class TimeInterval {
 	 */
 	public static void main(String[] args) {
 		TimeInterval x = new TimeInterval(new STime(2002,8,15,23,45), 1800);
-		System.out.println("start: " + x.getStart() + " end: " + x.getEnd() + 
+		System.out.println("SCHEDULING: start: " + x.getStart() + " end: " + x.getEnd() + 
 						   " duration: " + x.getLength() + " sec");
-		System.out.println("x: " + x);
+		System.out.println("SCHEDULING: x: " + x);
 		x = new TimeInterval(new STime(2002,8,15,23,45,0),new STime(2002,8,16,1,15,0));
-		System.out.println("x: " + x);
+		System.out.println("SCHEDULING: x: " + x);
 		x = new TimeInterval(150);
-		System.out.println("x: " + x);
+		System.out.println("SCHEDULING: x: " + x);
 	}
 	
 }

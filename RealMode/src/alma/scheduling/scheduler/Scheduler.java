@@ -28,6 +28,7 @@ package ALMA.scheduling.scheduler;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.lang.InterruptedException;
 
 import ALMA.scheduling.define.STime;
 import ALMA.scheduling.master_scheduler.*;
@@ -105,34 +106,44 @@ public class Scheduler implements Runnable {
 
     public void run() {
     //eventually needs to be put in a while loop.
+        boolean moreSBs = true;
         schedulerState = State.EXECUTING;
-        System.out.println("SCHEDULING: Scheduler is running in "+mode+" mode!");
-        /*
-        Vector uidList = queue.getIds();
-        String[] ids = new String[uidList.size()];
-        for(int i=0; i < uidList.size(); i++) {
-            ids[i] = (String)uidList.elementAt(i);
-        }*/
+        logger.info("SCHEDULING: Scheduler is running in "+mode+" mode!");
         String[] ids = queue.getIds();
-        Message m = new Message();
-        try {
-            container.assignUniqueEntityId(m.getMessageEntity());
-        } catch(ContainerException e) {}
-        String m_id = m.getMessageId();
-        //String selectedSB = operator.selectSB(ids, m_id);
-        String selectedSB = getSB(ids, m_id);
-        logger.log(Level.INFO, "SCHEDULING: in scheduler. selectedSB = "+selectedSB);
-        messageQueue.removeMessage(m_id);
-        logger.log(Level.INFO, "SCHEDULING: Message "+m_id+" removed from queue.");
+        while(moreSBs) {
+            Message m = new Message();
+            try {
+                container.assignUniqueEntityId(m.getMessageEntity());
+            } catch(ContainerException e) {}
+            String m_id = m.getMessageId();
+            String selectedSB = getSB(ids, m_id);
+            if(selectedSB == null) {
+                moreSBs = false;
+                break;
+            }
+            //String selectedSB = operator.selectSB(ids, m_id);
+            logger.info("SCHEDULING: in scheduler. selectedSB = "+selectedSB);
+            messageQueue.removeMessage(m_id);
+            logger.info("SCHEDULING: Message "+m_id+" removed from queue.");
 
-        if(selectedSB != null) {
-            dispatchSB(selectedSB);
-        } else {
-            logger.log(Level.INFO, "SCHEDULING: selectedSB was null. Nothing sent to control.");
+            if(selectedSB != null) {
+                dispatchSB(selectedSB);
+            } else {
+                logger.info("SCHEDULING: selectedSB was null. Nothing sent to control.");
+            }
+            try {
+                logger.info("SCHEDULING: waiting til sb is done processing");
+                //schedulerTaskControl.getTask().wait();
+                //schedulerTaskControl.getTask().join();
+                schedulerTaskControl.getTask().sleep(24*60*60*1000L);
+            } catch(InterruptedException e) {
+                logger.info("SCHEDULING: scheduler woken up!");
+            }
         }
     }
     
     public void stop() {
+        schedulerTaskControl.stopTask();
         schedulerState = State.STOPPED;
         System.out.println("SCHEDULING: Scheduler is stopped");
     }
@@ -142,6 +153,12 @@ public class Scheduler implements Runnable {
         dispatcher.sendToControl(id, new STime() );
     }
 
+    public boolean isInQueue(String id) {
+        System.out.println("SCHEDULING: in scheduler, id="+id);
+        return queue.isInSubQueue(id);
+    }
+
+
     ///////////////////////////////////////////////////////
 
     /* GetMethods */
@@ -150,7 +167,7 @@ public class Scheduler implements Runnable {
      *  @param ids An array of strings which contain all the SB uids
      *  @param m_id A string of the uid of the Message
      *  @return String The uid of the selected sb
-     */
+     InterruptedException*/
     public String getSB(String[] ids, String m_id) {
 
         String sb = operator.selectSB(ids, m_id);
@@ -163,11 +180,17 @@ public class Scheduler implements Runnable {
     public SchedulerTaskControl getSchedulerTaskControl() {
         return schedulerTaskControl;
     }
-
+    public State getSchedulerState() {
+        return schedulerState;
+    }
+    
     /* SetMethods */
 
     public void setSchedulerTaskControl(SchedulerTaskControl stc) {
         this.schedulerTaskControl = stc;
+    }
+    public void setSchedulerState(State s) {
+        schedulerState = s;
     }
     ///////////////////////////////////////////////////////
 

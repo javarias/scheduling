@@ -45,7 +45,23 @@ public class SBSubQueue {
     public SBSubQueue(Vector q) {
         queue = q;
     }
-
+    
+    /**
+     * Checks to see if the given id is in this queue of schedblocks
+     */
+    public boolean isInSubQueue(String id) {
+        boolean result = false;
+        SchedBlock tmp;
+        for(int i = 0; i< queue.size(); i++) {
+            tmp = (SchedBlock)queue.elementAt(i);
+            if(id.equals(tmp.getSchedBlockEntity().getEntityId())){
+                System.out.println("SCHEDULING: Sb ids match!");
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
     public synchronized void addSchedBlock(SchedBlock sb) {
         System.out.println("SCHEDULING: Adding sbs to queue");
         queue.add(sb);

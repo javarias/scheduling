@@ -26,10 +26,11 @@
  
 package ALMA.scheduling.master_scheduler;
 
-import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
+import ALMA.Control.ExecBlockEvent;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
+import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 
 import ALMA.scheduling.define.STime;
 /**
@@ -42,7 +43,8 @@ public interface ArchiveProxy {
 	SchedBlock[] getSchedBlock();
 	SchedBlock[] getNewSchedBlock(STime time);
 	SchedBlock getSchedBlock(String id);
-	void updateSchedBlock(SchedBlock sb);
+//	void updateSchedBlock(SchedBlock sb);
+	void updateSchedBlock(ExecBlockEvent execblockevent);
 
 	ObsProject[] getProject();
 	ObsProject getProject(String id);

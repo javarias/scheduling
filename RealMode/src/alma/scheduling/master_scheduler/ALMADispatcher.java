@@ -75,20 +75,6 @@ public class ALMADispatcher implements ControlProxy {
 		logger.log(Level.INFO,"SCHEDULING: The Dispatcher has been constructed.");
 	}
 
-    /**
-     *  Gets the required control components 
-     */
-    public void getControlComponents() {
-        // Can't do right now coz I don't know what control is going to 
-        // call its componenets..
-        //controlStatusComp = ;
-        //controlSystemComp = ;
-        //arrayControllerComp = ; dont know if i should get it here or when subarray is created
-        //arrayMonitorComp = ;
-    }
-    
-    
-
 	/**
 	 *  Tells the control system to execute the SB with 'id' and its start
 	 *  time is 'time'.

@@ -33,6 +33,8 @@ import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
 import ALMA.scheduling.define.STime;
 import ALMA.scheduling.master_scheduler.ArchiveProxy;
 
+import ALMA.Control.ExecBlockEvent;
+
 /**
  * Description 
  * 
@@ -84,7 +86,7 @@ public class ArchiveSimulator extends BasicComponent implements ArchiveProxy {
 	/* (non-Javadoc)
 	 * @see alma.scheduling.master_scheduler.ArchiveProxy#updateSchedBlock(alma.entity.xmlbinding.schedblock.SchedBlock)
 	 */
-	public void updateSchedBlock(SchedBlock sb) {
+	public void updateSchedBlock(ExecBlockEvent execblockevent) {
 		// TODO Auto-generated method stub
 
 	}

@@ -194,31 +194,31 @@ public class STime {
 	 */
 	public static void main(String[] args) {
 		STime t1 = new STime(2002,8,9,20,0,0);
-		System.out.println("t1 = " + t1);
+		System.out.println("SCHEDULING: t1 = " + t1);
 		STime t2 = new STime();
-		System.out.println("t2 = " + t2);
+		System.out.println("SCHEDULING: t2 = " + t2);
 		
 		long now = new GregorianCalendar(2002,8,8).getTime().getTime();
-		System.out.println("2002-8-8 = " + now);
+		System.out.println("SCHEDULING: 2002-8-8 = " + now);
 		STime x = new STime(2002,8,8,8,30,15);
-		System.out.println("x = " + x.getTime());
+		System.out.println("SCHEDULING: x = " + x.getTime());
 		
-		System.out.println("x := " + STime.convert(x).getTime());
-		System.out.println("x as FITS is " + x);
+		System.out.println("SCHEDULING: x := " + STime.convert(x).getTime());
+		System.out.println("SCHEDULING: x as FITS is " + x);
 		
 		STime x2 = STime.add(x,1845);
-		System.out.println("x2 is " + x2);
+		System.out.println("SCHEDULING: x2 is " + x2);
 		
 		STime y1 = new STime ("2002-08-19T09:42:56");
-		System.out.println("y1 = " + y1);
+		System.out.println("SCHEDULING: y1 = " + y1);
 
 		STime y2 = new STime ("2002-08-19 09:42:56");
-		System.out.println("y2 = " + y2);
+		System.out.println("SCHEDULING: y2 = " + y2);
 
 		try {
 			STime y3 = new STime ("2002-8-19T9:42");
 		} catch (IllegalArgumentException err) {
-			System.out.println(err.toString());
+			System.out.println("SCHEDULING: "+err.toString());
 		}
 	}
 }

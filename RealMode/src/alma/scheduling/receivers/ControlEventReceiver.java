@@ -71,7 +71,27 @@ public class ControlEventReceiver extends Consumer {
                 ExecBlockEventHelper.extract(
                     structuredEvent.filterable_data[0].value);
             System.out.println("SCHEDULING: Got event from control");
-            receive(e);
+            switch(e.reason.value()) {
+                case 0:
+                    System.out.println("SCHEDULING: Event reason = started");
+                    break;
+                case 1:
+                    System.out.println("SCHEDULING: Event reason = end");
+                    receive(e);
+                    break;
+                /*
+                case 2:
+                    System.out.println("SCHEDULING: Event Status = failed");
+                    break;
+                case 3:
+                    System.out.println("SCHEDULING: Event Status = timeout");
+                    break;
+                    */
+                default: 
+                    System.out.println("SCHEDULING: Event reason = error");
+                    break;
+            }
+                
         } catch(Exception e) {
             System.out.println("SCHEDULING: got something else "+e.toString());
             e.printStackTrace();

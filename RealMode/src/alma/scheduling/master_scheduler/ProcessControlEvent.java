@@ -27,6 +27,8 @@
 package ALMA.scheduling.master_scheduler;
 
 import ALMA.Control.ExecBlockEvent;
+import ALMA.Control.CompletionStatus;
+
 import ALMA.scheduling.project_manager.ALMAPipeline;
 import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
 
@@ -58,13 +60,35 @@ public class ProcessControlEvent implements Runnable {
 
     public void run() {
         System.out.println("SCHEDULING: process control event started");
-        updateSB(event.sbId);
-        startPipeline(event.sbId);
+        updateSB(event);
+        //System.out.println("SCHEDULING: Event Status = "+event.blockStatus.toString());
+        /*
+        switch(event.blockStatus.value()) {
+            case 0:
+                //System.out.println("SCHEDULING: Event Status = processing");
+                break;
+            case 1:
+                //System.out.println("SCHEDULING: Event Status = ok");
+                updateSB(event);
+                break;
+            case 2:
+                //System.out.println("SCHEDULING: Event Status = failed");
+                break;
+            case 3:
+                //System.out.println("SCHEDULING: Event Status = timeout");
+                break;
+            default: 
+                //System.out.println("SCHEDULING: Event Status error");
+                break;
+        }*/
+//        updateSB(event);
+        //updateSB(event.sbId);
+        //startPipeline(event.sbId);
     }
 
-    private void updateSB(String id) {
+    private void updateSB(ExecBlockEvent event) {
         try {
-            archive.updateSchedBlock(id);
+            archive.updateSchedBlock(event);
         } catch(Exception e) {
             e.printStackTrace();
         }

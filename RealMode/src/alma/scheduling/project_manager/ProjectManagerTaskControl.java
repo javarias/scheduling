@@ -53,7 +53,7 @@ public class ProjectManagerTaskControl extends TaskControlInfo {
     private boolean pipeline_event=false; //true if event gotten from pipeline
 
     //private ExecBlockEndEvent c_end_event;
-    private ScienceProcessingRequestEnd p_end_event;
+    //private ScienceProcessingRequestEnd p_end_event;
 
 	/**
 	 * @param masterScheduler

@@ -113,34 +113,34 @@ public class Priority {
 	 */
 	public static void main(String[] args) {
 		Priority p = null;
-		p = new Priority(Priority.HIGHEST); System.out.println("priority is " + p);
-		p = new Priority(Priority.HIGHER); System.out.println("priority is " + p);
-		p = new Priority(Priority.HIGH); System.out.println("priority is " + p);
-		p = new Priority(Priority.MEDIUMPLUS); System.out.println("priority is " + p);
-		p = new Priority(Priority.MEDIUM); System.out.println("priority is " + p);
-		p = new Priority(Priority.MEDIUMMINUS); System.out.println("priority is " + p);
-		p = new Priority(Priority.LOW); System.out.println("priority is " + p);
-		p = new Priority(Priority.LOWER); System.out.println("priority is " + p);
-		p = new Priority(Priority.LOWEST); System.out.println("priority is " + p);
-		p = new Priority(Priority.BACKGROUND); System.out.println("priority is " + p);
+		p = new Priority(Priority.HIGHEST); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.HIGHER); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.HIGH); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.MEDIUMPLUS); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.MEDIUM); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.MEDIUMMINUS); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.LOW); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.LOWER); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.LOWEST); System.out.println("SCHEDULING: priority is " + p);
+		p = new Priority(Priority.BACKGROUND); System.out.println("SCHEDULING: priority is " + p);
 		
-		System.out.println("is priority low? " + p.equals(Priority.LOW));
-		System.out.println("is priority background? " + p.equals(Priority.BACKGROUND));
+		System.out.println("SCHEDULING: is priority low? " + p.equals(Priority.LOW));
+		System.out.println("SCHEDULING: is priority background? " + p.equals(Priority.BACKGROUND));
 		p.setPriority(Priority.LOW);
-		System.out.println("priority is " + p);
-		System.out.println("is priority low? " + p.equals(Priority.LOW));
-		System.out.println("is priority background? " + p.equals(Priority.BACKGROUND));
+		System.out.println("SCHEDULING: priority is " + p);
+		System.out.println("SCHEDULING: is priority low? " + p.equals(Priority.LOW));
+		System.out.println("SCHEDULING: is priority background? " + p.equals(Priority.BACKGROUND));
 		p.setPriority(Priority.MEDIUM);
-		System.out.println("priority is " + p);
+		System.out.println("SCHEDULING: priority is " + p);
 		p.setPriority(Priority.MEDIUMPLUS);
-		System.out.println("priority is " + p);
+		System.out.println("SCHEDULING: priority is " + p);
 		try {
-			System.out.println("priority is " + Priority.HIGHEST);
+			System.out.println("SCHEDULING: priority is " + Priority.HIGHEST);
 			HIGHEST.setPriority(Priority.LOWEST);
 		} catch (UnsupportedOperationException err) {
-			System.out.println(err.toString());
+			System.out.println("SCHEDULING:"+ err.toString());
 		}
-		System.out.println("priority is " + Priority.HIGHEST);
+		System.out.println("SCHEDULING: priority is " + Priority.HIGHEST);
 	}
 }
 

@@ -60,6 +60,8 @@ import alma.xmlstore.Cursor;
 import alma.xmlstore.CursorPackage.QueryResult;
 
 import ALMA.scheduling.define.STime;
+
+import ALMA.Control.ExecBlockEvent;
 /**
  * The ALMAArchive class is the interface to the real or simulated archive.
  * 
@@ -90,7 +92,6 @@ public class ALMAArchive implements ArchiveProxy {
             logger.log(Level.SEVERE, "SCHEDULING: Could not get archive!");
         }
         entitySerializer = EntitySerializer.getEntitySerializer(container.getLogger());
-        //entityDeserializer = new EntityDeserializer(container.getLogger());
         entityDeserializer = EntityDeserializer.getEntityDeserializer(container.getLogger());
         logger.log(Level.FINE, "SCHEDULING: The ALMAArchive has been constructed.");
     }
@@ -143,7 +144,13 @@ public class ALMAArchive implements ArchiveProxy {
      *  @return SchedBlock[] Array of all the new scheduling blocks.
      */
     public SchedBlock[] getNewSchedBlock(STime time) {
-        SchedBlock[] sbs = getSchedBlock();
+        //can't be implemented until archive has timestamps!
+        logger.info("SCHEDULING: getting new SBs");
+        //get all sbs from archive. if count is more than current count 
+        SchedBlock[] sbs = null;
+        if(checkNewSB()) {
+            sbs = getSchedBlock();
+        }
         return sbs;
     }
 
@@ -180,17 +187,35 @@ public class ALMAArchive implements ArchiveProxy {
         return sb;
     }
 
-    public void updateSchedBlock(String id) {
-        XmlEntityStruct sb_xml = retrieve(id);
+    //public void updateSchedBlock(String id) {
+    public void updateSchedBlock(ExecBlockEvent execblockevent) {
+        logger.info("SCHEDULING: sb id="+execblockevent.sbId);
+        XmlEntityStruct sb_xml = retrieve(execblockevent.sbId);
         //convert to SchedBlock
         SchedBlock sb_obj = (SchedBlock)convertToObject(sb_xml.xmlString, 
             "alma.entity.xmlbinding.schedblock.SchedBlock");
         //update status - for now it just does it to complete! will change!!! :)
+        
         ObsUnitControl ouc = sb_obj.getObsUnitControl(); 
         if(ouc == null) {
             ouc = new ObsUnitControl();
         }
-        ouc.setSchedStatus(SchedStatusT.COMPLETED);
+        switch(execblockevent.blockStatus.value()) {
+            case 0://exec block status = processing
+                ouc.setSchedStatus(SchedStatusT.RUNNING);
+                break;
+            case 1: //exec block status = ok
+                ouc.setSchedStatus(SchedStatusT.COMPLETED);
+                break;
+            case 2://exec block status = failed
+                ouc.setSchedStatus(SchedStatusT.ABORTED);
+                break;
+            case 3://exec block status = timeout
+                ouc.setSchedStatus(SchedStatusT.ABORTED);
+                break;
+            default://exec block status kooky.. 
+                break;
+        }
         sb_obj.setObsUnitControl(ouc);
         //stores it back in archive
         updateSchedBlock(sb_obj);
@@ -239,6 +264,13 @@ public class ALMAArchive implements ArchiveProxy {
 
     public ObsProject getProject(String id) {
         ObsProject obsProject = null;
+        ObsProject[] all_proj = getProject();
+        for(int i=0; i < all_proj.length; i++) {
+            if(((String)all_proj[i].getObsProjectEntity().getEntityId()).equals(id)){
+                obsProject = (ObsProject)all_proj[i];
+                break;
+            }
+        }
         /*
         String query = "/ObsProject/ObsProjectEntity[@entityId=\""+id+"\"]";
         String schema = "ObsProject";
@@ -279,6 +311,7 @@ public class ALMAArchive implements ArchiveProxy {
         //String query = "/SchedulingPolicy";
         String query = "/*";
         String schema = "SchedulingPolicy";
+        String className = "alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy";
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
             policyCount = cursor.count();
@@ -286,7 +319,7 @@ public class ALMAArchive implements ArchiveProxy {
             int i=0;
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
-                schedulingPolicy[i++] = (SchedulingPolicy)convertToObject(res, schema);
+                schedulingPolicy[i++] = (SchedulingPolicy)convertToObject(res, className);
                 //schedulingPolicy[i++] = (SchedulingPolicy)convertToObject(res.xml, schema);
             }
             return schedulingPolicy;
@@ -297,28 +330,37 @@ public class ALMAArchive implements ArchiveProxy {
     }
 
     public PipelineProcessingRequest[] getPipelineProcessingRequest() {
-        /*
-        String query = "/PipelineProcessingRequest";
+        String query = "/*";
+        //String query = "/PipelineProcessingRequest";
         String schema = "PipelineProcessingRequest";
+        String className = "alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest";
+        
         try {
             Cursor cursor = operArchiveComp.query(query, schema);
             PipelineProcessingRequest[] ppr = new PipelineProcessingRequest[cursor.count()];
             int i = 0;
             while(cursor.hasNext()){
                 QueryResult res = cursor.next();
-                ppr[i++] = (PipelineProcessingRequest)convertToObject(res, schema);
+                ppr[i++] = (PipelineProcessingRequest)convertToObject(res, className);
                 //ppr[i++] = (PipelineProcessingRequest)convertToObject(res.xml, schema);
             }
             return ppr;
         } catch(ArchiveInternalError e) {
             logger.log(Level.SEVERE, e.toString());
         }
-        */
+        
         return null;
     }
 
     public PipelineProcessingRequest getPipelineProcessingRequest(String id) {
         PipelineProcessingRequest ppr = null;
+        PipelineProcessingRequest[] all_ppr = getPipelineProcessingRequest();
+        for(int i=0; i < all_ppr.length; i++) {
+            if(((String)all_ppr[i].getPipelineProcessingRequestEntity().getEntityId()).equals(id)){
+                ppr = (PipelineProcessingRequest)all_ppr[i];
+                break;
+            }
+        }
         /*
         String query = "/PipelineProcessingRequest/PipelineProcessingRequestEntityT[@entityId=\""+id+"\"]";
         String schema = "PipelineProcessingRequest";
@@ -363,16 +405,12 @@ public class ALMAArchive implements ArchiveProxy {
     public void updatePipelineProcessingRequest(PipelineProcessingRequest ppr) {
         addPipelineProcessingRequest(ppr);
     }
-    /******************************************************************/
+    /****************************************************************/
     /* Other stuff */
-    /*
-    public ExecBlock getExecBlock(String id) {
-    }
-    */
     
     
     
-/******************************************************************************************/
+    /****************************************************************/
     /** General Archive functions **/
 
     /**

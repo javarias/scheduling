@@ -152,7 +152,7 @@ public class WeatherCondition {
 			"windDirection"
 		};
 		Expression.setFunctionNames(names);
-		System.out.println("OK, static functions are set.");
+		System.out.println("SCHEDULING: OK, static functions are set.");
 		//Simulator sim = new Simulator(null,null,null,
 		//					new Time(2003,2,26,10,0,0), new Time(2003,2,28,10,0,0));
 		//EnvironmentalModel.setSimulator(sim);
@@ -164,7 +164,7 @@ public class WeatherCondition {
 			"schedule.EnvironmentalModel.getWindDirection"
 		};
 		Expression.setMethods(methods);
-		System.out.println("OK, methods are set.");
+		System.out.println("SCHEDULING: OK, methods are set.");
 
 
 		String[] x = {
@@ -176,8 +176,8 @@ public class WeatherCondition {
 			"humidity >  50.0 -> 0.0"
 		};		 
 		WeatherCondition f1 = new WeatherCondition (x);
-		System.out.println("f1: " + f1);
-		System.out.println("f1's current value is " + f1.evaluate());
+		System.out.println("SCHEDULING: f1: " + f1);
+		System.out.println("SCHEDULING: f1's current value is " + f1.evaluate());
 
 	}
 	

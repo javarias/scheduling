@@ -48,17 +48,19 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
     private boolean isSimulation;
     private ContainerServices container;
     private MessageQueue messageQueue;
-    //private TemporaryExecutive executive;
+    private ALMAArchive archive;
     private MS masterSchedulerComp;
 
 	/**
 	 * 
 	 */
-	public ALMATelescopeOperator(boolean isSimulation, ContainerServices container) {
+	public ALMATelescopeOperator(boolean isSimulation, 
+        ContainerServices container, ALMAArchive a) {
 		super();
         this.container = container;
         this.logger = container.getLogger();
         this.isSimulation = isSimulation;
+        this.archive = a;
         System.out.println("SCHEDULING: The ALMATelescopeOperator has been constructed.");
 	}
 
@@ -76,22 +78,27 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
 	 */
 	public String selectSB(String[] sbIdList, String messageId) {
         
-        //System.out.println(toString());
         
         Thread timer = new Thread(new SelectSBTimer(1000)); 
         //5 minutes in milliseconds
         timer.start();
         Message m = new Message(messageId,timer);
-//        Message m = new Message(messageId);
-        messageQueue.addMessage(m);
-//        Message m = messageQueue.getMessage(messageId);
-//        m.setThread(timer);
-        
-        //logger.log(Level.INFO,"SCHEDULING: in TO, messageQueue size ="+messageQueue.size());
-        //System.out.println(messageQueue.toString());
-        //logger.log(Level.INFO,"SCHEDULING: in TO. sbidlist len = "+ sbIdList.length);
-
+        try {
+            messageQueue.addMessage(m);
+        } catch(Exception e) {
+        }
+        //search sb ids to get the first non-complete sb
         int pos = 0; //First one.
+        for(int i=0; i < sbIdList.length; i++) {
+            if(!isCompletedSb(sbIdList[i])) { //it is non-complete
+                pos = i;
+                break;
+            } //else just loop again
+        }
+        if(pos ==0 && isCompletedSb(sbIdList[0])) {
+            //if all are complete return.
+            return null;
+        }   
         String reply = sbIdList[pos];
         logger.log(Level.INFO,"SCHEDULING: in TO. reply ="+ reply);
         try {
@@ -100,10 +107,6 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
             logger.log(Level.INFO,"SCHEDULING: in TO. ms response about to be called");
             masterSchedulerComp.response(messageId, reply);
             logger.log(Level.INFO,"SCHEDULING: in TO. ms response called");
-            //TODO= container.release("MASTER_SCHEDULER");
-//            if(timer.isAlive()){
-//                timer.interrupt();
-//            }
         } catch(ContainerException e) {
         } catch(UnidentifiedResponse e) {
         }
@@ -131,6 +134,22 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
 
         return messageQueue.getMessage(messageId).getReply();
 	}
+
+    private boolean isCompletedSb(String id) {
+        String completed = "completed";
+        boolean result = false;
+        try {
+            String status = archive.getSchedBlock(id).getObsUnitControl().getSchedStatus().toString();
+            logger.info("SCHEDULING: checking for non-complete SB");
+        
+            if((status != null) && (!status.equals(""))){
+                if(status.equals("completed")) {
+                    result = true;
+                }
+            } 
+        } catch(NullPointerException e) {}
+        return result;
+    }
 
 	/* (non-Javadoc)
 	 * @see alma.scheduling.master_scheduler.Scheduling_to_TelescopeOperator#confirmAntennaActive(short, java.lang.String)
