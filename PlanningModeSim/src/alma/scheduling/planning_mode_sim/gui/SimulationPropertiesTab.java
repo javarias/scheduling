@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JComboBox;
 
 public class SimulationPropertiesTab extends JScrollPane {
-    private Vector fromFile;    
+    private Vector v;    
 
     private JTextField beginTime, endTime, freqBandSetup, projSetup,
                        advanceClockBy, longitude, latitude, altitude,
@@ -406,7 +406,19 @@ public class SimulationPropertiesTab extends JScrollPane {
     }
 
     public void loadValuesFromFile(Vector values) {
-        fromFile = values;
-
+        v = values;
+        setBeginTime((String)v.elementAt(0));
+        setEndTime((String)v.elementAt(1));
+        setLoglevel((String)v.elementAt(2));
+        setFreqBandSetup((String)v.elementAt(3));
+        setProjSetup((String)v.elementAt(4));
+        setClockAdvance((String)v.elementAt(5));
+        setLongitude((String)v.elementAt(6));
+        setLatitude((String)v.elementAt(7));
+        setTimezone((String)v.elementAt(8));
+        setAltitude((String)v.elementAt(9));
+        setMinElevationAngle((String)v.elementAt(10));
+        setAntennas((String)v.elementAt(11));
+    
     }
 }

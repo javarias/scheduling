@@ -167,6 +167,14 @@ public class GUI extends JFrame {
         return outputPanes;
     }
 
+    public String getProjectFile() {
+        String s = createFileChooser("load");
+        if(s == null) {
+            System.out.println("Canceled project load, s == null!");
+        }
+        return chooser.getSelectedFile().getPath();
+    }
+
     public void exit() {
         dispose();
     }

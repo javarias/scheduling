@@ -1,5 +1,7 @@
 package alma.scheduling.planning_mode_sim.gui;
 
+import java.util.Vector;
+import java.util.StringTokenizer;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;
@@ -16,10 +18,11 @@ import javax.swing.JComboBox;
 
 public class WeatherDataTab extends JScrollPane {
 
+    private Vector v;
     private JPanel weatherFields;
     //this will change when there are more than 1 weather functions.
     private JTextField name, units, p0,p1,p2,s0,s1,t0,t1;
-
+    private JComboBox totalfuncs;
     private int totalWeatherFuncs;
 
 
@@ -58,16 +61,20 @@ public class WeatherDataTab extends JScrollPane {
         c.gridwidth = 1;
         gridbag.setConstraints(label, c);
         panelThree_gridPanel.add(label);
-        JComboBox panelThree_cb = new JComboBox();
-        panelThree_cb.addItem("1");
+        totalfuncs = new JComboBox();
+        totalfuncs.addItem("1");
         /* 
         panelThree_cb.addItem("2"); panelThree_cb.addItem("3"); 
         panelThree_cb.addItem("4"); panelThree_cb.addItem("5"); panelThree_cb.addItem("6"); 
         panelThree_cb.addItem("7"); panelThree_cb.addItem("8"); panelThree_cb.addItem("9"); 
         panelThree_cb.addItem("10"); 
         */
-        panelThree_cb.addActionListener(new ActionListener() {
+        totalfuncs.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                getTotalWeatherFuncs();
+                //do nothing right now really...
+
+                /*
                 JComboBox x = (JComboBox)e.getSource();
                 String s = (String)x.getSelectedItem();
                 totalWeatherFuncs = Integer.parseInt(s);
@@ -75,11 +82,12 @@ public class WeatherDataTab extends JScrollPane {
                 ((JPanel)tmp1.getParent()).add( 
                     addWeatherFunctions(totalWeatherFuncs));
                 ((JPanel)tmp1.getParent()).validate();
+                */
             }
         });
 
-        gridbag.setConstraints(panelThree_cb,c);
-        panelThree_gridPanel.add(panelThree_cb);
+        gridbag.setConstraints(totalfuncs,c);
+        panelThree_gridPanel.add(totalfuncs);
         c.gridwidth = GridBagConstraints.REMAINDER;
         label = new JLabel();
         gridbag.setConstraints(label, c);
@@ -94,6 +102,7 @@ public class WeatherDataTab extends JScrollPane {
 
     
     private JPanel addWeatherFunctions(int i) {
+        // TODO: when more than one function, must clean before redo
         //weatherFields
         weatherFields.setLayout(new GridLayout(10,4));
         JLabel l; 
@@ -172,7 +181,8 @@ public class WeatherDataTab extends JScrollPane {
     }
 
     public int getTotalWeatherFuncs() {
-        return totalWeatherFuncs;
+        //return totalWeatherFuncs;
+        return Integer.parseInt((String)totalfuncs.getSelectedItem());
     }
     
     ///////////////////////////////////////////////
@@ -206,5 +216,27 @@ public class WeatherDataTab extends JScrollPane {
         t1.setText(s);
     }
 
+    public void setTotalWeatherFuncs(String s){
+        //totalfuncs.setSelectedItem(s);
+        totalfuncs.setSelectedItem("1");
+    }
+
+    ///////////////////////////////////////////////
+
+    public void loadValuesFromFile(Vector values) {
+        v = values;
+        setTotalWeatherFuncs((String)v.elementAt(0));
+        StringTokenizer token = new StringTokenizer((String)v.elementAt(1), ";");
+        setWeatherName(token.nextToken());
+        setUnits(token.nextToken());
+        setP0(token.nextToken());
+        setP1(token.nextToken());
+        setP2(token.nextToken());
+        setS0(token.nextToken());
+        setS1(token.nextToken());
+        setT0(token.nextToken());
+        setT1(token.nextToken());
+        
+    }
 
 }

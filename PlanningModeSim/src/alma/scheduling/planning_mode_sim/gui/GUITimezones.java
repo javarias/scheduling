@@ -62,57 +62,57 @@ public class GUITimezones extends JComboBox {
             setSelectedItem("GMT-11:00");
         } else if ( s.equals("-10") || s.equals("-10:00") ){
             setSelectedItem("GMT-10:00");
-        } else if ( s.equals("-09") || s.equals("-09:00") ){
+        } else if ( s.equals("-09") || s.equals("-09:00") || s.equals("-9") ){
             setSelectedItem("GMT-09:00");
-        } else if ( s.equals("-08") || s.equals("-08:00") ){
+        } else if ( s.equals("-08") || s.equals("-08:00") || s.equals("-8") ){
             setSelectedItem("GMT-08:00");
-        } else if ( s.equals("-07") || s.equals("-07:00") ){
+        } else if ( s.equals("-07") || s.equals("-07:00") || s.equals("-7") ){
             setSelectedItem("GMT-07:00");
-        } else if ( s.equals("-06") || s.equals("-06:00") ){
+        } else if ( s.equals("-06") || s.equals("-06:00") || s.equals("-6") ){
             setSelectedItem("GMT-06:00");
-        } else if ( s.equals("-05") || s.equals("-05:00") ){
+        } else if ( s.equals("-05") || s.equals("-05:00") || s.equals("-5") ){
             setSelectedItem("GMT-05:00");
-        } else if ( s.equals("-04") || s.equals("-04:00") ){
+        } else if ( s.equals("-04") || s.equals("-04:00") || s.equals("-4") ){
             setSelectedItem("GMT-04:00");
-        } else if ( s.equals("-03:30") ) {
+        } else if ( s.equals("-03:30") || s.equals("-3:30") ) {
             setSelectedItem("GMT-03:30");
-        } else if ( s.equals("-03") || s.equals("-03:00") ){
+        } else if ( s.equals("-03") || s.equals("-03:00") || s.equals("-3") ){
             setSelectedItem("GMT-03:00");
-        } else if ( s.equals("-02") || s.equals("-02:00") ){
+        } else if ( s.equals("-02") || s.equals("-02:00") || s.equals("-2") ){
             setSelectedItem("GMT-02:00");
-        } else if ( s.equals("-01") || s.equals("-01:00") ){
+        } else if ( s.equals("-01") || s.equals("-01:00") || s.equals("-1") ){
             setSelectedItem("GMT-01:00");
-        } else if ( s.equals("00") ){
+        } else if ( s.equals("00") || s.equals("0") ){
             setSelectedItem("GMT 00:00");
-        } else if ( s.equals("+01") || s.equals("+01:00") ){
+        } else if ( s.equals("+01") || s.equals("+01:00") || s.equals("+1") ){
             setSelectedItem("GMT+01:00");
-        } else if ( s.equals("+02") || s.equals("+02:00") ){
+        } else if ( s.equals("+02") || s.equals("+02:00") || s.equals("+2") ){
             setSelectedItem("GMT+02:00");
-        } else if ( s.equals("+03") || s.equals("+03:00") ){
+        } else if ( s.equals("+03") || s.equals("+03:00") || s.equals("+3")){
             setSelectedItem("GMT+03:00");
-        } else if ( s.equals("+03:30") ){
+        } else if ( s.equals("+03:30") || s.equals("+3:30")){
             setSelectedItem("GMT+03:30");
-        } else if ( s.equals("+04") || s.equals("+04:00") ){
+        } else if ( s.equals("+04") || s.equals("+04:00") || s.equals("+4")){
             setSelectedItem("GMT+04:00");
-        } else if ( s.equals("+04:30") ){
+        } else if ( s.equals("+04:30") || s.equals("+4:30")){
             setSelectedItem("GMT+04:30");
-        } else if ( s.equals("+05") || s.equals("+05:00") ){
+        } else if ( s.equals("+05") || s.equals("+05:00") || s.equals("+5") ){ 
             setSelectedItem("GMT+05:00");
-        } else if ( s.equals("+05:30") ){
+        } else if ( s.equals("+05:30") || s.equals("+5:30")){
             setSelectedItem("GMT+05:30");
-        } else if ( s.equals("+05:45") ){
+        } else if ( s.equals("+05:45") || s.equals("+5:45") ){
             setSelectedItem("GMT+05:45");
-        } else if ( s.equals("+06") || s.equals("+06:00") ){
+        } else if ( s.equals("+06") || s.equals("+06:00") || s.equals("+6")){
             setSelectedItem("GMT+06:00");
-        } else if ( s.equals("+06:30") ){
+        } else if ( s.equals("+06:30") || s.equals("+6:30")|| s.equals("+6:30") ){
             setSelectedItem("GMT+06:30");
-        } else if ( s.equals("+07") || s.equals("+07:00") ){
+        } else if ( s.equals("+07") || s.equals("+07:00")|| s.equals("+7") ){
             setSelectedItem("GMT+07:00");
-        } else if ( s.equals("+08") || s.equals("+08:00") ){
+        } else if ( s.equals("+08") || s.equals("+08:00") || s.equals("+8")){
             setSelectedItem("GMT+08:00");
-        } else if ( s.equals("+09") || s.equals("+09:00") ){
+        } else if ( s.equals("+09") || s.equals("+09:00") || s.equals("+9")){
             setSelectedItem("GMT+09:00");
-        } else if ( s.equals("+09:30") ) {
+        } else if ( s.equals("+09:30") || s.equals("+9:30")) {
             setSelectedItem("GMT+09:30");
         } else if ( s.equals("+10") || s.equals("+10:00") ){
             setSelectedItem("GMT+10:00");

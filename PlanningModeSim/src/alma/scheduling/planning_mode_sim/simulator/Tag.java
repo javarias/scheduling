@@ -72,4 +72,6 @@ public class Tag {
 	public static final String weightOneSBRemaining		= "Weight.oneSBRemaining";
 	public static final String numberOfBands			= "FrequencyBand.numberOfBands";
 	public static final String band						= "FrequencyBand";
+	public static final String projectSourceType		= "projectSourceType";
+	public static final String projectSource			= "projectSource";
 }

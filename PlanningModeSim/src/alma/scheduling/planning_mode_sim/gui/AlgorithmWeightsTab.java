@@ -1,5 +1,6 @@
 package alma.scheduling.planning_mode_sim.gui;
 
+import java.util.Vector;
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
@@ -16,6 +17,7 @@ import javax.swing.JScrollPane;
 
 public class AlgorithmWeightsTab extends JScrollPane {
 
+    private Vector v;
     private JTextField posElev, posMax, weather, spsb, spdb, dpsb, dpdb,
                        newProj, lastSB, pri;
 
@@ -264,5 +266,20 @@ public class AlgorithmWeightsTab extends JScrollPane {
         pri.setText(s);
     }
 
+    ////////////////////////////////////////////////////
+    public void loadValuesFromFile(Vector values) {
+        v = values;
+        setPositionElevationWeight((String)v.elementAt(0));
+        setPositionMaxWeight((String)v.elementAt(1));
+        setWeatherWeight((String)v.elementAt(2));
+        setSPSBWeight((String)v.elementAt(3));
+        setSPDBWeight((String)v.elementAt(4));
+        setDPSBWeight((String)v.elementAt(5));
+        setDPDBWeight((String)v.elementAt(6));
+        setNewProjectWeight((String)v.elementAt(7));
+        setLastSBWeight((String)v.elementAt(8));
+        setPriorityWeight((String)v.elementAt(9));
+    }
+    
 }
 

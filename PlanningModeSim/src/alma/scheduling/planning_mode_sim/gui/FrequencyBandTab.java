@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
+import java.util.StringTokenizer;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -18,6 +19,7 @@ import javax.swing.JComboBox;
 
 public class FrequencyBandTab extends JScrollPane {
 
+    private Vector v;
     private JComboBox totalFrequencies;
     private JPanel panelTwo_gridPanel;
     private JPanel panelTwo_mainPanel;
@@ -173,22 +175,26 @@ public class FrequencyBandTab extends JScrollPane {
         JTextField ff_tf;
         int index=0;
         String min, max;
+        StringTokenizer token;
         try {
             freqFields.removeAll();
         }catch(Exception e) {}
         for(int i=0; i < total; i++) {
+            token = new StringTokenizer((String)v.elementAt(index++), ";");
             ff_p = new JPanel();
             ff_p.setLayout(new GridLayout(2,6));
             ff_l = new JLabel("Name");      ff_p.add(ff_l);
             ff_tf = new JTextField("");     ff_p.add(ff_tf);
-            ff_tf.setText((String)v.elementAt(index++));
+            ff_tf.setText((token.nextToken()).trim());
+            //ff_tf.setText((String)v.elementAt(index++));
             ff_l = new JLabel("min");       ff_p.add(ff_l);
             ff_tf = new JTextField("");     ff_p.add(ff_tf);
-            min = (String)v.elementAt(index++);
+            min = (token.nextToken()).trim();
+            //min = (String)v.elementAt(index++);
             ff_tf.setText(min);
             ff_l = new JLabel("max");       ff_p.add(ff_l);
             ff_tf = new JTextField("");     ff_p.add(ff_tf);
-            max =(String)v.elementAt(index++);
+            max = (token.nextToken()).trim();
             ff_tf.setText(max);
             ff_l = new JLabel("");          ff_p.add(ff_l);
             ff_l = new JLabel("");          ff_p.add(ff_l);
@@ -218,4 +224,13 @@ public class FrequencyBandTab extends JScrollPane {
         double bandwidth = max_d - min_d;
         return ""+bandwidth+"";
     }
+
+    public void loadValuesFromFile(Vector values){
+        v = values;
+        String total = (String)v.elementAt(0);
+        v.removeElementAt(0);
+        setTotalFreq(total);
+        setFrequencyValues(Integer.parseInt(total), v);
+    }
 }
+

@@ -67,6 +67,7 @@ public class GUIController implements Runnable {
     
     public void run() {
         this.gui = new GUI(this);
+        getTabs();
     }
     
     protected URL getImage(String name) {
@@ -74,7 +75,7 @@ public class GUIController implements Runnable {
             "alma/scheduling/planning_mode_sim/image/"+name);
     }
 
-    protected void saveToFile(String filename) {
+    private void getTabs() {
         Component[] comp1 = gui.getComponents();
         JRootPane rp = (JRootPane)comp1[0];
         Component[] comp2 = rp.getComponents();
@@ -84,25 +85,39 @@ public class GUIController implements Runnable {
         Component[] comp4 = p.getComponents();
         JTabbedPane tp = (JTabbedPane)comp4[1];
         Component[] comp5 = tp.getComponents();
+        simPropTab = (SimulationPropertiesTab)comp5[0];
+        frequencyTab = (FrequencyBandTab)comp5[1];
+        weatherTab = (WeatherDataTab)comp5[2];
+        algorithmTab = (AlgorithmWeightsTab)comp5[3];
+        projTab = (ProjectsTab)comp5[4];
+    }
+
+    protected void saveToFile(String filename) {
+        /*
+        Component[] comp1 = gui.getComponents();
+        JRootPane rp = (JRootPane)comp1[0];
+        Component[] comp2 = rp.getComponents();
+        JLayeredPane lp = (JLayeredPane)comp2[1];
+        Component[] comp3 = lp.getComponents();
+        JPanel p = (JPanel)comp3[0];
+        Component[] comp4 = p.getComponents();
+        JTabbedPane tp = (JTabbedPane)comp4[1];
+        Component[] comp5 = tp.getComponents();
+        */
         
         //Simulation Properties tab
-        simPropTab = (SimulationPropertiesTab)comp5[0];
         stuffFromSimulationPropertiesTab();
         
         //Frequency band tab
-        frequencyTab = (FrequencyBandTab)comp5[1];
         stuffFromFrequencyTab();
        
         //Weather model tab
-        weatherTab = (WeatherDataTab)comp5[2];
         stuffFromWeatherTab();
        
         //Weights tab
-        algorithmTab = (AlgorithmWeightsTab)comp5[3];
         stuffFromAlgorithmWeightsTab();
               
         //Projects tab
-        projTab = (ProjectsTab)comp5[4];
         stuffFromProjectsTab();
        
         //save all gathered info to a file
@@ -326,8 +341,9 @@ public class GUIController implements Runnable {
         Vector tab4 = new Vector();
         Vector tab5 = new Vector();
         Properties fileproperties = new Properties();
+        FileInputStream file;
         try {
-            FileInputStream file = new FileInputStream(filename);
+            file = new FileInputStream(filename);
             fileproperties.load(file);
             ////////////////////////////////////////////////////////////
             tab1.add(fileproperties.getProperty(Tag.beginTime));
@@ -342,6 +358,7 @@ public class GUIController implements Runnable {
             tab1.add(fileproperties.getProperty(Tag.altitude));
             tab1.add(fileproperties.getProperty(Tag.minimumElevationAngle));
             tab1.add(fileproperties.getProperty(Tag.numberAntennas));
+            simPropTab.loadValuesFromFile(tab1);
             ////////////////////////////////////////////////////////////
             int totalbands = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberOfBands));
@@ -349,6 +366,7 @@ public class GUIController implements Runnable {
             for(int i = 0; i < totalbands; i++) {
                 tab2.add(fileproperties.getProperty(Tag.band+"."+i));
             }
+            frequencyTab.loadValuesFromFile(tab2);
             ////////////////////////////////////////////////////////////
             tab3.add(fileproperties.getProperty(Tag.numberWeatherFunctions));
             int totalWeatherFuncs = Integer.parseInt(
@@ -356,6 +374,7 @@ public class GUIController implements Runnable {
             for(int i=0; i<totalWeatherFuncs; i++) {
                 tab3.add(fileproperties.getProperty(Tag.weather+"."+i));
             }
+            weatherTab.loadValuesFromFile(tab3);
             ////////////////////////////////////////////////////////////
             tab4.add(fileproperties.getProperty(Tag.weightPositionElevation));
             tab4.add(fileproperties.getProperty(Tag.weightPositionMaximum));
@@ -367,8 +386,25 @@ public class GUIController implements Runnable {
             tab4.add(fileproperties.getProperty(Tag.weightNewProject));
             tab4.add(fileproperties.getProperty(Tag.weightOneSBRemaining));
             tab4.add(fileproperties.getProperty(Tag.weightPriority));
-
+            algorithmTab.loadValuesFromFile(tab4);
             ////////////////////////////////////////////////////////////
+            try {
+                String projectfile = fileproperties.getProperty(Tag.projectSource);
+                System.out.println(projectfile);
+                file = new FileInputStream(projectfile);
+                fileproperties.load(file);
+            } catch (Exception e1) {
+                String projFile = promptForProjectFile();
+                System.out.println(projFile);
+                try {
+                    file = new FileInputStream(projFile);
+                    fileproperties.load(file);
+                } catch(Exception e2) {
+                    file = new FileInputStream(filename);
+                    fileproperties.load(file);
+                }
+            }
+            
             tab5.add(fileproperties.getProperty(Tag.numberProjects));
             int totalprojects = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberProjects));
@@ -384,16 +420,28 @@ public class GUIController implements Runnable {
                     }
                     
                 }
-                System.out.println(s);
+                //System.out.println(s);
                 s = s.trim();
                 int totaltargets = Integer.parseInt(s);
-                tab5.add(fileproperties.getProperty(Tag.project+"."+i));
+                //add proj info line
+                tab5.add(fileproperties.getProperty(Tag.project+"."+i)); 
+                //add target stuff
+                for(int j=0; j<totaltargets; j++) {
+                    tab5.add(fileproperties.getProperty(Tag.target+"."+i+"."+j));
+                }
             }
-            ////////////////////////////////////////////////////////////
+            projTab.loadValuesFromFile(tab5);
+        
+        ////////////////////////////////////////////////////////////
+        
         } catch(Exception e) {
+            System.out.println("Crap");
             e.printStackTrace();
         }
-        
+    }
+
+    public String promptForProjectFile() {
+        return gui.getProjectFile();
     }
     
     //////////////////////////////////////////////
