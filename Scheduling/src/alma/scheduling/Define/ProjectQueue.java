@@ -68,9 +68,14 @@ public class ProjectQueue {
 	 * @param item The array to be added.
 	 */
 	public synchronized void add(Project[] item) {
-		for (int i = 0; i < item.length; ++i)
-			queue.add(item[i]);
-	}
+		for (int i = 0; i < item.length; ++i){
+            if(!isExists(item[i].getId())){
+    			queue.add(item[i]);
+	        } else {
+                System.out.println("Project already exists! not adding to queue");
+            }
+        }
+    }
 	
 	/**
 	 * Remove the Project with the specified entity-id from the list.
