@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="INTROOT/lib/APDMEntities.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/jcont.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/jcontnc.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/systementities.jar"/>
+	<classpathentry sourcepath="ACSROOT/lib/xmlentity.jar" kind="var" path="ACSROOT/lib/xmlentity.jar"/>
+	<classpathentry sourcepath="ACSROOT/lib/xmljbind.jar" kind="var" path="ACSROOT/lib/xmljbind.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SchedulingEntities.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SchedulingInterfaces.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acscomponent.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acserr.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acserrj.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/ACSErrTypeCommon.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsjlog.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsnc.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/baci.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/mastercomp_if.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/mastercomp.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/jbaci.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/archive_xmlstore_if.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlInterfaces.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlEntities.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TelCalPublisher.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SciencePipeline.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SchedulingUtils.jar"/>
+	<classpathentry sourcepath="ACSROOT/lib/junit.jar" kind="var" path="ACSROOT/lib/junit.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/jACSUtil.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
