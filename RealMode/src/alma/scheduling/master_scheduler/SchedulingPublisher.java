@@ -64,11 +64,11 @@ public class SchedulingPublisher {
                    alma.scheduling.CHANNELNAME.value);
         }
         String[] names = new String[3];
-        names[SimpleSupplier.CHANNELPOS] = ALMA.scheduling.CHANNELNAME.value;
+        names[SimpleSupplier.CHANNELPOS] = alma.scheduling.CHANNELNAME.value;
         names[SimpleSupplier.TYPEPOS] = 
-            new String("ALMA.scheduling.NothingCanBeScheduledEvent");
+            new String("alma.scheduling.NothingCanBeScheduledEvent");
         names[SimpleSupplier.HELPERPOS] = 
-            new String("ALMA.scheduling.NothingCanBeScheduledEventHelper");
+            new String("alma.scheduling.NothingCanBeScheduledEventHelper");
 
         supplier = new SimpleSupplier(names);
         

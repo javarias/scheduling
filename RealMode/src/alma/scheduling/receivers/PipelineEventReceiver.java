@@ -27,16 +27,15 @@ package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 import org.omg.CosNotification.*;
+
 import alma.acsnc.*;
 import alma.acs.nc.*;
-
 import alma.acs.container.ContainerServices;
 
 import alma.pipelinescience.ScienceProcessingRequestEnd;
 import alma.pipelinescience.ScienceProcessingRequestEndHelper;
 
 import alma.scheduling.master_scheduler.ALMAArchive;
-import alma.scheduling.define.nc.*;
 import alma.scheduling.project_manager.ALMAPipeline;
 import alma.scheduling.project_manager.ProjectManagerTaskControl;
 

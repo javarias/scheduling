@@ -46,7 +46,7 @@ import alma.scheduling.master_scheduler.MasterScheduler;
  * @version 1.00  May 29, 2003
  * @author Allen Farris
  */
-public class Container implements ContainerServices {
+public class Container /*implements ContainerServices */{
 	static public final String ARCHIVE = "archive";
 	static public final String CONTROL = "control";
 	static public final String PIPELINE = "pipeline";
@@ -70,6 +70,7 @@ public class Container implements ContainerServices {
 	 * 
 	 */
 	public Container(Mode mode) {
+            /*
 		try {
 			this.mode = mode;
 			
@@ -110,17 +111,21 @@ public class Container implements ContainerServices {
 			calibration.setContainerServices(this);
 			control.setContainerServices(this);
 			masterScheduler.setContainerServices(this);
+
 			
 		} catch (IllegalArgumentException err) {
 			// This is basic stuff and if anything goes wrong, we stop.
 			err.printStackTrace();
 			System.exit(0);
 		}
+            */
 	}
 	
 	public void cleanUp() {
+        /*
 		logger.info("SCHEDULING: The logfile is being closed.");
 		logfile.close();
+        */
 	}
 
 	/* (non-Javadoc)
@@ -142,6 +147,7 @@ public class Container implements ContainerServices {
 	 * @see alma.acs.container.ContainerServices#getComponent(java.lang.String)
 	 */
 	public Object getComponent(String componentUrl) throws ContainerException {
+        /*
 		if (componentUrl.equals(ARCHIVE))
 			return archive;
 		else if (componentUrl.equals(CONTROL))
@@ -155,6 +161,8 @@ public class Container implements ContainerServices {
 		else if (componentUrl.equals(MASTER_SCHEDULER))
 			return masterScheduler;
 		throw new ContainerException("No such component as " + componentUrl);
+        */
+        return null;
 	}
 
 	/* (non-Javadoc)

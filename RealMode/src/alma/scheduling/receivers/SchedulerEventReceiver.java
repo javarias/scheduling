@@ -33,7 +33,6 @@ import alma.Control.ExecBlockEvent;
 import alma.Control.ExecBlockEventHelper;
 
 
-import alma.scheduling.define.nc.*;
 import alma.scheduling.scheduler.*;
 import alma.scheduling.project_manager.ProjectManagerTaskControl;
 

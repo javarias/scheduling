@@ -64,11 +64,6 @@ public class ComponentImplBase implements ComponentLifecycle {
 	 * @see alma.acs.component.ComponentLifecycle#setContainerServices(alma.acs.container.ContainerServices)
 	 */
 	public void setContainerServices(ContainerServices containerServices) {
-		if (containerServices == null)
-			throw new IllegalArgumentException (
-				"ContainerServices object cannot be a null.");
-		m_containerServices = containerServices;
-		m_logger = m_containerServices.getLogger();
 	}
 
 
@@ -82,10 +77,13 @@ public class ComponentImplBase implements ComponentLifecycle {
 	 * 
 	 * @see alma.acs.component.ComponentLifecycle#initialize()
 	 */
-	public void initialize() throws ComponentLifecycleException {
-		if (m_instanceName == null)
-			throw new ComponentLifecycleException (
-			"The component must be named before this object can be initialized.");
+	public void initialize(ContainerServices containerServices) 
+        throws ComponentLifecycleException {
+		if (containerServices == null)
+			throw new IllegalArgumentException (
+				"ContainerServices object cannot be a null.");
+		m_containerServices = containerServices;
+		m_logger = m_containerServices.getLogger();
 		if (m_containerServices == null)
 			throw new ComponentLifecycleException (
 			"The ContainerServices must be set before this object can be initialized.");

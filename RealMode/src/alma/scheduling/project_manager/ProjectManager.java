@@ -32,6 +32,8 @@ import java.util.logging.Level;
 
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
+import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;
+
 import alma.entities.commonentity.EntityRefT;
 
 import alma.scheduling.NothingCanBeScheduledEvent;
@@ -39,19 +41,15 @@ import alma.scheduling.master_scheduler.ALMAArchive;
 import alma.scheduling.master_scheduler.ALMADispatcher;
 import alma.scheduling.master_scheduler.MasterSBQueue;
 import alma.scheduling.master_scheduler.SchedulingPublisher;
-import alma.scheduling.define.nc.*;
 
 import alma.scheduling.receivers.*;
 
+import alma.acs.nc.*;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
-import alma.entity.xmlbinding.pipelineprocessingrequest.*;
-import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;
-
 import org.omg.CosNotification.*;
-import alma.acs.nc.*;
 
 /**
  * The ProjectManager class is the major controlling class in the 
@@ -91,7 +89,9 @@ public class ProjectManager implements Runnable {
         // create the scheduling notification channel.
         createSchedulingNC();
         projects = new ProjectQueue();
-        projects.addProject(archive.getProject());
+        // TOOK OUT FOR TESTING!!!
+        //projects.addProject(archive.getProject());
+        
         // TEMPORARY!!
         //Link sbs to their projects!
         /*

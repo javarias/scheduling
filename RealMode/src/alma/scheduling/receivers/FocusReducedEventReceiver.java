@@ -26,16 +26,15 @@ package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 
+import alma.acs.nc.*;
 import alma.acs.container.ContainerServices; 
 
 import alma.TelCalPublisher.FocusReducedEvent;
 import alma.TelCalPublisher.FocusReducedEventHelper;
 
 import alma.scheduling.project_manager.ProjectManagerTaskControl;
-import alma.scheduling.define.nc.*;
 
 import org.omg.CosNotification.*;
-import alma.acs.nc.*;
 
 //Take consumer acs.nc stuff when using scheduling's nc
 public class FocusReducedEventReceiver extends Consumer {

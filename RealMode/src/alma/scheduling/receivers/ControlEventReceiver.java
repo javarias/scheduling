@@ -26,6 +26,7 @@ package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 
+import alma.acs.nc.*;
 import alma.acs.container.ContainerServices;
 
 import alma.Control.ExecBlockEvent;
@@ -36,10 +37,8 @@ import alma.scheduling.master_scheduler.MasterSBQueue;
 import alma.scheduling.master_scheduler.ProcessControlEvent;
 import alma.scheduling.project_manager.ALMAPipeline;
 import alma.scheduling.project_manager.ProjectManagerTaskControl;
-import alma.scheduling.define.nc.*;
 
 import org.omg.CosNotification.*;
-import alma.acs.nc.*;
 
 //Take consumer acs.nc stuff when using scheduling's nc
 public class ControlEventReceiver extends Consumer {

@@ -26,16 +26,15 @@ package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 
+import alma.acs.nc.*;
 import alma.acs.container.ContainerServices;
 
 import alma.scheduling.project_manager.ProjectManagerTaskControl;
-import alma.scheduling.define.nc.*;
 
 import alma.TelCalPublisher.PointingReducedEvent;
 import alma.TelCalPublisher.PointingReducedEventHelper;
 
 import org.omg.CosNotification.*;
-import alma.acs.nc.*;
 
 //Take consumer acs.nc stuff when using scheduling's nc
 public class PointingReducedEventReceiver extends Consumer {

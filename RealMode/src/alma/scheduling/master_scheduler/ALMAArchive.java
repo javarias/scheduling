@@ -69,7 +69,7 @@ import alma.Control.ExecBlockEvent;
  */
 public class ALMAArchive implements ArchiveProxy {
     private ContainerServices containerServices;
-    private ArchiveConn connArchiveComp;
+    private ArchiveConnection connArchiveComp;
     private Operational operArchiveComp;
     private boolean isSimulation;
     private EntitySerializer entitySerializer;
@@ -87,7 +87,7 @@ public class ALMAArchive implements ArchiveProxy {
         this.logger = containerServices.getLogger();
         try {
             this.connArchiveComp = alma.xmlstore.ArchiveConnectionHelper.narrow(
-                container.getComponent("ARHCIVE_CONNECTION"));
+                container.getComponent("ARCHIVE_CONNECTION"));
             this.operArchiveComp = connArchiveComp.getOperational("SCHEDULING");
         } catch(ContainerException e) {
             logger.severe("SCHEDULING: ContainerException: "+e.toString());
@@ -234,7 +234,9 @@ public class ALMAArchive implements ArchiveProxy {
             logger.severe("SCHEDULING: "+ e.toString());
         } catch(MalformedURI e) {
             logger.severe("SCHEDULING: "+ e.toString());
-        } catch(InternalError e) {
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: "+ e.toString());
         }
     }
@@ -295,16 +297,20 @@ public class ALMAArchive implements ArchiveProxy {
 
     public void updateProject(ObsProject p) {
         try {
-            XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(p);
-            operArchiveComp.update(xmlEntity);
+            XmlEntityStruct newProjEntity = entitySerializer.serializeEntity(p);
+            XmlEntityStruct retrievedProjEntity = operArchiveComp.retrieve(newProjEntity.entityId);
+            retrievedProjEntity.xmlString = newProjEntity.xmlString;
+            operArchiveComp.update(retrievedProjEntity);
         } catch(EntityException e){
-            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(InternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
         }
     }
 
@@ -365,6 +371,7 @@ public class ALMAArchive implements ArchiveProxy {
                 break;
             }
         }
+        return ppr;
         /*
         String query = "/PipelineProcessingRequest/PipelineProcessingRequestEntityT[@entityId=\""+id+"\"]";
         String schema = "PipelineProcessingRequest";
@@ -380,7 +387,6 @@ public class ALMAArchive implements ArchiveProxy {
             logger.log(Level.SEVERE, e.toString());
         }
         */
-        return ppr;
     }
 
     /**
@@ -390,14 +396,12 @@ public class ALMAArchive implements ArchiveProxy {
     public void addPipelineProcessingRequest(PipelineProcessingRequest ppr) {
         try {
             XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(ppr);
-            operArchiveComp.update(xmlEntity);
+            operArchiveComp.store(xmlEntity);
         } catch(EntityException e){
             logger.severe("SCHEDULING: "+e.toString());
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-        } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(InternalError e) {
+        } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: "+e.toString());
         }
     }
@@ -407,7 +411,23 @@ public class ALMAArchive implements ArchiveProxy {
      *  @param ppr The updated version of the PipelineProcessingRequest
      */
     public void updatePipelineProcessingRequest(PipelineProcessingRequest ppr) {
-        addPipelineProcessingRequest(ppr);
+        try {
+            XmlEntityStruct newPPRentity = entitySerializer.serializeEntity(ppr);
+            XmlEntityStruct retrievedPPRentity = operArchiveComp.retrieve(newPPRentity.entityId);
+            retrievedPPRentity.xmlString = newPPRentity.xmlString;
+            operArchiveComp.update(retrievedPPRentity);
+        } catch(EntityException e){
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        }
+        
     }
     /****************************************************************/
     /* Other stuff */
@@ -430,9 +450,7 @@ public class ALMAArchive implements ArchiveProxy {
             logger.severe("SCHEDULING: "+e.toString());
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-        } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(InternalError e) {
+        } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: "+e.toString());
         }
     }
@@ -444,16 +462,20 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public void update(Object obj, EntityT entityT) {
         try {
-            XmlEntityStruct xmlEntity = entitySerializer.serializeEntity(obj, entityT);
-            operArchiveComp.update(xmlEntity);
+            XmlEntityStruct newXmlEntity = entitySerializer.serializeEntity(obj, entityT);
+            XmlEntityStruct retrievedXmlEntity = operArchiveComp.retrieve(newXmlEntity.entityId);
+            retrievedXmlEntity.xmlString = newXmlEntity.xmlString;
+            operArchiveComp.update(retrievedXmlEntity);
         } catch(EntityException e){
-            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
         } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(InternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+ e.toString());
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: "+ e.toString());
         }
     }
     
@@ -465,13 +487,12 @@ public class ALMAArchive implements ArchiveProxy {
     public XmlEntityStruct retrieve(String uri) {
         XmlEntityStruct entity = null;
         try {
-            entity = operArchiveComp.retrieve(uri, -1);
+            entity = operArchiveComp.retrieve(uri);
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
         } catch(NotFound e) {
             logger.severe("SCHEDULING: "+e.toString());
         } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
             logger.severe("SCHEDULING: "+e.toString());
         }
         return entity;
@@ -482,7 +503,6 @@ public class ALMAArchive implements ArchiveProxy {
      *  @param uri 
      *  @param version If -1 then the most recent version is returned.
      *  @return XmlEntityStruct
-     */
     public XmlEntityStruct retrieve(String uri, int version) {
         XmlEntityStruct entity = null;
         try {
@@ -496,6 +516,7 @@ public class ALMAArchive implements ArchiveProxy {
         }
         return entity;
     }
+     */
     
     /**
      * Removes an object from the archive
@@ -503,7 +524,6 @@ public class ALMAArchive implements ArchiveProxy {
      */
     public void delete(String uri) {
         try {
-        //set to false coz it apparantly doesn't do anything yet
             operArchiveComp.delete(uri);
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
@@ -519,7 +539,7 @@ public class ALMAArchive implements ArchiveProxy {
      *  @param uri The unique identifier of the object to be recovered.
      *  @param version The version of the object which will be recovered.
      */
-    public void undelete(String uri, int version) {
+    public void undelete(String uri) {
         try {
             operArchiveComp.undelete(uri);
         } catch(ArchiveInternalError e) {

@@ -36,16 +36,22 @@ import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
 
-import alma.acs.component.ComponentLifecycle;
+import alma.acs.nc.SimpleSupplier;
+import alma.acs.component.client.ComponentClient;
+import alma.acs.component.ComponentImplBase;
+//import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
+
 import alma.xmlentity.XmlEntityStruct;
+
 import alma.entities.commonentity.EntityT;
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.obsproject.*;
 //import alma.bo.SchedBlock;
 
 import alma.scheduling.*;
+import alma.scheduling.MSOperations;
 import alma.scheduling.project_manager.ProjectManager;
 import alma.scheduling.project_manager.ProjectManagerTaskControl;
 import alma.scheduling.project_manager.PIProxy;
@@ -62,11 +68,6 @@ import java.util.Vector;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import alma.acs.nc.SimpleSupplier;
-import alma.acs.component.client.ComponentClient;
-//import alma.scheduling.MSOperations;
-//import alma.scheduling.MS;
-
 
 /**
  * The MasterScheduler class is the major controlling class in the Scheduling
@@ -76,7 +77,7 @@ import alma.acs.component.client.ComponentClient;
  * @author Allen Farris
  */
 
-public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
+public class MasterScheduler extends ComponentImplBase implements MSOperations, Runnable {
 	
 	/** The scheduling subsystem's component name.  */
 	private String componentName;
@@ -182,6 +183,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	 * Set this component's name -- done by the container.
 	 * @see alma.acs.component.ComponentLifecycle#setComponentName(String)
 	 */
+     /*
 	public void setComponentName(String name) {
 		if (name == null || name.length() == 0)
 			throw new IllegalArgumentException (
@@ -191,6 +193,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 			"Cannot change the name of a component that has already been named.");
 		this.componentName = name;
 	}
+    */
 
 	/**
 	 * Set the object that provides container services -- done by the container.
@@ -230,13 +233,19 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	 * 
 	 * @see alma.acs.component.ComponentLifecycle#initialize()
 	 */
-	public void initialize() {
-		if (componentName == null)
-			throw new UnsupportedOperationException (
-			"The component must be named before this object can be initialized.");
+	public void initialize(ContainerServices containerServices) {
+		//if (componentName == null)
+		//	throw new UnsupportedOperationException (
+		//	"The component must be named before this object can be initialized.");
+        if (containerServices == null)
+            throw new IllegalArgumentException (
+                "ContainerServices object cannot be a null.");
+        this.container = containerServices;
+        /*
 		if (container == null)
 			throw new UnsupportedOperationException (
 			"The ContainerServices must be set before this object can be initialized.");
+        */
 		if (schedulingState.equals(State.EXECUTING))
 			throw new UnsupportedOperationException (
 			"Cannot initialize this object.  It is already executing!  It must be stopped first.");
@@ -846,7 +855,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 
 	public static void main(String[] args) {
 		MasterScheduler x = new MasterScheduler ();
-		x.setComponentName("TestScheduler");
+		//x.setComponentName("TestScheduler");
         
         try {
             ComponentClient c = new ComponentClient(
@@ -854,8 +863,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
                     "corbaloc::"+InetAddress.getLocalHost().getHostName()+":3000/Manager",
                         "TestScheduler");
 
-		    x.setContainerServices(c.getContainerServices());
-    		x.initialize();
+    		x.initialize(c.getContainerServices());
 	    	x.execute();
 		    x.cleanUp();
         } catch(Exception e) {

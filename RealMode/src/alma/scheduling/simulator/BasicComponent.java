@@ -65,7 +65,7 @@ public abstract class BasicComponent extends ComponentImplBase implements org.om
 	 * @see alma.acs.component.ComponentLifecycle#initialize()
 	 */
 	public void initialize() throws ComponentLifecycleException {
-		super.initialize();
+		//super.initialize();
 		m_state.setState(ComponentState.INITIALIZED);
 		m_logger.info("SCHEDULING: "+ m_instanceName + ".initialized");
 	}

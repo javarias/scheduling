@@ -126,7 +126,7 @@ public class Scheduler implements Runnable {
             //should send out nothingCanBeScheduled but
             //for now this is the end of the project and we start the pipeline
                 logger.info("SCHEDULING: No more SBs to process!");
-                s_publisher.pubish();
+                s_publisher.publish();
                 moreSBs = false;
                 break;
             }
