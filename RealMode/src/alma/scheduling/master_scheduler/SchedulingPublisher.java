@@ -33,6 +33,7 @@ import alma.acs.container.ContainerException;
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
 
+import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.NothingCanBeScheduledEvent;
 
 /**
@@ -81,7 +82,7 @@ public class SchedulingPublisher {
     public void publish() {
         try {
             NothingCanBeScheduledEvent e = new NothingCanBeScheduledEvent(
-                "nothing to schedule");
+                NothingCanBeScheduledEnum.OTHER, 0, "nothing to schedule");
             supplier.publishEvent(e);
             logger.info("SCHEDULING: Event sent.");
         } catch(Exception ex) {
@@ -92,7 +93,8 @@ public class SchedulingPublisher {
     public void publishEvent(String reason) {
         try {
             NothingCanBeScheduledEvent event = 
-                        new NothingCanBeScheduledEvent(reason);
+                        new NothingCanBeScheduledEvent(
+                            NothingCanBeScheduledEnum.OTHER, 0, reason);
             //sched_nc.publishEvent()
             sched_nc.publish(event);
             logger.info("SCHEDULING: Event sent.");

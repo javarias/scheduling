@@ -89,6 +89,7 @@ public class ProcessControlEvent implements Runnable {
         archive.addPipelineProcessingRequest(ppr);
         try {
             String res = pipeline.processRequest(ppr);
+            System.out.println("SCHEDULING: "+res);
         } catch (SchedulingException se) {
             se.printStackTrace();
         }

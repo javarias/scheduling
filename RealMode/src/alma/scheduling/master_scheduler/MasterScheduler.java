@@ -181,34 +181,6 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 	}
 
 	/**
-	 * Set this component's name -- done by the container.
-	 * @see alma.acs.component.ComponentLifecycle#setComponentName(String)
-	 */
-     /*
-	public void setComponentName(String name) {
-		if (name == null || name.length() == 0)
-			throw new IllegalArgumentException (
-			"Component name cannot be a null string.");
-		if (componentName != null)
-			throw new UnsupportedOperationException (
-			"Cannot change the name of a component that has already been named.");
-		this.componentName = name;
-	}
-    */
-
-	/**
-	 * Set the object that provides container services -- done by the container.
-	 * @see alma.acs.component.ComponentLifecycle#setContainerServices(ContainerServices)
-	 */
-    /*
-	public void setContainerServices(ContainerServices containerServices) {
-		if (containerServices == null)
-			throw new IllegalArgumentException (
-			"ContainerServices object cannot be a null.");
-		this.container = containerServices;
-	}
-    */
-	/**
 	 * The initialize method completely initializes the scheduling subsystem.
 	 * It cannot be called if the scheduling subsystem is in the "executing"
 	 * state.  In addition the component name and container services must
@@ -243,11 +215,6 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
             throw new IllegalArgumentException (
                 "ContainerServices object cannot be a null.");
         this.container = containerServices;
-        /*
-		if (container == null)
-			throw new UnsupportedOperationException (
-			"The ContainerServices must be set before this object can be initialized.");
-        */
 		if (schedulingState.equals(State.EXECUTING))
 			throw new UnsupportedOperationException (
 			"Cannot initialize this object.  It is already executing!  It must be stopped first.");
@@ -648,13 +615,15 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 	/**
 	 * @see alma.scheduling.TelescopeOperator_to_SchedulingOperations#pauseScheduling(short)
 	 */
-	public void pauseScheduling(short subarrayId) throws InvalidOperation {
+	//public void pauseScheduling(short subarrayId) throws InvalidOperation {
+	public void pauseScheduling(short subarrayId) {
 	}
 
 	/**
 	 * @see alma.scheduling.TelescopeOperator_to_SchedulingOperations#resumeScheduling(short)
 	 */
-	public void resumeScheduling(short subarrayId) throws InvalidOperation {
+	//public void resumeScheduling(short subarrayId) throws InvalidOperation {
+	public void resumeScheduling(short subarrayId) {
 	}
 
 	/**
