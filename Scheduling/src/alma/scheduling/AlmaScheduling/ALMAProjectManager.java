@@ -46,6 +46,7 @@ import alma.scheduling.Define.Project;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.Define.ObservedSession;
+import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
@@ -57,6 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
+ * @version $Id: ALMAProjectManager.java,v 1.21 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -374,7 +376,6 @@ public class ALMAProjectManager extends ProjectManager {
                 break;
             }
         }
-        //updateSession(
         try {
             EndSession end_event = new EndSession(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
@@ -389,4 +390,20 @@ public class ALMAProjectManager extends ProjectManager {
                         
     }
     
+    /**
+      * Creates a SciPipelineRequest with the given program and comment string.
+      * @param Program The program that the science pipeline request belongs to.
+      * @param s A comment about the science pipeline request
+      * @return SciPipelineRequest
+      */
+    //public SciPipelineRequest createSciPipelineRequest(Program p, String s)
+    public SciPipelineRequest createSciPipelineRequest(String sbid, String s)
+        throws SchedulingException {
+
+        //use sbid to get the program 
+        SB sb = sbQueue.get(sbid);
+        SciPipelineRequest ppr = new SciPipelineRequest(sb.getParent(), s);
+        return ppr;
+    }
+
 }

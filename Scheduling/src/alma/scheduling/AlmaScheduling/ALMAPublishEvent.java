@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version 1.00 July 29, 2004
+ * @version $Id: ALMAPublishEvent.java,v 1.3 2004/11/23 20:40:22 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {

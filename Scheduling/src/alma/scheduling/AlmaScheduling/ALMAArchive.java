@@ -61,7 +61,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version 1.0
+ * @version $Id: ALMAArchive.java,v 1.28 2004/11/23 20:40:22 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {

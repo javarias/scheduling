@@ -50,6 +50,7 @@ import alma.Control.ArrayNotIdleException;
 
 /**
  * @author Sohaila Lucero
+ * @version $Id: ALMAControl.java,v 1.15 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ALMAControl implements Control {
     

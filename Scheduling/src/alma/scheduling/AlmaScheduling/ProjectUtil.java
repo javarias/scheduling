@@ -85,7 +85,8 @@ import java.util.ArrayList;
  * 		</ul>  
  * </ul> 
  * 
- * @version 2.2 Oct 15, 2004
+ * version 2.2 Oct 15, 2004
+ * @version $Id: ProjectUtil.java,v 1.10 2004/11/23 20:40:22 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {

@@ -32,6 +32,7 @@ import alma.scheduling.Define.ClockAlarmListener;
 
 /**
  * @author Sohaila Lucero
+ * @version $Id: ALMAClock.java,v 1.4 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ALMAClock implements Clock {
     private DateTime time;

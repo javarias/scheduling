@@ -35,6 +35,7 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
+ * @version $Id: ProjectStatusQueue.java,v 1.3 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ProjectStatusQueue {
 

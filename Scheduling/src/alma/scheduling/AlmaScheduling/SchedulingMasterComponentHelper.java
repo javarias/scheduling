@@ -44,6 +44,7 @@ import alma.scheduling.AlmaScheduling.SchedulingMasterComponentImpl;
  * Name="SCHEDULINGMASTERCOMPONENT1" Code="alma.scheduling.SchedulingMasterComponentImpl.SchedulingMasterComponentHelper" Type="IDL:alma/ACS/MasterComponent:1.0" Container="java"
  * <p>
  * @author alma-component-helper-generator-tool
+ * @version $Id: SchedulingMasterComponentHelper.java,v 1.3 2004/11/23 20:40:22 sslucero Exp $
  */
 public class SchedulingMasterComponentHelper extends ComponentHelper
 {

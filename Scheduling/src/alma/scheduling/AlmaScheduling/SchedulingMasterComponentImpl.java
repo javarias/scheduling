@@ -38,6 +38,11 @@ import alma.acs.component.ComponentLifecycleException;
 
 import alma.scheduling.MasterSchedulerIF;
 
+/**
+  *
+  * @author Sohaila Lucero
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.7 2004/11/23 20:40:22 sslucero Exp $
+  */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
     

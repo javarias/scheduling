@@ -26,7 +26,6 @@
 
 package alma.scheduling.AlmaScheduling;
 
-//import java.util.logging.Logger;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.acs.nc.*;
@@ -56,8 +55,11 @@ import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
+
+
 /**
  * @author Sohaila Lucero
+ * @version $Id: ALMAMasterScheduler.java,v 1.15 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {

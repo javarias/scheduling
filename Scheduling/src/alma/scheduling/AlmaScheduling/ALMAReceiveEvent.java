@@ -44,19 +44,18 @@ import alma.pipelinescience.ScienceProcessingRequestEnd;
 import alma.scheduling.StartSession;
 import alma.scheduling.EndSession;
 import alma.scheduling.Event.Receivers.*;
-//import alma.scheduling.Define.ArrayTime;
 import alma.scheduling.Define.SB;
-//import alma.scheduling.Define.Session;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.ControlEvent;
+import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.SchedulingException;
 
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.15 2004/11/19 16:41:38 sroberts Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.16 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
@@ -64,6 +63,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private ALMAPipeline pipeline;
     private ALMAPublishEvent publisher;
 
+    /**
+      *
+      */
     public ALMAReceiveEvent(ContainerServices cs, ALMAProjectManager m, ALMAArchive a, 
         ALMAPipeline p, ALMAPublishEvent pub) {
         
@@ -81,10 +83,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * When an ExecBlockEvent is received by the scheduling subsystem it is
      * received here and the type is determined. Once the type is determined 
      * the appropriate action is taken.
+     * 
      *
      * @param ExecBlockEvent The event sent out by the control subsystem.
      */ 
     public void receive(ExecBlockEvent e) {
+        //the processes below are still being thought out and may not be the
+        //best way to do what needs to be done.
         try {
         logger.info("SCHEDULING: Starting to process the control event");
         ExecBlock eb = null;
@@ -92,21 +97,28 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             case 0:
                 logger.info("SCHEDULING: Event reason = started");
                 logger.info("SCHEDULING: Received sb start event from control.");
+                //create an execblock internal to scheduling. 
                 eb = createExecBlock(e);
                 eb.setStartTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)));
+                //send out a start session event.
                 startSession(eb);
                 break;
             case 1:
                 logger.info("SCHEDULING: Event reason = end");
                 logger.info("SCHEDULING: Received sb end event from control.");
+                //create a control event internal to scheduling.
+                //this object contains the info from controls event which sched wants
                 ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
                     e.type.value(), e.status.value(), new DateTime(
                         UTCUtility.utcOmgToJava(e.startTime)));
+                //update the sb with the new info from the event
                 updateSB(ce);
                 eb = createExecBlock(e);
                 eb.setEndTime(new DateTime(UTCUtility.utcOmgToJava(e.startTime)),Status.COMPLETE);
+                //send out an end session event
                 endSession(eb);
                 sbCompleted(eb);
+                //workaround.. will be using the ps to replace the 'ids' stuff...
                 String[] ids = updateProjectStatus(eb);
                 startPipeline(ce, ids);
                 break;
@@ -120,6 +132,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         }
 
     }
+    
     /**
      * Event sent by the control system indication what the status of the control
      * system is.
@@ -213,10 +226,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         }
     }
 
-    private void updateSession(SessionT s, ExecBlockEvent e) {
-        //s.setEndTime(""+e.startTime);
-    }
-
 
     /** 
      * Starts the Science Pipeline given the SB which completed with this control
@@ -225,13 +234,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void startPipeline(ControlEvent e, String[] ids) {
         String result = null;
+        SciPipelineRequest ppr=null;
         try {
-            PipelineProcessingRequestT ppr = pipeline.createPipelineProcessingRequest(ids[0], ids[1]); //temporary for R2
-            /*
-            archive.storePipelineProcessingRequest(new ALMAPipelineProcessingRequest(ppr));
-            ppr = archive.retrievePPR(ppr.entityId);
-            result = pipeline.processRequest(ppr.xmlString);
-            */
+            ppr = manager.createSciPipelineRequest(e.getSBId(), "Empty Comment");
         } catch(Exception ex) {
             logger.severe("SCHEDULING: error starting the science pipeline");
             ex.printStackTrace();

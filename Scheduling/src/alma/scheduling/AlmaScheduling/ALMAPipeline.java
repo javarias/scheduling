@@ -46,6 +46,7 @@ import alma.pipelinescience.SciencePipeline;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
+ * @version $Id: ALMAPipeline.java,v 1.7 2004/11/23 20:40:22 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     private ContainerServices containerServices;

@@ -34,6 +34,7 @@ import alma.acs.container.ComponentHelper;
 
 /**
  * @author alma-component-helper-generator-tool
+ * @version $Id: MasterSchedulerIFHelper.java,v 1.3 2004/11/23 20:40:22 sslucero Exp $
  */
 public class MasterSchedulerIFHelper extends ComponentHelper
 {
