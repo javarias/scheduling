@@ -54,4 +54,11 @@
 			</xs:sequence>
 		</xs:sequence>
 	</xs:complexType>
+	  <xsd:complexType name="PipelineProcessingRequestEntityT">
+    <xsd:complexContent>
+      <xsd:restriction base="ent:EntityT">
+        <xsd:attribute name="entityTypeName" type="ent:EntityTypeNameT" use="required" fixed="PipelineProcessingRequest"/>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
 </xs:schema>
