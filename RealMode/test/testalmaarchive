@@ -1,5 +1,5 @@
 #! /bin/bash
 
-acsStartJava alma.scheduling.test.TestALMAArchive
+acsStartJava -endorsed alma.scheduling.test.TestALMAArchive
 
 

@@ -112,13 +112,16 @@ public class TestALMAArchive {
 
             logger.info("SCHED_TEST: function getProject(String id)");
             ObsProject p = archive.getProject(id);
-            xml_entity = es.serializeEntity(p);
+            if(p == null) {
+                logger.info("project is null...");
+            }  else { 
+                xml_entity = es.serializeEntity(p);
             //logger.info("SCHED_TEST: "+xml_entity.xmlString);
             //logger.info("SCHED_TEST: project with id="+id+" has version="+xml_entity.schemaVersion);
             logger.info("SCHED_TEST: project with id="+
                p.getObsProjectEntity().getEntityId()+" has version="+
                     p.getObsProjectEntity().getDocumentVersion());//xml_entity.schemaVersion);
-
+            
             logger.info("SCHED_TEST: function updateProject(ObsProject p)");
             archive.updateProject(p);
             //retreive it to see that it updated
@@ -128,19 +131,20 @@ public class TestALMAArchive {
             logger.info("SCHED_TEST: project with id="+
                p.getObsProjectEntity().getEntityId()+" has version="+
                     p.getObsProjectEntity().getDocumentVersion());//xml_entity.schemaVersion);
-
+            }
             SchedulingPolicy sp = new SchedulingPolicy();
             SchedulingPolicyEntityT sp_entity = new SchedulingPolicyEntityT();
             cs.assignUniqueEntityId(sp_entity);
             sp.setSchedulingPolicyEntity(sp_entity);
             archive.store(sp, sp_entity);
+            /*
             logger.info("SCHED_TEST: function getSchedulingPolicy()");
             SchedulingPolicy[] sps = archive.getSchedulingPolicy();
             for(int i = 0; i < sps.length; i++) {
                 xml_entity = es.serializeEntity(sps[i]);
                 //logger.info("SCHED_TEST: "+xml_entity.xmlString);
             }
-            
+            */
             logger.info("SCHED_TEST: function addPipelineProcessingRequest(PipelineProcessingRequest)");
             PipelineProcessingRequest ppr = new PipelineProcessingRequest();
             PipelineProcessingRequestEntityT ppr_entity = new PipelineProcessingRequestEntityT();

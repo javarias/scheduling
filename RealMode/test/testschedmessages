@@ -1,6 +1,6 @@
 #! /bin/bash
 
 #echo " Running test"
-acsStartJava alma.scheduling.test.TestSchedMessages
+acsStartJava -endorsed alma.scheduling.test.TestSchedMessages
 
 

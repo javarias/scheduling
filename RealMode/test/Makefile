@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.18 2003/12/23 19:06:10 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.19 2004/01/29 15:29:08 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -63,7 +63,7 @@ SCRIPTS_L       = prologue \
                    testcomponentstate \
                    testpipelinestatus testppr \
                    testsbsubqueue \
-                   testpriority \
+                   testpriority testschedsystem \
                   epilogue
 #testschedsystem testschedreceivers testalmaarchive 
 #>>>>> END OF standard rules

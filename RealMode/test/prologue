@@ -1,27 +1,13 @@
 #! /bin/bash
 
 # Get required paths
-ACS_CDB=$PWD
-
+#ACS_CDB=$PWD
 
 # Start acs processes
-echo " Cleaning acsdata"
 acsdataClean >& /dev/null &
 
-echo " Starting ORB Services"
-acsStartORBSRVC -b0 >& sched_orbsrvc.log 
+acsStart >& sched_acsStart.log 
 
-sleep 35
-
-echo " Starting Manager"
-maciManagerJ -b 0  >& sched_manager.log&
-sleep 30
-
-#echo " Starting Activator"
-#maciActivate Activator  >& sched_activator.log&
-#sleep 15
-
-echo " Starting frodoContainer"
 acsStartContainer -java frodoContainer -b 0 >& sched_frodoContainer.log &
 sleep 20
 

@@ -1,3 +1,30 @@
+INFO: No configuration file specified, going with the default configuration
+INFO: Database name: 'db'
+Archive Cleaned
+Instlling from /users/sroberts/introot/idl
+INFO: No configuration file specified, going with the default configuration
+INFO: Database name: 'db'
+Processing: BreakpointResponse.xsd done
+Processing: CorrConfig.xsd done
+Processing: ObsProject.xsd done
+Processing: ObsProposal.xsd done
+Processing: ObsToolUserPrefs.xsd done
+Processing: SBExecRec.xsd done
+Processing: SchedBlockIncludes.xsd done
+Processing: SchedBlock.xsd done
+Processing: ExecBlock.xsd done
+Processing: FocusResult.xsd done
+Processing: PointingResult.xsd done
+Processing: PipelineProcessingRequest.xsd done
+Processing: SchedulingInfo.xsd done
+Processing: SchedulingPolicy.xsd done
+Processing: QuickLookResult.xsd done
+Processing: AlmaMessage.xsd done
+Processing: AlmaResource.xsd done
+Processing: AlmaUserSecret.xsd done
+Processing: AlmaUser.xsd done
+Processing: ExecConfig.xsd done
+Processing: SchedSlot.xsd done
 FINE: ready to talk with components!
 FINE: component MASTER_SCHEDULER retrieved successfully.
 FINE: SCHED_TEST: MS Component created

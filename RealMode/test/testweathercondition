@@ -1,5 +1,5 @@
 #! /bin/bash
 
-acsStartJava alma.scheduling.define.WeatherCondition
+acsStartJava -endorsed alma.scheduling.define.WeatherCondition
 
 

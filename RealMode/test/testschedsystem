@@ -1,8 +1,10 @@
 #! /bin/bash
 
+archiveCleanMA
+#archiveConfigureMA  
+archiveLoadSchema
 otprotoBatch targets.txt  >&  sched_almaOT.log
-sleep 20
+#sleep 20
 
-abeansStart -endorsed alma.scheduling.test.SchedSystemTest
-#abeansStart -endorsed ALMA.scheduling.test.SchedSystemTest
+acsStartJava -endorsed alma.scheduling.test.SchedSystemTest
 

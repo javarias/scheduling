@@ -1,5 +1,8 @@
 PROLOGUE prologue
+testschedsystem
+testalmaarchive
 testschedmessages
+testschedreceivers
 testpipelinestatus
 testsbsubqueue
 testpriority

@@ -1,7 +1,6 @@
 #! /bin/bash
 
 #echo " Running test"
-abeansStart -endorsed alma.scheduling.test.TestSchedReceivers
-#abeansStart -endorsed ALMA.scheduling.test.TestSchedReceivers
+acsStartJava -endorsed alma.scheduling.test.TestSchedReceivers
 
 
