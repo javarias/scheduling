@@ -56,6 +56,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
+ * @version $Id: ALMAReceiveEvent.java,v 1.15 2004/11/19 16:41:38 sroberts Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     private ContainerServices containerServices;
