@@ -61,7 +61,8 @@ public class ALMAProject extends Project {
                         obs.getPI() );
         setTimeOfCreation(new DateTime(System.currentTimeMillis()));
         this.obsProject = obs;
-        this.sbs = getSBRefs(obsProject.getObsProgram().getObsUnitSetTChoice());
+        this.sbs = getSBRefs(obsProject.getObsProgram().getObsPlan().getObsUnitSetTChoice());
+        //this.sbs = getSBRefs(obsProject.getObsProgram().getObsUnitSetTChoice());
 
     }
 

@@ -638,23 +638,23 @@ public class ALMAArchive implements Archive {
             //sb.execEnd(eb, ce.getStartTime(), 5);
             //sb.getStatus().setEnded(ce.getStartTime(), 5);
             SchedBlock schedblock = getSBfromArchive(ce.getSBId());
-            ObsUnitControl ouc = schedblock.getObsUnitControl();
+            ObsUnitControlT ouc = schedblock.getObsUnitControl();
             if(ouc == null) {
-                ouc = new ObsUnitControl();
+                ouc = new ObsUnitControlT();
             }
             switch(ce.getStatus()) {
                 case 0://exec block status = processing
-                    ouc.setSchedStatus(SchedStatusT.RUNNING);
+                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.RUNNING);
                     //sb.setRunning();
                     break;
                 case 1: //exec block status = ok
-                    ouc.setSchedStatus(SchedStatusT.COMPLETED);
+                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.COMPLETED);
                     break;
                 case 2://exec block status = failed
-                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.ABORTED);
                     break;
                 case 3://exec block status = timeout
-                    ouc.setSchedStatus(SchedStatusT.ABORTED);
+                    ouc.setSchedStatus(ObsUnitControlTSchedStatusType.ABORTED);
                     break;
                 default://exec block status kooky.. 
                     break;

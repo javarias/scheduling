@@ -81,7 +81,7 @@ public class ALMASB extends SB {
                 //System.out.println(type);
                 Target t;
                 if(type.equals("rectangle")){
-                    RectangleT_SB rec = target_pattern.getRectangle();
+                    alma.entity.xmlbinding.schedblock.RectangleT rec =  target_pattern.getRectangle();
                     if(rec == null) {
                         //System.out.println("Rectangle info not there! rec == null!");
                     }
@@ -104,8 +104,7 @@ public class ALMASB extends SB {
             this.almaPointingCalTarget = almaSchedBlock.getPointingCalTarget(); 
 
             //preconditions
-            WeatherConstraints weather =    
-                almaSchedBlock.getPreconditions().getWeatherConstraints();
+            WeatherConstraintsT weather =  almaSchedBlock.getPreconditions().getWeatherConstraints();
             String polarization = almaSchedBlock.getPreconditions().getPolarization();
             String baselineCal = almaSchedBlock.getPreconditions().getBaselineCal();
         } catch(Exception e) {
