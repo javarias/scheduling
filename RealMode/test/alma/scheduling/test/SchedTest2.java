@@ -32,6 +32,17 @@ import alma.acs.component.client.ComponentClient;
 import alma.scheduling.master_scheduler.MasterScheduler;
 import alma.entity.xmlbinding.schedblock.SchedBlock; 
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT; 
+
+import alma.xmlstore.Operational;
+import alma.acs.entityutil.EntitySerializer;
+import alma.acs.entityutil.EntityException;
+import alma.xmlentity.XmlEntityStruct;
+import alma.xmlstore.OperationalPackage.MalformedURI;
+import alma.xmlstore.ArchiveInternalError;
+import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerException;
+
+
 /**
  *  Tests selectSB function.
  *
@@ -41,6 +52,7 @@ public class SchedTest2 {
     private MasterScheduler masterScheduler;
     private SchedBlock sb;
     private SchedBlockEntityT sb_entity;
+    private static EntitySerializer entitySerializer;
     
     public SchedTest2(MasterScheduler ms) {
         this.masterScheduler = ms;
@@ -55,6 +67,34 @@ public class SchedTest2 {
     public void testSelectSB() {
         masterScheduler.selectSB();
     }
+
+    public static void populateArchive(ContainerServices c) {
+        entitySerializer = EntitySerializer.getEntitySerializer(Logger.getLogger("serializer"));
+        Operational archive = null;
+        try {
+            archive = alma.xmlstore.OperationalHelper.narrow(c.getComponent("OPERATIONAL_ARCHIVE"));
+            for(int i=0; i < 5; i++) {
+                archive.update( createSB(c) );
+            }
+        } catch(ContainerException e) {
+        } catch(MalformedURI e) {
+        } catch(ArchiveInternalError e) {
+        }
+
+    }
+
+    private static XmlEntityStruct createSB(ContainerServices c) {
+        try {
+            SchedBlock sb = new SchedBlock();
+            SchedBlockEntityT sb_entity = new SchedBlockEntityT();
+            c.assignUniqueEntityId(sb_entity);
+            sb.setSchedBlockEntity(sb_entity);
+            return entitySerializer.serializeEntity(sb);
+        } catch (ContainerException e) {
+        } catch (EntityException e) {
+        }
+        return null;
+    }
     
     public static void main(String[] args) {
         try {
@@ -62,6 +102,8 @@ public class SchedTest2 {
                 Logger.getLogger("SchedTest2"), 
                     "corbaloc::" + InetAddress.getLocalHost().getHostName() + ":3000/Manager",
                         "SchedTest2");
+            // Bad fix to populate the archive with 5 sched blocks.            
+            SchedTest1.populateArchive(client.getContainerServices());
                         
             MasterScheduler ms = new MasterScheduler();
             ms.setComponentName("SchedTest2");

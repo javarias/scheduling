@@ -13,16 +13,10 @@ Exec created
 exec set in operator
 Message queue set in operator
 The MasterScheduler has been initialized.
-Getting noncomplete sbs from archive
 SBs returned
 sbs not null storing into queue
 MB Action started
 The MasterScheduler is executing.
 Scheduler is running in dynamic mode!
 got scheduler
-got SB
-got dispatcher
-Sending SB with id = uid://X----------------/X-------- to controller.
-MB Action stopped
-Scheduler is stopped
-The MasterScheduler has been cleaned up and is now stopped.
+EXCEPTION: java.util.NoSuchElementException
