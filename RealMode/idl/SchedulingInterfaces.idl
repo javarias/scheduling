@@ -19,9 +19,12 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
  *    MA 02111-1307  USA
  */
-#pragma prefix "alma"
+
+#ifndef _SCHEDULINGINTERFACES_IDL_
+#define _SCHEDULINGINTERFACES_IDL_
 
 #include <xmlentity.idl> 
+#pragma prefix "alma"
 
 module scheduling {
 
@@ -207,5 +210,8 @@ module scheduling {
 		string reason;
 	};
 
+    interface MS : Executive_to_Scheduling, TelescopeOperator_to_Scheduling {};
 
 };
+
+#endif
