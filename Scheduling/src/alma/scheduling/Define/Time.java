@@ -106,7 +106,7 @@ public class Time {
 	/**
 	 * A unit test of the Time class.
 	 * @param args none
-	 */	
+	 *	
 	public static void main(String[] args) {
 		Time t = new Time (22, 45, 55.6789); System.out.println("Time is " + t);
 		t = new Time (0, 0, 0.0); System.out.println("Time is " + t);
@@ -137,4 +137,5 @@ public class Time {
 			System.out.println(err.toString());
 		}
 	}
+    */
 }

@@ -21,36 +21,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File AllTests.java
+ * File TestTime.java
  */
  
 package alma.scheduling.test;
 
-import junit.framework.TestSuite;
-import junit.framework.Test;
+import junit.framework.TestCase;
 
-public class AllTests {//extends TestSuite{
-    /*
-    private static TestDateTime dtTest = new TestDateTime();
-    private static TestAntenna antennaTest = new TestAntenna();
-    */
-    public static Test suite(){
-        TestSuite suite = new TestSuite();
-        try {
-            suite.addTestSuite(alma.scheduling.test.TestAntenna.class);
-            suite.addTestSuite(alma.scheduling.test.TestDateTime.class);
-            suite.addTestSuite(alma.scheduling.test.TestALMAArchive.class);
-            suite.addTestSuite(alma.scheduling.test.TestALMAControl.class);
-            suite.addTestSuite(alma.scheduling.test.TestStatus.class);
-            suite.addTestSuite(alma.scheduling.test.TestTime.class);
-        }catch(Exception e) {
-            System.out.println("hmm");
-        }
-        return suite;
+import alma.scheduling.Define.Time;
+
+public class TestTime extends TestCase {
+
+    public TestTime() throws Exception {
+        super("Time class Test!");
+    }
+    
+    protected void setUp() throws Exception {}
+    protected void tearDown() throws Exception {}
+
+    public void test1Time() {
+        Time t = new Time(22, 45, 55.6789);
+        assertEquals("22:45:55.67890000000517", t.toString());
+    }
+   
+    public void test2Time() {
+        Time t = new Time(0, 0, 0.0);
+        assertEquals("0:0:0.0", t.toString());
+    }
+    public void test3Time() {
+        Time t = new Time(0, 0, 0.1);
+        assertEquals("0:0:0.1", t.toString());
+    }
+    public void test4Time() {
+        Time t = new Time(23, 59, 59.999999);
+        assertEquals("23:59:59.99999900000631", t.toString());
     }
 
-    public static void main(String[] args) {
-        //junit.textui.TestRunner.run(AllTests.class);
-        alma.acs.testsupport.tat.TATJUnitRunner.run(AllTests.class);
+    public void test5Time() {
+        Time t = new Time(23.0);
+        assertEquals("23:0:0.0", t.toString());
+    }
+    public static void main(String[] args){
+        junit.textui.TestRunner.run(TestTime.class);
     }
 }
