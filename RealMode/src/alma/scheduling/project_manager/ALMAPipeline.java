@@ -28,6 +28,8 @@ package alma.scheduling.project_manager;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import alma.xmlentity.XmlEntityStruct;
+
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.entityutil.EntitySerializer;
@@ -81,7 +83,8 @@ public class ALMAPipeline implements PipelineProxy {
 	/** 
 	 * 
 	 */
-    public String processRequest(PipelineProcessingRequest request)
+    //public String processRequest(PipelineProcessingRequest request)
+    public String processRequest(XmlEntityStruct request)
 	        throws SchedulingException {
         String requestRes="request result";
         if(isSimulation) {
@@ -90,13 +93,22 @@ public class ALMAPipeline implements PipelineProxy {
             try {
                 sciencePipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
                     containerServices.getComponent("SCIENCE_PIPELINE"));
-                requestRes =sciencePipelineComp.processRequest(
-                    EntitySerializer.getEntitySerializer(logger).serializeEntity(request));
+                XmlEntityStruct entity = EntitySerializer.getEntitySerializer(logger).serializeEntity(request);
+                //entity.timeStamp = timeStamp;
+                //logger.info("ALMAPipeline:"+ entity.xmlString);
+                //logger.info("ALMAPipeline:"+ entity.timeStamp);
+                logger.info("ALMAPipeline:"+ request.xmlString);
+                logger.info("ALMAPipeline:"+ request.timeStamp);
+                logger.info("ALMAPipeline:"+ requestRes);
+                requestRes =sciencePipelineComp.processRequest(request);
+                //requestRes = sciencePipelineComp.processRequest(entity);
+                    
             } catch (Exception e) {
-                logger.log(Level.SEVERE,"SCHEDULING: Error connecting to PIPELINE!");
+                logger.severe("SCHEDULING: Error connecting to PIPELINE!");
+                logger.severe(e.toString());
             }
         }
-        logger.log(Level.INFO,"SCHEDULING: "+requestRes);
+        logger.info("SCHEDULING: "+requestRes);
         return requestRes;
     }
 

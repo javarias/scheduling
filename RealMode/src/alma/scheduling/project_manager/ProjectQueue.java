@@ -42,48 +42,60 @@ public class ProjectQueue {
         queue = new Vector();
 	}
 
-    //public synchronized void addProject(ObsProject proj) {
     public synchronized void addProject(SProject proj) {
         queue.add(proj);
     }
 
+    /*
     public synchronized void addProject(ObsProject[] projs) {
-    //public synchronized void addProject(SProject[] projs) {
         for(int i=0; i < projs.length; i++) {
             queue.add(new SProject(projs[i]));
         }
     }
+    */
 
     /**
-     *  Returns the SchedBlock at location i
+     *  Returns the SProject at location i
      */
     public synchronized SProject getProject(int i) {
         return (SProject)queue.elementAt(i);
     }
 
     /**
-     *  Returns the first SB in the queue
+     *  Returns the first SProject in the queue
+     * @return SProject
      */
     public synchronized SProject getProject() {
         return (SProject) queue.firstElement();
     }
 
 
+    /** 
+     * Returns a vector of all the projects
+     * @return Vector
+     */
     public synchronized Vector queueToVector() {
         return queue;
     }
 
-    public boolean isProjectComplete() {
-        boolean res = false;
-        for(int i=0; i< queue.size(); i++) {
-            
-        }
-        return res;
+    /**
+     * Returns true if the project is complete.
+     * @return boolean
+     */
+    public synchronized boolean isProjectComplete(SProject s) {
+        boolean complete = false;
+        return complete;
     }
-    public String[] getCompletedProjects() {
-        return null;
+    public synchronized boolean isProjectComplete() {
+        boolean complete = false;
+        return complete;
     }
-    public int getQueueSize() {
+
+    public synchronized String[] getCompletedProjects() {
+        String[] complete = new String[queue.size()]; //temporary!
+        return complete;
+    }
+    public synchronized int getQueueSize() {
         return queue.size();
     }
 	public static void main(String[] args) {

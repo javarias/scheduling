@@ -25,6 +25,8 @@
  
 package alma.scheduling.project_manager;
 
+import alma.xmlentity.XmlEntityStruct;
+
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 import alma.scheduling.master_scheduler.SchedulingException;
 
@@ -36,7 +38,10 @@ import alma.scheduling.master_scheduler.SchedulingException;
  * @author Allen Farris
  */
 public interface PipelineProxy {
-	public String processRequest(PipelineProcessingRequest request) throws SchedulingException;
+	public String processRequest(XmlEntityStruct request) throws SchedulingException;
+	//public String processRequest(PipelineProcessingRequest request) 
+    //    throws SchedulingException;
+
 	public PipelineStatus getStatus(String pipelineProcessingId);
 
 }

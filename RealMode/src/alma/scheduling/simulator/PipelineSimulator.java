@@ -27,6 +27,8 @@ package alma.scheduling.simulator;
 
 import java.util.logging.Logger;
 
+import alma.xmlentity.XmlEntityStruct;
+
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
@@ -70,6 +72,7 @@ public class PipelineSimulator implements PipelineProxy {
 	/**
 	 *
 	 */
+	//public String processRequest(XmlEntityStruct request)
 	public String processRequest(PipelineProcessingRequest request)
 		throws SchedulingException {
         // send out a pipeline event to say that its done processing
@@ -89,6 +92,11 @@ public class PipelineSimulator implements PipelineProxy {
         
 		return ppre.PipelineRequestId;
 	}
+	public String processRequest(XmlEntityStruct request)
+		throws SchedulingException {
+
+        return null;
+    }
 
 	/**
 	 *

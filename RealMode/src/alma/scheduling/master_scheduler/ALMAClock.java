@@ -63,6 +63,7 @@ public class ALMAClock extends ClockBase {
 		synchronize();
         this.container = container;
         this.logger = container.getLogger();
+        /*
         try {
             org.omg.CORBA.Object obj = container.getDefaultComponent("IDL:alma/acstime/Clock:1.0");
             alma.acstime.Clock acsclock = alma.acstime.ClockHelper.narrow(obj);
@@ -72,6 +73,7 @@ public class ALMAClock extends ClockBase {
             long now1 = now.get_sync(something);
             fits_str = acsclock.toISO8601(alma.acstime.TimeSystem.TSUTC,
                                               new alma.acstime.Epoch(now1));
+                                              */
             //logger.fine("SCHEDULING: time now is "+ fits_str);
             //DateTime dt = new DateTime(now1);
             //logger.fine("SCHEDULING: DateTime is now "+ dt.toString());
@@ -103,12 +105,13 @@ public class ALMAClock extends ClockBase {
             String sec = st.nextToken();
             logger.fine("SCHEDULING: sec now is "+ sec);
             */
-            DateTime dt = new DateTime(fits_str);
+            //DateTime dt = new DateTime(fits_str);
             //logger.fine("SCHEDULING: date time = "  + dt.toString());
-        }catch(Exception e) {
+/*        }catch(Exception e) {
             logger.severe("SCHEDULING: "+e.toString());
             e.printStackTrace();
         }
+*/        
 	}
 	
 	

@@ -115,6 +115,7 @@ public class ALMAArchive implements ArchiveProxy {
      *  @return SchedBlock[] The array of scheduling blocks.
      */
     public SchedBlock[] getSchedBlock() {
+        //String query = "*";
         String query = "/sbl:SchedBlock";
         String schema = "SchedBlock";
         String className = "alma.entity.xmlbinding.schedblock.SchedBlock";
@@ -362,16 +363,26 @@ public class ALMAArchive implements ArchiveProxy {
         return null;
     }
 
-    public PipelineProcessingRequest getPipelineProcessingRequest(String id) {
-        PipelineProcessingRequest ppr = null;
+    //public PipelineProcessingRequest getPipelineProcessingRequest(String id) {
+    public XmlEntityStruct getPipelineProcessingRequest(String id) {
+        logger.info("ALMAArchive: getting ppr");
+        //String className = "alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest";
+        //PipelineProcessingRequest ppr = null;
+        
+        XmlEntityStruct xmlstruct = retrieve(id);
+        return xmlstruct;
+        
+        //ppr = (PipelineProcessingRequest)convertToObject(xmlstruct.xmlString, className);
+        //return ppr;
+        /*
         PipelineProcessingRequest[] all_ppr = getPipelineProcessingRequest();
         for(int i=0; i < all_ppr.length; i++) {
             if(((String)all_ppr[i].getPipelineProcessingRequestEntity().getEntityId()).equals(id)){
-                ppr = (PipelineProcessingRequest)all_ppr[i];
+                //ppr = (PipelineProcessingRequest)all_ppr[i];
                 break;
             }
         }
-        return ppr;
+        */
         /*
         String query = "/PipelineProcessingRequest/PipelineProcessingRequestEntityT[@entityId=\""+id+"\"]";
         String schema = "PipelineProcessingRequest";

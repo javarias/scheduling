@@ -43,10 +43,9 @@ import alma.entity.xmlbinding.execblock.*;
  * @author Sohaila Roberts
  */
 public class ControlSimulator implements ControlProxy {
-//public class ControlSimulator extends BasicComponent implements ControlProxy {
 
-	private ClockSimulator clock;
-	private WeatherModel weather;
+    private ClockSimulator clock;
+    private WeatherModel weather;
     private ContainerServices container;
     private Logger logger;
     private ExecBlock eb;
@@ -55,6 +54,7 @@ public class ControlSimulator implements ControlProxy {
     private short ant_id =1;
 
 	/**
+     * Creates an instance of the scheduling ControlSimulator
 	 */
 	public ControlSimulator(ContainerServices cs) {
 		super();
@@ -65,6 +65,10 @@ public class ControlSimulator implements ControlProxy {
 	}
 
 	/**
+     * When the scheduling system is in simulation mode this function is 
+     * called from the ALMADispatcher.
+     * It simulates the control system sending an event and creating
+     * ExecBlocks.
 	 */
 	public void sendToControl(String id, STime time) {
         //create an ExecBlock

@@ -43,7 +43,7 @@ import alma.scheduling.NothingCanBeScheduledEvent;
 public class SchedulingPublisher {
     private Logger logger;
     private AbstractNotificationChannel sched_nc;
-    private SimpleSupplier supplier;
+    //private SimpleSupplier supplier;
 
 	/**
 	 * Create a Publisher object.
@@ -54,16 +54,9 @@ public class SchedulingPublisher {
         this.logger = container.getLogger();
 		logger.info("SCHEDULING: Scheduling Publisher has been created");
         /* Scheduling NC stuff */
-        //String[] eventType = new String[1];
-        //eventType[0] = "alma.scheduling.NothingCanBeScheduledEvent";
-        //if(isSimulation) { //create local channel
-            sched_nc = AbstractNotificationChannel.createNotificationChannel(
+        sched_nc = AbstractNotificationChannel.createNotificationChannel(
                 AbstractNotificationChannel.CORBA,
                     alma.scheduling.CHANNELNAME.value);
-        //} else { //create corba channel
-        //    sched_nc = new CorbaNotificationChannel(
-        //           alma.scheduling.CHANNELNAME.value);
-       // }
         /*
         String[] names = new String[3];
         names[SimpleSupplier.CHANNELPOS] = alma.scheduling.CHANNELNAME.value;
@@ -78,7 +71,6 @@ public class SchedulingPublisher {
 
     /** 
      * Use if using SimpleSupplier
-     */
     public void publish() {
         try {
             NothingCanBeScheduledEvent e = new NothingCanBeScheduledEvent(
@@ -89,12 +81,25 @@ public class SchedulingPublisher {
             logger.severe("SCHEDULING: Event not published!");
         }
     }
+     */
 
     public void publishEvent(String reason) {
         try {
             NothingCanBeScheduledEvent event = 
                         new NothingCanBeScheduledEvent(
                             NothingCanBeScheduledEnum.OTHER, 0, reason);
+            //sched_nc.publishEvent()
+            sched_nc.publish(event);
+            logger.info("SCHEDULING: Event sent.");
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Could not publish event. "+e.toString());
+        }
+    }
+
+    public void publishEvent(NothingCanBeScheduledEnum sched_enum, String comment) {
+        try {
+            NothingCanBeScheduledEvent event = 
+                        new NothingCanBeScheduledEvent(sched_enum, 0 , comment);
             //sched_nc.publishEvent()
             sched_nc.publish(event);
             logger.info("SCHEDULING: Event sent.");
@@ -118,6 +123,7 @@ public class SchedulingPublisher {
     }
 	
 	public static void main(String[] args) {
+        
 	}
 }
 

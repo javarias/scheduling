@@ -25,6 +25,8 @@
 
 package alma.scheduling.master_scheduler;
 
+import alma.xmlentity.XmlEntityStruct;
+
 import alma.Control.ExecBlockEvent;
 import alma.Control.CompletionStatus;
 
@@ -80,15 +82,23 @@ public class ProcessControlEvent implements Runnable {
         }
     }
     public void startPipeline(String id) {
-        PipelineProcessingRequest ppr = 
+        PipelineProcessingRequest ppr1 = 
             pipeline.createPipelineProcessingRequest();
         ReductionUnitT ru = new ReductionUnitT();
         ru.setEntityId(id);
-        ppr.setReductionUnit(ru);
-        //Store the ppr in the archive.
-        archive.addPipelineProcessingRequest(ppr);
+        ppr1.setReductionUnit(ru);
+        //Store the ppr1 in the archive.
+        archive.addPipelineProcessingRequest(ppr1);
+        
+        //PipelineProcessingRequest ppr2 = archive.getPipelineProcessingRequest(
+        //        ppr1.getPipelineProcessingRequestEntity().getEntityId());
+        
+        XmlEntityStruct ppr_struct = archive.getPipelineProcessingRequest(
+                ppr1.getPipelineProcessingRequestEntity().getEntityId());
+        
         try {
-            String res = pipeline.processRequest(ppr);
+            String res = pipeline.processRequest(ppr_struct);
+            //String res = pipeline.processRequest(ppr1);
             System.out.println("SCHEDULING: "+res);
         } catch (SchedulingException se) {
             se.printStackTrace();

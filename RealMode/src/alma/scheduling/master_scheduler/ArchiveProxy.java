@@ -25,6 +25,8 @@
  
 package alma.scheduling.master_scheduler;
 
+import alma.xmlentity.XmlEntityStruct; 
+
 import alma.Control.ExecBlockEvent;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.obsproject.ObsProject;
@@ -52,8 +54,11 @@ public interface ArchiveProxy {
 	SchedulingPolicy[] getSchedulingPolicy();
 
 	PipelineProcessingRequest[] getPipelineProcessingRequest();
-	PipelineProcessingRequest getPipelineProcessingRequest(String id);
-	void addPipelineProcessingRequest(PipelineProcessingRequest ppr);
+	
+    //PipelineProcessingRequest getPipelineProcessingRequest(String id);
+	XmlEntityStruct getPipelineProcessingRequest(String id);
+	
+    void addPipelineProcessingRequest(PipelineProcessingRequest ppr);
 	void updatePipelineProcessingRequest(PipelineProcessingRequest ppr);
 
 }

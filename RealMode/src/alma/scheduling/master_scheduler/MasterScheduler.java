@@ -496,11 +496,8 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
      * which ever type of scheduling mode they want, either dynamic, 
      * interactive or manual.
      */
-	//public void startInteractiveScheduling(XmlEntityStruct schedulingPolicy, 
-     //   String schedulingMode) throws InvalidOperation {
 	public void startInteractiveScheduling() throws InvalidOperation {
 
-        //startScheduler(schedulingMode);
         startScheduler("interactive");
         //get scheduling policy from schedulingPolicy arraylist then set it to start scheduling
 	}
