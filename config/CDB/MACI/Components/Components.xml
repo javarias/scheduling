@@ -60,7 +60,7 @@
             Container="java"/>
            
 <!-- ************ DATACAPTURER *********** -->
-      <_ Name="DATACAP1"   
+      <_ Name="OFFLINE_DATACAP1"   
             Code="alma.offline.DataCapturerImpl.DataCapturerHelper" 
             Type="IDL:alma/offline/DataCapturer:1.0" 
             Container="java"/>
