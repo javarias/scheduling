@@ -18,9 +18,6 @@ public class AlgorithmWeightsTab extends JScrollPane {
 
     private JTextField posElev, posMax, weather, spsb, spdb, dpsb, dpdb,
                        newProj, lastSB, pri;
-                       
-
-
 
     public AlgorithmWeightsTab(){
         super();
@@ -256,7 +253,7 @@ public class AlgorithmWeightsTab extends JScrollPane {
     public void setDPDBWeight(String s) {
         dpdb.setText(s);
     }
-    public void setNewProjWeight(String s) {
+    public void setNewProjectWeight(String s) {
         newProj.setText(s);
     }
     public void setLastSBWeight(String s) {

@@ -159,6 +159,14 @@ public class FrequencyBandTab extends JScrollPane {
         }
     }
     
+    /**
+     * For right now, assumes that the vector has 3*n entries
+     * where n is the number of frequency bands.
+     * This is because the template for the input file does
+     * not contain the Center & Bandwidth
+     * @param total The number of frequency bands
+     * @param v     The vector containing the frequency band info.
+     */
     public void setFrequencyValues(int total, Vector v) {
         JPanel ff_p;
         JLabel ff_l;

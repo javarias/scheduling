@@ -4,6 +4,7 @@ package alma.scheduling.planning_mode_sim.gui;
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.util.Vector;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -12,7 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JComboBox;
 
 public class SimulationPropertiesTab extends JScrollPane {
-    
+    private Vector fromFile;    
+
     private JTextField beginTime, endTime, freqBandSetup, projSetup,
                        advanceClockBy, longitude, latitude, altitude,
                        minElevAngle;
@@ -381,5 +383,10 @@ public class SimulationPropertiesTab extends JScrollPane {
 
     public void setAntennas(String s) {
         antennas.setValue(s);
+    }
+
+    public void loadValuesFromFile(Vector values) {
+        fromFile = values;
+
     }
 }
