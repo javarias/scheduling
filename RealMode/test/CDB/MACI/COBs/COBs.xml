@@ -66,8 +66,5 @@
       <_ Name="GETTELCALRESULTS1"  Code="GetTelCalResults"
                              Type="IDL:ALMA/TelCalPublisher/GetTelCalResults:1.0"
                              Activator="Activator"/>
-      <_ Name="PUBLISHTELCALEVENTS1"  Code="PublishTelCalEvents"
-                             Type="IDL:ALMA/TelCalPublisher/PublishTelCalEvents:1.0"
-                             Activator="Activator"/>
                              
 </COBs>
