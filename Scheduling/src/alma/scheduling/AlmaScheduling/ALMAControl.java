@@ -62,8 +62,7 @@ public class ALMAControl implements Control {
         try {
         //alma/Control/ControlSystemHelper
             control_system = alma.Control.ControlSystemHelper.narrow(
-                containerServices.getDefaultComponent(
-                    "IDL:alma/Control/ControlSystem:1.0"));
+                containerServices.getComponent("ControlSystem"));
             logger.info("SCHEDULING: Got ControlSystem Component");
         } catch (ContainerException ce) {
             logger.severe("SCHEDULING: error getting ControlSystem Component.");

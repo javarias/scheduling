@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Components  xmlns="urn:schemas-cosylab-com:Components:1.0"
+       xmlns:cdb="urn:schemas-cosylab-com:CDB:1.0" 
+       xmlns:baci="urn:schemas-cosylab-com:BACI:1.0" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!--
+        <_ Name="EXEC_OPERATORSERVER"
+                Code="alma.exec.OperatorServerImpl.OperatorServerHelper"
+                Type="IDL:alma/exec/Operator:1.0"
+                Container="java"/>            
+        <_ Name="EXEC_OPERATORSERVERPRIVILEGED"
+                Code="alma.exec.OperatorServerPrivilegedImpl.OperatorServerPrivilegedHelper"
+                Type="IDL:alma/exec/Operator:1.0"
+                Container="java"/>            
+
+        <_ Name="OPERATOR"
+                Code="alma.exec.OperatorImpl.OperatorHelper"
+                Type="IDL:alma/exec/Operator:1.0"
+                Container="ExecMasterInProcessContainer"/>            
+        <_ Name="USERADMIN"
+                Code="alma.exec.UserAdminImpl.UserAdminHelper"
+                Type="IDL:alma/exec/UserAdmin:1.0"
+                Container="java"/>            
+        <_ Name="USERADMIN_PRIVILEGED"
+                Code="alma.exec.UserAdminPrivilegedImpl.UserAdminPrivilegedHelper"
+                Type="IDL:alma/exec/UserAdminPrivileged:1.0"
+                Container="java"/> 
+                -->
+      <_ Name="SCHEDULINGMASTERCOMPONENT"
+            Code="alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper"
+            Type="IDL:alma/scheduling/SchedulingMasterComponent:1.0"
+            Container="java"/>
+
+      <_ Name="MasterScheduler"
+            Code="alma.scheduling.AlmaScheduling.MasterSchedulerIFHelper"
+            Type="IDL:alma/scheduling/MasterSchedulerIF:1.0"
+            Container="java" />
+      <_ Name="OBS_PROJ_REP"
+            Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
+            Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
+            Container="java"/>
+     <_ Name="IDENTIFIER_ARCHIVE"
+            Code="alma.archive.helpers.IdentifierHelper"
+            Type="IDL:alma/xmlstore/Identifier:1.0"
+            Container="java"
+            Default="true"/>
+      <_ Name="ARCHIVE_CONNECTION"
+            Code="alma.archive.helpers.ArchiveConnectionHelper"
+            Type="IDL:alma/xmlstore/ArchiveConnection:1.0"
+            Container="java"
+            Default="true"/>
+      <_ Name="ACSEVENTADMIN"	
+            Code="acsncImpl.ACSEventAdmin" 
+            Type="IDL:alma/acsnc/ACSEventAdmin:1.0" 
+            Container="python"
+			Default="true"/>    
+      <_ Name="PIPELINE_SCIENCE" 
+            Code="alma.pipelinescience.components.SciencePipelineHelper"
+            Type="IDL:alma/pipelinescience/SciencePipeline:1.0"
+            Container="java"/>
+      <_ Name="ControlSystem" 
+            Code="alma.Control.masterController.ControlSystemHelper"
+            Type="IDL:alma/Control/ControlSystem:1.0"
+            Container="java" />
+      <_ Name="ArrayController" 
+            Code="alma.Control.arrayInterfaces.ArrayControllerHelper"
+            Type="IDL:alma/Control/ArrayController:1.0"
+            Container="java"/>
+      <_ Name="*" 
+            Code="alma.Control.DelayServerImpl.DelayServerHelper"
+            Type="IDL:alma/Control/DelayServer:1.0"
+            Container="java"/>
+     <_ Name="OBSERVATION_CONTROL_SIM"
+             Code="alma.Correlator.ObservationControl"
+             Type="IDL:alma/Correlator/ObservationControl:1.0"
+             Container="java"/> 
+             <!--
+     <_ Name="GETTELCALRESULTS1"   
+             Code="alma.TelCalPublisher.GetTelCalResultsImpl.GetTelCalResultsHelper" 
+             Type="IDL:alma/TelCalPublisher/GetTelCalResults:1.0" 
+             Container="java"/>      
+      <_ Name="TELCAL_RECEIVED_NC_1"    
+             Code="ReceivingDataManager"
+             Type="IDL:alma/TelCalReceivedNC/ReceivingDataManager:1.0"
+             Container="cpp"/>
+             -->
+</Components>

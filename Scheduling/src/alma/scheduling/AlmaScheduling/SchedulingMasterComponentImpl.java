@@ -122,7 +122,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         // quantity from a list of substate names. This is probably easy
         // but not obvious.
         //
-
+        /*
         String startHi = SUBSYSSTATE_AVAILABLE.value + "/" +
             SUBSYSSTATE_OPERATIONAL.value;
         String stopHi = SUBSYSSTATE_AVAILABLE.value + "/" +
@@ -170,6 +170,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         } catch (Exception e) {
             m_logger.warning ("schedtest: failed to update state hierarchy");
         }
+        */
 
     }
     ////////////////////////////////////////////////////////////////
