@@ -50,6 +50,17 @@
             Type="IDL:alma/Control/ArrayController:1.0"
             Container="python"/>
 
+      <_ Name="ARCHIVE_CONNECTION"
+            Code="Acssim.Servants.Simulator"
+            Type="IDL:alma/xmlstore/ArchiveConnection:1.0"
+            Container="python"
+            Default="true"/>
+
+      <_ Name="OPERATIONAL"
+            Code="Acssim.Servants.Simulator"
+            Type="IDL:alma/xmlstore/Operational:1.0"
+            Container="python"
+            Default="true"/>
 
 
             <!--
