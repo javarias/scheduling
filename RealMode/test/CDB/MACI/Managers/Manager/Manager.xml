@@ -16,6 +16,7 @@
 	<cdb:_ string="IDENTIFIER_ARCHIVE"/>
 	<cdb:_ string="OPERATIONAL_ARCHIVE"/>
 	<cdb:_ string="SCIENCE_PIPELINE"/>
+	<cdb:_ string="ControlSystem1"/>
 	<cdb:_ string="ArrayController1"/>
   </Startup>
   <Execute>
