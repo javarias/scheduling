@@ -1,3 +1,28 @@
+/**
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * All rights reserved
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ * 
+ * File SchedTest1.java
+ * 
+ */
 package alma.scheduling.test;
 
 import java.net.InetAddress;
@@ -13,8 +38,13 @@ import alma.entity.xmlbinding.execblock.ExecBlock;
 import alma.entity.xmlbinding.execblock.ExecBlockEntityT;
 import alma.entity.xmlbinding.obsproject.types.SchedStatusT;
 import alma.entity.xmlbinding.obsproject.ObsUnitControl;
-//import alma.entity.xmlbinding.obsproject.ObsUnitT;
 
+/**
+ *  Tests creating a SchedBlock & its execution block, changing its status 
+ *  and storing it all in the archive.
+ *
+ *  @author Sohaila Roberts
+ */
 public class SchedTest1 {
     private MasterScheduler masterScheduler;
     private ArchiveProxy archive;
@@ -59,6 +89,7 @@ public class SchedTest1 {
         masterScheduler.assignId(exec_entity);
         exec.setExecBlockEntityT(exec_entity);
         exec.setSchedBlockId(sb.getSchedBlockEntity().getEntityId());
+        //exec.setSchedBlockId(sb.getId()); //will be this when using sched block wrapper clases
         setSBStatus(sb, SchedStatusT.READY);
         archive.store(exec, exec_entity);
         archive.update(sb, sb.getSchedBlockEntity());
@@ -76,7 +107,6 @@ public class SchedTest1 {
                     "corbaloc::" + InetAddress.getLocalHost().getHostName() + ":3000/Manager",
                         "SchedTest1");
                         
-            //SchedTest1 test1 = new SchedTest1(client);
             MasterScheduler ms = new MasterScheduler();
             ms.setComponentName("SchedTest1");
             ms.setContainerServices(client.getContainerServices());

@@ -37,7 +37,13 @@ import alma.acs.container.ContainerServices;
 public class TelescopeOperatorProxy
 	implements Scheduling_to_TelescopeOperator {
 
+    private TemporaryExecutive executive;
+    private MessageQueue messageQueue;
+    private ContainerServices containerServices;
+
+
 	public TelescopeOperatorProxy (boolean isSimulation, ContainerServices container) {
+        this.containerServices = container;
 		System.out.println("The TelescopeOperatorProxy has been constructed.");
 	}
 
@@ -50,16 +56,19 @@ public class TelescopeOperatorProxy
 	/**
 	 * @see master_scheduler.Scheduling_to_TelescopeOperator#SelectSB(String[], String)
 	 */
-	public void selectSB(String[] sbIdList, String messageId) {
+	public String selectSB(String[] sbIdList, String messageId) {
         Thread timer = new Thread(new SelectSBTimer(5*60*1000)); //5 minutes in milliseconds
-        messageQueue.add(messageId, timer);
+        //System.out.println("Timer thread created");
+        //messageQueue.addMessage(messageId, timer);
         timer.start();
-        //executive.selectSB(sbIdList, messageId);
+        Message m = messageQueue.getMessage(messageId);
+        m.setThread(timer);
+        executive.selectSB(sbIdList, messageId);
         try {
             timer.join();
         } catch(InterruptedException e) {
         }
-        //return messageQueue.getMessage(messageId).getReply();
+        return messageQueue.getMessage(messageId).getReply();
 
 	}
 
@@ -70,12 +79,21 @@ public class TelescopeOperatorProxy
 	}
 
 	/**
-	 * @see master_scheduler.Scheduling_to_TelescopeOperator#comfirmSubarrayCreation(short[], String)
+	 * @see master_scheduler.Scheduling_to_TelescopeOperator#confirmSubarrayCreation(short[], String)
 	 */
-	public void comfirmSubarrayCreation(
+	public void confirmSubarrayCreation(
 		short[] antennaIdList,
 		String messageId) {
 	}
+
+    public void setExecutive(TemporaryExecutive exec) {
+        this.executive = exec;
+        System.out.println("exec set in operator");
+    }
+    public void setMessageQueue(MessageQueue mq) {
+        this.messageQueue = mq;
+        System.out.println("Message queue set in operator");
+    }
 
 	public static void main(String[] args) {
 	}

@@ -2,4 +2,5 @@ PROLOGUE prologue
 testscript1
 testscript2
 testscript3
+testscript4
 EPILOGUE epilogue
