@@ -93,7 +93,6 @@ public class TestALMAStartScheduling {
             client.getContainerServices().releaseComponent("PIPELINE_SCIENCE");
             client.getContainerServices().releaseComponent("MasterScheduler");
 
-            System.out.println("IMPORTANT INFO: all interesting output from this test will be in the sched_javaContainer.log in the test directory.");
         } catch(Exception e) {
         }
     }

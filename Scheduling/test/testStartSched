@@ -1,3 +1,5 @@
 #! /bin/bash
 
 acsStartJava -endorsed alma.scheduling.test.TestALMAStartScheduling
+
+grep SCHEDULING sched_javaContainer.log

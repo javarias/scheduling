@@ -17,11 +17,11 @@ SCHEDULING: Message queue created
 ----------T--:--:--.--- INFO: SCHEDULING: Got 4 antennas
 SCHEDULING: array controller id = 1
 ----------T--:--:--.--- INFO: SCHEDULING: Running in DYNAMIC mode
-----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-14] (subarray 1): Configuration object validated.
-----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-14] (subarray 1): Dynamic scheduling algorithm created.
-----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-14] (subarray 1): Started ----------T--:--:--
+----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-**] (subarray 1): Configuration object validated.
+----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-**] (subarray 1): Dynamic scheduling algorithm created.
+----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-**] (subarray 1): Started ----------T--:--:--
 ----------T--:--:--.--- INFO: SCHEDULING: list length == 1
-----------T--:--:--.--- INFO: SCHEDULING: ** Scheduler [Thread-14] (subarray 1): best list:
+----------T--:--:--.--- INFO: SCHEDULING: ** Scheduler [Thread-**] (subarray 1): best list:
 ----------T--:--:--.--- INFO: SCHEDULING: in MS. MessageID = uid://X----------------/X--------
 ----------T--:--:--.--- INFO: SCHEDULING: in MS. Reply (sb id) = uid://X----------------/X--------
 ----------T--:--:--.--- INFO: SCHEDULING: in MS. messageQueue size = 1
@@ -52,9 +52,9 @@ SCHEDULING: time is : ----------T--:--:--
 ----------T--:--:--.--- INFO: SCHEDULING: about to update PS::uid://X----------------/X--------
 ----------T--:--:--.--- INFO: SCHEDULING: PPR created with id = uid://X----------------/X--------
 ----------T--:--:--.--- INFO: SCHEDULING: result returned from Pipeline = uid://X----------------/X--------
-----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-14] (subarray 1): executing uid://X----------------/X--------
+----------T--:--:--.--- INFO: SCHEDULING: Scheduler [Thread-**] (subarray 1): executing uid://X----------------/X--------
 ----------T--:--:--.--- INFO: SCHEDULING: list length == 0
 ----------T--:--:--.--- INFO: SCHEDULING: Nothing Can Be Scheduled Event sent out, in R2aPolicy
-----------T--:--:--.--- INFO: SCHEDULING: ** Scheduler [Thread-14] (subarray 1): ----------T--:--:--: There are no visible targets at this time. 
+----------T--:--:--.--- INFO: SCHEDULING: ** Scheduler [Thread-**] (subarray 1): ----------T--:--:--: There are no visible targets at this time. 
 ----------T--:--:--.--- INFO: SCHEDULING: stop
 ----------T--:--:--.--- INFO: SCHEDULING: Scheduler has ended at ----------T--:--:--
