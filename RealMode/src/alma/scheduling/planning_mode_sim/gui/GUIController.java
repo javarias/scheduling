@@ -72,7 +72,7 @@ public class GUIController implements Runnable {
     
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(
-            "alma/scheduling/planning_mode_sim/image/"+name);
+            "alma/scheduling/image/"+name);
     }
 
     private void getTabs() {
@@ -93,18 +93,6 @@ public class GUIController implements Runnable {
     }
 
     protected void saveToFile(String filename) {
-        /*
-        Component[] comp1 = gui.getComponents();
-        JRootPane rp = (JRootPane)comp1[0];
-        Component[] comp2 = rp.getComponents();
-        JLayeredPane lp = (JLayeredPane)comp2[1];
-        Component[] comp3 = lp.getComponents();
-        JPanel p = (JPanel)comp3[0];
-        Component[] comp4 = p.getComponents();
-        JTabbedPane tp = (JTabbedPane)comp4[1];
-        Component[] comp5 = tp.getComponents();
-        */
-        
         //Simulation Properties tab
         stuffFromSimulationPropertiesTab();
         
@@ -422,18 +410,34 @@ public class GUIController implements Runnable {
                     while(token.hasMoreElements()) {
                         s = token.nextToken();
                     }
-                    
                 }
-                //System.out.println(s);
                 s = s.trim();
-                int totaltargets = Integer.parseInt(s);
+                int totalsets = Integer.parseInt(s);
                 //add proj info line
                 tab5.add(fileproperties.getProperty(Tag.project+"."+i)); 
                 //add target stuff
-                for(int j=0; j<totaltargets; j++) {
-                    tab5.add(fileproperties.getProperty(Tag.target+"."+i+"."+j));
+                for(int j=0; j<totalsets; j++) {
+                    s = fileproperties.getProperty(Tag.set+"."+i+"."+j);
+                    tab5.add(s);
+                    token = new StringTokenizer(s,";");
+                    if(token.countTokens() !=5 ) {
+                        throw new Exception("Incorrect input data file.");
+                    } else if (token.countTokens() == 5 ) {
+                        while(token.hasMoreElements()) {
+                            s = token.nextToken();
+                        }
+                    }
+                    s = s.trim();
+                    int totaltargets = Integer.parseInt(s);
+                    for(int k=0; k < totaltargets; k++) {
+                        s = fileproperties.getProperty(Tag.target+"."+i+"."+j+"."+k);
+                        tab5.add(s);
+                    }
                 }
             }
+            //for(int i=0; i < tab5.size(); i++) {
+            //    System.out.println(tab5.elementAt(i));
+            //}
             projTab.loadValuesFromFile(tab5);
         
         ////////////////////////////////////////////////////////////

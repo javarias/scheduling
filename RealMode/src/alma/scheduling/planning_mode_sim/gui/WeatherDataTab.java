@@ -36,9 +36,9 @@ public class WeatherDataTab extends JScrollPane {
         JPanel main = new JPanel(new BorderLayout());
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.WEST;
+        //c.anchor = GridBagConstraints.WEST;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0; c. weighty = 1.0;
+        c.weightx = 1.0;// c. weighty = 1.0;
         JPanel panelThree_gridPanel = new JPanel();
         panelThree_gridPanel.setLayout(gridbag);
         /////////////////////////////////////////
@@ -97,14 +97,11 @@ public class WeatherDataTab extends JScrollPane {
         main.add(addWeatherFunctions(1), BorderLayout.CENTER);
         return main;
     }
-
-
-
     
     private JPanel addWeatherFunctions(int i) {
         // TODO: when more than one function, must clean before redo
         //weatherFields
-        weatherFields.setLayout(new GridLayout(10,4));
+        weatherFields.setLayout(new GridLayout(12,4));
         JLabel l; 
         /////////////////////////////////////////
         l = new JLabel();               weatherFields.add(l);
@@ -144,6 +141,16 @@ public class WeatherDataTab extends JScrollPane {
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("t1");           weatherFields.add(l);
         t1 = new JTextField("");        weatherFields.add(t1);
+        /////////////////////////////////////////
+        l = new JLabel();               weatherFields.add(l);
+        l = new JLabel();               weatherFields.add(l);
+        l = new JLabel();               weatherFields.add(l);
+        l = new JLabel();               weatherFields.add(l);
+        /////////////////////////////////////////
+        l = new JLabel();               weatherFields.add(l);
+        l = new JLabel();               weatherFields.add(l);
+        l = new JLabel();               weatherFields.add(l);
+        l = new JLabel();               weatherFields.add(l);
         /////////////////////////////////////////
         return weatherFields;
     }

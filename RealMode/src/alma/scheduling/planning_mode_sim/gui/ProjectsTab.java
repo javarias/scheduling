@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 
 public class ProjectsTab extends JScrollPane {
@@ -36,6 +38,15 @@ public class ProjectsTab extends JScrollPane {
     public JPanel createView() {
 
         projectPane = new JTabbedPane();
+        /*
+        projectPane.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                JTabbedPane pane = (JTabbedPane)e.getSource();
+                int i = pane.getSelectedIndex();
+                JScrollPane scroll = (JScrollPane)pane.getComponent(i);
+                pane.setSelectedComponent(scroll);
+            }
+        });*/
         panelFive_main = new JPanel(new BorderLayout());
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -73,7 +84,7 @@ public class ProjectsTab extends JScrollPane {
                         projectPane.removeAll();
                     }catch(Exception ex) {}
                     for(int x=0; x< i; x++) {
-                        projectPane.addTab(""+(x+1)+"", addProjectTab());
+                        projectPane.add("Project "+(x+1),addProjectTab());
                     }
                     panelFive_main.add(projectPane, BorderLayout.CENTER);
                     panelFive_main.validate();
@@ -92,7 +103,7 @@ public class ProjectsTab extends JScrollPane {
         panelFive_main.add(header, BorderLayout.NORTH);
         return panelFive_main;
     }
-
+    
     private JScrollPane addProjectTab() {
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -122,7 +133,7 @@ public class ProjectsTab extends JScrollPane {
         tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
-        l = new JLabel("# of Targets");
+        l = new JLabel("# of Sets");
         gridbag.setConstraints(l,c);
         p.add(l);
         tf = new JTextField("");
@@ -130,20 +141,19 @@ public class ProjectsTab extends JScrollPane {
             public void actionPerformed(ActionEvent e) {
                 JTextField tf = (JTextField)e.getSource();
                 String s = tf.getText();
-                int i = Integer.parseInt(s);
-                JPanel p1 = (JPanel)tf.getParent(); //main panel
-                JPanel tmp1 = (JPanel)p1.getParent();
+                int sets = Integer.parseInt(s);
+                JPanel p1 = (JPanel)tf.getParent();
+                JPanel projPanel = (JPanel)p1.getParent();
                 try {
-                    tmp1.remove(1);
+                    projPanel.remove(1);
                 } catch(Exception ex) {}
-                JPanel p2 = new JPanel(new GridLayout(i,1));
-                JPanel tmp;
-                for(int x = 0; x < i; x++) {
-                    tmp = addTargetsField();
-                    p2.add(tmp);
+                JTabbedPane setsPane = new JTabbedPane();
+                for(int i=0; i < sets; i++) {
+                    setsPane.addTab("Set "+(i+1), addSetPanel());
                 }
-                tmp1.add(p2);
-                //tmp1.getParent().validate();
+                projPanel.add(setsPane);
+                projPanel.validate();
+                
             }
         });
         c.gridwidth= GridBagConstraints.REMAINDER;
@@ -153,6 +163,96 @@ public class ProjectsTab extends JScrollPane {
         /////////////////////
         JScrollPane pane = new JScrollPane(main);
         return pane;
+    }
+
+    public JScrollPane addSetPanel() {
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0; c.weighty = 1.0;
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel p = new JPanel(gridbag);
+        ///////////////////
+        JLabel l; JTextField tf;
+        c.gridwidth = 1;
+        l = new JLabel("Name of Set");
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        p.add(tf);
+        l = new JLabel();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        l= new JLabel("Frequency Band");
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        p.add(tf);
+        l= new JLabel("Frequency");
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(tf,c);
+        p.add(tf);  
+        l= new JLabel("Weather Condition");
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        JComboBox cb = new JComboBox();
+        cb.addItem("Exceptional");
+        cb.addItem("Excellent");
+        cb.addItem("Good");
+        cb.addItem("Average");
+        cb.addItem("Below Ave.");
+        cb.addItem("Poor");
+        cb.addItem("Dismal");
+        cb.addItem("Any");
+        cb.setSelectedItem("Any");
+        gridbag.setConstraints(cb,c);
+        p.add(cb);
+        l= new JLabel("# of Targets");
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(tf,c);
+        tf.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JTextField tf = (JTextField)e.getSource();
+                String s = tf.getText();
+                int targets = Integer.parseInt(s);
+                JPanel p1 = (JPanel)tf.getParent(); //main panel
+                JPanel tmp1 = (JPanel)p1.getParent();
+                try {
+                    tmp1.remove(1);
+                } catch(Exception ex) {}
+                JPanel p2 = new JPanel(new GridLayout(targets,1));
+                JPanel tmp;
+                for(int i=0; i < targets; i++) {
+                    tmp = addTargetsField();
+                    p2.add(tmp);
+                }
+                tmp1.add(p2);
+                tmp1.getParent().validate();
+            }
+        });
+        p.add(tf);  
+        l = new JLabel("-----");
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        
+        main.add(p, BorderLayout.NORTH);
+        ///////////////////
+        JScrollPane pane = new JScrollPane(main);
+        return pane;
+        
     }
 
     private JPanel addTargetsField() {
@@ -340,10 +440,10 @@ public class ProjectsTab extends JScrollPane {
         }catch(Exception ex) {}
         
         int counter = v.size();
-        String s, targets="";
-        StringTokenizer token, tmp;
-        int totalproj=1, totaltargets=0, i=0;
-        Vector projTargets;
+        String s, sets="", targets="";
+        StringTokenizer token, tmp, tmp2;
+        int totalproj=1,totalSets=0, totaltargets=0, i=0;
+        Vector projTargets, projSets;
         while(counter > 0) {
             s = (String)v.elementAt(i++);
             counter--;
@@ -351,29 +451,104 @@ public class ProjectsTab extends JScrollPane {
             token = new StringTokenizer(s,";");
             tmp = new StringTokenizer(s,";");
             
-            while(tmp.hasMoreTokens()){
-                targets = tmp.nextToken();
-                //System.out.println(targets);
-            }
-            //System.out.println(targets +" = final");
-            totaltargets = Integer.parseInt(targets.trim());
-            projTargets = new Vector(totaltargets);
-            for(int t=0; t < totaltargets; t++) {
-                projTargets.add((String)v.elementAt(i++));
-                counter--;
-            }
-            //System.out.println("I = "+i);
-            projectPane.add(""+totalproj+"", updateProjectTab(token, projTargets));
+            projectPane.add("Project "+totalproj, updateProjectTab(token));//, projTargets));
             totalproj++;
+            
+            while(tmp.hasMoreTokens()){
+                sets = tmp.nextToken();
+            }
+
+            totalSets = Integer.parseInt(sets.trim());
+            projSets = new Vector(totalSets);
+            for(int t=0; t < totalSets; t++) {
+                s = (String)v.elementAt(i++);
+                counter--;
+                JScrollPane projectTab = (JScrollPane)projectPane.getComponentAt(totalproj-2); //coz totalproj starts at 1 and has already been incremented & getComponent starts at 0.
+                System.out.println(projectTab.getClass().getName());
+                projSets.add(s);
+                updateSetsTab(s, (t+1), projectTab);
+                tmp2 = new StringTokenizer(s,";");
+                while(tmp2.hasMoreElements()) {
+                    targets = tmp2.nextToken();
+                }
+                totaltargets = Integer.parseInt(targets.trim());
+                for(int k=0; k< totaltargets; k++) {
+                    //get target
+                    s = (String)v.elementAt(i++);
+                    counter--;
+                }
+            }
             
         }
         panelFive_main.add(projectPane, BorderLayout.CENTER);
+    }
 
-
+    public void updateSetsTab(String setString, int setNum, JScrollPane projectTab) {
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0; c.weighty = 1.0;
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel p = new JPanel(gridbag);
+        ///////////////////
+        JLabel l; JTextField tf;
+        c.gridwidth = 1;
+        l = new JLabel("Name of Set");
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        p.add(tf);
+        l = new JLabel();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        l= new JLabel("Frequency Band");
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        p.add(tf);
+        l= new JLabel("Frequency");
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(tf,c);
+        p.add(tf);  
+        l= new JLabel("Weather Condition");
+        c.gridwidth = 1;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        JComboBox cb = new JComboBox();
+        cb.addItem("Exceptional");
+        cb.addItem("Excellent");
+        cb.addItem("Good");
+        cb.addItem("Average");
+        cb.addItem("Below Ave.");
+        cb.addItem("Poor");
+        cb.addItem("Dismal");
+        cb.addItem("Any");
+        cb.setSelectedItem("Any");
+        gridbag.setConstraints(cb,c);
+        p.add(cb);
+        l= new JLabel("# of Targets");
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        tf = new JTextField();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(tf,c);
+        p.add(tf);
+        main.add(p);
+        projectTab.add(main);
+        projectTab.getParent().validate();
     }
 
 
-    public JScrollPane updateProjectTab(StringTokenizer token, Vector t) {
+    public JScrollPane updateProjectTab(StringTokenizer token) {//, Vector t) {
         
         //StringTokenizer token = new StringTokenizer(s,";");
         
@@ -405,19 +580,19 @@ public class ProjectsTab extends JScrollPane {
         tf = new JTextField((token.nextToken()).trim());
         gridbag.setConstraints(tf,c);
         p.add(tf);
-        l = new JLabel("# of Targets");
+        l = new JLabel("# of Sets");
         gridbag.setConstraints(l,c);
         p.add(l);
-        String targets = token.nextToken();
-        int targetcount = Integer.parseInt(targets.trim());
-        tf = new JTextField(targets.trim());
+        String sets = token.nextToken();
+        int setscount = Integer.parseInt(sets.trim());
+        tf = new JTextField(sets.trim());
         c.gridwidth= GridBagConstraints.REMAINDER;
         gridbag.setConstraints(tf,c);
         p.add(tf);
 
         main.add(p, BorderLayout.NORTH);
         
-        main.add(updateTargetsField(targetcount, t));
+        //main.add(updateTargetsField(targetcount, t));
 
         JScrollPane pane = new JScrollPane(main);
         return pane;
