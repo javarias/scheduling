@@ -1,0 +1,21 @@
+#! /bin/bash
+
+#Set my CDB
+ACS_CDB=../config
+
+#Start ACS & the Manager
+acsStart >& sched_acsStart.log
+
+#Get the instance which ACS started on
+export ACS_INSTANCE=`grep "For this ACS session, please do an" sched_acsStart.lo
+g | cut -d\' -f2 | cut -d= -f2`
+
+#Save the instance var to a file for easy access
+echo $ACS_INSTANCE > sched_acs_instance.log
+
+#Start a java container named 'java'
+acsStartContainer -java java & >& sched_javaContainer.log
+
+#sleep for 10 seconds to make sure the container comes up! 
+#Hopefully it won't take more than 10 seconds! 
+sleep 10
