@@ -17,15 +17,18 @@
 #------------------------------------------------------------------------
 
 #
-# Modules in the various ACS sub-packages.
+# Modules in the various SCHEDULING sub-packages.
 #
-MODULES_SCHED = master_scheduler project_manager scheduler simulator
-#MODULES_TOOLS = emacs doxygen 
+#MODULES_SCHED = ../SCHEDULING
+#MODULES_KIT = vlt doc acs acstempl
+#MODULES_TOOLS = cmm emacs compat doxygen tat expat loki
+#MODULES_ACS = acsutil logging acserr cdb recovery baci enumprop maci acsdo acsnc acslog acsexmpl abeans objexp adminc jlog abeansgen acspy xmljbind comphelpgen XmlIdl define acstestentities jcont jcontexmpl
 
-MODULES =  $(foreach sched, $(MODULES_SCHED), src/alma/scheduling/$(sched)) \
+MODULES = ../SCHEDULING
+#MODULES =  $(foreach kit, $(MODULES_KIT), Kit/$(kit)) \
 #           $(foreach tools, $(MODULES_TOOLS), Tools/$(tools)) \
-           $(foreach acs, $(MODULES_ACS), CommonSoftware/$(acs)) \
-           acsBUILD
+#           $(foreach acs, $(MODULES_ACS), CommonSoftware/$(acs)) \
+#           acsBUILD
 
 
 MAKE_FLAGS = "-k"
@@ -49,37 +52,15 @@ ifeq ($(os),SunOS)
 	realtime=YES
 endif
 
-#
-#
-# what's the intelligence from pkginBuild ?
-# you want the four targets: clean, all, install, test
-# where test is the most controversial
-# FEATURES:
-# o   recognize if you live on SunOS
-#     and set the compiler accordingly
-#     (that's already done at local Makefile level)
-# o   turn verbose on and off 
-# o   have logging into some well defined place
-# o   set specialized variables for CXX/CC/JAVA
-#
-#
-# following example for Workstation
-#
-
-#
-# This target just forward any make target to all modules
-#
-
-
 define canned
-	@$(ECHO) "############ Executing '$@' on all ACS modules #################"
+	@$(ECHO) "############ Executing '$@' on all SCHEDULING modules #################"
 	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
 		    $(ECHO) "############ $${member}" ;\
 		    if [ ! -d $${member} ]; then \
                          echo "### ==> $${member} MODULE NOT FOUND! FAILED! " | tee -a build.log;\
                     fi;\
-		    if [ -f $${member}/Makefile ]; then \
-			$(MAKE) $(MAKE_FLAGS) -C $${member} $@ || break ;\
+		    if [ -f $${member}/src/Makefile ]; then \
+			$(MAKE) $(MAKE_FLAGS) -C $${member}/src/ $@ || break ;\
 		    elif [ -f $${member}/ws/src/Makefile ]; then \
 			$(MAKE) $(MAKE_FLAGS) -C $${member}/ws/src/ $@ || break ;\
 		    fi;\
@@ -93,7 +74,7 @@ endef
 
 
 #
-# This target builds and installs the complete ACS 
+# This target builds and installs the complete SCHEDULING 
 # on a clean directory structure.
 # Per each module it executes:
 #    make clean all man install clean
@@ -102,7 +83,7 @@ build:   	clean_log checkModuleTree prepare update
 	@$(ECHO) "... done"
 
 #
-# This target re-builds and installs the complete ACS 
+# This target re-builds and installs the complete SCHEDULING 
 # on an existing directory structure.
 # Per each module it executes:
 #    make clean all man install clean
@@ -137,7 +118,7 @@ checkModuleTree:
 
 
 #
-# Before being able to cleanly build and install ACS I need to have available
+# Before being able to cleanly build and install SCHEDULING I need to have available
 # - the directory trre
 # - the Kit modules: vlt doc acs acstempl
 #   Nodice that vlt and doc have a circular dependency
@@ -154,7 +135,7 @@ prepare:
 # Update of all core components
 #
 update:	
-	@$(ECHO) "############ (Re-)build ACS Software         #################"| tee -a build.log
+	@$(ECHO) "############ (Re-)build SCHEDULING Software         #################"| tee -a build.log
 	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
 		    if [ ! -d $${member} ]; then \
                          echo "### ==> $${member} MODULE NOT FOUND! FAILED! " | tee -a build.log;\
@@ -197,7 +178,7 @@ $(Test):
 	@$(ECHO) "############ Clean Test Log File: test.log #################"
 	@rm -f test.log
 	@touch test.log
-	@$(ECHO) "############ TEST ACS Software #################"| tee -a test.log
+	@$(ECHO) "############ TEST SCHEDULING Software #################"| tee -a test.log
 	@for member in $(foreach name,$(MODULES),$(name)); do\
 		if [ -d $${member}/ws/test ]; then\
 			$(ECHO) "############ $${member}/ws/test WS TEST ############" | tee -a test.log ;\
