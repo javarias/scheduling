@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.4 2004/09/14 16:45:31 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.5 2004/09/15 13:29:53 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -16,7 +16,6 @@
 #    None
 #------------------------------------------------------------------------
 
-CDB_SCHEMAS = SCHEDULINGMASTERCOMPONENT
 
 DEBUG = on
 #COMPONENT_HELPERS=on

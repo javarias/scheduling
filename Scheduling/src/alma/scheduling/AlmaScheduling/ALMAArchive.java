@@ -378,7 +378,7 @@ public class ALMAArchive implements Archive {
             containerServices.assignUniqueEntityId(session.getSession().getSessionEntity());
             XmlEntityStruct sessionStruct = entitySerializer.serializeEntity(
                 session.getSession(), session.getSession().getSessionEntity());
-            //System.out.println(sessionStruct.xmlString);
+            System.out.println("Storing: "+sessionStruct.xmlString);
             archOperationComp.store(sessionStruct);
             id = session.getSession().getSessionEntity().getEntityId();
             //System.out.println(sessionStruct.xmlString);
@@ -398,8 +398,9 @@ public class ALMAArchive implements Archive {
         return id;
     }
 
-    public Session querySession(String sbid) {
-        String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
+    public Session querySession(String execid) {
+        //String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
+        String query = "/se:Session/se:Execution/se:ExecBlockReference[@entityId='"+execid+"']";
         String schema = "Session"; 
         String className = new String("alma.entity.xmlbinding.session.Session");
         Session session = null;
@@ -412,7 +413,9 @@ public class ALMAArchive implements Archive {
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
                 try {
+                    logger.info("woo getting session!");
                     session = convertToSession1(res);
+                    logger.info("woo got session!");
                 }catch(Exception e) {
                     logger.severe("SCHEDULING: "+e.toString());
                 }
@@ -648,6 +651,7 @@ public class ALMAArchive implements Archive {
     private Session convertToSession2(XmlEntityStruct xml) throws Exception {
         ALMASession session=null;
         try {
+            logger.info(xml.xmlString);
             alma.entity.xmlbinding.session.Session s = (alma.entity.xmlbinding.session.Session) 
                 entityDeserializer.deserializeEntity(xml, Class.forName(
                     "alma.entity.xmlbinding.session.Session"));

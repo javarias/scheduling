@@ -199,9 +199,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void endSession(ExecBlockEvent e) {
         //query session object from the archive
-        Session s = archive.querySession(e.sbId);
+        try {
+        Session s = archive.querySession(e.execID);
         if(s != null) {
             logger.info("non-null session! ");
+        }
+        } catch(Exception ex) {
+            ex.printStackTrace();
         }
     //update session object and update it in the archive
     //archive.updateSession
