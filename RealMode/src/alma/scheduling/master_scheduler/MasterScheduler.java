@@ -129,6 +129,8 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
     private Logger logger;
     /** Time the MS thread sleeps */
     private int msSleepTime = 300000;//5 minute sleep
+    /** Scheduling Publisher */
+    private SchedulingPublisher s_publisher;
     
 	
 	private void setNullReferences() {
@@ -245,6 +247,8 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		// and an exception is thrown.
 		
 		try {
+            //create the scheduling notification channel.
+            s_publisher = new SchedulingPublisher(isSimulation, container);
             //get logger from container
             logger = container.getLogger();
 			// Create the Master SB queue.
@@ -819,7 +823,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         SBSubQueue subQueue = new SBSubQueue(subSBQueue);
         Scheduler s = new Scheduler(isSimulation, container, operator, 
                                         dispatcher, subQueue, messageQueue, 
-                                            clock, pi, mode); 
+                                            clock, pi, mode, s_publisher); 
         logger.info("SCHEDULING: New scheduler started.");
         logger.info("SCHEDULING: Start of new project.");
         Thread schedThread = new Thread(s);
