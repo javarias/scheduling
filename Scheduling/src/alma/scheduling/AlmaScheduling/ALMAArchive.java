@@ -131,6 +131,11 @@ public class ALMAArchive implements Archive {
         return projects;
     }
 
+    /**
+      * Gets all the project status objects from the archive.
+      * @return An array of all the project status objects
+      * @throws SchedulingExceptino
+      */
     public ProjectStatus[] getAllProjectStatus() throws SchedulingException {
         ProjectStatus[] projectStatus = null;
         Vector tmp_ps = new Vector();
@@ -158,6 +163,41 @@ public class ALMAArchive implements Archive {
         } catch(ArchiveInternalError e) {
              logger.severe("SCHEDULING: "+e.toString());
              throw new SchedulingException(e);
+        }
+        /**
+          * Temporary:
+          *     For R2, check to see if there is a project status for each
+          *     project. If there exists a project that doesn't have a project
+          *     status a new one is created and stored in the archive. 
+          */
+        Project[] tmpProjects = getAllProject();
+        if(tmpProjects.length < projectStatus.length) {
+            throw new SchedulingException("Cannot have more Project Status objects "+
+                    "than there are Project Objects in the archive!");
+        }
+        if(tmpProjects.length == projectStatus.length) { 
+            //same number for each, double check they match up!
+            boolean ok = true;
+            for(int i=0; i < tmpProjects.length; i++){
+                for(int j=0; j < projectStatus.length; j++){
+                    if(tmpProjects[i].getId() ==
+                            projectStatus.getProjectStatusEntity().getEntityId()) {
+                        //yes this project has a Project status!
+                        //break this for loop and go to next project now
+                        ok = true;
+                        break;
+                    } else {
+                        //this project doesn't match this project status
+                        //try again
+                        ok = false;
+                        //if this is the last project in the array we have run into a problem!
+                        //must figure out a way to correct this.. 
+                    }
+                }
+            }
+        } else (tmpProjects.length > projectStatus.length) {
+            //more projects than project status.. 
+            //create a project status & store in archive for project that doesn't have one.
         }
         return projectStatus;
     }

@@ -50,6 +50,7 @@ public class ALMAProjectManager extends ProjectManager {
     private ALMAArchive archive;
     private SBQueue sbQueue;
     private ProjectQueue pQueue;
+    private ProjectStatusQueue psQueue;
 
     public ALMAProjectManager(ContainerServices cs, ALMAArchive a, SBQueue q) {
         super();
@@ -57,6 +58,7 @@ public class ALMAProjectManager extends ProjectManager {
         this.logger = cs.getLogger();
         this.archive = a;
         this.sbQueue = q;
+        this.psQueue = new ProjectStatusQueue();
         this.pQueue = new ProjectQueue(pollArchive());
     }
 
@@ -92,6 +94,7 @@ public class ALMAProjectManager extends ProjectManager {
         try {
             String[] ids;
             projs = archive.getAllProject();
+            psQueue.add(archive.getAllProjectStatus());
             logger.info("SCHEDULING: projects = "+projs.length);
             SB[] sbs = getSBsFromProjects(projs);
             logger.info("SCHEDULING: total SBs = "+sbs.length);
