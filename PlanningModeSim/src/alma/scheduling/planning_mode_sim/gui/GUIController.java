@@ -50,7 +50,7 @@ public class GUIController implements Runnable {
     
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(
-            "alma/scheduling/image/"+name);
+            "alma/scheduling/planning_mode_sim/image/"+name);
     }
 
     protected void saveToFile() {
