@@ -50,7 +50,17 @@ public class TelescopeOperatorProxy
 	/**
 	 * @see master_scheduler.Scheduling_to_TelescopeOperator#SelectSB(String[], String)
 	 */
-	public void SelectSB(String[] sbIdList, String messageId) {
+	public void selectSB(String[] sbIdList, String messageId) {
+        Thread timer = new Thread(new SelectSBTimer(5*60*1000)); //5 minutes in milliseconds
+        //messageQueue.add(messageId, timer);
+        timer.start();
+        //executive.selectSB(sbIdList, messageId);
+        try {
+            timer.join();
+        } catch(InterruptedException e) {
+        }
+        //return messageQueue.getMessage(messageId).getReply();
+
 	}
 
 	/**
@@ -69,5 +79,20 @@ public class TelescopeOperatorProxy
 
 	public static void main(String[] args) {
 	}
+
+    class SelectSBTimer implements Runnable {
+        private Thread thread;
+        private long delay;
+        public SelectSBTimer(long delay) {
+            this.thread = new Thread("SB select Timer");
+            this.delay = delay;
+        }
+        public void run() {
+            try {
+                thread.sleep(delay);
+            }catch(InterruptedException e) {
+            }
+        }
+    }
 }
 
