@@ -67,7 +67,7 @@
             Code="alma.Control.arrayInterfaces.ArrayControllerHelper"
             Type="IDL:alma/Control/ArrayController:1.0"
             Container="java"/>
-      <_ Name="*" 
+      <_ Name="DelayServer" 
             Code="alma.Control.DelayServerImpl.DelayServerHelper"
             Type="IDL:alma/Control/DelayServer:1.0"
             Container="java"/>
