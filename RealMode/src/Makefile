@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.7 2003/06/12 16:36:26 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.8 2003/06/18 23:10:54 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -22,8 +22,8 @@ DEBUG = on
 #
 # XML schema files and includes
 #
-#XSDBIND = SchedulingEntities
-#XSDBIND_INCLUDE = systementities
+XSDBIND = SchedulingEntities
+XSDBIND_INCLUDE = systementities
 
 XML_IDL="SchedBlock=alma.entity.xmlbinding.schedblock.SchedBlock; \
          SchedulingInfo=alma.entity.xmlbinding.schedulinginfo.SchedulingInfo; \

@@ -57,7 +57,8 @@ public class TemporaryExecutive {
         if(pos == 5) {
             pos = 4; //coz queue only filled from 0-4
         }
-        SchedBlock sb = queue.getSchedBlock(pos);
+        //SchedBlock sb = queue.getSchedBlock(pos);
+        SchedBlock sb = queue.getSB(pos);
         String reply = sb.getSchedBlockEntity().getEntityId();
         //String reply = sb.getId();
         System.out.println("Reply="+reply);
