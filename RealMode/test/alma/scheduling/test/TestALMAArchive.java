@@ -112,7 +112,7 @@ public class TestALMAArchive {
             logger.info("SCHED_TEST: function getProject(String id)");
             ObsProject p = archive.getProject(id);
             xml_entity = es.serializeEntity(p);
-            logger.info("SCHED_TEST: "+xml_entity.xmlString);
+            //logger.info("SCHED_TEST: "+xml_entity.xmlString);
             //logger.info("SCHED_TEST: project with id="+id+" has version="+xml_entity.schemaVersion);
             logger.info("SCHED_TEST: project with id="+
                p.getObsProjectEntity().getEntityId()+" has version="+
@@ -156,7 +156,7 @@ public class TestALMAArchive {
             logger.info("SCHED_TEST: function getPipelineProcessingRequest(String id)");
             ppr = archive.getPipelineProcessingRequest(xml_entity.entityId);
             xml_entity = es.serializeEntity(ppr);
-            logger.info("SCHED_TEST: "+xml_entity.xmlString);
+            //logger.info("SCHED_TEST: "+xml_entity.xmlString);
             
             logger.info("SCHED_TEST: function updatePipelineProcessingRequest(PipelineProcessingRequest ppr)");
             archive.updatePipelineProcessingRequest(ppr);

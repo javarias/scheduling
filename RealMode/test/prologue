@@ -18,9 +18,9 @@ echo " Starting Manager"
 maciManagerJ -m >& sched_manager.log&
 sleep 30
 
-echo " Starting Activator"
-maciActivate Activator  >& sched_activator.log&
-sleep 15
+#echo " Starting Activator"
+#maciActivate Activator  >& sched_activator.log&
+#sleep 15
 
 echo " Starting hugoActivator"
 acsStartContainer hugoActivator >& sched_hugoActivator.log &

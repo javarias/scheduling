@@ -10,7 +10,7 @@
 #sleep 20
 
 #echo " Running almaOTBatchMode"
-almaOTBatchMode.sh targets.txt  >&  sched_almaOT.log
+otprotoBatch targets.txt  >&  sched_almaOT.log
 sleep 20
 
 #echo " Running test"
