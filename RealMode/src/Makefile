@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.14 2003/09/30 23:45:56 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.15 2003/10/06 18:56:44 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -23,27 +23,27 @@ USER_JFLAGS= -deprecation
 #
 # XML schema files and includes
 #
-XSDBIND = SchedulingEntities
-XSDBIND_INCLUDE = systementities
+#XSDBIND = SchedulingEntities
+#XSDBIND_INCLUDE = systementities
 
-XML_IDL="SchedBlock=alma.entity.xmlbinding.schedblock.SchedBlock; \
-         SchedulingInfo=alma.entity.xmlbinding.schedulinginfo.SchedulingInfo; \
-         SchedulingPolicy=alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy"
+#XML_IDL="SchedBlock=alma.entity.xmlbinding.schedblock.SchedBlock; \
+#         SchedulingInfo=alma.entity.xmlbinding.schedulinginfo.SchedulingInfo; \
+#         SchedulingPolicy=alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy"
 
 # 
 # IDL Files and flags
 # 
-IDL_FILES = SchedulingInterfaces
+#IDL_FILES = SchedulingInterfaces
 #IDL_TAO_FLAGS =
 #USER_IDL =
 
 #
 # Libraries (public and local)
 #
-LIBRARIES       = SchedulingInterfaces
-LIBRARIES_L     =
+#LIBRARIES       = SchedulingInterfaces
+#LIBRARIES_L     =
 
-SchedulingInterfaces_OBJECTS = SchedulingInterfacesC SchedulingInterfacesS
+#SchedulingInterfaces_OBJECTS = SchedulingInterfacesC SchedulingInterfacesS
 
 #
 # Jarfiles and their directories

@@ -152,7 +152,6 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             //Listen for TELCAL events
-            /*
             try {
                 pointing_event.addSubscription("PointingReducedEvent");
                 pointing_event.consumerReady();
@@ -169,7 +168,6 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
-            */
             /*
             try {
             } catch(Exception e) {
