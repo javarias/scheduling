@@ -31,7 +31,7 @@ import alma.acs.nc.AbstractNotificationChannel;
  * The PublishEvent class contains methods to handle publishing all
  * events in the Scheduling system. 
  * 
- * @version 1.00 Jun 10, 2004
+ * @version $Id: PublishEvent.java,v 1.4 2004/11/23 21:11:57 sslucero Exp $
  * @author Allen Farris
  */
 public class PublishEvent {

@@ -33,6 +33,7 @@ import alma.scheduling.Define.DateTime;
  * a time out so that if the Telescope Operator wants to intervene they'll 
  * have time to do so.
  *
+ * @version $Id: Message.java,v 1.2 2004/11/23 21:13:02 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class Message {

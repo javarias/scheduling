@@ -34,6 +34,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 
 /** 
+  * @version $Id: MasterScheduler.java,v 1.9 2004/11/23 21:13:02 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class MasterScheduler implements Runnable {
