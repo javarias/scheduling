@@ -28,7 +28,7 @@ package alma.scheduling.Define;
 
 /**
  * Flow control expressions are used to constrain the order in which members of 
- * an SUnitSet are executed.  If there are no flow control expressions, the members 
+ * an Program are executed.  If there are no flow control expressions, the members 
  * are executed in any order.  
  * 
  * @version 1.30 May 10, 2004

@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * scheduling algorithm cannot schedule any activity.  This data 
  * includes:
  * <ul>
- * <li> the time when this event occured,
+ * <li> the time when this event occurred,
  * <li> an enumerated reason code,
  * <li> and a text comment.
  * </ul>

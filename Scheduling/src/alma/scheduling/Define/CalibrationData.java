@@ -21,51 +21,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File PipelineEvent.java
+ * File CalibrationData.java
  */
-
 package alma.scheduling.Define;
 
 /**
- * This class contains all the information from the PipelineProcessingRequestEnd
- * which in ALMA production will come from the Pipeline Subsystem. In simulation
- * mode it will be created by the Scheduling Subsystem's PipelineSimulator.
- *
- * @author Sohaila Lucero
- * @version 1.0 Aug 5, 2004
+ * The CalibrationData class provides access to the
+ * various types of calibration data that are currently
+ * available.  This class does not contain all calibration
+ * data, only those high-level portions needed by scheduling.
+ * In some cases only the fact that such data exists and when
+ * it was taken is needed. 
+ * <p>
+ * This class is not implemented at this time.
+ * 
+ * @version 1.5 September 16, 2004
+ * @author Allen Farris
  */
-public class PipelineEvent {
-    /*
-    private String ebId;
-    private String sbId;
-    private String saId;
-    private String eventType;
-    private String eventStatus;
-    private DateTime startTime;
-    */
+public class CalibrationData {
 
-    public PipelineEvent() {
-    }
-
-/*
-    public String getSBId() {
-        return sbId;
-    }
-    public String getEBId() {
-        return ebId;
-    }
-    public String getSAId() {
-        return saId;
-    }
-    public String getEventType() {
-        return eventType;
-    }
-    public String getStatus() {
-        return eventStatus;
-    }
-    public DateTime getStartTime() {
-        return startTime;
-    }
-*/
+	/**
+	 * 
+	 */
+	public CalibrationData() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 }

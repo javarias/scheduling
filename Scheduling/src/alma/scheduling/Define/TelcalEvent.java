@@ -26,7 +26,6 @@
 
 package alma.scheduling.Define;
 
-import alma.scheduling.Event.Receivers.ReceiveEvent;
 /**
  * This class contains all the information from the ExecBlockEvent which in
  * ALMA production will come from the Telcal Subsystem. In simulation mode
@@ -35,7 +34,7 @@ import alma.scheduling.Event.Receivers.ReceiveEvent;
  * @author Sohaila Lucero
  * @version 1.0 Aug 5, 2004
  */
-public class TelcalEvent extends ReceiveEvent {
+public class TelcalEvent {
     /*
     private String ebId;
     private String sbId;

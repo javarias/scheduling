@@ -21,51 +21,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File PipelineEvent.java
+ * File SciPipeline.java
  */
-
 package alma.scheduling.Define;
 
 /**
- * This class contains all the information from the PipelineProcessingRequestEnd
- * which in ALMA production will come from the Pipeline Subsystem. In simulation
- * mode it will be created by the Scheduling Subsystem's PipelineSimulator.
- *
- * @author Sohaila Lucero
- * @version 1.0 Aug 5, 2004
+ * The SciPipeline interface specifies those methods needed by Scheduling
+ * from the Science Pipeline.  These include methods to start the science
+ * pipeline and to inquire about the status of an outstanding request. 
+ * 
+ * @version 1.5 September 16, 2004
+ * @author Allen Farris
  */
-public class PipelineEvent {
-    /*
-    private String ebId;
-    private String sbId;
-    private String saId;
-    private String eventType;
-    private String eventStatus;
-    private DateTime startTime;
-    */
+public interface SciPipeline {
 
-    public PipelineEvent() {
-    }
-
-/*
-    public String getSBId() {
-        return sbId;
-    }
-    public String getEBId() {
-        return ebId;
-    }
-    public String getSAId() {
-        return saId;
-    }
-    public String getEventType() {
-        return eventType;
-    }
-    public String getStatus() {
-        return eventStatus;
-    }
-    public DateTime getStartTime() {
-        return startTime;
-    }
-*/
-
+	
+	void start(SciPipelineRequest request) throws SchedulingException;
+	
+	Status getStatus(SciPipelineRequest request) throws SchedulingException;
+	
 }
