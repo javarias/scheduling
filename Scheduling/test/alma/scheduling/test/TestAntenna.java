@@ -38,19 +38,19 @@ public class TestAntenna extends TestCase {
 
     public TestAntenna() throws Exception {
         super("AntennaClassTest");
-        antenna = new Antenna((short)10, 100, false);
+        antenna = new Antenna("10", 100, false);
     }
     protected void setUp() throws Exception {
         //super.setUp();
         // create an antenna with id = 10, locaition =100, and it
         // doesnt have a nutator
-        antenna = new Antenna((short)10, 100, false);
+        antenna = new Antenna("10", 100, false);
     }
     public void tearDown() throws Exception {
     }
 
     public void testID() {
-        assertEquals(10, antenna.getAntennaId());
+        assertEquals("10", antenna.getAntennaId());
     }
     
     public void testLocation() {

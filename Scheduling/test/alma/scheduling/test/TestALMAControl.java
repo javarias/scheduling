@@ -45,7 +45,8 @@ public class TestALMAControl extends ComponentClientTestCase {
     }
 
     public void test1CreateSubarray() {
-        short[] antennas = {1,2,3,4,5,6,7,8,9};
+        //short[] antennas = {1,2,3,4,5,6,7,8,9};
+        String[] antennas = {"1","2","3","4","5","6","7"};
         short subarray = -1;
         try {
             subarray = control.createSubarray(antennas);
