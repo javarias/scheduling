@@ -27,9 +27,6 @@
 package ALMA.scheduling.define;
 
 
-// Only to get this to compile.
-class ObsProject { String dummy; }
-
 /**
  * An SProject is an observing project as viewed by the
  * scheduling subsystem. 
@@ -37,12 +34,18 @@ class ObsProject { String dummy; }
  * @version 1.00  Jun 4, 2003
  * @author Allen Farris
  */
-public class SProject {
+public class SProject implements ArchiveEntity {
+	private String id;
+	private STime timeOfCreation;
+	private STime timeOfUpdate;
 	
 	private String obsProjectId;
+	private String proposalRef;
 	private String projectName;
+	private String projectVersion;
 	private String PI;
-	private STime dateOfSubmission;
+	private SUnitSet program;
+	
 	private STime startTime;
 	private STime endTime;
 	private int totalRequiredTimeInSeconds;
@@ -52,29 +55,103 @@ public class SProject {
 	private int numberUnitsFailed;
 	private Status projectStatus;
 	private boolean breakpoint;
-	private SUnitSet unitSet;
 
 	/**
-	 * Construct an SProject from an ObsProject object.
+	 * Construct an SProject.
 	 */
-	public SProject(ObsProject project) {
-		// Not implemented at this time.
+	public SProject() {
+		obsProjectId = "";
+		proposalRef = "";
+		projectName = "";
+		projectVersion = "";
+		PI = "";
+		program = new SUnitSet ();
+		startTime = new STime ();
+		endTime = new STime ();
+		totalRequiredTimeInSeconds = 0;
+		totalUsedTimeInSeconds = 0;
+		totalUnits = 0;
+		numberUnitsCompleted = 0;
+		numberUnitsFailed = 0;
+		projectStatus = new Status (Status.NOTDEFINED);
+		breakpoint = false;
 	}
 
+	public void setMemberLink() {
+		program.setMemberIndex(0);
+		program.setId(getId() + ".0");
+		program.setTimeCreated(getTimeCreated());
+		program.setTimeUpdated(getTimeCreated());
+		program.setProjectId(getId());
+		program.setParentId(getId());
+		program.setProject(this);
+		program.setParent(null);
+		// The program's parentId is set to the project's id, but the
+		// program's parent is null, because it has no UnitSetMember parent.
+		program.setMemberLink(program);
+	}
 
+	////////////////////////////////////////////////////
+	// Implementation of the ArchiveEntity interface. //
+	////////////////////////////////////////////////////
+
+	/**
+	 * Get the archive identifier.
+	 * @return The archive identifier as a String.
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	/**
+	 * Get the time this archive entry was created.
+	 * @return The time this archive entry was created as an STime.
+	 */
+	public STime getTimeCreated() {
+		return timeOfCreation;
+	}
+	
+	/**
+	 * Get the time this archive entry was last updated.
+	 * @return The time this archive entry was last updated as an STime.
+	 */
+	public STime getTimeUpdated() {
+		return timeOfUpdate;
+	}
+	
+	/**
+	 * Set the archive identifier.
+	 * @param id The id of this archive entity.
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	/**
+	 * Set the time this archive entry was created.
+	 * @param t The time this archive entry was created.
+	 */
+	public void setTimeCreated(STime t) {
+		this.timeOfCreation = t;
+	}
+	
+	/**
+	 * Set the time this archive entry was last updated.
+	 * @param t The time this archive entry was last updated.
+	 */
+	public void setTimeUpdated(STime t) {
+		this.timeOfUpdate = t;
+	}
+
+	////////////////////
+	// Getter methods //
+	////////////////////
 
 	/**
 	 * @return
 	 */
 	public boolean isBreakpoint() {
 		return breakpoint;
-	}
-
-	/**
-	 * @return
-	 */
-	public STime getDateOfSubmission() {
-		return dateOfSubmission;
 	}
 
 	/**
@@ -129,6 +206,20 @@ public class SProject {
 	/**
 	 * @return
 	 */
+	public String getProjectVersion() {
+		return projectVersion;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getProposalRef() {
+		return proposalRef;
+	}
+
+	/**
+	 * @return
+	 */
 	public STime getStartTime() {
 		return startTime;
 	}
@@ -157,22 +248,19 @@ public class SProject {
 	/**
 	 * @return
 	 */
-	public SUnitSet getUnitSet() {
-		return unitSet;
+	public SUnitSet getProgram() {
+		return program;
 	}
+
+	////////////////////
+	// Setter methods //
+	////////////////////
 
 	/**
 	 * @param b
 	 */
 	public void setBreakpoint(boolean b) {
 		breakpoint = b;
-	}
-
-	/**
-	 * @param time
-	 */
-	public void setDateOfSubmission(STime time) {
-		dateOfSubmission = time;
 	}
 
 	/**
@@ -225,6 +313,20 @@ public class SProject {
 	}
 
 	/**
+	 * @param string
+	 */
+	public void setProjectVersion(String string) {
+		projectVersion = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setProposalRef(String string) {
+		proposalRef = string;
+	}
+
+	/**
 	 * @param time
 	 */
 	public void setStartTime(STime time) {
@@ -255,8 +357,93 @@ public class SProject {
 	/**
 	 * @param set
 	 */
-	public void setUnitSet(SUnitSet set) {
-		unitSet = set;
+	public void setProgram(SUnitSet set) {
+		program = set;
+	}
+
+	public String toString() {
+		StringBuffer s = new StringBuffer ();
+		s.append("SProject (" + getId() + "," + getTimeCreated() + "," + getTimeUpdated() + ")");
+		s.append("\n\t" + getProjectName() + " " + getProjectVersion() + " " + getObsProjectId() + " " +
+				getProposalRef() + " " + getPI() + "\nProgram");
+		s.append("\n" + program);
+		return s.toString();
+	}
+
+	public static void main(String[] arg) {
+        /*
+		System.out.println("Test of SProject");
+		java.io.PrintStream out = null;
+		try {
+			out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File ("ALMA\\scheduling\\define","out.txt")));
+		} catch (Exception err) {
+			err.printStackTrace();
+			System.exit(0);
+		}
+
+		SProject prj = new SProject ();
+		prj.setObsProjectId("0001");
+		prj.setProposalRef("0002");
+		prj.setProjectName("TestProject");
+		prj.setProjectVersion("v01");
+		prj.setPI("Allen Farris");
+		prj.setStartTime(new STime(2003,9,5,13,36,30));
+		prj.setEndTime(new STime(2003,9,6,13,36,30));
+		SUnitSet program = new SUnitSet ();
+		prj.setProgram(program);
+		
+		program.setScientificPriority(Priority.HIGH);
+		program.setUserPriority(Priority.HIGH);
+		
+		// Use the VLA as the default clock.
+		Clock c = new alma.scheduling.simulator.ClockSimulator (107.6177275,34.0787491666667,-6);
+		DateTime.setDefaultClock(c);
+		
+		SUnitSet[] set = new SUnitSet [3];
+		for (int i = 0; i < set.length; ++i) {
+			set[i] = new SUnitSet ();
+			program.addMember(set[i]);
+			SUnit[] unit = new SUnit [3];
+			for (int j = 0; j < unit.length; ++j) {
+				unit[j] = new SUnit ();
+				unit[j].setImagingScript("myImagingScript");
+				unit[j].setObservingScript("myObervingScript");
+				unit[j].setMaximumTimeInSeconds(1800);
+				unit[j].setSchedBlockId("0004" + i + "_" + j);
+				Equatorial coord = new Equatorial (9 + i + j, 53, 0.0, 54 + i + j, 54, 0.0);
+				Target t = new Target(coord,0.1,0.2);
+				unit[j].setTarget(t);
+				set[i].addMember(unit[j]);
+			}
+		}
+		
+		prj.setId("0000001");
+		prj.setTimeCreated(new STime(2003,9,5,0,0,0));
+		prj.setTimeUpdated(new STime(2003,9,5,1,0,0));
+		prj.setMemberLink();
+		
+		out.println("Project " + prj.getId());
+		SUnitSet prog = prj.getProgram();
+		out.println("Program " + prog.getId());
+		MemberOf[] mem = prog.getMember();
+		SUnitSet x = null;
+		MemberOf[] xmem = null;
+		for (int i = 0; i < mem.length; ++i) {
+			out.println("\t member: name " + mem[i].getMemberIndex() + " id " + mem[i].getId());
+			if (mem[i] instanceof SUnitSet) {
+				xmem = ((SUnitSet)mem[i]).getMember();
+				for (int j = 0; j < xmem.length; ++j) {
+					out.println("\t\t member: name " + xmem[j].getMemberIndex() + " id " + xmem[j].getId());
+				}
+			}
+		}
+
+		out.println("The Project.");
+		out.println();
+		out.println(prj.toString());
+
+		System.out.println("End test of SProject");		
+		*/
 	}
 
 }

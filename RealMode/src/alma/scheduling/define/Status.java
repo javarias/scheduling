@@ -26,20 +26,28 @@
  
 package ALMA.scheduling.define;
 
-import alma.entity.xmlbinding.obsproject.types.SchedStatusT;
-
 /**
- * Description 
+ * The Status class is used ot denote the status of an SUnit.
+ * A Status can have the following values.
+ * <ul>
+ * <li> NOTDEFINED
+ * <li>	WAITING
+ * <li>	READY
+ * <li>	RUNNING
+ * <li>	ABORTED
+ * <li>	COMPLETE
+ * </ul> 
  * 
  * @version 1.00  Jun 5, 2003
  * @author Allen Farris
  */
 public class Status {
-	static public final Status WAITING	= new Status(0);
-	static public final Status READY	= new Status(1);
-	static public final Status RUNNING	= new Status(2);
-	static public final Status ABORTED	= new Status(3);
-	static public final Status COMPLETE	= new Status(4);
+	static public final Status NOTDEFINED = new Status(0);
+	static public final Status WAITING	  = new Status(1);
+	static public final Status READY	  = new Status(2);
+	static public final Status RUNNING	  = new Status(3);
+	static public final Status ABORTED	  = new Status(4);
+	static public final Status COMPLETE	  = new Status(5);
 	
 	private int status;
 	private boolean isConstant;
@@ -58,24 +66,6 @@ public class Status {
 		this.status = x.status;
 		this.isConstant = false;
 	}
-
-    /**
-     * Create a Status object from a Status object from 
-     * alma.entity.xmlbinding.obsproject.types.SchedStatusT;
-     */
-    public Status(SchedStatusT stat) {
-        if(stat == SchedStatusT.WAITING) {
-            this.status = 0;
-        } else if(stat == SchedStatusT.READY) {
-            this.status = 1;
-        } else if(stat == SchedStatusT.RUNNING) { 
-            this.status = 2;
-        } else if(stat == SchedStatusT.ABORTED) {
-            this.status = 3;
-        } else if(stat == SchedStatusT.COMPLETED) {
-            this.status = 4;
-        }
-    }
 	
 	/**
 	 * Change the state of this Status object.
@@ -93,32 +83,15 @@ public class Status {
 	 */
 	public String getStatus() {
 		switch (status) {
-			case 0: return "waiting";
-			case 1: return "ready";
-			case 2: return "running";
-			case 3: return "aborted";
-			case 4: return "complete";
+			case 0: return "notdefined";
+			case 1: return "waiting";
+			case 2: return "ready";
+			case 3: return "running";
+			case 4: return "aborted";
+			case 5: return "complete";
 			default: return "***";
 		}
 	}
-
-    /**
-     * Returns the SchedStatus equivalent
-     */
-    public SchedStatusT getSchedStatus() {
-        if(status == 0) {
-            return SchedStatusT.WAITING;
-        } else if(status == 1 ){
-            return SchedStatusT.READY;
-        } else if(status == 2 ){ 
-            return SchedStatusT.RUNNING;
-        } else if(status == 3 ) {
-            return SchedStatusT.ABORTED;
-        } else if(status  == 4) {
-            return SchedStatusT.COMPLETED;
-        }
-        return null;
-    }
 	
 	/**
 	 * Return true if this state is equal to the specified state.
@@ -139,28 +112,28 @@ public class Status {
 	 */
 	public static void main(String[] args) {
 		Status s = new Status(Status.WAITING);
-		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("state is " + s);
 		s.setStatus(Status.READY);
-		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("state is " + s);
 		s.setStatus(Status.RUNNING);
-		System.out.println("SCHEDULING: state is " + s);
-		System.out.println("SCHEDULING: is state running? " + s.equals(Status.RUNNING));
-		System.out.println("SCHEDULING: is state complete? " + s.equals(Status.COMPLETE));
+		System.out.println("state is " + s);
+		System.out.println("is state running? " + s.equals(Status.RUNNING));
+		System.out.println("is state complete? " + s.equals(Status.COMPLETE));
 		s.setStatus(Status.COMPLETE);
-		System.out.println("SCHEDULING: state is " + s);
-		System.out.println("SCHEDULING: is state RUNNING? " + s.equals(Status.RUNNING));
-		System.out.println("SCHEDULING: is state COMPLETE? " + s.equals(Status.COMPLETE));
+		System.out.println("state is " + s);
+		System.out.println("is state RUNNING? " + s.equals(Status.RUNNING));
+		System.out.println("is state COMPLETE? " + s.equals(Status.COMPLETE));
 		s.setStatus(Status.ABORTED);
-		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("state is " + s);
 		s.setStatus(Status.READY);
-		System.out.println("SCHEDULING: state is " + s);
+		System.out.println("state is " + s);
 		try {
-			System.out.println("SCHEDULING: state is " + Status.WAITING);
+			System.out.println("state is " + Status.WAITING);
 			WAITING.setStatus(Status.COMPLETE);
 		} catch (UnsupportedOperationException err) {
-			System.out.println("SCHEDULING: "+err.toString());
+			System.out.println(err.toString());
 		}
-		System.out.println("SCHEDULING: state is " + Status.WAITING);
+		System.out.println("state is " + Status.WAITING);
 	}
 }
 

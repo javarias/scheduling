@@ -26,31 +26,36 @@
  
 package ALMA.scheduling.define;
 
-// Only to get this to compile.
-//class SchedBlock { String dummy; }
-//import alma.bo.SchedBlock;
-import alma.entity.xmlbinding.schedblock.*;
-import alma.entity.xmlbinding.obsproject.*;
+import java.util.ArrayList;
 
-import alma.acs.entityutil.EntityException;
-import alma.acs.entityutil.EntitySerializer;
-import alma.acs.entityutil.EntityDeserializer;
-
-import alma.xmlentity.XmlEntityStruct;
-import alma.entities.commonentity.EntityT;
-
-import java.util.logging.Logger;
 /**
  * An SUnit is the lowest-level, atomic scheduling unit. 
  * 
  * @version 1.00  Jun 4, 2003
  * @author Allen Farris
  */
-public class SUnit {
-
-    private alma.entity.xmlbinding.schedblock.SchedBlock schedBlock;
+public class SUnit implements HasMembers, MemberOf {
+	// The archive id of this entity.
+	private String id;
+	// The time this archive entity was created. 
+	private STime timeOfCreation;
+	// The time this archive entity was last updated.
+	private STime timeOfUpdate;
+	// The index of this member.
+	private int index;
+	// The project to which this SUnit belongs.
+	private SProject project;
+	// The id of the project to which this SUnit belongs.
+	private String projectId;
+	// The immediate parent of this SUnit.
+	private SUnitSet parent;
+	// The id of the immediate parent of this SUnit.
+	private String parentId;
+	// The members of this set are execution records.
+	private ArrayList executionRec;
+	
+	// The scheduling block id that identifies this SUnit.
 	private String schedBlockId;
-	private int name;
 		
 	private Priority scientificPriority;
 	private Priority userPriority;
@@ -58,34 +63,320 @@ public class SUnit {
 	private WeatherCondition weatherConstraint;
 	private SystemSetup requiredInitialSetup;
 	private int maximumTimeInSeconds;
-
-	private SkyCoordinates coordinates;
+	private int maximumNumberOfRepeats;
+	private String imagingScript;
+	private String observingScript;
 	private boolean isStandardScript;
-	private Status unitStatus;
 
-    private EntitySerializer serializer;
-    private EntityDeserializer deserializer;
-    //////////////////////// Constructors ////////////////////////////////
-    
+	//private Target target;
+	private double frequency;
+	
+	private Status unitStatus;
+	
 	/**
-	 * Create an SUnit object from a SchedBlock object.
+	 * Create an SUnit object.
 	 */
-	public SUnit(SchedBlock sb) {
-        this.schedBlock = sb;
-        this.serializer = EntitySerializer.getEntitySerializer(
-            Logger.getAnonymousLogger());
-        this.deserializer = EntityDeserializer.getEntityDeserializer(
-            Logger.getAnonymousLogger());
+	public SUnit() {
+		executionRec = new ArrayList ();
+		unitStatus = new Status (Status.NOTDEFINED);
+
+		project = null;
+		projectId = "";
+		parent = null;
+		parentId = "";
+		schedBlockId = "";
+		scientificPriority = new Priority (Priority.BACKGROUND);
+		userPriority = new Priority (Priority.BACKGROUND);
+		scienceGoal = null;
+		weatherConstraint = null;
+		requiredInitialSetup = null;
+		maximumTimeInSeconds = 0;		
+		maximumNumberOfRepeats = 0;
+		imagingScript = "";
+		observingScript = "";
+		isStandardScript = true;
+		//Equatorial tmp = new Equatorial (0,0,0.0,0,0,0.0);
+		//target = new Target (tmp,0.0);
+		frequency = 0.0;
+		unitStatus = new Status (Status.WAITING);
 	}
 
+	public void setMemberLink(SUnitSet parent) {
+	}
 
-    //////////////////////// Get Methods ////////////////////////////////
-    
+	////////////////////////////////////////////////////
+	// Implementation of the ArchiveEntity interface. //
+	////////////////////////////////////////////////////
+
+	/**
+	 * Get the archive identifier.
+	 * @return The archive identifier as a String.
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	/**
+	 * Get the time this archive entry was created.
+	 * @return The time this archive entry was created as an STime.
+	 */
+	public STime getTimeCreated() {
+		return timeOfCreation;
+	}
+	
+	/**
+	 * Get the time this archive entry was last updated.
+	 * @return The time this archive entry was last updated as an STime.
+	 */
+	public STime getTimeUpdated() {
+		return timeOfUpdate;
+	}
+	
+	/**
+	 * Set the archive identifier.
+	 * @param id The id of this archive entity.
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	/**
+	 * Set the time this archive entry was created.
+	 * @param t The time this archive entry was created.
+	 */
+	public void setTimeCreated(STime t) {
+		this.timeOfCreation = t;
+	}
+	
+	/**
+	 * Set the time this archive entry was last updated.
+	 * @param t The time this archive entry was last updated.
+	 */
+	public void setTimeUpdated(STime t) {
+		this.timeOfUpdate = t;
+	}
+	
+	/////////////////////////////////////////////////
+	// Implementation of the HasMembers interface. //
+	/////////////////////////////////////////////////
+
+	/**
+	 * Get the number of members in this set.
+	 * @return The number of members in this set.
+	 */	
+	public int getNumberMembers() {
+		return executionRec.size();
+	}
+	
+	/**
+	 * Get a member of this set by specifying its name.
+	 * @param index The index of the member to be returned.
+	 * @return The member with the specified index
+	 * or null, if there was no such object.
+	 */
+	public MemberOf getMember(int index) {
+		if (index < 0 || index >= executionRec.size())
+			return null; 
+		return (MemberOf)(executionRec.get(index));
+	}
+
+	/**
+	 * The member with the specified id.
+	 * @param id The id of the member to be returned.
+	 * @return The member with the specified id
+	 * or null, if there was no such object.
+	 */
+	public MemberOf getMember(String id) {
+		MemberOf x = null;
+		for (int i = 0; i < executionRec.size(); ++i) {
+			x = (MemberOf)executionRec.get(i);
+			if (x.getId().equals(id))
+				return x;
+		}
+		return null;
+	}
+
+	/**
+	 * Get all the members of this set.
+	 * @return The members of this set as an array of Objects.
+	 */
+	public MemberOf[] getMember() {
+		MemberOf[] x = new MemberOf [executionRec.size()];
+		x = (MemberOf[])executionRec.toArray(x);
+		return x;
+	}
+	
+	/**
+	 * Add a member to this set.
+	 * @param x The member to be added.
+	 */
+	public void addMember(SExec x) {
+		x.setMemberIndex(executionRec.size());
+		x.setProjectId(getProjectId());
+		x.setProject(getProject());
+		x.setParentId(getId());
+		x.setParent(this);
+		executionRec.add(x);
+	}
+
 	/**
 	 * @return
 	 */
-	public SkyCoordinates getCoordinates() {
-		return coordinates;
+	public SExec[] getSExec() {
+		SExec[] s = new SExec [executionRec.size()];
+		s = (SExec[])executionRec.toArray(s);
+		return s;
+	}
+
+	/**
+	 * Get a member of this set by specifying its index.
+	 * @param index The index of the member to be returned.
+	 * @return The member with the specified index
+	 * or null, if there was no such object.
+	 */
+	public SExec getSExec(int index) {
+		if (index < 0 || index >= executionRec.size())
+			return null; 
+		return (SExec)(executionRec.get(index));
+	}
+
+	/**
+	 * Get the member of this set with the specified id.
+	 * @param id The id of the member to be returned.
+	 * @return The member with the specified id
+	 * or null, if there was no such object.
+	 */
+	public SExec getSExec(String id) {
+		SExec x = null;
+		for (int i = 0; i < executionRec.size(); ++i) {
+			x = (SExec)executionRec.get(i);
+			if (x.getId().equals(id))
+				return x;
+		}
+		return null;
+	}
+	
+	/////////////////////////////////////////////// 
+	// Implementation of the MemberOf interface. // 
+	///////////////////////////////////////////////
+	
+	/**
+	 * Get the index of this member;
+	 * @return The index of the member as an int.
+	 */
+	public int getMemberIndex() {
+		return index;
+	}
+
+	/**
+	 * Set the index of this member;
+	 * @parm index The index of this member.
+	 */
+	public void setMemberIndex(int index) {
+		this.index = index;
+	}
+
+	/**
+	 * @return
+	 */
+	public SUnitSet getParent() {
+		return parent;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getParentId() {
+		return parentId;
+	}
+
+	/**
+	 * @return
+	 */
+	public SProject getProject() {
+		return project;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getProjectId() {
+		return projectId;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setParentId(String string) {
+		parentId = string;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setProjectId(String string) {
+		projectId = string;
+	}
+
+	/**
+	 * @param project
+	 */
+	public void setProject(SProject project) {
+		this.project = project;
+	}
+
+	/**
+	 * @param set
+	 */
+	public void setParent(SUnitSet set) {
+		parent = set;
+	}
+
+	////////////////////
+	// Getter methods //
+	////////////////////
+
+	/**
+	 * @return
+	 */
+	public int getMaximumNumberOfRepeats() {
+		return maximumNumberOfRepeats;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getNumberExecutions() {
+		return executionRec.size();
+	}
+
+	/**
+	 * @return
+	 */
+	public String getImagingScript() {
+		return imagingScript;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getObservingScript() {
+		return observingScript;
+	}
+
+	/**
+	 * @return
+	 */
+    /*
+	public Target getTarget() {
+		return target;
+	}
+    */
+	/**
+	 * @return
+	 */
+	public String getSchedBlockId() {
+		return schedBlockId;
 	}
 
 	/**
@@ -100,13 +391,6 @@ public class SUnit {
 	 */
 	public int getMaximumTimeInSeconds() {
 		return maximumTimeInSeconds;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getName() {
-		return name;
 	}
 
 	/**
@@ -151,21 +435,9 @@ public class SUnit {
 		return weatherConstraint;
 	}
 
-    public String getSchedBlockId() {
-        return schedBlockId;
-    }
-
-    public SchedBlock getSBEntityObject() {
-        return schedBlock;
-    }
-    //////////////////////// Set Methods /////////////////////////////////
-    
-	/**
-	 * @param coordinates
-	 */
-	public void setCoordinates(SkyCoordinates coordinates) {
-		this.coordinates = coordinates;
-	}
+	////////////////////
+	// Setter methods //
+	////////////////////
 
 	/**
 	 * @param b
@@ -179,13 +451,6 @@ public class SUnit {
 	 */
 	public void setMaximumTimeInSeconds(int i) {
 		maximumTimeInSeconds = i;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setName(int i) {
-		name = i;
 	}
 
 	/**
@@ -230,35 +495,99 @@ public class SUnit {
 		weatherConstraint = condition;
 	}
 
-    public void setSchedBlockId(String id) {
-        this.schedBlockId = id;
-    }
+	/**
+	 * @param string
+	 */
+	public void setSchedBlockId(String string) {
+		schedBlockId = string;
+	}
 
-    public void setSBEntityObject(SchedBlock sb) {
-        this.schedBlock = sb;
-        updateFields();
-    }
+	public void addExecutionRec(String id) {
+		executionRec.add(id);
+	}
 
-    //////////////////////// Other Public Methods ////////////////////////////////
+	/**
+	 * @param string
+	 */
+	public void setImagingScript(String string) {
+		imagingScript = string;
+	}
 
-    public XmlEntityStruct serializeSUnit() throws EntityException {
-        return serializer.serializeEntity(schedBlock);
-    }
-    
-    public void updateSUnit(XmlEntityStruct xml) 
-      throws EntityException, ClassNotFoundException {
-        SchedBlock sb = (SchedBlock)deserializer.deserializeEntity(xml.xmlString, 
-            Class.forName("alma.entity.xmlbinding.schedblock.SchedBlock"));
-        this.setSBEntityObject(sb);
-        updateFields();
-    }
-    //////////////////////// Other Private Methods ////////////////////////////////
+	/**
+	 * @param string
+	 */
+	public void setObservingScript(String string) {
+		observingScript = string;
+	}
 
+	/**
+	 * @param target
+	 */
     /*
-     *  Updates all the fields when the entity has been updated or set.
-     */
-    private void updateFields() {
-        setSchedBlockId(((EntityT)schedBlock.getSchedBlockEntity()).getEntityId());
-        setUnitStatus(new Status(schedBlock.getObsUnitControl().getSchedStatus()));
-    }
+	public void setTarget(Target target) {
+		this.target = target;
+	}
+    */
+
+	/**
+	 * @param i
+	 */
+	public void setMaximumNumberOfRepeats(int i) {
+		maximumNumberOfRepeats = i;
+	}
+
+	/**
+	 * @return
+	 */
+	public double getFrequency() {
+		return frequency;
+	}
+
+	/**
+	 * @param d
+	 */
+	public void setFrequency(double d) {
+		frequency = d;
+	}
+	
+	/**
+	 * Get the earliest time at which this SUnit can be scheduled on a specified date.
+	 * @param d The date on interest.
+	 * @return The earliest time at which this SUnit can be scheduled on the specified date.
+	 */
+	public STime getEarliest(Date d) {
+		return null; 
+	}
+	/**
+	 * Get the latest time at which this SUnit can be scheduled on a specified date.
+	 * @param d The date on interest.
+	 * @return The latest time at which this SUnit can be scheduled on the specified date.
+	 */
+	public STime getLatest(Date d) {
+		return null;
+	}
+	/**
+	 * Get the elevation of the target at the specified time.
+	 * @param t The time of interest.
+	 * @return The elevation of the target at the specified time.
+	 */
+	public double getElevation(STime t) {
+		return 0.0;
+	}
+
+	//////////////////////////
+	// The toString method. //
+	//////////////////////////
+
+	/**
+	 * Return the internal information about this SUnit as a string.
+	 */
+	public String toString() {
+		return "\tSUnit (" + getId() + "," + getTimeCreated() + "," + getTimeUpdated() + ") [" +
+				   getMemberIndex() + "," + getProjectId() + "," + getParentId() + "] " +
+				   getSchedBlockId() + " " + getScientificPriority() + " " /*+ getTarget() + " " */+
+				   getFrequency() + " " + getUnitStatus();
+	}
+
 }
+
