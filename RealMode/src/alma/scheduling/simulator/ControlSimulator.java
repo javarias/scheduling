@@ -24,10 +24,10 @@
  * File ControlSimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
-import ALMA.scheduling.define.STime;
-import ALMA.scheduling.master_scheduler.ControlProxy;
+import alma.scheduling.define.STime;
+import alma.scheduling.master_scheduler.ControlProxy;
 
 /**
  * Description 

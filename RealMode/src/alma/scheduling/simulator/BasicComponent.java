@@ -24,12 +24,12 @@
  * File BasicComponent.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 import alma.acs.component.ComponentLifecycleException;
 
-import ALMA.scheduling.define.ComponentImplBase;
-import ALMA.scheduling.define.ComponentState;
+import alma.scheduling.define.ComponentImplBase;
+import alma.scheduling.define.ComponentState;
 
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;

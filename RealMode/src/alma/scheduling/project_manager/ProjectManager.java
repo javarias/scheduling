@@ -24,7 +24,7 @@
  * 
  */
 
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -34,14 +34,14 @@ import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 import alma.entities.commonentity.EntityRefT;
 
-import ALMA.scheduling.NothingCanBeScheduledEvent;
-import ALMA.scheduling.master_scheduler.ALMAArchive;
-import ALMA.scheduling.master_scheduler.ALMADispatcher;
-import ALMA.scheduling.master_scheduler.MasterSBQueue;
-import ALMA.scheduling.master_scheduler.SchedulingPublisher;
-import ALMA.scheduling.define.nc.*;
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.master_scheduler.ALMAArchive;
+import alma.scheduling.master_scheduler.ALMADispatcher;
+import alma.scheduling.master_scheduler.MasterSBQueue;
+import alma.scheduling.master_scheduler.SchedulingPublisher;
+import alma.scheduling.define.nc.*;
 
-import ALMA.scheduling.receivers.*;
+import alma.scheduling.receivers.*;
 
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
@@ -117,14 +117,14 @@ public class ProjectManager implements Runnable {
             /*
             controlReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.LOCAL, 
-                    ALMA.Control.CHANNELNAME.value, 
+                    alma.Control.CHANNELNAME.value, 
                         "scheduling");
-            controlReceiver.attach("ALMA.Control.ExecBlockEndEvent",control_event);
+            controlReceiver.attach("alma.Control.ExecBlockEndEvent",control_event);
             */
             /*
             pipelineReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.LOCAL, 
-                    ALMA.pipelinescience.CHANNELNAME.value, 
+                    alma.pipelinescience.CHANNELNAME.value, 
                         "scheduling");
             pipelineReceiver.attach("alma.piplinescience.ScienceProcessingRequestEnd",pipeline_event);
             */
@@ -133,7 +133,7 @@ public class ProjectManager implements Runnable {
             logger.info("SCHEDULING: Trying to get NCs");
             
             try {
-                control_event.addSubscription(ALMA.Control.EXECEVENTS.value);
+                control_event.addSubscription(alma.Control.EXECEVENTS.value);
                 control_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to CONTROL");
             } catch(Exception e) {
@@ -142,9 +142,9 @@ public class ProjectManager implements Runnable {
             }
            
             try {
-                //pipeline_event.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
+                //pipeline_event.addSubscription(alma.acsnc.DEFAULTTYPE.value);
                 pipeline_event.addSubscription(
-                    "ALMA.pipelinescience.ScienceProcessingRequestEnd");
+                    "alma.pipelinescience.ScienceProcessingRequestEnd");
                 pipeline_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to PIPELINE");
             } catch(Exception e) {
@@ -178,14 +178,14 @@ public class ProjectManager implements Runnable {
             /*
             controlReceiver = AbstractNotificationChannel.getReceiver(
                         AbstractNotificationChannel.CORBA,
-                            ALMA.Control.CHANNELNAME.value);
-            //controlReceiver.attach(ALMA.Control.EXECEVENTS.value,control_event);
-            controlReceiver.attach("ALMA.Control.ExecBlockEvent",control_event);
+                            alma.Control.CHANNELNAME.value);
+            //controlReceiver.attach(alma.Control.EXECEVENTS.value,control_event);
+            controlReceiver.attach("alma.Control.ExecBlockEvent",control_event);
             controlReceiver.begin();
             pipelineReceiver = AbstractNotificationChannel.getReceiver(
                         AbstractNotificationChannel.CORBA,
-                            ALMA.pipelinescience.CHANNELNAME.value);
-            pipelineReceiver.attach("ALMA.pipelinescience.ScienceProcessingRequestEnd",pipeline_event);
+                            alma.pipelinescience.CHANNELNAME.value);
+            pipelineReceiver.attach("alma.pipelinescience.ScienceProcessingRequestEnd",pipeline_event);
             pipelineReceiver.begin();
             */
             logger.info("SCHEDULING: Got NCs");

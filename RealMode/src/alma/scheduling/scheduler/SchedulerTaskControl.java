@@ -24,9 +24,9 @@
  * File SchedulerTaskControl.java
  */
  
-package ALMA.scheduling.scheduler;
+package alma.scheduling.scheduler;
 
-import ALMA.scheduling.master_scheduler.TaskControlInfo;
+import alma.scheduling.master_scheduler.TaskControlInfo;
 
 /**
  * Description 

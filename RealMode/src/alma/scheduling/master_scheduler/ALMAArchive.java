@@ -23,7 +23,7 @@
  * File ALMAArchive.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -59,9 +59,9 @@ import alma.xmlstore.ArchiveInternalError;
 import alma.xmlstore.Cursor;
 import alma.xmlstore.CursorPackage.QueryResult;
 
-import ALMA.scheduling.define.STime;
+import alma.scheduling.define.STime;
 
-import ALMA.Control.ExecBlockEvent;
+import alma.Control.ExecBlockEvent;
 /**
  * The ALMAArchive class is the interface to the real or simulated archive.
  * 

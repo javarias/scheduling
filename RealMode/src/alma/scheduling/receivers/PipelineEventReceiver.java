@@ -23,22 +23,22 @@
  * File PipelineEventReceiver.java
  * 
  */
-package ALMA.scheduling.receivers;
+package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 import org.omg.CosNotification.*;
-import ALMA.acsnc.*;
+import alma.acsnc.*;
 import alma.acs.nc.*;
 
 import alma.acs.container.ContainerServices;
 
-import ALMA.pipelinescience.ScienceProcessingRequestEnd;
-import ALMA.pipelinescience.ScienceProcessingRequestEndHelper;
+import alma.pipelinescience.ScienceProcessingRequestEnd;
+import alma.pipelinescience.ScienceProcessingRequestEndHelper;
 
-import ALMA.scheduling.master_scheduler.ALMAArchive;
-import ALMA.scheduling.define.nc.*;
-import ALMA.scheduling.project_manager.ALMAPipeline;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.master_scheduler.ALMAArchive;
+import alma.scheduling.define.nc.*;
+import alma.scheduling.project_manager.ALMAPipeline;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
 
 /** 
  *  Listens to the pipeline for events
@@ -56,7 +56,7 @@ public class PipelineEventReceiver extends Consumer {
     public PipelineEventReceiver(ContainerServices cs, ALMAPipeline p, 
         ALMAArchive a) {
         
-        super(ALMA.pipelinescience.CHANNELNAME.value);
+        super(alma.pipelinescience.CHANNELNAME.value);
         this.pipeline = p;
         this.archive = a;
         this.containerServices = cs;

@@ -24,7 +24,7 @@
  * File SimulationMode.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 /**
  * Description 

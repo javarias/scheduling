@@ -24,7 +24,7 @@
  * File WeatherModel.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 /**
  * Description 

@@ -22,21 +22,21 @@
  * 
  * File ControlEventReceiver.java
  */
-package ALMA.scheduling.receivers;
+package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
 
-import ALMA.Control.ExecBlockEvent;
-import ALMA.Control.ExecBlockEventHelper;
+import alma.Control.ExecBlockEvent;
+import alma.Control.ExecBlockEventHelper;
 
-import ALMA.scheduling.master_scheduler.ALMAArchive;
-import ALMA.scheduling.master_scheduler.MasterSBQueue;
-import ALMA.scheduling.master_scheduler.ProcessControlEvent;
-import ALMA.scheduling.project_manager.ALMAPipeline;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
-import ALMA.scheduling.define.nc.*;
+import alma.scheduling.master_scheduler.ALMAArchive;
+import alma.scheduling.master_scheduler.MasterSBQueue;
+import alma.scheduling.master_scheduler.ProcessControlEvent;
+import alma.scheduling.project_manager.ALMAPipeline;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.define.nc.*;
 
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
@@ -53,7 +53,7 @@ public class ControlEventReceiver extends Consumer {
     public ControlEventReceiver(ContainerServices cs, ALMAPipeline p, 
         ALMAArchive a, MasterSBQueue q){
         
-        super(ALMA.Control.CHANNELNAME.value);
+        super(alma.Control.CHANNELNAME.value);
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.pipeline = p;

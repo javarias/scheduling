@@ -24,7 +24,7 @@
  * File LocalReceiver.java
  */
  
-package ALMA.scheduling.define.nc;
+package alma.scheduling.define.nc;
 
 import java.util.ArrayList;
 import java.util.ListIterator;

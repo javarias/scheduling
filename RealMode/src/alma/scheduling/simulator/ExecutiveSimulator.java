@@ -24,11 +24,11 @@
  * File ExecutiveSimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 import alma.acs.component.ComponentLifecycleException;
 import alma.acs.container.ContainerException;
-import ALMA.scheduling.master_scheduler.MasterScheduler;
+import alma.scheduling.master_scheduler.MasterScheduler;
 
 /**
  * Description 

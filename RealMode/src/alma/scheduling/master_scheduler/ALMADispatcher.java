@@ -23,22 +23,22 @@
  * File ALMADispatcher.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import alma.acs.container.ContainerServices;
-import ALMA.scheduling.define.STime;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.define.STime;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
 
 import alma.entity.xmlbinding.schedblock.*;
 
-import ALMA.Control.ControlSystem;
-import ALMA.Control.ArrayController;
-import ALMA.Control.TooLateException;
-import ALMA.Control.ArrayNotIdleException;
+import alma.Control.ControlSystem;
+import alma.Control.ArrayController;
+import alma.Control.TooLateException;
+import alma.Control.ArrayNotIdleException;
 /**
  * The ALMADispatcher class presents a list of scheduling blocks for execution
  * to the telescope operator, in priority order, and waits for a selection.
@@ -89,13 +89,13 @@ public class ALMADispatcher implements ControlProxy {
         try {
             //connect to control's components
             /*
-            controlSysComp = ALMA.Control.ControlSystemHelper.narrow(
+            controlSysComp = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("ControlSystem1"));
             logger.log(Level.INFO, "SCHEDULING: Got control system");
             short[] subarray = new short[1];
             */
             //arrayControllerComp = controlSysComp.createSubArray(subarray);
-            arrayControllerComp = ALMA.Control.ArrayControllerHelper.narrow(
+            arrayControllerComp = alma.Control.ArrayControllerHelper.narrow(
                 containerServices.getComponent("ArrayController1"));
             logger.log(Level.INFO, "SCHEDULING: Got array controller");
             //tell control to process the schedblock

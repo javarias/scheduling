@@ -24,7 +24,7 @@
  * File SProject.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.obsproject.*;

@@ -23,7 +23,7 @@
  * File MasterScheduler.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
@@ -45,12 +45,12 @@ import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.obsproject.*;
 //import alma.bo.SchedBlock;
 
-import ALMA.scheduling.*;
-import ALMA.scheduling.project_manager.ProjectManager;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
-import ALMA.scheduling.project_manager.PIProxy;
-import ALMA.scheduling.scheduler.*;
-import ALMA.scheduling.receivers.SchedulerEventReceiver;
+import alma.scheduling.*;
+import alma.scheduling.project_manager.ProjectManager;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.project_manager.PIProxy;
+import alma.scheduling.scheduler.*;
+import alma.scheduling.receivers.SchedulerEventReceiver;
 
 import java.io.File;
 import java.io.ObjectOutputStream;
@@ -64,8 +64,8 @@ import java.net.UnknownHostException;
 
 import alma.acs.nc.SimpleSupplier;
 import alma.acs.component.client.ComponentClient;
-//import ALMA.scheduling.MSOperations;
-//import ALMA.scheduling.MS;
+//import alma.scheduling.MSOperations;
+//import alma.scheduling.MS;
 
 
 /**
@@ -832,7 +832,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         try {
             SchedulerEventReceiver sched_listener = 
                 new SchedulerEventReceiver(s);
-            sched_listener.addSubscription(ALMA.Control.EXECEVENTS.value);
+            sched_listener.addSubscription(alma.Control.EXECEVENTS.value);
             sched_listener.consumerReady();
         } catch(Exception e) {
             logger.severe("SCHEDULING: Problem with scheduler event listener");

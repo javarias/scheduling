@@ -23,12 +23,12 @@
  * File ProjectQueue.java
  * 
  */
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 
-import ALMA.scheduling.define.*;
+import alma.scheduling.define.*;
 /**
  * The ProjectQueue class is the collection of Projects
  * currently under consideration by the scheduling system.

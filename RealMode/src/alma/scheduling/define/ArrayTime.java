@@ -24,7 +24,7 @@
  * File ArrayTime.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * ArrayTime is based on the definition of time from the 

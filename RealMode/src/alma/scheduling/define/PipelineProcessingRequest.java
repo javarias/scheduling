@@ -24,7 +24,7 @@
  * File PipelineProcessingRequest.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 import org.exolab.castor.xml.ValidationException;
 import java.util.logging.Logger;
@@ -564,16 +564,16 @@ public class PipelineProcessingRequest {
     public static void main(String[] args) {
         //try {
             System.out.println("SCHEDULING: function PipelineProcessingRequest()");
-            ALMA.scheduling.define.PipelineProcessingRequest ppr1=null; 
+            alma.scheduling.define.PipelineProcessingRequest ppr1=null; 
             try {
-                ppr1=new ALMA.scheduling.define.PipelineProcessingRequest();
+                ppr1=new alma.scheduling.define.PipelineProcessingRequest();
             } catch(Exception e) {
                 System.out.println("SCHEDULING: error="+e.toString());
             }
                 /*
             System.out.println("SCHEDULING: function PipelineProcessingRequest(alma.entity.xmlbinding.pipelineprocessingrequest.PipelinePrococessingRequest)");
-            ALMA.scheduling.define.PipelineProcessingRequest ppr2 = 
-                new ALMA.scheduling.define.PipelineProcessingRequest(
+            alma.scheduling.define.PipelineProcessingRequest ppr2 = 
+                new alma.scheduling.define.PipelineProcessingRequest(
                     new alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest());
                     */
             System.out.println("SCHEDULING: function createEntity()");

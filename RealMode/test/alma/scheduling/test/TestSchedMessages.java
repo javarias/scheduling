@@ -24,10 +24,10 @@
  * 
  */
 
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
-import ALMA.scheduling.master_scheduler.Message;
-import ALMA.scheduling.master_scheduler.MessageQueue;
+import alma.scheduling.master_scheduler.Message;
+import alma.scheduling.master_scheduler.MessageQueue;
 
 import alma.entities.commonentity.EntityT;
 

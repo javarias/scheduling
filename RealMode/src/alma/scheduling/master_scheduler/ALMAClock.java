@@ -24,13 +24,13 @@
  * File ALMAClock.java
  */
  
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import alma.acs.container.ContainerServices;
-import ALMA.scheduling.define.STime;
-import ALMA.scheduling.define.ArrayTime;
-import ALMA.scheduling.define.ClockBase;
-import ALMA.scheduling.define.ClockAlarmListener;
+import alma.scheduling.define.STime;
+import alma.scheduling.define.ArrayTime;
+import alma.scheduling.define.ClockBase;
+import alma.scheduling.define.ClockAlarmListener;
 
 /**
  * The Clock class gives access to the array time, as implemented by

@@ -24,9 +24,9 @@
  * File ClockAlarmListener.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
-import ALMA.scheduling.define.STime;
+import alma.scheduling.define.STime;
 
 /**
  * The ClockAlarmListener is an interface that is called

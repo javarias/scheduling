@@ -24,7 +24,7 @@
  * File SchedulingPublisher.java
  */
  
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import java.util.logging.Logger;
 
@@ -34,8 +34,8 @@ import alma.acs.container.ContainerException;
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
 
-import ALMA.scheduling.define.nc.*;
-import ALMA.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.define.nc.*;
+import alma.scheduling.NothingCanBeScheduledEvent;
 
 /**
  * 
@@ -54,15 +54,15 @@ public class SchedulingPublisher {
 		logger.info("SCHEDULING: Scheduling Publisher has been created");
         /* Scheduling NC stuff */
         String[] eventType = new String[1];
-        eventType[0] = "ALMA.scheduling.NothingCanBeScheduledEvent";
+        eventType[0] = "alma.scheduling.NothingCanBeScheduledEvent";
         if(isSimulation) { //create local channel
             LocalNotificationChannel sched = 
                 new LocalNotificationChannel(
-                    ALMA.scheduling.CHANNELNAME.value);
+                    alma.scheduling.CHANNELNAME.value);
         } else { //create corba channel
             CorbaNotificationChannel sched = 
                 new CorbaNotificationChannel(
-                   ALMA.scheduling.CHANNELNAME.value);
+                   alma.scheduling.CHANNELNAME.value);
         }
         
 	}

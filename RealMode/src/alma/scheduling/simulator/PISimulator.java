@@ -24,9 +24,9 @@
  * File PISimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
-import ALMA.scheduling.project_manager.ProjectManager_to_PI;
+import alma.scheduling.project_manager.ProjectManager_to_PI;
 
 /**
  * Description 

@@ -24,7 +24,7 @@
  * File Simulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 import java.util.logging.Logger;
 

@@ -24,10 +24,10 @@
  * File PipelineProxy.java
  */
  
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
-import ALMA.scheduling.master_scheduler.SchedulingException;
+import alma.scheduling.master_scheduler.SchedulingException;
 
 /**
  * The PipelineProxy defines the interface to the pipeline

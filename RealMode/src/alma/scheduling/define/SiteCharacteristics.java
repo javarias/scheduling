@@ -24,7 +24,7 @@
  * File SiteCharacteristics.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * Description 

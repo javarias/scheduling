@@ -24,7 +24,7 @@
  * File EventReceiver.java
  */
  
-package ALMA.scheduling.define.nc;
+package alma.scheduling.define.nc;
 
 /**
  * The EventReceiver object is a helper class used internally in

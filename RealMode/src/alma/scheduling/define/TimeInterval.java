@@ -24,7 +24,7 @@
  * File TimeInterval.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * Description 

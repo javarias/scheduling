@@ -24,7 +24,7 @@
  * File ComponentState.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * The State class describes the state of the scheduling system.  The

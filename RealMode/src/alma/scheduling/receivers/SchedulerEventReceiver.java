@@ -23,19 +23,19 @@
  * File SchedulerEventReceiver.java
  * 
  */
-package ALMA.scheduling.receivers;
+package alma.scheduling.receivers;
 
 import org.omg.CosNotification.*;
-import ALMA.acsnc.*;
+import alma.acsnc.*;
 import alma.acs.nc.*;
 
-import ALMA.Control.ExecBlockEvent;
-import ALMA.Control.ExecBlockEventHelper;
+import alma.Control.ExecBlockEvent;
+import alma.Control.ExecBlockEventHelper;
 
 
-import ALMA.scheduling.define.nc.*;
-import ALMA.scheduling.scheduler.*;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.define.nc.*;
+import alma.scheduling.scheduler.*;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
 
 /** 
  * Listens to control for events that the scheduler needs/wants
@@ -50,7 +50,7 @@ public class SchedulerEventReceiver extends Consumer {
     private Scheduler scheduler;
 
     public SchedulerEventReceiver(Scheduler s) {
-        super(ALMA.Control.CHANNELNAME.value);
+        super(alma.Control.CHANNELNAME.value);
         this.scheduler = s;
         System.out.println("SCHEDULING: SchedulerEventReceiver created.");
     }

@@ -24,9 +24,9 @@
  * File TelescopeOperatorSimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
-import ALMA.scheduling.master_scheduler.Scheduling_to_TelescopeOperator;
+import alma.scheduling.master_scheduler.Scheduling_to_TelescopeOperator;
 
 /**
  * Description 

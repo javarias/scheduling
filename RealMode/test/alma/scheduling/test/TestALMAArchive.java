@@ -23,7 +23,7 @@
  * File TestALMAArchive.java
  * 
  */
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
@@ -38,8 +38,8 @@ import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.schedulingpolicy.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 
-import ALMA.scheduling.master_scheduler.ALMAArchive;
-import ALMA.Control.ExecBlockEvent;
+import alma.scheduling.master_scheduler.ALMAArchive;
+import alma.Control.ExecBlockEvent;
 /**
  *  Test the functions in the ALMAArchive
  *
@@ -81,7 +81,7 @@ public class TestALMAArchive {
             logger.info("SCHED_TEST: function updateSchedBlock(ExecBlockEvent e) ");
             ExecBlockEvent event = new ExecBlockEvent();
             event.sbId = id;
-            event.status = ALMA.Control.CompletionStatus.COMPLETED_OK;
+            event.status = alma.Control.CompletionStatus.COMPLETED_OK;
             archive.updateSchedBlock(event);
             //retreive it to see that it updated
             sb = archive.getSchedBlock(id);

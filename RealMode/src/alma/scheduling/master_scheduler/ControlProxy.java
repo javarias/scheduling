@@ -24,9 +24,9 @@
  * File ControlProxy.java
  */
  
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
-import ALMA.scheduling.define.STime;
+import alma.scheduling.define.STime;
 
 /**
  * Description 

@@ -24,19 +24,19 @@
  * 
  */
 
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
-import ALMA.scheduling.receivers.*;
-import ALMA.scheduling.master_scheduler.ALMAArchive;
-import ALMA.scheduling.master_scheduler.MasterSBQueue;
-import ALMA.scheduling.project_manager.ALMAPipeline;
+import alma.scheduling.receivers.*;
+import alma.scheduling.master_scheduler.ALMAArchive;
+import alma.scheduling.master_scheduler.MasterSBQueue;
+import alma.scheduling.project_manager.ALMAPipeline;
 
-import ALMA.Control.ExecBlockEvent;
-import ALMA.Control.ExecBlockEventHelper;
-import ALMA.pipelinescience.ScienceProcessingRequestEnd;
-import ALMA.pipelinescience.ScienceProcessingRequestEndHelper;
+import alma.Control.ExecBlockEvent;
+import alma.Control.ExecBlockEventHelper;
+import alma.pipelinescience.ScienceProcessingRequestEnd;
+import alma.pipelinescience.ScienceProcessingRequestEndHelper;
 
-import ALMA.acsnc.*;
+import alma.acsnc.*;
 import alma.acs.nc.*;
 import org.omg.CosNotification.StructuredEvent;
 
@@ -77,14 +77,14 @@ public class TestSchedReceivers {
         telcalevents = new TestSchedSupplier();
         
         String[] names = new String[3];
-        names[SimpleSupplier.CHANNELPOS] = ALMA.Control.CHANNELNAME.value;
-        names[SimpleSupplier.TYPEPOS] = ALMA.Control.EXECEVENTS.value;
-        names[SimpleSupplier.HELPERPOS] = "ALMA.Control.ExecBlockEventHelper";
+        names[SimpleSupplier.CHANNELPOS] = alma.Control.CHANNELNAME.value;
+        names[SimpleSupplier.TYPEPOS] = alma.Control.EXECEVENTS.value;
+        names[SimpleSupplier.HELPERPOS] = "alma.Control.ExecBlockEventHelper";
         controlSup = new SimpleSupplier(names);
 
-        names[SimpleSupplier.CHANNELPOS] = ALMA.pipelinescience.CHANNELNAME.value;
-        names[SimpleSupplier.TYPEPOS] = "ALMA.pipelinescience.ScienceProcessingRequestEnd";
-        names[SimpleSupplier.HELPERPOS] = "ALMA.pipelinescience.ScienceProcessingRequestEndHelper";
+        names[SimpleSupplier.CHANNELPOS] = alma.pipelinescience.CHANNELNAME.value;
+        names[SimpleSupplier.TYPEPOS] = "alma.pipelinescience.ScienceProcessingRequestEnd";
+        names[SimpleSupplier.HELPERPOS] = "alma.pipelinescience.ScienceProcessingRequestEndHelper";
         pipelineSup = new SimpleSupplier(names);
 
     }
@@ -98,13 +98,13 @@ public class TestSchedReceivers {
             telcal2.consumerReady();
             control1 = new ControlEventReceiver(container, new ALMAPipeline(true, container),
                     new ALMAArchive(true, container), new MasterSBQueue());
-            control1.addSubscription(ALMA.Control.EXECEVENTS.value);
+            control1.addSubscription(alma.Control.EXECEVENTS.value);
             control1.consumerReady();
             //control2 = new SchedulerEventReceiver();
             pipeline1 = new PipelineEventReceiver(container, new ALMAPipeline(true, container),
                 new ALMAArchive(true,container));
             pipeline1.addSubscription(
-                "ALMA.pipelinescience.ScienceProcessingRequestEnd");
+                "alma.pipelinescience.ScienceProcessingRequestEnd");
             pipeline1.consumerReady();
         } catch (Exception e){
         }
@@ -113,14 +113,14 @@ public class TestSchedReceivers {
         telcalevents.sendTelCalEvents();
         try {
             ExecBlockEvent c_event = new ExecBlockEvent(
-                    ALMA.Control.EventReason.START, 
+                    alma.Control.EventReason.START, 
                         "block id", "sb id",(short)1,
-                            ALMA.Control.CompletionStatus.COMPLETED_OK, 
+                            alma.Control.CompletionStatus.COMPLETED_OK, 
                                 System.currentTimeMillis());
             controlSup.publishEvent(c_event);
             ScienceProcessingRequestEnd p_event = 
                 new ScienceProcessingRequestEnd( "request id","threadname",
-                    ALMA.pipelinescience.CompletionStatusEnum.COMPLETE_SUCCEEDED,
+                    alma.pipelinescience.CompletionStatusEnum.COMPLETE_SUCCEEDED,
                         "TESTING!");
             pipelineSup.publishEvent(p_event);
         }catch(Exception e){ 

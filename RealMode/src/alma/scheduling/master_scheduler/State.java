@@ -23,7 +23,7 @@
  * File State.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 /**
  * The State class describes the state of the scheduling system.  The

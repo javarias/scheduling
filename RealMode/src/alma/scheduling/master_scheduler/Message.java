@@ -24,7 +24,7 @@
  * 
  */
 
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import alma.entities.commonentity.EntityT;
 /**

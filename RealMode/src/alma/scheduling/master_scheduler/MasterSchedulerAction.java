@@ -23,7 +23,7 @@
  * File MasterSchedulerAction.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 
 /**

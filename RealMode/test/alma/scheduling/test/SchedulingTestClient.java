@@ -23,7 +23,7 @@
  * File SchedulingTestClient.java
  * 
  */
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
 import java.io.IOException;
 import java.io.StringWriter;

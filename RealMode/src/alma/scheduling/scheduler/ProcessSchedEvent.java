@@ -24,11 +24,11 @@
  * File ProcessSchedEvent.java
  */
 
-package ALMA.scheduling.scheduler;
+package alma.scheduling.scheduler;
 
-import ALMA.Control.ExecBlockEvent;
-import ALMA.scheduling.project_manager.ALMAPipeline;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.Control.ExecBlockEvent;
+import alma.scheduling.project_manager.ALMAPipeline;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
 
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;

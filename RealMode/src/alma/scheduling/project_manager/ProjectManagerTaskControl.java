@@ -24,11 +24,11 @@
  * File ProjectManagerTaskControl.java
  */
  
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
-import ALMA.scheduling.master_scheduler.TaskControlInfo;
-//import ALMA.Control.ExecBlockEndEvent;
-import ALMA.pipelinescience.ScienceProcessingRequestEnd;
+import alma.scheduling.master_scheduler.TaskControlInfo;
+//import alma.Control.ExecBlockEndEvent;
+import alma.pipelinescience.ScienceProcessingRequestEnd;
 
 /**
  * Description 

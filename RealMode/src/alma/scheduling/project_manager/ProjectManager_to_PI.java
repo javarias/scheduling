@@ -23,7 +23,7 @@
  * File ProjectManager_to_PI.java
  * 
  */
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 /**
  * This interface is implemented by the scheduling PIProxy class using

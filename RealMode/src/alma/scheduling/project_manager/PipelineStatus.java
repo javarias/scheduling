@@ -24,7 +24,7 @@
  * File PipelineStatus.java
  */
  
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 /**
  * Define the status of a pipeline processing request. 

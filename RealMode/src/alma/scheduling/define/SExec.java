@@ -24,7 +24,7 @@
  * File SExec.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 
 /**

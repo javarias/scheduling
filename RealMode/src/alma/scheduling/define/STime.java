@@ -24,7 +24,7 @@
  * File STime.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

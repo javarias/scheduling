@@ -24,11 +24,11 @@
  * File ClockSimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
-import ALMA.scheduling.define.ClockBase;
-import ALMA.scheduling.define.STime;
-import ALMA.scheduling.define.ArrayTime;
+import alma.scheduling.define.ClockBase;
+import alma.scheduling.define.STime;
+import alma.scheduling.define.ArrayTime;
 
 /**
  * Description 

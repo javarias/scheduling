@@ -24,7 +24,7 @@
  * File NotifyPI.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * A NotifyPI object cantains a logical expression and a mode

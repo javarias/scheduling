@@ -24,7 +24,7 @@
  * File Status.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * The Status class is used ot denote the status of an SUnit.

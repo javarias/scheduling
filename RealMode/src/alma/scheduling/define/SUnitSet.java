@@ -24,7 +24,7 @@
  * File SUnitSet.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 import java.util.ArrayList;
 import alma.entity.xmlbinding.obsproject.*;

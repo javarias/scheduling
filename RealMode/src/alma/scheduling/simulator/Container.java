@@ -24,7 +24,7 @@
  * File Container.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -36,9 +36,9 @@ import org.omg.CORBA.Object;
 import alma.acs.container.ContainerException;
 import alma.acs.container.ContainerServices;
 import alma.entities.commonentity.EntityT;
-import ALMA.ACS.OffShoot;
+import alma.ACS.OffShoot;
 
-import ALMA.scheduling.master_scheduler.MasterScheduler;
+import alma.scheduling.master_scheduler.MasterScheduler;
 
 /**
  * Description 

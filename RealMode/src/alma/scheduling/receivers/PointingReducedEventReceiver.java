@@ -22,17 +22,17 @@
  * 
  * File PointingReducedEventReceiver.java
  */
-package ALMA.scheduling.receivers;
+package alma.scheduling.receivers;
 
 import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
 
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
-import ALMA.scheduling.define.nc.*;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.define.nc.*;
 
-import ALMA.TelCalPublisher.PointingReducedEvent;
-import ALMA.TelCalPublisher.PointingReducedEventHelper;
+import alma.TelCalPublisher.PointingReducedEvent;
+import alma.TelCalPublisher.PointingReducedEventHelper;
 
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
@@ -44,7 +44,7 @@ public class PointingReducedEventReceiver extends Consumer {
     private ContainerServices containerServices;
     
     public PointingReducedEventReceiver(ContainerServices cs){
-        super(ALMA.TelCalPublisher.CHANNELNAME.value);
+        super(alma.TelCalPublisher.CHANNELNAME.value);
         this.containerServices = cs;
         this.logger = cs.getLogger();
     }

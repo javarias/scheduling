@@ -23,7 +23,7 @@
  * File Scheduling_to_TelescopeOperator.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 /**
  * This interface is implemented in the TelescopeOperator class using

@@ -24,7 +24,7 @@
  * File CorbaReceiver.java
  */
  
-package ALMA.scheduling.define.nc;
+package alma.scheduling.define.nc;
 
 import java.lang.reflect.*;
 import java.util.*;

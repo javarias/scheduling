@@ -23,7 +23,7 @@
  * File PIProxy.java
  * 
  */
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 import alma.acs.container.ContainerServices;
 

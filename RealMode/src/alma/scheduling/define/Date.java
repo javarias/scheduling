@@ -24,7 +24,7 @@
  * File Date.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * Record the date as year, month, and day.

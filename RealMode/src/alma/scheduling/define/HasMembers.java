@@ -24,7 +24,7 @@
  * File HasMembers.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * The HasMembers interface is a collection of methods that 

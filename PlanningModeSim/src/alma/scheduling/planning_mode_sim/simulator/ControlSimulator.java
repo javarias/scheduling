@@ -124,7 +124,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#createSubarray(short[])
+	 * @see alma.scheduling.master_scheduler.ControlProxy#createSubarray(short[])
 	 */
 	public short createSubarray(short[] antenna) throws SchedulingException {
 		Antenna x = null;
@@ -150,7 +150,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#destroySubarray(short)
+	 * @see alma.scheduling.master_scheduler.ControlProxy#destroySubarray(short)
 	 */
 	public void destroySubarray(short subarrayId) throws SchedulingException {
 		Subarray s = getSubarray(subarrayId);
@@ -165,7 +165,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String, ALMA.scheduling.define.DateTime)
+	 * @see alma.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String, alma.scheduling.define.DateTime)
 	 */
 	public void execSB(short subarrayId, String id, DateTime time)
 		throws SchedulingException {
@@ -178,7 +178,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 	
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String)
+	 * @see alma.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String)
 	 */
 	public void execSB(short subarrayId, String id)
 		throws SchedulingException {
@@ -229,7 +229,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getActiveSubarray()
+	 * @see alma.scheduling.master_scheduler.ControlProxy#getActiveSubarray()
 	 */
 	public short[] getActiveSubarray() throws SchedulingException {
 		short[] s = new short [subarray.size()];
@@ -240,7 +240,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getIdleAntennas()
+	 * @see alma.scheduling.master_scheduler.ControlProxy#getIdleAntennas()
 	 */
 	public short[] getIdleAntennas() throws SchedulingException {
 		int count = 0;
@@ -259,7 +259,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getSubarrayAntennas(short)
+	 * @see alma.scheduling.master_scheduler.ControlProxy#getSubarrayAntennas(short)
 	 */
 	public short[] getSubarrayAntennas(short subarrayId)
 		throws SchedulingException {
@@ -275,7 +275,7 @@ public class ControlSimulator extends BasicComponent implements ControlProxy {
 	}
 
 	/* (non-Javadoc)
-	 * @see ALMA.scheduling.master_scheduler.ControlProxy#stopSB(java.lang.Short, java.lang.String)
+	 * @see alma.scheduling.master_scheduler.ControlProxy#stopSB(java.lang.Short, java.lang.String)
 	 */
 	public void stopSB(short subarrayId, String id)
 		throws SchedulingException {

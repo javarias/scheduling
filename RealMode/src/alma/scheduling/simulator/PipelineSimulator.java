@@ -24,12 +24,12 @@
  * File PipelineSimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
-import ALMA.scheduling.master_scheduler.SchedulingException;
-import ALMA.scheduling.project_manager.PipelineProxy;
-import ALMA.scheduling.project_manager.PipelineStatus;
+import alma.scheduling.master_scheduler.SchedulingException;
+import alma.scheduling.project_manager.PipelineProxy;
+import alma.scheduling.project_manager.PipelineStatus;
 
 /**
  * Description 

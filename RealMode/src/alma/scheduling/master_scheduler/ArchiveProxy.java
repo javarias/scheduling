@@ -24,15 +24,15 @@
  * File ArchiveProxy.java
  */
  
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
-import ALMA.Control.ExecBlockEvent;
+import alma.Control.ExecBlockEvent;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 
-import ALMA.scheduling.define.STime;
+import alma.scheduling.define.STime;
 /**
  * Description 
  * 

@@ -24,7 +24,7 @@
  * File NotificationChannel.java
  */
  
-package ALMA.scheduling.define.nc;
+package alma.scheduling.define.nc;
 
 /**
  * The NotificationChannel interface allows one to both publish

@@ -23,7 +23,7 @@
  * File SchedSystemTest.java
  * 
  */
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -40,16 +40,16 @@ import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 
-import ALMA.scheduling.MS;
-import ALMA.scheduling.MSOperations;
-import ALMA.scheduling.MSPOATie;
-import ALMA.scheduling.NothingCanBeScheduledEvent;
-import ALMA.scheduling.NothingCanBeScheduledEventHelper;
-import ALMA.scheduling.master_scheduler.MSHelper;
-import ALMA.scheduling.InvalidOperation;
-import ALMA.scheduling.master_scheduler.MasterScheduler;
-import ALMA.scheduling.master_scheduler.ALMAArchive;
-import ALMA.scheduling.project_manager.ProjectManager;
+import alma.scheduling.MS;
+import alma.scheduling.MSOperations;
+import alma.scheduling.MSPOATie;
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.NothingCanBeScheduledEventHelper;
+import alma.scheduling.master_scheduler.MSHelper;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.master_scheduler.MasterScheduler;
+import alma.scheduling.master_scheduler.ALMAArchive;
+import alma.scheduling.project_manager.ProjectManager;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
@@ -83,7 +83,7 @@ public class SchedSystemTest {
         entityDeserializer = EntityDeserializer.getEntityDeserializer(logger);
         // Get the MS interface as a component to test how the Exec will use it
         try {
-            this.masterSchedulerComp = ALMA.scheduling.MSHelper.narrow(
+            this.masterSchedulerComp = alma.scheduling.MSHelper.narrow(
                 containerServices.getComponent("MASTER_SCHEDULER"));
             logger.fine("SCHED_TEST: MS Component created");
         } catch(ContainerException e) {
@@ -124,7 +124,7 @@ public class SchedSystemTest {
         consumer = new TestSchedConsumer(containerServices);
         System.out.println("SCHED_TEST: SchedConsumer created");
         try {
-            consumer.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
+            consumer.addSubscription(alma.acsnc.DEFAULTTYPE.value);
             consumer.consumerReady();
         } catch(Exception e) {
             consumer.disconnect();

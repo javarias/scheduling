@@ -24,14 +24,14 @@
  * File ALMATelescopeOperator.java
  */
  
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import ALMA.scheduling.MS;
-import ALMA.scheduling.UnidentifiedResponse;
-import ALMA.scheduling.master_scheduler.MSHelper;
+import alma.scheduling.MS;
+import alma.scheduling.UnidentifiedResponse;
+import alma.scheduling.master_scheduler.MSHelper;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
@@ -108,7 +108,7 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
         String reply = sbIdList[pos];
         logger.log(Level.INFO,"SCHEDULING: in TO. reply ="+ reply);
         try {
-            this.masterSchedulerComp = ALMA.scheduling.MSHelper.narrow(
+            this.masterSchedulerComp = alma.scheduling.MSHelper.narrow(
                 container.getComponent("MASTER_SCHEDULER"));
             logger.log(Level.INFO,"SCHEDULING: in TO. ms response about to be called");
             masterSchedulerComp.response(messageId, reply);

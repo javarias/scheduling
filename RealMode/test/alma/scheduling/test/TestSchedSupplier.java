@@ -23,15 +23,15 @@
  * File TestSchedSupplier.java
  * 
  */
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
-import ALMA.acsnc.*;
+import alma.acsnc.*;
 import alma.acs.nc.*;
 import org.omg.CosNotification.StructuredEvent;
-import ALMA.TelCalPublisher.PointingReducedEvent;
-import ALMA.TelCalPublisher.PointingReducedEventHelper;
-import ALMA.TelCalPublisher.FocusReducedEvent;
-import ALMA.TelCalPublisher.FocusReducedEventHelper;
+import alma.TelCalPublisher.PointingReducedEvent;
+import alma.TelCalPublisher.PointingReducedEventHelper;
+import alma.TelCalPublisher.FocusReducedEvent;
+import alma.TelCalPublisher.FocusReducedEventHelper;
 
 public class TestSchedSupplier { // extends Supplier {
 
@@ -40,21 +40,21 @@ public class TestSchedSupplier { // extends Supplier {
 
     public TestSchedSupplier() {
         String[] names = new String[3];
-        names[SimpleSupplier.CHANNELPOS] = ALMA.TelCalPublisher.CHANNELNAME.value;
+        names[SimpleSupplier.CHANNELPOS] = alma.TelCalPublisher.CHANNELNAME.value;
         names[SimpleSupplier.TYPEPOS] = new String(
             "PointingReducedEvent");
-        //    "ALMA.TelCalPublisher.PointingReducedEvent");
+        //    "alma.TelCalPublisher.PointingReducedEvent");
         names[SimpleSupplier.HELPERPOS] = new String(
-            "ALMA.TelCalPublisher.PointingReducedEventHelper");
+            "alma.TelCalPublisher.PointingReducedEventHelper");
         //create a supplier for the PointingReducedEvent
         sup1 = new SimpleSupplier(names);
         System.out.println("SCHED_TEST: sup1 created"); 
 
         names[SimpleSupplier.TYPEPOS] = new String(
             "FocusReducedEvent");
-            //"ALMA.TelCalPublisher.FocusReducedEvent");
+            //"alma.TelCalPublisher.FocusReducedEvent");
         names[SimpleSupplier.HELPERPOS] = new String(
-            "ALMA.TelCalPublisher.FocusReducedEventHelper");
+            "alma.TelCalPublisher.FocusReducedEventHelper");
 
         //create a supplier for the FocusReducedEvent
         sup2 = new SimpleSupplier(names);

@@ -24,14 +24,14 @@
  * File ProcessControlEvent.java
  */
 
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
-import ALMA.Control.ExecBlockEvent;
-import ALMA.Control.CompletionStatus;
+import alma.Control.ExecBlockEvent;
+import alma.Control.CompletionStatus;
 
-import ALMA.scheduling.master_scheduler.MasterSBQueue;
-import ALMA.scheduling.project_manager.ALMAPipeline;
-import ALMA.scheduling.project_manager.ProjectManagerTaskControl;
+import alma.scheduling.master_scheduler.MasterSBQueue;
+import alma.scheduling.project_manager.ALMAPipeline;
+import alma.scheduling.project_manager.ProjectManagerTaskControl;
 
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;

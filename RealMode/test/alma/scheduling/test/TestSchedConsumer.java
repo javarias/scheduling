@@ -23,15 +23,15 @@
  * File TestSchedConsumer.java
  * 
  */
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
 import org.omg.CosNotification.*;
 import alma.acs.nc.*;
 
-import ALMA.scheduling.MS;
-import ALMA.scheduling.InvalidOperation;
-import ALMA.scheduling.NothingCanBeScheduledEvent;
-import ALMA.scheduling.NothingCanBeScheduledEventHelper;
+import alma.scheduling.MS;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.NothingCanBeScheduledEventHelper;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -41,11 +41,11 @@ public class TestSchedConsumer extends Consumer {
     private MS masterSchedulerComp;
 
     public TestSchedConsumer(ContainerServices cs) {
-        super(ALMA.scheduling.CHANNELNAME.value);
+        super(alma.scheduling.CHANNELNAME.value);
         System.out.println("Got scheduling channel");
         this.container=cs;
         try {
-            this.masterSchedulerComp = ALMA.scheduling.MSHelper.narrow(
+            this.masterSchedulerComp = alma.scheduling.MSHelper.narrow(
                 container.getComponent("MASTER_SCHEDULER"));
         } catch (ContainerException e) {
         }

@@ -23,16 +23,16 @@
  * File Scheduler.java
  * 
  */
-package ALMA.scheduling.scheduler;
+package alma.scheduling.scheduler;
 
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.lang.InterruptedException;
 
-import ALMA.scheduling.define.STime;
-import ALMA.scheduling.master_scheduler.*;
-import ALMA.scheduling.project_manager.PIProxy;
+import alma.scheduling.define.STime;
+import alma.scheduling.master_scheduler.*;
+import alma.scheduling.project_manager.PIProxy;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;

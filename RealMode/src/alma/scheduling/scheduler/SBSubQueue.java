@@ -23,7 +23,7 @@
  * File SBSubQueue.java
  * 
  */
-package ALMA.scheduling.scheduler;
+package alma.scheduling.scheduler;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.schedblock.SchedBlock;

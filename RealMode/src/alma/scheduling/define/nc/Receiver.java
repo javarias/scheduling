@@ -24,7 +24,7 @@
  * File Receiver.java
  */
  
-package ALMA.scheduling.define.nc;
+package alma.scheduling.define.nc;
 
 /**
  * The Receiver interface allows one to attach and detach

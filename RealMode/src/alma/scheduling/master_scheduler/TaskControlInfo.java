@@ -24,10 +24,10 @@
  * File TaskControlInfo.java
  */
  
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
-import ALMA.scheduling.define.ComponentState;
-import ALMA.scheduling.define.STime;
+import alma.scheduling.define.ComponentState;
+import alma.scheduling.define.STime;
 
 /**
  * TaskControlInfo is an informational object that is used by the

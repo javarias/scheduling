@@ -24,7 +24,7 @@
  * File MemberOf.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * Description 

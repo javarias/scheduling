@@ -24,7 +24,7 @@
  * File Publisher.java
  */
  
-package ALMA.scheduling.define.nc;
+package alma.scheduling.define.nc;
 
 import org.omg.CORBA.portable.IDLEntity;
 

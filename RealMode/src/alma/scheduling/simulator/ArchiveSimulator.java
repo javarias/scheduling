@@ -24,16 +24,16 @@
  * File ArchiveSimulator.java
  */
  
-package ALMA.scheduling.simulator;
+package alma.scheduling.simulator;
 
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy;
-import ALMA.scheduling.define.STime;
-import ALMA.scheduling.master_scheduler.ArchiveProxy;
+import alma.scheduling.define.STime;
+import alma.scheduling.master_scheduler.ArchiveProxy;
 
-import ALMA.Control.ExecBlockEvent;
+import alma.Control.ExecBlockEvent;
 
 /**
  * Description 

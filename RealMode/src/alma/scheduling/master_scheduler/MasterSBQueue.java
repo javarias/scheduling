@@ -23,14 +23,14 @@
  * File MasterSBQueue.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package alma.scheduling.master_scheduler;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproject.types.*;
-import ALMA.scheduling.define.SUnit;
-import ALMA.Control.ExecBlockEvent;
+import alma.scheduling.define.SUnit;
+import alma.Control.ExecBlockEvent;
 //import alma.bo.SchedBlock;
 
 /**

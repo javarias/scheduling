@@ -24,9 +24,9 @@
  * 
  */
 
-package ALMA.scheduling.test;
+package alma.scheduling.test;
 
-import ALMA.scheduling.scheduler.SBSubQueue;
+import alma.scheduling.scheduler.SBSubQueue;
 
 import alma.entity.xmlbinding.schedblock.*;
 

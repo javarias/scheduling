@@ -24,7 +24,7 @@
  * File ALMAPipeline.java
  */
  
-package ALMA.scheduling.project_manager;
+package alma.scheduling.project_manager;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -36,9 +36,9 @@ import alma.acs.entityutil.EntitySerializer;
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;
 
-import ALMA.pipelinescience.SciencePipeline;
+import alma.pipelinescience.SciencePipeline;
 
-import ALMA.scheduling.master_scheduler.SchedulingException;
+import alma.scheduling.master_scheduler.SchedulingException;
 
 /**
  * Description 
@@ -86,7 +86,7 @@ public class ALMAPipeline implements PipelineProxy {
         String requestRes="request result";
         logger.log(Level.INFO,"SCHEDULING: "+requestRes);
         try {
-            sciencePipelineComp = ALMA.pipelinescience.SciencePipelineHelper.narrow(
+            sciencePipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
                 containerServices.getComponent("SCIENCE_PIPELINE"));
             requestRes =sciencePipelineComp.processRequest(
                 EntitySerializer.getEntitySerializer(logger).serializeEntity(request));
@@ -106,7 +106,7 @@ public class ALMAPipeline implements PipelineProxy {
 	public PipelineStatus getStatus(String pipelineProcessingId) {
      /*
         try {
-            sciencePipelineComp = ALMA.pipelinescience.SciencePipelineHelper.narrow(
+            sciencePipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
             
         } catch (Exception e) {}
     */

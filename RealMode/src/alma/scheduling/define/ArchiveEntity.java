@@ -24,7 +24,7 @@
  * File ArchiveEntity.java
  */
  
-package ALMA.scheduling.define;
+package alma.scheduling.define;
 
 /**
  * The ArchiveEntity interface defines common attributes that all entries 
