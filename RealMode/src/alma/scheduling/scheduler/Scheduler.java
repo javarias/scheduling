@@ -110,7 +110,8 @@ public class Scheduler implements Runnable {
         schedulerState = State.EXECUTING;
         logger.info("SCHEDULING: Scheduler is running in "+mode+" mode!");
         String[] ids = queue.getIds();
-        while(moreSBs) {
+        while(moreSBs) { // will need to change ethis when there is more than 
+                         // one project being executed.
             Message m = new Message();
             try {
                 container.assignUniqueEntityId(m.getMessageEntity());
@@ -118,6 +119,9 @@ public class Scheduler implements Runnable {
             String m_id = m.getMessageId();
             String selectedSB = getSB(ids, m_id);
             if(selectedSB == null) {
+            //all sbs have been processed!
+            //should send out nothingCanBeScheduled but
+            //for now this is the end of the project and we start the pipeline
                 moreSBs = false;
                 break;
             }
@@ -140,6 +144,7 @@ public class Scheduler implements Runnable {
                 logger.info("SCHEDULING: scheduler woken up!");
             }
         }
+        
     }
     
     public void stop() {
@@ -192,6 +197,12 @@ public class Scheduler implements Runnable {
     public void setSchedulerState(State s) {
         schedulerState = s;
     }
+    ///////////////////////////////////////////////////////
+    /*
+    public void setPipeline(ALMAPipeline p) {
+        this.pipeline = p;
+    }
+    */
     ///////////////////////////////////////////////////////
 
 	public static void main(String[] args) {

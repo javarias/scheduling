@@ -68,16 +68,14 @@ public class ProjectManager implements Runnable {
     private Logger logger;
     private ALMAArchive archive;
     private ALMADispatcher dispatcher;
-    private Vector projects;
+    private ProjectQueue projects;
     private ALMAPipeline pipeline;
     private MasterSBQueue sbQueue;
     private ProjectManagerTaskControl pmTaskControl;
     private PipelineEventReceiver pipeline_event;
     private ControlEventReceiver control_event;
-    private PointingScanReducedEventReceiver pointingScan_event;
-    private FocusScanReducedEventReceiver focusScan_event;
-    //private Receiver pipelineReceiver;
-    //private Receiver controlReceiver;
+    private PointingReducedEventReceiver pointing_event;
+    private FocusReducedEventReceiver focus_event;
     private boolean pmFlag=true;
     private int pmSleepTime = 300000; //5 minute sleep
     private SchedulingPublisher sp;
@@ -92,13 +90,14 @@ public class ProjectManager implements Runnable {
         this.logger = cs.getLogger();
         // create the scheduling notification channel.
         createSchedulingNC();
-        projects = convertToVector(archive.getProject());
+        projects = new ProjectQueue();
+        projects.addProject(archive.getProject());
         pipeline = new ALMAPipeline(isSimulation, containerServices);
         //Receiver objects
         control_event = new ControlEventReceiver(cs, pipeline, archive);
         pipeline_event = new PipelineEventReceiver(cs, pipeline, archive);
-        pointingScan_event = new PointingScanReducedEventReceiver(cs);
-        focusScan_event = new FocusScanReducedEventReceiver(cs);
+        pointing_event = new PointingReducedEventReceiver(cs);
+        focus_event = new FocusReducedEventReceiver(cs);
         if(isSimulation) {
             //its a simulation, so create local channels
             
@@ -136,17 +135,17 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             try {
-                pointingScan_event.addSubscription("PointingScanReducedEvent");
-                pointingScan_event.consumerReady();
+                pointing_event.addSubscription("PointingReducedEvent");
+                pointing_event.consumerReady();
             } catch(Exception e) {
-                logger.severe("SCHEDULING: Could not get PointingScanReduced channel");
+                logger.severe("SCHEDULING: Could not get PointingReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             try {
-                focusScan_event.addSubscription("FocusScanReducedEvent");
-                focusScan_event.consumerReady();
+                focus_event.addSubscription("FocusReducedEvent");
+                focus_event.consumerReady();
             } catch(Exception e) {
-                logger.severe("SCHEDULING: Could not get FocusScanReduced channel");
+                logger.severe("SCHEDULING: Could not get FocusReduced channel");
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             /*

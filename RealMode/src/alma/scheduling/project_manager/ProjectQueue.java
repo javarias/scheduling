@@ -23,7 +23,7 @@
  * File ProjectQueue.java
  * 
  */
-package ALMA.scheduling.master_scheduler;
+package ALMA.scheduling.project_manager;
 
 import java.util.Vector;
 import alma.entity.xmlbinding.obsproject.ObsProject;

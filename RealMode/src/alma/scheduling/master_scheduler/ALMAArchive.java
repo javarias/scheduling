@@ -186,9 +186,13 @@ public class ALMAArchive implements ArchiveProxy {
         return sb;
     }
 
-    //public void updateSchedBlock(String id) {
+    /**
+     * Updates the schedblock that was just executed by the control system.
+     * 
+     */
     public void updateSchedBlock(ExecBlockEvent execblockevent) {
         logger.info("SCHEDULING: sb id="+execblockevent.sbId);
+        logger.info("SCHEDULING: ** This is where the sb will be linked to its sxecblock **");
         XmlEntityStruct sb_xml = retrieve(execblockevent.sbId);
         //convert to SchedBlock
         SchedBlock sb_obj = (SchedBlock)convertToObject(sb_xml.xmlString, 

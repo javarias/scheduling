@@ -61,29 +61,6 @@ public class ProcessControlEvent implements Runnable {
     public void run() {
         System.out.println("SCHEDULING: process control event started");
         updateSB(event);
-        //System.out.println("SCHEDULING: Event Status = "+event.blockStatus.toString());
-        /*
-        switch(event.blockStatus.value()) {
-            case 0:
-                //System.out.println("SCHEDULING: Event Status = processing");
-                break;
-            case 1:
-                //System.out.println("SCHEDULING: Event Status = ok");
-                updateSB(event);
-                break;
-            case 2:
-                //System.out.println("SCHEDULING: Event Status = failed");
-                break;
-            case 3:
-                //System.out.println("SCHEDULING: Event Status = timeout");
-                break;
-            default: 
-                //System.out.println("SCHEDULING: Event Status error");
-                break;
-        }*/
-//        updateSB(event);
-        //updateSB(event.sbId);
-        //startPipeline(event.sbId);
     }
 
     private void updateSB(ExecBlockEvent event) {
@@ -93,7 +70,7 @@ public class ProcessControlEvent implements Runnable {
             e.printStackTrace();
         }
     }
-
+/*
     public void startPipeline(String id) {
         PipelineProcessingRequest ppr = 
             pipeline.createPipelineProcessingRequest();
@@ -108,5 +85,6 @@ public class ProcessControlEvent implements Runnable {
             se.printStackTrace();
         }
     }
+    */
     
 }

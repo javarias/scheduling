@@ -106,7 +106,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	/** The Clock */
 	private ALMAClock clock;
 	/** The object which holds all the SchedBlocks/SUnits */
-	private MasterSBQueue queue;
+	private MasterSBQueue sbQueue;
 	/** The object that holds all the messages */
     private MessageQueue messageQueue;
     /** The ProjectManager object */
@@ -137,7 +137,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 		pi = null;
 		dispatcher = null;
 		clock = null;
-		queue = null;
+		sbQueue = null;
         messageQueue = null;
 		projectManager = null;
 		schedulingPolicy = new ArrayList ();
@@ -220,6 +220,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 	 * <li> Gets the list of commissioned antennas from the archive.
 	 * <li> Creates the Project Manager object.
 	 * <li> Creates an empty queue of SchedBlocks.
+	 * <li> Creates an empty queue of ObsProjects.
 	 * <li> Create an empty list of Schedulers.
 	 * <li> Create a periodic action object.
 	 * <li> Set state to "initialized".
@@ -247,7 +248,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
             //get logger from container
             logger = container.getLogger();
 			// Create the Master SB queue.
-			queue = new MasterSBQueue ();
+			sbQueue = new MasterSBQueue ();
             // Create the Message queue
             messageQueue = new MessageQueue();
 			// Create the archive proxy.
@@ -263,7 +264,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
             //logger.log(Level.FINE, "Got PIProxy in MS");
             
 			// Create a periodic action object.
-			action = new MasterSchedulerAction (archive, queue);
+			action = new MasterSchedulerAction (archive, sbQueue);
 
 			// Create the ALMADispatcher.
 			dispatcher = new ALMADispatcher(isSimulation,container,archive);
@@ -271,7 +272,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 
 			// Create the Project Manager.
             projectManager = new ProjectManager(isSimulation, container, 
-                                                 archive, queue, dispatcher);
+                                                 archive, sbQueue, dispatcher);
 			
 			// Create the ALMAClock.
 			clock = new ALMAClock(isSimulation,container);
@@ -341,9 +342,9 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
 
         // place SBs in master SB queue
         if(sbs != null) {
-            logger.info("SCHEDULING: sbs not null storing into queue");
+            logger.info("SCHEDULING: sbs not null storing into sbQueue");
             //queue.addNonCompleteSBsToQueue(sbs);   
-            queue.addSchedBlock(sbs);
+            sbQueue.addSchedBlock(sbs);
         } else {
             logger.info("SCHEDULING: sbs null will result in error?");
         }
@@ -758,7 +759,7 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
         return messageQueue;
     }
     public MasterSBQueue getSBQueue() {
-        return queue;
+        return sbQueue;
     }
     public ALMATelescopeOperator getOperator() {
         return operator;
@@ -792,12 +793,14 @@ public class MasterScheduler implements MS, ComponentLifecycle, Runnable {
             logger.severe("SCHEDULING: Scheduler not started. Invalid mode: "+mode);
             return;
         }
-        Vector subSBQueue = queue.queueToVector();
+        Vector subSBQueue = sbQueue.queueToVector();
         // for now the subqueue is the queue
         SBSubQueue subQueue = new SBSubQueue(subSBQueue);
         Scheduler s = new Scheduler(isSimulation, container, operator, 
                                         dispatcher, subQueue, messageQueue, 
                                             clock, pi, mode); 
+        logger.info("SCHEDULING: New scheduler started.");
+        logger.info("SCHEDULING: Start if new project.");
         Thread schedThread = new Thread(s);
         SchedulerTaskControl stc = 
             new SchedulerTaskControl(msThread,schedThread);
