@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xs:schema targetNamespace="Alma/Scheduling/PipelineProcessingRequest" 
+	xmlns:ppr="Alma/Scheduling/PipelineProcessingRequest" 
+	xmlns:prj="Alma/ObsPrep/ObsProject" 
+	xmlns:sber="Alma/ObsPrep/SBExecRec"	 
+	xmlns:ent="Alma/CommonEntity"	 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	elementFormDefault="unqualified" attributeFormDefault="unqualified" 
+	version="1">
+
+	<xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
+	<xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd"/>
+	<xs:import namespace="Alma/ObsPrep/SBExecRec" schemaLocation="SBExecRec.xsd"/>
+
+		<xs:element name="PipelineProcessingRequest">
+		<xs:annotation>
+			<xs:documentation>Initate a request to run the science data reduction pipeline</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ImagingProcedureName" type="xs:string"/>
+				<xs:element name="ProjectReference" type="prj:ObsProjectRefT"/>
+				<xs:element name="Status">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="submitted"/>
+							<xs:enumeration value="incomplete"/>
+							<xs:enumeration value="complete-success"/>
+							<xs:enumeration value="complete-failure"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Comment" type="xs:string"/>
+				<xs:sequence maxOccurs="unbounded">
+					<xs:element name="ReductionUnit" type="ppr:ReductionUnitType"/>
+				</xs:sequence>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="ReductionUnitType">
+		<xs:sequence>
+			<xs:element name="ReductionUnitReference" type="ent:EntityRefT"/>
+			<xs:element name="ReductionUnitType">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ObsUnitSet"/>
+						<xs:enumeration value="SB"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="ExecutionReference" type="sber:SBExecRecRefT"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
