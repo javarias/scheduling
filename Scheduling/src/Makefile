@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.2 2004/08/05 21:19:49 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.3 2004/08/05 22:17:02 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -24,8 +24,8 @@ USER_JFLAGS= -deprecation
 # Jarfiles and their directories
 #
 JARFILES = scheduling 
-scheduling_DIRS =  alma/Scheduling/
-scheduling_EXTRAS = alma/Scheduling/Image/*.jpg
+scheduling_DIRS =  alma/scheduling/
+scheduling_EXTRAS = alma/scheduling/Image/*.jpg
 
 
 INSTALL_FILES = ../lib/scheduling.jar
