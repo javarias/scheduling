@@ -117,6 +117,10 @@ public class ALMAArchive implements Archive {
                     throw new SchedulingException (e);
                 }
             }
+            projects = new Project[tmp_projects.size()];
+            for(int i=0; i < tmp_projects.size();i++) {
+                projects[i] = (Project)tmp_projects.elementAt(i);
+            }
             logger.info("SCHEDULING: Projects available = "+tmp_projects.size());
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
@@ -409,7 +413,7 @@ public class ALMAArchive implements Archive {
             //XmlEntityStruct xml_struct = archOperationComp.retrieve(sb_id);
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(sb_id);
             sb = convertToSB2(xml_struct);
-            //System.out.println(xml_struct.xmlString);
+            System.out.println(xml_struct.xmlString);
             //String proj_id = schedblock.getObsProjectRef().getEntityId();
             //if(proj_id == null) {
             //    System.out.println("dammit its null");
@@ -458,6 +462,7 @@ public class ALMAArchive implements Archive {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
             //System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
+            System.out.println(xml_struct.xmlString);
         } catch (MalformedURI e) { 
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
