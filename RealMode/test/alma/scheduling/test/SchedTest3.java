@@ -27,15 +27,12 @@ package alma.scheduling.test;
 
 import java.net.InetAddress;
 import java.util.logging.Logger;
-import java.lang.Thread;
 import alma.acs.component.client.ComponentClient;
 import alma.scheduling.master_scheduler.MasterScheduler;
 import alma.scheduling.NothingCanBeScheduledEvent;
-import alma.entity.xmlbinding.schedblock.SchedBlock; 
-import alma.entity.xmlbinding.schedblock.SchedBlockEntityT; 
 
 /**
- *  Tests selectSB function.
+ *  Tests creation of NothingCanBeScheduledEvent.
  *
  *  @author Sohaila Roberts
  */
