@@ -170,7 +170,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         String sessionID = archive.storeSession(s);
         //send out the session start event
         StartSession start_event = new StartSession (e.startTime, 
-            sessionID, e.sbId, e.sbId); //NOTE: for now last 2 are the same..
+            sessionID, e.sbId, e.sbId, e.execID); //NOTE: for now last 2 are the same..
         publisher.publish(start_event);       
       }catch(Exception ex) {
         logger.severe("SCHEDULING: error! ");

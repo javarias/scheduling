@@ -27,6 +27,7 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.ACS.MasterComponentImpl.*;
 import alma.ACS.MasterComponentImpl.statemachine.*;
+import alma.ACS.ComponentStates;
 import alma.ACS.SUBSYSSTATE_AVAILABLE;
 import alma.ACS.SUBSYSSTATE_OPERATIONAL;
 import alma.ACS.SUBSYSSTATE_ONLINE;
@@ -39,24 +40,26 @@ import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SchedulingMasterComponentOperations;
 
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
-    implements AlmaSubsystemActions, SchedulingMasterComponentOperations {
+    implements SchedulingMasterComponentOperations, AlmaSubsystemActions {
     
 
     private MasterSchedulerIF masterScheduler;
-    private ContainerServices containerServices;
+    private ContainerServices cs;
 
-    /*public SchedulingMasterComponentImpl() {
+    public SchedulingMasterComponentImpl() {
         super();
-    }*/
+    }
 
     ////////////////////////////////////////////////////////////////
     // Component Lifecycle Methods
     ////////////////////////////////////////////////////////////////
+    
+    
     public void initialize(ContainerServices containerServices) 
         throws ComponentLifecycleException {
     
-        //super.initialize(containerServices);
-        this.containerServices = containerServices;
+        super.initialize(containerServices);
+        this.cs = containerServices;
         m_logger = containerServices.getLogger();
         m_logger.info("SCHEDULING MC: master component initialized.");
     }
@@ -70,6 +73,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     }
 
     public void aboutToAbort() {
+        cleanUp();
         m_logger.info("SCHEDULING MC: master component about to abort.");
     }
     
@@ -84,8 +88,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: initSubsysPass1() method called");
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                containerServices.getDefaultComponent(
-                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                cs.getComponent("MasterScheduler"));
         } catch (ContainerException e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component.");
             e.printStackTrace();
@@ -108,5 +111,67 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: shutDownSubsysPass2() method called");
     }
 
+    
+    public void stateChangedNotify (AcsState[] oldStateHierarchy,
+        AcsState[] newStateHierarchy) {
+        //super.stateChangedNotify(oldStateHierarchy, newStateHierarchy);
+
+                //
+        // Note that an assumption that the substate separator is "/" is being
+        // made here. I cannot find an easy method to create an AcsState
+        // quantity from a list of substate names. This is probably easy
+        // but not obvious.
+        //
+
+        String startHi = SUBSYSSTATE_AVAILABLE.value + "/" +
+            SUBSYSSTATE_OPERATIONAL.value;
+        String stopHi = SUBSYSSTATE_AVAILABLE.value + "/" +
+            SUBSYSSTATE_ONLINE.value;
+
+        //
+        // This uses the builtin in string conversion routine which currently
+        // uses the separator "/" internally
+        //
+
+        String oldHi = AcsStateUtil.stateHierarchyToString (oldStateHierarchy);
+        String newHi = AcsStateUtil.stateHierarchyToString (newStateHierarchy);
+
+        //
+        // Change the state of the master component. Trap the start and stop
+        // events which are defined by the appropriate before and after state
+        // hieararchies.
+        //
+
+        try {
+
+            //
+            // Check for a null change of state.
+            //
+
+            if (oldHi.equals(newHi)) {
+                m_logger.info ("schedtest: subsystem states are the same " +  newHi);
+
+            //
+            // Deal with changes of state by updating the state hierarchy. Do
+            // something special with start and stop events.
+            //
+
+            } else {
+                if (oldHi.equals(stopHi) && newHi.equals(startHi)) {
+                    m_logger.info ("schedtest: subsystem start method executed"
+);
+                } else if (oldHi.equals(startHi) && newHi.equals(stopHi)) {
+                    m_logger.info ("schedtest: subsystem stop method executed")
+;
+                }
+                updateStateHierarchy();
+                m_logger.info ("schedtest: subsystem state has changed from " + oldHi + " to " + newHi);
+            }
+        } catch (Exception e) {
+            m_logger.warning ("schedtest: failed to update state hierarchy");
+        }
+
+    }
     ////////////////////////////////////////////////////////////////
+
 }
