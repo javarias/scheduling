@@ -46,11 +46,13 @@ import alma.scheduling.Define.PolicyFactor;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.MasterScheduler.MasterScheduler;
+import alma.scheduling.MasterScheduler.Message;
+import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.scheduling.Scheduler.Scheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 
 /**
- * @author Sohaila Roberts
+ * @author Sohaila Lucero
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -74,6 +76,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     private ALMAControl control;
     //Interface to the TelescopeOperator
     private ALMAOperator operator;
+    // The queue which holds all the messages sent to the operator
+    private MessageQueue messageQueue;
     // Information that scheduling wants to know about 
     // all the alma telescopes
     private ALMATelescope telescope;
@@ -82,8 +86,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Receiver telcal_nc;
     private Receiver pipeline_nc;
     private ALMAControlReceiver controlreceiver;
-    private ALMATelcalReceiver telcalreceiver;
-    private ALMAPipelineReceiver pipelinereceiver;
+    //private ALMATelcalReceiver telcalreceiver;
+    //private ALMAPipelineReceiver pipelinereceiver;
     
     /** 
      * Constructor
@@ -111,7 +115,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.clock = new ALMAClock();
         this.manager = new ALMAProjectManager(containerServices, archive, sbQueue);
         this.control = new ALMAControl(containerServices);
-        this.operator = new ALMAOperator();
+        this.messageQueue = new MessageQueue();
+        this.operator = new ALMAOperator(containerServices, messageQueue);
         this.telescope = new ALMATelescope();
         this.publisher = new ALMASchedPublisher(containerServices);
         
@@ -131,6 +136,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         control_nc.attach("alma.Control.ExecBlockEvent", controlreceiver);
         control_nc.begin();
         // Connect to the TelCal NC
+        /*
         telcalreceiver = new ALMATelcalReceiver(containerServices);
         telcal_nc = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.TelCalPublisher.CHANNELNAME.value,
@@ -146,7 +152,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 containerServices);
         pipeline_nc.attach("alma.pipelinescience.ScienceProcessingRequestEnd",pipelinereceiver);
         pipeline_nc.begin();
-
+        */
     }
 
     /**
@@ -307,6 +313,26 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void response(String messageId, String reply) 
         throws UnidentifiedResponse {
 
+        if(logger == null) {
+            System.out.println("SCHEDULING: logger is null!");
+        }
+        logger.info("SCHEDULING: in MS. MessageID = "+messageId);
+        logger.info("SCHEDULING: in MS. Reply (sb id) = "+reply);
+        logger.info("SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
+       
+       if(messageQueue.size() < 1) {
+            logger.info("SCHEDULING: in MS. MessageQueue was empty. " +
+                "Try starting with startScheduling function!");
+            return;
+        } 
+        
+        Message item = messageQueue.getMessage(messageId);
+        logger.info("SCHEDULING: in MS. Got message with id="+item.getMessageId());
+        item.setReply(reply);
+        logger.info("SCHEDULING: in MS. message = "+ messageId + 
+            " gotten and reply = "+ reply + " sent.");
+        item.getTimer().interrupt();
+        //messageQueue.removeMessage(messageId);
     
     }
 

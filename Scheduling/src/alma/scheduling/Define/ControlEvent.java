@@ -26,6 +26,8 @@
 
 package alma.scheduling.Define;
 
+import alma.scheduling.Event.Receivers.ReceiveEvent;
+
 /**
  * This class contains all the information from the ExecBlockEvent which in
  * ALMA production will come from the Control Subsystem. In simulation mode
@@ -34,7 +36,7 @@ package alma.scheduling.Define;
  * @author Sohaila Lucero
  * @version 1.0 Aug 5, 2004
  */
-public class ControlEvent {
+public class ControlEvent extends ReceiveEvent {
     private String ebId;
     private String sbId;
     private String saId;

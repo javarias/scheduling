@@ -29,6 +29,7 @@ package alma.scheduling.PlanningModeSim;
 import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.Antenna;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
@@ -79,13 +80,13 @@ public class OperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.define.OperatorProxy#selectSB(java.lang.String[])
 	 */
-	public void selectSB(BestSB best) {
+	public String selectSB(BestSB best, Message m) {
 		if (best == null || best.getNumberReturned() == 0) {
 			logger.severe("OperatorSimulator: entityId cannot be null or have zero length.");
-			return;
+			return null;
 		}
 		// Leave the default selection.
-		return;
+		return null;
 	}
 
 	/* (non-Javadoc)

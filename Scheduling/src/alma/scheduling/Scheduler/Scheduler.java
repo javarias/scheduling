@@ -31,6 +31,8 @@ import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.MasterScheduler.Message;
+import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
 import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
 
@@ -299,11 +301,13 @@ public class Scheduler implements Runnable {
     	
     	// Log the best list.
     	log.info("SCHEDULING: "+name() + ": " + best.toString());
-        //set its status to started now.
-        String bestSBId= best.getBestSelection();
-        System.out.println("best sb id = "+bestSBId);
-        SB selectedSB = config.getQueue().get(bestSBId);
-    	if (best.getNumberReturned() == 0) {
+        // create a message to correspond to this selectSB request
+        Message m = new Message();
+        // Submit the list to the operator to get the id of the best SB from 
+        //the list
+        String bestSBId = config.getOperator().selectSB(best, m);
+    	//if (best.getNumberReturned() == 0) {
+        if(bestSBId == null) {
     		// Nothing can be scheduled at this time.
     		// Call config's nothingToDo method and wait.
     		config.nothingToDo(best.getNothingCanBeScheduled());
@@ -330,10 +334,11 @@ public class Scheduler implements Runnable {
                     + config.getAction() + ")"); 
     		}
     	} else {
+            SB selectedSB = config.getQueue().get(bestSBId);
     		// We've got somthing to schedule.
-    		// Submit the list to the operator ...
+            //set its status to started now.
             selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
-    		config.getOperator().selectSB(best);
+    		//config.getOperator().selectSB(best);
     		// ... and execute the selected scheduling unit.
     		log.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
             short[] idleantennas = config.getControl().getIdleAntennas();

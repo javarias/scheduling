@@ -26,6 +26,7 @@
  
 package alma.scheduling.Define;
 
+import alma.scheduling.MasterScheduler.Message;
 /**
  * The Operator interface defines those methods needed by the Scheduling
  * Subsystem to communicate with the telescope operator. 
@@ -55,7 +56,7 @@ public interface Operator {
 	 * @param best The list of SBs under consideration to be executed.
 	 * @return The SB from the specified list that is to be executed.
 	 */	
-	public void selectSB (BestSB best);
+	public String selectSB (BestSB best, Message m);
 	
 	/**
 	 * Reply true if and only if the specified antenna is in manual mode and
@@ -78,5 +79,21 @@ public interface Operator {
 	 * list of antennas.
 	 */
 	public boolean confirmSubarrayCreation (int[] antennaId);
+
+
+   class SelectSBTimer implements Runnable {
+        private long delay;
+        
+        public SelectSBTimer(long delay) {
+            this.delay = delay;
+        }
+        
+        public void run() {
+            try {
+                Thread.sleep(delay);
+            }catch(InterruptedException e) {
+            }
+        }
+    }
 
 }

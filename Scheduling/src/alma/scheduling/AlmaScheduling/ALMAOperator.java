@@ -25,14 +25,28 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.util.logging.Logger;
+
+import alma.acs.container.ContainerServices;
+
 import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.MasterScheduler.Message;
+import alma.scheduling.MasterScheduler.MessageQueue;
 
+import alma.entities.commonentity.EntityT;
 /**
  * @author Sohaila Roberts
  */
 public class ALMAOperator implements Operator {
-    public ALMAOperator() {
+    private ContainerServices containerServices;
+    private MessageQueue messageQueue;
+    private Logger logger;
+    
+    public ALMAOperator(ContainerServices cs, MessageQueue queue) {
+        this.containerServices = cs;
+        this.logger = cs.getLogger();
+        this.messageQueue = queue;
     }
 
     /**
@@ -49,10 +63,50 @@ public class ALMAOperator implements Operator {
     }
 
     /**
-     *
+     * Given the list of all the possible best SBs the operator selects
+     * which SB is best to schedule now! 
+     * @param best The selection of possible best SBs
+     * @return String The id of the selected SB.
      */
-    public void selectSB(BestSB best) {
-    
+    public String selectSB(BestSB best, Message message) {
+        // Temporary solution to giving the messages unique IDs!
+        EntityT entity = new EntityT();
+        try { 
+            containerServices.assignUniqueEntityId(entity);
+        } catch(Exception e) {}
+        message.setMessageId(entity.getEntityId());
+        Thread timer = new Thread(new SelectSBTimer(1000));
+        timer.start();
+        message.setTimer(timer);
+        /////////////////////////////
+        try {
+            messageQueue.addMessage(message);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: error adding a message!");
+            logger.severe(e.toString());
+            e.printStackTrace();
+        }
+        String bestSBId= best.getBestSelection();
+        //bestSBId is the reply
+        //got best SB selection so now we respond via the MasterScheduler
+        try {
+            (alma.scheduling.MasterSchedulerIFHelper.narrow( 
+                containerServices.getDefaultComponent(
+                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"))).response(
+                        message.getMessageId(), bestSBId);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: error getting MasterScheduler Component!");
+            logger.severe(e.toString());
+            e.printStackTrace();
+        }
+        try {
+            timer.join();
+            logger.info("SCHEDULING: timer joined!");
+        } catch(InterruptedException e) {
+            logger.info("SCHEDULING: timer was interrupted!");
+        }
+        System.out.println("best sb id = "+bestSBId);
+        return bestSBId;
     }
     
     /**
