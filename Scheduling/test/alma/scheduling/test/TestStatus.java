@@ -50,10 +50,11 @@ public class TestStatus extends TestCase {
     public void test2Status() {
         Status s = new Status();
 		DateTime t = new DateTime (2004,03,12,9,0,0);
+		s.setReady(t); 
+        assertEquals("ready", s.getStatus());
+		t = new DateTime (2004,03,12,20,0,0);
 		s.setStarted(t); 
         assertEquals("running", s.getStatus());
-		s.setReady(); 
-        assertEquals("ready", s.getStatus());
 		s.setRunning(); 
         assertEquals("running", s.getStatus());
 		s.setWaiting();
