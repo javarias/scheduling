@@ -10,5 +10,5 @@
         Value="print 'Observing'\nNone" />
 
     <_method Name="id" 
-        Value="print 'getting id'\n1" />
+        Value="print 'getting id=1'\n1" />
 </SimulatedComponent>

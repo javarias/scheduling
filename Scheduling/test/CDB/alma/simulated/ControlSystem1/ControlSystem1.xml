@@ -7,11 +7,7 @@
         Value="print 'Control Started'\nNone" />
 
     <_method Name="createSubArray" 
-        Value="from Acspy.Clients.SimpleClient import PySimpleClient\n
-               client = PySimpleClient()\n
-               component = client.getComponent(compName=\"ArrayController1\")\n
-               print 'Subarray created'\n
-               component\n"/>
+        Value="from Acssim.Servants.Components import getComponent\ncomponent=getComponent('ControlSystem1').getComponent('ArrayController1')\nprint 'Subarray created'\ncomponent"/>
         
     <_method Name="destroySubArray" 
         Value="print 'Subarray destroyed'\nNone" />

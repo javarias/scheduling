@@ -27,7 +27,7 @@
                 Container="java"/> 
                 -->
 
-      <!-- ********* MASTER COMPONENTS *********** -->                
+      <!-- ********* COMPONENTS *********** -->                
 
       <_ Name="SCHEDULINGMASTERCOMPONENT"
             Code="alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper"
@@ -84,8 +84,7 @@
             Code="alma.archive.bulkstream.BulkStreamHelper"
             Type="IDL:alma/bulkstream/BulkStreamListener:1.0"
             Container="java"/>
-      <_ Name="MONITORSTORE"
-            Code="alma.archive.monitorstream.MonitorStreamHelper"
+      <_ Name="MONITORSTORE" Code="alma.archive.monitorstream.MonitorStreamHelper"
             Type="IDL:alma/monitorstream/MonitorStreamListener:1.0"
             Container="java"/>
       <_ Name="ACSEVENTADMIN"	
