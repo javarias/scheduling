@@ -136,7 +136,7 @@ public class Simulator implements Runnable {
 			log.setLevel(Level.CONFIG);
 			log.addHandler(logfile);
 		
-			// Create the SimulationInput oblect.
+			// Create the SimulationInput object.
 			data = new SimulationInput(inputFile.getAbsolutePath(),log);
 			
 			// Check the mode.  We're only doing PLANNING for now.

@@ -77,6 +77,8 @@ public class ProjectManager implements Runnable {
     private boolean pmFlag=true;
     private int pmSleepTime = 300000; //5 minute sleep
     private SchedulingPublisher sp;
+    private Receiver controlReceiver;
+    private Receiver pipelineReceiver;
 
     public ProjectManager(boolean isSimulation, ContainerServices cs, 
                     ALMAArchive a, MasterSBQueue q, ALMADispatcher d ) {
@@ -116,20 +118,17 @@ public class ProjectManager implements Runnable {
         if(isSimulation) {
             //its a simulation, so create local channels
             
-            /*
             controlReceiver = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.LOCAL, 
-                    alma.Control.CHANNELNAME.value, 
-                        "scheduling");
-            controlReceiver.attach("alma.Control.ExecBlockEndEvent",control_event);
-            */
-            /*
+                AbstractNotificationChannel.CORBA, 
+                    alma.Control.CHANNELNAME.value);
+            controlReceiver.attach("alma.Control.ExecBlockEvent",control_event);
+            controlReceiver.begin();
+
             pipelineReceiver = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.LOCAL, 
-                    alma.pipelinescience.CHANNELNAME.value, 
-                        "scheduling");
-            pipelineReceiver.attach("alma.piplinescience.ScienceProcessingRequestEnd",pipeline_event);
-            */
+                AbstractNotificationChannel.CORBA, 
+                    alma.pipelinescience.CHANNELNAME.value); 
+            pipelineReceiver.attach("alma.pipelinescience.ScienceProcessingRequestEnd",pipeline_event);
+            pipelineReceiver.begin();
         } else {
             //its the real thing! create corba channels.
             logger.info("SCHEDULING: Trying to get NCs");

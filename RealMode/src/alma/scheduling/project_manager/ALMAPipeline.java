@@ -42,13 +42,13 @@ import alma.scheduling.master_scheduler.SchedulingException;
 /**
  * Description 
  * 
- * @version 1.00  Jun 3, 2003
- * @author Allen Farris
+ * @author Sohaila Roberts
  */
 public class ALMAPipeline implements PipelineProxy {
     private ContainerServices containerServices;
     private SciencePipeline sciencePipelineComp;
     private Logger logger;
+    private boolean isSimulation;
     //private ProjectManager projectManager;
     
 	/**
@@ -59,6 +59,7 @@ public class ALMAPipeline implements PipelineProxy {
         
 		super();
         System.out.println("SCHEDULING: The PipelineProxy has been constructed.");
+        this.isSimulation = isSimulation;
         this.containerServices = cs;
         //this.projectManager = pm;
         this.logger = containerServices.getLogger();
@@ -77,21 +78,25 @@ public class ALMAPipeline implements PipelineProxy {
         return ppr;
     }
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.project_manager.PipelineProxy#processRequest(alma.eServicesServicesntity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest)
+	/** 
+	 * 
 	 */
     public String processRequest(PipelineProcessingRequest request)
 	        throws SchedulingException {
         String requestRes="request result";
-        logger.log(Level.INFO,"SCHEDULING: "+requestRes);
-        try {
-            sciencePipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
-                containerServices.getComponent("SCIENCE_PIPELINE"));
-            requestRes =sciencePipelineComp.processRequest(
-                EntitySerializer.getEntitySerializer(logger).serializeEntity(request));
-        } catch (Exception e) {
-            logger.log(Level.SEVERE,"SCHEDULING: Error connecting to PIPELINE!");
+        if(isSimulation) {
+            
+        } else {
+            try {
+                sciencePipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
+                    containerServices.getComponent("SCIENCE_PIPELINE"));
+                requestRes =sciencePipelineComp.processRequest(
+                    EntitySerializer.getEntitySerializer(logger).serializeEntity(request));
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,"SCHEDULING: Error connecting to PIPELINE!");
+            }
         }
+        logger.log(Level.INFO,"SCHEDULING: "+requestRes);
         return requestRes;
     }
 
@@ -99,8 +104,8 @@ public class ALMAPipeline implements PipelineProxy {
         containerServices.releaseComponent("SCIENCE_PIPELINE");
     }
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.project_manager.PipelineProxy#getStatus(java.lang.String)
+	/**
+	 *
 	 */
 	public PipelineStatus getStatus(String pipelineProcessingId) {
      /*

@@ -51,9 +51,6 @@ public class GUIController implements Runnable {
     public GUIController(Scheduler s) {
         this.scheduler = s;
     }
-    protected void exit() {
-        System.exit(0);
-    }
 
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(

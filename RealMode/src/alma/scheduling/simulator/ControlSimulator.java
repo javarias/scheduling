@@ -25,40 +25,85 @@
  
 package alma.scheduling.simulator;
 
+import java.util.logging.Logger;
+
+import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerException;
+
 import alma.scheduling.define.STime;
 import alma.scheduling.master_scheduler.ControlProxy;
+
+import alma.Control.*;
+import alma.Control.ExecBlockEvent;
+import alma.entity.xmlbinding.execblock.*;
 
 /**
  * Description 
  * 
- * @version 1.00  Jul 18, 2003
- * @author Allen Farris
+ * @author Sohaila Roberts
  */
 public class ControlSimulator extends BasicComponent implements ControlProxy {
 
 	private ClockSimulator clock;
 	private WeatherModel weather;
+    private ContainerServices container;
+    private Logger logger;
+    private ExecBlock eb;
+    private ExecBlockEntityT eb_entity;
+    private ExecBlockEvent control_event;
+    private short ant_id =1;
 
 	/**
-	 * @param mode
 	 */
-	public ControlSimulator(Mode mode) {
-		super(mode);
+	public ControlSimulator(ContainerServices cs) {
+		super();
 		clock = new ClockSimulator ();
 		weather = new WeatherModel ();
+        this.container = cs;
+        this.logger = cs.getLogger();
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.master_scheduler.ControlProxy#sendToControl(java.lang.String, alma.scheduling.define.STime)
+	/**
 	 */
 	public void sendToControl(String id, STime time) {
-		// TODO Auto-generated method stub
-
+        //create an ExecBlock
+        eb = new ExecBlock();
+        eb_entity = new ExecBlockEntityT();
+        try { 
+            container.assignUniqueEntityId(eb_entity);
+        } catch(ContainerException e){
+            logger.severe("SCHEDULING SIMULATOR: could not get id for ExecBlock");
+            return;
+        }
+        eb.setExecBlockEntityT(eb_entity);
+        eb.setSchedBlockId(id);
+                            
+        // create a control event to say sb has started 
+        // and then an event to say its completed
+        control_event = new ExecBlockEvent(EventReason.START,
+                                eb.getExecBlockEntityT().getEntityId(),
+                                eb.getSchedBlockId(),
+                                ant_id, CompletionStatus.NOT_COMPLETE,
+                                System.currentTimeMillis());
+        NotificationChannelSimulator.sendControlEvent(control_event);
+        logger.fine("SCHEDULING SIMULATOR: Control started....");
+        try {
+            logger.fine("SCHEDULING SIMULATOR: sleeping..");
+            Thread.sleep(7000);
+        } catch(Exception e) {
+        }
+        control_event = new ExecBlockEvent(EventReason.END,
+                                eb.getExecBlockEntityT().getEntityId(),
+                                eb.getSchedBlockId(),
+                                ant_id, CompletionStatus.COMPLETED_OK,
+                                System.currentTimeMillis());
+        NotificationChannelSimulator.sendControlEvent(control_event);
+        logger.fine("SCHEDULING SIMULATOR: ....Control ended");
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Unit test of control simulator.");
-		ControlSimulator control = new ControlSimulator(Mode.FULL);
+		//ControlSimulator control = new ControlSimulator();
 		System.out.println("End unit test of control simulator.");
 	}
 }

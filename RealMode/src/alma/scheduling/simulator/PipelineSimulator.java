@@ -25,55 +25,82 @@
  
 package alma.scheduling.simulator;
 
-import alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest;
+import java.util.logging.Logger;
+
+import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerException;
+
+import alma.pipelinescience.PipelineStatusEnum;
+import alma.pipelinescience.CompletionStatusEnum; 
+
+import alma.entity.xmlbinding.pipelineprocessingrequest.*;
+import alma.entity.xmlbinding.pipelineprocessingrequest.types.*;
+
 import alma.scheduling.master_scheduler.SchedulingException;
 import alma.scheduling.project_manager.PipelineProxy;
 import alma.scheduling.project_manager.PipelineStatus;
 
+import alma.pipelinescience.ScienceProcessingRequestEnd;
+import alma.pipelinescience.PipelineStatusEnum;
+
+import alma.xmlstore.*;
+import alma.xmlstore.IdentifierPackage.*;
+import alma.entities.commonentity.EntityT;
+
 /**
  * Description 
  * 
- * @version 1.00  Jul 18, 2003
- * @author Allen Farris
+ * @author Sohaila Roberts
  */
-public class PipelineSimulator
-	extends BasicComponent
-	implements PipelineProxy {
+public class PipelineSimulator implements PipelineProxy {
 
-	/**
-	 * @param mode
-	 */
-	public PipelineSimulator(Mode mode) {
-		super(mode);
-	}
+    private ContainerServices container;
+    private Logger logger;
+
 
 	/**
 	 * 
 	 */
-	public PipelineSimulator() {
-		super(Mode.FULL);
+	public PipelineSimulator(ContainerServices cs) {
+		super();
+        this.container = cs;
+        this.logger = cs.getLogger();
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.project_manager.PipelineProxy#processRequest(alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest)
+	/**
+	 *
 	 */
 	public String processRequest(PipelineProcessingRequest request)
 		throws SchedulingException {
-		// TODO Auto-generated method stub
-		return null;
+        // send out a pipeline event to say that its done processing
+        // ScienceProcessingRequestEnd
+        //return the id of the pipelineprocessingrequestend thing
+        ScienceProcessingRequestEnd ppre = new ScienceProcessingRequestEnd();
+        ppre.PipelineRequestId = request.getPipelineProcessingRequestEntity().getEntityId();
+        EntityT entity = new EntityT();
+        try {
+            container.assignUniqueEntityId(entity);
+        } catch(Exception e) {
+        }
+        //"something unique to pipeline - id";
+        ppre.PipelineProcessId = entity.getEntityId();
+        ppre.completionStatus = CompletionStatusEnum.COMPLETE_SUCCEEDED;
+        ppre.reason = "Simulation pipeline processing!";
+        
+		return ppre.PipelineRequestId;
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.project_manager.PipelineProxy#getStatus(java.lang.String)
+	/**
+	 *
 	 */
 	public PipelineStatus getStatus(String pipelineProcessingId) {
-		// TODO Auto-generated method stub
-		return null;
+		// not sure what to do here so pretend its complete.
+		return PipelineStatus.COMPLETE; 
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Unit test of pipeline simulator.");
-		PipelineSimulator pipeline = new PipelineSimulator(Mode.FULL);
+		//PipelineSimulator pipeline = new PipelineSimulator();
 		System.out.println("End unit test of pipeline simulator.");
 	}
 }

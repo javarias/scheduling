@@ -39,6 +39,8 @@ import alma.Control.ControlSystem;
 import alma.Control.ArrayController;
 import alma.Control.TooLateException;
 import alma.Control.ArrayNotIdleException;
+
+import alma.scheduling.simulator.*;
 /**
  * The ALMADispatcher class presents a list of scheduling blocks for execution
  * to the telescope operator, in priority order, and waits for a selection.
@@ -74,7 +76,7 @@ public class ALMADispatcher implements ControlProxy {
         subArrays = new Vector();
         antennaMonitor = new Vector();
         this.logger = containerServices.getLogger();
-		logger.log(Level.INFO,"SCHEDULING: The Dispatcher has been constructed.");
+		logger.info("SCHEDULING: The Dispatcher has been constructed.");
 	}
 
 	/**
@@ -84,26 +86,31 @@ public class ALMADispatcher implements ControlProxy {
 	 *  @param time
 	 */
 	public void sendToControl(String id, STime time) {
-		logger.log(Level.INFO,"SCHEDULING: Sending SB with id = "+id+" to controller.");
-        
-        try {
-            //connect to control's components
-            /*
-            controlSysComp = alma.Control.ControlSystemHelper.narrow(
+		logger.info("SCHEDULING: Sending SB with id = "+id+" to controller.");
+        if(isSimulation) {
+            logger.info("SCHEDULING: simulator send to control!");
+            FullModeSimulatorImpl.getControlSimulator().sendToControl(id,time);
+        } else {    
+            try {
+                //connect to control's components
+                /*
+                controlSysComp = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("ControlSystem1"));
-            logger.log(Level.INFO, "SCHEDULING: Got control system");
-            short[] subarray = new short[1];
-            */
-            //arrayControllerComp = controlSysComp.createSubArray(subarray);
-            arrayControllerComp = alma.Control.ArrayControllerHelper.narrow(
-                containerServices.getComponent("ArrayController1"));
-            logger.log(Level.INFO, "SCHEDULING: Got array controller");
-            //tell control to process the schedblock
-            //arrayControllerComp.processSchedBlock(id, time.getTime());
-            arrayControllerComp.observeNow(id);
-        } catch (Exception e) {
-            logger.severe("SCHEDULING: error getting array controller");
-            logger.severe("SCHEDULING: "+e.toString());
+                logger.log(Level.INFO, "SCHEDULING: Got control system");
+                short[] subarray = new short[1];
+                */
+                //arrayControllerComp = controlSysComp.createSubArray(subarray);
+                arrayControllerComp = alma.Control.ArrayControllerHelper.narrow(
+                    containerServices.getComponent("ArrayController1"));
+                logger.info("SCHEDULING: Got array controller");
+                //tell control to process the schedblock
+                //arrayControllerComp.processSchedBlock(id, time.getTime());
+                arrayControllerComp.observeNow(id);
+            } catch (Exception e) {
+                logger.severe("SCHEDULING: error getting array controller");
+                logger.severe("SCHEDULING: "+e.toString());
+            }
+
         }
         
 	}

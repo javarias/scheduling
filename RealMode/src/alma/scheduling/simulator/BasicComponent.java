@@ -51,13 +51,11 @@ public abstract class BasicComponent extends ComponentImplBase implements org.om
 	/**
 	 * The simulation mode.
 	 */
-	protected Mode mode;
 
 	/**
 	 * 
 	 */
-	protected BasicComponent(Mode mode) {
-		this.mode = mode;
+	protected BasicComponent() {
 	}
 
 	/* (non-Javadoc)
@@ -83,14 +81,6 @@ public abstract class BasicComponent extends ComponentImplBase implements org.om
 	 */
 	public void cleanUp() {
 		super.cleanUp();
-	}
-
-	/**
-	 * 
-	 */
-	public BasicComponent() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/* (non-Javadoc)

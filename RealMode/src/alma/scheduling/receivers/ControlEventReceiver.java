@@ -58,7 +58,7 @@ public class ControlEventReceiver extends Consumer {
         this.pipeline = p;
         this.archive = a;
         this.sbQueue = q;
-        //System.out.println("#########ControlEventReceiver created######");
+        System.out.println("#########ControlEventReceiver created######");
     }
     /*
     public ControlEventReceiver(ProjectManagerTaskControl pmtc,
@@ -70,10 +70,24 @@ public class ControlEventReceiver extends Consumer {
     public void receive(ExecBlockEvent e) {
         logger.info("SCHEDULING: Starting to process the control event");
         String sb_id = e.sbId;
-        ProcessControlEvent pce = new ProcessControlEvent(pmTaskControl,
-                                        archive, pipeline, e, sbQueue);
-        Thread t = new Thread(pce);
-        t.start();
+        switch(e.type.value()) {
+            case 0:
+                logger.info("SCHEDULING: Event reason = started");
+                logger.info("SCHEDULING: Received sb start event from control.");
+                break;
+            case 1:
+                logger.info("SCHEDULING: Event reason = end");
+                logger.info("SCHEDULING: Received sb end event from control.");
+                ProcessControlEvent pce = new ProcessControlEvent(pmTaskControl,
+                                         archive, pipeline, e, sbQueue);
+                Thread t = new Thread(pce);
+                t.start();
+                break;
+            default: 
+                logger.severe("SCHEDULING: Event reason = error");
+                break;
+        }
+
     }
     
     public void push_structured_event(StructuredEvent structuredEvent) 

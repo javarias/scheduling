@@ -31,6 +31,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -56,19 +57,16 @@ import javax.swing.JTextArea;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JDialog;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 /*
-import java.lang.Process;
-import java.lang.Runtime;
-import java.io.IOException;
-
 import alma.obsprep.util.PropertyHandler;
-import alma.obsprep.editors.ObservingToolController;
 */
+import alma.obsprep.editors.ObservingTool;
 /**
  * A Gui that lets a PI interact with a scheduler to do interactive
  * scheduling.
@@ -80,13 +78,9 @@ public class GUI extends JFrame {
     private GUIController controller;
     private JTextArea outputView;
     private JTextArea sbOutputView;
-    private Popup errorPopup;
-    private Popup loginPopup;
-    private Popup addSBpopup;
-    private Popup executePopup;
-    private Popup deletePopup;
-    private Popup updatePopup;
-
+    private JDialog littleframe;
+    private String projectID;
+    
     public GUI(GUIController c) {
         this.controller = c;
         JMenuBar menuBar = new JMenuBar();
@@ -98,8 +92,6 @@ public class GUI extends JFrame {
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 exit();
-                //System.exit(0);
-        //        controller.exit();
             }
         });
         menu1.add(quit);
@@ -113,22 +105,20 @@ public class GUI extends JFrame {
         setTitle("Interactive Scheduling GUI");
         setSize(800, 600);
 
-        getContentPane().setLayout(new GridLayout(1,2));
-        //JScrollPane pane = createOutputView();
-        getContentPane().add(createOutputView());
-        getContentPane().add(createButtonView());
-        
+        getContentPane().setLayout(new BorderLayout());
+        JPanel p = new JPanel(new GridLayout(1,2));
+        p.add(createOutputView());
+        p.add(createButtonView());
+        getContentPane().add(p);
         addWindowListener(new WindowAdapter() 
         {
             public void windowClosing(WindowEvent e) {
-                //System.exit(0);
                 exit();
             }
         });
         setVisible(true);
     }
 
-//    private JScrollPane createOutputView() {
     private JTabbedPane createOutputView() {
         JTabbedPane returnView = new JTabbedPane();
         returnView.setTabPlacement(JTabbedPane.TOP);
@@ -313,9 +303,6 @@ public class GUI extends JFrame {
         gridbag.setConstraints(blank, c);
         panel.add(blank);
         ///////////////////////////////////////
-        //c.fill = GridBagConstraints.NONE;
-        //c.fill = GridBagConstraints.HORIZONTAL;
-        ///////////////////////////////////////
         c.gridwidth = 1;
         blank = new JLabel("");
         gridbag.setConstraints(blank, c);
@@ -370,33 +357,6 @@ public class GUI extends JFrame {
     }
 
     private void addSB(){
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        JPanel panel = new JPanel(gridbag);
-        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-        JLabel label = new JLabel("  ObservingTool will popup....");
-        JTextField tf = new JTextField();
-        JButton ok = new JButton("Ok");
-        ok.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addSBpopup.hide();
-            }
-        });
-        c.weightx = 1.0; c.weighty = 1.0;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.BOTH;
-        gridbag.setConstraints(label, c);
-        panel.add(label);
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(ok, c);
-        panel.add(ok);
-        PopupFactory pf = PopupFactory.getSharedInstance();
-        Point p = this.getLocationOnScreen();
-        int x = p.x + 350; int y = p.y + 250;
-        addSBpopup = pf.getPopup(this,panel,x,y);
-        addSBpopup.show();
-        
         openObservingTool();
     }
     private void executeSB() {
@@ -406,11 +366,6 @@ public class GUI extends JFrame {
             controller.executeSB(selectedSB);
             outputView.append("SB "+selectedSB+" is now executing.\n");
         } else {
-            GridBagLayout gridbag = new GridBagLayout();
-            GridBagConstraints c = new GridBagConstraints();
-            JPanel panel = new JPanel(gridbag);
-            panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-            JLabel label = new JLabel("  Enter SB id or cancel and highlight it from list  ");
             JTextField tf = new JTextField();
             JButton ok = new JButton("Ok");
             ok.addActionListener(new ActionListener() {
@@ -428,34 +383,18 @@ public class GUI extends JFrame {
                             controller.executeSB(selectedSB);
                         }
                     }
-                    executePopup.hide();
+                    littleframe.hide();
                 }
             });
+
             JButton cancel = new JButton("Cancel");
             cancel.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    executePopup.hide();
+                    littleframe.hide();
                 }
             });
-            c.weightx = 1.0; c.weighty = 1.0;
-                c.anchor = GridBagConstraints.CENTER;
-            c.gridwidth = GridBagConstraints.REMAINDER;
-            c.fill = GridBagConstraints.BOTH;
-            gridbag.setConstraints(label, c);
-            panel.add(label);
-            gridbag.setConstraints(tf, c);
-            panel.add(tf);
-            c.gridwidth = 1;
-            gridbag.setConstraints(ok, c);
-            panel.add(ok);
-            c.gridwidth = GridBagConstraints.REMAINDER;
-            gridbag.setConstraints(cancel, c);
-            panel.add(cancel);
-            PopupFactory pf = PopupFactory.getSharedInstance();
-            Point p = this.getLocationOnScreen();
-            int x = p.x + 350; int y = p.y + 250;
-            executePopup = pf.getPopup(this,panel,x,y);
-            executePopup.show();
+            ok.setFocusable(true);
+            makePopupFrame("Execute SB","Enter SB id:", tf, ok, cancel);
         }
     }
     private void deleteSB() {
@@ -464,13 +403,9 @@ public class GUI extends JFrame {
             clear();
             outputView.append("SB "+selectedSB+" is now deleted.\n");
         } else {
-            GridBagLayout gridbag = new GridBagLayout();
-            GridBagConstraints c = new GridBagConstraints();
-            JPanel panel = new JPanel(gridbag);
-            panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-            JLabel label = new JLabel("  Enter SB id or cancel and highlight it from list  ");
             JTextField tf = new JTextField();
             JButton ok = new JButton("Ok");
+            ok.setFocusable(true);
             ok.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JButton tmpB = (JButton)e.getSource();
@@ -488,63 +423,21 @@ public class GUI extends JFrame {
                             controller.deleteSB(selectedSB);
                         }
                     }
-                    deletePopup.hide();
+                    littleframe.hide();
                 }
             });
             JButton cancel = new JButton("Cancel");
             cancel.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    deletePopup.hide();
+                    littleframe.hide();
                 }
             });
-            c.weightx = 1.0; c.weighty = 1.0;
-                c.anchor = GridBagConstraints.CENTER;
-            c.gridwidth = GridBagConstraints.REMAINDER;
-            c.fill = GridBagConstraints.BOTH;
-            gridbag.setConstraints(label, c);
-            panel.add(label);
-            gridbag.setConstraints(tf, c);
-            panel.add(tf);
-            c.gridwidth = 1;
-            gridbag.setConstraints(ok, c);
-            panel.add(ok);
-            c.gridwidth = GridBagConstraints.REMAINDER;
-            gridbag.setConstraints(cancel, c);
-            panel.add(cancel);
-            PopupFactory pf = PopupFactory.getSharedInstance();
-            Point p = this.getLocationOnScreen();
-            int x = p.x + 350; int y = p.y + 250;
-            deletePopup = pf.getPopup(this,panel,x,y);
-            deletePopup.show();
+            makePopupFrame("Delete SB", "Enter SB id:", tf, ok, cancel);
         }
     }
+
     private void updateSB(){
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        JPanel panel = new JPanel(gridbag);
-        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-        JLabel label = new JLabel("  ObservingTool will popup....");
-        JTextField tf = new JTextField();
-        JButton ok = new JButton("Ok");
-        ok.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                updatePopup.hide();
-            }
-        });
-        c.weightx = 1.0; c.weighty = 1.0;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.BOTH;
-        gridbag.setConstraints(label, c);
-        panel.add(label);
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(ok, c);
-        panel.add(ok);
-        PopupFactory pf = PopupFactory.getSharedInstance();
-        Point p = this.getLocationOnScreen();
-        int x = p.x + 350; int y = p.y + 250;
-        updatePopup = pf.getPopup(this,panel,x,y);
-        updatePopup.show();
+        openObservingTool();
     }
     
     /**
@@ -552,13 +445,8 @@ public class GUI extends JFrame {
      * entered. 
      */
     private void login(){
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        JPanel panel = new JPanel(gridbag);
-        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-        JLabel label = new JLabel("  Login ID: ");
-        JTextField tf = new JTextField();
-        JButton ok = new JButton("Ok");
+        JTextField tf = new JTextField("");
+        JButton ok = new JButton("Ok");            
         ok.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JButton tmpB = (JButton)e.getSource();
@@ -566,44 +454,22 @@ public class GUI extends JFrame {
                 Component[] tmpC = tmpP.getComponents();
                 for(int i=0; i<tmpC.length; i++) {
                     if((tmpC[i].getClass().getName()).equals(
-                        "javax.swing.JTextField")){
-                        
+                      "javax.swing.JTextField")){
                         controller.setLogin(((JTextField)tmpC[i]).getText());
                         outputView.append("Welcome " +controller.getLogin() +"\n");
                     }
                 }
-                loginPopup.hide();
+                littleframe.hide();
             }
         });
-
+        ok.setFocusable(true);
         JButton cancel = new JButton("Cancel");
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                loginPopup.hide();
-            }
+                littleframe.hide();
+            }   
         });
-        c.weightx = 1.0; c.weighty = 1.0;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.BOTH;
-        gridbag.setConstraints(label, c);
-        panel.add(label);
-        gridbag.setConstraints(tf, c);
-        panel.add(tf);
-        c.gridwidth = 1;
-        gridbag.setConstraints(ok, c);
-        panel.add(ok);
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(cancel, c);
-        panel.add(cancel);
-        panel.requestFocus();
-        tf.requestFocus();
-        tf.setCaretPosition(0);
-        PopupFactory pf = PopupFactory.getSharedInstance();
-        Point p = this.getLocationOnScreen();
-        int x = p.x + 350; int y = p.y + 250;
-        loginPopup = pf.getPopup(this,panel,x,y);
-        loginPopup.show();
+        makePopupFrame("Login","Enter username:",tf, ok, cancel);
     }
 
     private void getSBs() {
@@ -616,8 +482,9 @@ public class GUI extends JFrame {
             sbOutputView.append("SchedBlock ID: " +
                 s[i].getSchedBlockEntity().getEntityId() +"\n");
             try {
+                projectID = s[i].getObsProjectRef().getEntityId();
                 sbOutputView.append("SB's project id: "+
-                    s[i].getObsProjectRef().getEntityId()+"\n");
+                    projectID +"\n");
             } catch (Exception e) {
                 sbOutputView.append("SB's project id: not set to a project! this is bad!\n");
             }
@@ -657,63 +524,100 @@ public class GUI extends JFrame {
     }
 
     private void mustLogin() {
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        JPanel panel = new JPanel(gridbag);
-        panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
-        JLabel label = new JLabel("  You must log in first!  ");
-        JTextField tf = new JTextField();
         JButton ok = new JButton("Ok");
         ok.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                errorPopup.hide();
+                littleframe.hide();
             }
         });
+        ok.setFocusable(true);
+        makePopupFrame("Login", "You must login!", null, ok, null);
+    }
+
+    /** 
+     * Creates a popup window to display information to the user or get information
+     * from the user.
+     * @param title The title to be displayed on the popup window.
+     * @param labeltext The text to show up in the label in the popup window.
+     */
+    private void makePopupFrame(String title, String labeltext, JTextField tf, JButton b1, JButton b2) {
+    //private void makePopupFrame(String title, String labeltext, boolean addTF, boolean isLogin) {
+      
+        littleframe = new JDialog(this,title);
+        Point p = this.getLocationOnScreen();
+        int x = p.x + 350; int y = p.y + 250;
+        littleframe.setBounds(x, y, 150, 100);
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel panel = new JPanel(gridbag);
+        //panel.setBorder(new MatteBorder(3,3,3,3,Color.black));
+        JLabel label = new JLabel(labeltext);
         c.weightx = 1.0; c.weighty = 1.0;
         c.anchor = GridBagConstraints.CENTER;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
         gridbag.setConstraints(label, c);
         panel.add(label);
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(ok, c);
-        panel.add(ok);
-        PopupFactory pf = PopupFactory.getSharedInstance();
-        Point p = this.getLocationOnScreen();
-        int x = p.x + 350; int y = p.y + 250;
-        errorPopup = pf.getPopup(this,panel,x,y);
-        errorPopup.show();
+        if(tf != null) {
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            gridbag.setConstraints(tf, c);
+            panel.add(tf);
+        }
+        if(b2 == null) {
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            gridbag.setConstraints(b1, c);
+            panel.add(b1);
+        } else {
+            c.gridwidth = GridBagConstraints.RELATIVE;
+            gridbag.setConstraints(b1,c);
+            panel.add(b1);
+            c.gridwidth = GridBagConstraints.REMAINDER;
+            gridbag.setConstraints(b2,c);
+            panel.add(b2);
+        }
+        littleframe.getContentPane().add(panel);
+        littleframe.toFront();
+        littleframe.show();
+        /*
+        JButton ok = new JButton("Ok");
+        ok.setFocusable(true);
+        if(isLogin) {
+        } else {
+            ok.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    littleframe.hide();
+                }
+            });
+        }
+        */
     }
 
+    /**
+     * Stops the current SB from executing.
+     */ 
     public void stopSB() {
     }
 
     public void openObservingTool(){ 
-            /*
-        try {
-            //String displayName = System.getProperty("$HOSTNAME") + 
-            //    System.getProperty("$DISPLAY") + ".0";
-            String displayName = "solar-vml:0.0";
-            System.out.println(displayName);
-            String[] tmp = { "DISPLAY", displayName }; 
-            //Process process = Runtime.getRuntime().exec("otproto &", tmp);
-            Process process = Runtime.getRuntime().exec("acsStartJava -endorsed -DotData.dir=$ACSDATA/config/otData alma.ot.ptt.gui.ObservingTool$1 $2 $3 $4 $5 $6 $7 $8 &");
-            //Process process = Runtime.getRuntime().exec("otproto &");
-            
-        } catch(IOException e) {
-            System.out.println("Observing tool didn't pop up..");
-            System.out.println(e.toString());
-        }
-            */
+        OpenOT ot = new OpenOT(projectID);
+        Thread t = new Thread(ot);
+        t.start();
+        //ObservingTool.main(new String[]{"-r",projectID});
     }
 
     private void clear() {
         outputView.setText("");
+        sbOutputView.setText("");
     }
+
+    /**
+     * Exits the GUI in a clean way so it doesn't break anything else
+     * running on the same JVM.
+     */
     public void exit() {
         dispose();
     }
+
     public static void main(String[] args) {
-        //GUI gui = new GUI(null);
     }
 }

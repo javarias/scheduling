@@ -33,7 +33,7 @@ import alma.scheduling.UnidentifiedResponse;
 import alma.scheduling.master_scheduler.MSHelper;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
-
+import alma.scheduling.simulator.*;
 /**
  * Description 
  *  The interface to the telescope operator.  Methods in this class use
@@ -77,8 +77,6 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
      *
 	 */
 	public String selectSB(String[] sbIdList, String messageId) {
-        
-        
         if(sbIdList == null || sbIdList.length == 0) {
             logger.info("SCHEDULING: There are no SBs to select from!");
             logger.info("SCHEDULING: Put some in the archive and try again.");
@@ -105,36 +103,41 @@ public class ALMATelescopeOperator implements Scheduling_to_TelescopeOperator {
             return null;
         }   
         String reply = sbIdList[pos];
-        logger.log(Level.INFO,"SCHEDULING: in TO. reply ="+ reply);
-        try {
-            this.masterSchedulerComp = alma.scheduling.MSHelper.narrow(
-                container.getComponent("MASTER_SCHEDULER"));
-            logger.log(Level.INFO,"SCHEDULING: in TO. ms response about to be called");
-            masterSchedulerComp.response(messageId, reply);
-            logger.log(Level.INFO,"SCHEDULING: in TO. ms response called");
-        } catch(ContainerException e) {
-        } catch(UnidentifiedResponse e) {
+        logger.info("SCHEDULING: in TO. reply ="+ reply);
+        if(isSimulation) {
+            try {
+                FullModeSimulatorImpl.getMasterScheduler().response(
+                    messageId, reply);
+            } catch(Exception e) {}
+        } else {
+            try {
+                this.masterSchedulerComp = alma.scheduling.MSHelper.narrow(
+                    container.getComponent("MASTER_SCHEDULER"));
+                logger.info("SCHEDULING: in TO. ms response about to be called");
+                masterSchedulerComp.response(messageId, reply);
+                logger.info("SCHEDULING: in TO. ms response called");
+            } catch(Exception e) {
+            }
         }
-
         try {
             timer.join();
-            logger.log(Level.INFO,"SCHEDULING: in TO. timer.join()");
+            logger.info("SCHEDULING: in TO. timer.join()");
         } catch(InterruptedException e) {
-            logger.log(Level.INFO,"SCHEDULING: in TO. timer interrupted");
+            logger.fine("SCHEDULING: in TO. timer interrupted");
         }
 
         if(messageQueue == null) {
-            logger.log(Level.INFO,"SCHEDULING: in TO. messageQueue is null");
+            logger.info("SCHEDULING: in TO. messageQueue is null");
         }
         if(messageId == null) {
-            logger.log(Level.INFO,"SCHEDULING: in TO. messageId is null");
+            logger.info("SCHEDULING: in TO. messageId is null");
         }
         if(messageQueue.getMessage(messageId) == null) {
-            logger.log(Level.INFO,"SCHEDULING: in TO. mesage is null");
+            logger.info("SCHEDULING: in TO. mesage is null");
             return "";
         }
         if(messageQueue.getMessage(messageId).getReply() == null){
-            logger.log(Level.INFO,"SCHEDULING: in TO. message reply is null");
+            logger.info("SCHEDULING: in TO. message reply is null");
         }
 
         return messageQueue.getMessage(messageId).getReply();

@@ -35,13 +35,13 @@ public class CalibrationSimulator extends BasicComponent {
 	/**
 	 * 
 	 */
-	public CalibrationSimulator(Mode mode) {
-		super(mode);
+	public CalibrationSimulator() {
+		super();
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Unit test of calibration simulator.");
-		CalibrationSimulator calibration = new CalibrationSimulator(Mode.FULL);
+		CalibrationSimulator calibration = new CalibrationSimulator();
 		System.out.println("End unit test of calibration simulator.");
 	}
 }
