@@ -70,6 +70,12 @@ public class CorbaReceiver extends alma.acs.nc.Consumer {
 		this.subsystemName = subsystemName;
 		this.channel = null;
 	}
+	CorbaReceiver (String channelName, String subsystemName, String actualChannelName) {
+		super (actualChannelName);
+		this.channelName = channelName;
+		this.subsystemName = subsystemName;
+		this.channel = null;
+	}
 	
 	void setChannel (CorbaNotificationChannel channel) {
 		this.channel = channel;

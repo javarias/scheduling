@@ -77,6 +77,26 @@ public class CorbaPublisher extends alma.acs.nc.Supplier {
 			throw new IllegalArgumentException(err.toString());
 		}
 	}
+	public CorbaPublisher (String channelName, String subsystemName, String[] eventType, String actualChannelName) {
+		super (actualChannelName);
+		this.channelName = channelName;
+		this.subsystemName = subsystemName;
+		this.eventType = new String [eventType.length];
+		for (int i = 0; i < eventType.length; ++i)
+			this.eventType[i] = eventType[i];
+		corbaEvent = new StructuredEvent ();
+		// Let the SupplierAdmin know all the event types.
+		EventType[] corbaType = new EventType [eventType.length];
+		for (int i = 0; i < eventType.length; ++i)
+			corbaType[i] = new EventType (CorbaNotificationChannel.ALMA_DOMAIN,
+										  eventType[i]);
+		try {
+			m_supplierAdmin.offer_change(corbaType,new EventType [0]);
+		} catch (InvalidEventType err) {
+			err.printStackTrace(System.err);
+			throw new IllegalArgumentException(err.toString());
+		}
+	}
 	
 	/**
 	 * This is the main method for publishing an event.  The IDLEntity must be

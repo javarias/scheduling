@@ -66,6 +66,15 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 		throw new IllegalArgumentException("Illeagl type value (" + type + 
 			").  Must be LOCAL or CORBA.");
 	}
+	static public AbstractNotificationChannel createNotificationChannel(int type,
+		String channelName, String subsystemName, String[] eventType, String actualChannelName) {
+		switch (type) {
+			case LOCAL: return new LocalNotificationChannel(channelName,subsystemName,eventType);
+			case CORBA: return new CorbaNotificationChannel(channelName,subsystemName,eventType, actualChannelName);
+		}
+		throw new IllegalArgumentException("Illeagl type value (" + type + 
+			").  Must be LOCAL or CORBA.");
+	}
 
 	/**
 	 * Get the Receiver interface to a currently created channel.
@@ -77,6 +86,14 @@ public abstract class AbstractNotificationChannel implements NotificationChannel
 		switch (type) {
 			case LOCAL: return LocalNotificationChannel.getLocalReceiver(channelName,subsystemName);
 			case CORBA: return CorbaNotificationChannel.getCorbaReceiver(channelName,subsystemName);
+		}
+		throw new IllegalArgumentException("Illeagl type value (" + type + 
+			").  Must be LOCAL or CORBA.");
+	}
+	static public Receiver getReceiver(int type, String channelName, String subsystemName, String actualChannelName) {
+		switch (type) {
+			case LOCAL: return LocalNotificationChannel.getLocalReceiver(channelName,subsystemName);
+			case CORBA: return CorbaNotificationChannel.getCorbaReceiver(channelName,subsystemName,actualChannelName);
 		}
 		throw new IllegalArgumentException("Illeagl type value (" + type + 
 			").  Must be LOCAL or CORBA.");

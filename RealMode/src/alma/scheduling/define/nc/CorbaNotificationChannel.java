@@ -83,6 +83,22 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 		x.setEventType(typeName);
 		return x;
 	}
+	static public Receiver getCorbaReceiver(String channelName, String subsystemName, String actualChannelName) {
+		CorbaNotificationChannel x = new CorbaNotificationChannel (channelName,subsystemName);
+		CorbaReceiver r = new CorbaReceiver(channelName,subsystemName,actualChannelName);
+		x.setReceiver(r);
+		r.setChannel(x);
+		EventType[] e = r.getProxySupplier().obtain_offered_types
+			(org.omg.CosNotifyChannelAdmin.ObtainInfoMode.ALL_NOW_UPDATES_OFF);
+		if (e.length == 0)
+			throw new IllegalArgumentException ("There are no events published on channel " +
+				channelName + " of subsystem " + subsystemName);
+		String[] typeName = new String [e.length];
+		for (int i = 0; i < e.length; ++i)
+			typeName[i] = e[i].type_name;
+		x.setEventType(typeName);
+		return x;
+	}
 	
 	/**
 	 * The mapToCorbaChannel method maps a channel name and subsystem name to a 
@@ -132,6 +148,13 @@ public class CorbaNotificationChannel extends AbstractNotificationChannel {
 			String[] eventType) {
 		super(channelName,subsystemName,eventType);
 		corbaPublisher = new CorbaPublisher(channelName, subsystemName, eventType);
+		corbaReceiver = null;
+		receivers = new ArrayList ();
+	}
+	public CorbaNotificationChannel (String channelName, String subsystemName, 
+			String[] eventType, String actualChannelName) {
+		super(channelName,subsystemName,eventType);
+		corbaPublisher = new CorbaPublisher(channelName, subsystemName, eventType, actualChannelName);
 		corbaReceiver = null;
 		receivers = new ArrayList ();
 	}
