@@ -36,7 +36,6 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
-//import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
 
 import java.util.logging.Logger;
 
@@ -47,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.4 2004/11/23 21:22:31 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.5 2005/03/30 18:39:58 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -188,7 +187,6 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     			logger.info("SCHEDULING: "+name() + ": Stopping because there are no more "+
                     "scheduling units.");
                 logger.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in scheduler.");
-                //config.getSchedulingPublisher().publish("No more SBs to schedule");
 
                 //NothingCanBeScheduled.NoResources
 				break;
@@ -236,6 +234,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
      * @throws SchedulingException
      */
     private boolean synchronousMode() throws SchedulingException {
+
     	DateTime now = clock.getDateTime();
     	
     	// Get the best list from the dsa.
@@ -284,6 +283,15 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                         + config.getAction() + ")"); 
     	    }
     	} else {
+            //check if any sbs are currently running.
+            SB[] sbs = config.getQueue().getRunning();
+            if( sbs.length > 0 ){
+                logger.info("SCHEDULING: There's an SB running!");
+                try {
+                    Thread.sleep(config.getSleepTime() * 1000);
+                }catch(Exception e) {}
+                return false;
+            }
             try {
                 Message m = new Message();
                 config.getOperator().selectSB(best, m);
@@ -299,6 +307,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     //            selectedSB.getParent());
                     //config.getProjectManager().sendStartSessionEvent(session);
       		        config.getControl().execSB(config.getSubarrayId(), best);
+                    selectedSB.setRunning();
                 } else {
                     logger.info("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...

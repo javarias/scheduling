@@ -107,7 +107,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.5 2004/11/23 21:22:31 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.6 2005/03/30 18:39:58 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -238,21 +238,7 @@ public class SchedulerConfiguration extends TaskControl {
 			Operator operator, Telescope telescope, 
 			ProjectManager projectManager, Policy policy, Logger log) {
            
-      /*  this(masterScheduler,dynamic, synchronous,queue,bestNumber,sleepTime,
-            subarrayId,clock,control,operator,telescope,projectManager,
-            policy,log,null);*/
-    //}
-	/**
-	 * Create a Scheduler Configuration object.
-	 */
-    /*
-	public SchedulerConfiguration(Thread masterScheduler,
-			boolean dynamic, boolean synchronous, SBQueue queue, int bestNumber,
-            int sleepTime, short subarrayId, Clock clock, Control control,
-			Operator operator, Telescope telescope, 
-			ProjectManager projectManager, Policy policy, Logger log,
-            PublishEvent p) {
-*/
+
 		super(masterScheduler);
 		this.dynamic = dynamic;
 		this.synchronous = synchronous;
@@ -281,7 +267,6 @@ public class SchedulerConfiguration extends TaskControl {
 		this.action = NOTHING;
 		this.sbToDo = null;
 		this.currentSB = "";
-        //this.publisher = p;
 	}
 	
     /**
@@ -568,11 +553,6 @@ public class SchedulerConfiguration extends TaskControl {
 		return projectManager;
 	}
 
-    /*
-    public PublishEvent getSchedulingPublisher() {
-        return publisher;
-    }*/
-
 	/**
 	 * @return
 	 */
@@ -587,7 +567,6 @@ public class SchedulerConfiguration extends TaskControl {
 		return synchronous;
 	}
 	
-
     /**
      * @return Returns the currentSB.
      */

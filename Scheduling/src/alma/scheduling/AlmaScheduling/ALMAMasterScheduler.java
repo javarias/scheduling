@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.21 2005/03/15 20:45:36 afarris Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.22 2005/03/30 18:39:58 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -314,7 +314,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         short subarrayId = createSubarray(new short[0], "dynamic");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
-            Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 0, 
+            Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
             subarrayId, clock, control, operator, telescope, manager, s_policy, 
             logger);
         DynamicScheduler scheduler = new DynamicScheduler(config);

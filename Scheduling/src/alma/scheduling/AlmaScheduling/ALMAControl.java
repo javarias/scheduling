@@ -43,7 +43,7 @@ import alma.ControlExceptions.*;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.19 2005/02/28 17:09:59 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.20 2005/03/30 18:39:58 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -108,7 +108,7 @@ public class ALMAControl implements Control {
         
         ArrayController ctrl = getArrayController(subarrayId);
         try{
-            ctrl.observeNow(sbId, "sessionId"); //fix session ID!
+            ctrl.observeNow(sbId, "sessionId"); //TODO fix session ID!
         } catch(ABSYErrorEx e1) {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();

@@ -57,14 +57,13 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.23 2005/03/29 23:45:28 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.24 2005/03/30 18:39:58 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
     private ContainerServices containerServices;
     // the alma project manager
     private ALMAProjectManager manager;
-    //private ALMAPipeline pipeline;
     //publish event class
     private ALMAPublishEvent publisher;
     //a list of the ExecBlock that are currently started but not finished.
@@ -80,7 +79,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.containerServices = cs;    
         this.logger = cs.getLogger();
         this.manager = m;
-        //this.pipeline = p;
         this.publisher = pub;
         this.currentEB = new Vector();
     }
