@@ -55,6 +55,9 @@ public class ALMAPipeline implements Pipeline {
         entitySerializer = EntitySerializer.getEntitySerializer(cs.getLogger());
     }
 
+    /**
+     * Connect to the pipeline components
+     */
     private void getPipelineComponents() {
         try {
             pipelineComp = alma.pipelinescience.SciencePipelineHelper.narrow(
@@ -67,6 +70,11 @@ public class ALMAPipeline implements Pipeline {
     }
 
 
+    /**
+     * Send the pipeline processing request to the pipeline subsystem.
+     * @param ppr The xmlentitystruct reprenesentation of the pipeline processing request
+     * @return String The result from the pipeline subsystem
+     */
     public String processRequest(XmlEntityStruct ppr) {
         String requestResult = null;
         try { 

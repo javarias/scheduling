@@ -41,6 +41,9 @@ public class ALMATelescope extends Telescope  {
         setupSiteInfo();
     }
 
+    /**
+     * 
+     */
     private void setupSiteInfo() {
         FrequencyBand[] freq = new FrequencyBand[1];
         freq[0] = new FrequencyBand("1", 31.3, 45.0);
