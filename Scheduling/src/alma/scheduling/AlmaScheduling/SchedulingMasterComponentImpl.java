@@ -41,7 +41,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.9 2004/11/30 23:36:05 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.10 2004/12/13 23:05:20 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -53,34 +53,6 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         super();
     }
 
-    ////////////////////////////////////////////////////////////////
-    // Component Lifecycle Methods
-    ////////////////////////////////////////////////////////////////
-    
-    
-    /*
-    public void initialize(ContainerServices containerServices) 
-        throws ComponentLifecycleException {
-    
-        super.initialize(containerServices);
-        this.cs = containerServices;
-        m_logger = containerServices.getLogger();
-        m_logger.info("SCHEDULING MC: master component initialized.");
-    }
-
-    public void execute() {
-        m_logger.info("SCHEDULING MC: master component executing.");
-    }
-
-    public void cleanUp() {
-        m_logger.info("SCHEDULING MC: master component clean up.");
-    }
-
-    public void aboutToAbort() {
-        cleanUp();
-        m_logger.info("SCHEDULING MC: master component about to abort.");
-    }
-    */
     ////////////////////////////////////////////////////////////////
     
     protected AlmaSubsystemActions getActionHandler() {
