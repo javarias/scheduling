@@ -73,6 +73,38 @@
             Container="python"
 			Default="true"/>    
 
+      <!-- ************ EXEC COMPS ************** -->
+
+      <_ Name="EXEC_OPERATORSERVER"
+	    	Code="alma.exec.OperatorServerImpl.OperatorServerHelper"
+		    Type="IDL:alma/exec/Operator:1.0"
+    		Container="java"/>            
+
+	  <_ Name="EXEC_OPERATORSERVERPRIVILEGED"
+    		Code="alma.exec.OperatorServerPrivilegedImpl.OperatorServerPrivilegedHelper"
+	    	Type="IDL:alma/exec/Operator:1.0"
+		    Container="java"/>            
+
+      <_ Name="EXECMASTERCOMPONENT"
+            Code="alma.exec.ExecMasterComponentImpl.ExecMasterComponentHelper"
+            Type="IDL:alma/exec/ExecMasterComponent:1.0" 
+            Container="java"/>              
+
+      <_ Name="OPERATOR"
+	    	Code="alma.exec.OperatorImpl.OperatorHelper"
+    		Type="IDL:alma/exec/Operator:1.0"
+	    	Container="java"/>            
+
+      <_ Name="USERADMIN_PRIVILEGED"
+		    Code="alma.exec.UserAdminPrivilegedImpl.UserAdminPrivilegedHelper"
+	    	Type="IDL:alma/exec/UserAdminPrivileged:1.0"
+    		Container="java"/>
+
+      <_ Name="USERADMIN"
+	    	Code="alma.exec.UserAdminImpl.UserAdminHelper"
+    		Type="IDL:alma/exec/UserAdmin:1.0"
+		    Container="java"/>  
+      
       <!-- ************************************** -->
       <_ Name="MasterScheduler"
             Code="alma.scheduling.AlmaScheduling.MasterSchedulerIFHelper"
