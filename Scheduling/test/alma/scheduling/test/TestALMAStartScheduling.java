@@ -27,13 +27,14 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
+import alma.acs.nc.*;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.component.client.ComponentClient;
 
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.NothingCanBeScheduledEvent;
-
+import alma.pipelinescience.ScienceProcessingRequestEnd;
 import alma.xmlentity.XmlEntityStruct;
 
 /**
@@ -46,15 +47,20 @@ public class TestALMAStartScheduling {
     private ContainerServices container;
     private Logger logger;
     private boolean stopCommand=false;
-    private MasterSchedulerIF masterScheduler;
+    private Receiver r;
     
     public TestALMAStartScheduling(ContainerServices cs){
         this.container = cs;
         this.logger = cs.getLogger();
         stopCommand = false;
+        r = AbstractNotificationChannel.getReceiver(
+            AbstractNotificationChannel.CORBA, alma.pipelinescience.CHANNELNAME.value,
+                container);
+        r.attach("alma.pipelinescience.ScienceProcessingRequestEnd",this);
+        r.begin();
     }
 
-    public void receive(NothingCanBeScheduledEvent event) {
+    public void receive(ScienceProcessingRequestEnd event) {
         stopCommand = true;
     }
 
@@ -68,18 +74,23 @@ public class TestALMAStartScheduling {
         try {
             ComponentClient client = new ComponentClient(null, managerLocation, name);
 
+
             TestALMAStartScheduling test = new TestALMAStartScheduling(client.getContainerServices());
             
             MasterSchedulerIF ms = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                client.getContainerServices().getDefaultComponent(
-                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                client.getContainerServices().getComponent("MasterScheduler"));
 
             ms.startScheduling(new XmlEntityStruct());                    
             
 
             while (!test.getStopCommand()) {
-                client.getContainerServices().:
+                try {
+                    Thread.sleep(1000);
+                }catch(Exception e) {}
             }
+            client.getContainerServices().releaseComponent("ControlSystem");
+            client.getContainerServices().releaseComponent("PIPELINE_SCIENCE");
+            client.getContainerServices().releaseComponent("MasterScheduler");
             
         } catch(Exception e) {
         }
