@@ -12,6 +12,9 @@
   CentralizedLogger="Log">
   <Startup>
     <cdb:_ string="ARCHIVE_CONNECTION" />
+    <cdb:_ string="ControlSystem1" />
+    <cdb:_ string="SCIENCE_PIPELINE" />
+    <cdb:_ string="GETTELCALRESULTS1" />
   </Startup>
   <Execute>
 	<cdb:_ string=""/>

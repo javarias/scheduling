@@ -23,14 +23,17 @@
                              Code="alma.pipelinescience.components.SciencePipelineHelper"
                              Type="IDL:alma/pipelinescience/SciencePipeline:1.0"
                              Container="frodoContainer"/>
-      
+      <_ Name="ControlSystem1"
+                             Code="alma.Control.masterController.ControlSystemHelper"
+                             Type="IDL:alma/Control/ControlSystem:1.0"
+                             Container="frodoContainer"/>                                       
       <_ Name="ArrayController1"
                              Code="alma.Control.arrayInterfaces.ArrayControllerHelper"
                              Type="IDL:alma/Control/ArrayController:1.0"
                              Container="frodoContainer"/>            
       <_ Name="GETTELCALRESULTS1"
                              Code="GetTelCalResults"
-                             Type="IDL:alma/TelCalProto/GetTelCalResults:1.0"
+                             Type="IDL:alma/TelCalPublisher/GetTelCalResults:1.0"
                              Container="bilboContainer"/>
       <_ Name="TELCAL_SENT_NC_1"
                             Code="ReceivingDataManager"
@@ -50,4 +53,9 @@
                              Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
                              Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
                              Container="frodoContainer"/>
+      <_ Name="CLOCK1"  Code="acsclock"
+                        Type="IDL:alma/acstime/Clock:1.0"
+                        Container="bilboContainer"
+                        Default="true"/>
+
 </Components>

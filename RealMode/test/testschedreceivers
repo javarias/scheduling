@@ -1,4 +1,5 @@
 #! /bin/bash
+export ACS_INSTANCE=`cat sched_acs_instance`
 
 #echo " Running test"
 acsStartJava -endorsed alma.scheduling.test.TestSchedReceivers

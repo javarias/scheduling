@@ -4,9 +4,15 @@
 ACS_CDB=$PWD
 
 # Start acs processes
-acsdataClean >& /dev/null &
+acsdataClean >& /dev/null 
 
 acsStart >& sched_acsStart.log 
+
+export ACS_INSTANCE=`grep "For this ACS session, please do an" sched_acsStart.log | cut -d\' -f2 | cut -d= -f2`
+echo $ACS_INSTANCE > sched_acs_instance
+
+acsStartContainer -cpp bilboContainer -b 0 >& sched_bilboContainer.log &
+sleep 10
 
 acsStartContainer -java frodoContainer -b 0 >& sched_frodoContainer.log &
 sleep 20

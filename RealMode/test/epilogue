@@ -1,10 +1,9 @@
 #! /bin/bash
 
-# Shutdown acs and java processes
-
-#killACS
-#acsStopContainer Activator >&  /dev/null
-acsStopContainer frodoContainer -b0 >&  /dev/null
-maciManagerShutdown -b0 >&  /dev/null
-acsStopORBSRVC -b0 >&  /dev/null
+# Shutdown acs
+export ACS_INSTANCE=`cat sched_acs_instance`
+acsStopContainer bilboContainer  >&  /dev/null
+acsStopContainer frodoContainer  >&  /dev/null
+maciManagerShutdown  >&  /dev/null
+acsStopORBSRVC  >&  /dev/null
 acsdataClean

@@ -1,10 +1,12 @@
 #! /bin/bash
 
+export ACS_INSTANCE=`cat sched_acs_instance`
+
 archiveCleanMA
-#archiveConfigureMA  
+
 archiveLoadSchema
+
 otprotoBatch targets.txt  >&  sched_almaOT.log
-#sleep 20
 
 acsStartJava -endorsed alma.scheduling.test.SchedSystemTest
 
