@@ -2,12 +2,8 @@
 The MasterScheduler has been constructed.
 The ALMATelescopeOperator has been constructed.
 The PIProxy has been constructed.
-The Dispatcher has been constructed.
-The Clock has been constructed.
 The PipelineProxy has been constructed.
-Consumer.getNotificationChannel(...): channel doesn't exist
-alma.acs.nc.ncExcept: Consumer.getNotificationChannel(...): sorry, cannot receive events from a channel that does not exist
-alma.acs.nc.ncExcept: Consumer.init(): unknown error: Consumer.getNotificationChannel(...): sorry, cannot receive events from a channel that does not exist
+The Clock has been constructed.
 Message queue created
 Message queue set in operator
 The MasterScheduler has been initialized.
@@ -19,7 +15,6 @@ The MasterScheduler is executing.
 Scheduler is running in dynamic mode!
 Scheduler is running in interactive mode!
 MB Action stopped
-java.lang.NullPointerException
 Scheduler is stopped
 Scheduler is stopped
 The MasterScheduler has been cleaned up and is now stopped.
