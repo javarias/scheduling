@@ -6,13 +6,14 @@ SCHEDULING: The PipelineProxy has been constructed.
 FINE: SCHEDULING: The ALMAArchive has been constructed.
 SCHEDULING: The PipelineProxy has been constructed.
 FINE: SCHEDULING: The ALMAArchive has been constructed.
-SCHEDULING: PipelineEventListener created.
+INFO: SCHEDULING: PipelineEventListener created.
 SCHEDULING: Got PointingScanReduced event
 SCHEDULING: Starting to process the PointingScanReduced event
-SCHEDULING: Got FocusScanReduced event
-SCHEDULING: Starting to process the FocusScanReduced event
+INFO: SCHEDULING: Got FocusScanReduced event
+INFO: SCHEDULING: Starting to process the FocusScanReduced event
 SCHED_TEST: Published TelCalEvents
-SCHEDULING: Got event from control
-SCHEDULING: Event reason = started
-SCHEDULING: PipelineEnd event received!
-SCHEDULING: Got event from Pipeline
+INFO: SCHEDULING: Got event from control
+INFO: SCHEDULING: Event reason = started
+INFO: SCHEDULING: Received sb start event from control.
+INFO: SCHEDULING: PipelineEnd event received!
+INFO: SCHEDULING: Got event from Pipeline
