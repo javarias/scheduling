@@ -9,20 +9,19 @@ echo " Cleaning acsdata"
 acsdataClean >& /dev/null &
 
 echo " Starting ORB Services"
-#acsStartORBSRVC >& /dev/null &
-acsStartORBSRVC >& sched_orbsrvc.log 
+acsStartORBSRVC -b0 >& sched_orbsrvc.log 
 
 sleep 35
 
 echo " Starting Manager"
-maciManagerJ -m >& sched_manager.log&
+maciManagerJ -b 0  >& sched_manager.log&
 sleep 30
 
 #echo " Starting Activator"
 #maciActivate Activator  >& sched_activator.log&
 #sleep 15
 
-echo " Starting hugoActivator"
-acsStartContainer hugoActivator >& sched_hugoActivator.log &
+echo " Starting frodoContainer"
+acsStartContainer -java frodoContainer -b 0 >& sched_frodoContainer.log &
 sleep 20
 

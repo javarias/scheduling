@@ -127,7 +127,7 @@ public class SchedulingTestClient {
         //    System.err.println(e.toString());
         } catch(ArchiveInternalError e) {
             System.err.println(e.toString());
-        } catch(MalformedURI e) {
+        } catch(IllegalEntity e) {
             System.err.println(e.toString());
         } catch(InternalError e) {
             System.err.println(e.toString());
@@ -137,7 +137,7 @@ public class SchedulingTestClient {
 	
 	public void retrieveSchedBlock() {
         try {
-			XmlEntityStruct retrievedStruct = m_operArchiveComp.retrieve(xmlEntityStruct.entityId, -1);
+			XmlEntityStruct retrievedStruct = m_operArchiveComp.retrieve(xmlEntityStruct.entityId);
 			System.out.println(retrievedStruct.xmlString+ " " + retrievedStruct.entityId);
         } catch(ArchiveInternalError e) {
         } catch(NotFound e) {
@@ -155,7 +155,7 @@ public class SchedulingTestClient {
             System.err.println(e.toString());
         } catch(ArchiveInternalError e) {
             System.err.println(e.toString());
-        } catch(MalformedURI e) {
+        } catch(IllegalEntity e) {
             System.err.println(e.toString());
         } catch(InternalError e) {
             System.err.println(e.toString());
@@ -164,7 +164,7 @@ public class SchedulingTestClient {
 
 	public void removeSchedBlock() {
         try {
-			m_operArchiveComp.delete(xmlEntityStruct.entityId, -1, false);
+			m_operArchiveComp.delete(xmlEntityStruct.entityId);
         } catch(ArchiveInternalError e) {
         } catch(NotFound e) {
         } catch(MalformedURI e) {

@@ -35,6 +35,7 @@ import alma.scheduling.NothingCanBeScheduledEventHelper;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
+import alma.acs.component.client.ComponentClient;
 
 public class TestSchedConsumer extends Consumer {
     private ContainerServices container;
@@ -54,7 +55,7 @@ public class TestSchedConsumer extends Consumer {
 
     public void push_structured_event(StructuredEvent structuredEvent) 
             throws org.omg.CosEventComm.Disconnected {
-        
+       
         try {
             NothingCanBeScheduledEvent event = 
                 NothingCanBeScheduledEventHelper.extract(structuredEvent.filterable_data[0].value);
@@ -65,6 +66,15 @@ public class TestSchedConsumer extends Consumer {
     }
         
     public static void main(String[] args) {
+        try{
+            String name="NothingCanBeScheduledConsumer";
+            String managerLoc = System.getProperty("ACS.manager");
+            ComponentClient client = new ComponentClient(null, managerLoc, name);
+            ContainerServices cs = client.getContainerServices();
+            TestSchedConsumer test = new TestSchedConsumer(cs);
+            test.addSubscription(NothingCanBeScheduledEvent.class);
+            test.consumerReady();
+        } catch(Exception e) {}
     }
 }
 

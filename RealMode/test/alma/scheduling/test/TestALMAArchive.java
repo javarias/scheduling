@@ -34,6 +34,7 @@ import alma.acs.component.client.ComponentClient;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.entity.xmlbinding.schedblock.*;
+import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.schedulingpolicy.*;
 import alma.entity.xmlbinding.pipelineprocessingrequest.*;
@@ -63,7 +64,7 @@ public class TestALMAArchive {
             XmlEntityStruct xml_entity;
 
             logger.info("SCHED_TEST: function getSchedBlock() ");
-            SchedBlock[] sbs = archive.getSchedBlock();
+            SchedBlock[] sbs = archive.getSchedBlock(); //hmm...
             for (int i = 0; i < sbs.length; i++) {
                 xml_entity = es.serializeEntity(sbs[i]);
                 id = xml_entity.entityId;

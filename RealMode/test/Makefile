@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
 # MA 02111-1307  USA
 #
-# "@(#) $Id: Makefile,v 1.16 2003/09/17 21:17:04 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.17 2003/12/23 18:41:32 sroberts Exp $"
 #
 # Makefile of ........
 #
@@ -48,7 +48,7 @@ USER_JFLAGS= -deprecation
 # Jarfiles and their directories
 #
 JARFILES = schedulingTest
-schedulingTest_DIRS = ALMA/scheduling/test
+schedulingTest_DIRS = alma/scheduling/test
 schedulingTest_EXTRAS = 
 
 

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-abeansStart -endorsed alma.scheduling.project_manager.PipelineStatus
+acsStartJava alma.scheduling.project_manager.PipelineStatus
 #abeansStart -endorsed ALMA.scheduling.project_manager.PipelineStatus
 
 

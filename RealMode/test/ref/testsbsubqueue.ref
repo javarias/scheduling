@@ -3,6 +3,7 @@ SCHED_TEST: function addSchedBlock(sb)
 SCHEDULING: Adding sbs to queue
 SCHED_TEST: function getSchedBlock()
 SCHED_TEST: function getIds()
+SCHEDULING SUB QUEUE size = 1
 SCHED_TEST: function getSchedBlock(int)
 SCHED_TEST: function isInSubQueue(id) with id=sb2
 SCHED_TEST: should be false!
