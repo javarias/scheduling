@@ -30,7 +30,6 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproposal.*;
 import alma.entity.xmlbinding.schedblock.*;
-//import alma.entity.xmlbinding.execblock.*;
 import alma.entity.xmlbinding.valuetypes.StatusT;//hso
 import alma.entity.xmlbinding.valuetypes.TimeT;
 import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
@@ -90,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.20 2005/03/17 21:41:05 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.21 2005/03/29 18:11:55 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {

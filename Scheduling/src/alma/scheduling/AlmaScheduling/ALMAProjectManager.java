@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.31 2005/03/17 21:41:05 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.32 2005/03/29 18:11:55 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -91,7 +91,6 @@ public class ALMAProjectManager extends ProjectManager {
         super.run();
         while(!stopCommand) {
             try {
-                //Thread.sleep(5*60*1000);
                 Thread.sleep(60*5000);
             }catch(InterruptedException e) {
                 logger.info("SCHEDULING: ProjectManager Interrupted!");
@@ -407,8 +406,6 @@ public class ALMAProjectManager extends ProjectManager {
             e.printStackTrace();
         }
     }
-
-
     /* Will be this way in future
     public void sendStartSessionEvent(ObservedSession session) {
     }
@@ -443,6 +440,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
     */
     public void sendEndSessionEvent(ExecBlock eb) {
+        
         String endTime = (new DateTime(System.currentTimeMillis())).toString();
         String execid = eb.getExecId();
         String sbid = ((SB)eb.getParent()).getId();
@@ -451,49 +449,28 @@ public class ALMAProjectManager extends ProjectManager {
         String projectid = proj.getId();
         ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
-        SessionT[] sessions = obsProgram.getSession();
         
-        SessionT session = null; //= getSession(eb);
-        logger.info("SCHEDULING: in PM sessions length = "+sessions.length);
-        for(int i=0; i < sessions.length; i++) {
-            ExecBlockRefT[] execblocks = sessions[i].getExecBlockRef();
-            for(int j=0; j < execblocks.length; j++) {
-                if(execblocks[j].getExecBlockId().equals(execid)){
-                    logger.info("SCHEDULING: session found!");
-                    session = sessions[i];
-                    session.setEndTime(endTime);
-                    logger.info("SCHEDULING: sbid = " +sbid);
-                    logger.info("SCHEDULING: session part id = "+session.getEntityPartId());
-                    sessionEnd(session.getEntityPartId(), sbid);
-                    updateObservedSession(proj, ps, session.getEntityPartId(), endTime);
-                    try {
-                        EndSessionEvent end_event = new EndSessionEvent(
-                                UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-                                session.getEntityPartId(),
-                                obsProgram.getEntityPartId(),
-                                execid);
-                        publisher.publish(end_event);
-                    } catch(Exception e) {
-                        logger.severe("SCHEDULING: Failed to send end session event!");
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-                logger.info("SCHEDULING: hmmm...");
-            }
+        SessionT session = getSession(eb);
+        logger.info("SCHEDULING: session found!");
+        session.setEndTime(endTime);
+        logger.info("SCHEDULING: sbid = " +sbid);
+        logger.info("SCHEDULING: session part id = "+session.getEntityPartId());
+        sessionEnd(session.getEntityPartId(), sbid);
+        updateObservedSession(proj, ps, session.getEntityPartId(), endTime);
+        try {
+            EndSessionEvent end_event = new EndSessionEvent(
+                    UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
+                    session.getEntityPartId(),
+                    obsProgram.getEntityPartId(),
+                    execid);
+            publisher.publish(end_event);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Failed to send end session event!");
+            e.printStackTrace();
         }
     }
 
     private SessionT getSession(ExecBlock eb) {
-        /*
-         get the obsprogram (= prog1) (very top program), it shouldn't have any sessions but double check.
-         choice = prog1.getObsUnitSetStatusTChoice(); 
-         //check if theres any obs unit sets
-         prog2 = choice.getObsUnitSetStatus(); 
-         //might have sessions so check.
-         // might also have more obsunitsets
-         choice = prog2.getObsUnitSetStatusTChoice();
-         */
         boolean gotSession = false;
         String endTime = (new DateTime(System.currentTimeMillis())).toString();
         String execid = eb.getExecId();
@@ -503,21 +480,53 @@ public class ALMAProjectManager extends ProjectManager {
         String projectid = proj.getId();
         ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
-        SessionT[] sessions = obsProgram.getSession();
-        if(sessions.length != 0) {//shouldn't ever have any sessions, but double check!
+        ObsUnitSetStatusT set = searchSets(obsProgram.getObsUnitSetStatusTChoice().getObsUnitSetStatus(), execid);
+        SessionT[] sessions = set.getSession();
+        logger.info("SCHEDULING: in PM getSession, length = "+sessions.length);
+        if(sessions.length != 0) {//if this is the wrong set of sessions i screwed up..
             gotSession = sessionExists(eb, sessions);
             if(gotSession) {
                 return retrieveSession(eb, sessions);
             }
         }
-        
         return null;
         
     }
-
-   // private ObsUnitSetStatusT getObsUnitSetStatus(ObsUnitSetStatusTCh
-
+    
     /**
+      * Recursive search of the program to find the obs unit set that 
+      * contains the session we want.
+      */
+    private ObsUnitSetStatusT searchSets(ObsUnitSetStatusT[] sets, String ebId) {
+        ObsUnitSetStatusT set=null;
+        SessionT[] sessions;
+        for(int i=0; i < sets.length; i++){
+            sessions = sets[i].getSession();
+            for(int j=0; j < sessions.length;j++){
+                if( isSession(sessions[j], ebId) ) {
+                    return sets[i];
+                }
+            }
+            //session wasn't in those sets so lets get some more
+            set = searchSets(sets[i].getObsUnitSetStatusTChoice().getObsUnitSetStatus(), ebId);
+        }
+        return set;
+    }
+    
+    private boolean isSession(SessionT ses, String ebid) {
+        boolean result=false;
+        ExecBlockRefT[] execblocks = ses.getExecBlockRef();
+        for(int i=0; i < execblocks.length; i++){
+            if (execblocks[i].getExecBlockId().equals(ebid)){
+                System.out.println("Session found! returning true");
+                return true;
+            }
+        }
+        return result;
+    }
+
+
+   /**
       * Returns true if a session in this group is the one associated with
       * this exec block!
       */
@@ -568,9 +577,10 @@ public class ALMAProjectManager extends ProjectManager {
         throws SchedulingException {
 
         //use sbid to get the program 
-            System.out.println("CReateing PPR in PM");
+        System.out.println("Creating PPR in PM");
         SB sb = sbQueue.get(sbid);
         Program prog = sb.getParent();
+        System.out.println("sb parent's part id = "+prog.getObsUnitSetStatusId());
         SciPipelineRequest ppr = new SciPipelineRequest(prog, s);
  		ppr.setReady(ProjectUtil.genPartId(), new DateTime(System.currentTimeMillis()));
         ppr.setStarted(new DateTime(System.currentTimeMillis()));
