@@ -189,7 +189,7 @@ public class GUI extends JFrame {
         label = new JLabel("Frequency Band");
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         gridPanel.add(tf);
         JComboBox cb = new JComboBox();
@@ -202,7 +202,7 @@ public class GUI extends JFrame {
         label = new JLabel("New Project");
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         gridPanel.add(tf);
         cb = new JComboBox();
@@ -217,7 +217,7 @@ public class GUI extends JFrame {
         label = new JLabel("Advance Clock by");
         gridbag.setConstraints(label, c);
         gridPanel.add(label);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         gridPanel.add(tf);
         cb = new JComboBox();
@@ -230,8 +230,6 @@ public class GUI extends JFrame {
         gridPanel.add(label);
 
         p.add(gridPanel);
-        ///////////////////
-        //p.add(new JLabel());
         ///////////////////
         gridPanel = new JPanel();
         gridPanel.setLayout(gridbag);
@@ -385,21 +383,20 @@ public class GUI extends JFrame {
             ff_p = new JPanel();
             ff_p.setLayout(new GridLayout(2,6));
             ff_l = new JLabel("Name");      ff_p.add(ff_l);
-            ff_tf = new JTextField();       ff_p.add(ff_tf);
+            ff_tf = new JTextField("");     ff_p.add(ff_tf);
             ff_l = new JLabel("min");       ff_p.add(ff_l);
-            ff_tf = new JTextField();       ff_p.add(ff_tf);
+            ff_tf = new JTextField("");     ff_p.add(ff_tf);
             ff_l = new JLabel("max");       ff_p.add(ff_l);
-            ff_tf = new JTextField();       ff_p.add(ff_tf);
+            ff_tf = new JTextField("");     ff_p.add(ff_tf);
             ff_l = new JLabel("");          ff_p.add(ff_l);
             ff_l = new JLabel("");          ff_p.add(ff_l);
             ff_l = new JLabel("Center");    ff_p.add(ff_l);
-            ff_tf = new JTextField();       ff_p.add(ff_tf);
+            ff_tf = new JTextField("");     ff_p.add(ff_tf);
             ff_l = new JLabel("Bandwidth"); ff_p.add(ff_l);
-            ff_tf = new JTextField();       ff_p.add(ff_tf);
+            ff_tf = new JTextField("");     ff_p.add(ff_tf);
             ff_p.repaint();
             freqFields.add(ff_p);
         }
-        //return freqFields;
         panelTwo_mainPanel.add(freqFields, BorderLayout.CENTER);
     }
 
@@ -476,21 +473,21 @@ public class GUI extends JFrame {
         l = new JLabel();               weatherFields.add(l);
         //////////////////
         l = new JLabel("Function Name");weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel("Units");        weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("p0");           weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("p1");           weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("p2");           weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("s0");           weatherFields.add(l);
@@ -498,20 +495,15 @@ public class GUI extends JFrame {
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("s1");           weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("t0");           weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
+        tf = new JTextField("");        weatherFields.add(tf);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel();               weatherFields.add(l);
         l = new JLabel("t1");           weatherFields.add(l);
-        tf = new JTextField();          weatherFields.add(tf);
-        //////////////////
-        //l = new JLabel();               weatherFields.add(l);
-        //l = new JLabel();               weatherFields.add(l);
-        //l = new JLabel();               weatherFields.add(l);
-        //l = new JLabel();               weatherFields.add(l);
+        tf = new JTextField("");        weatherFields.add(tf);
         //////////////////
         return weatherFields;
     }
@@ -535,7 +527,7 @@ public class GUI extends JFrame {
         l = new JLabel("Position Elevation");
         gridbag.setConstraints(l,c);
         main.add(l);
-        JTextField tf = new JTextField();
+        JTextField tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -549,7 +541,7 @@ public class GUI extends JFrame {
         l = new JLabel("Position Maximum");
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -564,7 +556,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -579,7 +571,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -594,7 +586,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -610,7 +602,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -625,7 +617,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -641,7 +633,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -656,7 +648,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -671,7 +663,7 @@ public class GUI extends JFrame {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         main.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         main.add(tf);
         l = new JLabel();
@@ -709,13 +701,16 @@ public class GUI extends JFrame {
         l = new JLabel("Total projects");
         gridbag.setConstraints(l,c);
         header.add(l);
-        JTextField tf = new JTextField();
+        JTextField tf = new JTextField("Enter # of projects");
         tf.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 JTextField tf = (JTextField)e.getSource();
                 String s = tf.getText();
                 int i;
-                if(s == null || s.equals("")) {
+                if(s == null || s.equals("") 
+                  || s.equals("Enter # of projects") 
+                  || s.equals("Enter a number!")) {
+
                     tf.setText("Enter a number!");
                 }else {
                     i = Integer.parseInt(s);
@@ -757,32 +752,25 @@ public class GUI extends JFrame {
         l = new JLabel("Project Name");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
-        /*
-        tf.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                
-            }
-        });
-        */
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
         l = new JLabel("PI name");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
         l = new JLabel("Priority");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
         l = new JLabel("# of Targets");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         tf.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JTextField tf = (JTextField)e.getSource();
@@ -799,10 +787,7 @@ public class GUI extends JFrame {
                     tmp = addTargetsField();
                     p2.add(tmp);
                 }
-                tmp1.add(p2);//, ((BorderLayout)tmp1.getLayout()).CENTER);
-                tmp1.repaint();
-                tmp1.validate();
-                tmp1.getParent().repaint();
+                tmp1.add(p2);
                 tmp1.getParent().validate();
             }
         });
@@ -820,28 +805,32 @@ public class GUI extends JFrame {
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.NORTHWEST;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0; c. weighty = 1.0;
+        c.weightx = 1.0; //c.weighty = 1.0;
         JPanel p = new JPanel(gridbag);
+        JLabel l = new JLabel();
+        /*
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(l,c);
+        p.add(l);
+        */
+        //////////////////
         c.gridwidth = 1;
-        JLabel l ;//= new JLabel();
-        //gridbag.setConstraints(l,c);
-        //p.add(l);
         l =new JLabel("-- Target Name");
         gridbag.setConstraints(l,c);
         p.add(l);
-        JTextField tf = new JTextField();
+        JTextField tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
         l = new JLabel("RA");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
         l = new JLabel("DEC");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(tf,c);
         p.add(tf);
@@ -853,16 +842,16 @@ public class GUI extends JFrame {
         l = new JLabel();
         gridbag.setConstraints(l,c);
         p.add(l);
-        l = new JLabel("Frequency");
+        l = new JLabel("Freq.");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         gridbag.setConstraints(tf,c);
         p.add(tf);
         l = new JLabel("Total Time");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(tf,c);
         p.add(tf);
@@ -874,7 +863,7 @@ public class GUI extends JFrame {
         l = new JLabel();
         gridbag.setConstraints(l,c);
         p.add(l);
-        l = new JLabel("Weather Cond.");
+        l = new JLabel("Weather");
         gridbag.setConstraints(l,c);
         p.add(l);
         JComboBox cb = new JComboBox();
@@ -892,38 +881,10 @@ public class GUI extends JFrame {
         l = new JLabel("Repeat Count");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField();
+        tf = new JTextField("");
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(tf,c);
         p.add(tf);
-        /*
-        l = new JLabel();
-        gridbag.setConstraints(l,c);
-        p.add(l);
-        l = new JLabel();
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(l,c);
-        p.add(l);
-        ////////////////////////
-        l = new JLabel();
-        c.gridwidth = 1;
-        gridbag.setConstraints(l,c);
-        p.add(l);
-        l = new JLabel();
-        gridbag.setConstraints(l,c);
-        p.add(l);
-        l = new JLabel("Repeat Count");
-        gridbag.setConstraints(l,c);
-        p.add(l);
-        tf = new JTextField();
-        gridbag.setConstraints(tf,c);
-        p.add(tf);
-        l = new JLabel();
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(l,c);
-        p.add(l);
-
-        */
         return p;
     }
     

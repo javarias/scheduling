@@ -208,51 +208,73 @@ public class GUIController implements Runnable {
         Component[] p5Comps = p.getComponents();
         JPanel p1 = (JPanel)p5Comps[0];
         Component[] p1Comps = p1.getComponents();
+        String tmpstr = "";
         try {
-            totalprojects = Integer.parseInt(((JTextField)p1Comps[3]).getText());
-            System.out.println(totalprojects);
+            tmpstr = ((JTextField)p1Comps[3]).getText();
+            if(tmpstr.equals("Enter # of projects") || tmpstr.equals("")) {
+                totalprojects = 0;
+            } else {
+                totalprojects = Integer.parseInt(tmpstr);
+            }
+            //System.out.println(totalprojects);
             projects = new Vector();
             Component[] projectPanes = ((JTabbedPane)p5Comps[1]).getComponents();
             Component[] tabPanes, tmp, comps;
-            JPanel panel, targetpanel;
+            JPanel panel1, panel2, targetpanel;
             for(int i=0; i < totalprojects; i++) {
                 tabPanes = ((JScrollPane)projectPanes[i]).getComponents();
-                /*
-                System.out.println(tabPanes[0].getClass().getName());
-                System.out.println(tabPanes[1].getClass().getName());
-                System.out.println(tabPanes[2].getClass().getName());
-                */
                 tmp = ((JViewport)tabPanes[0]).getComponents();
-                panel =(JPanel)tmp[0]; //mainpanel
-                tmp = panel.getComponents();
-                panel = (JPanel)tmp[1]; //headerpanel
-                comps = panel.getComponents();
-                System.out.println(comps.length);
-                /*
-                projects.add(((JTextField)tmp[1]).getText());
-                projects.add(((JTextField)tmp[3]).getText());
-                projects.add(((JTextField)tmp[5]).getText());
-                projects.add(((JTextField)tmp[7]).getText());
-                int totaltargets =0;
-                totaltargets = Integer.parseInt(
-                            (String)((JTextField)tmp[7]).getText());
-                if(totaltargets == 0) {
-                    break;
-                }
-                targetpanel = (JPanel)tmp[1];
-                Vector targets = new Vector();
-                projects.add(targets);
-                */
-                /*
-                System.out.println(tmp.length);
-                System.out.println(tmp[0].getClass().getName());
-                */
+                panel1 =(JPanel)tmp[0]; //mainpanel
+                tmp = panel1.getComponents();
+                panel2 = (JPanel)tmp[0];
+                comps = panel2.getComponents();
+                projects.add(((JTextField)comps[1]).getText());
+                projects.add(((JTextField)comps[3]).getText());
+                projects.add(((JTextField)comps[5]).getText());
+                projects.add(((JTextField)comps[7]).getText());
+                //add targets now!
+                Component[] targets = ((JPanel)tmp[1]).getComponents();
+                projects.add(getTargetsInfo(targets));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            //totalprojects = 0;
             return;
         }
+    }
+    private Vector getTargetsInfo(Component[] comp) throws Exception {
+        int totaltargets = comp.length;
+        Vector targets = new Vector(totaltargets);
+        JPanel p;
+        Component[] c;
+        String tmp;
+        for(int i=0; i < totaltargets; i++ ) {
+            p = (JPanel)comp[i];
+            c = p.getComponents();
+            //System.out.println(c.length);
+            tmp = ((JTextField)c[1]).getText();
+            if(tmp == "") throw new Exception("Target must have a name.");
+            targets.add(tmp);
+            tmp = ((JTextField)c[3]).getText();
+            if(tmp == "") throw new Exception("Target must have a RA.");
+            targets.add(tmp);
+            tmp = ((JTextField)c[5]).getText();
+            if(tmp == "") throw new Exception("Target must have a DEC.");
+            targets.add(tmp);
+            tmp = ((JTextField)c[9]).getText();
+            if(tmp == "") throw new Exception("Target must have a frequency.");
+            targets.add(tmp);
+            tmp = ((JTextField)c[11]).getText();
+            if(tmp == "") throw new Exception("Target must have a total time.");
+            targets.add(tmp);
+            tmp =  (String)((JComboBox)c[15]).getSelectedItem();
+            targets.add(tmp);
+            tmp = ((JTextField)c[17]).getText();
+            if ((tmp == "") || (tmp == null)) tmp = "0";
+            targets.add(tmp);
+            
+        }
+
+        return targets;
     }
 
     private void createFile() {
@@ -317,15 +339,31 @@ public class GUIController implements Runnable {
             out.println();
             out.println("numberProjects = " + totalprojects);
             out.println();
-            /*
-            for(int i=0; i < totalprojects; i++) {
-                out.println("project."+ i +" = " +
-                    (String)(projects.elementAt(i+0)) + "; " +
-                    (String)(projects.elementAt(i+1)) + "; " +
-                    (String)(projects.elementAt(i+2)) + "; " +
-                    (String)(projects.elementAt(i+3)) );
+            int x=0;
+            for(int i=0; i < totalprojects*5; i=i+5) {
+                out.println("project."+ x +" = " +
+                    ((String)(projects.elementAt(i+0))) + "; " +
+                    ((String)(projects.elementAt(i+1))) + "; " +
+                    ((String)(projects.elementAt(i+2))) + "; " +
+                    ((String)(projects.elementAt(i+3))) );
+                Vector targets = (Vector)projects.elementAt(i+4);
+                int targetSize = targets.size()/7;
+                System.out.println("total targets = "+(targets.size()/7));
+                for(int j=0; j < targetSize; j++) {
+                    int z = 0;
+                    out.println("target."+x+"."+j+" = " +
+                        ((String)(targets.elementAt(z))) + "; " +
+                        ((String)(targets.elementAt(z+1))) + "; " +
+                        ((String)(targets.elementAt(z+2))) + "; " +
+                        ((String)(targets.elementAt(z+3))) + "; " +
+                        ((String)(targets.elementAt(z+4))) + "; " +
+                        ((String)(targets.elementAt(z+5))) + "; " +
+                        ((String)(targets.elementAt(z+6))) );
+                }
+                x++;
             }
-            */
+            out.println();
+            out.println();
 
         } catch(Exception ex) {
             System.out.println("ERROR!");
