@@ -48,6 +48,15 @@ public class GUI extends JFrame {
         file.setMnemonic(KeyEvent.VK_ALT);
         menuBar.add(file);
 
+        JMenuItem save = new JMenuItem("Save");
+        save.setMnemonic(KeyEvent.VK_S);
+        save.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                controller.saveToFile();
+            };
+        });
+        file.add(save);
+
         JMenuItem exit = new JMenuItem("Exit");
         exit.setMnemonic(KeyEvent.VK_X);
         exit.addActionListener(new ActionListener() {
@@ -56,6 +65,7 @@ public class GUI extends JFrame {
             }
         });
         file.add(exit);
+
         setJMenuBar(menuBar);
 
         int inset = 250;
@@ -203,6 +213,22 @@ public class GUI extends JFrame {
         label = new JLabel("");
         gridbag.setConstraints(label, c);
         gridPanel.add(label);
+        c.gridwidth = 1;
+        label = new JLabel("Advance Clock by");
+        gridbag.setConstraints(label, c);
+        gridPanel.add(label);
+        tf = new JTextField();
+        gridbag.setConstraints(tf,c);
+        gridPanel.add(tf);
+        cb = new JComboBox();
+        cb.addItem("sec"); cb.addItem("min"); cb.addItem("hour");
+        gridbag.setConstraints(cb, c);
+        gridPanel.add(cb);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        label = new JLabel("");
+        gridbag.setConstraints(label, c);
+        gridPanel.add(label);
+
         p.add(gridPanel);
         ///////////////////
         //p.add(new JLabel());
@@ -437,6 +463,7 @@ public class GUI extends JFrame {
         panelThree_gridPanel.add(label);
         /////////////////
         main.add(panelThree_gridPanel, BorderLayout.NORTH);
+        main.add(addWeatherFunctions(1), BorderLayout.CENTER);
         JScrollPane pane = new JScrollPane(main);
         return pane;
     }
