@@ -222,7 +222,7 @@ public class SchedTest7 {
             //test7.testSelectSB();
             //test7.testNothingToSchedule();
             //System.out.println("Sleeping for 90 sec before releasing MS");
-            Thread.sleep(1000*300);
+            Thread.sleep(1000*180);
             test7.release();
         } catch(Exception e) {
             System.out.println("Exception: " +e.toString() );
