@@ -29,7 +29,7 @@ import java.net.InetAddress;
 import java.util.logging.Logger;
 import alma.acs.component.client.ComponentClient;
 import alma.scheduling.master_scheduler.MasterScheduler;
-import alma.scheduling.master_scheduler.ArchiveProxy;
+import alma.scheduling.master_scheduler.ALMAArchive;
 import alma.entity.xmlbinding.schedblock.SchedBlock; 
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT; 
 import alma.entity.xmlbinding.execblock.ExecBlock; 
@@ -47,7 +47,7 @@ import alma.entity.xmlbinding.obsproject.ObsUnitControl;
  */
 public class SchedTest1 {
     private MasterScheduler masterScheduler;
-    private ArchiveProxy archive;
+    private ALMAArchive archive;
     private SchedBlock sb;
     private SchedBlockEntityT sb_entity;
     private ExecBlock exec;

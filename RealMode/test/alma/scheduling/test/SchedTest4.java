@@ -63,6 +63,7 @@ public class SchedTest4 {
             ms.setContainerServices(client.getContainerServices());
             SchedTest4 test4 = new SchedTest4(ms);
             test4.startScheduler("dynamic");
+            test4.startScheduler("interactive");
             test4.stop();
         } catch (Exception e) {
             System.err.println("EXCEPTION: "+ e.toString());

@@ -70,7 +70,7 @@ public class SchedTest2 {
             try {
                 for(int i=0; i < 6; i++) {
                     test2.testSelectSB();
-                    Thread.sleep(1000*60);
+                    Thread.sleep(1000*20);
                 }
             } catch(InterruptedException e) {}
             test2.stop();

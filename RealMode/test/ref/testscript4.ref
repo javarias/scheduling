@@ -1,8 +1,8 @@
  Running test
 The MasterScheduler has been constructed.
-The ArchiveProxy has been constructed.
+The ALMAArchive has been constructed.
 The PipelineProxy has been constructed.
-The TelescopeOperatorProxy has been constructed.
+The ALMATelescopeOperator has been constructed.
 The PIProxy has been constructed.
 The Dispatcher has been constructed.
 The Clock has been constructed.

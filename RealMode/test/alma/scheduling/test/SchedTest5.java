@@ -30,7 +30,8 @@ import java.net.InetAddress;
 import java.util.logging.Logger;
 import alma.acs.component.client.ComponentClient;
 import alma.scheduling.master_scheduler.MasterScheduler;
-import alma.scheduling.master_scheduler.Dispatcher;
+import alma.scheduling.master_scheduler.ALMADispatcher;
+import alma.scheduling.master_scheduler.STime;
 import alma.scheduling.scheduler.Scheduler;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 //import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
@@ -55,9 +56,9 @@ public class SchedTest5 {
         System.out.println("got scheduler");
         SchedBlock sb = s.getSB();
         System.out.println("got SB");
-        Dispatcher d = masterScheduler.getDispatcher();
+        ALMADispatcher d = masterScheduler.getDispatcher();
         System.out.println("got dispatcher");
-        d.sendToControl(sb.getSchedBlockEntity().getEntityId(), "start-time");
+        d.sendToControl(sb.getSchedBlockEntity().getEntityId(), new STime());
         
     }
     
