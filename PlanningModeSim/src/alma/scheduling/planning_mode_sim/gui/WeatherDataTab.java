@@ -193,7 +193,7 @@ public class WeatherDataTab extends JScrollPane {
     public void setP2(String s) {
         p2.setText(s);
     }
-    public void setSO(String s) {
+    public void setS0(String s) {
         s0.setText(s);
     }
     public void setS1(String s) {
