@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.17 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.18 2005/01/26 18:20:14 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -184,6 +184,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         super.setStopCommand(true);
         this.manager.setStopCommand(true);
         control_nc.detach("alma.Control.ExecBlockEvent", eventreceiver);
+        ((CorbaReceiver)control_nc).disconnect();
         pipeline_nc.detach("alma.pipelinescience.ScienceProcessingRequestEnd",eventreceiver);
         ((CorbaReceiver)pipeline_nc).disconnect();
     }
