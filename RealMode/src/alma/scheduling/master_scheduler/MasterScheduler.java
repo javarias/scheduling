@@ -39,7 +39,6 @@ import org.omg.CORBA.SetOverrideType;
 import alma.acs.nc.SimpleSupplier;
 import alma.acs.component.client.ComponentClient;
 import alma.acs.component.ComponentImplBase;
-//import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
@@ -48,7 +47,8 @@ import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
 import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.obsproject.*;
-//import alma.bo.SchedBlock;
+
+import alma.Control.ExecBlockEvent;
 
 import alma.scheduling.*;
 import alma.scheduling.MSOperations;
@@ -147,6 +147,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 		antenna = new ArrayList ();
 		scheduler = new ArrayList();
 		action = null;
+        s_publisher = null; 
 	}
 	
 	/**
@@ -349,29 +350,6 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
         logger.info("SCHEDULING: starting execute");
 
         pollArchive();
-        /*
-        // get non-complete SBs from archive, right now it gets ALL sbs.
-        SchedBlock[] sbs = archive.getSchedBlock();
-        logger.info("SCHEDULING: Getting SBs from archive");
-
-        // place SBs in master SB queue
-        if(sbs != null) {
-            logger.info("SCHEDULING: sbs not null storing into sbQueue");
-            //queue.addNonCompleteSBsToQueue(sbs);   
-            sbQueue.addSchedBlock(sbs);
-        } else {
-            logger.info("SCHEDULING: sbs null will result in error?");
-        }
-        */
-
-        // form unique list of sb ids from queue
-        //Vector uid = queue.getAllUid();
-        // give list to project manager - adds them to list of projects 
-        //projectManager.addSBUids(uid);
-
-        // Get all project definitions out of the archive
-        //ObsProject[] proj = archive.getProject();
-        
 
         // TODO get antenna state from control
         // TODO get state model from control
@@ -464,7 +442,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
         */
 		
 		// if there are active MasterScheduler notification channel listeners, deactivate them.
-		
+		s_publisher.shutdown();
 
 		// Those were the important steps.  If aboutToAbort() gets this far, we're probably OK.
 		schedulingState.setState(State.STOPPED);
@@ -785,7 +763,7 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
 
 
     /* Methods for testing, not sure if they'll be needed later */
-
+/*
     public ALMAArchive getArchive() {
         return archive;
     }
@@ -805,18 +783,18 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
         return dispatcher;
     }
     
-    
+  */  
 
     /**
      *  Assigns a uid to the EntityT.
      *  @param et
-     */
     public void assignId(EntityT et) {
         try {
             container.assignUniqueEntityId(et);
         } catch(Exception e) {
         }
     }
+     */
     
     /**
      *  Creates a scheduler in the mode submitted by the input parameter.
@@ -845,7 +823,8 @@ public class MasterScheduler extends ComponentImplBase implements MSOperations, 
         try {
             SchedulerEventReceiver sched_listener = 
                 new SchedulerEventReceiver(s);
-            sched_listener.addSubscription(alma.Control.EXECEVENTS.value);
+            //sched_listener.addSubscription(alma.Control.EXECEVENTS.value);
+            sched_listener.addSubscription(ExecBlockEvent.class);
             sched_listener.consumerReady();
         } catch(Exception e) {
             logger.severe("SCHEDULING: Problem with scheduler event listener");

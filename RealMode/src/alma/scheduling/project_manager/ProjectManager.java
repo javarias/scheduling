@@ -133,7 +133,7 @@ public class ProjectManager implements Runnable {
             logger.info("SCHEDULING: Trying to get NCs");
             
             try {
-                control_event.addSubscription(alma.Control.EXECEVENTS.value);
+                control_event.addSubscription(alma.Control.EXECEVENTS.class);
                 control_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to CONTROL");
             } catch(Exception e) {
@@ -144,7 +144,7 @@ public class ProjectManager implements Runnable {
             try {
                 //pipeline_event.addSubscription(alma.acsnc.DEFAULTTYPE.value);
                 pipeline_event.addSubscription(
-                    "alma.pipelinescience.ScienceProcessingRequestEnd");
+                    alma.pipelinescience.ScienceProcessingRequestEnd.class);
                 pipeline_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to PIPELINE");
             } catch(Exception e) {
@@ -153,7 +153,8 @@ public class ProjectManager implements Runnable {
             }
             //Listen for TELCAL events
             try {
-                pointing_event.addSubscription("PointingReducedEvent");
+                //pointing_event.addSubscription("PointingReducedEvent");
+                pointing_event.addSubscription(alma.TelCalPublisher.PointingReducedEvent.class);
                 pointing_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to TELCAL PointingReducedEvent");
             } catch(Exception e) {
@@ -161,7 +162,7 @@ public class ProjectManager implements Runnable {
                 logger.severe("SCHEDULING: "+ e.toString());
             }
             try {
-                focus_event.addSubscription("FocusReducedEvent");
+                focus_event.addSubscription(alma.TelCalPublisher.FocusReducedEvent.class);
                 focus_event.consumerReady();
                 logger.info("SCHEDULING: Subscribed to TELCAL FocusReducedEvent");
             } catch(Exception e) {
@@ -235,8 +236,11 @@ public class ProjectManager implements Runnable {
      */
     public void stop() {
         pmFlag = false;
-        //pipeline_event.disconnect();
-        //control_event.disconnect();
+        /* Disconnect from all notification channels. */
+        pipeline_event.disconnect();
+        control_event.disconnect();
+        pointing_event.disconnect();
+        focus_event.disconnect();
         logger.info("SCHEDULING: PM Stopped!");
     }
 

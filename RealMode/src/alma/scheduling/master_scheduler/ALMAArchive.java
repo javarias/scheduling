@@ -115,7 +115,7 @@ public class ALMAArchive implements ArchiveProxy {
      *  @return SchedBlock[] The array of scheduling blocks.
      */
     public SchedBlock[] getSchedBlock() {
-        String query = "/*";
+        String query = "/sbl:SchedBlock";
         String schema = "SchedBlock";
         String className = "alma.entity.xmlbinding.schedblock.SchedBlock";
         try {
@@ -243,7 +243,7 @@ public class ALMAArchive implements ArchiveProxy {
 
 
     public ObsProject[] getProject() {
-        String query = "/*";
+        String query = "/prj:ObsProject";
         String schema = "ObsProject";
         String className = "alma.entity.xmlbinding.obsproject.ObsProject";
         try {
@@ -315,7 +315,7 @@ public class ALMAArchive implements ArchiveProxy {
     }
 
     public SchedulingPolicy[] getSchedulingPolicy() {
-        String query = "/*";
+        String query = "/sp:SchedulingPolicy*";
         String schema = "SchedulingPolicy";
         String className = "alma.entity.xmlbinding.schedulingpolicy.SchedulingPolicy";
         try {
@@ -338,7 +338,7 @@ public class ALMAArchive implements ArchiveProxy {
     }
 
     public PipelineProcessingRequest[] getPipelineProcessingRequest() {
-        String query = "/*";
+        String query = "/ppr:PipelineProcessingRequest";
         String schema = "PipelineProcessingRequest";
         String className = "alma.entity.xmlbinding.pipelineprocessingrequest.PipelineProcessingRequest";
         
@@ -604,7 +604,7 @@ public class ALMAArchive implements ArchiveProxy {
         //SchedBlock sb;
         //SchedBlockEntityT sb_entity;
         logger.info("SCHEDULING: Getting noncomplete sbs from archive");
-        String query = "/SchedBlock/ObsUnitControl[@schedStatus=\"waiting\"]";
+        String query = "/sbl:SchedBlock/ObsUnitControl[@schedStatus=\"waiting\"]";
         try {
             sbs = new Vector(); 
             Cursor cursor = operArchiveComp.query(query, "SchedBlock");

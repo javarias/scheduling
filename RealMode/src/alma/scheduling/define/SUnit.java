@@ -105,7 +105,7 @@ public class SUnit implements HasMembers, MemberOf {
         this();
         this.schedBlock = sb;
         this.schedBlockId = sb.getSchedBlockEntity().getEntityId();
-        this.projectId = sb.getObsProjectRef().getEntityId();
+        //this.projectId = sb.getObsProjectRef().getEntityId();
     }
 
 	public void setMemberLink(SUnitSet parent) {

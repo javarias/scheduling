@@ -126,11 +126,10 @@ public class Scheduler implements Runnable {
             //should send out nothingCanBeScheduled but
             //for now this is the end of the project and we start the pipeline
                 logger.info("SCHEDULING: No more SBs to process!");
-                s_publisher.publish();
+                s_publisher.publishEvent();
                 moreSBs = false;
                 break;
             }
-            //String selectedSB = operator.selectSB(ids, m_id);
             logger.info("SCHEDULING: in scheduler. selectedSB = "+selectedSB);
             messageQueue.removeMessage(m_id);
             logger.info("SCHEDULING: Message "+m_id+" removed from queue.");
@@ -142,8 +141,6 @@ public class Scheduler implements Runnable {
             }
             try {
                 logger.info("SCHEDULING: waiting til sb is done processing");
-                //schedulerTaskControl.getTask().wait();
-                //schedulerTaskControl.getTask().join();
                 schedulerTaskControl.getTask().sleep(24*60*60*1000L);
             } catch(InterruptedException e) {
                 logger.info("SCHEDULING: scheduler woken up!");

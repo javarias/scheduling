@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.16 2003/12/04 18:50:26 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.17 2003/12/11 22:40:46 sroberts Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -69,9 +69,9 @@ man   : do_man
 	@echo " . . . man page(s) done"
 
 install : install_all
-	@echo " . . . copying required CDB (schedulingCDB) in ACSDATA"
-	-@cp -r ../config/schedulingCDB $(ACSDATA)/config;\
-	          chmod -R ug+rw $(ACSDATA)/config/schedulingCDB;
+#	@echo " . . . copying required CDB (schedulingCDB) in ACSDATA"
+#	-@cp -r ../config/schedulingCDB $(ACSDATA)/config;\
+#	          chmod -R ug+rw $(ACSDATA)/config/schedulingCDB;
 	@echo " . . . installation done"
 
 db : db_all
