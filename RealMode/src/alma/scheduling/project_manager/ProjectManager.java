@@ -35,8 +35,12 @@ import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 import alma.entities.commonentity.EntityRefT;
 
 import ALMA.scheduling.NothingCanBeScheduledEvent;
-import ALMA.scheduling.master_scheduler.*;
+import ALMA.scheduling.master_scheduler.ALMAArchive;
+import ALMA.scheduling.master_scheduler.ALMADispatcher;
+import ALMA.scheduling.master_scheduler.MasterSBQueue;
 import ALMA.scheduling.define.nc.*;
+
+import ALMA.scheduling.receivers.*;
 
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
@@ -67,10 +71,12 @@ public class ProjectManager implements Runnable {
     private ALMAPipeline pipeline;
     private MasterSBQueue sbQueue;
     private ProjectManagerTaskControl pmTaskControl;
-    private PipelineEventReceiver p_event;
-    private ControlEventReceiver c_event;
-    private Receiver pipelineReceiver;
-    private Receiver controlReceiver;
+    private PipelineEventReceiver pipeline_event;
+    private ControlEventReceiver control_event;
+    private PointingScanReducedEventReceiver pointingScan_event;
+    private FocusScanReducedEventReceiver focusScan_event;
+    //private Receiver pipelineReceiver;
+    //private Receiver controlReceiver;
     private boolean pmFlag=true;
     private int pmSleepTime = 300000; //5 minute sleep
     private SimpleSupplier supplier;
@@ -87,8 +93,11 @@ public class ProjectManager implements Runnable {
         createSchedulingNC();
         projects = convertToVector(archive.getProject());
         pipeline = new ALMAPipeline(isSimulation, containerServices);
-        c_event = new ControlEventReceiver(pipeline, archive);
-        p_event = new PipelineEventReceiver(pipeline, archive);
+        //Receiver objects
+        control_event = new ControlEventReceiver(pipeline, archive);
+        pipeline_event = new PipelineEventReceiver(pipeline, archive);
+        pointingScan_event = new PointingScanReducedEventReceiver();
+        focusScan_event = new FocusScanReducedEventReceiver();
         if(isSimulation) {
             //its a simulation, so create local channels
             
@@ -97,44 +106,69 @@ public class ProjectManager implements Runnable {
                 AbstractNotificationChannel.LOCAL, 
                     ALMA.Control.CHANNELNAME.value, 
                         "scheduling");
-            controlReceiver.attach("ALMA.Control.ExecBlockEndEvent",c_event);
+            controlReceiver.attach("ALMA.Control.ExecBlockEndEvent",control_event);
             */
             /*
             pipelineReceiver = AbstractNotificationChannel.getReceiver(
                 AbstractNotificationChannel.LOCAL, 
                     ALMA.pipelinescience.CHANNELNAME.value, 
                         "scheduling");
-            pipelineReceiver.attach("alma.piplinescience.ScienceProcessingRequestEnd",p_event);
+            pipelineReceiver.attach("alma.piplinescience.ScienceProcessingRequestEnd",pipeline_event);
             */
         } else {
             //its the real thing! create corba channels.
-            logger.info("Trying to get nc");
+            logger.info("SCHEDULING: Trying to get NCs");
             try {
-                c_event.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
-                c_event.consumerReady();
+                control_event.addSubscription(ALMA.Control.EXECEVENTS.value);
+                control_event.consumerReady();
             } catch(Exception e) {
-                logger.severe("Could not get control channel");
+                logger.severe("SCHEDULING: Could not get control channel");
                 logger.severe(e.toString());
             }
             try {
-                p_event.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
-                p_event.consumerReady();
+                //pipeline_event.addSubscription(ALMA.acsnc.DEFAULTTYPE.value);
+                pipeline_event.addSubscription(
+                    "ALMA.pipelinescience.ScienceProcessingRequestEnd");
+                pipeline_event.consumerReady();
             } catch(Exception e) {
-                logger.severe("Could not get pipeline channel");
-                logger.severe(e.toString());
+                logger.severe("SCHEDULING: Could not get pipeline channel");
+                logger.severe("SCHEDULING: "+ e.toString());
+            }
+            try {
+                pointingScan_event.addSubscription("PointingScanReducedEvent");
+                pointingScan_event.consumerReady();
+            } catch(Exception e) {
+                logger.severe("SCHEDULING: Could not get PointingScanReduced channel");
+                logger.severe("SCHEDULING: "+ e.toString());
+            }
+            try {
+                focusScan_event.addSubscription("FocusScanReducedEvent");
+                focusScan_event.consumerReady();
+            } catch(Exception e) {
+                logger.severe("SCHEDULING: Could not get FocusScanReduced channel");
+                logger.severe("SCHEDULING: "+ e.toString());
+            }
+            /*
+            try {
+            } catch(Exception e) {
+            }
+            try {
+            } catch(Exception e) {
             }
             /*
             controlReceiver = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.CORBA, 
-                    ALMA.Control.CHANNELNAME.value, 
-                        "CONTROL", ALMA.Control.CHANNELNAME.value);
-            controlReceiver.attach("ALMA.Control.ExecBlockEndEvent",c_event);
+                        AbstractNotificationChannel.CORBA,
+                            ALMA.Control.CHANNELNAME.value);
+            //controlReceiver.attach(ALMA.Control.EXECEVENTS.value,control_event);
+            controlReceiver.attach("ALMA.Control.ExecBlockEvent",control_event);
+            controlReceiver.begin();
             pipelineReceiver = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.CORBA, 
-                    ALMA.pipelinescience.CHANNELNAME.value, 
-                        "PIPELINE", ALMA.pipelinescience.CHANNELNAME.value);
-            pipelineReceiver.attach("alma.piplinescience.ScienceProcessingRequestEnd",p_event);
+                        AbstractNotificationChannel.CORBA,
+                            ALMA.pipelinescience.CHANNELNAME.value);
+            pipelineReceiver.attach("ALMA.pipelinescience.ScienceProcessingRequestEnd",pipeline_event);
+            pipelineReceiver.begin();
             */
+            logger.info("SCHEDULING: Got NCs");
         }
     }
 
@@ -164,14 +198,14 @@ public class ProjectManager implements Runnable {
     /** Runnable method */
     public void run() {
         // Set pmTaskControl before it enters run loop!
-        c_event.setProjectManagerTaskControl(pmTaskControl);
-        p_event.setProjectManagerTaskControl(pmTaskControl);
+        control_event.setProjectManagerTaskControl(pmTaskControl);
+        pipeline_event.setProjectManagerTaskControl(pmTaskControl);
         while(pmFlag) {
             try {
                 Thread.sleep(pmSleepTime); //5 minute sleep.
-                logger.info("PM woken up");
+                logger.info("SCHEDULING: PM woken up");
             }catch(InterruptedException e) {
-                logger.info("PM interrupted");
+                logger.info("SCHEDULING: PM interrupted");
             }
         }
     }
@@ -180,9 +214,9 @@ public class ProjectManager implements Runnable {
      */
     public void stop() {
         pmFlag = false;
-        p_event.disconnect();
-        c_event.disconnect();
-        logger.info("PM Stopped!");
+        //pipeline_event.disconnect();
+        //control_event.disconnect();
+        logger.info("SCHEDULING: PM Stopped!");
     }
 
     //////////////////////////////////////////////////////////////////////////

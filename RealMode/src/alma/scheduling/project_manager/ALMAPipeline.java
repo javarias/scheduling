@@ -60,7 +60,7 @@ public class ALMAPipeline implements PipelineProxy {
      //   ProjectManager pm) {
         
 		super();
-        System.out.println("The PipelineProxy has been constructed.");
+        System.out.println("SCHEDULING: The PipelineProxy has been constructed.");
         this.containerServices = cs;
         //this.projectManager = pm;
         this.logger = containerServices.getLogger();
@@ -85,14 +85,14 @@ public class ALMAPipeline implements PipelineProxy {
     public String processRequest(PipelineProcessingRequest request)
 	        throws SchedulingException {
         String requestRes="request result";
-        logger.log(Level.INFO,"!!!!!!!!!!!!!!!"+requestRes);
+        logger.log(Level.INFO,"SCHEDULING: "+requestRes);
         try {
             sciencePipelineComp = ALMA.pipelinescience.SciencePipelineHelper.narrow(
                 containerServices.getComponent("SCIENCE_PIPELINE"));
             requestRes =sciencePipelineComp.processRequest(
                 EntitySerializer.getEntitySerializer(logger).serializeEntity(request));
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"Error connecting to PIPELINE!");
+            logger.log(Level.SEVERE,"SCHEDULING: Error connecting to PIPELINE!");
         }
         return requestRes;
     }

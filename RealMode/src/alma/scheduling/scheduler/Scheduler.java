@@ -106,7 +106,7 @@ public class Scheduler implements Runnable {
     public void run() {
     //eventually needs to be put in a while loop.
         schedulerState = State.EXECUTING;
-        System.out.println("Scheduler is running in "+mode+" mode!");
+        System.out.println("SCHEDULING: Scheduler is running in "+mode+" mode!");
         /*
         Vector uidList = queue.getIds();
         String[] ids = new String[uidList.size()];
@@ -121,20 +121,20 @@ public class Scheduler implements Runnable {
         String m_id = m.getMessageId();
         //String selectedSB = operator.selectSB(ids, m_id);
         String selectedSB = getSB(ids, m_id);
-        logger.log(Level.INFO, "in MS. selectedSB = "+selectedSB);
+        logger.log(Level.INFO, "SCHEDULING: in scheduler. selectedSB = "+selectedSB);
         messageQueue.removeMessage(m_id);
-        logger.log(Level.INFO, "Message "+m_id+" removed from queue.");
+        logger.log(Level.INFO, "SCHEDULING: Message "+m_id+" removed from queue.");
 
         if(selectedSB != null) {
             dispatchSB(selectedSB);
         } else {
-            logger.log(Level.INFO, "selectedSB was null. Nothing sent to control.");
+            logger.log(Level.INFO, "SCHEDULING: selectedSB was null. Nothing sent to control.");
         }
     }
     
     public void stop() {
         schedulerState = State.STOPPED;
-        System.out.println("Scheduler is stopped");
+        System.out.println("SCHEDULING: Scheduler is stopped");
     }
 
     public void dispatchSB(String id) {

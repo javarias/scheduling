@@ -67,7 +67,7 @@ public abstract class BasicComponent extends ComponentImplBase implements org.om
 	public void initialize() throws ComponentLifecycleException {
 		super.initialize();
 		m_state.setState(ComponentState.INITIALIZED);
-		m_logger.info(m_instanceName + ".initialized");
+		m_logger.info("SCHEDULING: "+ m_instanceName + ".initialized");
 	}
 
 	/* (non-Javadoc)
@@ -76,7 +76,7 @@ public abstract class BasicComponent extends ComponentImplBase implements org.om
 	public void execute() throws ComponentLifecycleException {
 		super.execute();
 		m_state.setState(ComponentState.EXECUTING);
-		m_logger.info(m_instanceName + ".executing");
+		m_logger.info("SCHEDULING: "+ m_instanceName + ".executing");
 	}
 
 	/* (non-Javadoc)

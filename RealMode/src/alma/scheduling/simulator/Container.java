@@ -119,7 +119,7 @@ public class Container implements ContainerServices {
 	}
 	
 	public void cleanUp() {
-		logger.info("The logfile is being closed.");
+		logger.info("SCHEDULING: The logfile is being closed.");
 		logfile.close();
 	}
 

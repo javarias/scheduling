@@ -27,7 +27,7 @@
 package ALMA.scheduling.project_manager;
 
 import ALMA.scheduling.master_scheduler.TaskControlInfo;
-import ALMA.Control.ExecBlockEndEvent;
+//import ALMA.Control.ExecBlockEndEvent;
 import ALMA.pipelinescience.ScienceProcessingRequestEnd;
 
 /**
@@ -52,7 +52,7 @@ public class ProjectManagerTaskControl extends TaskControlInfo {
     private boolean control_event=false; //true if an event gotten from control
     private boolean pipeline_event=false; //true if event gotten from pipeline
 
-    private ExecBlockEndEvent c_end_event;
+    //private ExecBlockEndEvent c_end_event;
     private ScienceProcessingRequestEnd p_end_event;
 
 	/**

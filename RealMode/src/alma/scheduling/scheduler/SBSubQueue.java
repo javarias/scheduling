@@ -47,7 +47,7 @@ public class SBSubQueue {
     }
 
     public synchronized void addSchedBlock(SchedBlock sb) {
-        System.out.println("Adding sbs to queue");
+        System.out.println("SCHEDULING: Adding sbs to queue");
         queue.add(sb);
     }
 

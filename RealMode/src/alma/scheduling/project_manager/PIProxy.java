@@ -37,7 +37,7 @@ import alma.acs.container.ContainerServices;
 public class PIProxy implements ProjectManager_to_PI {
 
 	public PIProxy (boolean isSimulation, ContainerServices container) {
-		System.out.println("The PIProxy has been constructed.");
+		System.out.println("SCHEDULING: The PIProxy has been constructed.");
 	}
 
 	/**

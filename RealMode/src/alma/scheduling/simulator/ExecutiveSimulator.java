@@ -91,7 +91,7 @@ public class ExecutiveSimulator extends BasicComponent {
 		//	e.printStackTrace();
 		//	System.exit(0);
 		//}
-		m_logger.info("executive.executing");
+		m_logger.info("SCHEDULING: executive.executing");
 	}
 
 	public static void main(String[] args) {
