@@ -1,0 +1,60 @@
+May 1, 2003 8:02:11 AM alma.acs.container.AcsManagerProxy loginToManager
+INFO: manager reference not yet available in method loginToManager; will try to find the manager first...
+May 1, 2003 8:02:11 AM alma.acs.container.AcsManagerProxy findManager
+FINEST: manager corbaloc 'corbaloc::solar-vml:3000/Manager' resolved.
+May 1, 2003 8:02:12 AM alma.acs.container.AcsManagerProxy findManager
+FINEST: manager narrow successful.
+May 1, 2003 8:02:12 AM alma.acs.container.AcsManagerProxy loginToManager
+FINE: Manager login done, handle '46530561' obtained.
+Started
+May 1, 2003 8:02:12 AM alma.acs.container.archive.ArchiveProxy getUid
+FINE: trying to access the identifier archive...
+May 1, 2003 8:02:12 AM alma.acs.container.archive.ArchiveProxy getUid
+FINE: about to call getIdNamespace()...
+May 1, 2003 8:02:14 AM alma.acs.container.archive.ArchiveProxy getUid
+FINE: getIdNamespace() returned UID://X0000000000000035/X00000000
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+UID://X0000000000000035/X00000000SchedBlock 1.0
+SchedBlock created: <?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+
+SchedBlock Stored
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+</ns1:SchedBlock>
+UID://X0000000000000035/X00000000
+<?xml version="1.0"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+</ns1:SchedBlock> UID://X0000000000000035/X00000000
+SchedBlock retrieved
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+    <ns1:ObsProcedure/>
+</ns1:SchedBlock>
+UID://X0000000000000035/X00000000SchedBlock 1.0
+SchedBlock updated: <?xml version="1.0" encoding="UTF-8"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000"
+        entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --"/>
+    <ns1:ObsProcedure/>
+</ns1:SchedBlock>
+
+<?xml version="1.0"?>
+<ns1:SchedBlock xmlns:ns1="Alma/ObsPrep/SchedBlock">
+    <ns1:SchedBlockEntity entityId="UID://X0000000000000035/X00000000" entityTypeName="SchedBlock" entityIdEncrypted="-- id encryption not yet implemented --" />
+    <ns1:ObsProcedure />
+</ns1:SchedBlock> UID://X0000000000000035/X00000000
+SchedBlock retrieved
+SchedBlock removed
