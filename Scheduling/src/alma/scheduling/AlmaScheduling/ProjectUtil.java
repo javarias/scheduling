@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.23 2005/03/29 23:25:34 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.24 2005/04/04 16:11:07 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -430,11 +430,15 @@ public class ProjectUtil {
 		ProgramMember[] m = p.getMember();
 		for (int i = 0; i < m.length; ++i) {
 			if (m[i] instanceof Program) {
-				((Program)m[i]).setObsUnitSetStatusId(genPartId());
-                //System.out.println("part id for program member, prog");
+                if(((Program)m[i]).getObsUnitSetStatusId() == null) {
+				    ((Program)m[i]).setObsUnitSetStatusId(genPartId());
+                }             
+                    //System.out.println("part id for program member, prog");
 				setProgramMember((Program)m[i]);
 			} else {
-				((SB)m[i]).setSbStatusId(genPartId());
+                if(((SB)m[i]).getSbStatusId() == null) {
+				    ((SB)m[i]).setSbStatusId(genPartId());
+                }
                 //System.out.println("part id for program member, sb");
 				setSBMember((SB)m[i]);
 			}
