@@ -27,7 +27,8 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
-//import alma.entity.xmlbinding.session.*;
+import alma.entities.commonentity.EntityRefT;
+import alma.entity.xmlbinding.session.*;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
@@ -43,7 +44,7 @@ import alma.scheduling.EndSession;
 import alma.scheduling.Event.Receivers.*;
 //import alma.scheduling.Define.ArrayTime;
 import alma.scheduling.Define.SB;
-import alma.scheduling.Define.Session;
+//import alma.scheduling.Define.Session;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.ExecBlock;
@@ -186,13 +187,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       try {
         logger.info("SCHEDULING: Start of a Session!");
         //create a session object 
-        ALMASession s = new ALMASession();
-        s.addExecBlockId(e.execID);
+        //ALMASession s = new ALMASession();
+        //s.addExecBlockId(e.execID);
         //s.setStartTime(e.startTime);
         //ouc & sb == same thing right now!
-        s.setObsUnitSetId(e.sbId);
-        s.setSbId(e.sbId);
+        //s.setObsUnitSetId(e.sbId);
+        //s.setSbId(e.sbId);
         //store session obj in the archive
+        Session s = createSession(e);
         String sessionID = archive.storeSession(s);
         //send out the session start event
         StartSession start_event = new StartSession (e.startTime, 
@@ -204,6 +206,26 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         ex.printStackTrace();
       }
     }
+
+    private Session createSession(ExecBlockEvent e) {
+        Session s = new Session();
+        SessionEntityT  s_entity = new SessionEntityT();
+        s.setSessionEntity(s_entity);
+        //s.setEndTime(""+e.startTime);
+        EntityRefT execRef = new EntityRefT();
+        execRef.setEntityId(e.execID);
+        ExecutionT execution = new ExecutionT();
+        execution.setExecBlockReference(execRef);
+        SessionSequenceItem seq_item = new SessionSequenceItem();
+        seq_item.setExecution(execution);
+        SessionSequence seq = new SessionSequence();
+        seq.setSessionSequenceItem(seq_item);
+        SessionSequence[] seqArray = new SessionSequence[1];
+        seqArray[0] = seq;
+        s.setSessionSequence(seqArray);
+        
+        return s;
+    }
     
     /**
      * Updates an existing session object in the archive to say that the SB has 
@@ -213,17 +235,32 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void endSession(ExecBlockEvent e) {
         //query session object from the archive
+        logger.info("SCHEDULING: End of a Session!");
         try {
-            Session s = archive.querySession(e.execID);
+            //Get Session from the archive.
+            //ALMASession session = (ALMASession)archive.querySession(e.execID);
+            //update session object and update it in the archive
+            //alma.entity.xmlbinding.session.Session s = session.getSession();
+            Session s = archive.querySession(e);
+            updateSession(s, e);
+            //archive.updateSession
+            //send out the session end event
+            EndSession end_event = new EndSession (
+                                        e.startTime, 
+                                        s.getSessionEntity().getEntityId(),
+                                        "ous_partid", 
+                                        e.execID);
+            publisher.publish(end_event);
+            manager.sessionEnd(e.sbId);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: error in ALMAReceiveEvent:endSession");
             ex.printStackTrace();
         }
-    //update session object and update it in the archive
-    //archive.updateSession
-    //send out the session end event
-        manager.sessionEnd(e.sbId);
 
+    }
+
+    private void updateSession(alma.entity.xmlbinding.session.Session s, ExecBlockEvent e) {
+        //s.setEndTime(""+e.startTime);
     }
 
 

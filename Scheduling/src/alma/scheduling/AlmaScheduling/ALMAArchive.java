@@ -31,6 +31,7 @@ import java.util.Vector;
 import alma.scheduling.Define.*;
 import alma.scheduling.ProjectStatusUtil;
 
+import alma.Control.ExecBlockEvent;
 import alma.xmlentity.XmlEntityStruct;
 
 import alma.acs.container.ContainerServices;
@@ -727,6 +728,67 @@ public class ALMAArchive implements Archive {
         return id;
     }
 
+    /**
+      * Session store function for R2
+      */
+    public String storeSession(alma.entity.xmlbinding.session.Session s) {
+        String id = null;
+        try{
+            containerServices.assignUniqueEntityId(s.getSessionEntity());
+            XmlEntityStruct xml = entitySerializer.serializeEntity(s, s.getSessionEntity());
+            System.out.println("session: "+xml.xmlString); 
+            archOperationComp.store(xml);
+            id = s.getSessionEntity().getEntityId();
+        } catch(ContainerException e) {
+            logger.severe("SCHEDULING: error getting entity's ID");
+            e.printStackTrace();
+        } catch(EntityException e) {
+            logger.severe("SCHEDULING: error serializing session");
+            e.printStackTrace();
+        } catch(IllegalEntity e) {
+            logger.severe("SCHEDULING: illegal entity error");
+            e.printStackTrace();
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: ArchiveInternalError");
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    /**
+      * Query for R2
+      */ 
+    public alma.entity.xmlbinding.session.Session querySession(ExecBlockEvent ebe) {
+        String query = "/se:Session/se:Execution/se:ExecBlockReference[@entityId='"+ebe.execID+"']";
+        String schema = "Session"; 
+        String className = new String("alma.entity.xmlbinding.session.Session");
+        alma.entity.xmlbinding.session.Session session =null;
+        try{
+            Cursor cursor = archOperationComp.queryDirty(query,schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying Sessions!");
+                return null ;
+            } 
+            while(cursor.hasNext()) {//should be only one..
+                QueryResult res = cursor.next();
+                try {
+                    XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
+                    System.out.println("Session in query: "+xml.xmlString);
+                    session = (alma.entity.xmlbinding.session.Session)
+                            entityDeserializer.deserializeEntity(xml, Class.forName(
+                                "alma.entity.xmlbinding.session.Session"));
+
+                } catch(Exception e) {
+                    logger.severe("SCHEDULING: "+e.toString());
+                }
+            }
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            e.printStackTrace();
+        }
+        return session;
+    }
+    
     public Session querySession(String execid) {
         //String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
         String query = "/se:Session/se:Execution/se:ExecBlockReference[@entityId='"+execid+"']";
@@ -756,6 +818,22 @@ public class ALMAArchive implements Archive {
         return session;
     }
     
+    /**
+      * update session for R2
+      */
+    public void updateSession(alma.entity.xmlbinding.session.Session s) {
+        try {
+            XmlEntityStruct xml1 = archOperationComp.retrieve(s.getSessionEntity().getEntityId());
+            XmlEntityStruct xml2 = entitySerializer.serializeEntity(s, s.getSessionEntity());
+            xml1.xmlString = xml2.xmlString;
+            System.out.println("updated session: "+xml1.xmlString);
+            archOperationComp.update(xml1);
+            
+        } catch(Exception e){
+            logger.severe("SCHEDULING: "+e.toString());
+            e.printStackTrace();
+        }
+    }
     public void updateSession(String sbid) {
         String query = "/se:Session/ObsUnitSetReference[@entityId='"+sbid+"']";
         String schema = "Session"; 
