@@ -2,6 +2,7 @@ FINE: ready to talk with components!
 INFO: SCHED_TEST: Testing Receivers!
 SCHED_TEST: sup1 created
 SCHED_TEST: sup2 created
+Attempting to create the sciencepipeline channel.
 SCHEDULING: The PipelineProxy has been constructed.
 FINE: SCHEDULING: The ALMAArchive has been constructed.
 SCHEDULING: The PipelineProxy has been constructed.
