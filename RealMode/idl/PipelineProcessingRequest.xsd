@@ -10,8 +10,8 @@
 	version="1">
 
 	<xs:import namespace="Alma/CommonEntity" schemaLocation="CommonEntity.xsd"/>
-	<xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="ObsProject.xsd"/>
-	<xs:import namespace="Alma/ObsPrep/SBExecRec" schemaLocation="SBExecRec.xsd"/>
+	<xs:import namespace="Alma/ObsPrep/ObsProject" schemaLocation="TestObsProject.xsd"/>
+	<xs:import namespace="Alma/ObsPrep/SBExecRec" schemaLocation="TestSBExecRec.xsd"/>
 
 		<xs:element name="PipelineProcessingRequest">
 		<xs:annotation>
