@@ -1,6 +1,9 @@
 #*******************************************************************************
+# ALMA Project
 #
-# Makefile of Scheduling module
+# "@(#) $Id: Subsystem.make,v 1.1 2003/03/27 13:22:26 mzampare Exp $"
+#
+# Makefile of ........
 #
 # who       when      what
 # --------  --------  ----------------------------------------------
@@ -14,18 +17,19 @@
 #------------------------------------------------------------------------
 
 #
-# Modules in the various SCHEDULING sub-packages.
+# Modules in the various ACS sub-packages.
 #
-#MODULES_SCHED = ../SCHEDULING
-#MODULES_KIT = vlt doc acs acstempl
-#MODULES_TOOLS = cmm emacs compat doxygen tat expat loki
-#MODULES_ACS = acsutil logging acserr cdb recovery baci enumprop maci acsdo acsnc acslog acsexmpl abeans objexp adminc jlog abeansgen acspy xmljbind comphelpgen XmlIdl define acstestentities jcont jcontexmpl
+# The following example is for a subsystem called Voyager One
+# which is composed of two directories, Alpha and Beta.
 
-MODULES = ../SCHEDULING
-#MODULES =  $(foreach kit, $(MODULES_KIT), Kit/$(kit)) \
-#           $(foreach tools, $(MODULES_TOOLS), Tools/$(tools)) \
-#           $(foreach acs, $(MODULES_ACS), CommonSoftware/$(acs)) \
-#           acsBUILD
+# Alpha contains the modules alpha1, alpha2 and alpha3
+# Beta continas the moduels beta1, beta2 and beta3
+#
+# Modify as appropriate to your subsystem
+
+SUBSYSTEM = SCHEDULING
+
+MODULES =  .
 
 
 MAKE_FLAGS = "-k"
@@ -49,8 +53,13 @@ ifeq ($(os),SunOS)
 	realtime=YES
 endif
 
+#
+# This target just forward any make target to all modules
+#
+
+
 define canned
-	@$(ECHO) "############ Executing '$@' on all SCHEDULING modules #################"
+	@$(ECHO) "############ Executing '$@' on all $(SUBSYSTEM) modules #################"
 	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
 		    $(ECHO) "############ $${member}" ;\
 		    if [ ! -d $${member} ]; then \
@@ -69,65 +78,16 @@ define canned
 		done
 endef
 
-
-#
-# This target builds and installs the complete SCHEDULING 
-# on a clean directory structure.
-# Per each module it executes:
-#    make clean all man install clean
-#
-build:   	clean_log checkModuleTree prepare update
-	@$(ECHO) "... done"
-
-#
-# This target re-builds and installs the complete SCHEDULING 
-# on an existing directory structure.
-# Per each module it executes:
-#    make clean all man install clean
-#
-rebuild:	clean_log update
-	@$(ECHO) "... done"
-
 clean_log:
 	@$(ECHO) "############ Clean Build Log File: build.log #################"
 	@rm -f build.log
 	@touch build.log
 
 #
-# Check module tree
+# building all modules
 #
-checkModuleTree:	
-	@$(ECHO) "############ Check directory tree for modules  #################"| tee -a build.log
-	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
-		    if [ ! -d $${member} ]; then \
-                         echo "### ==> $${member} MODULE NOT FOUND! FAILED! " | tee -a build.log;\
-                    fi;\
-		    if [ -f $${member}/src/Makefile ]; then \
-                         sh acsBUILD/src/acsBUILDCheckModuleTree.sh $${member} | tee -a build.log;\
-		    fi;\
-		    if [ -f $${member}/ws/src/Makefile ]; then \
-                         sh acsBUILD/src/acsBUILDCheckModuleTree.sh $${member}/ws | tee -a build.log;\
-		    fi;\
-		    if [ -f $${member}/lcu/src/Makefile ]; then \
-                         sh acsBUILD/src/acsBUILDCheckModuleTree.sh $${member}/lcu | tee -a build.log;\
-		    fi;\
-		done
-
-
-#
-#
-prepare:	
-	@$(ECHO) "############ Prepare installation areas      #################" | tee -a build.log
-	@sh acsBUILD/src/acsBUILDPrepareKit.sh >> build.log 2>& 1
-	@$(MAKE) $(MAKE_FLAGS) -C Kit/acs/src/ all install clean >> build.log 2>& 1 || echo "### ==> FAILED! " | tee -a build.log
-	@$(MAKE) $(MAKE_FLAGS) -C Kit/acstempl/src/ all install clean >> build.log 2>& 1 || echo "### ==> FAILED! " | tee -a build.log
-	@$(MAKE) $(MAKE_FLAGS) -C Tools/doxygen/src/ all install clean >> build.log 2>& 1 || echo "### ==> FAILED! " | tee -a build.log
-
-#
-# Update of all core components
-#
-update:	
-	@$(ECHO) "############ (Re-)build SCHEDULING Software         #################"| tee -a build.log
+build:	
+	@$(ECHO) "############ build $(SUBSYSTEM) Software         #################"| tee -a build.log
 	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
 		    if [ ! -d $${member} ]; then \
                          echo "### ==> $${member} MODULE NOT FOUND! FAILED! " | tee -a build.log;\
@@ -160,8 +120,6 @@ update:
 			fi;\
 		    fi;\
 		done
-	@sh acsBUILD/src/acsBUILDAfterBuildMod.sh >> build.log 2>& 1
-
 #
 # Test target
 #
@@ -170,7 +128,7 @@ $(Test):
 	@$(ECHO) "############ Clean Test Log File: test.log #################"
 	@rm -f test.log
 	@touch test.log
-	@$(ECHO) "############ TEST SCHEDULING Software #################"| tee -a test.log
+	@$(ECHO) "############ TEST $(SUBSYSTEM) Software #################"| tee -a test.log
 	@for member in $(foreach name,$(MODULES),$(name)); do\
 		if [ -d $${member}/ws/test ]; then\
 			$(ECHO) "############ $${member}/ws/test WS TEST ############" | tee -a test.log ;\
@@ -187,15 +145,17 @@ $(Test):
 		fi;\
 	done
 	@$(ECHO) "... done"
-
 #
-# Standard targets
+# Standard canned targets
 #
 clean:	
 	$(canned)
 all:	
 	$(canned)
 install:
+	$(canned)
+
+man:
 	$(canned)
 
 #
