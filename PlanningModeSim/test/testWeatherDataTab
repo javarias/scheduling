@@ -1,0 +1,3 @@
+#! /bin/bash
+
+acsStartJava alma.scheduling.planning_mode_sim.test.TestWeatherDataTab
