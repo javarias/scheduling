@@ -93,8 +93,10 @@ public class ALMAProjectManager extends ProjectManager {
         Project[] projs = new Project[0];
         try {
             String[] ids;
+            logger.info("SCHEDULING: getting projects");
             projs = archive.getAllProject();
-            psQueue.add(archive.getAllProjectStatus());
+            logger.info("SCHEDULING: getting projectstatus'");
+            psQueue.add(archive.getAllProjectStatus(projs));
             logger.info("SCHEDULING: projects = "+projs.length);
             SB[] sbs = getSBsFromProjects(projs);
             logger.info("SCHEDULING: total SBs = "+sbs.length);
@@ -121,7 +123,8 @@ public class ALMAProjectManager extends ProjectManager {
                 }
             }
         }catch(Exception e) {
-            e.toString();
+            logger.severe("SCHEDULING: Error polling archive: "+e.toString());
+            e.printStackTrace();
         }
         return projs;
     }

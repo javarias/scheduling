@@ -119,4 +119,20 @@ public class ALMAOperator implements Operator {
     public boolean confirmSubarrayCreation(String[] antennaId) {
         return true;
     }
+
+     class SelectSBTimer implements Runnable {
+        private long delay;
+        
+        public SelectSBTimer(long delay) {
+            this.delay = delay;
+        }
+        
+        public void run() {
+            try {
+                Thread.sleep(delay);
+            }catch(InterruptedException e) {
+            }
+        }
+    }
+  
 }

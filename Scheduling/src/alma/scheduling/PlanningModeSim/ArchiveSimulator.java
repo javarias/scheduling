@@ -36,7 +36,7 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Archive;
-import alma.scheduling.Define.PipelineProcessingRequest;
+import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.SchedulingException;
 
 import java.util.ArrayList;
@@ -268,15 +268,17 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 		if (u == null) {
 			throw new IllegalArgumentException ("SB cannot be null!");
 		}
-		String[] id = u.getExec();
-		ExecBlock[] x = new ExecBlock [id.length];
+		//String[] id = u.getExec();
+		//ExecBlock[] x = new ExecBlock [id.length];
+        ExecBlock[] x = u.getExec();
+        /*
 		for (int i = 0; i <x.length; ++i) {
 			x[i] = getExec(id[i]);
-		}
+		}*/
 		return x;
 	}
 	
-    public void storePipelineProcessingRequest(PipelineProcessingRequest ppr) {}
+    public void storePipelineProcessingRequest(SciPipelineRequest ppr) {}
     public String storeSession(Session s) { return null; }
     public void updateSession(String id) {}
     

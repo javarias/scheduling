@@ -40,6 +40,8 @@ public class Project implements ProjectMember {
 	
 	// The ObsProject-id that identifies this Project.
 	protected String obsProjectId;
+    // The ProjectStatus-id that is associated with the Project.
+    protected String projectStatusId;
 	// The proposal-id that is associated with this Project. 
 	protected String proposalId;
 	// The name of this Project.
@@ -379,5 +381,18 @@ public class Project implements ProjectMember {
 		return program.getAllPrograms();
 	}
 	
-	
+    /**
+     * @return Returns the projectStatusId.
+     */
+    public String getProjectStatusId() {
+        return projectStatusId;
+    }
+
+    /**
+     * @param projectStatusId The projectStatusId to set.
+     */
+    public void setProjectStatusId(String projectStatusId) {
+        this.projectStatusId = projectStatusId;
+    }
+
 }

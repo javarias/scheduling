@@ -678,7 +678,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			// Set the scientific priority.
 			set.setScientificPriority(program.getScientificPriority());
 			// Set the frequency and frequency band.
-			set.setFrequency(frequency);
+			set.setCenterFrequency(frequency);
 			set.setFrequencyBand(b);
 			// Set the weather condition.
 			set.setWeatherConstraint(w);
@@ -823,7 +823,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 				ra = Double.parseDouble(s[1].trim());
 				dec = Double.parseDouble(s[2].trim());
 				if (s[3].trim().length() == 0)
-					frequency = set.getFrequency();
+					frequency = set.getCenterFrequency();
 				else
 					frequency = Double.parseDouble(s[3].trim());
 				// Convert time to seconds.

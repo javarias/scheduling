@@ -29,12 +29,15 @@ package alma.scheduling.Define;
 /**
  * The BestSB class is information that is returned by a dynamic scheduling
  * algorithm when requested to select the best units to execute at any point
- * in time.  If nothing can be scheduled, the numberReturned is zero; otherwise, 
- * numberReturned is the length of the array of unitIds and the reasonCode is zero.
- * If nothing can be scheduled, there is a NothingCanBeScheduled object that 
- * designates why nothing could be scheduled.
+ * in time.  It contains an small array of SB identifiers in order 
+ * of highest to lowest score, together with information about their ranking
+ * factors.  The number of items in the array is also returned.  If nothing 
+ * can be scheduled, the number of items returned is zero; otherwise, the
+ * number of items returned is the length of the array of SB-Ids.
+ * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
+ * object that designates why nothing could be scheduled.
  * 
- * @version 1.30 May 10, 2004
+ * @version 1.5 September 16, 2004
  * @author Allen Farris
  */
 public class BestSB {

@@ -61,12 +61,20 @@ public class ALMAProject extends Project {
                         obs.getPI() );
         setTimeOfCreation(new DateTime(System.currentTimeMillis()));
         this.obsProject = obs;
-        this.sbs = getSBRefs(obsProject.getObsProgram().getObsPlan().getObsUnitSetTChoice());
+        if(obsProject.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
+            System.out.println("SCHEDULING: no sbs stuff available in project");
+            this.sbs = new SchedBlockRefT[0];
+        } else {
+            this.sbs = getSBRefs(obsProject.getObsProgram().getObsPlan().getObsUnitSetTChoice());
+        }
         //this.sbs = getSBRefs(obsProject.getObsProgram().getObsUnitSetTChoice());
 
     }
 
     private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) {
+        if(choice == null) {
+            System.out.println("SCHEDULING: choice is null..");
+        }
         if(choice.getObsUnitSetCount() == 0) {
             return choice.getSchedBlockRef();
         } else {

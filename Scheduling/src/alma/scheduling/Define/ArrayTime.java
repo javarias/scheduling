@@ -39,8 +39,6 @@ public class ArrayTime {
     private final long conversion = 12219292800L; //in seconds
     //The array time
 	private long time;
-    //Arraytime converted to unix time.
-    private long unixTime;
 
 	/**
 	 * Create an ArrayTime from a long. The long representing ACSTime
@@ -50,9 +48,45 @@ public class ArrayTime {
         System.out.println("ACS Time = "+time);
 	}
 
+    /**
+     * @return
+     */
     public DateTime arrayTimeToDateTime() {
-        unixTime = (time / 10000) - (conversion * 1000);
+        long unixTime = (time / 10000) - (conversion * 1000);
         System.out.println("Unixtime = "+unixTime);
         return  new DateTime(unixTime);
     }
+     
+    /*
+     * Another method for converting
+     * To convert from ACSTime to MJD:
+     *
+     *  1. Convert the base time to JD. Call it jd1582
+     *      1582-10-15 00:00:00 UT = 2299160.5 JD
+     *      jd1582 = 2299160.5
+     *
+     *  2. convert ACSTime to days and fractions --> call it acsdays
+     *      acsdays = asctime / 864000000000.0
+     *
+     *  3. compute the current time in JD
+     *      currentjd = jd1582 + acsdays
+     *
+     *  4. compute the mjd
+     *      mjd = currentjd - 2400000.5
+     *
+     */
+
+
+        
+    /**
+     * Get the value of the array time as a long.
+     * @return
+     */
+    public long getValue() {
+        return time;
+    }
+
+
+
+    
 }

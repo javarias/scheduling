@@ -70,11 +70,14 @@ public class Status {
 	private DateTime startTime;
 	private DateTime endTime;
 	
-
+/*
     public Status(int s) {
         this.status = s;
         
     }
+    */
+
+
 	/**
 	 * Create a Status object with an initial state of NOT-DEFINED.
 	 */
@@ -133,12 +136,12 @@ public class Status {
 	 * Set the start time, to indicate this unit has begun execution.
 	 */
 	public void setStarted(DateTime time) {
-        /*
+        ///
 		if (startTime != null )
 			throw new UnsupportedOperationException("Cannot set start time!  Component has already been started.");
 		if (readyTime == null || readyTime.gt(time))
 			throw new UnsupportedOperationException("Cannot set 'started' before setting 'ready'.");
-            */
+            ////
 		startTime = new DateTime (time);
 		status = RUNNING;
 	}

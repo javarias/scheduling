@@ -27,16 +27,18 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.xmlentity.XmlEntityStruct;
 
-import alma.scheduling.Define.PipelineProcessingRequest;
+import alma.scheduling.Define.SciPipelineRequest;
 
 /**
  * 
  * @author Sohaila Lucero
  */
-public class ALMAPipelineProcessingRequest extends PipelineProcessingRequest {
+public class ALMAPipelineProcessingRequest extends SciPipelineRequest {
     XmlEntityStruct ppr_struct;
     
+    
     public ALMAPipelineProcessingRequest(XmlEntityStruct ppr) throws Exception {
+        super(new ALMAProgram(), "");
         ppr_struct = ppr;
     }
 

@@ -33,12 +33,30 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version 1.30 May 10, 2004
+ * @version 1.5 September 16, 2004
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
+	
+	// Types of scheduling blocks.
+	public static final int NORMAL = 0;
+	public static final int INTERACTIVE = 1;
+	public static final int MAINTENANCE = 2;
+	public static final int TEST = 3;
+	public static final int VLBI = 4;
+	public static final int OTHER = 9;
+	
+	// The type of scheduling block.
+	private int type;
+	// Required starting time.
+	private TimeInterval requiredStart;
+	// List of relevant antennas.
+	private ArrayList antennaList;
+	
 	// The scheduling block id that identifies this SB.
 	private String schedBlockId;
+	// The statusId associated with this SB.
+	private String sbStatusId;
 	// The project to which this SB belongs.
 	private Project project;
 	// The time this SB was created. 
@@ -57,7 +75,7 @@ public class SB implements ProgramMember {
 	// Note: The total required time is:
 	//			maximumTimeInSeconds * (maximumNumberOfRepeats + 1)
 	
-	// The members of this set are Strings, the ids of the execution records.
+	// The members of this set are ExecBlocks.
 	private ArrayList exec;
 		
 	private Priority scientificPriority;
@@ -83,6 +101,9 @@ public class SB implements ProgramMember {
 	 * @param id The archive-id of the scheduling block that this SB represents.
 	 */
 	public SB(String id) {
+		type = NORMAL;
+		requiredStart = null;
+		antennaList = new ArrayList ();
 		schedBlockId = id;
 		project = null;
 		timeOfCreation = null;
@@ -108,12 +129,65 @@ public class SB implements ProgramMember {
 		lstEnd = -1.0;
 		exec = new ArrayList ();
 	}
+	
+	/**
+	 * Set the type of scheduling block.  The default is NORMAL.
+	 * @param type
+	 */
+	public void setType(int type) {
+		if (type < 0 || type > OTHER)
+			throw new IllegalArgumentException(type + " is not a valid type of SB.");
+		this.type = type;
+	}
+	
+	/**
+	 * Get the type of scheduling block.
+	 * @return
+	 */
+	public int getType() {
+		return type;
+	}
 
 	/**
-	 * Return the internal information about this SB as a string.
+	 * Set the required starting time for fixed-time SBs.
+	 * @param start
+	 */
+	public void setRequiredStart(TimeInterval start) {
+		this.requiredStart = start;
+	}
+	
+	/**
+	 * Get the required starting interval.  If the starting interval
+	 * is nor specified, null is returned.
+	 * @return
+	 */
+	public TimeInterval getRequiredStart() {
+		return requiredStart;
+	}
+	
+	/**
+	 * Add an antenna-is to the list of relevant antennas.
+	 * @param antennaId
+	 */
+	public void addAntenna(String antennaId) {
+		antennaList.add(antennaId);
+	}
+	
+	/**
+	 * Get the list of antennas associated with this SB.
+	 * @return
+	 */
+	public String[] getAntennaList() {
+		String[] s = new String [antennaList.size()];
+		s = (String[])antennaList.toArray(s);
+		return s;
+	}
+	
+	/**
+	 * Return the internal information about this SUnit as a string.
 	 */
 	public String toString() {
-		return "\tSB (" + getId() + "," + getTimeOfCreation() + "," + getTimeOfUpdate() + ") [" +
+		return "\tSUnit (" + getId() + "," + getTimeOfCreation() + "," + getTimeOfUpdate() + ") [" +
 		getProject().getId() + "," + getParent().getId() + "] " +
 		getSchedBlockId() + " " + getScientificPriority() + " " + getTarget() + " " +
 		getCenterFrequency() + " " + getStatus();
@@ -148,10 +222,10 @@ public class SB implements ProgramMember {
 		out.println(indent + "\ttimeOfUpdate " + (timeOfUpdate == null ? "null" : timeOfUpdate.toString()));
 		out.println(indent + "\tstatus " + status.getState());
 		out.println(indent + "\tnumber of executions " + exec.size());
-		String x = null;
+		ExecBlock x = null;
 		for (int i = 0; i < exec.size(); ++i) {
-			x = (String)exec.get(i);
-			out.println(indent + "\t" + x);
+			x = (ExecBlock)exec.get(i);
+			out.println(indent + "\t" + x.getExecId());
 		}
 	}
 
@@ -166,10 +240,10 @@ public class SB implements ProgramMember {
 				" parent " + (parent == null ? "null" : parent.getId()) + 
 				" project " + (project == null ? "null" : project.getId()) + 
 				" status " + status.getStatus());
-		String x = null;
+		ExecBlock x = null;
 		for (int i = 0; i < exec.size(); ++i) {
-			x = (String)exec.get(i);
-			out.println(indent + "\t" + x);
+			x = (ExecBlock)exec.get(i);
+			out.println(indent + "\t" + x.getExecId());
 		}
 		
 	}
@@ -177,42 +251,42 @@ public class SB implements ProgramMember {
 	// Methods related to manipulating execution blocks.
 	
 	/**
-	 * Get the number of executions of this unit.
-	 * @return The number of executions of this unit.
+	 * Get the number of ExecBlocks that belong to this SB.
+	 * @return The number of ExecBlocks that belong to this SB.
 	 */	
 	public int getNumberExec() {
 		return exec.size();
 	}
 	
 	/**
-	 * Add a UnitExec to this Unit.
-	 * @param x The UnitExec to be added.
+	 * Add an ExecBlock to this SB.
+	 * @param x The ExecBlock to be added.
 	 */
 	private void addExec(ExecBlock x) {
 		x.setProject(getProject());
 		x.setParent(this);
-		exec.add(x.getId());
+		exec.add(x);
 	}
 
 	/**
-	 * Return the ids of the execution records that belong to this unit.
-	 * @return the ids of the execution records that belong to this unit.
+	 * Return the ExecBlocks that belong to this SB.
+	 * @return the ExecBlocks that belong to this SB.
 	 */
-	public String[] getExec() {
-		String[] list = new String [exec.size()];
-		return (String[])exec.toArray(list);
+	public ExecBlock[] getExec() {
+		ExecBlock[] list = new ExecBlock [exec.size()];
+		return (ExecBlock[])exec.toArray(list);
 	}
 
 	/**
-	 * Get an execution record id by specifying its index.
-	 * @param index The index of the execution record to be returned.
-	 * @return The execution record id with the specified index
+	 * Get an ExecBlock by specifying its index.
+	 * @param index The index of the ExecBlock to be returned.
+	 * @return The ExecBlock with the specified index
 	 * or null, if there was no such object.
 	 */
-	public String getExec(int index) {
+	public ExecBlock getExec(int index) {
 		if (index < 0 || index >= exec.size())
 			return null; 
-		return (String)(exec.get(index));
+		return (ExecBlock)(exec.get(index));
 	}
 
 	// Methods for manipulating state.
@@ -231,7 +305,7 @@ public class SB implements ProgramMember {
 	
 	/**
 	 * The setStartTime method marks the start of the first time
-	 * this SUnint is executed.  The method sets its own start time
+	 * this SB is executed.  The method sets its own start time
 	 * and informs its parent that this event has occurred.  The information
 	 * flow is upwards -- if the parent has not started, then its start
 	 * time is set and its parent is informed -- all the way up to the
@@ -241,12 +315,12 @@ public class SB implements ProgramMember {
 	 */
 	public void setStartTime(DateTime time) {
 		status.setStarted(time);
-		//parent.unitStarted(this,time);
+		parent.unitStarted(this,time);
 	}
 	
 	/**
 	 * The setStartTime method marks the start of the first time
-	 * this SUnint is executed.  The method sets its own start time
+	 * this SB is executed.  The method sets its own start time
 	 * and informs its parent that this event has occurred.  The information
 	 * flow is upwards -- if the parent has not started, then its start
 	 * time is set and its parent is informed -- all the way up to the
@@ -272,7 +346,7 @@ public class SB implements ProgramMember {
 	 * @param ex The UnitExec object that was produced as a result of its execution.
 	 * 			 This object may be null, which means that the execution produced no
 	 * 			 results that should be attached to this unit.
-	 * @param time The time at which this Unit ended. The startTime of the ExecBlockEvent
+	 * @param time The time at which this Unit ended.
 	 * @param int The state to which this unit should be changed.
 	 */
 	public void execEnd(ExecBlock ex, DateTime time, int state) {
@@ -299,7 +373,7 @@ public class SB implements ProgramMember {
 					// produce some results that are attached to the unit.  The time 
 					// used is not updated.  We still have to inform the parent.
 					// The ony possible state change is to "ready".
-					//parent.execEnd(this,time,0,Status.READY);
+					parent.execEnd(this,time,0,Status.READY);
 					status.setReady();
 				}
 			} else {
@@ -368,7 +442,7 @@ public class SB implements ProgramMember {
 	}
 
 	/**
-	 * @param centerFrequency The frequency to set.
+	 * @param frequency The frequency to set.
 	 */
 	public void setCenterFrequency(double centerFrequency) {
 		this.centerFrequency = centerFrequency;
@@ -588,7 +662,6 @@ public class SB implements ProgramMember {
 	 * @param project The project to set.
 	 */
 	public void setProject(Project project) {
-        System.out.println("SCHEDULING: Project set with id="+project.getId());
 		this.project = project;
 	}
 
@@ -638,6 +711,20 @@ public class SB implements ProgramMember {
 	 */
 	public Status getStatus() {
 		return status;
+	}
+
+	/**
+	 * @return Returns the sbStatusId.
+	 */
+	public String getSbStatusId() {
+		return sbStatusId;
+	}
+
+	/**
+	 * @param sbStatusId The sbStatusId to set.
+	 */
+	public void setSbStatusId(String sbStatusId) {
+		this.sbStatusId = sbStatusId;
 	}
 
 }

@@ -35,14 +35,18 @@ import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.entityutil.*;
 
-import alma.scheduling.Define.Pipeline;
+import alma.scheduling.Define.SciPipeline;
+import alma.scheduling.Define.SciPipelineRequest;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.SchedulingException;
+
 import alma.pipelinescience.SciencePipeline;
 
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
  */
-public class ALMAPipeline implements Pipeline {
+public class ALMAPipeline implements SciPipeline {
     private ContainerServices containerServices;
     private Logger logger;
     private SciencePipeline pipelineComp;
@@ -111,6 +115,25 @@ public class ALMAPipeline implements Pipeline {
             e.printStackTrace();
         }
         return ppr_struct;
+    }
+
+    /**
+      *
+      */
+    public void start(SciPipelineRequest ppr)
+        throws SchedulingException {
+
+        logger.info("SCHEDULING: Starting the science pipeline");
+        processRequest(((ALMAPipelineProcessingRequest)
+                ppr).getPipelineProcessingRequestStruct());
+    }
+    /**
+      *
+      */
+    public Status getStatus(SciPipelineRequest ppr) 
+        throws SchedulingException {
+
+        return null;
     }
 }
 

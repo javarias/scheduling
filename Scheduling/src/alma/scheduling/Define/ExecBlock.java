@@ -30,17 +30,20 @@ import java.io.PrintStream;
 
 
 /**
- * The UnitExec class identifies the execution record resulting from 
+ * The ExecBlock class identifies the execution record resulting from 
  * the execution of a scheduling block.  It contains the entity-id,
  * starting and ending time, and the subarray-id of the subarray
- * that executed it. 
+ * that executed it. This is a wrapper class for the actual ExecBlock
+ * that is defined by the Control system.
  * 
  * @version 1.30 May 10, 2004
  * @author Allen Farris
  */
 public class ExecBlock implements ProjectMember {
-	// The archive id of this entity.
+	// The archive id of this entity -- the entityId of the Data capture generated ExecBlock.
 	private String execId;
+    // The statusId associated with this ExecBlock.
+    private String execStatusId;
 	// The project to which this ExecBlock belongs.
 	private Project project;
 	// The time this ExecBlock was created. 
@@ -221,4 +224,17 @@ public class ExecBlock implements ProjectMember {
 		return status;
 	}
 	
+    /**
+     * @return Returns the execStatusId.
+     */
+    public String getExecStatusId() {
+        return execStatusId;
+    }
+
+    /**
+     * @param execStatusId The execStatusId to set.
+     */
+    public void setExecStatusId(String execStatusId) {
+        this.execStatusId = execStatusId;
+    }
 }

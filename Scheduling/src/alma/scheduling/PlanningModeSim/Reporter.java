@@ -142,9 +142,9 @@ public class Reporter extends BasicComponent {
 		sSuccess = ((sSuccess.length() == 2) ? "      " : "     ") + sSuccess;
 		sRank = ((sRank.length() == 2) ? "      " : "     ") + sRank;
 		int executionNumber = 0;
-		String[] n = sb.getExec();
+		ExecBlock[] n = sb.getExec();
 		for (int i = 0; i < n.length; ++i) {
-			if (n[i].equals(ex.getId())) {
+			if (n[i].getId().equals(ex.getId())) {
 				executionNumber = i;
 				break;
 			}

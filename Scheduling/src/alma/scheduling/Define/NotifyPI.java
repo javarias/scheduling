@@ -3,6 +3,7 @@
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
  * Copyright by AUI (in the framework of the ALMA collaboration),
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or

@@ -33,12 +33,14 @@ import java.io.PrintStream;
  * A Program is a hierarchical tree whose leaves are SB objects. 
  * It is an ObsProgram as viewed by the scheduling subsystem.
  * 
- * @version 1.30 May 10, 2004
+ * @version 1.5 September 16, 2004
  * @author Allen Farris
  */
 public class Program implements ProgramMember {
-	// The unique id of this entity.
+	// The unique id of this entity -- which is the ObsUnitSet part-id.
 	private String programId;
+	// The statusId assoiciated with this Program.
+	private String obsUnitSetStatusId;
 	// The project to which this Program belongs.
 	private Project project;
 	// The time this Program was created. 
@@ -52,6 +54,13 @@ public class Program implements ProgramMember {
 	
 	// The members of this set are either Program or SB objects.
 	private ArrayList member;
+	
+	// The ObservedSessions that belong to this Program.
+	private ArrayList session;
+	
+	// The science pipeline processing request tha belong to this program,
+	// which may be null.
+	private SciPipelineRequest sciPipelineRequest;
 	
 	// The total time required to execute this Program.
 	private int totalRequiredTimeInSeconds;
@@ -73,6 +82,7 @@ public class Program implements ProgramMember {
 	private Priority scientificPriority;
 	private Priority userPriority;
 	private String dataReductionProcedureName;
+	private Object[] dataReductionParameters;
 	private Status pipelineStatus;
 	private FlowControl[] flowControl;
 	private NotifyPI notify;
@@ -93,6 +103,7 @@ public class Program implements ProgramMember {
 		timeOfUpdate = null;
 		status = new Status ();
 		member = new ArrayList ();
+		session = new ArrayList();
 
 		parent = null;
 		totalRequiredTimeInSeconds = 0;
@@ -106,6 +117,7 @@ public class Program implements ProgramMember {
 		scientificPriority = new Priority (Priority.BACKGROUND);
 		userPriority = new Priority (Priority.BACKGROUND);
 		dataReductionProcedureName = "";
+		dataReductionParameters = new Object [0];
 		pipelineStatus = new Status ();
 		flowControl = null;
 		notify = null;
@@ -535,7 +547,29 @@ public class Program implements ProgramMember {
 	public void addMember(SB x) {
 		member.add(x);
 	}
+	
+	// Methods for adding and accessing observed sessions.
+	
+	public int getNumberSession() {
+		return session.size();
+	}
+	
+	public void addObservedSession(ObservedSession s) {
+		session.add(s);
+	}
 
+	public ObservedSession[] getAllSession() {
+		ObservedSession[] x = new ObservedSession [session.size()];
+		x = (ObservedSession[])session.toArray(x);
+		return x;
+	}
+	
+	public ObservedSession getSession(int index) {
+		if (index < 0 || index >= session.size())
+			return null;
+		return (ObservedSession)(session.get(index));
+	}
+	
 	/**
 	 * Increment the time used by the specified number of seconds.
 	 * @param totalUsedTimeInSeconds The timeInSeconds to be added to the total time used.
@@ -553,14 +587,14 @@ public class Program implements ProgramMember {
 	/**
 	 * @return Returns the centerFrequency.
 	 */
-	public double getFrequency() {
+	public double getCenterFrequency() {
 		return centerFrequency;
 	}
 
 	/**
 	 * @param centerFrequency The center frequency to set.
 	 */
-	public void setFrequency(double centerFrequency) {
+	public void setCenterFrequency(double centerFrequency) {
 		this.centerFrequency = centerFrequency;
 	}
 
@@ -855,6 +889,48 @@ public class Program implements ProgramMember {
 	 */
 	public Status getStatus() {
 		return status;
+	}
+
+	/**
+	 * @return Returns the dataReductionParameters.
+	 */
+	public Object[] getDataReductionParameters() {
+		return dataReductionParameters;
+	}
+
+	/**
+	 * @param dataReductionParameters The dataReductionParameters to set.
+	 */
+	public void setDataReductonParameters(Object[] dataReductionParameters) {
+		this.dataReductionParameters = dataReductionParameters;
+	}
+
+	/**
+	 * @return Returns the sciPipelineRequest.
+	 */
+	public SciPipelineRequest getSciPipelineRequest() {
+		return sciPipelineRequest;
+	}
+
+	/**
+	 * @param sciPipelineRequest The sciPipelineRequest to set.
+	 */
+	public void setSciPipelineRequest(SciPipelineRequest sciPipelineRequest) {
+		this.sciPipelineRequest = sciPipelineRequest;
+	}
+
+	/**
+	 * @return Returns the obsUnitSetStatusId.
+	 */
+	public String getObsUnitSetStatusId() {
+		return obsUnitSetStatusId;
+	}
+
+	/**
+	 * @param obsUnitSetStatusId The obsUnitSetStatusId to set.
+	 */
+	public void setObsUnitSetStatusId(String obsUnitSetStatusId) {
+		this.obsUnitSetStatusId = obsUnitSetStatusId;
 	}
 
 }

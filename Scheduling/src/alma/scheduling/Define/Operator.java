@@ -80,7 +80,7 @@ public interface Operator {
 	 */
 	public boolean confirmSubarrayCreation (String[] antennaId);
 
-
+    /*
    class SelectSBTimer implements Runnable {
         private long delay;
         
@@ -95,5 +95,6 @@ public interface Operator {
             }
         }
     }
+   */
 
 }

@@ -3,6 +3,7 @@
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
  * Copyright by AUI (in the framework of the ALMA collaboration),
+ * Copyright by ESO (in the framework of the ALMA collaboration),
  * All rights reserved.
  * 
  * This library is free software; you can redistribute it and/or
@@ -91,6 +92,10 @@ public class Date {
 		return year + "-" + month + "-" + day; 
 	}
 
+    /**
+     * A unit test of the Date class.
+     * @param args none
+     */
 	public static void main(String[] args) {
 		Date d = new Date (2003,7,2); System.out.println("The date is " + d + ".");
 		d = new Date (1999,12,31); System.out.println("The date is " + d + ".");

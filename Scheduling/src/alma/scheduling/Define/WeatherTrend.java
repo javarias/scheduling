@@ -27,7 +27,7 @@
 package alma.scheduling.Define;
 
 /**
- * The WeatherTrend class create a structure for housing weather 
+ * The WeatherTrend class create a structure for housing current weather 
  * data in a circular buffer.  The size of the buffer may be specified. 
  * (The default is an array of 50 items.)  There are two major methods,
  * store and get.  The store method stores weather data in

@@ -52,6 +52,7 @@ import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.obsproject.*;
 import alma.entity.xmlbinding.obsproject.types.*;            
 import alma.entities.generalincludes.*;
+import alma.entities.commonentity.*;
 
 
 /**
@@ -116,6 +117,7 @@ public class ALMAArchive implements Archive {
                     tmp_projects.add(convertToProject1(res));
                 }catch(Exception e) {
                     logger.severe("SCHEDULING: "+e.toString());
+                    e.printStackTrace();
                     throw new SchedulingException (e);
                 }
             }
@@ -136,7 +138,7 @@ public class ALMAArchive implements Archive {
       * @return An array of all the project status objects
       * @throws SchedulingExceptino
       */
-    public ProjectStatus[] getAllProjectStatus() throws SchedulingException {
+    public ProjectStatus[] getAllProjectStatus(Project[] projects) throws SchedulingException {
         ProjectStatus[] projectStatus = null;
         Vector tmp_ps = new Vector();
         String query = new String("/ps:ProjectStatus");
@@ -149,11 +151,12 @@ public class ALMAArchive implements Archive {
                 logger.severe("SCHEDULING: cursor was null when querying project status");
                 return null;
             } else {
-                logger.info("SCHEDULING: cursor was not null.");
+                logger.info("SCHEDULING: cursor was not null when querying PS.");
             }
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
                 try{
+                    logger.info("SCHEDULING: PS now being converted.");
                     tmp_ps.add(convertToProjectStatus1(res));
                 } catch(Exception e) {
                     logger.severe("SCHEDULING: "+e.toString());
@@ -164,40 +167,127 @@ public class ALMAArchive implements Archive {
              logger.severe("SCHEDULING: "+e.toString());
              throw new SchedulingException(e);
         }
+        logger.info("######################################");
+        logger.info("SCHEDULING: # of PS in archive = "+tmp_ps.size());
+        logger.info("######################################");
+        for(int i=0; i < tmp_ps.size(); i++) {
+            logger.info("Current PS = "+
+                ((ProjectStatus)tmp_ps.elementAt(i)).getProjectStatusEntity().getEntityId()
+                    + " belongs to project "+
+                        ((ProjectStatus)tmp_ps.elementAt(i)).getObsProjectRef().getEntityId());
+        }
         /**
           * Temporary:
           *     For R2, check to see if there is a project status for each
           *     project. If there exists a project that doesn't have a project
           *     status a new one is created and stored in the archive. 
           */
-        Project[] tmpProjects = getAllProject();
-        if(tmpProjects.length < projectStatus.length) {
+        //Project[] tmpProjects = getAllProject();
+        Project[] tmpProjects = projects;
+        if(tmpProjects.length < tmp_ps.size()) {
+            logger.severe("SCHEDULING: tmp_ps greater than tmpProjects!");
             throw new SchedulingException("Cannot have more Project Status objects "+
                     "than there are Project Objects in the archive!");
-        }
-        if(tmpProjects.length == projectStatus.length) { 
+        } else if(tmpProjects.length == tmp_ps.size()) { 
+            logger.info("SCHEDULING: tmp_ps equal to tmpProjects!");
             //same number for each, double check they match up!
             boolean ok = true;
             for(int i=0; i < tmpProjects.length; i++){
-                for(int j=0; j < projectStatus.length; j++){
-                    if(tmpProjects[i].getId() ==
-                            projectStatus.getProjectStatusEntity().getEntityId()) {
+                for(int j=0; j < tmp_ps.size(); j++){
+                    System.out.println("project id = "+ tmpProjects[i].getId());
+                    System.out.println("ps project id = "+ ((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId());
+                    if(tmpProjects[i].getId().equals(((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId())) {
+                            //WRONG! ((ProjectStatus)tmp_ps.elementAt(j)).getProjectStatusEntity().getEntityId()) 
                         //yes this project has a Project status!
                         //break this for loop and go to next project now
+                        System.out.println("yes they are equal!");
                         ok = true;
                         break;
                     } else {
+                        System.out.println("no not equal!");
                         //this project doesn't match this project status
                         //try again
                         ok = false;
-                        //if this is the last project in the array we have run into a problem!
-                        //must figure out a way to correct this.. 
+                        //if this is the last one there's a problem! 
+                        //gotta figure out a way to recover from this...
                     }
                 }
+                 
+                if(!ok) {
+                    throw new SchedulingException(
+                            "SCHEDULING: Project/ProjectStatus length's match but actual objects do not match! ");
+                
+                }
             }
-        } else (tmpProjects.length > projectStatus.length) {
+            logger.info("SCHEDULING: tmp_ps equal to tmpProjects! exiting everything ok!");
+        } else if(tmpProjects.length > tmp_ps.size()) {
+            logger.info("SCHEDULING: tmp_ps less than tmpProjects!");
             //more projects than project status.. 
             //create a project status & store in archive for project that doesn't have one.
+            boolean ok=true;
+            for(int i=0; i < tmpProjects.length; i++) {
+                if(tmp_ps.size() == 0 ){
+                    //No project status's at all!
+                    logger.info("SCHEDULING: there were no project status objects in the archive");
+                    ok = false;
+                    //break; 
+                } else {
+                    for (int j=0; j < tmp_ps.size(); j++){
+                        if(tmpProjects[i].getId().equals(
+                                    ((ProjectStatus)tmp_ps.elementAt(j)).getObsProjectRef().getEntityId())) {
+                        //if(tmpProjects[i].getId() ==
+                                //WRONG!((ProjectStatus)tmp_ps.elementAt(j)).getProjectStatusEntity().getEntityId()) {
+                            //project has a projectStatus already
+                            logger.info("PS-sched: project "+tmpProjects[i].getId()+" has a PS");
+                            ok = true;
+                            break;
+                        } else {
+                            logger.info("PS-sched: project "+tmpProjects[i].getId()+" doesn't have a PS");
+                            ok = false;
+                        }
+                    }
+                }
+                
+                if(!ok) {
+                    logger.info("SCHEDULING: creating a project status for a project");
+                    //project doesn't have a ProjectStatus, so create one for it now and archive it
+                    ProjectStatus newPS = alma.scheduling.ProjectStatusUtil.createProjectStatus(
+                            tmpProjects[i].getId());
+                    logger.info("ps-sched: creating ps for project "+ tmpProjects[i].getId() );
+
+                    try {
+                        containerServices.assignUniqueEntityId(newPS.getProjectStatusEntity());
+                    } catch(ContainerException ce) {
+                        throw new SchedulingException(
+                                "SCHEDULING: error assinging UID to new ProjectStatus entity");
+                    }
+                    try {
+                        XmlEntityStruct ps_xml = entitySerializer.serializeEntity(
+                            newPS, newPS.getProjectStatusEntity());
+                        archOperationComp.store(ps_xml);
+                    } catch(EntityException ee) {
+                        throw new SchedulingException(
+                                "SCHEDULING: error serializing ProjectStatus entity.");
+                    } catch(IllegalEntity e) {
+                        logger.severe("SCHEDULING: illegal entity error");
+                        e.printStackTrace();
+                    } catch(ArchiveInternalError e) {
+                        logger.severe("SCHEDULING: ArchiveInternalError");
+                        e.printStackTrace();
+                    }
+                    tmp_ps.add(newPS);
+                }
+            }
+            
+        }
+        //now convert the tmp_ps vector into that ProjectStatus array to be returned.
+        projectStatus = new ProjectStatus[tmp_ps.size()];
+        for(int i=0; i < tmp_ps.size(); i++) {
+            projectStatus[i] = (ProjectStatus)tmp_ps.elementAt(i);
+        }
+        if(projectStatus.length != tmpProjects.length) {
+            throw new SchedulingException(
+                    "SCHEDULING: ERROR in projectStatus vs project length matches.");
         }
         return projectStatus;
     }
@@ -327,7 +417,7 @@ public class ALMAArchive implements Archive {
         SB sb = null;
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
-            //System.out.println(xml.xmlString);
+            //System.out.println("SB: "+xml.xmlString);
             sb = convertToSB2(xml);
             //XmlEntityStruct xml = archOperationComp.retrieve(id);
             //XmlEntityStruct xml = archOperationComp.updateRetrieve(id);
@@ -369,7 +459,7 @@ public class ALMAArchive implements Archive {
 
     // PipelineProcessingRequest
 
-    public void storePipelineProcessingRequest(PipelineProcessingRequest p) {
+    public void storePipelineProcessingRequest(SciPipelineRequest p) {
         try {
             ALMAPipelineProcessingRequest ppr = (ALMAPipelineProcessingRequest)p;
             XmlEntityStruct ppr_struct = ppr.getPipelineProcessingRequestStruct();
@@ -584,9 +674,8 @@ public class ALMAArchive implements Archive {
         Project proj = null;
         try {
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(proj_id);
-            //System.out.println(xml_struct.xmlString);
             proj = convertToProject2(xml_struct);
-            //System.out.println(xml_struct.xmlString);
+            System.out.println("Project: "+xml_struct.xmlString);
         } catch (MalformedURI e) { 
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
@@ -710,7 +799,10 @@ public class ALMAArchive implements Archive {
         ProjectStatus ps = null;
         try{
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(ps_id);
-            ps = convertToProjectStatus2(xml_struct);
+            logger.info("project status" + xml_struct.xmlString);
+            ps = (alma.entity.xmlbinding.projectstatus.ProjectStatus)
+                    entityDeserializer.deserializeEntity(xml_struct, Class.forName(
+                        "alma.entity.xmlbinding.projectstatus.ProjectStatus"));
         } catch (MalformedURI e) { 
             logger.severe("SCHEDULING: "+e.toString());
             throw new Exception (e);
@@ -729,8 +821,9 @@ public class ALMAArchive implements Archive {
         return ps;
     }
 
+    /*
     private ProjectStatus convertToProjectStatus2(XmlEntityStruct xml) throws Exception {
-        ALMAProjectStatus almaps = null;
+        ProjectStatus almaps = null;
         try {
             alma.entity.xmlbinding.projectstatus.ProjectStatus ps =
                 (alma.entity.xmlbinding.projectstatus.ProjectStatus)
@@ -743,6 +836,7 @@ public class ALMAArchive implements Archive {
         }
         return almaps;
     }
+    */
 
     /**
      * Temporary function for updating the sb in the archive.
@@ -751,6 +845,7 @@ public class ALMAArchive implements Archive {
         SchedBlock sb =null;
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            logger.info(xml.xmlString); //not poll archive
             sb = (SchedBlock) 
                 entityDeserializer.deserializeEntity(xml, Class.forName(
                     "alma.entity.xmlbinding.schedblock.SchedBlock"));
