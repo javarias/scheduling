@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.35 2005/03/30 19:28:50 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.36 2005/04/12 16:39:54 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -473,7 +473,13 @@ public class ALMAProjectManager extends ProjectManager {
         String projectid = proj.getId();
         ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
-        ObsUnitSetStatusT set = searchSets(obsProgram.getObsUnitSetStatusTChoice().getObsUnitSetStatus(), execid);
+        //ObsUnitSetStatusT set = searchSets(obsProgram.getObsUnitSetStatusTChoice().getObsUnitSetStatus(), execid);
+        ObsUnitSetStatusT[] tmp = new ObsUnitSetStatusT[1];
+        tmp[0] = obsProgram;
+        ObsUnitSetStatusT set = searchSets(tmp, execid);
+        if(set == null) {
+            logger.severe("SCHEDULING: PM: returned set is null! (looking for session)");
+        }
         SessionT[] sessions = set.getSession();
         logger.info("SCHEDULING: in PM getSession, length = "+sessions.length);
         if(sessions.length != 0) {//if this is the wrong set of sessions i screwed up..
