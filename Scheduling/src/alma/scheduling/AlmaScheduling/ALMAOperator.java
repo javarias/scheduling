@@ -71,6 +71,7 @@ public class ALMAOperator implements Operator {
       * @param String
       */
     public void send(String message) {
+        /*
         try{
             execOperator = alma.exec.OperatorHelper.narrow(
                     containerServices.getComponent("EXEC_OPERATOR"));
@@ -81,6 +82,7 @@ public class ALMAOperator implements Operator {
             logger.severe("SCHEDULING: error sending message to Telescope Operator");
             e.printStackTrace();
         }
+        */
     }
 
     /**

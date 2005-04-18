@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.36 2005/04/12 16:39:54 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.37 2005/04/18 17:35:16 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -98,9 +98,13 @@ public class ALMAProjectManager extends ProjectManager {
                 logger.info("SCHEDULING: ProjectManager Interrupted!");
             }
             if(!stopCommand){
-                pollArchive();
+                pQueue.add(pollArchive());
             }
         }
+    }
+
+    public void checkForProjectUpdates() {
+        pQueue.add(pollArchive());
     }
 
     /** 
