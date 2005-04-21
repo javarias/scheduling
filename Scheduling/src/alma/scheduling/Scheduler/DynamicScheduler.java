@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.5 2005/03/30 18:39:58 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.6 2005/04/21 17:39:50 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -306,8 +306,8 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     //    config.getProjectManager().createObservedSession(
                     //            selectedSB.getParent());
                     //config.getProjectManager().sendStartSessionEvent(session);
-      		        config.getControl().execSB(config.getSubarrayId(), best);
                     selectedSB.setRunning();
+      		        config.getControl().execSB(config.getSubarrayId(), best);
                 } else {
                     logger.info("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...
