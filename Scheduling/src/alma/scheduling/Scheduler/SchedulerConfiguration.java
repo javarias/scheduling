@@ -65,7 +65,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> The scheduling policy
  * <li> The number of units in the "best" list
  * <li> The time, in seconds, for the scheduler to sleep between intervals
- * <li> The id of the subarray to which this scheduler is assigned
+ * <li> The name of the array to which this scheduler is assigned
  * <li> The logger
  * </ul>
  * There are a number of variables used to give an indication of work done
@@ -107,7 +107,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.6 2005/03/30 18:39:58 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.7 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -123,8 +123,8 @@ public class SchedulerConfiguration extends TaskControl {
 	private int bestNumber;
 	// The time, in seconds, for the scheduler to sleep between intervals.
 	private int sleepTime;
-	// The id of the subarray to which this scheduler is assigned.
-	private short subarrayId;
+	// The name of the array to which this scheduler is assigned.
+	private String arrayName;
 	// The clock.
 	private Clock clock;
 	// The control system component.
@@ -234,7 +234,7 @@ public class SchedulerConfiguration extends TaskControl {
 	 */
 	public SchedulerConfiguration(Thread masterScheduler,
 			boolean dynamic, boolean synchronous, SBQueue queue, int bestNumber,
-            int sleepTime, short subarrayId, Clock clock, Control control,
+            int sleepTime, String name, Clock clock, Control control,
 			Operator operator, Telescope telescope, 
 			ProjectManager projectManager, Policy policy, Logger log) {
            
@@ -249,7 +249,7 @@ public class SchedulerConfiguration extends TaskControl {
         }
 		this.bestNumber = bestNumber;
 		this.sleepTime = sleepTime;
-		this.subarrayId = subarrayId;
+		this.arrayName = name;
 		this.clock = clock;
 		this.control = control;
 		this.operator = operator; 
@@ -535,8 +535,8 @@ public class SchedulerConfiguration extends TaskControl {
 	/**
 	 * @return
 	 */
-	public short getSubarrayId() {
-		return subarrayId;
+	public String getArrayName() {
+		return arrayName;
 	}
 
 	/**

@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version $Id: Control.java,v 1.7 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Control.java,v 1.8 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public interface Control {
@@ -39,39 +39,39 @@ public interface Control {
 	/**
 	 * Execute the selected SB with the specified identifier on the specified 
 	 * sub-array at the specified time.
-	 * @param subarrayId The subarray on which to execute the SB.
+	 * @param name The array on which to execute the SB.
 	 * @param best The array of choices to be executed.
 	 * @param time The time at which the SB is to be started.
 	 */
-	public void execSB(short subarrayId, BestSB best, DateTime time)
+	public void execSB(String name, BestSB best, DateTime time)
 		throws SchedulingException;
 
 	/**
 	 * Execute the selected SB with the specified identifier on the specified 
 	 * sub-array immediately.
-	 * @param subarrayId The subarray on which to execute the SB.
+	 * @param name The array on which to execute the SB.
 	 * @param best The array of choices to be executed.
 	 */
-	public void execSB(short subarrayId, BestSB best)
+	public void execSB(String name, BestSB best)
 		throws SchedulingException;
 
 	/**
 	 * Execute the selected SB with the specified identifier on the specified 
 	 * sub-array immediately.
-	 * @param subarrayId The subarray on which to execute the SB.
+	 * @param name The array on which to execute the SB.
 	 * @param bestSB The string id of the best sb to schedule now
      */
-	public void execSB(short subarrayId, String bestSB)
+	public void execSB(String name, String bestSB)
 		throws SchedulingException;
 	 
 
        
 	/**
 	 * Stop the currently executing SB.
-	 * @param subarrayId The subarray on which the SB is currently executing.
+	 * @param name The array on which the SB is currently executing.
 	 * @param id The entity-id of the SB to stop.
 	 */
-	public void stopSB(short subarrayId, String id)
+	public void stopSB(String name, String id)
 		throws SchedulingException;
 	
 	/**
@@ -79,14 +79,14 @@ public interface Control {
 	 * @param antenna The list of antennas that are to make up the sub-array.
 	 * @return The id of the newly created sub-array. 
 	 */
-	public short createSubarray(String[] antenna)
+	public String createArray(String[] antenna)
 		throws SchedulingException;
 	
 	/**
 	 * Destroy a current sub-array.
-	 * @param subarrayId The id of the sub-array to be destroyed. 
+	 * @param name The id of the sub-array to be destroyed. 
 	 */
-	public void destroySubarray(short subarrayId)
+	public void destroyArray(String name)
 		throws SchedulingException;
 
 	/**
@@ -94,7 +94,7 @@ public interface Control {
 	 * @return The list of sub-array ids that are currently active.  This number
 	 * may be zero. 
 	 */
-	public short[] getActiveSubarray()
+	public String[] getActiveArray()
 		throws SchedulingException;
 	
 	/**
@@ -107,10 +107,10 @@ public interface Control {
 	
 	/**
 	 * Get the list of antennas currently allocated to the specified sub-array.
-	 * @param subarrayId The sub-array of interest.
+	 * @param name The array of interest.
 	 * @return The list of antenna ids currently allocated to the specified sub-array.
 	 */
-	public String[] getSubarrayAntennas(short subarrayId)
+	public String[] getArrayAntennas(String name)
 		throws SchedulingException;
 
 }

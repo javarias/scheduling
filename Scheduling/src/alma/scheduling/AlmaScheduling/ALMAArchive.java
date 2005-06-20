@@ -30,7 +30,6 @@ import java.util.Vector;
 
 import alma.scheduling.Define.*;
 
-import alma.Control.ExecBlockEvent;
 import alma.xmlentity.XmlEntityStruct;
 
 import alma.acs.container.ContainerServices;
@@ -60,7 +59,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.36 2005/02/28 19:12:38 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.37 2005/06/20 20:58:09 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -720,7 +719,7 @@ public class ALMAArchive implements Archive {
     public void updateSB(ControlEvent ce) throws SchedulingException{
         try {
             SB sb = getSB(ce.getSBId());
-            ExecBlock eb = new ExecBlock(ce.getEBId(), ce.getSAId());
+            ExecBlock eb = new ExecBlock(ce.getEBId(), ce.getArrayName());
             //sb.execEnd(eb, ce.getStartTime(), 5);
             //sb.getStatus().setEnded(ce.getStartTime(), 5);
             //SchedBlock schedblock = getSBfromArchive(ce.getSBId());

@@ -37,8 +37,9 @@ import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
 import alma.acs.util.UTCUtility;
 
-import alma.Control.ExecBlockEvent;
-import alma.Control.ControlSystemStatusEvent;
+import alma.Control.ExecBlockStartedEvent;
+import alma.Control.ExecBlockEndedEvent;
+//import alma.Control.ControlSystemStatusEvent;
 import alma.TelCalPublisher.FocusReducedEvent;
 import alma.TelCalPublisher.PointingReducedEvent;
 import alma.pipelinescience.ScienceProcessingDoneEvent;
@@ -57,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.24 2005/03/30 18:39:58 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.25 2005/06/20 20:58:09 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -87,60 +88,57 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     //  Receive functions for each event type
     ///////////////////////////////////////////////////////////////////////////
     /**
-     * When an ExecBlockEvent is received by the scheduling subsystem it is
+     * When an ExecBlockStartedEvent is received by the scheduling subsystem it is
      * received here and the type is determined. Once the type is determined 
      * the appropriate action is taken.
      * 
      *
-     * @param ExecBlockEvent The event sent out by the control subsystem.
+     * @param ExecBlockStartedEvent The event sent out by the control subsystem.
      */ 
-    public void receive(ExecBlockEvent e) {
+    public void receive(ExecBlockStartedEvent e) {
         //the processes below are still being thought out and may not be the
         //best way to do what needs to be done.
         try {
-        logger.info("SCHEDULING: Starting to process the control event");
-        ExecBlock eb = null;
-        switch(e.type.value()) {
-            case 0:
-                logger.info("SCHEDULING: Event reason = started");
-                logger.info("SCHEDULING: Received sb start event from control.");
-                //create an execblock internal to scheduling. 
-                eb = createExecBlock(e);
-                DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
-                eb.setStartTime(startEb);
-                eb.setTimeOfCreation(startEb);
-                eb.setTimeOfUpdate(startEb);
-                currentEB.add(eb);
-                //send out a start session event.
-                startSession(eb);
-                break;
-            case 1:
-                logger.info("SCHEDULING: Event reason = end");
-                logger.info("SCHEDULING: Received sb end event from control.");
-                //create a control event internal to scheduling.
-                //this object contains the info from controls event which sched wants
-                ControlEvent ce = new ControlEvent(e.execID, e.sbId, e.saId, 
-                    e.type.value(), e.status.value(), new DateTime(
-                        UTCUtility.utcOmgToJava(e.startTime)));
-                //update the sb with the new info from the event
-                updateSB(ce);
-                //eb = createExecBlock(e);
-                eb = retrieveExecBlock(e.execID);
-                DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
-                eb.setEndTime(endEb, Status.COMPLETE);
-                eb.setTimeOfUpdate(endEb);
-                //send out an end session event
-                endSession(eb);
-                sbCompleted(eb);
-                startPipeline(ce);
-                deleteFinishedEB(eb);
-                break;
-            default: 
-                logger.severe("SCHEDULING: Event reason = error");
-                break;
-        }
+            logger.info("SCHEDULING: Event reason = started");
+            logger.info("SCHEDULING: Received sb start event from control.");
+            //create an execblock internal to scheduling. 
+            ExecBlock eb = createExecBlock(e);
+            DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
+            eb.setStartTime(startEb);
+            eb.setTimeOfCreation(startEb);
+            eb.setTimeOfUpdate(startEb);
+            currentEB.add(eb);
+            //send out a start session event.
+            startSession(eb);
         } catch(Exception ex) {
-            logger.severe("SCHEDULING: Error receiving and processing ExecBlockEvent.");
+            logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
+            ex.printStackTrace();
+        }
+    }
+
+    public void receive(ExecBlockEndedEvent e) {
+        try{
+            logger.info("SCHEDULING: Event reason = end");
+            logger.info("SCHEDULING: Received sb end event from control.");
+            //create a control event internal to scheduling.
+            //this object contains the info from controls event which sched wants
+            ControlEvent ce = new ControlEvent(e.execId, e.sbId, e.arrayName, 
+                 e.status.value(), new DateTime(
+                    UTCUtility.utcOmgToJava(e.endTime)));
+            //update the sb with the new info from the event
+            updateSB(ce);
+            //eb = createExecBlock(e);
+            ExecBlock eb = retrieveExecBlock(e.execId);
+            DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
+            eb.setEndTime(endEb, Status.COMPLETE);
+            eb.setTimeOfUpdate(endEb);
+            //send out an end session event
+            endSession(eb);
+            sbCompleted(eb);
+            startPipeline(ce);
+            deleteFinishedEB(eb);
+        } catch(Exception ex) {
+            logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace();
         }
 
@@ -150,10 +148,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * Event sent by the control system indication what the status of the control
      * system is.
      * @param ControlSystemStatusEvent
-     */
     public void receive(ControlSystemStatusEvent e) {
         logger.info("SCHEDULING: Received Control System's status event.");
     }
+     */
 
     /**
      * When the scheduling subsystem receives the ScienceProcessingRequestEnd event
@@ -193,9 +191,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * @param ExecBlockEvent
       * @return ExecBlock Internal obj to scheduling, contains the info we want from control
       */
-    private ExecBlock createExecBlock(ExecBlockEvent event) {
+    private ExecBlock createExecBlock(ExecBlockStartedEvent event) {
         // System.out.println("EXECBLOCK in event id = "+event.execID);
-        ExecBlock eb = new ExecBlock(event.execID, event.saId);
+        ExecBlock eb = new ExecBlock(event.execId, event.arrayName);
         // do this to get SB id over to PM, will be replaced with proper SB
         eb.setParent(new SB(event.sbId));
         return eb;

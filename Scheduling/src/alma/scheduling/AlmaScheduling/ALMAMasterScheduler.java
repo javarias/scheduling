@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.24 2005/04/18 17:35:16 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.25 2005/06/20 20:58:09 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -123,7 +123,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.msThread.start();
         
         this.containerServices = cs;
-        this.instanceName = containerServices.getComponentInstanceName();
+        this.instanceName = containerServices.getName();
         this.logger = containerServices.getLogger();
 
         this.archive = new ALMAArchive(containerServices);
@@ -312,11 +312,11 @@ public class ALMAMasterScheduler extends MasterScheduler
         //TODO Eventually populate s_policy with info from the schedulingPolicy
         Policy s_policy = createPolicy();
         
-        short subarrayId = createSubarray(new short[0], "dynamic");
+        String arrayname = createArray(new short[0], "dynamic");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
-            subarrayId, clock, control, operator, telescope, manager, s_policy, 
+            arrayname, clock, control, operator, telescope, manager, s_policy, 
             logger);
         DynamicScheduler scheduler = new DynamicScheduler(config);
         Thread scheduler_thread = new Thread(scheduler);
@@ -336,7 +336,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         if(!config.isOperational()) {
             logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
         }
-        destroySubarray(subarrayId);
+        destroyArray(arrayname);
     }
 
     /**
@@ -351,13 +351,13 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         sbQueue = new SBQueue(sbs);
         
-        short subarrayId = createSubarray(new short[0], "interactive");
+        String arrayname = createArray(new short[0], "interactive");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), false, true, sbQueue, sbQueue.size(), 0, 
-            subarrayId, clock, control, operator, telescope, manager, s_policy, 
+            arrayname, clock, control, operator, telescope, manager, s_policy, 
             logger);
-        System.out.println("subarray id == "+subarrayId);
+        logger.info("SCHEDULING: Array name == "+arrayname);
         GUIController interactiveGUI = new GUIController(config);
         Thread scheduler_thread = new Thread(interactiveGUI);
         scheduler_thread.start();
@@ -438,27 +438,27 @@ public class ALMAMasterScheduler extends MasterScheduler
     /**
       * @return SchedulingInfo
       */
-    public SchedulingInfo getSubarrayInfo() {
+    public SchedulingInfo getArrayInfo() {
         return null;
     }
 
     /**
       * @param short[]
       * @param String
-      * @return short
+      * @return String
       * @throws InvalidOperation
       */
-    public short createSubarray(short[] antennaIdList, String schedulingMode)
+    public String createArray(short[] antennaIdList, String schedulingMode)
         throws InvalidOperation {
         
-        short subarrayId=0;
+        String name;
         try {             
             String[] idleAntennas = control.getIdleAntennas();
-            subarrayId = control.createSubarray(idleAntennas);
+            name = control.createArray(idleAntennas);
         } catch(SchedulingException e) {
             throw new InvalidOperation();
         }
-        return subarrayId;
+        return name;
     }
 
 
@@ -466,9 +466,9 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @param short
       * @throws InvalidOperation
       */
-    public void destroySubarray(short subarrayId) throws InvalidOperation {
+    public void destroyArray(String name) throws InvalidOperation {
         try {
-            control.destroySubarray(subarrayId);
+            control.destroyArray(name);
         } catch(SchedulingException e) {
             throw new InvalidOperation();
         }
@@ -479,7 +479,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @param short
       * @throws InvalidOperation
       */
-    public void executeProject(String projectId, short subarrayId)
+    public void executeProject(String projectId, String name)
         throws InvalidOperation {
     }
 
@@ -488,9 +488,9 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @param short
       * @param String
       */
-    public void executeSB(String sbId, short subarrayId, String when) {
-        logger.info ("SCHEDULING: executing SB "+sbId+" on subarray "
-                +subarrayId+" at time "+when);
+    public void executeSB(String sbId, String name, String when) {
+        logger.info ("SCHEDULING: executing SB "+sbId+" on array "
+                +name+" at time "+when);
     }
 
     /**
@@ -504,17 +504,17 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     /**
-     * Pauses all scheduling activity on the given subarray.
-     * @param short The Subarray ID
+     * Pauses all scheduling activity on the given array.
+     * @param String The Array name
      */
-    public void pauseScheduling(short subarrayId) {
+    public void pauseScheduling(String name) {
         logger.info("SCHEDULING: Pause Scheduling not implemented yet.");
     }
 
     /**
       * @param short
       */
-    public void resumeScheduling(short subarrayId) {
+    public void resumeScheduling(String name) {
     }
 
     /**

@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * data about the telescope, including site characteristics, accumulated 
  * weather data, and the current state of antennas and allocated subarrays.
  * 
- * @version $Id: Telescope.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Telescope.java,v 1.5 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public abstract class Telescope {
@@ -135,11 +135,11 @@ public abstract class Telescope {
 	 * @param subarrayId
 	 * @return
 	 */	
-	public synchronized Subarray getSubarray(int subarrayId) {
+	public synchronized Subarray getArray(String name) {
 		Subarray x = null;
 		for (int i = 0; i < subarray.size(); ++i) {
 			x = (Subarray)subarray.get(i);
-			if (x.getSubarrayId() == subarrayId)
+			if (x.getArrayName() == name)
 				break;
 		}
 		return x;

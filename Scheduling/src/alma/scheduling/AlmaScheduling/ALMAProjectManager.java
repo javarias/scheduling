@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.37 2005/04/18 17:35:16 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.38 2005/06/20 20:58:09 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -155,7 +155,7 @@ public class ALMAProjectManager extends ProjectManager {
                     ids = sbQueue.getAllIds();
                     String tmp_id = sbs[j].getId();
                     if(ids.length == 0) { //nothing in the SBQueue
-                        System.out.println("SCHEDULING: id's length == 0");
+                        logger.info("SCHEDULING: id's length == 0");
                         sb_present = false;
                     }
                     for(int k=0; k < ids.length; k++) {
@@ -170,7 +170,7 @@ public class ALMAProjectManager extends ProjectManager {
                         }
                     }
                     if(!sb_present){
-                        System.out.println("SCHEDULING: sbpresent false; adding "+tmp_id +" to queue");
+                        logger.info("SCHEDULING: sbpresent false; adding "+tmp_id +" to queue");
                         sbQueue.add(sbs[j]);
                     }
                 }
@@ -348,7 +348,8 @@ public class ALMAProjectManager extends ProjectManager {
         Program prog =  addProgram(p);
         Project proj = prog.getProject();
         if(proj == null) {
-            System.out.println("program was null!!!");
+            logger.info("SCHEDULING: project was null!!!"); //should never happen.
+            //throw new Exception("SCHEDULING: Error with project structure!"); TODO Add this eventually
         }
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
@@ -521,7 +522,7 @@ public class ALMAProjectManager extends ProjectManager {
         ExecBlockRefT[] execblocks = ses.getExecBlockRef();
         for(int i=0; i < execblocks.length; i++){
             if (execblocks[i].getExecBlockId().equals(ebid)){
-                System.out.println("Session found! returning true");
+                logger.info("SCHEDULING: Session found! returning true");
                 return true;
             }
         }
@@ -540,7 +541,7 @@ public class ALMAProjectManager extends ProjectManager {
             ExecBlockRefT[] execblocks = all[i].getExecBlockRef();
             for(int j=0; j < execblocks.length; j++){
                 if (execblocks[j].getExecBlockId().equals(execid)){
-                    System.out.println("Session found! returning true");
+                    logger.info("SCHEDULING: Session found! returning true");
                     return true;
                 }
             }
@@ -560,7 +561,7 @@ public class ALMAProjectManager extends ProjectManager {
             ExecBlockRefT[] execblocks = session.getExecBlockRef();
             for(int j=0; j < execblocks.length; j++){
                 if (execblocks[j].getExecBlockId().equals(execid)){
-                    System.out.println("Session found! returning session");
+                    logger.info("SCHEDULING: Session found! returning session");
                     return session;
                 }
             }
@@ -580,7 +581,7 @@ public class ALMAProjectManager extends ProjectManager {
         throws SchedulingException {
 
         //use sbid to get the program 
-        System.out.println("Creating PPR in PM");
+        logger.info("SCHEDULING: Creating PPR in PM");
         SB sb = sbQueue.get(sbid);
         Program prog = sb.getParent();
         //System.out.println("sb parent's part id = "+prog.getObsUnitSetStatusId());

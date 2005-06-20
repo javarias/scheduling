@@ -36,7 +36,7 @@ import java.io.PrintStream;
  * that executed it. This is a wrapper class for the actual ExecBlock
  * that is defined by the Control system.
  * 
- * @version $Id: ExecBlock.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ExecBlock.java,v 1.5 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public class ExecBlock implements ProjectMember {
@@ -55,21 +55,23 @@ public class ExecBlock implements ProjectMember {
 	// The immediate parent of this ExecBlock.
 	private SB parent;
 	// The subarray used to create this execution record.
-	private int subarrayId;
+	///private int subarrayId;
+    private String arrayName;
 	// The BestUnit object used to execute this SB.
 	private BestSB best;
 
 	/**
 	 * Create a UnitExec object.
 	 */
-	public ExecBlock(String id, int subarray) {
+	public ExecBlock(String id, String arrayName) {
 		this.execId = id;
 		project = null;
 		timeOfCreation = null;
 		timeOfUpdate = null;
 		status = new Status ();
 		parent = null;
-		this.subarrayId = subarray;
+		//this.subarrayId = subarray;
+		this.arrayName = arrayName;
 		best = null;
 	}
 
@@ -91,7 +93,7 @@ public class ExecBlock implements ProjectMember {
 	public void printTree(PrintStream out, String indent) {
 		out.println(indent + "UnitExec " + execId); 
 		out.println(indent + "\tparent " + (parent == null ? "null" : parent.getId()));
-		out.println(indent + "\tsubarray " + subarrayId);
+		out.println(indent + "\tarray " + arrayName);
 		out.println(indent + "\tproject " + (project == null ? "null" : project.getId()));
 		out.println(indent + "\ttimeOfCreation " + (timeOfCreation == null ? "null" : timeOfCreation.toString()));
 		out.println(indent + "\ttimeOfUpdate " + (timeOfUpdate == null ? "null" : timeOfUpdate.toString()));
@@ -143,10 +145,17 @@ public class ExecBlock implements ProjectMember {
 
 	/**
 	 * @return Returns the subarrayId.
-	 */
 	public int getSubarrayId() {
 		return subarrayId;
 	}
+    */
+    /**
+     * @return Returns the subarrayId.
+     */
+    public String getArrayName() {
+        return arrayName;
+    }
+	 
 
 	/**
 	 * @return Returns the best.

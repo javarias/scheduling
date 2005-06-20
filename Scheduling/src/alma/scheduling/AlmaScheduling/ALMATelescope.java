@@ -34,7 +34,7 @@ import alma.scheduling.Define.Subarray;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMATelescope.java,v 1.7 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ALMATelescope.java,v 1.8 2005/06/20 20:58:09 sslucero Exp $
  */
 public class ALMATelescope extends Telescope  {
 
@@ -59,7 +59,7 @@ public class ALMATelescope extends Telescope  {
         for(int i = 0; i < 64; i++) {
             antennas[i] = new Antenna(""+i+"", i, false);
         }
-        super.addSubarray(new Subarray((short)0,antennas)); 
+        super.addSubarray(new Subarray("Temp_Array",antennas)); 
 
     }
 

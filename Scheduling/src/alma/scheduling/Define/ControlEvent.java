@@ -33,7 +33,7 @@ package alma.scheduling.Define;
  * it will be created by the Scheduling Subsystem's ControlSimulator.
  *
  * @author Sohaila Lucero
- * @version $Id: ControlEvent.java,v 1.7 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: ControlEvent.java,v 1.8 2005/06/20 20:58:09 sslucero Exp $
  */
 public class ControlEvent {
     /**
@@ -44,15 +44,11 @@ public class ControlEvent {
       *
       */
     private String sbId;
-    //private String saId;
+    private String arrayName;
     /**
       *
       */
-    private short saId;
-    /**
-      *
-      */
-    private int eventType;
+    //private short saId;
     /**
       *
       */
@@ -67,13 +63,13 @@ public class ControlEvent {
       *
       */
     public ControlEvent(String execblockId, String schedblockId, 
-                        short subarrayId, int type, int status, 
+                        String arrayName, int status, 
                         DateTime st) {
 
         this.ebId = execblockId;
         this.sbId = schedblockId;
-        this.saId = subarrayId;
-        this.eventType = type;
+        //this.saId = subarrayId;
+        this.arrayName = arrayName;
         this.eventStatus = status;
         this.startTime = new DateTime(st);
         System.out.println("SCHEDULING: time is : "+ startTime.toString());
@@ -94,16 +90,15 @@ public class ControlEvent {
     }
     /**
       * @return short
-      */
+      *
     public short getSAId() {
         return saId;
     }
-    /**
-      * @return int
-      */
-    public int getEventType() {
-        return eventType;
+    */
+    public String getArrayName() {
+        return arrayName;
     }
+    
     /**
       * @return int
       */

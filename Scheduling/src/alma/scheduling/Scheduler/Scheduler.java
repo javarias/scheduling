@@ -34,29 +34,29 @@ import java.util.logging.Logger;
  * The Scheduler class is an abstract class that forms the basis for
  * the DynamicScheduler and InteractiveScheduler classes.
  * 
- * @version $Id: Scheduler.java,v 1.10 2004/11/23 21:22:31 sslucero Exp $
+ * @version $Id: Scheduler.java,v 1.11 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  *
  */
 abstract public class Scheduler {
 	
     protected SchedulerConfiguration config = null;
-    protected short subarrayId = -1;
+    protected String arrayName = null;
     protected Logger logger = null;
     protected Clock clock = null;
     protected DynamicSchedulingAlgorithm dsa = null;
     
     public Scheduler(SchedulerConfiguration config) {
     	this.config = config;
-    	this.subarrayId = config.getSubarrayId();
+    	this.arrayName = config.getArrayName();
     	this.clock = config.getClock();
     	this.logger = config.getLog();
     	// At a minimum, the configuration, clock, and log objects
-    	// cannot be null and the subarrayId cannot be negative.
+    	// cannot be null and the arrayName cannot be null.
     	if (config == null)
     		throw new IllegalArgumentException(name() + ": There is no configuration object!");
-    	if (subarrayId < 0)
-    		throw new IllegalArgumentException(name() + ": Invalid subarray-id!");
+    	if (arrayName == null)
+    		throw new IllegalArgumentException(name() + ": Invalid array-name!");
     	if (logger == null)
     		throw new IllegalArgumentException(name() + ": There is no logger!");
     	if (clock == null)
@@ -65,13 +65,13 @@ abstract public class Scheduler {
     
     /**
      * Form a name of this scheduler, which includes its thread name and the id
-     * of the subarray on which it operates.  This name has the following form:
-     * 		Scheduler [task1] (subarray 1)
+     * of the array on which it operates.  This name has the following form:
+     * 		Scheduler [task1] (array 1)
      * @return A string identifying this scheduler.
      */
     protected String name() {
     	return "Scheduler [" + Thread.currentThread().getName() + 
-		"] (subarray " + subarrayId + ")";
+		"] (array " + arrayName + ")";
     }
     
     

@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.6 2005/04/21 17:39:50 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.7 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -58,13 +58,13 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     
     /**
      * Form a name of this scheduler, which includes its thread name and the id
-     * of the subarray on which it operates.  This name has the folloeing form:
-     * 		Scheduler [task1] (subarray 1)
+     * of the array on which it operates.  This name has the folloeing form:
+     * 		Scheduler [task1] (array 1)
      * @return A string identifying this scheduler.
      */
     protected String name() {
     	return "Scheduler [" + Thread.currentThread().getName() + 
-			"] (subarray " + subarrayId + ")";
+			"] (array " + arrayName + ")";
     }
     
     /**
@@ -136,7 +136,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     	// Create the dynamic scheduling algorithm object.
     	try {
     		dsa = new DynamicSchedulingAlgorithm(
-    				subarrayId, config.getPolicy(), config.getQueue(), clock,
+    				arrayName, config.getPolicy(), config.getQueue(), clock,
 					config.getTelescope(), config.getProjectManager(), logger, 
                     config.getBestNumber());
                     
@@ -307,7 +307,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     //            selectedSB.getParent());
                     //config.getProjectManager().sendStartSessionEvent(session);
                     selectedSB.setRunning();
-      		        config.getControl().execSB(config.getSubarrayId(), best);
+      		        config.getControl().execSB(config.getArrayName(), best);
                 } else {
                     logger.info("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...

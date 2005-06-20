@@ -37,13 +37,16 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 
 import alma.Control.ControlSystem;
-import alma.Control.ArrayController;
+//import alma.Control.ArrayController;
+import alma.Control.AutomaticArrayCommand;
 
 import alma.ControlExceptions.*;
+import alma.Control.InvalidRequest;
+import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.20 2005/03/30 18:39:58 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.21 2005/06/20 20:58:09 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -67,7 +70,8 @@ public class ALMAControl implements Control {
             control_system = alma.Control.ControlSystemHelper.narrow(
                 containerServices.getComponent("CONTROL_ControlSystem1"));
             logger.info("SCHEDULING: Got ControlSystem Component");
-        } catch (Exception ce) {
+            
+        } catch (alma.acs.container.ContainerException ce) {
             logger.severe("SCHEDULING: error getting ControlSystem Component.");
             logger.severe("SCHEDULING: "+ce.toString());
         }
@@ -76,10 +80,10 @@ public class ALMAControl implements Control {
      *
      * @throws SchedulingException
      */
-    public void execSB(short subarrayId, BestSB best, DateTime time) 
+    public void execSB(String arrayName, BestSB best, DateTime time) 
         throws SchedulingException {
 
-        execSB(subarrayId, best);
+        execSB(arrayName, best);
     }
 
     /**
@@ -88,10 +92,10 @@ public class ALMAControl implements Control {
      * @param bestSBId
      * @throws SchedulingException
      */
-    public void execSB(short subarrayId, BestSB best) 
+    public void execSB(String arrayName, BestSB best) 
         throws SchedulingException {
         
-        execSB(subarrayId, best.getBestSelection());
+        execSB(arrayName, best.getBestSelection());
     }
     
     /**
@@ -100,18 +104,21 @@ public class ALMAControl implements Control {
      * @param sbId
      * @throws SchedulingException
      */
-    public void execSB(short subarrayId, String sbId) 
+    public void execSB(String arrayName, String sbId) 
         throws SchedulingException {
     
         logger.info("SCHEDULING: Sending BestSBs to Control!");
-        logger.info("SCHEDULING: Subarray being used has id = "+subarrayId);
+        logger.info("SCHEDULING: Array being used has name = "+arrayName);
         
-        ArrayController ctrl = getArrayController(subarrayId);
+        AutomaticArrayCommand ctrl = getAutomaticArray(arrayName);
         try{
             ctrl.observeNow(sbId, "sessionId"); //TODO fix session ID!
-        } catch(ABSYErrorEx e1) {
+        } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();
+        } catch(InaccessibleException e2) {
+            logger.severe("SCHEDULING: could not observe!");
+            e2.printStackTrace();
         }
     }
 
@@ -120,7 +127,7 @@ public class ALMAControl implements Control {
      *
      * @throws SchedulingException
      */
-    public void stopSB(short subarrayId, String id) throws SchedulingException {
+    public void stopSB(String name, String id) throws SchedulingException {
     }
 
     /**
@@ -130,31 +137,40 @@ public class ALMAControl implements Control {
      * @throws SchedulingException If antenna is null or contains nothing an 
      *                             exception is thrown.
      */
-    public short createSubarray(String[] antenna) throws SchedulingException {
+    public String createArray(String[] antenna) throws SchedulingException {
         if(antenna == null || antenna.length == 0) {
             throw new SchedulingException
                 ("SCHEDULING: Cannot create a subarray with out any antennas!");
         }
         try {
-            ArrayController ctrl = control_system.createSubArray(antenna);
             if(control_system == null) {
-                System.out.println("control system == null..");
+                logger.severe("SCHEDULING: control system == null..");
+                throw new SchedulingException("SCHEDULING: Error with ControlSystem Component.");
             }
             if(controllers == null) { 
-                System.out.println("controllers == null..");
+                logger.severe("SCHEDULING: controllers == null..");
+                throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
+            //ArrayController ctrl = control_system.createSubArray(antenna);
+            String arrayName = control_system.createAutomaticArray(antenna);
+            AutomaticArrayCommand ctrl = alma.Control.AutomaticArrayCommandHelper.narrow(
+                    containerServices.getComponent(arrayName));
             if(ctrl == null) {
-                System.out.println("ctrl is null");
+                logger.severe("SCHEDULING: ctrl is null");
+                throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             controllers.add(ctrl);
-            System.out.println("SCHEDULING: array controller id = "+ ctrl.id());
-            return ctrl.id();
-        } catch(ANTErrorEx e1) {
+            logger.info("SCHEDULING: array controller id = "+ ctrl.getName());
+            return ctrl.getName();
+        } catch(InvalidRequest e1) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e1.toString());
-        } catch(INACTErrorEx e2) {
+        } catch(InaccessibleException e2) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e2.toString());
+        } catch (alma.acs.container.ContainerException e3) {
+            throw new SchedulingException
+                ("SCHEDULING: Error getting AutomaticArrayCommand component." +e3.toString());
         }
     }
 
@@ -162,19 +178,19 @@ public class ALMAControl implements Control {
      *
      * @throws SchedulingException
      */
-    public void destroySubarray(short subarrayId) throws SchedulingException {
+    public void destroyArray(String name) throws SchedulingException {
         try {
-            control_system.destroySubArray(subarrayId);
-        } catch(INACTErrorEx e1) {
-        } catch(SUBAErrorEx e2){
+            control_system.destroyArray(name);
+        } catch(InvalidRequest e1) {
+        } catch(InaccessibleException e2){
         }
     }
 
     /**
-     * @return short[]
+     * @return String[]
      * @throws SchedulingException
      */
-    public short[] getActiveSubarray() throws SchedulingException {
+    public String[] getActiveArray() throws SchedulingException {
         return null;
     }
     
@@ -183,15 +199,20 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public String[] getIdleAntennas() throws SchedulingException {
-            String[] antennas = control_system.availableAntennas();
+        try{
+            String[] antennas = control_system.getAvailableAntennas();
             logger.info("SCHEDULING: Got "+ antennas.length +" antennas");
             return antennas;
+        } catch(InaccessibleException e1) {
+            throw new SchedulingException
+                ("SCHEDULING: Couldn't get available antennas. "+e1.toString()); 
+        }
     }
 
     /**
      * @return String[]
      */
-    public String[] getSubarrayAntennas(short subarrayId) {
+    public String[] getArrayAntennas(String name) {
         return null;
     }
     
@@ -199,12 +220,12 @@ public class ALMAControl implements Control {
       * @return ArrayController
       * @throws SchedulingException
       */
-    private ArrayController getArrayController(short subarrayId) throws SchedulingException {
-        logger.info("SCHEDULING: looking for subarray with id = "+ subarrayId);
+    private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
+        logger.info("SCHEDULING: looking for subarray with id = "+ name);
         for(int i=0; i < controllers.size(); i++){
-            if( ((ArrayController)controllers.elementAt(i)).id() == subarrayId) {
-                logger.info("SCHEDULING: found subarray with id = "+ subarrayId);
-                return (ArrayController)controllers.elementAt(i);
+            if( ((AutomaticArrayCommand)controllers.elementAt(i)).getName() == name) {
+                logger.info("SCHEDULING: found subarray with id = "+ name);
+                return (AutomaticArrayCommand)controllers.elementAt(i);
             }
         }
         return null;

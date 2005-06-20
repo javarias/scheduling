@@ -103,7 +103,7 @@ import alma.scheduling.Define.BestSB;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.2 2004/11/23 21:22:31 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.3 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -337,7 +337,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (!sb.getStatus().isStarted()) {
 			config.decrementSbsNotStarted();
 		}
-		control.execSB(config.getSubarrayId(),best);
+		control.execSB(config.getArrayName(),best);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been started.";
@@ -364,7 +364,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			error("The SB specified in the stop method (" + sbId +
 					" does not match the currently executing SB (" + tmp + ")");
 		}
-		control.stopSB(config.getSubarrayId(),sbId);
+		control.stopSB(config.getArrayName(),sbId);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been stopped.";

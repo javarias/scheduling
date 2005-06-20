@@ -138,7 +138,7 @@ public class ALMAOperator implements Operator {
         } catch(InterruptedException e) {
             //logger.info("SCHEDULING: timer was interrupted!");
         }
-        System.out.println("best sb id = "+message.getReply());
+        logger.info("SCHEDULING: best sb id = "+message.getReply());
         //return message.getReply();
     }
     

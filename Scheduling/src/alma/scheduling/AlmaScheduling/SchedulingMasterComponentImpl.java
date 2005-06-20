@@ -27,6 +27,7 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.ACS.MasterComponentImpl.*;
 import alma.ACS.MasterComponentImpl.statemachine.*;
+import alma.acs.genfw.runtime.sm.*;
 import alma.ACS.ComponentStates;
 import alma.ACS.MasterComponentPackage.*;
 /*
@@ -43,7 +44,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.15 2005/02/02 22:26:16 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.16 2005/06/20 20:58:09 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {

@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.24 2005/04/04 16:11:07 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.25 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1058,7 +1058,9 @@ public class ProjectUtil {
 			// Set state.
 			exStatus.setStatus(assignState(ex[i].getStatus()));
 			// Set subarray-id.
-			exStatus.setSubarrayId(ex[i].getSubarrayId());
+            //TODO This will change!
+			//exStatus.setSubarrayId(ex[i].getSubarrayId());
+            exStatus.setSubarrayId(1); //will change to ArrayName thing
 			// Set BestSB.
 			//exStatus.setBestSB(assignBestSB(ex[i].getBest()));
 			list[i] = exStatus;

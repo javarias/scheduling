@@ -37,12 +37,12 @@ package alma.scheduling.Define;
  * <li> its current project, unit set, and scheduling unit.
  * </ul>
  * 
- * @version $Id: Subarray.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Subarray.java,v 1.4 2005/06/20 20:58:09 sslucero Exp $
  * @author Allen Farris
  */
 public class Subarray {
 
-	private short subarrayId;
+	private String arrayName;
 	boolean idle;
 	private Antenna[] antenna;
 	private FrequencyBand currentFrequencyBand;
@@ -53,8 +53,8 @@ public class Subarray {
 	private String currentProgram;
 	private String currentSB;
 	
-	public Subarray (short subarrayId, Antenna[] antenna) {
-		this.subarrayId = subarrayId;
+	public Subarray (String name, Antenna[] antenna) {
+		this.arrayName = name;
 		this.antenna = antenna;
 		setBusy();
 		this.currentFrequencyBand = new FrequencyBand ("",0.0,0.0);
@@ -72,8 +72,8 @@ public class Subarray {
 	public synchronized boolean isIdle() {
 		return idle;
 	}
-	public short getSubarrayId() {
-		return subarrayId;
+	public String getArrayName() {
+		return arrayName;
 	}
 
 	public synchronized void setIdle() {
