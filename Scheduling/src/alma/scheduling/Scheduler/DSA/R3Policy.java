@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File R2aPolicy.java
+ * File R3Policy.java
  */
 package alma.scheduling.Scheduler.DSA;
 
@@ -44,17 +44,17 @@ import alma.scheduling.Define.NothingCanBeScheduled;
 import java.util.logging.Logger;
 
 /**
- * This is one of the dynamic scheduling algorithms for R2.
+ * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R2aPolicy.java,v 1.4 2005/01/10 17:51:27 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.1 2005/06/20 20:42:27 sslucero Exp $
  * @author Sohaila Lucero
  */
-class R2aPolicy extends PolicyType {
+class R3Policy extends PolicyType {
 
     /**
       * policy's name
       */
-	static public final String name = "R2aPolicy"; 
+	static public final String name = "R3Policy"; 
 	/**
       * queue of sbs
       */
@@ -80,9 +80,9 @@ class R2aPolicy extends PolicyType {
       */
 	private ProjectManager projectManager;
     /**
-      * subarray's id
+      * array's name
       */
-	private int subarrayId;
+	private String arrayName;
 	
     /**
       * elevation position weight
@@ -128,7 +128,7 @@ class R2aPolicy extends PolicyType {
 	/**
       *The array of scheduling units.
       */
-	private R2aUnit[] unit;
+	private R3Unit[] unit;
 	
     /**
       * The index of the best sb
@@ -136,11 +136,11 @@ class R2aPolicy extends PolicyType {
 	private int bestNumber;
 	
 	
-	public R2aPolicy (int subarrayId, Policy policy, SBQueue queue, 
+	public R3Policy (String arrayName, Policy policy, SBQueue queue, 
 			Clock clock, Telescope telescope, ProjectManager projectManager,
 			Logger log, int bestNumber ) throws SchedulingException {
 		// Save the parameters.
-		this.subarrayId = subarrayId;
+		this.arrayName = arrayName;
 		this.policy = policy;
 		this.queue = queue;
 		this.clock = clock;
@@ -155,14 +155,14 @@ class R2aPolicy extends PolicyType {
 		// Create the scheduling units.
 		SB[] sb = queue.getAll();
         System.out.println("sb.length= " +sb.length);
-		unit = new R2aUnit [sb.length];
+		unit = new R3Unit [sb.length];
 		SiteCharacteristics site = telescope.getSite();
 		for (int i = 0; i < unit.length; ++i) {
-			unit[i] = new R2aUnit (sb[i],site);
+			unit[i] = new R3Unit (sb[i],site);
 		}
 		
 		// Sort the list of scheduling units by scientific priority.
-		R2aUnit tmp = null;
+		R3Unit tmp = null;
 		int n = unit.length;
 		if (n > 2) {
 			int j = 0;
@@ -212,7 +212,7 @@ class R2aPolicy extends PolicyType {
 	 * 3. The ramaining ranking factors can be negative, 0, or positive.
 	 */
 	private void setWeights() {
-		if (!policy.getName().equals("R2aPolicy")) {
+		if (!policy.getName().equals("R3Policy")) {
 			log.severe("Scheduling policy " + policy.getName() + " is not supported");
 			//System.exit(0);
 		}
@@ -271,7 +271,7 @@ class R2aPolicy extends PolicyType {
                 ready++;
             }
         }
-        R2aUnit[] list = new R2aUnit[ready];
+        R3Unit[] list = new R3Unit[ready];
         log.info("SCHEDULING: list length == "+ list.length);
         int ready2 =0;
         for(int x=0; x < unit.length; x++) {
@@ -288,7 +288,7 @@ class R2aPolicy extends PolicyType {
 			// Nothing can be scheduled.
 			best = new BestSB(new NothingCanBeScheduled (
                 new DateTime(System.currentTimeMillis()), whyNothing(), ""));
-            log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in R2aPolicy");
+            log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in R3Policy");
 			//best = new BestSB(new NothingCanBeScheduled (clock.getDateTime(), whyNothing(), ""));
 		} else {
 			String[] id = new String [list.length];
@@ -395,7 +395,7 @@ class R2aPolicy extends PolicyType {
 		return NothingCanBeScheduled.Other;
 	}
 	
-	private R2aUnit[] topList() {
+	private R3Unit[] topList() {
 		class Pair {
 			Pair (int a, double b) {
 				this.a = a;
@@ -423,7 +423,7 @@ class R2aPolicy extends PolicyType {
 
 		// If we can't schedule anything, we're done.
 		if (size == 0) {
-			return new R2aUnit [0];
+			return new R3Unit [0];
 		}
 
 		// Get the top N.
@@ -444,7 +444,7 @@ class R2aPolicy extends PolicyType {
 		}
 
 		// Return the top N scheduling units.
-		R2aUnit[] out = new R2aUnit [bestSize];
+		R3Unit[] out = new R3Unit [bestSize];
 		for (int i = 0; i < bestSize; ++i) {
 			out[i] = unit[copy[i].a];
         }
@@ -464,12 +464,12 @@ class R2aPolicy extends PolicyType {
 	}
 
 	private void rank() {
-		R2aUnit u = null;
+		R3Unit u = null;
 		double x = 0.0;
-		Subarray array = telescope.getSubarray(subarrayId);
+		Subarray array = telescope.getArray(arrayName);
 		if (array == null) {
-			log.severe("No such subarray as " + subarrayId);
-			throw new IllegalArgumentException ("No such subarray as " + subarrayId);
+			log.severe("No such array as " + arrayName);
+			throw new IllegalArgumentException ("No such array as " + arrayName);
 		}
 		String currentProjectId = array.getCurrentProject();
 		FrequencyBand currentBand = array.getCurrentFrequencyBand();
@@ -512,7 +512,7 @@ class R2aPolicy extends PolicyType {
 		double pMax = 0.0;
 		double w = 0.0;
 		SB sb = null;
-		R2aUnit u = null;
+		R3Unit u = null;
 		for (int i = 0; i < unit.length; ++i) {
 			if (!unit[i].isReady()) {
                 continue;
@@ -534,7 +534,7 @@ class R2aPolicy extends PolicyType {
 		}
 	}
 
-	private void setState(R2aUnit u, String currentProjectId, FrequencyBand currentBand) {
+	private void setState(R3Unit u, String currentProjectId, FrequencyBand currentBand) {
 		SB sb = u.getSB();
 		if (currentProjectId.equals(sb.getProject().getId())) {
 			if (sb.getFrequencyBand().equals(currentBand)) {
@@ -569,14 +569,14 @@ class R2aPolicy extends PolicyType {
 		}
 	}
 	
-	private double positionEl(R2aUnit u) {
+	private double positionEl(R3Unit u) {
 		if (u.isVisible(clock.getDateTime())) {
 			return Math.sin(u.getElevation(clock.getDateTime(),telescope.getSite()));
         }
 		return 0.0;
 	}
 
-	private double positionMax(R2aUnit u) {
+	private double positionMax(R3Unit u) {
 		// First, we make sure the source is visible.
 		DateTime t = clock.getDateTime();
 		if (!u.isVisible(t)) {

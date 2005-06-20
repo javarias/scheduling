@@ -78,15 +78,17 @@ import java.util.logging.Logger;
  * So, there is a good deal of thinking to be done on how to do this.
  * For now, the second method is not implemented.
  * 
- * @version $Id: DynamicSchedulingAlgorithm.java,v 1.3 2004/11/23 21:22:07 sslucero Exp $
+ * @version $Id: DynamicSchedulingAlgorithm.java,v 1.4 2005/06/20 20:42:27 sslucero Exp $
  * @author Allen Farris
  */
 public class DynamicSchedulingAlgorithm {
 	
-	private R2aPolicy dsa;
+	//private R2aPolicy dsa;
+                    
+    private R3Policy dsa;
 
 	
-	public DynamicSchedulingAlgorithm(int subarrayId, Policy policy, 
+	public DynamicSchedulingAlgorithm(String arrayname, Policy policy, 
         SBQueue queue, Clock clock, Telescope telescope, 
         ProjectManager projectManager, Logger log, int bestNumber ) 
         throws SchedulingException {
@@ -95,8 +97,12 @@ public class DynamicSchedulingAlgorithm {
     		//dsa = new R1Policy(subarrayId,policy, queue, clock, telescope,
               //  projectManager, log, bestNumber);
         } else if(policy.getName().equals("R2aPolicy")) {
-    		dsa = new R2aPolicy(subarrayId,policy, queue, clock, telescope,
-                projectManager, log, bestNumber);
+    	//	dsa = new R2aPolicy(arrayname,policy, queue, clock, telescope,
+          //      projectManager, log, bestNumber);
+        } else if(policy.getName().equals("R3.0Policy")) {
+            dsa = new R3Policy(
+                    arrayname, policy, queue, clock, telescope,
+                    projectManager, log, bestNumber);
         }
 	}
 

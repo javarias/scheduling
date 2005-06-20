@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File R1Unit.java
+ * File R3Unit.java
  */
 package alma.scheduling.Scheduler.DSA;
 
@@ -33,45 +33,119 @@ import alma.scheduling.Define.SiteCharacteristics;
 import java.text.NumberFormat;
 
 /**
- * The R1Unit class is used by the R1Policy class.
+ * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R1Unit.java,v 1.4 2004/11/23 21:22:07 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.1 2005/06/20 20:42:27 sslucero Exp $
  * @author Allen Farris
  */
-class R1Unit extends SchedulingUnit {
+class R3Unit extends SchedulingUnit {
 
+    /**
+      * SB associated with this unit.
+      */
 	private SB sb;
+    /**
+      * The Score
+      */
 	private double score;
+    /**
+      * The Success
+      */
 	private double success;
+    /**
+      * The Ranking
+      */
 	private double rank;
+    /**
+      * Elevation position weight
+      */
 	private double positionEl;
+    /**
+      * Maximum position weight
+      */
 	private double positionMax;
+    /**
+      * weather weight
+      */
 	private double weather;
+    /**
+      * The priority
+      */
 	private int priority;
+    /**
+      * Does it have same project & same band?
+      */
 	private boolean sameProjectSameBand;
+    /**
+      * Does it have same project & different band?
+      */
 	private boolean sameProjectDifferentBand;
+    /**
+      * Does it have different project & same band?
+      */
 	private boolean differentProjectSameBand;
+    /**
+      * Does it have different project & different band?
+      */
 	private boolean differentProjectDifferentBand;
+    /**
+      * Is it a new Project?
+      */
 	private boolean newProject;
+    /**
+      * Is there one sb remaining?
+      */
 	private boolean oneSBRemaining;
-	
+	/**
+      * Sin Dec
+      */
 	private double sinDec;
+    /**
+      * cos dec
+      */
 	private double cosDec;
-	
+	/**
+      * Visibility
+      */
 	private int visible;
-	private double elMax;	// max elevation in radians
-	private double lstMax;	// LST at maximum elevation
-	private double lstSet;	// LST at setting minimum elevation, adjusted by totalTime.
-	private double lstRise;	// LST at rising minimum elevation
-
+    /**
+      *max elevation in radians
+      */
+	private double elMax;	
+    /**
+      *LST at maximum elevation
+      */
+	private double lstMax;	
+    /**
+      *LST at setting minimum elevation, adjusted by totalTime.
+      */
+	private double lstSet;	
+    /**
+      * LST at rising minimum elevation
+      */
+	private double lstRise;	
+    /**
+      * ??
+      */
 	private NumberFormat dform;
 	
+    /**
+      * Calls the scoreToString method
+      */
 	public String toString() {
 		return scoreToString();
 	}		
+
+    /**
+      * prints the format to string form
+      */
 	public String formatToString() {
 		return "sunitId (projectId) [ score, rank (priorityFactor, sameProjectSameBandFactor, sameProjectDifferentBandFactor, differentProjectSameBandFactor, differentProjectDifferentBandFactor, newProjectFactor, oneSBRemainingFactor), success (positionEl, positionMax, weather) ]";
 	}
+
+    /**
+      * prints the visibility to string form
+      */
 	public String visibleToString() {
 		if (visible == -1)
 			return "Source is never visible.";
@@ -83,6 +157,10 @@ class R1Unit extends SchedulingUnit {
 			return s + " Source is always visible.";
 		return s + " rise " + dform.format(lstRise) + " set " + dform.format(lstSet);
 	}
+
+    /**
+      * Prints the score to string form 
+      */
 	public String scoreToString() {
 		return sb.getId() +// " (" + sb.getProject().getId() + ") [ " + 
 		dform.format(score) + ", " + 
@@ -105,7 +183,7 @@ class R1Unit extends SchedulingUnit {
 	 * @param sb The SUnit to be scheduled.
 	 * @param lst The starting LST of the simulation.
 	 */
-	public R1Unit(SB sb, SiteCharacteristics site) {
+	public R3Unit(SB sb, SiteCharacteristics site) {
 		super();
 		this.sb = sb;
 		this.score = 0.0;
@@ -126,16 +204,28 @@ class R1Unit extends SchedulingUnit {
         cosDec=1.0;
 		//sinDec = Math.sin(sb.getTarget().getCenter().getDec());
 		//cosDec = Math.cos(sb.getTarget().getCenter().getDec());
-		computeTimes(sb,site);
+		//computeTimes(sb,site);
 		// Set thenumber format.
 		dform = NumberFormat.getInstance();
 		dform.setMaximumFractionDigits(2);
 		
 	}
 
+    /**
+      * convertion of rad to deg
+      */
 	static private final double radToDeg = 180.0 / Math.PI;
+    /**
+      * conversion of rad to hour
+      */
 	static private final double radToHour =  12.0 / Math.PI;
+    /**
+      * conversion of deg to rad
+      */
 	static private final double degToRad = Math.PI / 180.0;
+    /**
+      * conversion of hour to rad
+      */
 	static private final double hourToRad =  Math.PI / 12.0;
 	
 	/**
@@ -188,10 +278,19 @@ class R1Unit extends SchedulingUnit {
 		sb.getTarget().setLstSet(lstSet);
 	}
 	
+    /**
+      * Is it visible?
+      * @param DateTime LST
+      * @return boolean
+      */
 	public boolean isVisible(DateTime lst) {
 		return sb.getTarget().isVisible(lst);
 	}
 	
+    /**
+      * returns max elevation
+      * @return double
+      */
 	public double getMaxElevation() {
 		return elMax;
 	}
@@ -200,7 +299,7 @@ class R1Unit extends SchedulingUnit {
 	 * Get the elevation of the target at the specified LST.
 	 * @param lst The time of interest.
 	 * @param site The Site characteristics.
-	 * @return The elevation in radians of the target at the specified time.
+	 * @return double The elevation in radians of the target at the specified time.
 	 */
 	public double getElevation(DateTime lst, SiteCharacteristics site) {
 		double sinL = site.getSinLatitude();						// sin(latitude)
@@ -210,119 +309,209 @@ class R1Unit extends SchedulingUnit {
 		return Math.asin(x);
 	}
 
+    /**
+      * get sb
+      * @return SB
+      */
 	public SB getSB() {
 		return sb;
 	}
 
+    /**
+      * get score
+      * @return double
+      */
 	public double getScore() {
 		return score;
 	}
+
+    /**
+      * set score
+      * @param double
+      */
 	public void setScore(double d) {
 		score = d;
 	}
 
+    /**
+      * get success
+      * @return double
+      */
 	public double getSuccess() {
 		return success;
 	}
+    /**
+      * set success
+      * @param double
+      */
 	public void setSuccess(double d) {
 		success = d;
 	}
 
+    /**
+      * get rank
+      * @return double
+      */
 	public double getRank() {
 		return rank;
 	}
+    /**
+      * set rank
+      * @param double
+      */
 	public void setRank(double d) {
 		rank = d;
 	}
 
+    /**
+      * @return boolean
+      */
 	public boolean isDifferentProjectDifferentBand() {
 		return differentProjectDifferentBand;
 	}
+    /**
+      * @return boolean
+      */
 	public boolean isDifferentProjectSameBand() {
 		return differentProjectSameBand;
 	}
+    /**
+      * @return boolean
+      */
 	public boolean isNewProject() {
 		return newProject;
 	}
+    /**
+      * @return boolean
+      */
 	public boolean isOneSBRemaining() {
 		return oneSBRemaining;
 	}
+    /**
+      * @return double
+      */
 	public double getPositionEl() {
 		return positionEl;
 	}
+    /**
+      * @return double
+      */
 	public double getPositionMax() {
 		return positionMax;
 	}
+    /**
+      * @return int
+      */
 	public int getPriority() {
 		return priority;
 	}
+    /**
+      * @return boolean
+      */
 	public boolean isSameProjectDifferentBand() {
 		return sameProjectDifferentBand;
 	}
+    /**
+      * @return boolean
+      */
 	public boolean isSameProjectSameBand() {
 		return sameProjectSameBand;
 	}
+    /**
+      * @return double
+      */
 	public double getWeather() {
 		return weather;
 	}
-
+    
+    /**
+      * @param boolean
+      */
 	public void setDifferentProjectDifferentBand(boolean b) {
 		differentProjectDifferentBand = b;
 	}
+    /**
+      * @param boolean
+      */
 	public void setDifferentProjectSameBand(boolean b) {
 		differentProjectSameBand = b;
 	}
+    /**
+      * @param boolean
+      */
 	public void setNewProject(boolean b) {
 		newProject = b;
 	}
+    /**
+      * @param boolean
+      */
 	public void setOneSBRemaining(boolean b) {
 		oneSBRemaining = b;
 	}
+    /**
+      * @param double
+      */
 	public void setPositionEl(double d) {
 		positionEl = d;
 	}
+    /**
+      * @param double
+      */
 	public void setPositionMax(double d) {
 		positionMax = d;
 	}
+    /**
+      * @param boolean
+      */
 	public void setSameProjectDifferentBand(boolean b) {
 		sameProjectDifferentBand = b;
 	}
+    /**
+      * @param boolean
+      */
 	public void setSameProjectSameBand(boolean b) {
 		sameProjectSameBand = b;
 	}
+    /**
+      * @param double
+      */
 	public void setWeather(double d) {
 		weather = d;
 	}
 
 	/**
-	 * @return
+	 * @return boolean
 	 */
 	public boolean isReady() {
 		return sb.getStatus().isReady();
 	}
 
 	/**
-	 * @return
+	 * @return double 
 	 */
 	public double getLstMax() {
 		return lstMax;
 	}
 
 	/**
-	 * @return
+	 * @return double 
 	 */
 	public double getLstRise() {
 		return lstRise;
 	}
 
 	/**
-	 * @return
+	 * @return double 
 	 */
 	public double getLstSet() {
 		return lstSet;
 	}
 
+    /**
+      *
+      */
 	public static void main (String[] arg) {
+        /*
 		alma.scheduling.Define.Project p = new alma.scheduling.Define.Project ("AF1","","","","");
 		SB sb = new SB ("af04");
 		SiteCharacteristics site = new SiteCharacteristics (0.0, 0.0, 0, 0.0, 0.0, 1, null);
@@ -331,8 +520,8 @@ class R1Unit extends SchedulingUnit {
 		alma.scheduling.Define.Equatorial coord = new Equatorial(3.2,47.0);
 		alma.scheduling.Define.Target t = new alma.scheduling.Define.Target (coord,2.0);
 		sb.setTarget(t);
-		sb.setCenterFrequency(68.0);
-		R1Unit unit = new R1Unit(sb,site);
+		sb.setFrequency(68.0);
+		R3Unit unit = new R3Unit(sb,site);
 
 		unit.setScore(85.011111111111);
 		unit.setRank(95.077777777777);
@@ -350,6 +539,7 @@ class R1Unit extends SchedulingUnit {
 		System.out.println(unit.formatToString());
 		System.out.println(unit.visibleToString());
 		System.out.println(unit.scoreToString());
+        */
 	}
 	
 }
