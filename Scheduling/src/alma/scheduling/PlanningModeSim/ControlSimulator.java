@@ -50,7 +50,7 @@ import java.util.logging.Level;
  */
 public class ControlSimulator extends BasicComponent implements Control {
 
-	static short subarrayIdGenerator = 0; 
+	static int subarrayIdGenerator = 0; 
 
 	private ClockSimulator clock;
 	private ProjectManagerSimulator project;
@@ -105,16 +105,16 @@ public class ControlSimulator extends BasicComponent implements Control {
 		return null;
 	}
 
-	private Subarray getSubarray(short subarrayId) {
+	private Subarray getArray(String name) {
 		Subarray[] x = telescope.getSubarray();
 		for (int i = 0; i < x.length; ++i) {
-			if (x[i].getSubarrayId() == subarrayId)
+			if (x[i].getArrayName() == name)
 				return x[i];
 		}
 		return null;
 	}
 
-	public short createSubarray(String[] antenna) throws SchedulingException {
+	public String createArray(String[] antenna) throws SchedulingException {
 		Antenna x = null;
 		for (int i = 0; i < antenna.length; ++i) {
 			x = getAntenna(antenna[i]);
@@ -132,15 +132,19 @@ public class ControlSimulator extends BasicComponent implements Control {
 		Antenna[] a = new Antenna [antenna.length];
 		for (int i = 0; i < antenna.length; ++i)
 			a[i] = getAntenna(antenna[i]);
-		Subarray s = new Subarray (++subarrayIdGenerator, a);
+		Subarray s = new Subarray (arrayNameGenerator(), a);
 		telescope.addSubarray(s);
-		return s.getSubarrayId();
+		return s.getArrayName();
 	}
+    private String arrayNameGenerator() {
+        return "Array"+(++subarrayIdGenerator);
+        
+    }
 
-	public void destroySubarray(short subarrayId) throws SchedulingException {
-		Subarray s = getSubarray(subarrayId);
+	public void destroyArray(String name) throws SchedulingException {
+		Subarray s = getArray(name);
 		if (s == null)
-			error("Subarray " + subarrayId + " was not found.");
+			error("Subarray " + name + " was not found.");
 		else {
 			Antenna[] a = s.getAntenna();
 			for (int i = 0; i < a.length; ++i)
@@ -149,29 +153,29 @@ public class ControlSimulator extends BasicComponent implements Control {
 		}
 	}
 
-    public void execSB(short subarrayId, String id) throws SchedulingException {
+    public void execSB(String name, String id) throws SchedulingException {
     }
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String, ALMA.scheduling.define.DateTime)
 	 */
-	public void execSB(short subarrayId, BestSB best, DateTime time)
+	public void execSB(String name, BestSB best, DateTime time)
 		throws SchedulingException {
 			
 			// If the starting time is in the future, set the clock.
 			if (clock.compareTo(time) == 1)
 				clock.setTime(time);
 
-			execSB(subarrayId,best);
+			execSB(name,best);
 	}
 	
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#execSB(java.lang.Short, java.lang.String)
 	 */
-	public void execSB(short subarrayId, BestSB best) throws SchedulingException {
+	public void execSB(String name, BestSB best) throws SchedulingException {
 			// Get the subarray.
-			Subarray s = getSubarray(subarrayId);
+			Subarray s = getArray(name);
 			if (s == null)
-				error("Subarray " + subarrayId + " was not found.");
+				error("Subarray " + name + " was not found.");
 		
 			// Get the SB.
 			SB sb = archive.getSB(best.getBestSelection());
@@ -198,13 +202,15 @@ public class ControlSimulator extends BasicComponent implements Control {
 			
 			// Inform the project manager.
 			try {
-				project.execStart(subarrayId,sb.getId(),beg);
+                //TODO, 1 should be name but not changing that in project yet..
+                // subarray name now string not int.
+				project.execStart(1,sb.getId(),beg);
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
 			}
 			
 			// Create the execution record.
-			ExecBlock ex = new ExecBlock (containerServices.getEntityId(),subarrayId);
+			ExecBlock ex = new ExecBlock (containerServices.getEntityId(),name);
 			// Set the start time in the exec block.
 			ex.setStartTime(beg);
 			// Set the best unit.
@@ -223,7 +229,9 @@ public class ControlSimulator extends BasicComponent implements Control {
 
 			// Inform the project manager.
 			try {
-				project.execEnd(subarrayId,sb.getId(),ex.getId(),end);
+                //TODO, 1 should be name but not changing that in project yet..
+                // subarray name now string not int.
+				project.execEnd(1,sb.getId(),ex.getId(),end);
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
 			}
@@ -232,11 +240,11 @@ public class ControlSimulator extends BasicComponent implements Control {
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getActiveSubarray()
 	 */
-	public short[] getActiveSubarray() throws SchedulingException {
+	public String[] getActiveArray() throws SchedulingException {
 		Subarray[] x = telescope.getSubarray();
-		short[] s = new short [x.length];
+		String[] s = new String [x.length];
 		for (int i = 0; i < x.length; ++i) {
-			s[i] = x[i].getSubarrayId();
+			s[i] = x[i].getArrayName();
 		}
 		return s;
 	}
@@ -264,12 +272,12 @@ public class ControlSimulator extends BasicComponent implements Control {
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getSubarrayAntennas(int)
 	 */
-	public String[] getSubarrayAntennas(short subarrayId)
+	public String[] getArrayAntennas(String name)
 		throws SchedulingException {
 		// Get the subarray.
-		Subarray s = getSubarray(subarrayId);
+		Subarray s = getArray(name);
 		if (s == null)
-			error("Subarray " + subarrayId + " was not found.");
+			error("Subarray " + name + " was not found.");
 		Antenna[] a = s.getAntenna();
 		String[] x = new String [a.length];
 		for (int i = 0; i < x.length; ++i)
@@ -280,7 +288,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#stopSB(java.lang.Short, java.lang.String)
 	 */
-	public void stopSB(short subarrayId, String id)
+	public void stopSB(String name, String id)
 		throws SchedulingException {
 		// Don't need it in the simulation.
 	}

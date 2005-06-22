@@ -130,16 +130,16 @@ public class MasterScheduler extends BasicComponent {
 			for (int i = 0; i < p.length; ++i)
 				p[i].setReady(now);
 
-			// Create a subarray.
+			// Create an array.
 			String[] ant = control.getIdleAntennas();
-			short subarrayId = control.createSubarray(ant);
+			String arrayName = control.createArray(ant);
 			
 			// Create a scheduler configuration.
 			SBQueue queue = new SBQueue ();
 			queue.add(sbList);
 			SchedulerConfiguration config = new SchedulerConfiguration (
 					Thread.currentThread(),
-					true,true,queue,5,0,subarrayId,clock,control,operator,
+					true,true,queue,5,0,arrayName,clock,control,operator,
                     telescope, projectManager,policy,logger);			
 			
 			// Create a scheduler.
