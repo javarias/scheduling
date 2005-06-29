@@ -47,10 +47,10 @@ public class TestALMAControl extends ComponentClientTestCase {
     public void test1CreateSubarray() {
         //short[] antennas = {1,2,3,4,5,6,7,8,9};
         String[] antennas = {"1","2","3","4","5","6","7"};
-        short subarray = -1;
+        String subarray = null;
         try {
-            subarray = control.createSubarray(antennas);
-            assertTrue(subarray != -1);
+            subarray = control.createArray(antennas);
+            assertTrue(subarray != null);
         } catch(Exception e) {
             m_logger.severe("SCHED_TEST: error");
             e.printStackTrace();
