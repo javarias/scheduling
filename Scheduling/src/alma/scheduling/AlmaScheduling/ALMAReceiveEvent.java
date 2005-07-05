@@ -40,8 +40,7 @@ import alma.acs.util.UTCUtility;
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
 //import alma.Control.ControlSystemStatusEvent;
-import alma.TelCalPublisher.FocusReducedEvent;
-import alma.TelCalPublisher.PointingReducedEvent;
+import alma.TelCalPublisher.*;
 import alma.pipelinescience.ScienceProcessingDoneEvent;
 
 import alma.scheduling.StartSessionEvent;
@@ -58,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.25 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.26 2005/07/05 17:29:06 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -84,9 +83,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.currentEB = new Vector();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    //  Receive functions for each event type
-    ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+//  Receive functions for each event type
+///////////////////////////////////////////////////////////////////////////
+
+////////////////////////
+// Control
+////////////////////////
     /**
      * When an ExecBlockStartedEvent is received by the scheduling subsystem it is
      * received here and the type is determined. Once the type is determined 
@@ -153,6 +156,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     }
      */
 
+////////////////////////
+// SciPipeline
+////////////////////////
     /**
      * When the scheduling subsystem receives the ScienceProcessingRequestEnd event
      * from the pipeline subsystem it is received here and processed accordingly
@@ -161,6 +167,28 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     public void receive(ScienceProcessingDoneEvent e) {
         logger.info("SCHEDULING: Starting to process the pipeline event");
+    }
+////////////////////////
+// TELCAL
+////////////////////////
+    public void receive(AmpliCalReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the AmpliCalReducedEvent");
+    }
+    
+    public void receive(AmpCurveReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the AmpCurveReducedEvent");
+    }
+    
+    public void receive(AntennaPositionsReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the AntennaPositionsReducedEvent");
+    }
+    
+    public void receive(AtmosphereReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the AtmosphereReducedEvent");
+    }
+    
+    public void receive(DelayReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the DelayReducedEvent");
     }
 
     /**
@@ -172,6 +200,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     public void receive(FocusReducedEvent e) {
         logger.info("SCHEDULING: Starting to process the focus reduced event");
     }
+    
+    public void receive(PhaseCalReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the PhaseCalReducedEvent");
+    }
+    
+    public void receive(PhaseCurveReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the PhaseCurveReducedEvent");
+    }
 
     /**
      * When the scheduling subsystem receives the PointingReducedEvent event
@@ -182,10 +218,18 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     public void receive(PointingReducedEvent e) {
         logger.info("SCHEDULING: Starting to process the pointing reduced event");
     }
+    
+    public void receive(PointingModelReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the PointingModelReducedEvent");
+    }
+    
+    public void receive(SkydipReducedEvent e) {
+        logger.info("SCHEDULING: Starting to process the SkydipReducedEvent");
+    }
 
-    ///////////////////////////////////////////////////////////////////////////
-    //  Util functions 
-    ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+//  Util functions 
+///////////////////////////////////////////////////////////////////////////
 
     /**
       * @param ExecBlockEvent

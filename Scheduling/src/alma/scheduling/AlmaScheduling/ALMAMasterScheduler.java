@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.25 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.26 2005/07/05 17:29:06 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -159,14 +159,22 @@ public class ALMAMasterScheduler extends MasterScheduler
         control_nc.attach("alma.Control.ExecBlockEvent", eventreceiver);
         control_nc.begin();
         // Connect to the TelCal NC
-        /*
         telcal_nc = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.TelCalPublisher.CHANNELNAME.value,
-                containerServices);
+            AbstractNotificationChannel.CORBA, 
+            alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
+            containerServices);
+        telcal_nc.attach("alma.TelCalPublisher.AmpliCalReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.AmpCurveReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.AntennaPositionsReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.AtmosphereReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.DelayReducedEvent", eventreceiver);
         telcal_nc.attach("alma.TelCalPublisher.FocusReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.PhaseCalReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.PhaseCurveReducedEvent", eventreceiver);
         telcal_nc.attach("alma.TelCalPublisher.PointingReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.PointingModelReducedEvent", eventreceiver);
+        telcal_nc.attach("alma.TelCalPublisher.SkydipReducedEvent", eventreceiver);
         telcal_nc.begin();
-        */
         
         // Connect to the Pipeline NC
         pipeline_nc = AbstractNotificationChannel.getReceiver(
