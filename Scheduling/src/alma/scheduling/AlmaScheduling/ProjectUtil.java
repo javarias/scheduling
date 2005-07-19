@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.26 2005/07/05 17:29:06 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.27 2005/07/19 19:11:43 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -674,11 +674,14 @@ public class ProjectUtil {
 		// one target, we will add a one-degree rectangle around it.
 		ArrayList eqList = new ArrayList ();
 		for (int i = 0; i < targetList.length; ++i) {
+            /*
 			FieldSpecT fieldSpec = targetList[i].getFieldSpec();
 			if (fieldSpec == null)
 				throw new SchedulingException("There is no FieldSpecT object in the scheduling block with id " + 
 						sb.getSchedBlockId());
-			FieldSourceT fieldSource = fieldSpec.getFieldSource();
+                        */
+//			FieldSourceT fieldSource = fieldSpec.getFieldSource();
+			FieldSourceT fieldSource = targetList[i].getFieldSource();
 			if (fieldSource == null)
 				throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
 						sb.getSchedBlockId());
