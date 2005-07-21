@@ -46,7 +46,7 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.21 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.22 2005/07/21 22:53:50 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -68,7 +68,7 @@ public class ALMAControl implements Control {
         this.observedSessions = new Vector();
         try {
             control_system = alma.Control.ControlSystemHelper.narrow(
-                containerServices.getComponent("CONTROL_ControlSystem1"));
+                containerServices.getComponent("CONTROL_MASTER"));
             logger.info("SCHEDULING: Got ControlSystem Component");
             
         } catch (alma.acs.container.ContainerException ce) {
@@ -151,7 +151,6 @@ public class ALMAControl implements Control {
                 logger.severe("SCHEDULING: controllers == null..");
                 throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
-            //ArrayController ctrl = control_system.createSubArray(antenna);
             String arrayName = control_system.createAutomaticArray(antenna);
             AutomaticArrayCommand ctrl = alma.Control.AutomaticArrayCommandHelper.narrow(
                     containerServices.getComponent(arrayName));
@@ -212,8 +211,8 @@ public class ALMAControl implements Control {
     /**
      * @return String[]
      */
-    public String[] getArrayAntennas(String name) {
-        return null;
+    public String[] getArrayAntennas(String name) throws SchedulingException {
+            return getAutomaticArray(name).getAntennas();
     }
     
     /**
@@ -236,7 +235,7 @@ public class ALMAControl implements Control {
       */
     public void releaseControlComp() {
         try {
-            containerServices.releaseComponent("CONTROL_ControlSystem1");
+            containerServices.releaseComponent("CONTROL_MASTER");
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error releasing control comp.");
             e.printStackTrace();

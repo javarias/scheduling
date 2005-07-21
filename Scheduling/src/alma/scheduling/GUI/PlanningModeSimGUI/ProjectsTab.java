@@ -407,31 +407,87 @@ public class ProjectsTab extends JScrollPane {
      * @return Vector
      */
     public Vector getProjects() {
-        Vector v = new Vector(); //projects vector
+        Vector allProjects = new Vector(); //projects vector
         try {
             totalProjects = projectPane.getTabCount();
+            //System.out.println("Total projects = "+totalProjects);
             for(int i=0; i < totalProjects; i++) {
+                Vector v = new Vector();
                 Component scrollPane = projectPane.getComponentAt(i);
                 Component[] tabPane = ((JScrollPane)scrollPane).getComponents();
                 Component[] tabPaneComps = ((JViewport)tabPane[0]).getComponents();
                 JPanel mainPanel = (JPanel)tabPaneComps[0];
                 Component[] mainPanelComps = mainPanel.getComponents();
+                //System.out.println(mainPanelComps.length);
+                //System.out.println(mainPanelComps[0].getClass().getName());
+                //System.out.println(mainPanelComps[1].getClass().getName());
                 JPanel projectInfoPanel = (JPanel)mainPanelComps[0];
-                JPanel targetsInfoPanel = (JPanel)mainPanelComps[1];
+                //JPanel targetsInfoPanel = (JPanel)mainPanelComps[1];
+                JTabbedPane setsTabs = (JTabbedPane) mainPanelComps[1];
 
                 Component[] projectInfo = projectInfoPanel.getComponents();
                 v.add( ((JTextField)projectInfo[1]).getText() );//project name
                 v.add( ((JTextField)projectInfo[3]).getText() ); //PI
                 v.add( ((JTextField)projectInfo[5]).getText() ); //priority
-                v.add( ((JTextField)projectInfo[7]).getText() ); //number of targets
+                v.add( ((JTextField)projectInfo[7]).getText() ); //number of sets
                 
-                Component[] targetsInfo = targetsInfoPanel.getComponents();
-                v.add(getTargetsInfo(targetsInfo));
+                Component[] setsPaneComps = setsTabs.getComponents();
+                //System.out.println(setsPaneComps.length);// The number of sets equals this.
+                //System.out.println(setsPaneComps[0].getClass().getName());//JScrollPane
+                //for each scroll pane in setsPaneComps get the internals.
+                int numberOfSets = setsPaneComps.length;// The number of sets equals this.
+                Vector sets = new Vector();
+                for (int j=0; j < numberOfSets;j++){
+                    sets.add( getSetsInfo( ((JScrollPane)setsPaneComps[j]).getComponents() ) );
+                }
+                v.add(sets);
+                     
+                allProjects.add(v);
             }
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return v;
+        return allProjects;
+    }
+
+    /**
+      *
+      */
+    public Vector getSetsInfo(Component[] comp) throws Exception {
+        int len = comp.length;
+        Vector setStuff = new Vector();//First 5 = set info stuff, next = target stuff
+        /*System.out.println(len);
+        for(int i=0; i < len; i++){
+            System.out.println(comp[i].getClass().getName());
+        }
+        */
+        Component[] setsContents = ((JViewport)comp[0]).getComponents();
+        Component[] setsPanel = ((JPanel)setsContents[0]).getComponents();
+        
+        //System.out.println(setsPanel.length);
+        //System.out.println(setsPanel[0].getClass().getName());
+        //System.out.println(setsPanel[1].getClass().getName());
+        Component[] setsInfo = ((JPanel)setsPanel[0]).getComponents(); //12 items
+        setStuff.add(((JTextField)setsInfo[1]).getText());//sets name
+        setStuff.add(((JTextField)setsInfo[4]).getText());//freq band
+        setStuff.add((String)((JComboBox)setsInfo[8]).getSelectedItem());//weather cond.
+        setStuff.add(((JTextField)setsInfo[6]).getText());//freq
+        setStuff.add(((JTextField)setsInfo[10]).getText());//# of targets
+        /*
+        for(int i=0; i < setStuff.size();i++){
+            System.out.println(setStuff.elementAt(i));
+        }
+        */
+        //System.out.println(setsInfo.length);
+        Component[] targets = ((JPanel)setsPanel[1]).getComponents();
+        Vector targetsInfo = new Vector(targets.length);
+        for(int i=0; i < targets.length;i++){
+            targetsInfo.add(getTargetsInfo(((JPanel)targets[i]).getComponents()));
+        }
+        setStuff.add(targetsInfo);
+        //There will be a JPanel for each target.
+        int targetLen = targets.length;
+        return setStuff;
     }
 
     /** 
@@ -441,37 +497,16 @@ public class ProjectsTab extends JScrollPane {
      */
     public Vector getTargetsInfo(Component[] comp) throws Exception {
         int totaltargets = comp.length;
-        Vector targets = new Vector(totaltargets);
-        JPanel p;
-        Component[] c;
-        String tmp;
-        for(int i=0; i < totaltargets; i++ ) {
-            p = (JPanel)comp[i];
-            c = p.getComponents();
-            tmp = ((JTextField)c[1]).getText();
-            if(tmp == "") throw new Exception("Target must have a name.");
-            targets.add(tmp);
-            tmp = ((JTextField)c[3]).getText();
-            if(tmp == "") throw new Exception("Target must have a RA.");
-            targets.add(tmp);
-            tmp = ((JTextField)c[5]).getText();
-            if(tmp == "") throw new Exception("Target must have a DEC.");
-            targets.add(tmp);
-            tmp = ((JTextField)c[9]).getText();
-            if(tmp == "") throw new Exception("Target must have a frequency.");
-            targets.add(tmp);
-            tmp = ((JTextField)c[11]).getText();
-            if(tmp == "") throw new Exception("Target must have a total time.");
-            targets.add(tmp);
-            tmp =  (String)((JComboBox)c[15]).getSelectedItem();
-            targets.add(tmp);
-            tmp = ((JTextField)c[17]).getText();
-            if ((tmp == "") || (tmp == null)) tmp = "0";
-            targets.add(tmp);
-            
-        }
-
-        return targets;
+        Vector target = new Vector(); //holds all the targets info.
+        target.add(((JTextField)comp[1]).getText()); //targetName
+        target.add(((JTextField)comp[3]).getText()); //RA
+        target.add(((JTextField)comp[5]).getText()); //DEC
+        target.add(((JTextField)comp[9]).getText()); //FREQ
+        target.add(((JTextField)comp[11]).getText()); //total time
+        target.add((String)((JComboBox)comp[15]).getSelectedItem()); //weather
+        target.add(((JTextField)comp[17]).getText()); //repeat count
+           
+        return target;
     }
 
     /**

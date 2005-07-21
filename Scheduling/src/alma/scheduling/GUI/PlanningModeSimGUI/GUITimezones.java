@@ -91,7 +91,75 @@ public class GUITimezones extends JComboBox {
      */
     public String getValue() {
         String value1 = (String)getSelectedItem();
-        String substring = value1.substring(3);
+        String s = value1.substring(3);
+        String substring = "";
+        if ( s.equals("-12:00") ) {
+            substring = "-12";
+        } else if ( s.equals("-11:00") ){
+            substring = "-11";
+        } else if ( s.equals("-10:00") ){
+            substring = "-10";
+        } else if ( s.equals("-09:00") ){
+            substring = "-9";
+        } else if ( s.equals("-08:00") ){
+            substring = "-8";
+        } else if ( s.equals("-07:00") ){
+            substring = "-7";
+        } else if ( s.equals("-06:00") ){
+            substring = "-6";
+        } else if ( s.equals("-05:00") ){
+            substring = "-5";
+        } else if ( s.equals("-04:00") ){
+            substring = "-4";
+        } else if ( s.equals("-03:30") ){
+            substring = "-3.30";
+        } else if ( s.equals("-03:00") ){
+            substring = "-3";
+        } else if ( s.equals("-02:00") ){
+            substring = "-2";
+        } else if ( s.equals("-01:00") ){
+            substring = "-1";
+        } else if ( s.equals("00:00")  ){
+            substring = "0";
+        } else if ( s.equals("+01:00") ){
+            substring = "1";
+        } else if ( s.equals("+02:00") ){
+            substring = "2";
+        } else if ( s.equals("+03:00") ){
+            substring = "3";
+        } else if ( s.equals("+03:30") ){
+            substring = "3.3";
+        } else if ( s.equals("+04:00") ){
+            substring = "4";
+        } else if ( s.equals("+04:30") ){
+            substring = "4.3";
+        } else if ( s.equals("+05:00") ){
+            substring = "5";
+        } else if ( s.equals("+05:30") ){
+            substring = "5.3";
+        } else if ( s.equals("+05:45") ){
+            substring = "5.45";
+        } else if ( s.equals("+06:00") ){
+            substring = "6";
+        } else if ( s.equals("+06:30") ){
+            substring = "6.3";
+        } else if ( s.equals("+07:00") ){
+            substring = "7";
+        } else if ( s.equals("+08:00") ){
+            substring = "8";
+        } else if ( s.equals("+09:00") ){
+            substring = "9";
+        } else if ( s.equals("+09:30") ){
+            substring = "9.3";
+        } else if ( s.equals("+10:00") ){
+            substring = "10";
+        } else if ( s.equals("+11:00") ){
+            substring = "11";
+        } else if ( s.equals("+12:00") ){
+            substring = "12";
+        } else if ( s.equals("+13:00") ){
+            substring = "13";
+        }
         return substring;
     }
 

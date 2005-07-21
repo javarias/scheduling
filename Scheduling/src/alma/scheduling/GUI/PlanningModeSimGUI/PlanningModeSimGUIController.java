@@ -98,7 +98,7 @@ public class PlanningModeSimGUIController implements Runnable {
     
     protected URL getImage(String name) {
         return this.getClass().getClassLoader().getResource(
-            "alma/scheduling/image/"+name);
+            "alma/scheduling/Image/"+name);
     }
 
     private void getTabs() {
@@ -157,6 +157,7 @@ public class PlanningModeSimGUIController implements Runnable {
 
     private void stuffFromFrequencyTab() {
         freqbands = frequencyTab.getFrequencyValues();
+        totalfreqbands = freqbands.size();
     }
 
     private void stuffFromWeatherTab() {
@@ -212,7 +213,7 @@ public class PlanningModeSimGUIController implements Runnable {
             out.println();
             out.println("Site.longitude = " + longitude);
             out.println("Site.latitude = " + latitude);
-            out.println("Site.timezone = " + timezone);
+            out.println("Site.timeZone = " + timezone);
             out.println("Site.altitude = " + altitude);
             out.println("Site.minimumElevationAngle = " +minAngle);
             out.println("Site.numberAntennas = " + totalAntennas);
@@ -258,28 +259,44 @@ public class PlanningModeSimGUIController implements Runnable {
             out.println();
             out.println("numberProjects = " + totalprojects);
             out.println();
-            int x=0;
-            for(int i=0; i < totalprojects*5; i=i+5) {
-                out.println("project."+ x +" = " +
-                    ((String)(projects.elementAt(i+0))) + "; " +
-                    ((String)(projects.elementAt(i+1))) + "; " +
-                    ((String)(projects.elementAt(i+2))) + "; " +
-                    ((String)(projects.elementAt(i+3))) );
-                Vector targets = (Vector)projects.elementAt(i+4);
-                int targetSize = targets.size()/7;
-                //System.out.println("total targets = "+(targets.size()/7));
-                for(int j=0; j < targetSize; j++) {
-                    int z = 0;
-                    out.println("target."+x+"."+j+" = " +
-                        ((String)(targets.elementAt(z))) + "; " +
-                        ((String)(targets.elementAt(z+1))) + "; " +
-                        ((String)(targets.elementAt(z+2))) + "; " +
-                        ((String)(targets.elementAt(z+3))) + "; " +
-                        ((String)(targets.elementAt(z+4))) + "; " +
-                        ((String)(targets.elementAt(z+5))) + "; " +
-                        ((String)(targets.elementAt(z+6))) );
+            for(int i=0; i < totalprojects; i++){
+                //project name; pi; priority; # of sets
+                Vector proj = (Vector)projects.elementAt(i);
+                out.println("project."+i+" = "+
+                    (String)(proj.elementAt(0)) + "; " +
+                    (String)(proj.elementAt(1)) + "; " +
+                    (String)(proj.elementAt(2)) + "; " +
+                    (String)(proj.elementAt(3)) );
+                //get # of sets
+                Vector sets = (Vector)proj.elementAt(4);
+                int numOfSets = sets.size();
+                for(int j=0; j< numOfSets; j++){
+                    Vector set = (Vector)sets.elementAt(j);
+                    out.println("set."+i+"."+j+" = "+
+                           ((String)set.elementAt(0)) +"; "+ 
+                           ((String)set.elementAt(1)) +"; "+ 
+                           ((String)set.elementAt(2)) +"; "+ 
+                           ((String)set.elementAt(3)) +"; "+ 
+                           ((String)set.elementAt(4)) );
+                    Vector targets = (Vector)set.elementAt(5);
+
+                    //get # of targets.
+                    int numOfTargets= targets.size();
+                    for(int k=0; k < numOfTargets;k++){
+                        Vector target = (Vector)targets.elementAt(k);
+                        out.println("target."+i+"."+j+"."+k+" = "+
+                                ((String)target.elementAt(0)) +"; "+ 
+                                ((String)target.elementAt(1)) +"; "+ 
+                                ((String)target.elementAt(2)) +"; "+ 
+                                ((String)target.elementAt(3)) +"; "+ 
+                                ((String)target.elementAt(4)) +"; "+ 
+                                ((String)target.elementAt(5)) +"; "+ 
+                                ((String)target.elementAt(6)) );
+                    }
                 }
-                x++;
+                out.println();
+                
+                        
             }
             out.println();
             out.println();
@@ -311,10 +328,12 @@ public class PlanningModeSimGUIController implements Runnable {
             simulator = new Simulator();
             try {
                 simulator.initialize(".", "data.txt", "output.txt", "log.txt");
+                Thread t = new Thread(simulator);
+                t.start();
             } catch(Exception e) {
+                System.out.println("Error initializing simulator!");
+                e.printStackTrace();
             }
-            Thread t = new Thread(simulator);
-            t.start();
         }
     }
 
