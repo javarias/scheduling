@@ -40,16 +40,11 @@
             Container="python" 
             Default="true" />
 
-      <_ Name="CONTROL_ControlSystem1" 
+      <_ Name="CONTROL_MASTER_COMP" 
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/Control/ControlSystem:1.0"
             Container="python" />
             
-      <_ Name="CONTROL_ArrayController1" 
-            Code="Acssim.Servants.Simulator"
-            Type="IDL:alma/Control/ArrayController:1.0"
-            Container="python"/>
-
       <_ Name="ARCHIVE_CONNECTION"
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/xmlstore/ArchiveConnection:1.0"
