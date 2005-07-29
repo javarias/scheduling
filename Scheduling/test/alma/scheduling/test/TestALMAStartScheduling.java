@@ -89,7 +89,7 @@ public class TestALMAStartScheduling {
                     Thread.sleep(1000);
                 }catch(Exception e) {}
             }
-            client.getContainerServices().releaseComponent("CONTROL_ControlSystem");
+            client.getContainerServices().releaseComponent("CONTROL_SYSTEM_COMPONENT");
             client.getContainerServices().releaseComponent("PIPELINE_SCIENCE");
             client.getContainerServices().releaseComponent("SCHEDULING_MASTERSCHEDULER");
 
