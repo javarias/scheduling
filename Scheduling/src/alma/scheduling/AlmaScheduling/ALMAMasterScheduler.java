@@ -59,7 +59,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.26 2005/07/05 17:29:06 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.27 2005/07/29 19:58:41 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -156,7 +156,8 @@ public class ALMAMasterScheduler extends MasterScheduler
             AbstractNotificationChannel.CORBA, 
             alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
                 containerServices);
-        control_nc.attach("alma.Control.ExecBlockEvent", eventreceiver);
+        control_nc.attach("alma.Control.ExecBlockStartedEvent", eventreceiver);
+        control_nc.attach("alma.Control.ExecBlockEndedEvent", eventreceiver);
         control_nc.begin();
         // Connect to the TelCal NC
         telcal_nc = AbstractNotificationChannel.getReceiver(
@@ -195,7 +196,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.manager.managerStopped();
         this.control.releaseControlComp();
         this.archive.releaseArchiveComponents();
-        control_nc.detach("alma.Control.ExecBlockEvent", eventreceiver);
+        control_nc.detach("alma.Control.ExecBlockStartedEvent", eventreceiver);
+        control_nc.detach("alma.Control.ExecBlockEndedEvent", eventreceiver);
         ((CorbaReceiver)control_nc).disconnect();
         pipeline_nc.detach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
         ((CorbaReceiver)pipeline_nc).disconnect();
