@@ -6,13 +6,13 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.10 2005/03/30 19:44:39 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.11 2005/07/29 20:20:30 sslucero Exp $"
 
 Documents:
 
 
 Configuration Requirements:
-    - ACS-4.0.2
+    - ACS-4.1.1
     - MicroArchive that was released with ACS
     - All other subsystems that are installed before scheduling in the build 
       process must be installed.
@@ -54,7 +54,7 @@ Tests:
 
 TEST NOTE: Scheduling now has an Interactive Scheduling Mode. This requires human interaction
            and therefore cannot be automatically tested. For more imformation on how to test 
-           the Interactive Scheduling mode please see Allen Farris or Sohaila Lucero.
+           the Interactive Scheduling mode please see Sohaila Lucero.
     
 Known problems/bugs:
     - In interactive scheduling when the observing tool is used (when sb is 
@@ -66,6 +66,9 @@ Cost:
 
 
 Changes:
+
+    - Scheduling now receives (but doesn't do anything with) the TELCAL events. A log message is just sent out.
+    
     - Alot of fixes to the project status structure manipulation was done.
     - New functionality to talk to the Operator component from exec. To send a message that the a session has started and stopped.
 
