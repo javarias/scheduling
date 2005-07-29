@@ -46,9 +46,9 @@
 	         Type="IDL:alma/pipelinescience/SciPipeManager:1.0"
 		     Container="java"/>
 <!-- ************ CONTROL **************** -->
-      <_ Name="CONTROL_SYSTEM_COMPONENT" 
+      <_ Name="CONTROL_MASTER_COMP" 
             Code="alma.Control.ControlMaster.ControlSystemComponentCreator"
-            Type="IDL:alma/Control/ControlStatus:1.0"
+            Type="IDL:alma/Control/ControlSystem:1.0"
             Container="java" />
 
            
