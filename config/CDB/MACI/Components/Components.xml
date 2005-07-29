@@ -40,11 +40,11 @@
 
             -->
 <!-- ************ PIPELINE *************** -->
-      <_ Name="SCIENCE_PIPELINE" 
-            Code="alma.pipelinescience.components.SciencePipelineHelper"
-            Type="IDL:alma/pipelinescience/SciencePipeline:1.0"
-            Container="java"/>
-
+      
+      <_ Name="PIPELINE_SCIPIPEMANAGER"
+	         Code="alma.pipelinescience.components.SciPipeManagerHelper"
+	         Type="IDL:alma/pipelinescience/SciPipeManager:1.0"
+		     Container="java"/>
 <!-- ************ CONTROL **************** -->
       <_ Name="CONTROL_SYSTEM_COMPONENT" 
             Code="alma.Control.ControlMaster.ControlSystemComponentCreator"
