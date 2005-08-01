@@ -50,16 +50,14 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.MasterScheduler;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
-import alma.scheduling.Scheduler.DynamicScheduler;
-import alma.scheduling.Scheduler.InteractiveScheduler;
-import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.Scheduler.*;
 import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.27 2005/07/29 19:58:41 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.28 2005/08/01 19:17:05 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
