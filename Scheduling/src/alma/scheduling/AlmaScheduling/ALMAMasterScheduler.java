@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.28 2005/08/01 19:17:05 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.29 2005/08/01 21:20:10 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -320,7 +320,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         //TODO Eventually populate s_policy with info from the schedulingPolicy
         Policy s_policy = createPolicy();
         
-        String arrayname = createArray(new short[0], "dynamic");
+        String arrayname = createArray(new String[0], "dynamic");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
@@ -359,7 +359,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         sbQueue = new SBQueue(sbs);
         
-        String arrayname = createArray(new short[0], "interactive");
+        String arrayname = createArray(new String[0], "interactive");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), false, true, sbQueue, sbQueue.size(), 0, 
@@ -456,7 +456,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @return String
       * @throws InvalidOperation
       */
-    public String createArray(short[] antennaIdList, String schedulingMode)
+    public String createArray(String[] antennaIdList, String schedulingMode)
         throws InvalidOperation {
         
         String name;
@@ -529,14 +529,14 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @param short
       * @throws InvalidOperation
       */
-    public void manualMode(short antennaId) throws InvalidOperation{
+    public void manualMode(String antennaId) throws InvalidOperation{
     }
 
     /**
       * @param short
       * @throws InvalidOperation
       */
-    public void activeMode(short antennaId) throws InvalidOperation {
+    public void activeMode(String antennaId) throws InvalidOperation {
     }
      
     /////////////////////////////////////////////////////////////////////
