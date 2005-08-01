@@ -6,10 +6,16 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.11 2005/07/29 20:20:30 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.12 2005/08/01 00:36:35 sslucero Exp $"
 
 Documents:
 
+Important Comments:
+    For MONTHLY-2005-07:
+    - This version of SCHEDULING has NOT been tested with the new CONTROL code
+      and previous functionality is not guarenteed. Any major modifications to
+      this version of SCHEDULING will be done in the next release. Minor 
+      modifications will be possible tho none should be needed.
 
 Configuration Requirements:
     - ACS-4.1.1
@@ -57,6 +63,7 @@ TEST NOTE: Scheduling now has an Interactive Scheduling Mode. This requires huma
            the Interactive Scheduling mode please see Sohaila Lucero.
     
 Known problems/bugs:
+
     - In interactive scheduling when the observing tool is used (when sb is 
       added or updated..) problems occur with the acs container. This due to 
       the way the OT shuts down or something.. killACS seems to be the only way
