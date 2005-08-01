@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.38 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.39 2005/08/01 21:21:17 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -211,12 +211,18 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     /**
-      *
+      * An SB has completed an execution. Check that its repeat count is met and if so 
+      * its status to complete. If not set it back to ready.
       */
     public void setSBComplete(ExecBlock eb) {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
-        completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
+	    //If this SB has reached its maximum number of repeats set it to complete.
+        if(completed.getNumberExec() < completed.getMaximumNumberOfRepeats() ){
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
+        } else { //set it to ready
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
+        }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
     }
 
