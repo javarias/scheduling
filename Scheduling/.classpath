@@ -19,15 +19,19 @@
 	<classpathentry kind="var" path="ACSROOT/lib/acsnc.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/baci.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/mastercomp_if.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/mastercomp.jar"/>
+	<classpathentry sourcepath="/ACSROOT/lib/mastercomp.jar" kind="var" path="ACSROOT/lib/mastercomp.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/jbaci.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/archive_xmlstore_if.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/ControlInterfaces.jar"/>
-	<classpathentry kind="var" path="INTROOT/lib/ControlEntities.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/TelCalPublisher.jar"/>
-	<classpathentry kind="var" path="INTROOT/lib/SciencePipeline.jar"/>
-	<classpathentry kind="var" path="INTROOT/lib/SchedulingUtils.jar"/>
 	<classpathentry sourcepath="ACSROOT/lib/junit.jar" kind="var" path="ACSROOT/lib/junit.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/jACSUtil.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acscodegen.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlExceptions.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/ACSErrTypeOK.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ObservingTool.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SciPipeManager.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SciPipeExceptions.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ExecInterfaces.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
