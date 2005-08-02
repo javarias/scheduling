@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.39 2005/08/01 21:21:17 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.40 2005/08/02 20:41:13 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -428,8 +428,8 @@ public class ALMAProjectManager extends ProjectManager {
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                     session.getSessionId(),
                     session.getProgram().getId(),
-                    sbid,
-                    eb.getId());
+                    sbid);
+                    //eb.getId());
                     
             publisher.publish(start_event);
         } catch(Exception e) {
@@ -446,9 +446,14 @@ public class ALMAProjectManager extends ProjectManager {
     public void sendEndSessionEvent(ExecBlock eb) {
         
         String endTime = (new DateTime(System.currentTimeMillis())).toString();
-        String execid = eb.getExecId();
+        //String execid = eb.getExecId();
         String sbid = ((SB)eb.getParent()).getId();
         SB sb = sbQueue.get(sbid);
+        ExecBlock[] allExecs = sb.getExec();
+        String[] allExecIds = new String[allExecs.length];
+        for(int i=0; i < allExecs.length; i++){
+            allExecIds[i] = allExecs[i].getExecId();
+        }
         Project proj = (Project)sb.getProject();
         String projectid = proj.getId();
         ProjectStatus ps = psQueue.getStatusFromProjectId(projectid);
@@ -466,7 +471,7 @@ public class ALMAProjectManager extends ProjectManager {
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
                     session.getEntityPartId(),
                     obsProgram.getEntityPartId(),
-                    execid);
+                    allExecIds);
             publisher.publish(end_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send end session event!");
