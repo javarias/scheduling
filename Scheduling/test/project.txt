@@ -1,0 +1,130 @@
+# Project data with sets and target lists
+
+# Project data is entered in the form of data identifying the project
+# followed by a list of sets that belong to that project.  Following each
+# set is a series of target entries.  An ObsUnitSet is created for each set 
+# entry and a scheduling block, belonging to that set, is created for each 
+# target entry.
+#
+# Syntax:
+#
+#     numberProjects = N
+#     project.<i> = projectName; PI; priority; numberSets 
+#	  set.<i>.<j> = setName; frequency-band; frequency; weather-condition; numberTargets
+#     target.<i>.<j>.<k> = targetName; ra; dec; frequency; total-time; weather-condition; repeat-count; lstBegin; lstEnd
+#
+# where 0 <= i < N and 
+# 		0 <= j < numberSets[i] and 
+#		0 <= k < numberTargets[i][j].
+# Units: ra hours, dec degrees, frequency GHz, total-time minutes.
+# 
+# All sets must specify the same frequency band.  A default frequency and 
+# weather-condition must be specified for the set but these may be overridden
+# on the target.  There are no optional parameters on the set statement.
+# 
+# There are a number of optional parameters on a target statement, however.
+# a. The "repeat-count" is optional and may be omitted (in which case it is 0).
+# b. The LST range is optional; however if lstBegin is specified, then repeat-count
+#    and lstEnd must be specified.  The purpose of the LST range is to request
+#    support of expanded U-V coverage. 
+# c. The "frequency" and "weather-condition" on a target are optional and if
+#    not specified are inherited from the set.
+# 
+# The priority is: highest, higher, high, mediumPlus, medium, mediumMinus, low, lower, lowest, background
+# 
+# The weather-condition is: exceptional, excellent, good, average, belowAverage, poor, dismal, any
+
+
+
+numberProjects = 9
+
+project.0 = Background; Allen Farris; low; 2
+set.0.0 = s00; 1; 40.0; any; 5
+target.0.0.0 = bk00; 1.0; 50.0; 40.0; 5.0; any; 5
+target.0.0.1 = bk01; 2.0; 50.0; 40.0; 5.0; any; 5
+target.0.0.2 = bk02; 3.0; 50.0; 40.0; 5.0; any; 5
+target.0.0.3 = bk03; 4.0; 50.0; 40.0; 5.0; any; 5
+target.0.0.4 = bk04; 5.0; 50.0; 40.0; 5.0; any; 5
+set.0.1 = s01; 1; 40.0; any; 5
+target.0.1.0 = bk05; 6.0; 50.0; ; 5.0; ; 5
+target.0.1.1 = bk06; 7.0; 50.0; ; 5.0; ; 5
+target.0.1.2 = bk07; 8.0; 50.0; ; 5.0; ; 5
+target.0.1.3 = bk08; 9.0; 50.0; ; 5.0; ; 5
+target.0.1.4 = bk09; 10.0; 50.0; ; 5.0; ; 5
+
+project.1  = AF1; Allen Farris; medium; 2
+set.1.0 = s10; 2; 68.0; good; 3
+target.1.0.0 = af01;   0.2; 50.0; 68.0; 30.0; excellent
+target.1.0.1 = af02;   1.2; 49.0; 68.0; 25.0; good
+target.1.0.2 = af03;   2.2; 48.0; 68.0; 35.0; average
+set.1.1 = s11; 2; 68.0; good; 3
+target.1.1.0 = af04;   3.2; 47.0; 68.0; 20.0; average
+target.1.1.1 = af05;   4.2; 46.0; 68.0; 25.0; good
+target.1.1.2 = af06;   5.2; 45.0; 68.0; 35.0; poor
+
+project.2  = AF2; Allen Farris; high; 2
+set.2.0 = s20; 3; 100.0; good; 3
+target.2.0.0 = af07;   6.2; 45.0; 100.0; 15.0; excellent
+target.2.0.1 = af08;   7.2; 44.0; 100.0; 30.0; good
+target.2.0.2 = af09;   8.2; 43.0; 100.0; 20.0; average
+set.2.1 = s21; 3; 100.0; good; 3
+target.2.1.0 = af10;  9.2; 42.0; 100.0; 35.0; average
+target.2.1.1 = af11; 10.2; 41.0; 100.0; 40.0; good
+target.2.1.2 = af12; 11.2; 40.0; 100.0; 30.0; poor
+
+project.3  = AF3; Allen Farris; highest; 3
+set.3.0 = s30; 3; 100.0; good; 2
+target.3.0.0 = af13; 12.2; 39.0; 80.0; 30.0; excellent
+target.3.0.1 = af14; 13.2; 38.0; 80.0; 30.0; good
+set.3.1 = s31; 3; 100.0; good; 2
+target.3.1.0 = af15; 14.2; 37.0; 80.0; 30.0; average
+target.3.1.1 = af16; 15.2; 36.0; 80.0; 30.0; average
+set.3.2 = s32; 3; 100.0; good; 2
+target.3.2.0 = af17; 16.2; 35.0; 80.0; 30.0; good
+target.3.2.1 = af18; 17.2; 34.0; 80.0; 30.0; poor
+
+project.4  = AF4; Allen Farris; higher; 1
+set.4.0 = s40; 5; 200.0; good; 6
+target.4.0.0 = af19; 18.2; 33.0; 200.0; 30.0; excellent
+target.4.0.1 = af20; 19.2; 32.0; 200.0; 25.0; good
+target.4.0.2 = af21; 20.2; 31.0; 200.0; 35.0; average
+target.4.0.3 = af22; 21.2; 30.0; 200.0; 20.0; average
+target.4.0.4 = af23; 22.2; 29.0; 200.0; 25.0; good
+target.4.0.5 = af24; 23.2; 28.0; 200.0; 35.0; poor
+
+project.5  = AF5; Allen Farris; medium; 1
+set.5.0 = s50; 7; 300.0; good; 6
+target.5.0.0 = af25;   0.2; 50.0; 300.0; 30.0; excellent
+target.5.0.1 = af26;   1.2; 49.0; 300.0; 25.0; good
+target.5.0.2 = af27;   2.2; 48.0; 300.0; 35.0; average
+target.5.0.3 = af28;   3.2; 47.0; 300.0; 20.0; average
+target.5.0.4 = af29;   4.2; 46.0; 300.0; 25.0; good
+target.5.0.5 = af30;   5.2; 45.0; 300.0; 35.0; poor
+
+project.6  = AF6; Allen Farris; high; 1
+set.6.0 = s60; 8; 500.0; good; 6
+target.6.0.0 = af31;   6.2; 45.0; 500.0; 15.0; excellent
+target.6.0.1 = af32;   7.2; 44.0; 500.0; 30.0; good
+target.6.0.2 = af33;   8.2; 43.0; 500.0; 20.0; average
+target.6.0.3 = af34;  9.2; 42.0; 500.0; 35.0; average
+target.6.0.4 = af35; 10.2; 41.0; 500.0; 40.0; good
+target.6.0.5 = af36; 11.2; 40.0; 500.0; 30.0; poor
+
+project.7  = AF7; Allen Farris; highest; 1
+set.7.0 = s70; 10; 900.0; good; 6
+target.7.0.0 = af37; 12.2; 39.0; 900.0; 30.0; excellent
+target.7.0.1 = af38; 13.2; 38.0; 900.0; 30.0; good
+target.7.0.2 = af39; 14.2; 37.0; 900.0; 30.0; average
+target.7.0.3 = af40; 15.2; 36.0; 900.0; 30.0; average
+target.7.0.4 = af41; 16.2; 35.0; 900.0; 30.0; good
+target.7.0.5 = af42; 17.2; 34.0; 900.0; 30.0; poor
+
+project.8  = AF8; Allen Farris; higher; 1
+set.8.0 = s80; 7; 300.0; good; 6
+target.8.0.0 = af43; 18.2; 33.0; 300.0; 30.0; excellent
+target.8.0.1 = af44; 19.2; 32.0; 300.0; 25.0; good
+target.8.0.2 = af45; 20.2; 31.0; 300.0; 35.0; average
+target.8.0.3 = af46; 21.2; 30.0; 300.0; 20.0; average
+target.8.0.4 = af47; 22.2; 29.0; 300.0; 25.0; good
+target.8.0.5 = af48; 23.2; 28.0; 300.0; 35.0; poor
+

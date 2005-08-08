@@ -1,0 +1,131 @@
+# R2.1 Simulation Input May 4, 2004
+# Properties of the simulation.
+
+# The beginning and ending time of the simulation.
+Simulation.beginTime = 2003-08-25T00:00:00
+Simulation.endTime = 2003-08-27T00:00:00
+
+# Simulation mode: FULL, PLANNING, or CONFLICT
+Simulation.mode = PLANNING
+# The logging level: CONFIG, FINE, FINER, or FINEST
+Simulation.logLevel = CONFIG
+# The time, in seconds, that is required to change to a different
+# observing setup, for example, to change frequency bands.
+Simulation.setUpTime = 120
+# The time, in seconds, that is required to change from one project
+# to a different project.
+Simulation.changeProjectTime = 300
+# The time, in seconds, to advance the clock when nothing can be 
+# scheduled.
+Simulation.advanceClock = 300
+
+# Site Characteristics
+
+# Site longitude in degrees.
+Site.longitude = 107.6177275
+# Site latitude in degrees.
+Site.latitude = 34.0787491666667
+# The time zone of the site.
+Site.timeZone = -6
+# Site altitude in meters.
+Site.altitude = 2124.0
+# Site minimum elevation angle above the horizon.
+Site.minimumElevationAngle = 8.0
+# Number of antennas.
+Site.numberAntennas = 64
+
+# Frequency Bands
+
+#     Syntax:
+#         FrequencyBand.numberOfBands = N
+#         FrequencyBand.<i> = nameOfBand; minimumFrequency; maximumFrequency
+# where 0 <= i < N, and N is the number of frequency bands.  
+# Frequencies are in GHz.
+FrequencyBand.numberOfBands = 10
+FrequencyBand.0 = 1;   31.3;  45.0
+FrequencyBand.1 = 2;   67.0;  90.0
+FrequencyBand.2 = 3;   84.0; 116.0
+FrequencyBand.3 = 4;  125.0; 168.0
+FrequencyBand.4 = 5;  163.0; 211.0
+FrequencyBand.5 = 6;  211.0; 275.0
+FrequencyBand.6 = 7;  275.0; 373.0
+FrequencyBand.7 = 8;  385.0; 500.0
+FrequencyBand.8 = 9;  602.0; 720.0
+FrequencyBand.9 = 10; 787.0; 950.0
+
+# Weather model parameters
+
+#     Weather.numberFunctions = N
+#     Weather.<i> = functionName; units; p0; p1; p2; s0; s1; t0; t1
+# where 0 <= i < N.  The formula used is:
+#		f(T) = p0*sin(t0*T + s0) + p1*cos(t1*T + s1) + p2;		
+# where T is the time of day in radians.
+# For the R1 simulation, there is only one weather function.
+Weather.numberFunctions = 1
+Weather.0 = quality; ; 0.15; -0.03; 0.7; 0.0; 6.0; 2.0; 2.0
+
+# The dynamic scheduling algorithm
+
+# For the R1 simulation, there is one dynamic scheduling algorithm.
+# For it, one can specify the weights on the various factors computed
+# in the algorithm.  The definitions of the factors are given below.
+#
+# positionElevation
+#     sin of the current elevation or 0.0 if the source is not visible, 
+#         max = 1.0 min = 0.0
+# positionMaximum
+#     Returns 1.0 if the current LST is close to the LST at the maximum
+#     elevation of the source and diminishes as it is further away.   
+#         max = 1.0 min = 0.0
+# weather
+#     weather expression evaluation, max = 1.0 min = 0.0
+# priority
+#     the scientific priority, value: 10(high)/9/8/7/6/5/4/3/2/1
+# sameProjectSameBand
+#     SB belongs to same project and frequency band as current, value: 1/0
+# sameProjectDifferentBand
+#     SB belongs to same project as current but has a different frequency band, 
+#         value: 1/0
+# differentProjectSameBand
+#     SB belongs to a different project but has same frequency band as current, 
+#         value: 1/0
+# differentProjectDifferentBand
+#     SB belongs to a different project and has different frequency band from 
+#         current, value: 1/0
+# newProject
+#     the cost of starting a new project, value: 1/0
+# oneSBRemaining
+#     only one SB remains in the project, value: 1/0
+# The success calculation is:
+#     positionWeight * positionFactor + weatherWeight * weatherFactor
+# The ranking calculation is:
+#     priorityWeight * priorityFactor + 
+#     sameProjectSameBandWeight * sameProjectSameBandFactor +
+#     sameProjectDifferentBandWeight * sameProjectDifferentBandFactor +
+#     differentProjectSameBandWeight * differentProjectSameBandFactor +
+#     differentProjectDifferentBandWeight * differentProjectDifferentBandFactor +
+#     newProjectWeight * newProjectFactor +
+#     oneSBRemainingWeight * oneSBRemainingFactor
+# The final score is:
+#     success * ranking
+
+Weight.positionElevation = 0.25
+Weight.positionMaximum = 0.25
+Weight.weather = 0.5
+Weight.priority = 10.0
+Weight.sameProjectSameBand = 10.0
+Weight.sameProjectDifferentBand = -5.0
+Weight.differentProjectSameBand = 5.0
+Weight.differentProjectDifferentBand = -10.0
+Weight.newProject = -15.0
+Weight.oneSBRemaining = 20.0
+
+# Indicate the source of the project data.
+# The projectSourceType tells what kind of input the source data is.
+# At present, only JavaPoperties is supported.  In the future,
+# there will be other possibilities, such as an archive.
+# The projectSource is the name of the project source file.
+# This name is relative to the same directory that is specified
+# in the simulation input.
+projectSourceType = JavaProperties
+projectSource = project.txt

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+acsStartJava -endorsed alma.scheduling.PlanningModeSim.RunSimulator . input.txt PMS_output.txt PMS_log.txt

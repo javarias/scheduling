@@ -1,3 +1,4 @@
 PROLOGUE prologue
-allTests
+1 allTests allTests
+2 simTest runSim 
 EPILOGUE epilogue
