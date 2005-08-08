@@ -1,3 +1,5 @@
+SimulationInput.filename Using file
+SimulationInput.projectFilename Using file
 attempting to create the
 channel doesn't exist
 will return existing reference
