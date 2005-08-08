@@ -39,6 +39,7 @@ import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.AlmaScheduling.ALMAPublishEvent;
+import alma.Control.ControlSystemChangeOfStateEvent;
 
 
 public class TestALMAPublishEvent {
@@ -48,10 +49,13 @@ public class TestALMAPublishEvent {
     private Receiver r1;
     private Receiver r2;
     private Receiver r3;
+    private Receiver r4;
+    private SimpleSupplier sup;
     
     public TestALMAPublishEvent(ContainerServices cs){
         this.container = cs;
         this.logger = cs.getLogger();
+        
         r1 = AbstractNotificationChannel.getReceiver(
             AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
@@ -69,6 +73,16 @@ public class TestALMAPublishEvent {
                 container);
         r3.attach("alma.scheduling.EndSessionEvent", this);
         r3.begin();
+        try {
+            sup = new SimpleSupplier(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        r4 = AbstractNotificationChannel.getReceiver(
+            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
+                container);
+        r4.attach("alma.Control.ControlSystemChangeOfStateEvent", this);
+        r4.begin();
     }
 
     public void receive(NothingCanBeScheduledEvent event) {
@@ -80,6 +94,19 @@ public class TestALMAPublishEvent {
     public void receive(EndSessionEvent event) {
         logger.info("SCHED_TEST: received EndSessionEvent Event");
     }
+    public void receive(ControlSystemChangeOfStateEvent event) {
+        logger.info("SCHED_TEST: received ControlSystemChangeOfStateEvent Event");
+    }
+ 
+    
+    public void publish(ControlSystemChangeOfStateEvent e) {
+        try {
+            sup.publishEvent(e);
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
 
     public static void main(String[] args) {
         String name = new String("Scheduling Publisher Test");
@@ -93,22 +120,39 @@ public class TestALMAPublishEvent {
             Thread.sleep(5000);
             
             long startTime = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
-            StartSessionEvent event1 = new StartSessionEvent(startTime, "session id", "ous part id", "sb id", "eb id");
+            StartSessionEvent event1 = new StartSessionEvent(startTime, "session id", "ous part id", "sb id");
             
             publisher.publish(event1);
-
+            
             NothingCanBeScheduledEvent event2 = new NothingCanBeScheduledEvent(
                     NothingCanBeScheduledEnum.OTHER, (new DateTime(System.currentTimeMillis())).toString(), "");
             
             publisher.publish(event2);       
 
+
+            
             long endTime = UTCUtility.utcJavaToOmg(System.currentTimeMillis()); 
-            EndSessionEvent event3 = new EndSessionEvent(endTime, "session id", "ous id", "eb id");
+            String[] exec_ids = new String[2];
+            exec_ids[0] = "exec id 1";
+            exec_ids[1] = "exec id 2";
+            EndSessionEvent event3 = new EndSessionEvent(endTime, "session id", "ous id", exec_ids);
 
             publisher.publish(event3);
 
             
+            /*
+            ControlSystemChangeOfStateEvent event4 = new ControlSystemChangeOfStateEvent();
+                    event4.currentState = SystemState.OPERATIONAL;
+                    event4.currentSubstate = SystemSubstate.STARTING_UP_PASS2;
+                    event4.previousState = SystemState.OPERATIONAL;
+                    event4.previousSubstate = SystemSubstate.STARTING_UP_PASS1;
+                    event4.error = false; 
+                    event4.time =0L;
+            test.publish(event4);
+*/
+            
         } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }
