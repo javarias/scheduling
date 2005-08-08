@@ -3,7 +3,6 @@
 1 - INFO: Component names and services have been set.
 1 - INFO: Simulator:  Container created.
 1 - INFO: reporter.initialized
-1 - INFO: SimulationInput.filename Using file /export/home/solar/sslucero/SCHEDULING_working/SCHEDULING/Scheduling/test/./input.txt for simultation data.
 1 - INFO: input.initialized
 1 - INFO: telescope.initialized
 1 - INFO: operator.initialized
@@ -14,7 +13,6 @@
 1 - INFO: master_scheduler.initialized
 1 - INFO: Simulator:  All components initialized.
 1 - INFO: reporter.execute complete
-1 - INFO: SimulationInput.projectFilename Using file /export/home/solar/sslucero/SCHEDULING_working/SCHEDULING/Scheduling/test/./project.txt for project data.
 1 - INFO: input.execute complete
 1 - INFO: telescope.execute complete
 1 - INFO: operator.execute complete
