@@ -83,10 +83,10 @@ public class OperatorSimulator
 	public void selectSB(BestSB best, Message m) {
 		if (best == null || best.getNumberReturned() == 0) {
 			logger.severe("OperatorSimulator: entityId cannot be null or have zero length.");
-			//return null;
+			return;
 		}
 		// Leave the default selection.
-		//return null;
+		return;
 	}
 
 	/* (non-Javadoc)

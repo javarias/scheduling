@@ -95,10 +95,10 @@ public class Reporter extends BasicComponent {
 
 	private DateTime currrentDay = null; // This is the current day in the simulation.
 	
-	public void execStart(int subarrayId, String sbId, DateTime time) {
+	public void execStart(String arrayname, String sbId, DateTime time) {
 	}
 	
-	public void execEnd(int subarrayId, String sbId, String execId, DateTime time) throws SchedulingException {
+	public void execEnd(String arrayname, String sbId, String execId, DateTime time) throws SchedulingException {
 		ExecBlock ex = archive.getExec(execId);
 		SB sb = archive.getSB(sbId);
 		DateTime startTime = ex.getStatus().getStartTime();
@@ -151,7 +151,7 @@ public class Reporter extends BasicComponent {
 		}
 		out.println(id +  
 				executionNumber + "    " + 
-				subarrayId + "     " +
+				arrayname + "     " +
 				st1 + "   " + 
 				st2 + sScore + sSuccess + sRank);
 		
@@ -384,7 +384,9 @@ public class Reporter extends BasicComponent {
 		Project[] prj = null;
 		try {
 			ex = archive.getAllExec();
+            System.out.println("SCHED: in reporter, all execs = "+ex.length);
 			prj = archive.getAllProject();
+            System.out.println("SCHED: in reporter, all projs ="+prj.length);
 		} catch (SchedulingException err) {
 			String msg = "Reporter.error: Error accessing archive! " + err.toString();
 			logger.severe(msg);

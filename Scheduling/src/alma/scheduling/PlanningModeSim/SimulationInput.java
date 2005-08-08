@@ -310,6 +310,17 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		int numberAntennas = getInt(Tag.numberAntennas);
 		if (numberAntennas < 1)
 			error("Number of antennas cannot be less than 1.");
+
+        /*
+        System.out.println("In sim input");
+        System.out.println("longitude = "+ longitude);
+        System.out.println("latitude = "+ latitude);
+        System.out.println("timeZone = "+ timeZone);
+        System.out.println("altitude = "+ altitude);
+        System.out.println("minimumElevationAngle = "+ minimumElevationAngle);
+        System.out.println("numberAntennas = "+ numberAntennas);
+        System.out.println("band = "+ band);
+        */
 		site = new SiteCharacteristics (longitude, latitude, timeZone, 
 					altitude, minimumElevationAngle, numberAntennas, band);
 		
@@ -444,9 +455,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	public void getSchedulingPolicy() throws SimulationException {
 		Policy[] x = new Policy [1];
 		x[0] = new Policy ();
-		x[0].setName("R1Policy");
+		//x[0].setName("R1Policy");
+		x[0].setName("R3.0Policy");
 		x[0].setVersion("V1.0");
-		x[0].setDescription("R1 Release -- 1 Oct, 2003");
+		x[0].setDescription("R3 Release -- 1 Oct, 2005");
 		x[0].setScoreCalculation("RankingCalculation * SuccessCalculation");
 		x[0].setSuccessCalculation("(w0*positionElevation + w1*positionMaximum  + w2*weather) / (w0 + w1 + w2)");
 			// Provided position > minimumElevation and weather > 0

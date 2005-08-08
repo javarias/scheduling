@@ -91,6 +91,16 @@ public class TelescopeSimulator
 	public void initialize() throws SimulationException {
 		SimulationInput data = (SimulationInput)containerServices.getComponent(Container.SIMULATION_INPUT);
 		setSite(data.getSite());
+        /*
+        System.out.println("In Telescope Sim");
+        System.out.println("longitude = "+ data.getSite().getLongitude());
+        System.out.println("latitude = "+ data.getSite().getLatitude());
+        System.out.println("timeZone = "+ data.getSite().getTimeZone());
+        System.out.println("altitude = "+ data.getSite().getAltitude());
+        System.out.println("minimumElevationAngle = "+ data.getSite().getMinimumElevationAngle());
+        System.out.println("numberAntennas = "+ data.getSite().getNumberAntennas());
+        System.out.println("band = "+ data.getSite().getBand());
+        */
 		setAntenna(data.getSite().getAntenna());
 		logger.info(instanceName + ".initialized");
 	}

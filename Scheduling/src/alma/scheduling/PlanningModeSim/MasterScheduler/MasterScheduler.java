@@ -25,14 +25,14 @@
  */
 package alma.scheduling.PlanningModeSim.MasterScheduler;
 
-import alma.scheduling.Scheduler.DynamicScheduler;
-import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.Scheduler.*;
 
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 
@@ -137,6 +137,8 @@ public class MasterScheduler extends BasicComponent {
 			// Create a scheduler configuration.
 			SBQueue queue = new SBQueue ();
 			queue.add(sbList);
+            projectManager.setProjectManagerTaskControl(
+                    new TaskControl(Thread.currentThread()));
 			SchedulerConfiguration config = new SchedulerConfiguration (
 					Thread.currentThread(),
 					true,true,queue,5,0,arrayName,clock,control,operator,
@@ -147,6 +149,7 @@ public class MasterScheduler extends BasicComponent {
 			
 			// Create a thread for this scheduler
 			Thread task = new Thread (scheduler);
+            projectManager.getProjectManagerTaskControl().setTask(task);
 			
 			// Set paramaters in the config object.
 			config.setTask(task);

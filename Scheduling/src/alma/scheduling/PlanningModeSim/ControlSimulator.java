@@ -137,7 +137,8 @@ public class ControlSimulator extends BasicComponent implements Control {
 		return s.getArrayName();
 	}
     private String arrayNameGenerator() {
-        return "Array"+(++subarrayIdGenerator);
+        //return "Array"+(++subarrayIdGenerator);
+        return ""+(++subarrayIdGenerator);
         
     }
 
@@ -204,7 +205,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 			try {
                 //TODO, 1 should be name but not changing that in project yet..
                 // subarray name now string not int.
-				project.execStart(1,sb.getId(),beg);
+				project.execStart(name,sb.getId(),beg);
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
 			}
@@ -231,7 +232,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 			try {
                 //TODO, 1 should be name but not changing that in project yet..
                 // subarray name now string not int.
-				project.execEnd(1,sb.getId(),ex.getId(),end);
+				project.execEnd(name,sb.getId(),ex.getId(),end);
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
 			}

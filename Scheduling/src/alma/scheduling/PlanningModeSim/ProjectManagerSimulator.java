@@ -53,6 +53,7 @@ public class ProjectManagerSimulator
 	private ArchiveSimulator archive;
 	private Reporter reporter;
 	private Project[] project;
+    private TaskControl taskControl;
 
 	/**
 	 * An internal method used in the event an error is found in the simulation.
@@ -106,7 +107,7 @@ public class ProjectManagerSimulator
 		return count;
 	}
 
-	public void execStart(int subarrayId, String sbId, DateTime time) throws SimulationException {
+	public void execStart(String arrayname, String sbId, DateTime time) throws SimulationException {
 		try {
 			// Get the SB.
 			SB sb = archive.getSB(sbId);
@@ -118,13 +119,13 @@ public class ProjectManagerSimulator
 			else // Otherwise, set its state to running. 
 				sb.setRunning();
 			// Inform the reporter.
-			reporter.execStart(subarrayId,sbId,time);
+			reporter.execStart(arrayname,sbId,time);
 		} catch (SchedulingException err) {
 			error(err.toString());
 		}
 	}
 	
-	public void execEnd(int subarrayId, String sbId, String execId, DateTime time) throws SimulationException {
+	public void execEnd(String arrayname, String sbId, String execId, DateTime time) throws SimulationException {
 		try {
 			// Get the SB.
 			SB sb = archive.getSB(sbId);
@@ -137,16 +138,23 @@ public class ProjectManagerSimulator
 			if (ex == null)
 				error("Execution block " + execId + " was not found.");
 			// Let the unit know it has ended.
-			sb.execEnd(ex,time,Status.READY);
+            //ex.setParent(sb);
+			//sb.execEnd(ex,time,Status.COMPLETE);
+            System.out.println(sbId +" about to set READY");
+            sb.execEnd(ex,time,Status.READY);
+            System.out.println(sb.getStatus().getStatus());
 			// Inform the reporter.
-			reporter.execEnd(subarrayId,sbId,execId,time);
+			reporter.execEnd(arrayname,sbId,execId,time);
 		} catch (SchedulingException err) {
 			error(err.toString());
 		}
 	}
 
+    public void setProjectManagerTaskControl(TaskControl tc) {
+        taskControl = tc;
+    }
     public TaskControl getProjectManagerTaskControl() {
-        return null;
+        return taskControl;
     }
 	
     public ObservedSession createObservedSession(Program p) {
