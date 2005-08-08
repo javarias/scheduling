@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.1 2005/06/20 20:42:27 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.2 2005/08/08 21:53:41 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -154,9 +154,20 @@ class R3Policy extends PolicyType {
 		
 		// Create the scheduling units.
 		SB[] sb = queue.getAll();
-        System.out.println("sb.length= " +sb.length);
+        //System.out.println("sb.length= " +sb.length);
 		unit = new R3Unit [sb.length];
 		SiteCharacteristics site = telescope.getSite();
+        
+        /*
+        System.out.println("In R3Policy");
+        System.out.println("longitude = "+ site.getLongitude());
+        System.out.println("latitude = "+ site.getLatitude());
+        System.out.println("timeZone = "+ site.getTimeZone());
+        System.out.println("altitude = "+ site.getAltitude());
+        System.out.println("minimumElevationAngle = "+ site.getMinimumElevationAngle());
+        System.out.println("numberAntennas = "+ site.getNumberAntennas());
+        System.out.println("band = "+ site.getBand());
+        */
 		for (int i = 0; i < unit.length; ++i) {
 			unit[i] = new R3Unit (sb[i],site);
 		}
@@ -180,22 +191,22 @@ class R3Policy extends PolicyType {
 				incr /= 2;
 			}
 		}
-        System.out.println("unit length = " +unit.length);
+        //System.out.println("unit length = " +unit.length);
 		
 		// Might want to modify this.
-		log.info("DynamicSchedulingAlgorithm policy " + name);
-		log.info("DynamicSchedulingAlgorithm position " + positionElW);
-		log.info("DynamicSchedulingAlgorithm position " + positionMaxW);
-		log.info("DynamicSchedulingAlgorithm weather " + weatherW);
-		log.info("DynamicSchedulingAlgorithm priority " + priorityW);
-		log.info("DynamicSchedulingAlgorithm sameProjectSameBand " + samePSameBW);
-		log.info("DynamicSchedulingAlgorithm sameProjectDifferentBand " + samePDiffBW);
-		log.info("DynamicSchedulingAlgorithm differentProjectSameBand " + diffPSameBW);
-		log.info("DynamicSchedulingAlgorithm differentProjectDifferentBand " + diffPDiffBW);
-		log.info("DynamicSchedulingAlgorithm newProject " + newPW);
-		log.info("DynamicSchedulingAlgorithm oneSBRemaining " + oneSBW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm policy " + name);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm position " + positionElW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm position " + positionMaxW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm weather " + weatherW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm priority " + priorityW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm sameProjectSameBand " + samePSameBW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm sameProjectDifferentBand " + samePDiffBW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm differentProjectSameBand " + diffPSameBW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm differentProjectDifferentBand " + diffPDiffBW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm newProject " + newPW);
+		log.info("SCHEDULING: DynamicSchedulingAlgorithm oneSBRemaining " + oneSBW);
 		for (int i = 0; i < unit.length; ++i) {
-			log.info("DSA: " + unit[i].scoreToString() + " " + unit[i].visibleToString());
+			log.info("SCHEDULING: DSA: " + unit[i].scoreToString() + " " + unit[i].visibleToString());
 		}
 		
 	}
@@ -212,7 +223,7 @@ class R3Policy extends PolicyType {
 	 * 3. The ramaining ranking factors can be negative, 0, or positive.
 	 */
 	private void setWeights() {
-		if (!policy.getName().equals("R3Policy")) {
+		if (!policy.getName().equals("R3.0Policy")) {
 			log.severe("Scheduling policy " + policy.getName() + " is not supported");
 			//System.exit(0);
 		}
@@ -265,12 +276,27 @@ class R3Policy extends PolicyType {
 	 */
 	public BestSB getBest() throws SchedulingException {
 		// Check if there is something left to schedule.
-        int ready =0;
+        
+        /*int ready =0;
         for(int z=0; z < unit.length; z++) {
             if(unit[z].isReady()) {
                 ready++;
             }
         }
+        */
+
+        int i=0;
+        for(; i < unit.length; i++){
+            if(unit[i].isReady()){
+                break;
+            }
+        }
+        if(i == unit.length){
+            return null;
+        }
+        score();
+        R3Unit[] list = topList();
+        /*
         R3Unit[] list = new R3Unit[ready];
         log.info("SCHEDULING: list length == "+ list.length);
         int ready2 =0;
@@ -280,6 +306,7 @@ class R3Policy extends PolicyType {
                 ready2++;
             }
         }
+        */
         //System.out.println("Number of ready's left is ="+list.length);
 
 		// Create the SUnitBest object.
@@ -287,7 +314,8 @@ class R3Policy extends PolicyType {
 		if (list.length == 0) {
 			// Nothing can be scheduled.
 			best = new BestSB(new NothingCanBeScheduled (
-                new DateTime(System.currentTimeMillis()), whyNothing(), ""));
+                clock.getDateTime(), whyNothing(), ""));
+                //new DateTime(System.currentTimeMillis()), whyNothing(), ""));
             log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in R3Policy");
 			//best = new BestSB(new NothingCanBeScheduled (clock.getDateTime(), whyNothing(), ""));
 		} else {
@@ -296,7 +324,8 @@ class R3Policy extends PolicyType {
 			double[] score = new double [list.length];
 			double[] success = new double [list.length];
 			double[] rank = new double [list.length];
-			for (int i = 0; i < list.length; ++i) {
+			//for (int i = 0; i < list.length; ++i) {
+			for (i = 0; i < list.length; ++i) {
                 try {
     				id[i] = list[i].getSB().getId();
 	    			scoreString[i] = list[i].scoreToString();
@@ -315,10 +344,12 @@ class R3Policy extends PolicyType {
 
 	// Figure out why and set the reason code.
 	private int whyNothing() {
-		for (int i = 0; i < unit.length; ++i) {
+        for (int i = 0; i < unit.length; ++i) {
 			if (unit[i].isReady()){
 				System.out.println(unit[i].toString());
-            }
+            }// else {
+			//	System.out.println("Not Ready "+unit[i].toString());
+            //
 		}
 		// Do we have visible targets? if not, then done.
 		int i = 0;
@@ -405,6 +436,7 @@ class R3Policy extends PolicyType {
 			double b;
 		}
 		if (unit.length < 2) {
+            //System.out.println("should be only one left, top list < 2");
 			return unit;
         }
 		
@@ -415,6 +447,7 @@ class R3Policy extends PolicyType {
 		for (int i = 0; i < copy.length; ++i) {
 			if (unit[i].isReady()) {
 				value = unit[i].getScore();
+                //System.out.println("Score = "+ value +" for "+unit[i].getSB().getId());
 				if (value > 0.0) { // We're not going to consider scores that are less than 0.
 					copy[size++] = new Pair (i,value);
 				}
@@ -444,11 +477,13 @@ class R3Policy extends PolicyType {
 		}
 
 		// Return the top N scheduling units.
+        System.out.println("BestSize="+bestSize);
 		R3Unit[] out = new R3Unit [bestSize];
 		for (int i = 0; i < bestSize; ++i) {
 			out[i] = unit[copy[i].a];
         }
-		
+	
+        //System.out.println("top list size: "+out.length);
 		return out;
 	}
 
@@ -502,7 +537,7 @@ class R3Policy extends PolicyType {
 					x += oneSBW;
                 }
 				u.setRank(x);
-                System.out.println("Rank == "+x);
+                //System.out.println("Rank == "+x);
 			}
 		}
 	}
@@ -525,9 +560,15 @@ class R3Policy extends PolicyType {
 			u.setPositionEl(pEl);
 			u.setPositionMax(pMax);
 			u.setWeather(w);
+            /*
+            System.out.println("pEl="+pEl);
+            System.out.println("pMax="+pMax);
+            System.out.println("w="+w);
+            */
+                    
 			if (pEl == 0.0 || pMax == 0.0 || w == 0.0) {
 				u.setSuccess(0.0);
-                System.out.println("Bad success calculation");
+                //System.out.println("Bad success calculation");
 			} else {
 				u.setSuccess((positionElW * pEl + positionMaxW * pMax + weatherW * w) / (positionElW + positionMaxW + weatherW));
 			}

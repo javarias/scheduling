@@ -46,12 +46,12 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.7 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.8 2005/08/08 21:53:41 sslucero Exp $
  * @author Allen Farris
  *
  */
 public class DynamicScheduler extends Scheduler implements Runnable {
-	
+	private int runNum=0;
     public DynamicScheduler(SchedulerConfiguration config) {
         super(config);
     }
@@ -64,7 +64,8 @@ public class DynamicScheduler extends Scheduler implements Runnable {
      */
     protected String name() {
     	return "Scheduler [" + Thread.currentThread().getName() + 
-			"] (array " + arrayName + ")";
+			"] (subarray " + arrayName + ")";
+			//"] (array " + arrayName + ")";
     }
     
     /**
@@ -254,7 +255,8 @@ public class DynamicScheduler extends Scheduler implements Runnable {
         //the list
         //String bestSBId = config.getOperator().selectSB(best, m);
         System.out.println("SCHEUDLING: best selection will be.. "+ best.getBestSelection());
-        if(best.getBestSelection() == null) {
+        //if(best.getBestSelection() == null) {
+        if(best.getNumberReturned() == 0) {
     		// Nothing can be scheduled at this time.
     		// Call config's nothingToDo method and wait.
     		config.nothingToDo(best.getNothingCanBeScheduled());
@@ -295,12 +297,27 @@ public class DynamicScheduler extends Scheduler implements Runnable {
             try {
                 Message m = new Message();
                 config.getOperator().selectSB(best, m);
+                /*
+                System.out.println("********************************");
+                System.out.println(best.toString());
+                System.out.println("********************************");
+                */
         		// We've got somthing to schedule.
                 SB selectedSB = config.getQueue().get(best.getBestSelection());
-                if(selectedSB.getStatus().isReady() ){ //&& selectedSB.getStartTime() == null) {
+               // System.out.println("**************"+selectedSB.getStatus().getStatus());
+                if(selectedSB.getStatus().isReady() ){ //&& selectedSB.getStartTime() == null) 
                     logger.info("SCHEDULING: About to schedule sb = "+selectedSB.getId());
-                    selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
-                    logger.info("SB is now "+selectedSB.getStatus().getStatus());
+                    //Check if its already running.
+                    //times and status stuff done here coz Control obj doesn't have 
+                    //have (or need) the whole queue.
+                    
+                    //Check that start time is null. If its not null but still ready
+                    //then we're in another execution of this SB. So no need to set the
+                    //starttime again. 
+                    if(selectedSB.getStatus().getStartTime() == null) {
+                        selectedSB.setStartTime(clock.getDateTime());
+                    }
+                    //logger.info("SB is now "+selectedSB.getStatus().getStatus());
                     //TODO When Lindsey says so ;)
                     //ObservedSession session = 
                     //    config.getProjectManager().createObservedSession(
@@ -322,7 +339,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
             }
     		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
     	}
-   	
+
     	return false;
     }
     

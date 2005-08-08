@@ -54,7 +54,7 @@ package alma.scheduling.Define;
  * the "ready", "waiting", or "running" state.  If the unit's end time
  * has been set the state is either "complete" or "aborted".  
  * 
- * @version $Id: Status.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Status.java,v 1.6 2005/08/08 21:53:41 sslucero Exp $
  * @author Allen Farris
  */
 public class Status {
@@ -158,6 +158,8 @@ public class Status {
 	public void setEnded(DateTime time, int status) {
 		if (endTime != null )
 			throw new UnsupportedOperationException("Cannot set end time!  Component has already been defined.");
+        //System.out.println("Status start = "+startTime.toString());
+        //System.out.println("Status end = "+time.toString());
 		if (startTime == null || startTime.gt(time)) 
 			throw new UnsupportedOperationException("Cannot set 'ended' before setting 'started'.");
 		if (!(status == COMPLETE || status == ABORTED)) 

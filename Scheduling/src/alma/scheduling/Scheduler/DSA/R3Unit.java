@@ -35,7 +35,7 @@ import java.text.NumberFormat;
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.1 2005/06/20 20:42:27 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.2 2005/08/08 21:53:41 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -162,7 +162,7 @@ class R3Unit extends SchedulingUnit {
       * Prints the score to string form 
       */
 	public String scoreToString() {
-		return sb.getId() +// " (" + sb.getProject().getId() + ") [ " + 
+		return sb.getId() + " (" + sb.getProject().getId() + ") [ " + 
 		dform.format(score) + ", " + 
 		dform.format(rank) + " (" + 
 		priority + ", " + 
@@ -192,8 +192,8 @@ class R3Unit extends SchedulingUnit {
 		this.positionEl = 0.0;
 		this.positionMax = 0.0;
 		this.weather = 0.0;
-		//this.priority = sb.getScientificPriority().getPriorityAsInt();
-		this.priority = 1;
+		this.priority = sb.getScientificPriority().getPriorityAsInt();
+		//this.priority = 1;
 		this.sameProjectSameBand = false;
 		this.sameProjectDifferentBand = false;
 		this.differentProjectSameBand = false;
@@ -202,9 +202,9 @@ class R3Unit extends SchedulingUnit {
 		this.oneSBRemaining = false;
         sinDec=1.0;
         cosDec=1.0;
-		//sinDec = Math.sin(sb.getTarget().getCenter().getDec());
-		//cosDec = Math.cos(sb.getTarget().getCenter().getDec());
-		//computeTimes(sb,site);
+		sinDec = Math.sin(sb.getTarget().getCenter().getDec());
+		cosDec = Math.cos(sb.getTarget().getCenter().getDec());
+		computeTimes(sb,site); //added back in..
 		// Set thenumber format.
 		dform = NumberFormat.getInstance();
 		dform.setMaximumFractionDigits(2);
@@ -251,7 +251,7 @@ class R3Unit extends SchedulingUnit {
 		double ra = sb.getTarget().getCenter().getRa();				// ra in radians
 		elMax = Math.asin(sinL * sinDec + cosL * cosDec);			// max elevation in radians
 		double cosMinH = (sinMinEl - sinL * sinDec) / (cosL * cosDec);
-		double minH = 0.0; 											// hour angle at minimum elevation
+		double minH = 0.0; 										// hour angle at minimum elevation
 		visible = 0;
 		double totalTime = (sb.getMaximumTimeInSeconds() / 3600.0) * hourToRad;
 

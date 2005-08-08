@@ -37,7 +37,7 @@ package alma.scheduling.Define;
  * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
  * object that designates why nothing could be scheduled.
  * 
- * @version $Id: BestSB.java,v 1.6 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: BestSB.java,v 1.7 2005/08/08 21:53:41 sslucero Exp $
  * @author Allen Farris
  */
 public class BestSB {
@@ -97,7 +97,7 @@ public class BestSB {
 		score = new double [0];
 		success = new double [0];
 		rank = new double [0];
-		selection = 0;		
+		selection = 0;		//if this is not modifed elsewhere then the first sb is always taken...
 		time = nothing.getTime();
 	}
 	
@@ -175,7 +175,7 @@ public class BestSB {
       */
 	public String getBestSelection() {
 		if (numberReturned == 0) {
-            System.out.println("BEST SB: num returned == 0");
+            //System.out.println("BEST SB: num returned == 0");
 			return null;
         }
         //numberReturned--;

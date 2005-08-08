@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.9 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: SB.java,v 1.10 2005/08/08 21:53:41 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -314,6 +314,7 @@ public class SB implements ProgramMember {
 	 * @param time The time at which this SB started.
 	 */
 	public void setStartTime(DateTime time) {
+        //System.out.println("SB started");
 		status.setStarted(time);
 		parent.unitStarted(this,time);
 	}
@@ -350,27 +351,32 @@ public class SB implements ProgramMember {
 	 * @param int The state to which this unit should be changed.
 	 */
 	public void execEnd(ExecBlock ex, DateTime time, int state) {
+        //System.out.println("SB's exec ended");
 			if (ex != null) {
 				// Add the exec block reference to the SB.
 				addExec(ex);
 				if (ex.getStatus().isComplete()) {
-                    System.out.println("Exec is complete");
+                    //System.out.println("Exec is complete");
 					// This is the "normal" case; the execution was successful.
 					// Increment the amount of time used in this Unit ...
 					totalUsedTimeInSeconds += maximumTimeInSeconds;
 					// If the maximum number of repeats has been reached ...
-				//Sohaila: removed temporarily if (getNumberExec() > maximumNumberOfRepeats) {
+                    //System.out.println("In SB: "+getNumberExec() +" : "+maximumNumberOfRepeats);
+				    //if (getNumberExec() >= maximumNumberOfRepeats) {
+				    if (getNumberExec() > maximumNumberOfRepeats) {
 						// ... then mark it complete and set its end time.
+                        //System.out.println("Status = "+ status.getStatus());
+                        //System.out.println("started = "+ status.getStartTime().toString());
 						status.setEnded(time,Status.COMPLETE);
 						// ... and inform the parent.
 						parent.execEnd(this,time,maximumTimeInSeconds,Status.COMPLETE);
                         //System.out.println("sb repeat count met.");
-				//Sohaila: removed temporarily 	} else {
+				 	} else {
 						// The only possible state change in this case is to "ready".
                         //System.out.println("sb repeat count not met.");
-				//Sohaila: removed temporarily 		parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
-				//Sohaila: removed temporarily 		status.setReady();
-				//Sohaila: removed temporarily 	}
+				 		parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
+				 		status.setReady();
+				 	}
 				} else {
 					// In this case, the execution failed; however, the execution did
 					// produce some results that are attached to the unit.  The time 

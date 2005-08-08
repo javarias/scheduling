@@ -46,7 +46,7 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.24 2005/07/29 19:58:41 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.25 2005/08/08 21:53:41 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -67,8 +67,12 @@ public class ALMAControl implements Control {
         this.controllers = new Vector();
         this.observedSessions = new Vector();
         try {
-            control_system = (ControlSystem)alma.Control.ControlSystemHelper.narrow(
-                containerServices.getComponent("CONTROL_MASTER_COMP"));
+            org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL_MASTER_COMP");
+            logger.info("got CONTROL_MASTER_COMP stub of type " + obj.getClass().getName());
+            control_system = alma.Control.ControlSystemHelper.narrow(obj);
+               // containerServices.getComponent("CONTROL_MASTER_COMP"));
+            //control_system = (ControlSystem)alma.Control.ControlSystemHelper.narrow(
+              //  containerServices.getComponent("CONTROL_MASTER_COMP"));
             logger.info("SCHEDULING: Got ControlSystem Component");
             
         } catch (alma.acs.container.ContainerException ce) {

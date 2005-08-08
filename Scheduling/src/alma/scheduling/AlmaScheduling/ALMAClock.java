@@ -31,9 +31,14 @@ import alma.scheduling.Define.ArrayTime;
 import alma.scheduling.Define.ClockAlarmListener;
 
 /**
- * @author Sohaila Lucero
- * @version $Id: ALMAClock.java,v 1.5 2004/12/21 21:37:01 sslucero Exp $
- */
+  * This class is used so that the scheduler has a common clock.
+  * Right now it is common to the system time of the system it was started on, 
+  * but once ACS or Control have a good clock component the time should be
+  * set using that.
+  *
+  * @author Sohaila Lucero
+  * @version $Id: ALMAClock.java,v 1.6 2005/08/08 21:53:41 sslucero Exp $
+  */
 public class ALMAClock implements Clock {
     //The time
     private DateTime time;
@@ -60,14 +65,25 @@ public class ALMAClock implements Clock {
     }
 
     /**
-     * @return DateTime
-     */
+      * Get the current datetime.
+      * @return DateTime
+      */
     public DateTime getDateTime() {
+        return new DateTime(System.currentTimeMillis());
+        /*
         if(time == null) {
             return new DateTime();
         } else {
-            return time;
-        }
+            return new DateTime
+        }*/
+    }
+
+    public void updateDateTime() {
+        time = new DateTime(System.currentTimeMillis());
+    }
+
+    public void updateDateTime(DateTime newTime) {
+        time = new DateTime(newTime);
     }
     
     /**
