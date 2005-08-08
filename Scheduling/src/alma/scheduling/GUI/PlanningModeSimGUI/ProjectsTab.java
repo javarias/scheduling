@@ -554,10 +554,10 @@ public class ProjectsTab extends JScrollPane {
         int projects=1, sets=0, targets=0;
         Vector sets_v = new Vector(), targets_v = new Vector();
         while( !v.isEmpty() ) {
-            System.out.println("main vector size == "+v.size());
+            //System.out.println("main vector size == "+v.size());
             s1 = (String)v.elementAt(0); //project info line
             v.removeElementAt(0);
-            System.out.println("d- main vector size == "+v.size());
+            //System.out.println("d- main vector size == "+v.size());
             token = new StringTokenizer(s1,";");
             //get the last token
             while(token.hasMoreTokens()){
@@ -567,13 +567,13 @@ public class ProjectsTab extends JScrollPane {
             if(sets > 0) {
                 sets_v = new Vector();
             }
-            System.out.println("Number of sets for this project = "+sets);
+            //System.out.println("Number of sets for this project = "+sets);
             for(int i=0; i < sets; i++) {
                 s2 = (String) v.elementAt(0); //set info line
-            System.out.println("main vector size == "+v.size());
+            //System.out.println("main vector size == "+v.size());
                 sets_v.add(s2);
                 v.removeElementAt(0);
-            System.out.println("d- main vector size == "+v.size());
+            //System.out.println("d- main vector size == "+v.size());
                 token = new StringTokenizer(s2, ";");
                 while(token.hasMoreTokens()){
                     tmp = token.nextToken().trim();
@@ -582,15 +582,16 @@ public class ProjectsTab extends JScrollPane {
                 if(targets > 0) {
                     targets_v = new Vector();
                 }
-                System.out.println("Number of targets for this set = "+targets);
+                //System.out.println("Number of targets for this set = "+targets);
                 for(int j=0; j < targets; j++) {
-            System.out.println("main vector size == "+v.size());
+            //System.out.println("main vector size == "+v.size());
                     s3 = (String) v.elementAt(0); //target info
                     targets_v.add(s3);
                     v.removeElementAt(0);
-            System.out.println("d- main vector size == "+v.size());
+            //System.out.println("d- main vector size == "+v.size());
                 }
             }
+            //System.out.println("OUTPUT TEST:"+projects+":"+s1 +":"+sets_v.size()+":"+targets_v.size());
             projectPane.add("Project "+projects, updateProjectTab(s1, sets_v, targets_v));
             projects++;
         }
@@ -655,7 +656,7 @@ public class ProjectsTab extends JScrollPane {
         
         JTabbedPane setsPane = new JTabbedPane();
         for(int i=0; i < setsInfo.size(); i++) {
-            System.out.println("Target vector size = "+ targetsInfo.size());
+            //System.out.println("Target vector size = "+ targetsInfo.size());
             setsPane.addTab("Set "+(i+1), updateSetPanel((String)setsInfo.elementAt(i), targetsInfo));
         }
         main.add(setsPane, BorderLayout.CENTER);
@@ -751,15 +752,12 @@ public class ProjectsTab extends JScrollPane {
         p.add(tf);
         main.add(p, BorderLayout.NORTH);
         Vector setTargets = new Vector(t);
-        System.out.println("vector size" +targets.size());
-        System.out.println("targets for this set "+t);
         for (int i =0 ; i<t; i++){
             //System.out.println(targets.elementAt(i));
-            System.out.println("");
-            setTargets.add(targets.elementAt(0));
-            targets.removeElementAt(0);
+            setTargets.add(targets.elementAt(i));
+            //targets.removeElementAt(i);
         }
-        //main.add(updateTargetsPanel(t,setTargets));
+        main.add(updateTargetsField(t,setTargets));
         JScrollPane pane = new JScrollPane(main);
         return pane;
     }

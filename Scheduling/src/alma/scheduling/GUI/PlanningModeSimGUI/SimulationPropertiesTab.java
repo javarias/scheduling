@@ -434,7 +434,7 @@ public class SimulationPropertiesTab extends JScrollPane {
             System.out.println("ERROR: wrong size ");
             System.out.println("xxxx-xx-xxTxx:xx:xx");
         } else {
-           beginTime.setText(s);
+           endTime.setText(s);
         }
     }
     /**
@@ -605,4 +605,6 @@ public class SimulationPropertiesTab extends JScrollPane {
         setAntennas((String)v.elementAt(11));
     
     }
+
+
 }

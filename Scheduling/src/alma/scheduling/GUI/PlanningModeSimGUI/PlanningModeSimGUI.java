@@ -97,6 +97,8 @@ public class PlanningModeSimGUI extends JFrame {
         newSim.setMnemonic(KeyEvent.VK_N);
         newSim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                getContentPane().add(createContentPanels(),BorderLayout.CENTER);
+                
             }
         });
         file.add(newSim);
@@ -121,7 +123,8 @@ public class PlanningModeSimGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String s = createFileChooser("load");
                 if(s != null) {
-                    controller.loadFile(chooser.getSelectedFile().getPath());
+                    controller.loadFile(chooser.getSelectedFile().getPath(),
+                                        chooser.getSelectedFile().getName());
                 } else{
                     System.out.println("Canceled load, s == null!");
                 }

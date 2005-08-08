@@ -136,7 +136,6 @@ public class PlanningModeSimGUIController implements Runnable {
        
         //save all gathered info to a file
         data_filename = filename;
-        createFile(data_filename);
 
     }
 
@@ -209,16 +208,14 @@ public class PlanningModeSimGUIController implements Runnable {
             out.println("Simulation.setUpTime = " + freqSetupTime);
             out.println("Simulation.changeProjectTime = " + projSetupTime);
             out.println("Simulation.advanceClock = " + advanceClock);
-            out.println();
-            out.println();
+            out.println(); out.println();
             out.println("Site.longitude = " + longitude);
-            out.println("Site.latitude = " + latitude);
-            out.println("Site.timeZone = " + timezone);
-            out.println("Site.altitude = " + altitude);
-            out.println("Site.minimumElevationAngle = " +minAngle);
-            out.println("Site.numberAntennas = " + totalAntennas);
-            out.println();
-            out.println();
+            out.println("Site.latitude = " + latitude); 
+            out.println("Site.timeZone = " + timezone); 
+            out.println("Site.altitude = " + altitude); 
+            out.println("Site.minimumElevationAngle = " +minAngle); 
+            out.println("Site.numberAntennas = " + totalAntennas); 
+            out.println(); out.println(); 
             out.println("FrequencyBand.numberOfBands = " + totalfreqbands);
             for(int i=0; i< totalfreqbands; i++) {
                 out.println("FrequencyBand."+i+" = " + 
@@ -228,8 +225,7 @@ public class PlanningModeSimGUIController implements Runnable {
                     (String)((Vector)freqbands.elementAt(i)).elementAt(3) +"; "+
                     (String)((Vector)freqbands.elementAt(i)).elementAt(4) +"; ");
             }
-            out.println();
-            out.println();
+            out.println(); out.println();
             out.println("Weather.numberFunctions = " + totalweatherfunc);
             for(int i=0; i < totalweatherfunc; i = i+9){
                 out.println("Weather."+ i + " = " +
@@ -243,8 +239,7 @@ public class PlanningModeSimGUIController implements Runnable {
                     (String)weatherfuncvalues.elementAt(i+7) + "; "+
                     (String)weatherfuncvalues.elementAt(i+8) );
             }
-            out.println();
-            out.println();
+            out.println(); out.println();
             out.println("Weight.positionElevation =  " + posElevation_w);
             out.println("Weight.positionMaximum =  " + posMax_w);
             out.println("Weight.weather =  " + weather_w);
@@ -255,8 +250,25 @@ public class PlanningModeSimGUIController implements Runnable {
             out.println("Weight.differentProjectDifferentBand = " + dpdb_w);
             out.println("Weight.newProject = " + newproj_w);
             out.println("Weight.oneSBRemaining = " + lastsb_w);
-            out.println();
-            out.println();
+            out.println(); out.println();
+            /**
+              * Indicate the source of the project data.
+              * The projectSourceType tells what kind of input the source data is.
+              * At present, only JavaPoperties is supported.  In the future,
+              * there will be other possibilities, such as an archive.
+              * The projectSource is the name of the project source file.
+              * This name is relative to the same directory that is specified
+              * in the simulation input.
+              */
+            out.println("projectSourceType = JavaProperties");
+            out.println("projectSource = project.txt");
+            /** 
+              * Create a new file for all the project stuff. Right now this is
+              * set to always be called project.txt
+              * TODO make it so user can change name of file the projects are stored in.
+              */
+            f = new File("project.txt");
+            out = new PrintStream(new FileOutputStream(f));
             out.println("numberProjects = " + totalprojects);
             out.println();
             for(int i=0; i < totalprojects; i++){
@@ -299,7 +311,6 @@ public class PlanningModeSimGUIController implements Runnable {
                         
             }
             out.println();
-            out.println();
 
         } catch(Exception ex) {
             System.out.println("ERROR!");
@@ -319,7 +330,7 @@ public class PlanningModeSimGUIController implements Runnable {
      * If no file is found with that name the simulation does not run.
      */
     public void runSimulation() {
-        File f = new File("data.txt");
+        File f = new File(data_filename);
         if(!f.exists()){
             System.out.println("A data file must be properly created " 
                 + "before a simulation can be run.");
@@ -327,7 +338,7 @@ public class PlanningModeSimGUIController implements Runnable {
             clearInputFields();
             simulator = new Simulator();
             try {
-                simulator.initialize(".", "data.txt", "output.txt", "log.txt");
+                simulator.initialize(".", data_filename, "output.txt", "log.txt");
                 Thread t = new Thread(simulator);
                 t.start();
             } catch(Exception e) {
@@ -370,8 +381,9 @@ public class PlanningModeSimGUIController implements Runnable {
      * load. The file is then loaded and the contents of the file are
      * displayed in their appropriate fields.
      */
-    public void loadFile(String filename) {
-        System.out.println("Opening "+filename);
+    public void loadFile(String filepathname, String filename) {
+        System.out.println("Opening "+filepathname);
+        data_filename = filename;
         Vector tab1 = new Vector();
         Vector tab2 = new Vector();
         Vector tab3 = new Vector();
@@ -380,7 +392,7 @@ public class PlanningModeSimGUIController implements Runnable {
         Properties fileproperties = new Properties();
         FileInputStream file;
         try {
-            file = new FileInputStream(filename);
+            file = new FileInputStream(filepathname);
             fileproperties.load(file);
             ////////////////////////////////////////////////////////////
             tab1.add(fileproperties.getProperty(Tag.beginTime));
@@ -430,6 +442,7 @@ public class PlanningModeSimGUIController implements Runnable {
                 System.out.println(projectfile);
                 file = new FileInputStream(projectfile);
                 fileproperties.load(file);
+                System.out.println("Project file loaded with project.txt");
             } catch (Exception e1) {
                 String projFile = promptForProjectFile();
                 System.out.println(projFile);
@@ -437,16 +450,19 @@ public class PlanningModeSimGUIController implements Runnable {
                     file = new FileInputStream(projFile);
                     fileproperties.load(file);
                 } catch(Exception e2) {
-                    file = new FileInputStream(filename);
+                    file = new FileInputStream(filepathname);
                     fileproperties.load(file);
                 }
+                System.out.println("Project file loaded with "+projFile);
             }
             
             tab5.add(fileproperties.getProperty(Tag.numberProjects));
             int totalprojects = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberProjects));
+            System.out.println(totalprojects);
             for(int i=0; i<totalprojects; i++) {
                 String s = fileproperties.getProperty(Tag.project+"."+i);
+                System.out.println(s);
                 StringTokenizer token = new StringTokenizer(s,";");
                 int tokencount = token.countTokens();
                 if(tokencount != 4) {
@@ -496,7 +512,7 @@ public class PlanningModeSimGUIController implements Runnable {
     public String promptForProjectFile() {
         return gui.getProjectFile();
     }
-    
+
     //////////////////////////////////////////////
 
     public static void main(String args[]) {
