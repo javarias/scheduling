@@ -1,4 +1,5 @@
 PROLOGUE prologue
 1 allTests allTests
 2 simTest runSim 
+3 pubTest testPublisher
 EPILOGUE epilogue

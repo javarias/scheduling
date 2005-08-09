@@ -25,39 +25,50 @@
  */
  
 package alma.scheduling.test;
+
+import alma.Control.AutomaticArrayCommand;
 import alma.scheduling.AlmaScheduling.ALMAControl;
 import alma.acs.component.client.ComponentClientTestCase;
 
 public class TestALMAControl extends ComponentClientTestCase {
-    private ALMAControl control; 
+    private ALMAControl control = null; 
     
     public TestALMAControl() throws Exception {
         super("Testing ALMAControl");
+        System.out.println("Constructor");
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void test1Connect() throws Exception {
+        m_logger.info("Test1");
         control = new ALMAControl(getContainerServices());
         m_logger.info("SCHED_TEST: Setup complete");
+        assertNotNull(control);
     }
 
-    protected void tearDown() throws Exception {
-    }
 
-    public void test1CreateSubarray() {
-        //short[] antennas = {1,2,3,4,5,6,7,8,9};
+    public void test2CreateSubarray() throws Exception {
+        m_logger.info("Test2");
+        control = new ALMAControl(getContainerServices());
         String[] antennas = {"1","2","3","4","5","6","7"};
-        String subarray = null;
-        try {
-            subarray = control.createArray(antennas);
-            assertTrue(subarray != null);
-        } catch(Exception e) {
-            m_logger.severe("SCHED_TEST: error");
-            e.printStackTrace();
-        }
+        String subarray = control.createArray(antennas);
+        assertNotNull(subarray);
     }
+
+    public void test3ObserveNow() throws Exception {
+        m_logger.info("Test3");
+        /*
+        control = new ALMAControl(getContainerServices());
+        String[] antennas = {"1","2","3","4","5","6","7"};
+        String subarray = control.createArray(antennas);
+        assertNotNull(subarray);
+        control.execSB(subarray, "SBID");
+       */ 
+    }
+    
+    
 
     public static void main(String[] args) {
+        System.out.println("Test");
         alma.acs.testsupport.tat.TATJUnitRunner.run(TestALMAControl.class);
     }
 }

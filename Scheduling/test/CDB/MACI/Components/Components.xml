@@ -45,6 +45,11 @@
             Type="IDL:alma/Control/ControlSystem:1.0"
             Container="python" />
             
+      <_ Name="ARRAY1" 
+            Code="Acssim.Servants.Simulator"
+            Type="IDL:alma/Control/AutomaticArrayCommand:1.0"
+            Container="python"/>
+
       <_ Name="ARCHIVE_CONNECTION"
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/xmlstore/ArchiveConnection:1.0"
@@ -57,6 +62,11 @@
             Container="python"
             Default="true"/>
 
+      <_ Name="ACSEVENTADMIN"	
+            Code="acsncImpl.ACSEventAdmin" 
+            Type="IDL:alma/acsnc/ACSEventAdmin:1.0" 
+            Container="python"
+			Default="true"/>    
 
             <!--
       <_ Name="PIPELINEMASTERCOMPONENT"
@@ -93,11 +103,6 @@
       <_ Name="MONITORSTORE" Code="alma.archive.monitorstream.MonitorStreamHelper"
             Type="IDL:alma/monitorstream/MonitorStreamListener:1.0"
             Container="java"/>
-      <_ Name="ACSEVENTADMIN"	
-            Code="acsncImpl.ACSEventAdmin" 
-            Type="IDL:alma/acsnc/ACSEventAdmin:1.0" 
-            Container="python"
-			Default="true"/>    
 -->
       <!-- ************ EXEC COMPS ************** -->
 <!--

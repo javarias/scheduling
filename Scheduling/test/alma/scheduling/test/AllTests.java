@@ -40,7 +40,7 @@ public class AllTests {//extends TestSuite{
             suite.addTestSuite(alma.scheduling.test.TestAntenna.class);
             suite.addTestSuite(alma.scheduling.test.TestDateTime.class);
             //suite.addTestSuite(alma.scheduling.test.TestALMAArchive.class);
-            suite.addTestSuite(alma.scheduling.test.TestMasterComponent.class);
+            //suite.addTestSuite(alma.scheduling.test.TestMasterComponent.class);
             suite.addTestSuite(alma.scheduling.test.TestALMAControl.class);
             suite.addTestSuite(alma.scheduling.test.TestStatus.class);
             suite.addTestSuite(alma.scheduling.test.TestTime.class);
