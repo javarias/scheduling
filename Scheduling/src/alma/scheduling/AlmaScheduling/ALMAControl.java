@@ -36,7 +36,7 @@ import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 
-import alma.Control.ControlSystem;
+import alma.Control.ControlMaster;
 //import alma.Control.ArrayController;
 import alma.Control.AutomaticArrayCommand;
 
@@ -46,14 +46,14 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.25 2005/08/08 21:53:41 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.26 2005/08/16 20:24:42 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
     //container services
     private ContainerServices containerServices;
     // control system component
-    private ControlSystem control_system;
+    private ControlMaster control_system;
     //list of current array controllers
     private Vector controllers;
     //logger
@@ -67,16 +67,16 @@ public class ALMAControl implements Control {
         this.controllers = new Vector();
         this.observedSessions = new Vector();
         try {
-            org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL_MASTER_COMP");
+            org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL_MASTER");
             logger.info("got CONTROL_MASTER_COMP stub of type " + obj.getClass().getName());
-            control_system = alma.Control.ControlSystemHelper.narrow(obj);
+            control_system = alma.Control.ControlMasterHelper.narrow(obj);
                // containerServices.getComponent("CONTROL_MASTER_COMP"));
-            //control_system = (ControlSystem)alma.Control.ControlSystemHelper.narrow(
+            //control_system = (ControlMaster)alma.Control.ControlMasterHelper.narrow(
               //  containerServices.getComponent("CONTROL_MASTER_COMP"));
-            logger.info("SCHEDULING: Got ControlSystem Component");
+            logger.info("SCHEDULING: Got ControlMasterComponent");
             
         } catch (alma.acs.container.ContainerException ce) {
-            logger.severe("SCHEDULING: error getting ControlSystem Component.");
+            logger.severe("SCHEDULING: error getting ControlMaster Component.");
             logger.severe("SCHEDULING: "+ce.toString());
         }
     }
@@ -149,7 +149,7 @@ public class ALMAControl implements Control {
         try {
             if(control_system == null) {
                 logger.severe("SCHEDULING: control system == null..");
-                throw new SchedulingException("SCHEDULING: Error with ControlSystem Component.");
+                throw new SchedulingException("SCHEDULING: Error with ControlMaster Component.");
             }
             if(controllers == null) { 
                 logger.severe("SCHEDULING: controllers == null..");
