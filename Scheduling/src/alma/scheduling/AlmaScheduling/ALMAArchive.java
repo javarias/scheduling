@@ -1,4 +1,6 @@
 /*
+ * Gets a list of projects for the sbs ids that are passed in.
+ * This function is for the start queue scheduling method./*
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
  * (c) Associated Universities Inc., 2002
@@ -29,6 +31,7 @@ import java.util.logging.Logger;
 import java.util.Vector;
 
 import alma.scheduling.Define.*;
+import alma.scheduling.SBLite;
 
 import alma.xmlentity.XmlEntityStruct;
 
@@ -59,7 +62,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.38 2005/08/08 21:53:41 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.39 2005/08/23 20:55:55 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -386,6 +389,39 @@ public class ALMAArchive implements Archive {
         return project;
     }
 
+    public ObsProject getProjectForSB(String sbid) throws SchedulingException {
+        try {
+            String query = new String("/prj:ObsProject//sbl:SchedBlockRef[entityId=\""+sbid+"\"]");
+            String schema = new String("ObsProject");
+            String className = new String(
+                "alma.entity.xmlbinding.obsproject.ObsProject");
+            Cursor cursor = archOperationComp.query(query, schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying obsproject");
+                throw new SchedulingException("SCHEDULING: Cursor was null when querying obsproject");
+            }
+            ObsProject proj=null;
+            QueryResult res = cursor.next();
+            proj = (ObsProject)entityDeserializer.deserializeEntity(res.xml, 
+                    Class.forName("alma.entity.xmlbinding.obsproject.ObsProject"));
+            if(cursor.hasNext()){
+                throw new SchedulingException("SCHEDULING: getting proj with sb ref, should only be one proj!");
+            }
+            return proj;
+
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        //} catch(NotFound e) {
+           // logger.severe("SCHEDULING: "+e.toString());
+        //} catch(MalformedURI e) {
+         //   logger.severe("SCHEDULING: "+e.toString());
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        }
+    }
+
     /**
      * Given a project object, its archive entry is retrieved, updated 
      * and stored back into the archive.
@@ -419,6 +455,23 @@ public class ALMAArchive implements Archive {
     public void updateProgram(Program s) throws SchedulingException{ }
 
 	// SB
+    public Cursor querySBs() throws SchedulingException {
+        try {
+            String query = new String("/sbl:SchedBlock");
+            String schema = new String("SchedBlock");
+            String className = new String(
+                "alma.entity.xmlbinding.schedblock.SchedBlock");
+            Cursor cursor = archOperationComp.query(query, schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying SchedBlocks");
+                throw new SchedulingException("SCHEDULING: Cursor was null when querying SBs");
+            }
+            return cursor;
+        }catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }
+    }
     /** 
      *
      */
@@ -426,16 +479,18 @@ public class ALMAArchive implements Archive {
         SB sbs[]=null;
         Vector tmp_sbs = new Vector();
         int i = 0;// the index of the SB array, sbs
-        String query = new String("/sbl:SchedBlock");
-        String schema = new String("SchedBlock");
-        String className = new String(
-            "alma.entity.xmlbinding.schedblock.SchedBlock");
+        //String query = new String("/sbl:SchedBlock");
+        //String schema = new String("SchedBlock");
+        //String className = new String(
+        //    "alma.entity.xmlbinding.schedblock.SchedBlock");
         try {
+            /*
             Cursor cursor = archOperationComp.query(query, schema);
             if(cursor == null) {
                 logger.severe("SCHEDULING: cursor was null when querying SchedBlocks");
                 return null;
-            }
+            }*/
+            Cursor cursor = querySBs();
             while (cursor.hasNext()){
                 QueryResult res = cursor.next();
                 try {
@@ -453,9 +508,51 @@ public class ALMAArchive implements Archive {
             }
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        } catch(SchedulingException se) {
+            logger.severe("SCHEDULING: "+se.toString());
+            throw new SchedulingException (se);
         }
         return sbs;
     }
+/*
+    public Vector getSbLites() throws SchedulingException {
+        Vector sbs = new Vector();
+        try {
+            Cursor cursor = querySBs();
+            if(cursor == null) {
+                logger.severe("SCHEDULING: cursor was null when querying SchedBlocks");
+                return null;
+            }
+            while (cursor.hasNext()){
+                QueryResult res = cursor.next();
+                SchedBlock sb = entityDeserializer.deserializeEntity(res.xml, 
+                        Class.forName("alma.entity.xmlbinding.schedblock.SchedBlock"));
+                ObsProject proj = getProjectForSB(sb.getSchedBlockEntity().getEntityId());
+                /*
+                SBLite sblite = new SBLite(
+                        sb.getSchedBlockEntity().getEntityId(),
+                        proj.getObsProjectEntity().getEntityId(),
+                        "ous_id",
+                        "sb_name",
+                        proj.getProjectName(),
+                        proj.getPI(),
+                        new String(proj.getObsProgram().getObsPlan().getObsUnitControl().getScientificPriority()),
+
+
+                        );
+            }
+        }catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        } catch(SchedulingException se) {
+            logger.severe("SCHEDULING: "+se.toString());
+            throw new SchedulingException (se);
+        }
+        
+        return sbs;
+    }
+    */
     
 	public SB[] getNewSB(DateTime time) throws SchedulingException {
         return null;

@@ -46,7 +46,7 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.26 2005/08/16 20:24:42 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.27 2005/08/23 20:55:55 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -67,8 +67,8 @@ public class ALMAControl implements Control {
         this.controllers = new Vector();
         this.observedSessions = new Vector();
         try {
-            org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL_MASTER");
-            logger.info("got CONTROL_MASTER_COMP stub of type " + obj.getClass().getName());
+            org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL/MASTER");
+            logger.info("got CONTROL_MASTER stub of type " + obj.getClass().getName());
             control_system = alma.Control.ControlMasterHelper.narrow(obj);
                // containerServices.getComponent("CONTROL_MASTER_COMP"));
             //control_system = (ControlMaster)alma.Control.ControlMasterHelper.narrow(

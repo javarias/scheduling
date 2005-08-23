@@ -35,11 +35,14 @@ import java.net.URL;
 //import alma.obsprep.bo.*;
 //import alma.obsprep.bo.Target;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.Define.TimeInterval;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 /**
  * A controller for the Interactive Scheduling GUI. 
  * All the functionality that is required from the the GUI
@@ -51,6 +54,7 @@ import alma.scheduling.Scheduler.SchedulerConfiguration;
 public class GUIController implements Runnable {
     private SchedulerConfiguration config;
     private String userlogin="";
+    private String defaultProjectId;
     private GUI gui;
     private InteractiveScheduler scheduler;
 
@@ -58,7 +62,10 @@ public class GUIController implements Runnable {
         this.config = s;
         try {
             this.scheduler = new InteractiveScheduler(config);
+            String[] tmp = getProjectIds();
+            defaultProjectId = tmp[0];
         } catch(SchedulingException e) {
+           // throw new SchedulingException("Problem starting interactive scheduling", e);
         }
     }
 
@@ -88,24 +95,22 @@ public class GUIController implements Runnable {
     public SB[] getSBs() {
         return config.getQueue().getAll();
     }
-/*
-    public String[] getSBContents(String uid) {
-        String[] contents = new String[10];
-        SchedBlock sb = scheduler.getSB(uid);
-        contents[0] = "SchedBlock - " + uid + "\n";
-        contents[1] = "Weather Constraints = " +
-                sb.getPreconditions().getWeatherConstraints().toString() +
-                "\n";
-        contents[2] = "Performance Goal = " + 
-                sb.getObsUnitControl().getPerformanceGoal()+ "\n";
-        contents[3] = "The max time this SchedBlock has is "+
-                sb.getSchedBlockControl().getSBMaximumTime().toString() + "\n";
-        contents[4] = "SchedBlock has been executed " +
-                sb.getSchedBlockControl().getRepeatCount() + " times \n";
-        
-        return contents;
+    
+    public SB getSB(String uid) {
+        return config.getQueue().get(uid);
     }
-    */
+
+    public String[] getProjectIds() {
+        return ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().getAllIds();
+    }
+    
+    public String getDefaultProjectId() {
+        return defaultProjectId;
+    }
+
+    public Project getProject(String id) {
+        return ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().get(id);
+    }
 
     /**
      *  Deletes the SB from the schedulers queue.

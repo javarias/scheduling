@@ -49,6 +49,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 
 import javax.swing.JFrame;
 import javax.swing.Popup;
@@ -60,17 +62,24 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JToolBar;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
+import javax.swing.JViewport;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.TableModel;
+import javax.swing.table.AbstractTableModel;
 
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Project;
 import alma.scheduling.Define.SchedulingException;
 
 /**
@@ -82,30 +91,66 @@ import alma.scheduling.Define.SchedulingException;
  */
 public class GUI extends JFrame {
     private GUIController controller;
-    private JTextArea outputView;
-    private JTextArea sbOutputView;
-    private JDialog littleframe;
-    private Hashtable outputStuff;
-    
+    private boolean loggedIn;
+    private Object[][] sbRowInfo;
+    private TableModel sbTableModel;
+    private JScrollPane mainViewPane;
+    private JScrollPane sbViewPane;
+    private JScrollPane sbListPane;
+    private JScrollPane selectedSBPane;
+    private JPanel sbDisplayPanel;
+    private JPanel projectDisplayPanel;
+    private JTextArea  selectedSBView;
+    //Toolbar & Buttons
+    private JToolBar toolbar;
+    private JButton sessionStateButton;
+    private JButton addSBButton;
+    private JButton updateSBButton;
+    private JButton executeSBButton;
+    private JButton deleteSBButton;
+    private JButton stopSBButton;
+    private JButton helpButton;
     /**
      *
      */
     public GUI(GUIController c) {
         this.controller = c;
+        getContentPane().setLayout(new BorderLayout());
         JMenuBar menuBar = new JMenuBar();
-        JMenu menu1 = new JMenu("File");
-        menu1.setMnemonic(KeyEvent.VK_ALT);
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_ALT);
         JMenuItem howto = new JMenuItem("HowTo");
-        //menu1.add(howto);
+        //fileMenu.add(howto);
         JMenuItem quit = new JMenuItem("Quit", KeyEvent.VK_Q);;
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 exit();
             }
         });
-        menu1.add(quit);
-        menuBar.add(menu1);
+        fileMenu.add(quit);
+        menuBar.add(fileMenu);
+        JMenu projectMenu = new JMenu("Projects");
+        String[] ids = controller.getProjectIds();
+        JMenuItem pItem;
+        for(int i=0; i<ids.length; i++){
+            pItem = new JMenuItem(ids[i]);
+            pItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    JMenuItem item = (JMenuItem)e.getSource();
+                    //item.getText() == project Id
+                    displayProjectInfo(item.getText());
+                    displaySBInfo(item.getText()); 
+                }
+            });
+            projectMenu.add(pItem);
+        }
+        menuBar.add(projectMenu);
         setJMenuBar(menuBar);
+        toolbar = new JToolBar();
+        toolbar.setFloatable(false);
+        //toolbar.setBackground(new Color(159,3,211));
+        createButtons(toolbar);
+        getContentPane().add(toolbar, BorderLayout.PAGE_START);
 
         int inset = 250;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -114,10 +159,9 @@ public class GUI extends JFrame {
         setTitle("Interactive Scheduling GUI");
         setSize(800, 600);
 
-        getContentPane().setLayout(new BorderLayout());
         JPanel p = new JPanel(new GridLayout(1,2));
         p.add(createOutputView());
-        p.add(createButtonView());
+        //p.add(createButtonView());
         getContentPane().add(p);
         addWindowListener(new WindowAdapter() 
         {
@@ -126,6 +170,7 @@ public class GUI extends JFrame {
             }
         });
         setVisible(true);
+        loggedIn = false;
     }
 
     /**
@@ -135,269 +180,44 @@ public class GUI extends JFrame {
         JTabbedPane returnView = new JTabbedPane();
         returnView.setTabPlacement(JTabbedPane.TOP);
         ///////////////////////
-        outputView = new JTextArea();
-        outputView.setEditable(false);
-        JScrollPane pane = new JScrollPane(outputView);
-        pane.setViewportBorder(new BevelBorder(BevelBorder.RAISED));
-        returnView.addTab("Main View", pane);
+        mainViewPane = new JScrollPane();
+        mainViewPane.setViewportBorder(new BevelBorder(BevelBorder.RAISED));
+        //mainViewPane.setBackground(new Color(159,3,211));
         ///////////////////////
-        sbOutputView = new JTextArea();
-        sbOutputView.setEditable(false);
-        pane = new JScrollPane(sbOutputView);
-        returnView.addTab("SB View", pane);
+        sbViewPane = new JScrollPane();
+        sbViewPane.setViewportBorder(new BevelBorder(BevelBorder.RAISED));
+        //sbViewPane.setBackground(new Color(159,3,211));
         ///////////////////////
+        returnView.addTab("Project View", mainViewPane);
+        returnView.addTab("SB View", sbViewPane);
+        //returnView.setBackground(new Color(159,3,211));
         return returnView;
     }
+
+
 
     /**
      *
      */
-    private JPanel createButtonView() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        /////////////////////////////
-        JPanel picturePanel = new JPanel(new BorderLayout());
-        picturePanel.setBackground(new Color(159,3,211));
-        picturePanel.add(new JLabel());
-        ImageIcon almaImage = new ImageIcon(controller.getImage("alma_logo.jpg"));
-        JLabel pl = new JLabel(almaImage);
-        //JLabel pl = new JLabel("Image should be here");
-        //pl.setBackground(Color.blue);
-        picturePanel.add(pl, BorderLayout.EAST);
-        ////////////////////////////
-        mainPanel.add(picturePanel, BorderLayout.NORTH);
-        ////////////////////////////
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(159,3,211));
-        panel.setLayout(gridbag);
-        JButton startSession = new JButton("Start Interactive Session");
-        startSession.addActionListener(new ActionListener() {
+    private void createButtons(JToolBar bar) {
+        sessionStateButton = new JButton("Login");
+        sessionStateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                login();
-            }
-        });
-        JButton getSBs = new JButton("Get all SchedBlocks");
-        getSBs.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
+                if(!loggedIn) {
+                    login();
+                    loggedIn = true;
+                } else {
+                    logout();
+                    loggedIn = false;
                 }
-                getSBs();
-            }
-        });
-        JButton addSB = new JButton("Add SB");
-        addSB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
-                }
-                addSB();
-            }
-        });
-        JButton deleteSB = new JButton("Delete SB");
-        deleteSB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
-                }
-                deleteSB();
-            }
-        });
-        JButton updateSB = new JButton("Update SB");
-        updateSB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
-                }
-                updateSB();
-            }
-        });
-        JButton executeSB = new JButton("Execute SB");
-        executeSB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
-                }
-                executeSB();
-            }
-        });
-        JButton stopSB = new JButton("Stop Current SchedBlock");
-        stopSB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
-                }
-                stopSB();
-            }
-        });
-        JButton refreshSBs = new JButton("Refresh SB Queue");
-        refreshSBs.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == ""){
-                    mustLogin();
-                    return;
-                }
-                refreshSBQueue();
-            }
-        });
-        JButton endSession = new JButton("End Interactive Session");
-        endSession.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(controller.getLogin() == "") {
-                    mustLogin();
-                    return;
-                }
-                //controller.setLogin("");
-                try{
-                    controller.endSession();
-                } catch(Exception ex){}
-                //do other things to insure user is logged out.
-                //ie: close scheduler, etc
-            }
-        });
-        JButton clearView = new JButton("Clear View");
-        clearView.setFont(new Font("Ariel",Font.PLAIN, 10));
-        clearView.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clear();
             }
         });
 
-        c.anchor = GridBagConstraints.CENTER;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0; c.weighty = 1.0;
-
-        JLabel blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
+        helpButton = new JButton("Help");
         
-        c.gridwidth = 2;
-        gridbag.setConstraints(startSession, c);
-        panel.add(startSession);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 1;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        c.gridwidth = 2;
-        gridbag.setConstraints(getSBs, c);
-        panel.add(getSBs);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 1;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        gridbag.setConstraints(addSB, c);
-        panel.add(addSB);
-
-        gridbag.setConstraints(deleteSB, c);
-        panel.add(deleteSB);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 1;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        gridbag.setConstraints(updateSB, c);
-        panel.add(updateSB);
-
-        gridbag.setConstraints(executeSB, c);
-        panel.add(executeSB);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 1;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        c.gridwidth = 2;
-        gridbag.setConstraints(refreshSBs, c);
-        panel.add(refreshSBs);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 1;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        c.gridwidth = 2;
-        gridbag.setConstraints(stopSB, c);
-        panel.add(stopSB);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 1;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        c.gridwidth = 2;
-        gridbag.setConstraints(endSession, c);
-        panel.add(endSession);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = 2;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        c.gridwidth = 1;
-        gridbag.setConstraints(clearView, c);
-        panel.add(clearView);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-        ///////////////////////////////////////
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        blank = new JLabel("");
-        gridbag.setConstraints(blank, c);
-        panel.add(blank);
-
-        ////////////////////////////
-        mainPanel.add(panel, BorderLayout.CENTER);
-        ////////////////////////////
-        return mainPanel;
+        toolbar.add(sessionStateButton);
+        toolbar.add(helpButton);
+        //toolbar.add(new JButton("woowoo"));
     }
 
     /**
@@ -406,6 +226,7 @@ public class GUI extends JFrame {
     private void addSB(){
         //openObservingTool();
         //project id will only ever be shown in the sbOutputView..
+        /*
         String projID = sbOutputView.getSelectedText();
         if(projID != null) {
             controller.openObservingTool(projID);
@@ -416,11 +237,13 @@ public class GUI extends JFrame {
                 controller.openObservingTool(projID);
             }
         }
+        */
     }
     /**
      *
      */
     private void executeSB() {
+        /*
         String selectedSB = outputView.getSelectedText();
         if(selectedSB != null) {
             clear();
@@ -435,11 +258,13 @@ public class GUI extends JFrame {
                     JOptionPane.PLAIN_MESSAGE);
             }
         }
+        */
     }
     /**
      *
      */
     private void deleteSB() {
+        /*
         String selectedSB = outputView.getSelectedText();
         if(selectedSB != null) {
             controller.deleteSB(selectedSB);
@@ -449,7 +274,7 @@ public class GUI extends JFrame {
             selectedSB = JOptionPane.showInputDialog(this, "Enter SB id", "Delete SB", 
                 JOptionPane.PLAIN_MESSAGE);
             controller.deleteSB(selectedSB);
-        }
+        }*/
     }
 
     /**
@@ -457,6 +282,7 @@ public class GUI extends JFrame {
      */
     private void updateSB(){
         //openObservingTool();
+        /*
         String projID = sbOutputView.getSelectedText();
         if(projID != null) {
             controller.openObservingTool(projID);
@@ -466,7 +292,7 @@ public class GUI extends JFrame {
             if(projID != null) {
                 controller.openObservingTool(projID);
             }
-        }
+        }*/
     }
     
     /**
@@ -477,66 +303,253 @@ public class GUI extends JFrame {
         try{
             String login = JOptionPane.showInputDialog(this,"Please log in.");
             controller.setLogin(login);
-            outputView.append("Welcome " +controller.getLogin() +"\n");
+            displaySBInfo(controller.getDefaultProjectId());
+            displayProjectInfo(controller.getDefaultProjectId());
+            sessionStateButton.setText("Logout");
         } catch(SchedulingException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "", 
                 JOptionPane.WARNING_MESSAGE);
         }
     }
 
+    private void displayProjectInfo(String id){
+        Project proj = controller.getProject(id);
+        projectDisplayPanel = new JPanel(new BorderLayout());
+        JPanel projectTop = new JPanel(new GridLayout(4,1));
+        //projectTop.add(new JSeparator()); 
+        JPanel tmp = new JPanel();
+        tmp.add(new JLabel("Project Name: ")); tmp.add(new JLabel(proj.getProjectName()));
+        tmp.add(new JSeparator()); 
+        projectTop.add(tmp);
+        tmp = new JPanel();
+        tmp.add(new JLabel("PI: ")); tmp.add(new JLabel(proj.getPI()));
+        tmp.add(new JSeparator());
+        projectTop.add(tmp);
+        tmp = new JPanel();
+        tmp.add(new JLabel("Status: ")); tmp.add(new JLabel(proj.getStatus().getStatus()));
+        tmp.add(new JSeparator());
+        projectTop.add(tmp);
+        tmp = new JPanel();
+        tmp.add(new JLabel("Time Created: ")); tmp.add(new JLabel(proj.getTimeOfCreation().toString()));
+        tmp.add(new JSeparator()); 
+        projectTop.add(tmp);
+        
+        /*
+        JPanel projectCenter = new JPanel(new GridLayout(3,1));
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JLabel("Total Programs: "+proj.getProgram().getTotalPrograms()));
+        projectCenter.add(new JLabel("Completed Programs: "+proj.getProgram().getNumberProgramsCompleted()));
+        projectCenter.add(new JLabel("Failed Programs: "+proj.getProgram().getNumberProgramsFailed()));
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JLabel("Total SBs: "+proj.getProgram().getTotalSBs()));
+        projectCenter.add(new JLabel("Completed SBs: "+proj.getProgram().getNumberSBsCompleted()));
+        projectCenter.add(new JLabel("Failed SBs: "+proj.getProgram().getNumberSBsFailed()));
+        projectCenter.add(new JSeparator());
+        
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JSeparator());
+        projectCenter.add(new JSeparator());
+        */
+        projectDisplayPanel.add(projectTop, BorderLayout.NORTH);
+        //projectDisplayPanel.add(projectCenter, BorderLayout.CENTER);
+        mainViewPane.getViewport().add(projectDisplayPanel);
+        mainViewPane.getViewport().repaint();
+    }
+    
+    private void logout(){
+        try{
+           // controller.setLogin("");
+            controller.endSession();
+            sessionStateButton.setText("Login");
+            mainViewPane.getViewport().removeAll();
+            mainViewPane.getViewport().repaint();
+            sbViewPane.getViewport().removeAll();
+            sbViewPane.getViewport().repaint();
+        } catch(Exception ex){}
+        //do other things to insure user is logged out.
+        //ie: close scheduler, etc
+    }
+
     /**
      *
      */
-    private void getSBs() {
-        SB[] s = controller.getSBs();
-        outputView.append("SchedBlocks: \n");
-        sbOutputView.append("SchedBlock Contents: \n");
-        sbOutputView.append("/////////////////////////////////////// \n");
-        for(int i=0; i < s.length; i++) {
-            outputView.append(s[i].getSchedBlockId() +"\n");
-            sbOutputView.append("SchedBlock ID: "+s[i].getSchedBlockId() +"\n");
-            try {
-                String projectID = s[i].getProject().getId();
-                sbOutputView.append("SB's project id: "+ projectID +"\n");
-            } catch (Exception e) {
-                sbOutputView.append("SB's project id: not set to a project! this is bad!\n");
-                e.printStackTrace();
+    private void displaySBInfo(String projectId) {
+        final String[] sbColumnInfo = {"SB Name", "Sci. Priority", "Center Freq."};
+        Dimension d = new Dimension(400,100);
+        sbDisplayPanel = new JPanel(new BorderLayout());
+        SB[] allsbs = controller.getSBs();
+        Vector s = new Vector();
+        for(int i=0; i < allsbs.length;i++){
+            if(allsbs[i].getProject().getId().equals(projectId)) {
+                s.add(allsbs[i]);
             }
-            //sbOutputView.append("SchedBlock Observing Procedure: "+
-            //    s[i].getObsProcedure() +"\n");
-            try {
-                sbOutputView.append("SchedBlock Status: "+
-                   s[i].getStatus().getStatus()+"\n");
-            } catch (Exception e) {
-                sbOutputView.append("SchedBlock Status: no status set. \n");
-            }
-            //sbOutputView.append("SchedBlock Performance Goal: "+
-            //    s[i].getObsUnitControl().getPerformanceGoal() +"\n");
-            sbOutputView.append("SchedBlock Weather Constraints: \n"); 
-            /*
-            try {
-                //sbOutputView.append("Opacity: "+s[i].getPreconditions().getWeatherConstraints().getOpacity() +"\n");
-            } catch(Exception e) {
-                sbOutputView.append("Opacity: no opacity set.\n");
-            }
-            try {
-                //sbOutputView.append("Phase Stability:"+s[i].getPreconditions().getWeatherConstraints().getPhaseStability() +"\n");
-            }catch(Exception e) {
-                sbOutputView.append("Phase Stability: no phase stability set.\n");
-            }
-            try {
-                //sbOutputView.append("Seeing:"+s[i].getPreconditions().getWeatherConstraints().getSeeing() +"\n");
-            } catch(Exception e) {
-                sbOutputView.append("Seeing: no seeing set.\n");
-            }
-            */
-            /*
-            project it comes from & name 
-            sbOutputView.append(s[i].() +"\n");
-            sbOutputView.append(s[i].() +"\n");
-            */
-            sbOutputView.append("/////////////////////////////////////// \n");
         }
+        /**  */
+        sbRowInfo = new Object[s.size()][4];
+        for(int i=0; i < s.size(); i++){
+            sbRowInfo[i][0] = ((SB)s.elementAt(i)).getSBName(); 
+            sbRowInfo[i][1] = ((SB)s.elementAt(i)).getScientificPriority();
+            sbRowInfo[i][2] = String.valueOf(((SB)s.elementAt(i)).getCenterFrequency());
+            sbRowInfo[i][3] = ((SB)s.elementAt(i)).getSchedBlockId();
+        }
+
+        sbTableModel = new AbstractTableModel() { //Table which has 3 columns and as many rows as SBs
+            public int getColumnCount() { return sbColumnInfo.length; }
+            public String getColumnName(int column) { return sbColumnInfo[column]; }
+            public int getRowCount() { return sbRowInfo.length;     }
+            public Object getValueAt(int row, int col) { return sbRowInfo[row][col]; }
+            public void setValueAt(Object val, int row, int col) { sbRowInfo[row][col]= val; }
+        };
+        JTable sbTable = new JTable(sbTableModel);
+        sbTable.setPreferredScrollableViewportSize(d);
+        sbTable.addFocusListener(new FocusListener() {
+                public void focusGained(FocusEvent fe) {
+                    addSelectedSBView(fe);
+                }
+                public void focusLost(FocusEvent fe){
+                    removeSelectedSBView();
+                }
+        });
+            
+        sbListPane = new JScrollPane(sbTable);
+        JPanel sbList = new JPanel();
+        sbList.add(new JSeparator());
+        sbList.add(sbListPane); //Scroll pane which holds all the sbs
+        sbList.add(new JSeparator());
+
+        sbDisplayPanel.add(sbList,BorderLayout.NORTH);
+        
+            
+        sbDisplayPanel.add(sbButtonView(), BorderLayout.SOUTH); //buttons for sbs (add, update, delete,...)
+
+        sbViewPane.getViewport().add (sbDisplayPanel); //add everything to Sb tab view.
+        sbViewPane.getViewport().repaint();
+    }
+
+    private void addSelectedSBView(FocusEvent e) {
+        JPanel sbDisplayed = new JPanel();
+        selectedSBView = new JTextArea();
+        selectedSBView.setLineWrap(true);
+        selectedSBView.setPreferredSize(new Dimension(400,300));
+        JTable t = (JTable)e.getSource(); //e.getComponent(); 
+        int row = t.getSelectedRow();
+        if(row <0 ) {
+            selectedSBView.setText("No row selected... nothing should have happened...");
+        }
+        SB sb = controller.getSB((String)sbRowInfo[row][3]);
+        //String name, target, status, upri, spri, weather;
+
+        selectedSBView.setText("SB Name:                "+ sbRowInfo[row][0] +"\n"+
+                               "SB Target: \n"+
+                               "   RA  (deg):           "+sb.getTarget().getCenter().getRaInDegrees()+"\n"+
+                               "   Dec (deg):           "+sb.getTarget().getCenter().getDecInDegrees()+"\n\n"+
+                               "SB Frequency: \n"+
+                               "   Center Frequency:    "+sb.getCenterFrequency()+"\n"+
+                               "   Frequency Band:      "+sb.getFrequencyBand().getName()+"\n"+       
+                               "      Low:              "+sb.getFrequencyBand().getLowFrequency()+"\n"+
+                               "      High:             "+sb.getFrequencyBand().getHighFrequency()+"\n\n"+
+                               "SB Status:              "+sb.getStatus()+"\n"+
+                               "SB User Priority:       "+sb.getUserPriority()+"\n"+
+                               "SB Scientific Priority: "+sb.getScientificPriority()+"\n" +
+                               " \n\n Eventually will have success, etc..");
+        
+                            //   "SB Weather Constraints: "+sb.getWeatherConstraint().toString()); //NULL right now..
+
+        selectedSBPane = new JScrollPane(selectedSBView);
+        sbDisplayed.add(new JSeparator());
+        sbDisplayed.add(selectedSBPane); //scroll pane which holds the info on a specific sb
+        sbDisplayed.add(new JSeparator());
+        
+        sbDisplayPanel.add(sbDisplayed, BorderLayout.CENTER);
+        sbDisplayPanel.validate();
+    }
+    private void removeSelectedSBView() {
+        selectedSBView.removeAll();
+        /*
+        JScrollPane tmp1 = (JScrollPane)selectedSBView.getParent();
+        JViewport tmp2 = (JViewport)tmp1.getParent();
+        JPanel tmp3 = (JPanel)tmp2.getParent();
+        tmp3.removeAll();
+        */
+    }
+
+    private JPanel sbButtonView(){
+        JPanel panel = new JPanel();
+        //addsb
+        panel.add(new JSeparator());
+        addSBButton = new JButton("Add SB");
+        addSBButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                addSB();
+            }
+        });
+        panel.add(addSBButton);
+        panel.add(new JSeparator());
+
+        //update sb
+        updateSBButton = new JButton("Update SB");
+        updateSBButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                updateSB();
+            }
+        });
+        panel.add(updateSBButton);
+        panel.add(new JSeparator());
+
+        //delete sb
+        deleteSBButton = new JButton("Delete SB");
+        deleteSBButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                deleteSB();
+            }
+        });
+        panel.add(deleteSBButton);
+        panel.add(new JSeparator());
+
+        //execute sb
+        executeSBButton = new JButton("Execute SB");
+        executeSBButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                executeSB();
+            }
+        });
+        panel.add(executeSBButton);
+        panel.add(new JSeparator());
+
+        //stop sb
+        stopSBButton = new JButton("Stop Current SchedBlock");
+        stopSBButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(controller.getLogin() == "") {
+                    mustLogin();
+                    return;
+                }
+                stopSB();
+            }
+        });
+        panel.add(stopSBButton);
+        panel.add(new JSeparator());
+
+        return panel;
     }
 
     /**
@@ -558,14 +571,6 @@ public class GUI extends JFrame {
      */
     private void refreshSBQueue() {
         controller.refreshSBQueue();
-    }
-
-    /**
-     *
-     */
-    private void clear() {
-        outputView.setText("");
-        sbOutputView.setText("");
     }
 
     /**

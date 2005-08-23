@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.10 2005/08/08 21:53:41 sslucero Exp $
+ * @version $Id: SB.java,v 1.11 2005/08/23 20:55:55 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -78,6 +78,8 @@ public class SB implements ProgramMember {
 	// The members of this set are ExecBlocks.
 	private ArrayList exec;
 		
+    // The name given to this SB
+    private String sbName;
 	private Priority scientificPriority;
 	private Priority userPriority;
 	private Expression scienceGoal;
@@ -187,7 +189,7 @@ public class SB implements ProgramMember {
 	 * Return the internal information about this SUnit as a string.
 	 */
 	public String toString() {
-		return "\tSUnit (" + getId() + "," + getTimeOfCreation() + "," + getTimeOfUpdate() + ") [" +
+		return "\tSB (" + getId() + "," + getTimeOfCreation() + "," + getTimeOfUpdate() + ") [" +
 		getProject().getId() + "," + getParent().getId() + "] " +
 		getSchedBlockId() + " " + getScientificPriority() + " " + getTarget() + " " +
 		getCenterFrequency() + " " + getStatus();
@@ -713,6 +715,14 @@ public class SB implements ProgramMember {
 	public String getId() {
 		return schedBlockId;
 	}
+
+    public String getSBName() {
+        return sbName;
+    }
+
+    public void setSBName(String n) {
+        sbName = n;
+    }
 
 	/**
 	 * Return the status of this project component.

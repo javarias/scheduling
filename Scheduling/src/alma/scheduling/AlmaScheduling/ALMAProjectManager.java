@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.40 2005/08/02 20:41:13 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.41 2005/08/23 20:55:55 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -181,7 +181,10 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return projs;
     }
-
+    
+    public ProjectQueue getProjectQueue(){
+        return pQueue;
+    }
 
     /**
       *

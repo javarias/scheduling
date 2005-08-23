@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.29 2005/08/01 21:20:10 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.30 2005/08/23 20:55:55 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -237,8 +237,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         Policy policy = new Policy();
         policy.setId("Temp ID");
         policy.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
-        policy.setDescription("R2aPolicy testing!");
-        policy.setName("R2aPolicy");
+        policy.setDescription("R3.0Policy testing!");
+        policy.setName("R3.0Policy");
         PolicyFactor[] factors = new PolicyFactor[10];
         /////////////////////
         factors[0] = new PolicyFactor();
@@ -303,6 +303,48 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public void startQueueScheduling(String[] sbList)
     	throws InvalidOperation {
+            //create a queue of sbs with these ids, 
+        SBQueue sbs = new SBQueue();
+        try {
+            for(int i=0; i < sbList.length; i++){
+                sbs.add(archive.getSB(sbList[i]));
+                System.out.println(sbList[i].toString());
+            }
+        } catch(SchedulingException e) {
+            throw new InvalidOperation("startQueueScheduling",
+                    "Cannot schedule without a SB queue");
+        }
+        //create policy
+        Policy s_policy = createPolicy();
+        //create an array
+        String arrayname = createArray(new String[0], "dynamic");
+        //then create a config 
+        SchedulerConfiguration config = new SchedulerConfiguration(
+                Thread.currentThread(), true, true, sbs, sbs.size(), 5, 
+                arrayname, clock, control, operator, telescope, manager, s_policy, 
+                logger);
+                    
+        //a scheduler and go from there!
+        DynamicScheduler scheduler = new DynamicScheduler(config);
+        Thread scheduler_thread = new Thread(scheduler);
+        scheduler_thread.start();
+        while(!stopCommand) {
+            try {
+                scheduler_thread.join();
+                break;
+            } catch(InterruptedException e) {
+                if(config.isNothingToSchedule()){
+                    config.respondStop();
+                    logger.info("SCHEDULING: interrupted sched thread in MS");
+                    manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
+                }
+            }
+        }
+        if(!config.isOperational()) {
+            logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
+        }
+        destroyArray(arrayname);
+            
 	}
 
     /**
@@ -369,16 +411,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         GUIController interactiveGUI = new GUIController(config);
         Thread scheduler_thread = new Thread(interactiveGUI);
         scheduler_thread.start();
-        /*
-        try{
-            InteractiveScheduler scheduler = new InteractiveScheduler(config);
-        }catch(Exception e){
-            throw new InvalidOperation();
-        }
-        */
-        //Scheduler scheduler = new Scheduler(config);
-        //Thread scheduler_thread = new Thread(scheduler);
-        //scheduler_thread.start();
         
     }
     
@@ -439,7 +471,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         logger.info("SCHEDULING: in MS. message = "+ messageId + 
             " gotten and reply = "+ reply + " sent.");
         item.getTimer().interrupt();
-        //messageQueue.removeMessage(messageId);
     
     }
 

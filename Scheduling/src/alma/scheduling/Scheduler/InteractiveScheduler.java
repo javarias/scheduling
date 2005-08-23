@@ -103,7 +103,7 @@ import alma.scheduling.Define.BestSB;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.3 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.4 2005/08/23 20:55:55 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -191,7 +191,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 */
 	public void login(String PI, SB interactiveSB) throws SchedulingException {
 		if (sessionStarted) {
-			error("Cannnot login.  A session is already underway.");
+			error("Cannot login.  A session is already underway.");
 		}
 		if (interactiveSB.getType() != SB.INTERACTIVE) {
 			error("The specified SB is not an interactive scheduling block.");

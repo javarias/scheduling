@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.27 2005/07/19 19:11:43 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.28 2005/08/23 20:55:55 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -592,6 +592,7 @@ public class ProjectUtil {
 			throw new SchedulingException("The scheduling block with id " + sb.getSchedBlockId() +
 					" is not in the specified SchedBlock array.");
 		
+        sb.setSBName(sched.getName());
 		// There are some problems here that we need to fix after R2.
 		sb.setScientificPriority(Priority.MEDIUM); // Can't find this in ObsPrep << Problem.
 		sb.setUserPriority(Priority.MEDIUM);

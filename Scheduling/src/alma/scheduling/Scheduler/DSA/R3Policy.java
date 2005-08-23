@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.2 2005/08/08 21:53:41 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.3 2005/08/23 20:55:55 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -284,6 +284,7 @@ class R3Policy extends PolicyType {
             }
         }
         */
+        log.info("SCHEDULING: Unit length == "+unit.length);
 
         int i=0;
         for(; i < unit.length; i++){
@@ -291,6 +292,7 @@ class R3Policy extends PolicyType {
                 break;
             }
         }
+        log.info("SCHEDULING: i == "+i);
         if(i == unit.length){
             return null;
         }
@@ -324,7 +326,6 @@ class R3Policy extends PolicyType {
 			double[] score = new double [list.length];
 			double[] success = new double [list.length];
 			double[] rank = new double [list.length];
-			//for (int i = 0; i < list.length; ++i) {
 			for (i = 0; i < list.length; ++i) {
                 try {
     				id[i] = list[i].getSB().getId();
@@ -659,7 +660,6 @@ class R3Policy extends PolicyType {
             }
 		} catch (Exception err) {
 			err.printStackTrace();
-			//System.exit(0);
 		}
 		return x;
 	}
