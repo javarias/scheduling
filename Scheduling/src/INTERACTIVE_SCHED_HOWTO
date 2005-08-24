@@ -1,0 +1,43 @@
+How to start/use the ALMA Interactive Scheduling GUI
+
+Getting the GUI up:
+   * Start the ARCHIVE and load all the ALMA Schemas into the archive (you must have all ALMA Subsystems installed also).
+   * Start up ACS-4.1.2 
+   * Put an ObsProject/ObsProgram/SchedBlock project into the archive. 
+      * There is a default project known to work with the scheduling system in SCHEDULING/Scheduling/test called Project.zip that works with 'ALMA-OT -batch'
+   * Start up and initialize all the ALMA Systems using their master components.
+   * Bring up Object Explorer (objexp) and click on the Master Scheduling component.
+   * Click the startInteractiveScheduling method and a GUI should pop up (might take a few seconds, if you get the 5000 timeout warning, just ignore it!)
+  
+  
+Using the GUI:
+   * First you need to login. The username will be the PI defined in the ObsProject. In the default project in scheduling's test dir it will be ALMA_PI
+   * Once you log in you will see a project loaded with its details in the first tab and the scheduling block details in the second tab.
+   * If there were more than one project sent to the interactive scheduler, you can access those via the Projects menu 
+
+   Adding an SB Button:
+      * This will only work if the OT provides support for loading of a project using its uid.
+      * With the project you want loaded into the interactive gui, click on the Add SB button in the SB View area. This will spawn the ObservingTool with the project. Once you have added your new SB (or SBs) you will need to save it (using the OT) and then back in the interactive scheduling gui you will need to update your view using the Update List button in the SB View area.
+
+
+   Update an SB Button:
+      * This will only work if the OT provides support for loading of a project using its uid.
+      * pretty much the same as add sb above, only you don't create a new sb, just update an existing one. Once finished, save via OT and Update List in interactive scheduling gui.
+
+   Delete an SB Button:
+      * NOT IMPLEMENTED YET
+      * Doesn't do anything right now.
+
+
+   Execute an SB Button:
+      * First you must select an sb from the list, then click the execute sb button.
+      * This will send the SB to the control system (which must be initialzied!) and it will be executed.
+
+   Stop Current SB Button:
+      * NOT IMPLEMENTED YET
+      * You will only be able to stop an sb if it is started executing. 
+   
+   Update SBs Button
+      * NOT IMPLEMENTED YET
+      
+   
