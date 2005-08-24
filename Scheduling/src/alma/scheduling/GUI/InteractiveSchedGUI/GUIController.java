@@ -107,6 +107,9 @@ public class GUIController implements Runnable {
     public String getDefaultProjectId() {
         return defaultProjectId;
     }
+    public void setDefaultProjectId(String id) {
+        defaultProjectId = id;
+    }
 
     public Project getProject(String id) {
         return ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().get(id);

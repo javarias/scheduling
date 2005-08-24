@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.3 2005/08/23 20:55:55 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.4 2005/08/24 19:37:31 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -289,8 +289,11 @@ class R3Policy extends PolicyType {
         int i=0;
         for(; i < unit.length; i++){
             if(unit[i].isReady()){
+                log.info("SCHEDULING: unit is ready");
                 break;
-            }
+            } //else  {
+                //log.info("SCHEDULING: unit is not ready");
+            //}
         }
         log.info("SCHEDULING: i == "+i);
         if(i == unit.length){
@@ -319,7 +322,6 @@ class R3Policy extends PolicyType {
                 clock.getDateTime(), whyNothing(), ""));
                 //new DateTime(System.currentTimeMillis()), whyNothing(), ""));
             log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in R3Policy");
-			//best = new BestSB(new NothingCanBeScheduled (clock.getDateTime(), whyNothing(), ""));
 		} else {
 			String[] id = new String [list.length];
 			String[] scoreString = new String [list.length];

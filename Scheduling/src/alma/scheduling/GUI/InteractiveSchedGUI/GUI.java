@@ -93,6 +93,7 @@ public class GUI extends JFrame {
     private GUIController controller;
     private boolean loggedIn;
     private Object[][] sbRowInfo;
+    private JTable sbTable;
     private TableModel sbTableModel;
     private JScrollPane mainViewPane;
     private JScrollPane sbViewPane;
@@ -224,42 +225,23 @@ public class GUI extends JFrame {
      *
      */
     private void addSB(){
-        //openObservingTool();
-        //project id will only ever be shown in the sbOutputView..
-        /*
-        String projID = sbOutputView.getSelectedText();
-        if(projID != null) {
-            controller.openObservingTool(projID);
-        } else {
-            projID = JOptionPane.showInputDialog(this, "Enter Project ID","Add SB", 
-                JOptionPane.PLAIN_MESSAGE);
-            if(projID != null) {
-                controller.openObservingTool(projID);
-            }
-        }
-        */
+        controller.openObservingTool(controller.getDefaultProjectId());
     }
     /**
      *
      */
     private void executeSB() {
-        /*
-        String selectedSB = outputView.getSelectedText();
-        if(selectedSB != null) {
-            clear();
-            controller.executeSB(selectedSB);
-            //outputView.append("SB "+selectedSB+" is now executing.\n");
-        } else {
-            selectedSB = sbOutputView.getSelectedText();
-            if(selectedSB != null) {
-                controller.executeSB(selectedSB);
-            } else {
-                selectedSB = JOptionPane.showInputDialog(this,"Enter SB id" ,"Execute SB", 
-                    JOptionPane.PLAIN_MESSAGE);
-            }
+        stopSBButton.setEnabled(true);
+        int row = sbTable.getSelectedRow();
+        if(row <0 ) {
+            JOptionPane.showMessageDialog(this, "Please select an sb");
+            return;
         }
-        */
+        String selectedSB = (String)sbRowInfo[row][3];
+        controller.executeSB(selectedSB);
+        
     }
+
     /**
      *
      */
@@ -281,18 +263,7 @@ public class GUI extends JFrame {
      *
      */
     private void updateSB(){
-        //openObservingTool();
-        /*
-        String projID = sbOutputView.getSelectedText();
-        if(projID != null) {
-            controller.openObservingTool(projID);
-        } else {
-            projID = JOptionPane.showInputDialog(this, "Enter Project ID","Update SB", 
-                JOptionPane.PLAIN_MESSAGE);
-            if(projID != null) {
-                controller.openObservingTool(projID);
-            }
-        }*/
+        controller.openObservingTool(controller.getDefaultProjectId());
     }
     
     /**
@@ -313,6 +284,7 @@ public class GUI extends JFrame {
     }
 
     private void displayProjectInfo(String id){
+        controller.setDefaultProjectId(id);
         Project proj = controller.getProject(id);
         projectDisplayPanel = new JPanel(new BorderLayout());
         JPanel projectTop = new JPanel(new GridLayout(4,1));
@@ -403,7 +375,7 @@ public class GUI extends JFrame {
             public Object getValueAt(int row, int col) { return sbRowInfo[row][col]; }
             public void setValueAt(Object val, int row, int col) { sbRowInfo[row][col]= val; }
         };
-        JTable sbTable = new JTable(sbTableModel);
+        sbTable = new JTable(sbTableModel);
         sbTable.setPreferredScrollableViewportSize(d);
         sbTable.addFocusListener(new FocusListener() {
                 public void focusGained(FocusEvent fe) {
@@ -434,8 +406,8 @@ public class GUI extends JFrame {
         selectedSBView = new JTextArea();
         selectedSBView.setLineWrap(true);
         selectedSBView.setPreferredSize(new Dimension(400,300));
-        JTable t = (JTable)e.getSource(); //e.getComponent(); 
-        int row = t.getSelectedRow();
+        //JTable t = (JTable)e.getSource(); //e.getComponent(); 
+        int row = sbTable.getSelectedRow();
         if(row <0 ) {
             selectedSBView.setText("No row selected... nothing should have happened...");
         }
@@ -536,7 +508,8 @@ public class GUI extends JFrame {
         panel.add(new JSeparator());
 
         //stop sb
-        stopSBButton = new JButton("Stop Current SchedBlock");
+        stopSBButton = new JButton("Stop Current SB");
+        stopSBButton.setEnabled(false);
         stopSBButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(controller.getLogin() == "") {

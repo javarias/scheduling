@@ -35,7 +35,7 @@ import java.text.NumberFormat;
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.3 2005/08/23 20:55:55 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.4 2005/08/24 19:37:31 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -267,10 +267,10 @@ class R3Unit extends SchedulingUnit {
 			lstSet = minH + ra - totalTime;
 			lstRise = -minH + ra;
 		}
-        System.out.println("visible = "+visible);
-        System.out.println("lstSet = "+lstSet);
-        System.out.println("lstRise = "+lstRise);
-        System.out.println("totalTime = "+totalTime);
+        //System.out.println("visible = "+visible);
+        //System.out.println("lstSet = "+lstSet);
+        //System.out.println("lstRise = "+lstRise);
+        //System.out.println("totalTime = "+totalTime);
 		if (visible == -1)
 			throw new IllegalArgumentException("The source in this SB is never visible.");
 		if (visible == 0 && (lstSet - lstRise) < totalTime)

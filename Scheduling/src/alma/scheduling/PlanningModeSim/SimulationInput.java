@@ -311,16 +311,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		if (numberAntennas < 1)
 			error("Number of antennas cannot be less than 1.");
 
-        /*
-        System.out.println("In sim input");
-        System.out.println("longitude = "+ longitude);
-        System.out.println("latitude = "+ latitude);
-        System.out.println("timeZone = "+ timeZone);
-        System.out.println("altitude = "+ altitude);
-        System.out.println("minimumElevationAngle = "+ minimumElevationAngle);
-        System.out.println("numberAntennas = "+ numberAntennas);
-        System.out.println("band = "+ band);
-        */
 		site = new SiteCharacteristics (longitude, latitude, timeZone, 
 					altitude, minimumElevationAngle, numberAntennas, band);
 		
