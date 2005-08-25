@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.4 2005/08/24 19:37:31 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.5 2005/08/25 20:26:30 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -284,18 +284,15 @@ class R3Policy extends PolicyType {
             }
         }
         */
-        log.info("SCHEDULING: Unit length == "+unit.length);
 
         int i=0;
         for(; i < unit.length; i++){
             if(unit[i].isReady()){
-                log.info("SCHEDULING: unit is ready");
                 break;
             } //else  {
                 //log.info("SCHEDULING: unit is not ready");
             //}
         }
-        log.info("SCHEDULING: i == "+i);
         if(i == unit.length){
             return null;
         }
