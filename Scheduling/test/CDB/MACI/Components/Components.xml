@@ -40,7 +40,7 @@
             Container="python" 
             Default="true" />
 
-      <_ Name="CONTROL_MASTER_COMP" 
+      <_ Name="CONTROL_MASTER" 
             Code="Acssim.Servants.Simulator"
             Type="IDL:alma/Control/ControlSystem:1.0"
             Container="python" />
