@@ -6,16 +6,15 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.12 2005/08/01 00:36:35 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.13 2005/08/25 20:42:50 sslucero Exp $"
 
 Documents:
 
 Important Comments:
-    For MONTHLY-2005-07:
-    - This version of SCHEDULING has NOT been tested with the new CONTROL code
+    For MONTHLY-2005-08:
+    - This version of SCHEDULING has NOT been *fully* tested with the new CONTROL code
       and previous functionality is not guarenteed. Any major modifications to
-      this version of SCHEDULING will be done in the next release. Minor 
-      modifications will be possible tho none should be needed.
+      this version of SCHEDULING will be done in the next release. 
 
 Configuration Requirements:
     - ACS-4.1.1
@@ -47,6 +46,9 @@ Tested:
   			  
     - Scheduling has been tested using entities created using the ALMA-OT batchmode. 
 
+    - The TestALMAControl test was removed because I could not simulate CONTROL/MASTER 
+      Putting that in the simualated dir of my test cdb wouldnt let the comp be activated.
+
    
 
 Tests: 
@@ -54,7 +56,6 @@ Tests:
         AllTests include:
             TestAntenna
             TestDateTime
-            TestALMAControl
             TestStatus
             TestTime
 
@@ -73,13 +74,17 @@ Cost:
 
 
 Changes:
+    - New way of dealing/sending out session events. This may cause problems because its not been tested fully with new control.
+    - Scheduling of an ordered queue is implemented. Tho its really just scheduling of a list of SBs 
+
+    - Interactive scheduling has a new look. same functionality tho. There's a HOWTO availble in src and on the scheduling twiki web.
 
     - Scheduling now receives (but doesn't do anything with) the TELCAL events. A log message is just sent out.
     
-    - Alot of fixes to the project status structure manipulation was done.
-    - New functionality to talk to the Operator component from exec. To send a message that the a session has started and stopped.
 
     Old:
+    - Alot of fixes to the project status structure manipulation was done.
+    - New functionality to talk to the Operator component from exec. To send a message that the a session has started and stopped.
     - Name changes for channel names and CDB stuff required by ITS
     - Now sending pipeline the PPR xml string in ProcessRequest
    	- PlanningModeSim and RealMode modules have been merged into one, Scheduling. 
