@@ -11,7 +11,7 @@ Getting the GUI up:
   
   
 Using the GUI:
-   * First you need to login. The username will be the PI defined in the ObsProject. In the default project in scheduling's test dir it will be ALMA_PI
+   * First you need to login. The username will be the PI defined in the ObsProject. In the default project (Project.zip) in scheduling's test dir it will be ALMA_PI
    * Once you log in you will see a project loaded with its details in the first tab and the scheduling block details in the second tab.
    * If there were more than one project sent to the interactive scheduler, you can access those via the Projects menu 
 
@@ -41,3 +41,4 @@ Using the GUI:
       * NOT IMPLEMENTED YET
       
    
+If all else fails.. come find sohaila...
