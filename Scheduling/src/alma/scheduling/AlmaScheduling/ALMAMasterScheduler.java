@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.30 2005/08/23 20:55:55 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.31 2005/08/25 16:26:18 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -128,10 +128,10 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.sbQueue = new SBQueue();
         this.clock = new ALMAClock();
         this.publisher = new ALMAPublishEvent(containerServices);
-        this.control = new ALMAControl(containerServices);
         this.messageQueue = new MessageQueue();
         this.operator = new ALMAOperator(containerServices, messageQueue);
         this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher);
+        this.control = new ALMAControl(containerServices, manager);
         this.telescope = new ALMATelescope();
         
         logger.config("SCHEDULING: MasterScheduler initialized");

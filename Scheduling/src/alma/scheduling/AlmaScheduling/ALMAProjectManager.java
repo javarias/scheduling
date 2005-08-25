@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.41 2005/08/23 20:55:55 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.42 2005/08/25 16:26:18 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -342,11 +342,17 @@ public class ALMAProjectManager extends ProjectManager {
     /**
       * Creates an Observed session and maps it to the ProjectStatus. The ProjectStatus then 
       * gets updated in the archive. 
+      *
+      * Gets called from ALMAReceiveEvent
       */
-    public ObservedSession createObservedSession(Program p, ExecBlock eb) {
+    public void createObservedSession(ExecBlock eb) {
 
+        String sbid = eb.getParent().getId();
+        System.out.println("EB's parent id = "+sbid);
+        Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
-        session.setSessionId(ProjectUtil.genPartId());
+        //session.setSessionId(ProjectUtil.genPartId());
+        session.setSessionId(eb.getSessionId());
         session.setProgram(p);
         session.setStartTime(new DateTime(System.currentTimeMillis()));
         //System.out.println("EXEC BLOCK: eb id ="+eb.getId());
@@ -370,7 +376,7 @@ public class ALMAProjectManager extends ProjectManager {
             logger.severe("SCHEDULING: error mapping PS with Session");
             e.printStackTrace();
         }
-        return session;
+        //return session;
     }
 
     /**
@@ -417,28 +423,28 @@ public class ALMAProjectManager extends ProjectManager {
     public void sendStartSessionEvent(ObservedSession session) {
     }
     */
-    public void sendStartSessionEvent(ExecBlock eb) {
-        String sbid = ((SB)eb.getParent()).getId();
+    public String sendStartSessionEvent(String sbid) {
         SB sb = sbQueue.get(sbid);
         //in future will be done in scheduler.
-        ObservedSession session = createObservedSession(sb.getParent(),eb);
+        //ObservedSession session = createObservedSession(sb.getParent(),eb);
         //session.addExec(eb);
-        sessionStart(session.getSessionId(), sbid);
-        logger.info("SCHEDULING: Session id == "+session.getSessionId());
+        String sessionId = new String(ProjectUtil.genPartId());
+        sessionStart(sessionId, sbid);
+        logger.info("SCHEDULING: Session id == "+sessionId);
         try {
             long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
             StartSessionEvent start_event = new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-                    session.getSessionId(),
-                    session.getProgram().getId(),
+                    sessionId,
+                    sb.getParent().getId(),
                     sbid);
-                    //eb.getId());
                     
             publisher.publish(start_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send start session event!");
             e.printStackTrace();
         }
+        return sessionId;
     }
 
 

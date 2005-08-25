@@ -36,7 +36,7 @@ import java.io.PrintStream;
  * that executed it. This is a wrapper class for the actual ExecBlock
  * that is defined by the Control system.
  * 
- * @version $Id: ExecBlock.java,v 1.5 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: ExecBlock.java,v 1.6 2005/08/25 16:26:18 sslucero Exp $
  * @author Allen Farris
  */
 public class ExecBlock implements ProjectMember {
@@ -59,6 +59,8 @@ public class ExecBlock implements ProjectMember {
     private String arrayName;
 	// The BestUnit object used to execute this SB.
 	private BestSB best;
+    //Session id
+    private String sessionId;
 
 	/**
 	 * Create a UnitExec object.
@@ -245,5 +247,13 @@ public class ExecBlock implements ProjectMember {
      */
     public void setExecStatusId(String execStatusId) {
         this.execStatusId = execStatusId;
+    }
+
+    public void setSessionId(String id){
+        this.sessionId = id;
+    }
+
+    public String getSessionId(){
+        return sessionId;
     }
 }

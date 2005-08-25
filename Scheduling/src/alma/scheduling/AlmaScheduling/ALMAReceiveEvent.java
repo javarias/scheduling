@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.26 2005/07/05 17:29:06 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.27 2005/08/25 16:26:18 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -104,15 +104,22 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         try {
             logger.info("SCHEDULING: Event reason = started");
             logger.info("SCHEDULING: Received sb start event from control.");
+            logger.info("SCHEDULING: ebid = "+  e.execId); 
+            logger.info("SCHEDULING: sbid =" + e.sbId );
+            logger.info("SCHEDULING: session id ="+ e.sessionId);
+            logger.info("SCHEDULING: arrayname = "+ e.arrayName);
+            logger.info("SCHEDULING: start time = "+ e.startTime);
             //create an execblock internal to scheduling. 
             ExecBlock eb = createExecBlock(e);
             DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
             eb.setStartTime(startEb);
             eb.setTimeOfCreation(startEb);
             eb.setTimeOfUpdate(startEb);
+            eb.setSessionId(e.sessionId);
             currentEB.add(eb);
+            createObservedSession(eb);
             //send out a start session event.
-            startSession(eb);
+            //startSession(eb);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
             ex.printStackTrace();
@@ -255,16 +262,16 @@ public class ALMAReceiveEvent extends ReceiveEvent {
 
 
     /**
-     * Creates a Session object for the start of this SB execution session. 
+     * Creates an ObservingSession object for the start of this SB execution session. 
      * Stores the session object in the archive and sends out a start session
      * event.
      * @param ExecBlock The ExecBlock which tells us that the SB has started
      *                       its execution.
      */
-    private void startSession(ExecBlock eb) {
+    private void createObservedSession(ExecBlock eb) {
         try {
             logger.info("SCHEDULING: Start of a Session!");
-            manager.sendStartSessionEvent(eb);
+            manager.createObservedSession(eb);
         }catch(Exception ex) {
             logger.severe("SCHEDULING: error! ");
             ex.printStackTrace();

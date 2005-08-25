@@ -72,6 +72,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JViewport;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
@@ -138,7 +139,6 @@ public class GUI extends JFrame {
             pItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JMenuItem item = (JMenuItem)e.getSource();
-                    //item.getText() == project Id
                     displayProjectInfo(item.getText());
                     displaySBInfo(item.getText()); 
                 }
@@ -162,7 +162,6 @@ public class GUI extends JFrame {
 
         JPanel p = new JPanel(new GridLayout(1,2));
         p.add(createOutputView());
-        //p.add(createButtonView());
         getContentPane().add(p);
         addWindowListener(new WindowAdapter() 
         {
@@ -182,6 +181,7 @@ public class GUI extends JFrame {
         returnView.setTabPlacement(JTabbedPane.TOP);
         ///////////////////////
         mainViewPane = new JScrollPane();
+        mainViewPane.setLayout(new ScrollPaneLayout());
         mainViewPane.setViewportBorder(new BevelBorder(BevelBorder.RAISED));
         //mainViewPane.setBackground(new Color(159,3,211));
         ///////////////////////
@@ -189,10 +189,23 @@ public class GUI extends JFrame {
         sbViewPane.setViewportBorder(new BevelBorder(BevelBorder.RAISED));
         //sbViewPane.setBackground(new Color(159,3,211));
         ///////////////////////
+        createDefaultMainViewPane();
         returnView.addTab("Project View", mainViewPane);
         returnView.addTab("SB View", sbViewPane);
         //returnView.setBackground(new Color(159,3,211));
         return returnView;
+    }
+
+    private void createDefaultMainViewPane() {
+        JPanel picturePanel = new JPanel(new BorderLayout());
+        ImageIcon almaImage = new ImageIcon(controller.getImage("alma_logo.jpg"));
+        JLabel title = new JLabel("Welcome to Interactive Scheduling");
+        title.setFont(new Font("", Font.ITALIC, 24));
+        JLabel pl = new JLabel(almaImage);
+        picturePanel.add(title, BorderLayout.WEST);
+        //picturePanel.add(new JSeparator());
+        picturePanel.add(pl, BorderLayout.EAST); 
+        mainViewPane.setColumnHeaderView(picturePanel);//, ScrollPaneLayout.UPPER_RIGHT_CORNER);
     }
 
 
@@ -218,7 +231,6 @@ public class GUI extends JFrame {
         
         toolbar.add(sessionStateButton);
         toolbar.add(helpButton);
-        //toolbar.add(new JButton("woowoo"));
     }
 
     /**
@@ -325,7 +337,7 @@ public class GUI extends JFrame {
         projectCenter.add(new JSeparator());
         projectCenter.add(new JSeparator());
         */
-        projectDisplayPanel.add(projectTop, BorderLayout.NORTH);
+        projectDisplayPanel.add(projectTop, BorderLayout.CENTER);
         //projectDisplayPanel.add(projectCenter, BorderLayout.CENTER);
         mainViewPane.getViewport().add(projectDisplayPanel);
         mainViewPane.getViewport().repaint();
@@ -337,6 +349,7 @@ public class GUI extends JFrame {
             controller.endSession();
             sessionStateButton.setText("Login");
             mainViewPane.getViewport().removeAll();
+            createDefaultMainViewPane();
             mainViewPane.getViewport().repaint();
             sbViewPane.getViewport().removeAll();
             sbViewPane.getViewport().repaint();

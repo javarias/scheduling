@@ -46,7 +46,7 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.27 2005/08/23 20:55:55 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.28 2005/08/25 16:26:18 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -60,9 +60,11 @@ public class ALMAControl implements Control {
     private Logger logger;
     //list of current observing sessions
     private Vector observedSessions;
+    private ALMAProjectManager manager;
 
-    public ALMAControl(ContainerServices cs) {
+    public ALMAControl(ContainerServices cs, ALMAProjectManager m) {
         this.containerServices = cs;
+        this.manager = m;
         this.logger = cs.getLogger();
         this.controllers = new Vector();
         this.observedSessions = new Vector();
@@ -110,13 +112,15 @@ public class ALMAControl implements Control {
      */
     public void execSB(String arrayName, String sbId) 
         throws SchedulingException {
-    
+
+        //send out start of session
+        String sessionId = manager.sendStartSessionEvent(sbId);
         logger.info("SCHEDULING: Sending BestSBs to Control!");
         logger.info("SCHEDULING: Array being used has name = "+arrayName);
         
         AutomaticArrayCommand ctrl = getAutomaticArray(arrayName);
         try{
-            ctrl.observeNow(sbId, "sessionId"); //TODO fix session ID!
+            ctrl.observeNow(sbId, sessionId); 
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
             e1.printStackTrace();

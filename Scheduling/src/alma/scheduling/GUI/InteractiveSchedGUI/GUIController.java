@@ -62,8 +62,11 @@ public class GUIController implements Runnable {
         this.config = s;
         try {
             this.scheduler = new InteractiveScheduler(config);
-            String[] tmp = getProjectIds();
-            defaultProjectId = tmp[0];
+            try {
+                String[] tmp = getProjectIds();
+                defaultProjectId = tmp[0];
+            } catch(Exception e) {
+            }
         } catch(SchedulingException e) {
            // throw new SchedulingException("Problem starting interactive scheduling", e);
         }
@@ -101,7 +104,14 @@ public class GUIController implements Runnable {
     }
 
     public String[] getProjectIds() {
-        return ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().getAllIds();
+        String[] tmp;
+        try {
+            tmp = ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().getAllIds();
+        } catch(Exception e) {
+            tmp = new String[1];
+            tmp[0] = "No projects loaded.";
+        }
+        return tmp;
     }
     
     public String getDefaultProjectId() {
