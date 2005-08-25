@@ -35,7 +35,7 @@ import java.text.NumberFormat;
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.4 2005/08/24 19:37:31 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.5 2005/08/25 20:16:36 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -255,7 +255,6 @@ class R3Unit extends SchedulingUnit {
 		visible = 0;
 		double totalTime = (sb.getMaximumTimeInSeconds() / 3600.0) * hourToRad;
 
-        System.out.println("CosMinH = "+cosMinH);
 		if (cosMinH > 1) {
 			visible = -1;
 		} else if (cosMinH < -1) {
