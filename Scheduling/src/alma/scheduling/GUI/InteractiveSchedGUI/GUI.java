@@ -198,6 +198,7 @@ public class GUI extends JFrame {
 
     private void createDefaultMainViewPane() {
         JPanel picturePanel = new JPanel(new BorderLayout());
+        picturePanel.setBorder(new BevelBorder(BevelBorder.RAISED));
         ImageIcon almaImage = new ImageIcon(controller.getImage("alma_logo.jpg"));
         JLabel title = new JLabel("Welcome to Interactive Scheduling");
         title.setFont(new Font("", Font.ITALIC, 24));
