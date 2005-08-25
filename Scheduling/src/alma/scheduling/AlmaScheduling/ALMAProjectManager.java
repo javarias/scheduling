@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.42 2005/08/25 16:26:18 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.43 2005/08/25 20:06:23 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -180,6 +180,20 @@ public class ALMAProjectManager extends ProjectManager {
             e.printStackTrace();
         }
         return projs;
+    }
+    
+    /**
+      * For Scheduling an ordered list of sbs we still need to map the to their projects
+      * so all the correct information gets into the SB objects.
+      * So this function basically creates a sbqueue with only the sbs in the list
+      * and maps only those sbs to projects.
+      */
+    public SBQueue mapQueuedSBsToProjects(String[] sbs) {
+        SBQueue queuedSBs= new SBQueue();
+        for (int i=0; i < sbs.length; i++){
+            queuedSBs.add(sbQueue.get(sbs[i]));
+        }
+        return queuedSBs;
     }
     
     public ProjectQueue getProjectQueue(){

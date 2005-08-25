@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.31 2005/08/25 16:26:18 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.32 2005/08/25 20:06:23 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -304,13 +304,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void startQueueScheduling(String[] sbList)
     	throws InvalidOperation {
             //create a queue of sbs with these ids, 
-        SBQueue sbs = new SBQueue();
-        try {
-            for(int i=0; i < sbList.length; i++){
-                sbs.add(archive.getSB(sbList[i]));
-                System.out.println(sbList[i].toString());
-            }
-        } catch(SchedulingException e) {
+        SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
+        if(sbs == null || sbs.size() ==0){
             throw new InvalidOperation("startQueueScheduling",
                     "Cannot schedule without a SB queue");
         }
