@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.29 2005/09/09 19:45:15 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.30 2005/09/09 19:51:40 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -874,9 +874,7 @@ public class ProjectUtil {
 	}
 	
 	static private SessionT[] assignSession(ObservedSession[] session) {
-        System.out.println("assigning sessions!");
 		SessionT[] list = new SessionT [session.length];
-        System.out.println("Session length = "+ session.length);
 		SessionT x = null; 
 		for (int i = 0; i < session.length; ++i) {
 			x = new SessionT ();
@@ -899,10 +897,6 @@ public class ProjectUtil {
 			//x.setObsUnitSetStatusRef(pRef);
 			// Set the list of exec block references.
 			ExecBlock[] s = session[i].getExec();
-            System.out.println("********************************");
-            System.out.println("session == "+ i);
-            System.out.println("exec block length == "+ s.length);
-            System.out.println("********************************");
             //System.out.println("EXEC BLOCKS: len = "+s.length);
 			ExecBlockRefT[] execRef = new ExecBlockRefT [s.length];//hso
 			for (int j = 0; j < s.length; ++j) {
