@@ -46,7 +46,7 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.28 2005/08/25 16:26:18 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.29 2005/09/14 22:25:55 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -230,7 +230,7 @@ public class ALMAControl implements Control {
     private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
         logger.info("SCHEDULING: looking for subarray with id = "+ name);
         for(int i=0; i < controllers.size(); i++){
-            if( ((AutomaticArrayCommand)controllers.elementAt(i)).getName() == name) {
+            if( ((AutomaticArrayCommand)controllers.elementAt(i)).getName().equals(name)) {
                 logger.info("SCHEDULING: found subarray with id = "+ name);
                 return (AutomaticArrayCommand)controllers.elementAt(i);
             }
