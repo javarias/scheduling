@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.5 2004/09/15 13:29:53 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.6 2005/09/19 17:10:52 sslucero Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -37,22 +37,11 @@ INSTALL_FILES = ../lib/scheduling.jar
 #
 # INCLUDE STANDARDS
 # -----------------
-ifdef ACSROOT
-    MAKEDIR  = $(shell if [ -f $(INTROOT)/include/acsMakefile ];  then \
-                     echo $(INTROOT)/include; \
-	           else \
-	             echo $(ACSROOT)/include; \
-		   fi;)
-    include $(MAKEDIR)/acsMakefile
-else
-    MAKEDIR  = $(shell if [ -f $(INTROOT)/include/vltMakefile ];  then \
-                     echo $(INTROOT)/include; \
-	           else \
-	             echo $(VLTROOT)/include; \
-		   fi;)
-    include $(MAKEDIR)/vltMakefile
+MAKEDIRTMP := $(shell searchFile include/acsMakefile)
+ifneq ($(MAKEDIRTMP),\#error\#)
+   MAKEDIR := $(MAKEDIRTMP)/include
+   include $(MAKEDIR)/acsMakefile
 endif
-
 
 #
 # TARGETS
