@@ -52,13 +52,13 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 import alma.entities.commonentity.EntityRefT;
-//import alma.entity.xmlbinding.execblock.*;
+import alma.entity.xmlbinding.specialsb.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.43 2005/08/25 20:06:23 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.44 2005/09/20 20:07:13 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -70,6 +70,8 @@ public class ALMAProjectManager extends ProjectManager {
     private ALMAPublishEvent publisher;
     private ALMAPipeline pipeline;
     private ALMAOperator oper;
+    //TODO temporary
+    private Vector specialSBs;
 
     public ALMAProjectManager(ContainerServices cs, ALMAOperator o, ALMAArchive a, SBQueue q, PublishEvent p) {
         super();
@@ -83,6 +85,8 @@ public class ALMAProjectManager extends ProjectManager {
         this.pQueue = new ProjectQueue();
         this.pipeline = new ALMAPipeline(cs);
         pQueue.add(pollArchive());
+        specialSBs = new Vector();
+        querySpecialSBs();
     }
 
     /**
@@ -99,8 +103,40 @@ public class ALMAProjectManager extends ProjectManager {
             }
             if(!stopCommand){
                 pQueue.add(pollArchive());
+                querySpecialSBs();
             }
         }
+    }
+
+    private void querySpecialSBs(){
+        boolean sbPresent = false;
+        try {
+            SpecialSB[] tmp = archive.querySpecialSBs();
+            for(int i=0; i < tmp.length; i++){
+                
+                for(int j=0; j < specialSBs.size(); j++){
+                    
+                    if(tmp[i].getSpecialSBEntity().getEntityId().equals(
+                         ((SpecialSB)specialSBs.elementAt(j)).getSpecialSBEntity().getEntityId())) {
+                        sbPresent = true;
+                        break;
+                    } 
+                }
+                
+                if(!sbPresent) {
+                    //add it.
+                    specialSBs.add(tmp[i]);
+                }
+
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("# of special sbs = "+specialSBs.size());
+    }
+
+    public Vector getSpecialSBs() {
+        return specialSBs;
     }
 
     public void checkForProjectUpdates() {
@@ -159,7 +195,6 @@ public class ALMAProjectManager extends ProjectManager {
                         sb_present = false;
                     }
                     for(int k=0; k < ids.length; k++) {
-                        logger.info("SCHEDULING: DOES "+tmp_id+" == "+ids[k]);
                         if(tmp_id.equals(ids[k])) { 
                             //SB already in queue
                             sb_present = true;
@@ -235,7 +270,11 @@ public class ALMAProjectManager extends ProjectManager {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
 	    //If this SB has reached its maximum number of repeats set it to complete.
-        if(completed.getNumberExec() < completed.getMaximumNumberOfRepeats() ){
+        if(completed.getNumberExec() == (completed.getMaximumNumberOfRepeats() +1) ){
+            System.out.println("#################################");
+            System.out.println(" # exec = "+completed.getNumberExec());
+            System.out.println(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            System.out.println("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         } else { //set it to ready
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
@@ -403,7 +442,7 @@ public class ALMAProjectManager extends ProjectManager {
 
             ObservedSession ses=null;
             for(int i=0; i < allSes.length; i++){
-                if(allSes[i].getSessionId() == sessionId){
+                if(allSes[i].getSessionId().equals(sessionId)){
                     ses = allSes[i];
                     ses.setEndTime(new DateTime(endTime));
                 }

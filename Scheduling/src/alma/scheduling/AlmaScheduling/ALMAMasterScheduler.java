@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.32 2005/08/25 20:06:23 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.33 2005/09/20 20:07:13 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -143,7 +143,7 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public void execute() throws ComponentLifecycleException {
         //Start the project manager's thread!
-        Thread pmThread = new Thread(manager);
+        Thread pmThread = containerServices.getThreadFactory().newThread(manager);
         manager.setProjectManagerTaskControl(new ProjectManagerTaskControl(msThread, pmThread));
         pmThread.start();
 
@@ -312,7 +312,13 @@ public class ALMAMasterScheduler extends MasterScheduler
         //create policy
         Policy s_policy = createPolicy();
         //create an array
-        String arrayname = createArray(new String[0], "dynamic");
+        String[] antennas = null;
+        try {
+            antennas = control.getIdleAntennas();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        String arrayname = createArray(antennas, "dynamic");
         //then create a config 
         SchedulerConfiguration config = new SchedulerConfiguration(
                 Thread.currentThread(), true, true, sbs, sbs.size(), 5, 
@@ -321,7 +327,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     
         //a scheduler and go from there!
         DynamicScheduler scheduler = new DynamicScheduler(config);
-        Thread scheduler_thread = new Thread(scheduler);
+        Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
         scheduler_thread.start();
         while(!stopCommand) {
             try {
@@ -357,14 +363,49 @@ public class ALMAMasterScheduler extends MasterScheduler
         //TODO Eventually populate s_policy with info from the schedulingPolicy
         Policy s_policy = createPolicy();
         
-        String arrayname = createArray(new String[0], "dynamic");
+        String[] allAntennas = null;
+        try {
+            allAntennas = control.getIdleAntennas();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        //if there are fixed and regular sbs split antennas.
+        //TODO when special sbs are changed to have antenna names included, the
+        // array created for special sbs must have  those antennas included.
+        String[] specialSbAntennas;
+        String[] regularSbAntennas;
+        if(manager.getSpecialSBs().size() > 0) {
+            //split array and start a scheduler for special sbs
+            specialSbAntennas = new String[allAntennas.length/2];
+            regularSbAntennas = new String[allAntennas.length/2];
+            int x=0;
+            for(int i=0; i < (allAntennas.length/2); i++){
+                specialSbAntennas[i] = allAntennas[x++];
+                regularSbAntennas[i] = allAntennas[x++];
+            }
+            String specialSBarrayname = createArray(specialSbAntennas, "dynamic");
+            //
+            Policy specialPolicy = createPolicy();
+            SchedulerConfiguration specialConfig = new SchedulerConfiguration(
+                    Thread.currentThread(), true, manager.getSpecialSBs(),
+                    specialSBarrayname, clock, control, operator, telescope, 
+                    manager, specialPolicy, logger);
+            SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
+            Thread specialSchedulerThread = 
+                containerServices.getThreadFactory().newThread(specialScheduler);
+            specialSchedulerThread.start();
+        } else {
+            regularSbAntennas = allAntennas;
+        }
+        // regular sb scheduling
+        String arrayname = createArray(regularSbAntennas, "dynamic");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
             arrayname, clock, control, operator, telescope, manager, s_policy, 
             logger);
         DynamicScheduler scheduler = new DynamicScheduler(config);
-        Thread scheduler_thread = new Thread(scheduler);
+        Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
         scheduler_thread.start();
         while(!stopCommand) {
             try {
@@ -396,15 +437,21 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         sbQueue = new SBQueue(sbs);
         
-        String arrayname = createArray(new String[0], "interactive");
+        String[] antennas = null; 
+        try {
+            antennas = control.getIdleAntennas();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        String arrayname = createArray(antennas, "interactive");
         
         SchedulerConfiguration config = new SchedulerConfiguration(
             Thread.currentThread(), false, true, sbQueue, sbQueue.size(), 0, 
             arrayname, clock, control, operator, telescope, manager, s_policy, 
             logger);
         logger.info("SCHEDULING: Array name == "+arrayname);
-        GUIController interactiveGUI = new GUIController(config);
-        Thread scheduler_thread = new Thread(interactiveGUI);
+        GUIController interactiveGUI = new GUIController(config, containerServices);
+        Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
         scheduler_thread.start();
         
     }
@@ -487,8 +534,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         
         String name;
         try {             
-            String[] idleAntennas = control.getIdleAntennas();
-            name = control.createArray(idleAntennas);
+            name = control.createArray(antennaIdList);
         } catch(SchedulingException e) {
             throw new InvalidOperation();
         }

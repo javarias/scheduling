@@ -25,9 +25,7 @@
 package alma.scheduling.GUI.InteractiveSchedGUI;
 
 
-import java.lang.Runtime;
-import java.lang.Process;
-
+import alma.acs.container.ContainerServices;
 /**
  * This Class starts the observing tool from inside the scheduling
  * system so that users can manipulate the scheduling blocks
@@ -37,10 +35,11 @@ import java.lang.Process;
  */
 public class OpenOT implements Runnable {
     private String id;
-    private Process otProcess;
+    private ContainerServices container;
 
-    public OpenOT(String projectID) {
+    public OpenOT(String projectID, ContainerServices cs) {
         id = projectID;
+        container = cs;
     }
     public void run() {
         
@@ -57,7 +56,9 @@ public class OpenOT implements Runnable {
         } catch(Exception e) {
             e.printStackTrace();
         }*/
-       alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
+       //alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
+       alma.obsprep.ot.gui.toplevel.ObservingToolEmbedded.main(
+               new String[] {"-x","-r",id}, container);
     }
     
 }

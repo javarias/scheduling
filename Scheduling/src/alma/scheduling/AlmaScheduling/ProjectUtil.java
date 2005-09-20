@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.30 2005/09/09 19:51:40 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.31 2005/09/20 20:07:13 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -629,7 +629,11 @@ public class ProjectUtil {
 			int repeatcount = ctrl.getRepeatCount();
 			if (repeatcount < 1)
 				throw new SchedulingException("Invalid repeat count (" + repeatcount + ").");
-			sb.setMaximumNumberOfRepeats(repeatcount - 1); 
+            //set to -1 because the first run is the original one. Not considered a 'repeat'
+			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
+            //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
+			sb.setMaximumNumberOfRepeats(repeatcount); 
+
 		}
 		
 		// Set the frequency and frequency band.

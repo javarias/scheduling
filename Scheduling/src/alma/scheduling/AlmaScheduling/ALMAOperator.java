@@ -100,7 +100,7 @@ public class ALMAOperator implements Operator {
             containerServices.assignUniqueEntityId(entity);
         } catch(Exception e) {}
         message.setMessageId(entity.getEntityId());
-        Thread timer = new Thread(new SelectSBTimer(1000));
+        Thread timer = containerServices.getThreadFactory().newThread(new SelectSBTimer(1000));
         timer.start();
         message.setTimer(timer);
         /////////////////////////////

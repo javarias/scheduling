@@ -31,6 +31,7 @@ import alma.scheduling.InvalidObject;
 import alma.scheduling.InvalidOperation;
 */
 import java.net.URL;
+import alma.acs.container.ContainerServices;
 //import alma.entity.xmlbinding.schedblock.*;
 //import alma.obsprep.bo.*;
 //import alma.obsprep.bo.Target;
@@ -57,9 +58,11 @@ public class GUIController implements Runnable {
     private String defaultProjectId;
     private GUI gui;
     private InteractiveScheduler scheduler;
+    private ContainerServices containerServices;
 
-    public GUIController(SchedulerConfiguration s) {
+    public GUIController(SchedulerConfiguration s, ContainerServices cs) {
         this.config = s;
+        this.containerServices = cs;
         try {
             this.scheduler = new InteractiveScheduler(config);
             try {
@@ -154,7 +157,7 @@ public class GUIController implements Runnable {
     public void openObservingTool(String projectID) {
         //SB sb = config.getQueue().get(sbid);
         //String projectID = (sb.getProject()).getId();
-        OpenOT ot = new OpenOT(projectID);
+        OpenOT ot = new OpenOT(projectID, containerServices);
         Thread t = new Thread(ot);
         t.start();
     }

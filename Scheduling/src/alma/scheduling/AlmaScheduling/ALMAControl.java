@@ -46,7 +46,7 @@ import alma.Control.InaccessibleException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.29 2005/09/14 22:25:55 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.30 2005/09/20 20:07:13 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -168,6 +168,7 @@ public class ALMAControl implements Control {
             }
             controllers.add(ctrl);
             logger.info("SCHEDULING: array controller id = "+ ctrl.getName());
+            logger.info("SCHEDULING: "+ctrl.getName()+" has "+antenna.length+" antennas");
             return ctrl.getName();
         } catch(InvalidRequest e1) {
             throw new SchedulingException
