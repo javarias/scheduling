@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version $Id: Control.java,v 1.8 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: Control.java,v 1.9 2005/09/26 20:23:00 sslucero Exp $
  * @author Allen Farris
  */
 public interface Control {
@@ -113,4 +113,9 @@ public interface Control {
 	public String[] getArrayAntennas(String name)
 		throws SchedulingException;
 
+    public void setAntennaOfflineNow(String antennaId) 
+        throws SchedulingException;
+
+    public void setAntennaOnlineNow(String antennaId) 
+        throws SchedulingException;
 }

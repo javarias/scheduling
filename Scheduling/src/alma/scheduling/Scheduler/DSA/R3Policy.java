@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.5 2005/08/25 20:26:30 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.6 2005/09/26 20:23:00 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -277,47 +277,29 @@ class R3Policy extends PolicyType {
 	public BestSB getBest() throws SchedulingException {
 		// Check if there is something left to schedule.
         
-        /*int ready =0;
-        for(int z=0; z < unit.length; z++) {
-            if(unit[z].isReady()) {
-                ready++;
-            }
-        }
-        */
-
+		BestSB best = null;
         int i=0;
         for(; i < unit.length; i++){
-            if(unit[i].isReady()){
+            if(unit[i].isReady() || unit[i].isRunning()){
                 break;
             } //else  {
                 //log.info("SCHEDULING: unit is not ready");
             //}
         }
         if(i == unit.length){
-            return null;
+            best = new BestSB(new NothingCanBeScheduled(clock.getDateTime(), 
+                        NothingCanBeScheduled.Other, "Nothing is ready."));
+            return best;
+
+//            return null;
         }
         score();
         R3Unit[] list = topList();
-        /*
-        R3Unit[] list = new R3Unit[ready];
-        log.info("SCHEDULING: list length == "+ list.length);
-        int ready2 =0;
-        for(int x=0; x < unit.length; x++) {
-            if(unit[x].isReady()) {
-                list[ready2] = unit[x];
-                ready2++;
-            }
-        }
-        */
-        //System.out.println("Number of ready's left is ="+list.length);
 
-		// Create the SUnitBest object.
-		BestSB best = null;
 		if (list.length == 0) {
 			// Nothing can be scheduled.
 			best = new BestSB(new NothingCanBeScheduled (
                 clock.getDateTime(), whyNothing(), ""));
-                //new DateTime(System.currentTimeMillis()), whyNothing(), ""));
             log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in R3Policy");
 		} else {
 			String[] id = new String [list.length];

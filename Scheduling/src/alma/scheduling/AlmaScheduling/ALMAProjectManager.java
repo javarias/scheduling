@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.44 2005/09/20 20:07:13 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.45 2005/09/26 20:23:00 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -269,14 +269,23 @@ public class ALMAProjectManager extends ProjectManager {
     public void setSBComplete(ExecBlock eb) {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
+        logger.info("##########################");
+        logger.info("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
+        logger.info("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
-        if(completed.getNumberExec() == (completed.getMaximumNumberOfRepeats() +1) ){
-            System.out.println("#################################");
+        if(completed.getNumberExec() > completed.getMaximumNumberOfRepeats()  ){
+            System.out.println("###########set to complete####");
+            System.out.println("Setting end time for "+eb.getId());
             System.out.println(" # exec = "+completed.getNumberExec());
             System.out.println(" # repeats = "+completed.getMaximumNumberOfRepeats());
             System.out.println("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         } else { //set it to ready
+            System.out.println("##########set to ready###########");
+            System.out.println("Setting end time for "+eb.getId());
+            System.out.println(" # exec = "+completed.getNumberExec());
+            System.out.println(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            System.out.println("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());

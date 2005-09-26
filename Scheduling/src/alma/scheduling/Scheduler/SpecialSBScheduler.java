@@ -1,5 +1,7 @@
 package alma.scheduling.Scheduler;
 
+import alma.scheduling.Define.DateTime;
+
 public class SpecialSBScheduler extends Scheduler implements Runnable {
 
     public SpecialSBScheduler(SchedulerConfiguration config) {
@@ -16,14 +18,29 @@ public class SpecialSBScheduler extends Scheduler implements Runnable {
     protected String name() {
         return "Scheduler [" + Thread.currentThread().getName() +
                         "] (subarray " + arrayName + ")";
-                        //"] (array " + arrayName + ")";
     }
 
-
-
     public void run() {
-        logger.info("SCHEDULING: Running scheduler for SpecialSBs (fixed time SBs)");
+        DateTime start = clock.getDateTime();
+    	DateTime end = config.getCommandedEndTime();
+    	config.start(start,end);
+    	logger.info("SCHEDULING: "+name() + ": Started " + start);
+        
         config.setTask(Thread.currentThread());
+        logger.info("SCHEDULING: Running scheduler for SpecialSBs (fixed time SBs)");
+        try {
+            String[] antennas = config.getControl().getArrayAntennas(arrayName);
+            for(int i=0; i < antennas.length; i++){
+                config.getControl().setAntennaOfflineNow(antennas[i]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        config.normalEnd(clock.getDateTime());
+        logger.info(name() + " has ended!");
+    	logger.info(name() + " started " + config.getActualStartTime());
+    	logger.info(name() + " ended " + config.getActualEndTime());
+
     }
 
         

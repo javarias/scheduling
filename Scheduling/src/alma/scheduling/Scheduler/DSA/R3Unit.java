@@ -35,7 +35,7 @@ import java.text.NumberFormat;
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.6 2005/09/20 15:48:21 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.7 2005/09/26 20:23:00 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -488,6 +488,12 @@ class R3Unit extends SchedulingUnit {
 	 */
 	public boolean isReady() {
 		return sb.getStatus().isReady();
+	}
+	/**
+	 * @return boolean
+	 */
+	public boolean isRunning() {
+		return sb.getStatus().isRunning();
 	}
 
 	/**

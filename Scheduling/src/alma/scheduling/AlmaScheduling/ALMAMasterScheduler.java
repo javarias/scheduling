@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.33 2005/09/20 20:07:13 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.34 2005/09/26 20:23:00 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -357,11 +357,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         throws InvalidOperation {
 
         manager.checkForProjectUpdates();
-        //store scheduling policy int the archive.
-        //archive.storeSchedulingPolicy(schedulingPolicy);
-
-        //TODO Eventually populate s_policy with info from the schedulingPolicy
-        Policy s_policy = createPolicy();
         
         String[] allAntennas = null;
         try {
@@ -374,7 +369,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         // array created for special sbs must have  those antennas included.
         String[] specialSbAntennas;
         String[] regularSbAntennas;
-        if(manager.getSpecialSBs().size() > 0) {
+        if((manager.getSpecialSBs().size() > 0) && (sbQueue.size() > 0)) {
             //split array and start a scheduler for special sbs
             specialSbAntennas = new String[allAntennas.length/2];
             regularSbAntennas = new String[allAntennas.length/2];
@@ -383,20 +378,24 @@ public class ALMAMasterScheduler extends MasterScheduler
                 specialSbAntennas[i] = allAntennas[x++];
                 regularSbAntennas[i] = allAntennas[x++];
             }
-            String specialSBarrayname = createArray(specialSbAntennas, "dynamic");
-            //
-            Policy specialPolicy = createPolicy();
-            SchedulerConfiguration specialConfig = new SchedulerConfiguration(
-                    Thread.currentThread(), true, manager.getSpecialSBs(),
-                    specialSBarrayname, clock, control, operator, telescope, 
-                    manager, specialPolicy, logger);
-            SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
-            Thread specialSchedulerThread = 
-                containerServices.getThreadFactory().newThread(specialScheduler);
-            specialSchedulerThread.start();
-        } else {
+            scheduleSpecialSBs(specialSbAntennas);
+            scheduleRegularSBs(regularSbAntennas);
+        } else if(manager.getSpecialSBs().size() > 0) {
+            specialSbAntennas = allAntennas;
+            scheduleSpecialSBs(specialSbAntennas);
+        } else if(sbQueue.size() > 0) {
             regularSbAntennas = allAntennas;
+            scheduleRegularSBs(regularSbAntennas);
         }
+    }
+
+
+    private void scheduleRegularSBs(String[] regularSbAntennas) throws InvalidOperation {
+        //store scheduling policy int the archive.
+        //archive.storeSchedulingPolicy(schedulingPolicy);
+
+        //TODO Eventually populate s_policy with info from the schedulingPolicy
+        Policy s_policy = createPolicy();
         // regular sb scheduling
         String arrayname = createArray(regularSbAntennas, "dynamic");
         
@@ -405,16 +404,16 @@ public class ALMAMasterScheduler extends MasterScheduler
             arrayname, clock, control, operator, telescope, manager, s_policy, 
             logger);
         DynamicScheduler scheduler = new DynamicScheduler(config);
-        Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
-        scheduler_thread.start();
+        Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
+        schedulerThread.start();
         while(!stopCommand) {
             try {
-                scheduler_thread.join();
+                schedulerThread.join();
                 break;
             } catch(InterruptedException e) {
                 if(config.isNothingToSchedule()){
                     config.respondStop();
-                    logger.info("SCHEDULING: interrupted sched thread in MS");
+                    logger.info("SCHEDULING: interrupted regular sched thread in MS");
                     manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
                 }
             }
@@ -423,6 +422,43 @@ public class ALMAMasterScheduler extends MasterScheduler
             logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
         }
         destroyArray(arrayname);
+    }
+
+    private void scheduleSpecialSBs(String[] specialSbAntennas)  throws InvalidOperation {
+        String specialSBarrayname = createArray(specialSbAntennas, "dynamic");
+        //
+        Policy specialPolicy = createPolicy();
+        SchedulerConfiguration specialConfig = new SchedulerConfiguration(
+                Thread.currentThread(), true, manager.getSpecialSBs(),
+                specialSBarrayname, clock, control, operator, telescope, 
+                manager, specialPolicy, logger);
+        SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
+        Thread specialSchedulerThread = 
+            containerServices.getThreadFactory().newThread(specialScheduler);
+        specialSchedulerThread.start();
+        /*
+        while(!stopCommand) {
+            try {
+                specialSchedulerThread.join();
+                break;
+            } catch(InterruptedException e) {
+                if(specialConfig.isNothingToSchedule()){
+                    specialConfig.respondStop();
+                    logger.info("SCHEDULING: interrupted special sched thread in MS");
+                    manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
+                }
+            }
+        }
+        if(!specialConfig.isOperational()) {
+            logger.info("SCHEDULING: Scheduler has ended at " + specialConfig.getActualEndTime());
+        }
+        try {
+            Thread.sleep(5000);
+        } catch(Exception e){}
+        
+        destroyArray(specialSBarrayname);
+        */
+
     }
 
     /**
@@ -548,6 +584,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public void destroyArray(String name) throws InvalidOperation {
         try {
+            logger.info("SCHEDULING: Destroying array "+name);
             control.destroyArray(name);
         } catch(SchedulingException e) {
             throw new InvalidOperation();

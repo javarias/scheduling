@@ -106,6 +106,10 @@ public class GUIController implements Runnable {
         return config.getQueue().get(uid);
     }
 
+    public void getSBUpdates() {
+    
+    }
+
     public String[] getProjectIds() {
         String[] tmp;
         try {

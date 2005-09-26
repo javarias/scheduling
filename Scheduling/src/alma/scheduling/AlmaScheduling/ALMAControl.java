@@ -43,10 +43,11 @@ import alma.Control.AutomaticArrayCommand;
 import alma.ControlExceptions.*;
 import alma.Control.InvalidRequest;
 import alma.Control.InaccessibleException;
+import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.30 2005/09/20 20:07:13 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.31 2005/09/26 20:23:00 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -190,7 +191,11 @@ public class ALMAControl implements Control {
         try {
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
+            e1.printStackTrace();
         } catch(InaccessibleException e2){
+            e2.printStackTrace();
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -237,6 +242,21 @@ public class ALMAControl implements Control {
             }
         }
         return null;
+    }
+
+    public void setAntennaOfflineNow(String antennaId) throws SchedulingException {
+        try {
+            control_system.setAntennaMode(antennaId, AntennaMode.OFFLINE, true);
+        } catch(InvalidRequest e1) {
+        } catch(InaccessibleException e2){
+        }
+    }
+    public void setAntennaOnlineNow(String antennaId) throws SchedulingException {
+        try {
+            control_system.setAntennaMode(antennaId, AntennaMode.ONLINE, true);
+        } catch(InvalidRequest e1) {
+        } catch(InaccessibleException e2){
+        }
     }
 
     /**

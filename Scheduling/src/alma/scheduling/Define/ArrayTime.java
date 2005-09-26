@@ -31,30 +31,32 @@ package alma.scheduling.Define;
  * (See ftp://ftp.omg.org/pub/docs/formal/97-12-21.pdf)
  * It is the number of 100 ns since 1582-10-15 00:00:00.
  * 
- * @version $Id: ArrayTime.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ArrayTime.java,v 1.6 2005/09/26 20:23:00 sslucero Exp $
  * @author Allen Farris
  */
 public class ArrayTime {
     //ACSTime in seconds when unix time is at 0.
     private final long conversion = 12219292800L; //in seconds
     //The array time
-	private long time;
+	private long acsTime;
 
 	/**
 	 * Create an ArrayTime from a long. The long representing ACSTime
 	 */
 	public ArrayTime(long t) {
-		this.time = t; //in 100ns units
-        System.out.println("ACS Time = "+time);
+		this.acsTime = t; //in 100ns units ... acs time
+        System.out.println("ACS Time = "+acsTime);
 	}
 
     /**
      * @return
      */
     public DateTime arrayTimeToDateTime() {
-        long unixTime = (time / 10000) - (conversion * 1000);
-        System.out.println("Unixtime = "+unixTime);
-        return  new DateTime(unixTime);
+        //long unixTime = (time - 122192928000000000L) / 10000L; 
+        double acs_jd = 2299160.5; //acs base time as JD
+        double jd = acs_jd + (acsTime / 864000000000.0);
+        System.out.println("JD = "+jd);
+        return  new DateTime(jd);
     }
      
     /*
@@ -83,7 +85,7 @@ public class ArrayTime {
      * @return
      */
     public long getValue() {
-        return time;
+        return acsTime;
     }
 
 

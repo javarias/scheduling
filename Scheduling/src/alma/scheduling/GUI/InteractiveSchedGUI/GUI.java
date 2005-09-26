@@ -106,7 +106,7 @@ public class GUI extends JFrame {
     //Toolbar & Buttons
     private JToolBar toolbar;
     private JButton sessionStateButton;
-    private JButton addSBButton;
+    private JButton modifySBButton;
     private JButton updateSBButton;
     private JButton executeSBButton;
     private JButton deleteSBButton;
@@ -206,7 +206,7 @@ public class GUI extends JFrame {
         picturePanel.add(title, BorderLayout.WEST);
         //picturePanel.add(new JSeparator());
         picturePanel.add(pl, BorderLayout.EAST); 
-        mainViewPane.setColumnHeaderView(picturePanel);//, ScrollPaneLayout.UPPER_RIGHT_CORNER);
+        mainViewPane.setColumnHeaderView(picturePanel);
     }
 
 
@@ -275,8 +275,8 @@ public class GUI extends JFrame {
     /**
      *
      */
-    private void updateSB(){
-        controller.openObservingTool(controller.getDefaultProjectId());
+    private void updateSBView(){
+        controller.getSBUpdates();
     }
     
     /**
@@ -319,25 +319,7 @@ public class GUI extends JFrame {
         tmp.add(new JSeparator()); 
         projectTop.add(tmp);
         
-        /*
-        JPanel projectCenter = new JPanel(new GridLayout(3,1));
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JLabel("Total Programs: "+proj.getProgram().getTotalPrograms()));
-        projectCenter.add(new JLabel("Completed Programs: "+proj.getProgram().getNumberProgramsCompleted()));
-        projectCenter.add(new JLabel("Failed Programs: "+proj.getProgram().getNumberProgramsFailed()));
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JLabel("Total SBs: "+proj.getProgram().getTotalSBs()));
-        projectCenter.add(new JLabel("Completed SBs: "+proj.getProgram().getNumberSBsCompleted()));
-        projectCenter.add(new JLabel("Failed SBs: "+proj.getProgram().getNumberSBsFailed()));
-        projectCenter.add(new JSeparator());
-        
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JSeparator());
-        projectCenter.add(new JSeparator());
-        */
+
         projectDisplayPanel.add(projectTop, BorderLayout.CENTER);
         //projectDisplayPanel.add(projectCenter, BorderLayout.CENTER);
         mainViewPane.getViewport().add(projectDisplayPanel);
@@ -466,8 +448,8 @@ public class GUI extends JFrame {
         JPanel panel = new JPanel();
         //addsb
         panel.add(new JSeparator());
-        addSBButton = new JButton("Add SB");
-        addSBButton.addActionListener(new ActionListener() {
+        modifySBButton = new JButton("Add/Update SB");
+        modifySBButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(controller.getLogin() == "") {
                     mustLogin();
@@ -476,18 +458,18 @@ public class GUI extends JFrame {
                 addSB();
             }
         });
-        panel.add(addSBButton);
+        panel.add(modifySBButton);
         panel.add(new JSeparator());
 
         //update sb
-        updateSBButton = new JButton("Update SB");
+        updateSBButton = new JButton("Update SB View");
         updateSBButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(controller.getLogin() == "") {
                     mustLogin();
                     return;
                 }
-                updateSB();
+                updateSBView();
             }
         });
         panel.add(updateSBButton);

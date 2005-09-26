@@ -50,7 +50,7 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version $Id: DateTime.java,v 1.7 2005/01/25 18:09:40 sslucero Exp $
+ * @version $Id: DateTime.java,v 1.8 2005/09/26 20:23:00 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {
@@ -220,6 +220,13 @@ public class DateTime {
         System.out.println("SCHEDULING: ACS TIME = "+acsTime);
         return acsTime;
     }
+
+    /*
+    static public long acsToUnix(long acsTime) {
+        //long unixTime = acsTime / ((CONVERSION * 1000) * 10000);
+        long unixTime = acsTime - (CONVERSION / 10000000);
+        return unixTime;
+    }*/
 	
 	/**
 	 * Internally, time is kept in the form of the Julian day, 
@@ -228,6 +235,18 @@ public class DateTime {
 	 * Julian day starts at 12 hours UT.
 	 */
 	private double jd;
+
+    /**
+	 * Create a DateTime by specifying the number of milliseconds since
+	 * midnight, January 1, 1970 UTC (which is what the Java System
+	 * method "long currentTimeMillis()" returns.
+	 * @param millisec The number of milliseconds since
+	 * midnight, January 1, 1970 UTC.
+	 */
+	public DateTime(long millisec) {
+		// 2440587.5 is the Julian date of Jan. 1, 1970, midnight UTC.
+		this(millisec / 86400000.0 + 2440587.5);	
+	}
 
 	/**
 	 * Create a DateTime by specifying the Julian day.
@@ -368,19 +387,6 @@ public class DateTime {
 	public DateTime(Date d, double hours) {
 		init(d.getYear(),d.getMonth(),(d.getDay() + (hours / 24.0)));
 	}
-
-	/**
-	 * Create a DateTime by specifying the number of milliseconds since
-	 * midnight, January 1, 1970 UTC (which is what the Java System
-	 * method "long currentTimeMillis()" returns.
-	 * @param millisec The number of milliseconds since
-	 * midnight, January 1, 1970 UTC.
-	 */
-	public DateTime(long millisec) {
-		// 2440587.5 is the Julian date of Jan. 1, 1970, midnight UTC.
-		this(millisec / 86400000.0 + 2440587.5);	
-	}
-
 
 	/**
 	 * Return the Julian day.
