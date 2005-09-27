@@ -107,7 +107,10 @@ public class GUIController implements Runnable {
     }
 
     public void getSBUpdates() {
-    
+        // get project from archive and see if there are new sbs in it
+        //if there are add new ones to config's queue
+        //if not do nothing.
+        
     }
 
     public String[] getProjectIds() {

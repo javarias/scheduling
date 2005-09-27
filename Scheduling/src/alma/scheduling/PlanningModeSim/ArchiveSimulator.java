@@ -281,5 +281,8 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
     public void storePipelineProcessingRequest(SciPipelineRequest ppr) {}
     public String storeSession(Session s) { return null; }
     public void updateSession(String id) {}
+    public Project checkProjectForUpdates(String id) throws SchedulingException{
+        return null;
+    }
     
 }

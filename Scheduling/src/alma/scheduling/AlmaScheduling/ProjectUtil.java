@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.31 2005/09/20 20:07:13 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.32 2005/09/27 14:49:34 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -381,7 +381,9 @@ public class ProjectUtil {
 	 * @throws SchedulingException
 	 */
 	static private Project initialize(ObsProject obs, SchedBlock[] sched, 
-			String projectStatusEntityId, DateTime now) throws SchedulingException {
+			                          String projectStatusEntityId, DateTime now) 
+                                      throws SchedulingException {
+
 		Project project = new Project (obs.getObsProjectEntity().getEntityId(),
 									   obs.getObsProposalRef().getEntityId(),
 									   obs.getProjectName(),
@@ -728,9 +730,10 @@ public class ProjectUtil {
 	static private void update(Project project, ProjectStatus status, DateTime now) 
 		throws SchedulingException {
 		//throw new SchedulingException("The ProjectUtil.update(Project project, ProjectStatus status, DateTime now) method is not implemented at the present time.");
-            System.out.println("UPDATING THE PROJECT CAUSE IT HAS AN EXISTING PROJECT STATUS");
+            System.out.println("UPDATING THE PROJECT BECAUSE IT HAS AN EXISTING PROJECT STATUS");
 		// TODO We will implement this after R2.  For R2, all projects we execute will be created from
 		//	scratch and will be initialized.  For this we won't need a previously created "real" ProjectStatus.
+
 	}
 	
 	//////////////////////////////////////////////////////////////////////

@@ -446,7 +446,7 @@ public class GUI extends JFrame {
 
     private JPanel sbButtonView(){
         JPanel panel = new JPanel();
-        //addsb
+        //addsb or modify sb
         panel.add(new JSeparator());
         modifySBButton = new JButton("Add/Update SB");
         modifySBButton.addActionListener(new ActionListener() {
@@ -461,7 +461,7 @@ public class GUI extends JFrame {
         panel.add(modifySBButton);
         panel.add(new JSeparator());
 
-        //update sb
+        //update sb view
         updateSBButton = new JButton("Update SB View");
         updateSBButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

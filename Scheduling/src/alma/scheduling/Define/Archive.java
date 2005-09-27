@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The Archive interface defines the interface to the archive needed
  * by the scheduling subsystem. 
  * 
- * @version $Id: Archive.java,v 1.7 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: Archive.java,v 1.8 2005/09/27 14:49:34 sslucero Exp $
  * @author Allen Farris
  */
 public interface Archive {
@@ -48,6 +48,13 @@ public interface Archive {
       * @throws SchedulingException
       */
 	public Project getProject(String id) throws SchedulingException;
+
+    /**
+      * Given the id, go to the archive and see if the project with this id
+      * has been updated with SBs.
+      */ 
+    public Project checkProjectForUpdates(String id) throws SchedulingException;
+    
     /**
       * @throws SchedulingException
       */
