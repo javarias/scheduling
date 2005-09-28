@@ -220,10 +220,8 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(!loggedIn) {
                     login();
-                    loggedIn = true;
                 } else {
                     logout();
-                    loggedIn = false;
                 }
             }
         });
@@ -276,7 +274,16 @@ public class GUI extends JFrame {
      *
      */
     private void updateSBView(){
-        controller.getSBUpdates();
+        try {
+            controller.getSBUpdates();
+            System.out.println("Updating project with id = "
+                     + controller.getDefaultProjectId());
+
+            displaySBInfo(controller.getDefaultProjectId());
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -287,13 +294,16 @@ public class GUI extends JFrame {
         try{
             String login = JOptionPane.showInputDialog(this,"Please log in.");
             controller.setLogin(login);
-            displaySBInfo(controller.getDefaultProjectId());
-            displayProjectInfo(controller.getDefaultProjectId());
-            sessionStateButton.setText("Logout");
         } catch(SchedulingException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "", 
                 JOptionPane.WARNING_MESSAGE);
+            //loggedIn = false;
+            return;
         }
+        displaySBInfo(controller.getDefaultProjectId());
+        displayProjectInfo(controller.getDefaultProjectId());
+        sessionStateButton.setText("Logout");
+        loggedIn = true;
     }
 
     private void displayProjectInfo(String id){
@@ -336,6 +346,7 @@ public class GUI extends JFrame {
             mainViewPane.getViewport().repaint();
             sbViewPane.getViewport().removeAll();
             sbViewPane.getViewport().repaint();
+            loggedIn = false;
         } catch(Exception ex){}
         //do other things to insure user is logged out.
         //ie: close scheduler, etc
@@ -349,8 +360,14 @@ public class GUI extends JFrame {
         Dimension d = new Dimension(400,100);
         sbDisplayPanel = new JPanel(new BorderLayout());
         SB[] allsbs = controller.getSBs();
+        System.out.println("SBs has size "+ allsbs.length);
         Vector s = new Vector();
         for(int i=0; i < allsbs.length;i++){
+            if(allsbs[i] == null) {
+                System.out.println("sbs is null... & i = "+ i);
+            } else {
+                System.out.println("sbs project id = "+ allsbs[i].getProject().getId() );
+            }
             if(allsbs[i].getProject().getId().equals(projectId)) {
                 s.add(allsbs[i]);
             }
@@ -395,6 +412,7 @@ public class GUI extends JFrame {
 
         sbViewPane.getViewport().add (sbDisplayPanel); //add everything to Sb tab view.
         sbViewPane.getViewport().repaint();
+        validate();
     }
 
     private void addSelectedSBView(FocusEvent e) {

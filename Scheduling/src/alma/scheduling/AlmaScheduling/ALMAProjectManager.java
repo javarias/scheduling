@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.45 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.46 2005/09/28 22:41:07 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -235,11 +235,16 @@ public class ALMAProjectManager extends ProjectManager {
         return pQueue;
     }
 
+    public Project getProject(String id) throws SchedulingException {
+        return archive.getProject(id);
+    }
+
     /**
       *
       * Log that the session has started and send a message to the Operator
       */
     public void sessionStart(String sessionId, String sb_id) {
+        System.out.println("SBQueue now has "+sbQueue.size()+" elements");
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
         logger.info("SCHEDULING:(session info) Session ("+sessionId+") has started.");
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
@@ -710,4 +715,82 @@ public class ALMAProjectManager extends ProjectManager {
         }
     }
 
+    /**
+      * Compares the SBs in project 1 with project 2.
+      * If the sbs in either are different the result is false.
+      * If the sbs are all the same the result is true.
+      * @param p1 Project 1, the new project!
+      * @param p2 Project 2, the existing project!
+      * @return boolean True if all the same, false if different.
+      */
+    public boolean compareSBs(Project p1, Project p2) {
+        boolean res = false;
+        SB[] sb1 = p1.getAllSBs();
+        SB[] sb2 = p2.getAllSBs();
+        if(sb1.length != sb2.length) {
+            logger.info("SCHEDULING: Comparing sb lists. Size is different so false return"
+                    + sb1.length +" : "+ sb2.length);
+            return false;
+        }
+        // Always starting with a false result... If the sb1[i] is not in
+        // sb2 then lists are not the same. If sb1[i] is in there check
+        // the next item in sb1 through all of sb2.
+        for(int i=0; i < sb1.length; i++){ //call this 'i' loop
+            res = false;
+            for(int j=0; j < sb2.length; j++){ // call this'j' loop
+                if( sb1[i].getId().equals(sb2[j].getId()) ) {
+                    res = true;
+                    break;
+                }
+            }
+            if(!res) break; //out of 'j' loop
+        }
+        return res; 
+    }
+
+    /*
+      * @param p1 Project 1, the new project!
+      * @param p2 Project 2, the existing project!
+      */
+    public SB[] getNewSBs(Project p1, Project p2) {
+        SB[] sb1 = p1.getAllSBs();
+        System.out.println("new proj has "+sb1.length+" sbs");
+        SB[] sb2 = p2.getAllSBs();
+        System.out.println("old proj has "+sb2.length+" sbs");
+        if(sb1.length <= sb2.length) {
+            logger.info("SCHEDULING: There are no new sbs! The new project has size "+
+                    + sb1.length +" and the old project has size "+ sb2.length);
+            return null;
+        }
+        int size = sb1.length - sb2.length;
+        int x=0;
+        SB[] newSBs = new SB[size];
+        boolean isThere = false;
+        for(int i=0; i < sb1.length; i++){ //Call this 'i' loop
+            for(int j=0; j < sb2.length; j++){ //Call this 'j' loop
+                if(sb1[i].getId().equals(sb2[j].getId())){ 
+                    System.out.println("sb is there. not adding");
+                    isThere = true;
+                }
+                if(isThere){
+                    System.out.println("break out of j loop only (hopefully)");
+                    isThere = false;
+                    break; //out of 'j' loop
+                } else {
+                    System.out.println("sb is not there. adding");
+                    //add to newSBs
+                    System.out.println("new sbs's id == "+sb1[i].getId());
+                    newSBs[x] = sb1[i];
+                    System.out.println("new sbs's id == "+newSBs[x].getId());
+                    x++;
+                    
+                }
+            }
+            System.out.println(" in getNewSBs i = "+i);
+        }
+        
+        System.out.println("SCHEDULING: difference between p1 & p2 = "+size);
+        System.out.println("SCHEDULING: size of newSBs = "+x);
+        return newSBs;
+    }
 }

@@ -106,10 +106,56 @@ public class GUIController implements Runnable {
         return config.getQueue().get(uid);
     }
 
+    public void addSB(SB sb){
+        config.getQueue().add(sb);
+    }
+    
+    public void updateProject(Project p) {
+        ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().replace(p);
+    }
+
     public void getSBUpdates() {
-        // get project from archive and see if there are new sbs in it
-        //if there are add new ones to config's queue
-        //if not do nothing.
+        // get project from archive and compare it with the project in the project queue 
+        try {
+
+            Project newProj = ((ALMAProjectManager)config.getProjectManager())
+                .getProject(defaultProjectId);
+            Project oldProj = ((ALMAProjectManager)config.getProjectManager())
+                .getProjectQueue().get(defaultProjectId);
+            
+            System.out.println("New project " +newProj.getProgram().getTotalSBs());
+            System.out.println("Old project " +oldProj.getProgram().getTotalSBs());
+            
+            //update new project in project queue
+            updateProject(newProj);
+            
+            if(newProj.getProgram().getTotalSBs() == oldProj.getProgram().getTotalSBs()) {
+                // same number, check that they're all the same
+                // compareSBs will return false if there is a sb in either project that isn't in the other
+                if( !((ALMAProjectManager)config.getProjectManager()).compareSBs(newProj, oldProj) ) {
+                    System.out.println("SCHEDULING: There was a problem comparing.");
+                }
+                System.out.println("Comparing identical sized total sbs");
+                
+            } else if(newProj.getProgram().getTotalSBs() > oldProj.getProgram().getTotalSBs()) {
+                System.out.println("SCHEDULING: There are new SBs.");
+                SB[] sbs = ((ALMAProjectManager)config.getProjectManager()).getNewSBs(newProj, oldProj);
+                for(int i=0; i < sbs.length; i++){
+                    System.out.println("adding sb "+ i);
+                    System.out.println("Stupid sb has id = "+ sbs[i].getId());
+                    addSB(sbs[i]);
+                }
+                System.out.println("size of sb queue = "+ config.getQueue().size());
+            } else if(newProj.getProgram().getTotalSBs() < oldProj.getProgram().getTotalSBs()) {
+                System.out.println("SCHEDULING: There were some SBs deleted.");
+                SB[] sbs = ((ALMAProjectManager)config.getProjectManager()).getNewSBs(newProj, oldProj);
+                //there are less sbs
+
+            }
+                
+        } catch(Exception e ) {
+            e.printStackTrace();
+        }
         
     }
 
@@ -179,11 +225,10 @@ public class GUIController implements Runnable {
       *
       */
     public void setLogin(String id) throws SchedulingException {
-        userlogin = id;
         SB[] sbs = config.getQueue().getAll();
-        //sbs[0].setRequiredStart(new TimeInterval(new DateTime(System.currentTimeMillis()), 3600));
-        config.setCommandedEndTime(DateTime.add(new DateTime(System.currentTimeMillis()),3600 ));
+        userlogin = id;
         scheduler.login(userlogin, sbs[0]);
+        config.setCommandedEndTime(DateTime.add(new DateTime(System.currentTimeMillis()),3600 ));
     }
 
     /**

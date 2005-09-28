@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * The ProjectQueue class is a queue of projects, held in memory,
  * that can be accessed and updated by multiple threads,
  *
- * @version $Id: ProjectQueue.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ProjectQueue.java,v 1.4 2005/09/28 22:41:07 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectQueue {
@@ -75,6 +75,19 @@ public class ProjectQueue {
                 System.out.println("Project already exists! not adding to queue");
             }
         }
+    }
+
+    /**
+      * Replace the given project with its older version in the queue.
+      * @param p The new version of an existing project
+      */
+    public synchronized void replace(Project p) {
+        for(int i=0; i < queue.size(); i++) {
+            if( p.getId().equals( ((Project)queue.get(i)).getId()) ){
+                queue.set(i, p);
+            }
+        }
+
     }
 	
 	/**

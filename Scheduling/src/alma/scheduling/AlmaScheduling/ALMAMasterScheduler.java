@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.35 2005/09/27 14:49:34 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.36 2005/09/28 22:41:07 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -471,6 +471,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         for(int i=0; i < sbs.length; i++){
             sbs[i].setType(SB.INTERACTIVE);
         }
+        //This will eventually cause problems i'm sure..
         sbQueue = new SBQueue(sbs);
         
         String[] antennas = null; 
