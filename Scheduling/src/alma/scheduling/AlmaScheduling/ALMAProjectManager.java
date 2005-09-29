@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.46 2005/09/28 22:41:07 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.47 2005/09/29 13:50:30 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -244,7 +244,6 @@ public class ALMAProjectManager extends ProjectManager {
       * Log that the session has started and send a message to the Operator
       */
     public void sessionStart(String sessionId, String sb_id) {
-        System.out.println("SBQueue now has "+sbQueue.size()+" elements");
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
         logger.info("SCHEDULING:(session info) Session ("+sessionId+") has started.");
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");

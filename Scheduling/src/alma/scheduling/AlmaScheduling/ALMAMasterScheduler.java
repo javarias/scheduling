@@ -57,7 +57,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.36 2005/09/28 22:41:07 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.37 2005/09/29 13:50:30 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -436,29 +436,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         Thread specialSchedulerThread = 
             containerServices.getThreadFactory().newThread(specialScheduler);
         specialSchedulerThread.start();
-        /*
-        while(!stopCommand) {
-            try {
-                specialSchedulerThread.join();
-                break;
-            } catch(InterruptedException e) {
-                if(specialConfig.isNothingToSchedule()){
-                    specialConfig.respondStop();
-                    logger.info("SCHEDULING: interrupted special sched thread in MS");
-                    manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
-                }
-            }
-        }
-        if(!specialConfig.isOperational()) {
-            logger.info("SCHEDULING: Scheduler has ended at " + specialConfig.getActualEndTime());
-        }
-        try {
-            Thread.sleep(5000);
-        } catch(Exception e){}
-        
-        destroyArray(specialSBarrayname);
-        */
-
+       
     }
 
     /**
@@ -466,13 +444,8 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public void startInteractiveScheduling() throws InvalidOperation {
         Policy s_policy = createPolicy();
-        //logger.info("SCHEDULING: sbqueue size = "+sbQueue.size());
-        SB[] sbs = sbQueue.getAll();
-        for(int i=0; i < sbs.length; i++){
-            sbs[i].setType(SB.INTERACTIVE);
-        }
-        //This will eventually cause problems i'm sure..
-        sbQueue = new SBQueue(sbs);
+
+        sbQueue.get(0).setType(SB.INTERACTIVE);
         
         String[] antennas = null; 
         try {
