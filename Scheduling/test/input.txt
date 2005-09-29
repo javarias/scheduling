@@ -32,7 +32,29 @@ Site.altitude = 2124.0
 # Site minimum elevation angle above the horizon.
 Site.minimumElevationAngle = 8.0
 # Number of antennas.
-Site.numberAntennas = 64
+Site.numberAntennas = 20
+# Antenna Configuration
+Antenna.0 = Antenna00; 104; Pad00; true
+Antenna.1 = Antenna01; 104; Pad01; true
+Antenna.2 = Antenna02; 104; Pad02; true
+Antenna.3 = Antenna03; 104; Pad03; true
+Antenna.4 = Antenna04; 104; Pad04; false
+Antenna.5 = Antenna04; 104; Pad05; false
+Antenna.6 = Antenna04; 104; Pad06; false
+Antenna.7 = Antenna04; 104; Pad07; false
+Antenna.8 = Antenna04; 104; Pad08; false
+Antenna.9 = Antenna04; 104; Pad09; false
+Antenna.10 = Antenna10; 104; Pad10; false
+Antenna.11 = Antenna11; 104; Pad11; false
+Antenna.12 = Antenna12; 104; Pad12; false
+Antenna.13 = Antenna13; 104; Pad13; false
+Antenna.14 = Antenna14; 104; Pad14; false
+Antenna.15 = Antenna15; 104; Pad15; false
+Antenna.16 = Antenna16; 104; Pad16; false
+Antenna.17 = Antenna17; 104; Pad17; false
+Antenna.18 = Antenna18; 104; Pad18; false
+Antenna.19 = Antenna19; 104; Pad19; false
+Antenna.20 = Antenna20; 104; Pad20; false
 
 # Frequency Bands
 
