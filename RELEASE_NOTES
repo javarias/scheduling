@@ -6,7 +6,7 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.14 2005/09/29 20:26:20 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.15 2005/09/29 21:14:47 sslucero Exp $"
 
 
 Important Comments:
@@ -70,6 +70,9 @@ Known problems/bugs:
     - In interactive scheduling when the observing tool is used (when sb is 
       added or updated..) problems occur with the acs container. This due to 
       the way the OT shuts down or something.. 
+
+    - The planning mode simulator gui does not create antenna config data so producing a file
+      via the gui for a planning mode simulation will fail. Use the input.txt in test dir.
       
 Changes:
     - There is a new schema SpecialSB. Which is an example of one type of a fixed scheduling
