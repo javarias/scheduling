@@ -2,7 +2,7 @@ How to start/use the ALMA Interactive Scheduling GUI (this is also on the ALMA S
 
 Getting the GUI up:
    * Start the ARCHIVE and load all the ALMA Schemas into the archive (you must have all ALMA Subsystems installed also).
-   * Start up ACS-4.1.2 
+   * Start up ACS-4.1.3 
    * Put an ObsProject/ObsProgram/SchedBlock project into the archive. 
       * There is a default project known to work with the scheduling system in SCHEDULING/Scheduling/test called Project.zip that works with 'ALMA-OT -batch'
    * Start up and initialize all the ALMA Systems using their master components.
@@ -15,14 +15,11 @@ Using the GUI:
    * Once you log in you will see a project loaded with its details in the first tab and the scheduling block details in the second tab.
    * If there were more than one project sent to the interactive scheduler, you can access those via the Projects menu 
 
-   Adding an SB Button: (currently not working coz of OT)
-      * This will only work if the OT provides support for loading of a project using its uid.
-      * With the project you want loaded into the interactive gui, click on the Add SB button in the SB View area. This will spawn the ObservingTool with the project. Once you have added your new SB (or SBs) you will need to save it (using the OT) and then back in the interactive scheduling gui you will need to update your view using the Update List button in the SB View area.
+   Adding or Updating a SB Button: 
+      * With the project you want loaded into the interactive gui, click on this button in the SB View area. This will spawn the ObservingTool with the sb's project. Add another scheduling block to the project or modifiy something in an existing SB, using the Observing Tool. Once you have made your changes you will need to save it (using the OT) and then back in the interactive scheduling gui you will need to update your view using the Update SB button in the SB View area.
 
-
-   Update an SB Button: (currently not working coz of OT)
-      * This will only work if the OT provides support for loading of a project using its uid.
-      * pretty much the same as add sb above, only you don't create a new sb, just update an existing one. Once finished, save via OT and Update List in interactive scheduling gui.
+   Update SB View Button:
+      * Once you have added or modified a sb using the observing tool and done a save (to update it in the archive) click the Update SB View button and your modifications should show up in the SB list.
 
    Delete an SB Button:
       * NOT IMPLEMENTED YET
@@ -37,8 +34,5 @@ Using the GUI:
       * NOT IMPLEMENTED YET
       * You will only be able to stop an sb if it is started executing. 
    
-   Update SBs View Button
-      * NOT IMPLEMENTED YET
-      
    
 If all else fails.. come find sohaila...
