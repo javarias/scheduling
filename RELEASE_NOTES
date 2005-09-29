@@ -6,18 +6,15 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.13 2005/08/25 20:42:50 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.14 2005/09/29 20:26:20 sslucero Exp $"
 
-Documents:
 
 Important Comments:
-    For MONTHLY-2005-08:
-    - This version of SCHEDULING has NOT been *fully* tested with the new CONTROL code
-      and previous functionality is not guarenteed. Any major modifications to
-      this version of SCHEDULING will be done in the next release. 
+    For MONTHLY-2005-09:
+    - Due to the complexity of the control system this version of scheduling has not been fully tested. It has been tested with the version of control (plus a couple of bug fixes which hopefully made it into this month's release) from -08.
 
 Configuration Requirements:
-    - ACS-4.1.1
+    - ACS-4.1.3
     - MicroArchive that was released with ACS
     - All other subsystems that are installed before scheduling in the build 
       process must be installed.
@@ -44,12 +41,10 @@ Tested:
       with other ALMA subsystems. In the future scheduling simulators will be
       completed to avoid this interaction in testing.
   			  
-    - Scheduling has been tested using entities created using the ALMA-OT batchmode. 
+    - Scheduling has been tested using entities created using the ALMA-OT batchmode.
+      There is a Project.zip file in the src directory which has been modified to 
+      contain a source which is *always* visible from the ATF location.
 
-    - The TestALMAControl test was removed because I could not simulate CONTROL/MASTER 
-      Putting that in the simualated dir of my test cdb wouldnt let the comp be activated.
-
-   
 
 Tests: 
     - All the tests below run as a suite, AllTests.java
@@ -58,23 +53,35 @@ Tests:
             TestDateTime
             TestStatus
             TestTime
+    - There is a test simTest which tests the Planning Mode Simulator.
+    - There is a test called pubTest which tests the NC Publisher for scheduling
 
 TEST NOTE: Scheduling now has an Interactive Scheduling Mode. This requires human interaction
            and therefore cannot be automatically tested. For more imformation on how to test 
-           the Interactive Scheduling mode please see Sohaila Lucero.
+           the Interactive Scheduling mode please read the INTERACTIVE_SCHED_HOWTO in the src
+           directory.
     
 Known problems/bugs:
 
+    - There was a problem in the time that CONTROL sent via the ExecBlockStarted event. 
+      It should be fixed in cvs but just incase there are problems thats one thing that 
+      could be the cause.
+
     - In interactive scheduling when the observing tool is used (when sb is 
       added or updated..) problems occur with the acs container. This due to 
-      the way the OT shuts down or something.. killACS seems to be the only way
-      to restart without errors. Problem is still under investigation.
+      the way the OT shuts down or something.. 
       
-Cost:
-
-
 Changes:
-    - New way of dealing/sending out session events. This may cause problems because its not been tested fully with new control.
+    - There is a new schema SpecialSB. Which is an example of one type of a fixed scheduling
+      block. With one of these stored in the archive, startScheduling will create a 
+      scheduler for it. There is a script (storeSpecialSB) to put one in the archive.
+
+    - If a SB has a repeat count, the scheduler now schedules the sb that many times. In
+      the given Project.zip there is a repeat count of 5 so you should see 5 executions.
+      The ProjectStatus.xml should have 5 sessions and 5 exec blocks.
+    
+    - New way of dealing/sending out session events. 
+    
     - Scheduling of an ordered queue is implemented. Tho its really just scheduling of a list of SBs 
 
     - Interactive scheduling has a new look. same functionality tho. There's a HOWTO availble in src and on the scheduling twiki web.
@@ -110,6 +117,6 @@ Changes:
      - ExecBlockEvent problem found in R1.1 integration has been corrected for
        future integrations
 
-     - Problem with the StartSesion and EndSession events. Parameter was null, which corba didn't like but didnt complain about.
+     - Problem with the StartSesion and EndSession events. Parameter was null, which corba 
+       didn't like but didnt complain about.
 
-                          ___oOo___
