@@ -28,6 +28,7 @@ package alma.scheduling.test;
 
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.scheduling.AlmaScheduling.ALMAArchive;
+import alma.scheduling.AlmaScheduling.ALMAClock;
 import alma.scheduling.Define.*;
 
 public class TestALMAArchive extends ComponentClientTestCase {
