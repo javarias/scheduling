@@ -32,7 +32,7 @@ Site.altitude = 2124.0
 # Site minimum elevation angle above the horizon.
 Site.minimumElevationAngle = 8.0
 # Number of antennas.
-Site.numberAntennas = 20
+Site.numberAntennas = 50
 # Antenna Configuration
 Antenna.0 = Antenna00; 104; Pad00; true
 Antenna.1 = Antenna01; 104; Pad01; true
@@ -55,6 +55,36 @@ Antenna.17 = Antenna17; 104; Pad17; false
 Antenna.18 = Antenna18; 104; Pad18; false
 Antenna.19 = Antenna19; 104; Pad19; false
 Antenna.20 = Antenna20; 104; Pad20; false
+Antenna.21 = Antenna21; 104; Pad21; false
+Antenna.22 = Antenna22; 104; Pad22; false
+Antenna.23 = Antenna23; 104; Pad23; false
+Antenna.24 = Antenna24; 104; Pad24; false
+Antenna.25 = Antenna25; 104; Pad25; false
+Antenna.26 = Antenna26; 104; Pad26; false
+Antenna.27 = Antenna27; 104; Pad27; false
+Antenna.28 = Antenna28; 104; Pad28; false
+Antenna.29 = Antenna29; 104; Pad29; false
+Antenna.30 = Antenna30; 104; Pad30; false
+Antenna.31 = Antenna31; 104; Pad31; false
+Antenna.32 = Antenna32; 104; Pad32; false
+Antenna.33 = Antenna33; 104; Pad33; false
+Antenna.34 = Antenna34; 104; Pad34; false
+Antenna.35 = Antenna35; 104; Pad35; false
+Antenna.36 = Antenna36; 104; Pad36; false
+Antenna.37 = Antenna37; 104; Pad37; false
+Antenna.38 = Antenna38; 104; Pad38; false
+Antenna.39 = Antenna39; 104; Pad39; false
+Antenna.40 = Antenna40; 104; Pad40; false
+Antenna.41 = Antenna41; 104; Pad41; false
+Antenna.42 = Antenna42; 104; Pad42; false
+Antenna.43 = Antenna43; 104; Pad43; false
+Antenna.44 = Antenna44; 104; Pad44; false
+Antenna.45 = Antenna45; 104; Pad45; false
+Antenna.46 = Antenna46; 104; Pad46; false
+Antenna.47 = Antenna47; 104; Pad47; false
+Antenna.48 = Antenna48; 104; Pad48; false
+Antenna.49 = Antenna49; 104; Pad40; false
+Antenna.50 = Antenna50; 104; Pad50; false
 
 # Frequency Bands
 
