@@ -32,7 +32,7 @@ package alma.scheduling.Define;
  * location, altitude, number of antennas, properties of those antennas,
  * minimum angle of elevation and supported frequency bands. 
  * 
- * @version $Id: SiteCharacteristics.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: SiteCharacteristics.java,v 1.5 2005/09/29 17:43:51 sslucero Exp $
  * @author Allen Farris
  */
 public class SiteCharacteristics {
@@ -210,6 +210,16 @@ public class SiteCharacteristics {
 	public int getTimeZone() {
 		return timeZone;
 	}
+
+
+    public void setAntenna(Antenna[] a) {
+        antenna = a;
+    }
+
+    public void setAntenna(Antenna a, int i){
+        antenna[i] = a;
+    }
+    
 
 }
 

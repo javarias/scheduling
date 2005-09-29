@@ -41,6 +41,7 @@ import alma.scheduling.Define.Priority;
 import alma.scheduling.Define.WeatherCondition;
 import alma.scheduling.Define.Target;
 import alma.scheduling.Define.Equatorial;
+import alma.scheduling.Define.Antenna;
 
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -136,6 +137,11 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	 * The frequency bands associated with this simulation.
 	 */
 	private FrequencyBand[] band;
+
+	/**
+	 * The antennas associated with this simulation
+	 */
+	private Antenna[] antenna;
 	
 	/**
 	 * The projects as constructed from the input properties file.
@@ -313,7 +319,30 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 
 		site = new SiteCharacteristics (longitude, latitude, timeZone, 
 					altitude, minimumElevationAngle, numberAntennas, band);
-		
+		// Get the Antenna configuration
+        antenna = new Antenna[numberAntennas];
+        String antDesc = null;
+        String antName = null;
+        String antPad = null;
+        int antLoc = -1;
+        boolean hasNutator = false;
+        String[] vals = null;
+        for(int i=0; i < numberAntennas; i++){
+            antDesc = getString(Tag.antenna +"."+ i);
+            vals = antDesc.split(";", -1);
+            if(vals.length < 4) {
+				error("Invalid number of antenna config parameters in " + antDesc);
+			}
+            try {
+                antName = vals[0].trim();
+                antLoc = Integer.parseInt(vals[1].trim());
+                antPad = vals[2].trim();
+                hasNutator = Boolean.getBoolean(vals[3].trim());
+            } catch(Exception e) {
+                error("Invalid format for antenna.");
+            }
+            antenna[i] = new Antenna(antName, antLoc, antPad, hasNutator);
+        }
 		// 6. Get setup time parameter -- 
 		// The time in seconds to change to a different observing setup.
 		setUpTimeInSec = getInt(Tag.setUpTime);
@@ -917,6 +946,13 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	public FrequencyBand[] getBand() {
 		return band;
 	}
+
+    /**
+      * @return
+      */
+    public Antenna[] getAntennas() {
+        return antenna;
+    }
 
 	/**
 	 * @return

@@ -47,6 +47,7 @@ public class Tag {
 	public static final String timeZone 				= "Site.timeZone";
 	public static final String minimumElevationAngle 	= "Site.minimumElevationAngle";
 	public static final String numberAntennas 			= "Site.numberAntennas";
+	public static final String antenna       			= "Antenna";
 	public static final String sbBegin	 				= "SB.begin";
 	public static final String sbEnd	 				= "SB.end";
 	public static final String subArrayCreate			= "SubArray.create";

@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.6 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.7 2005/09/29 17:43:51 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -282,9 +282,7 @@ class R3Policy extends PolicyType {
         for(; i < unit.length; i++){
             if(unit[i].isReady() || unit[i].isRunning()){
                 break;
-            } //else  {
-                //log.info("SCHEDULING: unit is not ready");
-            //}
+            } 
         }
         if(i == unit.length){
             best = new BestSB(new NothingCanBeScheduled(clock.getDateTime(), 

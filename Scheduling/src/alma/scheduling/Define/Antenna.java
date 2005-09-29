@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * <li> its standby frequency band and standby frequency.
  * </ul>
  * 
- * @version $Id: Antenna.java,v 1.5 2004/12/21 21:37:01 sslucero Exp $
+ * @version $Id: Antenna.java,v 1.6 2005/09/29 17:43:51 sslucero Exp $
  * @author Allen Farris
  */
 public class Antenna {
@@ -52,8 +52,11 @@ public class Antenna {
 	private String antennaId;
     // antenna's location
 	private int locationId;
+    // antenna's pad name
+    private String padName;
     //if antenna has a nutator
 	private boolean nutator;
+    
 
     //subarray id it belongs to
 	private short subarrayId;
@@ -90,6 +93,24 @@ public class Antenna {
 		this.nutator = nutator; 
 		setOffline();
 	}
+	/**
+	 * Create an Antenna.
+	 * 
+	 * @param antennaId A number <= 0 and <= 32768 that represents
+	 * 			how this antenna is identified.
+	 * @param locationId A number <= 0 and <= 32768 that represents
+	 * 			how the location on which this antenna presently resides
+	 * 			is identified.
+	 * @param padName Name of the antenna pad
+	 * @param nutator whether or not this antenna has nutator capabilities.
+	 */
+	public Antenna(String antennaId, int locationId, String padName, boolean nutator) {
+		this.antennaId = antennaId;
+		this.locationId = locationId;
+		this.padName = padName;
+		this.nutator = nutator; 
+		setOffline();
+	}
 
 	/**
 	 * Get the number that identifies this antenna.
@@ -109,6 +130,10 @@ public class Antenna {
 	public synchronized int getLocationId() {
 		return locationId;
 	}
+
+    public synchronized String getPadName() {
+        return padName;
+    }
 
 	/**
 	 * Get whether or not this antenna has nutator capabilities.
