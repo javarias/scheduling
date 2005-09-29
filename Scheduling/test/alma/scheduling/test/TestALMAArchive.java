@@ -39,7 +39,7 @@ public class TestALMAArchive extends ComponentClientTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         m_logger.info("SCHED_TEST: setup called");
-        archive = new ALMAArchive(getContainerServices());
+        archive = new ALMAArchive(getContainerServices(), new ALMAClock());
         m_logger.info("SCHED_TEST: ALAMArchive created");
     }
     protected void tearDown() throws Exception {
