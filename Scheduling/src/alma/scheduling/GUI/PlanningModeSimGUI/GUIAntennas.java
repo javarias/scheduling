@@ -35,6 +35,7 @@ public class GUIAntennas extends JComboBox {
         fillAntennas();
     }
     private void fillAntennas() {
+        addItem("0");
         addItem("1"); addItem("2"); addItem("3"); 
         addItem("4"); addItem("5"); addItem("6"); 
         addItem("7"); addItem("8"); addItem("9"); 
@@ -57,7 +58,7 @@ public class GUIAntennas extends JComboBox {
         addItem("61"); addItem("62"); addItem("63"); 
         addItem("64");
 
-        setSelectedItem("64");
+        setSelectedItem("0");
     }
 
     public void setValue(String s) {

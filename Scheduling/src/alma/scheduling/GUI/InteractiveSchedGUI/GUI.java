@@ -120,7 +120,7 @@ public class GUI extends JFrame {
         getContentPane().setLayout(new BorderLayout());
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
-        fileMenu.setMnemonic(KeyEvent.VK_ALT);
+        fileMenu.setMnemonic(KeyEvent.VK_F);
         JMenuItem howto = new JMenuItem("HowTo");
         //fileMenu.add(howto);
         JMenuItem quit = new JMenuItem("Quit", KeyEvent.VK_Q);;

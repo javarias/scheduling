@@ -64,6 +64,7 @@ public class PlanningModeSimGUIController implements Runnable {
     private WeatherDataTab          weatherTab;
     private FrequencyBandTab        frequencyTab;
     private AlgorithmWeightsTab     algorithmTab;
+    private AntennaTab              antennaTab;
     private SimulationPropertiesTab simPropTab;
     
     //Stuff gotten from first tab!
@@ -112,10 +113,11 @@ public class PlanningModeSimGUIController implements Runnable {
         JTabbedPane tp = (JTabbedPane)comp4[1];
         Component[] comp5 = tp.getComponents();
         simPropTab = (SimulationPropertiesTab)comp5[0];
-        frequencyTab = (FrequencyBandTab)comp5[1];
-        weatherTab = (WeatherDataTab)comp5[2];
-        algorithmTab = (AlgorithmWeightsTab)comp5[3];
-        projTab = (ProjectsTab)comp5[4];
+        antennaTab = (AntennaTab)comp5[1];
+        frequencyTab = (FrequencyBandTab)comp5[2];
+        weatherTab = (WeatherDataTab)comp5[3];
+        algorithmTab = (AlgorithmWeightsTab)comp5[4];
+        projTab = (ProjectsTab)comp5[5];
     }
 
     protected void saveToFile(String filename) {

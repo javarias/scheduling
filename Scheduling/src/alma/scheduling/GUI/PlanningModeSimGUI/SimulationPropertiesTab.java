@@ -243,7 +243,17 @@ public class SimulationPropertiesTab extends JScrollPane {
         gridPanel.add(minElevAngle);
         label = new JLabel("");
         gridbag.setConstraints(label,c);
+        /*
         gridPanel.add(label);
+        label = new JLabel("");
+        gridPanel.add(label);
+        label = new JLabel("");
+        gridPanel.add(label);*/
+        label = new JLabel("");
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(label,c);
+        gridPanel.add(label);
+        /*
         label = new JLabel("Total Antennas");
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
@@ -253,7 +263,7 @@ public class SimulationPropertiesTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         label = new JLabel("");
         gridbag.setConstraints(label,c);
-        gridPanel.add(label);
+        gridPanel.add(label);*/
 
         p.add(gridPanel);
         ///////////////////
