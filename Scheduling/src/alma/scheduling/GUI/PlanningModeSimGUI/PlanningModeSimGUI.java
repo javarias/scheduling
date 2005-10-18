@@ -198,7 +198,7 @@ public class PlanningModeSimGUI extends JFrame {
         JTabbedPane outputPanes = new JTabbedPane();
         outputPanes.setTabPlacement(JTabbedPane.TOP);
         outputPanes.addTab("Properties", new SimulationPropertiesTab());
-        outputPanes.addTab("Antennas", new AntennaTab());
+        outputPanes.addTab("Antennas", new GUIAntennaTab()); //<<<<<<<<<<<<<<<<AF,2005-10-18
         outputPanes.addTab("Frequency", new FrequencyBandTab());
         outputPanes.addTab("Weather", new WeatherDataTab());
         outputPanes.addTab("Weights", new AlgorithmWeightsTab());
