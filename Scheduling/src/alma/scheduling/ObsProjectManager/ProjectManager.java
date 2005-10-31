@@ -31,10 +31,12 @@ import java.util.logging.Logger;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.Program;
+import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ObservedSession;
+import alma.scheduling.Define.SchedulingException;
 
 /**
- * @version $Id: ProjectManager.java,v 1.8 2004/11/23 21:13:30 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.9 2005/10/31 21:08:40 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -112,6 +114,9 @@ public class ProjectManager implements Runnable,
     }
 
     public void sendEndSessionEvent(ObservedSession session) {
+    }
+    public Project getProject(String projId) throws SchedulingException{
+        return null;
     }
     
 }

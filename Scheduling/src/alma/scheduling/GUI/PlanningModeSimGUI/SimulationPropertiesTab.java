@@ -379,10 +379,10 @@ public class SimulationPropertiesTab extends JScrollPane {
     /**
      * Gets the number of antennas
      * @return String The string representation of the number of antennas
-     */
     public String getAntennas() {
         return antennas.getValue();
     }
+     */
     
 
     //////////////////////////////////////////////////
@@ -589,10 +589,10 @@ public class SimulationPropertiesTab extends JScrollPane {
     /**
      * Sets the number of antennas
      * @param s The string representation of the number of antennas
-     */
     public void setAntennas(String s) {
         antennas.setValue(s);
     }
+     */
 
     /**
      * Gets the values from the vector and creates the tab with all the 
@@ -612,7 +612,7 @@ public class SimulationPropertiesTab extends JScrollPane {
         setTimezone((String)v.elementAt(8));
         setAltitude((String)v.elementAt(9));
         setMinElevationAngle((String)v.elementAt(10));
-        setAntennas((String)v.elementAt(11));
+        //setAntennas((String)v.elementAt(11));
     
     }
 

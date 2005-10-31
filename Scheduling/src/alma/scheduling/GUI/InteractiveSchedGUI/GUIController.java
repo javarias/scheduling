@@ -228,7 +228,7 @@ public class GUIController implements Runnable {
     public void setLogin(String id) throws SchedulingException {
         SB[] sbs = config.getQueue().getAll();
         userlogin = id;
-        scheduler.login(userlogin, sbs[0]);
+        scheduler.login(userlogin, defaultProjectId, sbs[0]);
         config.setCommandedEndTime(DateTime.add(new DateTime(System.currentTimeMillis()),3600 ));
     }
 

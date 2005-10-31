@@ -32,6 +32,7 @@ import alma.scheduling.Define.Project;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Program;
+import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.SchedulingException;
@@ -163,4 +164,7 @@ public class ProjectManagerSimulator
 
     public void sendStartSessionEvent(ObservedSession session){}
     public void sendEndSessionEvent(ObservedSession session){}
+    public Project getProject(String projId) throws SchedulingException{
+        return null;
+    }
 }

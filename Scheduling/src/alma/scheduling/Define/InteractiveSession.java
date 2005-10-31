@@ -41,12 +41,12 @@ package alma.scheduling.Define;
  * <li>startSciPipeline -- start the science pipeline
  * </ul> 
  * 
- * @version $Id: InteractiveSession.java,v 1.2 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: InteractiveSession.java,v 1.3 2005/10/31 21:08:40 sslucero Exp $
  * @author Allen Farris
  */
 public interface InteractiveSession {
 	
-	void login(String PI, SB interactiveSB) throws SchedulingException;
+	void login(String PI, String projId, SB interactiveSB) throws SchedulingException;
 	
 	void logout() throws SchedulingException;
 	

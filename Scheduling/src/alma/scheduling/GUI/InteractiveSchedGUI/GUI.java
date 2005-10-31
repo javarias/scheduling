@@ -123,7 +123,7 @@ public class GUI extends JFrame {
         fileMenu.setMnemonic(KeyEvent.VK_F);
         JMenuItem howto = new JMenuItem("HowTo");
         //fileMenu.add(howto);
-        JMenuItem quit = new JMenuItem("Quit", KeyEvent.VK_Q);;
+        JMenuItem quit = new JMenuItem("Exit", KeyEvent.VK_X);;
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 exit();
@@ -139,8 +139,9 @@ public class GUI extends JFrame {
             pItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JMenuItem item = (JMenuItem)e.getSource();
-                    displayProjectInfo(item.getText());
-                    displaySBInfo(item.getText()); 
+                    controller.setDefaultProjectId(item.getText());
+                    //displayProjectInfo(item.getText());
+                    //displaySBInfo(item.getText()); 
                 }
             });
             projectMenu.add(pItem);

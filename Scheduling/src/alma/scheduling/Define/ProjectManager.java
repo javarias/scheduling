@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The ProjectManager interface defines public methods needed by various
  * components, both real and simulated.
  * 
- * @version $Id: ProjectManager.java,v 1.5 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.6 2005/10/31 21:08:40 sslucero Exp $
  * @author Allen Farris
  */
 public interface ProjectManager {
@@ -58,4 +58,6 @@ public interface ProjectManager {
     public ObservedSession createObservedSession(Program p);
     public void sendStartSessionEvent(ObservedSession session);
     public void sendEndSessionEvent(ObservedSession session);
+
+    public Project getProject(String projId) throws SchedulingException;
 }

@@ -37,6 +37,9 @@ import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.Telescope;
 import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Project;
+
+import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 
 /**
  * The InteractiveScheduler class implements the concept of a scheduler
@@ -103,7 +106,7 @@ import alma.scheduling.Define.BestSB;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.5 2005/09/28 22:41:07 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.6 2005/10/31 21:08:40 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -189,7 +192,10 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * SB is not an interactive schedling block, or if the specified PI does not match
 	 * the PI in the interactive scheduling block. 
 	 */
-	public void login(String PI, SB interactiveSB) throws SchedulingException {
+	public void login(String PI, String projId, SB interactiveSB) throws SchedulingException {
+        logger.info("id =" +interactiveSB.getProject().getId());
+        logger.info("PI =" +PI);
+        logger.info("PI of sb =" +interactiveSB.getProject().getPI());
 		if (sessionStarted) {
 			error("Cannot login.  A session is already underway.");
             return;
@@ -198,13 +204,20 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			error("The specified SB is not an interactive scheduling block.");
             return;
 		}
+        /*
 		if (!PI.equals(interactiveSB.getProject().getPI())) {
 			error("The specified PI does not match the PI in the interactive scheduling block.");
             return;
-		}
+		}*/
+        Project p = ((ALMAProjectManager)config.getProjectManager()).getProject(projId); 
+        String tmp = p.getPI();
+        if(!PI.equals(tmp)){
+			error("The specified PI does not match the PI in the project.");
+            return;
+        }
 		sessionStarted = true;
 		this.PI = PI;
-		projectId = interactiveSB.getProject().getId();
+		projectId = projId;//interactiveSB.getProject().getId();
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " started.";
 		operator.send(msg);

@@ -70,14 +70,17 @@ public class PlanningModeSimGUIController implements Runnable {
     //Stuff gotten from first tab!
     private String startTime, endTime, logLevel, freqSetupTime, projSetupTime,
                     advanceClock, latitude, longitude, timezone, altitude,
-                    minAngle, totalAntennas;
+                    minAngle;
     //Stuff gotten from second tab!
-    private int totalfreqbands;
-    private Vector freqbands;
+    //private Vector antennaConfigs;
+    private String[][] antennaConfigs;
     //Stuff gotten from third tab!
+    private int totalfreqbands, totalAntennas;
+    private Vector freqbands;
+    //Stuff gotten from fourth tab!
     private int totalweatherfunc;
     private Vector weatherfuncvalues;
-    //Stuff gotten from forth tab!
+    //Stuff gotten from fifth tab!
     private String posElevation_w, posMax_w, weather_w, spsb_w, spdb_w, dpdb_w,
                     dpsb_w, newproj_w, lastsb_w, priority_w;
     //Stuff gotten from fifth tab!
@@ -124,6 +127,8 @@ public class PlanningModeSimGUIController implements Runnable {
         //Simulation Properties tab
         stuffFromSimulationPropertiesTab();
         
+        //Antenna Config Tab
+        stuffFromAntennaConfigTab();
         //Frequency band tab
         stuffFromFrequencyTab();
        
@@ -153,7 +158,16 @@ public class PlanningModeSimGUIController implements Runnable {
         timezone = simPropTab.getTimezone();
         altitude = simPropTab.getAltitude();
         minAngle = simPropTab.getMinElevationAngle();
-        totalAntennas = simPropTab.getAntennas();
+        //totalAntennas = simPropTab.getAntennas();
+    }
+
+    private void stuffFromAntennaConfigTab() {
+        totalAntennas = antennaTab.getAntennaTotal();
+        antennaConfigs = new String[totalAntennas][4];
+        //antennaConfigs = antennaTab.getAllConfigInfo();
+        //for(int i=0; i < antennaConfigs.size(); i++){
+           // System.out.println(
+        //}
     }
 
     private void stuffFromFrequencyTab() {

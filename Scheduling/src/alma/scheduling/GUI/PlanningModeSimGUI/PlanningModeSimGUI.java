@@ -97,7 +97,9 @@ public class PlanningModeSimGUI extends JFrame {
         newSim.setMnemonic(KeyEvent.VK_N);
         newSim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                getContentPane().remove(1);
                 getContentPane().add(createContentPanels(),BorderLayout.CENTER);
+                getContentPane().validate();
                 
             }
         });
@@ -205,6 +207,9 @@ public class PlanningModeSimGUI extends JFrame {
         outputPanes.addTab("Projects", new ProjectsTab());
         return outputPanes;
     }
+
+    //private JTabbedPane clearContentPanels(){
+    //}
 
     public String getProjectFile() {
         String s = createFileChooser("load");

@@ -42,24 +42,9 @@ public class OpenOT implements Runnable {
         container = cs;
     }
     public void run() {
-        
-        /*
-        try {
-            System.out.println("Starting ALMA-OT");
-            Runtime runtime = Runtime.getRuntime();
-            //otProcess = runtime.exec("ALMA-OT");
-            if(id == null) {
-                otProcess = runtime.exec("java alma.obsprep.ot.gui.toplevel.ObservingTool");
-            } else {
-                otProcess = runtime.exec("java alma.obsprep.ot.gui.toplevel.ObservingTool \"-x\" \"-r\" "+id);
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }*/
-       //alma.obsprep.ot.gui.toplevel.ObservingTool.main(new String[] {"-x","-r",id});
-       // AF: 2005-10-18 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       //alma.obsprep.ot.gui.toplevel.ObservingToolEmbedded.main(
-       //        new String[] {"-x","-r",id}, container);
+
+       alma.obsprep.ot.gui.toplevel.ObservingToolEmbedded.main(
+               new String[] {"-x","-r",id}, container);
     }
     
 }
