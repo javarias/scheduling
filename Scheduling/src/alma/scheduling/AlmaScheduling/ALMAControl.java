@@ -47,7 +47,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.31 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.32 2005/11/01 22:56:12 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -191,11 +191,14 @@ public class ALMAControl implements Control {
         try {
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
-            e1.printStackTrace();
+            //e1.printStackTrace();
+            throw new SchedulingException(e1); 
         } catch(InaccessibleException e2){
-            e2.printStackTrace();
-        } catch(Exception e){
-            e.printStackTrace();
+            //e2.printStackTrace();
+            throw new SchedulingException(e2);
+        } catch(Exception e3){
+            //e.printStackTrace();
+            throw new SchedulingException(e3);
         }
     }
 
