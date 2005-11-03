@@ -46,6 +46,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
@@ -77,6 +78,7 @@ public class AntennaTab extends JScrollPane {
      */
     public JPanel createView() {
 
+        antennaPane = new JTabbedPane(JTabbedPane.TOP);
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         
@@ -113,13 +115,12 @@ public class AntennaTab extends JScrollPane {
     private void createAntennaConfigTabs(int n){
         
         JPanel p = new JPanel(new BorderLayout());
-        antennaPane = new JTabbedPane(JTabbedPane.TOP);
         for(int i=0; i < n; i++) {
             antennaPane.addTab("Antenna "+(i+1), antennaConfig());
         }
         p.add(antennaPane, BorderLayout.CENTER);
-        JScrollPane pane = new JScrollPane(p);
-        mainPanel.add(pane, BorderLayout.CENTER);
+        //JScrollPane pane = new JScrollPane(p);
+        mainPanel.add(antennaPane, BorderLayout.CENTER);
         mainPanel.validate();
         mainPanel.getParent().validate();
     }
@@ -228,19 +229,153 @@ public class AntennaTab extends JScrollPane {
         JPanel p1 = (JPanel)antennaPane.getComponentAt(n);
         Component[] c = p1.getComponents();
         for(int i=0; i < c.length;i++){
-            System.out.println(c[i].getClass().getName());
             if(c[i] instanceof JTextField){
-            } else if(c[i] instanceof JComboBox) {
+                antennaConfig.add( ((JTextField)c[i]).getText() );
+            } else if(c[i] instanceof YesNoNutator) {
+                System.out.println("nut result: "+((YesNoNutator)c[i]).getResult() );
+                antennaConfig.add( ((YesNoNutator)c[i]).getResult() );
             }
         }
-        //System.out.println(c.getClass().getName());
         return antennaConfig;
     }
-    
+
     public int getAntennaTotal() {
         return totalAntennas;
     }
 
+    //////////////////////////////////////////////////////
+    // Set Methods
+    //////////////////////////////////////////////////////
+    
+    public void setAntennaTotal(int i){
+        totalAntennas = i;
+        System.out.println("AntennaTotal = "+i);
+    }
+
+    //////////////////////////////////////////////////////
+    // Methods for loading values from file
+    //////////////////////////////////////////////////////
+
+    public void loadValuesFromFile(Vector val){
+        setAntennaTotal(Integer.parseInt((String)val.elementAt(0)));
+        ants.setValue((String)val.elementAt(0));
+        val.removeElementAt(0);
+        try {
+            antennaPane.removeAll();
+        }catch(Exception ex){}
+        String s1="";
+        StringTokenizer token;
+        int antennaNum=1;
+        String[] s2= new String[4];
+        System.out.println(val.size());
+        for(int i=0; i < val.size(); i++) {
+            s1 = (String)val.elementAt(i);
+            token = new StringTokenizer(s1,"; ");
+            s2[0] = token.nextToken().trim();
+            s2[1] = token.nextToken().trim();
+            s2[2] = token.nextToken().trim();
+            s2[3] = token.nextToken();
+            antennaPane.add("Antenna"+(antennaNum++), updateAntennaConfigTab(s2));
+        }
+        mainPanel.add(antennaPane, BorderLayout.CENTER);
+        mainPanel.validate();
+        mainPanel.getParent().validate();
+
+    }
+
+    public JPanel updateAntennaConfigTab(String[] s){
+        JPanel p = new JPanel();
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.fill =GridBagConstraints.HORIZONTAL;
+        c.weightx= 1.0;
+        c.gridwidth = 1;
+        p.setLayout(gridbag);
+        JLabel l;
+        JTextField tf;
+        JSeparator sep; 
+        // name
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        l = new JLabel("Antenna Name: ");
+        gridbag.setConstraints(l, c);
+        p.add(l);
+        //System.out.println(s[0]);
+        tf = new JTextField(s[0]);
+        c.gridwidth = 4;
+        c.weightx= 4.0;
+        gridbag.setConstraints(tf, c);
+        p.add(tf);
+        sep = new JSeparator();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        // location
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        l = new JLabel("Antenna Location: ");
+        gridbag.setConstraints(l, c);
+        p.add(l);
+        //System.out.println(s[1]);
+        tf = new JTextField(s[1]);
+        c.gridwidth = 4;
+        c.weightx= 4.0;
+        gridbag.setConstraints(tf, c);
+        p.add(tf);
+        sep = new JSeparator();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        // pad name
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        l = new JLabel("Antenna Pad Name: ");
+        gridbag.setConstraints(l, c);
+        p.add(l);
+        //System.out.println(s[2]);
+        tf = new JTextField(s[2]);
+        c.gridwidth = 4;
+        c.weightx= 4.0;
+        gridbag.setConstraints(tf, c);
+        p.add(tf);
+        sep = new JSeparator();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        // has nutator??
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        l = new JLabel("Nutator present");
+        c.weightx= 2.0;
+        gridbag.setConstraints(l, c);
+        p.add(l);
+        //System.out.println(s[3]);
+        YesNoNutator nut = new YesNoNutator(s[3]);
+        c.gridwidth = 4;
+        c.weightx= 4.0;
+        gridbag.setConstraints(nut, c);
+        p.add(nut);
+        sep = new JSeparator();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        return p;
+    }
+
+    //////////////////////////////////////////////////////
+    // Nested class 
+    //////////////////////////////////////////////////////
 
     class YesNoNutator extends JPanel implements ActionListener {
         JRadioButton yes;
@@ -248,14 +383,24 @@ public class AntennaTab extends JScrollPane {
         String value;
 
         public YesNoNutator() {
-            value = "no";
             yes = new JRadioButton("yes");
             yes.setActionCommand("yes");
+            yes.addActionListener(this);
             no = new JRadioButton("no");
             no.setActionCommand("no");
+            no.addActionListener(this);
 
             add(yes);
             add(no);
+            value="no";
+            ButtonGroup group = new ButtonGroup();
+            group.add(yes);
+            group.add(no);
+        }
+
+        public YesNoNutator(String val) {
+            this();
+            setResult(val);
         }
 
         public String getResult() {

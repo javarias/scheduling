@@ -143,6 +143,7 @@ public class PlanningModeSimGUIController implements Runnable {
        
         //save all gathered info to a file
         data_filename = filename;
+        createFile(filename);
 
     }
 
@@ -164,10 +165,13 @@ public class PlanningModeSimGUIController implements Runnable {
     private void stuffFromAntennaConfigTab() {
         totalAntennas = antennaTab.getAntennaTotal();
         antennaConfigs = new String[totalAntennas][4];
-        //antennaConfigs = antennaTab.getAllConfigInfo();
-        //for(int i=0; i < antennaConfigs.size(); i++){
-           // System.out.println(
-        //}
+        Vector allInfo = antennaTab.getAllConfigInfo();
+        for(int i=0; i < totalAntennas; i++){
+            antennaConfigs[i][0] = (String)((Vector)allInfo.elementAt(i)).elementAt(0);
+            antennaConfigs[i][1] = (String)((Vector)allInfo.elementAt(i)).elementAt(1);
+            antennaConfigs[i][2] = (String)((Vector)allInfo.elementAt(i)).elementAt(2);
+            antennaConfigs[i][3] = (String)((Vector)allInfo.elementAt(i)).elementAt(3);
+        }
     }
 
     private void stuffFromFrequencyTab() {
@@ -231,6 +235,16 @@ public class PlanningModeSimGUIController implements Runnable {
             out.println("Site.altitude = " + altitude); 
             out.println("Site.minimumElevationAngle = " +minAngle); 
             out.println("Site.numberAntennas = " + totalAntennas); 
+            out.println(); out.println(); 
+            //Antenna configuration
+            out.println("# Antenna.# = Name; Location; Pad name; Nutator? yes/no");
+            for(int i=0; i < totalAntennas; i++){
+                out.println("Antenna."+i+" = "+
+                        antennaConfigs[i][0] +"; "+
+                        antennaConfigs[i][1] +"; "+
+                        antennaConfigs[i][2] +"; "+
+                        antennaConfigs[i][3] );
+            }
             out.println(); out.println(); 
             out.println("FrequencyBand.numberOfBands = " + totalfreqbands);
             for(int i=0; i< totalfreqbands; i++) {
@@ -405,6 +419,7 @@ public class PlanningModeSimGUIController implements Runnable {
         Vector tab3 = new Vector();
         Vector tab4 = new Vector();
         Vector tab5 = new Vector();
+        Vector tab6 = new Vector();
         Properties fileproperties = new Properties();
         FileInputStream file;
         try {
@@ -422,36 +437,43 @@ public class PlanningModeSimGUIController implements Runnable {
             tab1.add(fileproperties.getProperty(Tag.timeZone));
             tab1.add(fileproperties.getProperty(Tag.altitude));
             tab1.add(fileproperties.getProperty(Tag.minimumElevationAngle));
-            tab1.add(fileproperties.getProperty(Tag.numberAntennas));
             simPropTab.loadValuesFromFile(tab1);
+            ////////////////////////////////////////////////////////////
+            tab2.add(fileproperties.getProperty(Tag.numberAntennas));
+            int allAntennas = Integer.parseInt(
+                    (String)fileproperties.getProperty(Tag.numberAntennas));
+            for(int i=0; i < allAntennas; i++){
+                tab2.add(fileproperties.getProperty(Tag.antenna+"."+i));
+            }
+            antennaTab.loadValuesFromFile(tab2);
             ////////////////////////////////////////////////////////////
             int totalbands = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberOfBands));
-            tab2.add(fileproperties.getProperty(Tag.numberOfBands));
+            tab3.add(fileproperties.getProperty(Tag.numberOfBands));
             for(int i = 0; i < totalbands; i++) {
-                tab2.add(fileproperties.getProperty(Tag.band+"."+i));
+                tab3.add(fileproperties.getProperty(Tag.band+"."+i));
             }
-            frequencyTab.loadValuesFromFile(tab2);
+            frequencyTab.loadValuesFromFile(tab3);
             ////////////////////////////////////////////////////////////
-            tab3.add(fileproperties.getProperty(Tag.numberWeatherFunctions));
+            tab4.add(fileproperties.getProperty(Tag.numberWeatherFunctions));
             int totalWeatherFuncs = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberWeatherFunctions));
             for(int i=0; i<totalWeatherFuncs; i++) {
-                tab3.add(fileproperties.getProperty(Tag.weather+"."+i));
+                tab4.add(fileproperties.getProperty(Tag.weather+"."+i));
             }
-            weatherTab.loadValuesFromFile(tab3);
+            weatherTab.loadValuesFromFile(tab4);
             ////////////////////////////////////////////////////////////
-            tab4.add(fileproperties.getProperty(Tag.weightPositionElevation));
-            tab4.add(fileproperties.getProperty(Tag.weightPositionMaximum));
-            tab4.add(fileproperties.getProperty(Tag.weightWeather));
-            tab4.add(fileproperties.getProperty(Tag.weightSameProjectSameBand));
-            tab4.add(fileproperties.getProperty(Tag.weightSameProjectDifferentBand));
-            tab4.add(fileproperties.getProperty(Tag.weightDifferentProjectSameBand));
-            tab4.add(fileproperties.getProperty(Tag.weightDifferentProjectDifferentBand));
-            tab4.add(fileproperties.getProperty(Tag.weightNewProject));
-            tab4.add(fileproperties.getProperty(Tag.weightOneSBRemaining));
-            tab4.add(fileproperties.getProperty(Tag.weightPriority));
-            algorithmTab.loadValuesFromFile(tab4);
+            tab5.add(fileproperties.getProperty(Tag.weightPositionElevation));
+            tab5.add(fileproperties.getProperty(Tag.weightPositionMaximum));
+            tab5.add(fileproperties.getProperty(Tag.weightWeather));
+            tab5.add(fileproperties.getProperty(Tag.weightSameProjectSameBand));
+            tab5.add(fileproperties.getProperty(Tag.weightSameProjectDifferentBand));
+            tab5.add(fileproperties.getProperty(Tag.weightDifferentProjectSameBand));
+            tab5.add(fileproperties.getProperty(Tag.weightDifferentProjectDifferentBand));
+            tab5.add(fileproperties.getProperty(Tag.weightNewProject));
+            tab5.add(fileproperties.getProperty(Tag.weightOneSBRemaining));
+            tab5.add(fileproperties.getProperty(Tag.weightPriority));
+            algorithmTab.loadValuesFromFile(tab5);
             ////////////////////////////////////////////////////////////
             try {
                 String projectfile = fileproperties.getProperty(Tag.projectSource);
@@ -472,7 +494,7 @@ public class PlanningModeSimGUIController implements Runnable {
                 System.out.println("Project file loaded with "+projFile);
             }
             
-            tab5.add(fileproperties.getProperty(Tag.numberProjects));
+            tab6.add(fileproperties.getProperty(Tag.numberProjects));
             int totalprojects = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberProjects));
             System.out.println(totalprojects);
@@ -491,11 +513,11 @@ public class PlanningModeSimGUIController implements Runnable {
                 s = s.trim();
                 int totalsets = Integer.parseInt(s);
                 //add proj info line
-                tab5.add(fileproperties.getProperty(Tag.project+"."+i)); 
+                tab6.add(fileproperties.getProperty(Tag.project+"."+i)); 
                 //add target stuff
                 for(int j=0; j<totalsets; j++) {
                     s = fileproperties.getProperty(Tag.set+"."+i+"."+j);
-                    tab5.add(s);
+                    tab6.add(s);
                     token = new StringTokenizer(s,";");
                     if(token.countTokens() !=5 ) {
                         throw new Exception("Incorrect input data file.");
@@ -508,14 +530,14 @@ public class PlanningModeSimGUIController implements Runnable {
                     int totaltargets = Integer.parseInt(s);
                     for(int k=0; k < totaltargets; k++) {
                         s = fileproperties.getProperty(Tag.target+"."+i+"."+j+"."+k);
-                        tab5.add(s);
+                        tab6.add(s);
                     }
                 }
             }
             //for(int i=0; i < tab5.size(); i++) {
             //    System.out.println(tab5.elementAt(i));
             //}
-            projTab.loadValuesFromFile(tab5);
+            projTab.loadValuesFromFile(tab6);
         
         ////////////////////////////////////////////////////////////
         
