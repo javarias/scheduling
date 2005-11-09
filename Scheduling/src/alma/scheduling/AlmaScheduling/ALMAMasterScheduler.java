@@ -34,12 +34,16 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
 import alma.ACS.ComponentStates;
 
+import alma.scheduling.*;
+/*
 import alma.scheduling.InvalidOperation;
 import alma.scheduling.NoSuchSB;
 import alma.scheduling.SchedulingInfo;
+import alma.scheduling.ArrayInfoSeq;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.UnidentifiedResponse;
 import alma.scheduling.MasterSchedulerIFOperations;
+*/
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingExceptions.InvalidObjectEx;
 import alma.SchedulingExceptions.UnidentifiedResponseEx;
@@ -67,7 +71,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.38 2005/11/01 22:56:12 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.39 2005/11/09 23:54:09 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -538,7 +542,13 @@ public class ALMAMasterScheduler extends MasterScheduler
      * @return SchedulingInfo
      */
     public SchedulingInfo getSchedulingInfo() {
-        return null;
+        String comment = "Information about the scheduling system.";
+        String currentTime = clock.getDateTime().toString();
+        String timeZone = String.valueOf(telescope.getSite().getTimeZone());
+        ArrayInfo[] arrayInfo = control.getAllArraysInfo();
+        SchedulingInfo schedInfo =
+            new SchedulingInfo(comment, currentTime, timeZone, arrayInfo);
+        return schedInfo;
     }
 
     /**
@@ -571,7 +581,6 @@ public class ALMAMasterScheduler extends MasterScheduler
                 " gotten and reply = "+ reply + " sent.");
             item.getTimer().interrupt();
         }catch(Exception e) {
-            //UnidentifiedResponse e1 = new UnidentifiedResponse(e);
             AcsJUnidentifiedResponseEx e1 = new AcsJUnidentifiedResponseEx(e);
             throw e1.toUnidentifiedResponseEx();
         }
@@ -581,7 +590,13 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @return SchedulingInfo
       */
     public SchedulingInfo getArrayInfo() {
-        return null;
+        String comment = "Information about the current arrays.";
+        String currentTime = clock.getDateTime().toString();
+        String timeZone = String.valueOf(telescope.getSite().getTimeZone());
+        ArrayInfo[] arrayInfo = control.getAllArraysInfo();
+        SchedulingInfo schedInfo =
+            new SchedulingInfo(comment, currentTime, timeZone, arrayInfo);
+        return schedInfo;
     }
 
     /**

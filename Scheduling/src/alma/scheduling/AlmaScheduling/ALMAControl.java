@@ -31,14 +31,19 @@ import java.util.Vector;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
+import alma.scheduling.ArrayInfo;
+import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.ArrayStateEnum;
+
 import alma.scheduling.Define.Control;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 
 import alma.Control.ControlMaster;
-//import alma.Control.ArrayController;
+import alma.Control.ArrayMonitor;
 import alma.Control.AutomaticArrayCommand;
+import alma.Control.ManualArrayMonitor;
 
 import alma.ControlExceptions.*;
 import alma.Control.InvalidRequest;
@@ -47,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.32 2005/11/01 22:56:12 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.33 2005/11/09 23:54:09 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -55,8 +60,10 @@ public class ALMAControl implements Control {
     private ContainerServices containerServices;
     // control system component
     private ControlMaster control_system;
-    //list of current array controllers
+    //list of current automatic array controllers
     private Vector controllers;
+    //list of current manual array monitors.
+    private Vector manualArrays;
     //logger
     private Logger logger;
     //list of current observing sessions
@@ -68,6 +75,7 @@ public class ALMAControl implements Control {
         this.manager = m;
         this.logger = cs.getLogger();
         this.controllers = new Vector();
+        manualArrays = new Vector();
         this.observedSessions = new Vector();
         try {
             org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL/MASTER");
@@ -124,10 +132,12 @@ public class ALMAControl implements Control {
             ctrl.observeNow(sbId, sessionId); 
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
-            e1.printStackTrace();
+            logger.severe("SCHEDULING: Problem was: "+e1.toString());
+            throw new SchedulingException(e1);
         } catch(InaccessibleException e2) {
             logger.severe("SCHEDULING: could not observe!");
-            e2.printStackTrace();
+            logger.severe("SCHEDULING: Problem was: "+e2.toString());
+            throw new SchedulingException(e2);
         }
     }
 
@@ -137,6 +147,18 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public void stopSB(String name, String id) throws SchedulingException {
+        AutomaticArrayCommand ctrl = getAutomaticArray(name);
+        try{
+            ctrl.stop(); 
+        } catch(InvalidRequest e1) {
+            logger.severe("SCHEDULING: could not stop SB "+id+"!");
+            logger.severe("SCHEDULING: Problem was: "+e1.toString());
+            throw new SchedulingException(e1);
+        } catch(InaccessibleException e2) {
+            logger.severe("SCHEDULING: could not stop SB "+id+"!");
+            logger.severe("SCHEDULING: Problem was: "+e2.toString());
+            throw new SchedulingException(e2);
+        }
     }
 
     /**
@@ -183,6 +205,11 @@ public class ALMAControl implements Control {
         }
     }
 
+    public String createManualArray(String[] antenna) throws SchedulingException {
+        return "";
+    }
+    
+
     /**
      *
      * @throws SchedulingException
@@ -191,13 +218,10 @@ public class ALMAControl implements Control {
         try {
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
-            //e1.printStackTrace();
             throw new SchedulingException(e1); 
         } catch(InaccessibleException e2){
-            //e2.printStackTrace();
             throw new SchedulingException(e2);
         } catch(Exception e3){
-            //e.printStackTrace();
             throw new SchedulingException(e3);
         }
     }
@@ -207,9 +231,86 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public String[] getActiveArray() throws SchedulingException {
-        return null;
+        try {
+            String[] automaticArrays = control_system.getAutomaticArrays();
+            String[] manualArrays = control_system.getManualArrays();
+            int all = automaticArrays.length + manualArrays.length;
+            String[] allArrays = new String[all];
+            int x=0;
+            for(int i=0; i < automaticArrays.length; i++){
+                allArrays[x++] = automaticArrays[i];
+            }
+            for(int i=0; i < manualArrays.length; i++){
+                allArrays[x++] = manualArrays[i];
+            }
+            if(allArrays.length != all) {
+                throw new SchedulingException(
+                        "SCHEDULING: Filling allArrays isn't equal to the all size");
+            }
+            return allArrays;
+        } catch(InaccessibleException e) {
+            throw new SchedulingException (e);
+        }
+    }
+
+    public String[] getAllAutomaticArrays() throws SchedulingException{
+        try {
+            return control_system.getAutomaticArrays();
+        } catch(InaccessibleException e) {
+            throw new SchedulingException (e);
+        }
+    }
+    public String[] getAllManualArrays() throws SchedulingException{
+        try {
+            return control_system.getManualArrays();
+        } catch(InaccessibleException e) {
+            throw new SchedulingException (e);
+        }
     }
     
+    /**
+      * Returns information about ALL arrays which are active (manual and automatic).
+      * @return ArrayInfo[]
+      */
+    public ArrayInfo[] getAllArraysInfo() {
+        try {
+            String[] automaticArrays = control_system.getAutomaticArrays();
+            String[] manualArrays = control_system.getManualArrays();
+            int all = automaticArrays.length + manualArrays.length;
+            ArrayInfo[] allInfo = new ArrayInfo[all];
+            int x=0; //counter for adding to 'allInfo'
+            for(int i=0; i < automaticArrays.length; i++){
+                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i].getName());
+                //TODO need a way to see if its dynamic/interactive
+                allInfo[x].mode =  ArrayModeEnum.DYNAMIC;
+                //TODO need a way to see if its busy/idle
+                if(getAutomaticArray(automaticArray[i].isBusy)){
+                    allInfo[x].state= ArrayStateEnum.BUSY; 
+                } else {
+                    allInfo[x].state= ArrayStateEnum.IDLE; 
+                }
+                allInfo[x].projectName ="";
+                allInfo[x].SBname ="";
+                allInfo[x].completionTime = "";
+                allInfo[x].comment="";
+
+                x++;
+            }
+            for(int i=0; i < manualArrays.length; i++){
+                x++;
+            }
+        
+            return allInfo;
+        }catch(InaccessibleException e){
+            //TODO do something better here eventually
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private String getArrayProjectName(String arrayName){
+    }
     /** 
      * @return String[]
      * @throws SchedulingException
@@ -233,7 +334,7 @@ public class ALMAControl implements Control {
     }
     
     /**
-      * @return ArrayController
+      * @return AutomaticArrayCommand
       * @throws SchedulingException
       */
     private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
@@ -245,6 +346,31 @@ public class ALMAControl implements Control {
             }
         }
         return null;
+    }
+    
+    private ManualArrayMonitor getManualArray(String name) throws SchedulingException {
+    }
+    /** 
+      * If you want to get an array with a given name and you don't know if its
+      * automatic or manual use this command. Then check the isManual/isAutomatic to 
+      * cast it to the right type.
+      *
+      * @param name Name of the array.
+      * @return ArrayMonitor
+      */
+    private ArrayMonitor getArray(String name) throws SchedulingException {
+    }
+    
+    public void getWeatherStations() throws SchedulingException {
+        try { 
+            String[] weather = controlSystem.getWeatherStations();
+            logger.info("SCHEDULING: Current weather stations ");
+            for(int i=0; i < weather.length; i++) {
+                logger.info("\tStation id ="+ weather[i]);
+            }
+        }catch(InaccessibleException e) {
+            throw new SchedulingException(e);
+        }
     }
 
     public void setAntennaOfflineNow(String antennaId) throws SchedulingException {
