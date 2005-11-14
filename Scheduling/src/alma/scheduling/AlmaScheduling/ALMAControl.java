@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.33 2005/11/09 23:54:09 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.34 2005/11/14 17:25:28 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -280,17 +280,19 @@ public class ALMAControl implements Control {
             ArrayInfo[] allInfo = new ArrayInfo[all];
             int x=0; //counter for adding to 'allInfo'
             for(int i=0; i < automaticArrays.length; i++){
-                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i].getName());
+                //allInfo[x].arrayName = getAutomaticArray(automaticArrays[i].getName());
+                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i]).getName();
                 //TODO need a way to see if its dynamic/interactive
                 allInfo[x].mode =  ArrayModeEnum.DYNAMIC;
                 //TODO need a way to see if its busy/idle
-                if(getAutomaticArray(automaticArray[i].isBusy)){
+                //if(getAutomaticArray(automaticArray[i].isBusy)){
+                if(getAutomaticArray(automaticArrays[i]).isBusy()){
                     allInfo[x].state= ArrayStateEnum.BUSY; 
                 } else {
                     allInfo[x].state= ArrayStateEnum.IDLE; 
                 }
                 allInfo[x].projectName ="";
-                allInfo[x].SBname ="";
+                allInfo[x].SBName ="";
                 allInfo[x].completionTime = "";
                 allInfo[x].comment="";
 
@@ -363,7 +365,7 @@ public class ALMAControl implements Control {
     
     public void getWeatherStations() throws SchedulingException {
         try { 
-            String[] weather = controlSystem.getWeatherStations();
+            String[] weather = control_system.getWeatherStations();
             logger.info("SCHEDULING: Current weather stations ");
             for(int i=0; i < weather.length; i++) {
                 logger.info("\tStation id ="+ weather[i]);
