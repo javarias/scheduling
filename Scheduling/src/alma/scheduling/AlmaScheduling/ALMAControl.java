@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.35 2005/11/16 14:33:48 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.36 2005/11/16 16:24:03 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -314,6 +314,7 @@ public class ALMAControl implements Control {
 
 
     private String getArrayProjectName(String arrayName){
+	return "";
     }
     /** 
      * @return String[]
@@ -353,6 +354,7 @@ public class ALMAControl implements Control {
     }
     
     private ManualArrayMonitor getManualArray(String name) throws SchedulingException {
+	return null;
     }
     /** 
       * If you want to get an array with a given name and you don't know if its
@@ -363,6 +365,7 @@ public class ALMAControl implements Control {
       * @return ArrayMonitor
       */
     private ArrayMonitor getArray(String name) throws SchedulingException {
+	return null;
     }
     
     public void getWeatherStations() throws SchedulingException {
