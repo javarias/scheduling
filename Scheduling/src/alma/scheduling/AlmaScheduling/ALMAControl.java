@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.34 2005/11/14 17:25:28 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.35 2005/11/16 14:33:48 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -285,7 +285,6 @@ public class ALMAControl implements Control {
                 //TODO need a way to see if its dynamic/interactive
                 allInfo[x].mode =  ArrayModeEnum.DYNAMIC;
                 //TODO need a way to see if its busy/idle
-                //if(getAutomaticArray(automaticArray[i].isBusy)){
                 if(getAutomaticArray(automaticArrays[i]).isBusy()){
                     allInfo[x].state= ArrayStateEnum.BUSY; 
                 } else {
@@ -307,7 +306,10 @@ public class ALMAControl implements Control {
             //TODO do something better here eventually
             e.printStackTrace();
             return null;
-        }
+        } catch(Exception ex){
+		ex.printStackTrace();
+		return null;
+	}
     }
 
 
