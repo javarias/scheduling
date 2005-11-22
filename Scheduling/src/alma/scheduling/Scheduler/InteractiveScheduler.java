@@ -39,6 +39,7 @@ import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Project;
 
+import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 
 /**
@@ -106,7 +107,7 @@ import alma.scheduling.AlmaScheduling.ALMAProjectManager;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.6 2005/10/31 21:08:40 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.7 2005/11/22 23:31:00 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -220,7 +221,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		projectId = projId;//interactiveSB.getProject().getId();
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " started.";
-		operator.send(msg);
+		operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
 
@@ -242,7 +243,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		projectId = null;
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " ended.";
-		operator.send(msg);
+		operator.send(msg, config.getArrayName());
 		logger.info(msg);
 		config.normalEnd(clock.getDateTime());
 	}
@@ -357,7 +358,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been started.";
-		operator.send(msg);
+		operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
 
@@ -384,7 +385,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been stopped.";
-		operator.send(msg);
+		operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
 

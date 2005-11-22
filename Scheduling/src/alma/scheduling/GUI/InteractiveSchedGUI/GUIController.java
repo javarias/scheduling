@@ -23,18 +23,9 @@
  * 
  */
 package alma.scheduling.GUI.InteractiveSchedGUI;
-/*
-import alma.scheduling.Interactive_PI_to_Scheduling;
-import alma.scheduling.SBExists;
-import alma.scheduling.NoSuchSB;
-import alma.scheduling.InvalidObject;
-import alma.scheduling.InvalidOperation;
-*/
+
 import java.net.URL;
 import alma.acs.container.ContainerServices;
-//import alma.entity.xmlbinding.schedblock.*;
-//import alma.obsprep.bo.*;
-//import alma.obsprep.bo.Target;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ProjectQueue;
@@ -75,7 +66,8 @@ public class GUIController implements Runnable {
         }
     }
 
-    public GUIController() {}
+    public GUIController() {
+    }
 
     /**
       *
@@ -254,13 +246,14 @@ public class GUIController implements Runnable {
       */
     public void run() {
         this.gui = new GUI(this);
+        //ArchiveQueryWindowController archiveQuery = new ArchiveQueryWindowController();
     }
 
     /**
       *
       */
     public static void main(String[] args) {
-        GUIController c = new GUIController();
-        c.run();
+            GUIController c = new GUIController();
+            c.run();
     }
 }

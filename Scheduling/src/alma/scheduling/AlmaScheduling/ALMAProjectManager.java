@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.48 2005/10/31 21:08:40 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.49 2005/11/22 23:31:00 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -252,7 +252,8 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
         logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
         //send message to operator
-        oper.send("Session ("+sessionId+") has started for Sb ("+sb_id+").");
+        //oper.send("Session ("+sessionId+") has started for Sb ("+sb_id+").");
+        
     }
 
     /**
@@ -266,7 +267,7 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
         logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
         //send message to operator
-        oper.send("Session ("+sessionId+") has ended for Sb ("+sb_id+").");
+        //oper.send("Session ("+sessionId+") has ended for Sb ("+sb_id+").");
     }
 
     /**

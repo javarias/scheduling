@@ -31,7 +31,7 @@ import alma.scheduling.MasterScheduler.Message;
  * The Operator interface defines those methods needed by the Scheduling
  * Subsystem to communicate with the telescope operator. 
  * 
- * @version $Id: Operator.java,v 1.7 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Operator.java,v 1.8 2005/11/22 23:31:00 sslucero Exp $
  * @author Allen Farris
  */
 public interface Operator {
@@ -47,7 +47,7 @@ public interface Operator {
 	 * 
 	 * @param message The message to be sent to the operator.
 	 */
-	public void send (String message);
+	public String send (String message, String arrayName);
 
 	/**
 	 * Select an SB from the specified list to be executed.
@@ -55,7 +55,7 @@ public interface Operator {
 	 * 
 	 * @param best The list of SBs under consideration to be executed.
 	 */	
-	public void selectSB (BestSB best, Message m);
+	public String selectSB (BestSB best, Message m, String arrayName);
 	
 	/**
 	 * Reply true if and only if the specified antenna is in manual mode and

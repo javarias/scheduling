@@ -28,6 +28,7 @@ package alma.scheduling.AlmaScheduling;
 import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerException;
 
 import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.BestSB;
@@ -37,6 +38,8 @@ import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.entities.commonentity.EntityT;
 
+import alma.exec.ReqType;
+import alma.exec.SubSystem;
 
 /**
  * @author Sohaila Lucero
@@ -69,20 +72,21 @@ public class ALMAOperator implements Operator {
     /** 
       * Sends a message to the Telescope Operator
       * @param String
+      * @return String The reply from the operator if there was one
       */
-    public void send(String message) {
-        /*
+    public String send(String message, String arrayName) {
+        String reply ="";
         try{
             execOperator = alma.exec.OperatorHelper.narrow(
                     containerServices.getComponent("EXEC_OPERATOR"));
-            boolean reply = execOperator.askOperator(message, (short)0, 0,
-                    true, "SCHEDULING", "");
+            reply = execOperator.askOperator(message, arrayName ,
+                    SubSystem.SCHEDULING_SUBSYSTEM, ReqType.NORMAL_REQUEST, true, 5);
             containerServices.releaseComponent("EXEC_OPERATOR");
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: error sending message to Telescope Operator");
-            e.printStackTrace();
+            return reply;
+        } catch(ContainerException e) {
+            logger.info("SCHEDULING: Operator component not available, scheduling will pick.");
+            return "TIMEOUT:Operator component not available";
         }
-        */
     }
 
     /**
@@ -92,8 +96,7 @@ public class ALMAOperator implements Operator {
      * @param Message
      * @return String The id of the selected SB.
      */
-    //public String selectSB(BestSB best, Message message) {
-    public void selectSB(BestSB best, Message message) {
+    public String selectSB(BestSB best, Message message, String arrayName) {
         // Temporary solution to giving the messages unique IDs!
         EntityT entity = new EntityT();
         try { 
@@ -111,7 +114,6 @@ public class ALMAOperator implements Operator {
             logger.severe(e.toString());
             e.printStackTrace();
         }
-        //best.setSelection(0); //for now set the first one to be the best one!
         String bestSBId= best.getBestSelection(); //used when Exec's operator times out
         if(bestSBId == null) {
             logger.info("SCHEDULING: best sb id == null. no visible targets");
@@ -119,18 +121,33 @@ public class ALMAOperator implements Operator {
                         new DateTime(System.currentTimeMillis()),
                             NothingCanBeScheduled.NoVisibleTargets, ""));
         } else {
-        //bestSBId is the reply
-        //got best SB selection so now we respond via the MasterScheduler
-        try {
-            (alma.scheduling.MasterSchedulerIFHelper.narrow( 
-                containerServices.getDefaultComponent(
-                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"))).response(
-                        message.getMessageId(), bestSBId);
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: error getting MasterScheduler Component!");
-            logger.severe(e.toString());
-            e.printStackTrace();
-        }
+            //bestSBId is the reply
+            //got best SB selection so now we respond via the MasterScheduler
+            /*
+            try {
+                (alma.scheduling.MasterSchedulerIFHelper.narrow( 
+                    containerServices.getDefaultComponent(
+                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"))).response(
+                            message.getMessageId(), bestSBId);
+            } catch(Exception e) {
+                logger.severe("SCHEDULING: error getting MasterScheduler Component!");
+                logger.severe(e.toString());
+                e.printStackTrace();
+            }
+            */
+            //ask operator now to select!
+            try{
+                execOperator = alma.exec.OperatorHelper.narrow(
+                        containerServices.getComponent("EXEC_OPERATOR"));
+
+                execOperator.selectSB(message.getMessageId(), arrayName, best.getSBLites(), 5);
+                        
+                containerServices.releaseComponent("EXEC_OPERATOR");
+            } catch(ContainerException e) {
+                logger.info("SCHEDULING: Operator component not available, "+
+                        "scheduling will pick.");
+                //return "TIMEOUT:Operator component not available";
+            }
         }
         try {
             timer.join();
@@ -139,7 +156,7 @@ public class ALMAOperator implements Operator {
             //logger.info("SCHEDULING: timer was interrupted!");
         }
         logger.info("SCHEDULING: best sb id = "+message.getReply());
-        //return message.getReply();
+        return message.getReply();
     }
     
     /**

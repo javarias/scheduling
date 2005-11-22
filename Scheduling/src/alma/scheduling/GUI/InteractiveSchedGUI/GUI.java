@@ -26,11 +26,7 @@ package alma.scheduling.GUI.InteractiveSchedGUI;
 
 import alma.xmlentity.XmlEntityStruct;
 
-import java.util.Map;
 import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Collection;
-import java.util.Enumeration;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -42,8 +38,6 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -140,8 +134,6 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     JMenuItem item = (JMenuItem)e.getSource();
                     controller.setDefaultProjectId(item.getText());
-                    //displayProjectInfo(item.getText());
-                    //displaySBInfo(item.getText()); 
                 }
             });
             projectMenu.add(pItem);
@@ -150,7 +142,6 @@ public class GUI extends JFrame {
         setJMenuBar(menuBar);
         toolbar = new JToolBar();
         toolbar.setFloatable(false);
-        //toolbar.setBackground(new Color(159,3,211));
         createButtons(toolbar);
         getContentPane().add(toolbar, BorderLayout.PAGE_START);
 

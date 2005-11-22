@@ -33,7 +33,7 @@ import alma.scheduling.Define.DateTime;
  * a time out so that if the Telescope Operator wants to intervene they'll 
  * have time to do so.
  *
- * @version $Id: Message.java,v 1.2 2004/11/23 21:13:02 sslucero Exp $
+ * @version $Id: Message.java,v 1.3 2005/11/22 23:31:00 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class Message {
@@ -43,6 +43,7 @@ public class Message {
     private String reply=null;
     private DateTime timeSent;
     private DateTime timeReply;
+    private String arrayName;
     
     public Message() {
     }
@@ -97,6 +98,10 @@ public class Message {
     public DateTime getTimeReply() {
         return timeReply;
     }
+
+    public String getArrayName(){
+        return arrayName;
+    }
     /**
      *
      */
@@ -137,6 +142,10 @@ public class Message {
      */
     public void setTimeReply(DateTime t) {
         timeReply = new DateTime(t);
+    }
+
+    public void setArrayName(String n) {
+        arrayName = n;
     }
     
     /**

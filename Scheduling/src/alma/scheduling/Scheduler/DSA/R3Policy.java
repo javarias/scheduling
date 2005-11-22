@@ -25,6 +25,8 @@
  */
 package alma.scheduling.Scheduler.DSA;
 
+import alma.scheduling.SBLite;
+
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Clock;
@@ -46,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.7 2005/09/29 17:43:51 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.8 2005/11/22 23:31:00 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -316,10 +318,18 @@ class R3Policy extends PolicyType {
                     npe.printStackTrace();
                 }   
 			}
-			best = new BestSB (id, scoreString, score, success, rank, clock.getDateTime());
+			best = new BestSB (id, getSBLites(list), scoreString, score, success, rank, clock.getDateTime());
 		}
 		return best;
 	}
+
+    private SBLite[] getSBLites(R3Unit[] u) {
+        SBLite[] lites = new SBLite[u.length];
+        for(int i=0; i < u.length; i++){
+            lites[i] = u[i].getSBLite();
+        }
+        return lites;
+    }
 
 
 	// Figure out why and set the reason code.

@@ -74,19 +74,20 @@ public class OperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.define.OperatorProxy#send(java.lang.String)
 	 */
-	public void send(String message) {
+	public String send(String message, String arrayName) {
+        return "";
 	}
 
 	/* (non-Javadoc)
 	 * @see alma.scheduling.define.OperatorProxy#selectSB(java.lang.String[])
 	 */
-	public void selectSB(BestSB best, Message m) {
+	public String selectSB(BestSB best, Message m, String arrayName) {
 		if (best == null || best.getNumberReturned() == 0) {
 			logger.severe("OperatorSimulator: entityId cannot be null or have zero length.");
-			return;
+			return "";
 		}
 		// Leave the default selection.
-		return;
+		return best.getBestSelection();
 	}
 
 	/* (non-Javadoc)

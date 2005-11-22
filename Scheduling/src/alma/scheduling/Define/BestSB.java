@@ -26,6 +26,8 @@
  
 package alma.scheduling.Define;
 
+import alma.scheduling.SBLite;
+
 /**
  * The BestSB class is information that is returned by a dynamic scheduling
  * algorithm when requested to select the best units to execute at any point
@@ -37,7 +39,7 @@ package alma.scheduling.Define;
  * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
  * object that designates why nothing could be scheduled.
  * 
- * @version $Id: BestSB.java,v 1.7 2005/08/08 21:53:41 sslucero Exp $
+ * @version $Id: BestSB.java,v 1.8 2005/11/22 23:31:00 sslucero Exp $
  * @author Allen Farris
  */
 public class BestSB {
@@ -47,6 +49,8 @@ public class BestSB {
 	 * no units that could be selected at this time.
 	 */
 	private int numberReturned;
+
+    private SBLite[] sbLites;
 	/**
 	 * The array of SB-ds that are to be considered, in rank order highest to lowest. 
 	 */
@@ -112,16 +116,20 @@ public class BestSB {
 	public BestSB(String[] sbId, String[] scoreString, double[] score, double[] success, 
 			double[] rank, DateTime time) {
 		if (scoreString.length != sbId.length) {
-			throw new IllegalArgumentException ("The sbId and scoreString arrays do not have the same number of dimensions.");
+			throw new IllegalArgumentException (
+               "The sbId and scoreString arrays do not have the same number of dimensions.");
         }
 		if (score.length != sbId.length) {
-			throw new IllegalArgumentException ("The sbId and score arrays do not have the same number of dimensions.");
+			throw new IllegalArgumentException (
+               "The sbId and score arrays do not have the same number of dimensions.");
         }
 		if (success.length != sbId.length) {
-			throw new IllegalArgumentException ("The sbId and success arrays do not have the same number of dimensions.");
+			throw new IllegalArgumentException (
+               "The sbId and success arrays do not have the same number of dimensions.");
         }
 		if (rank.length != sbId.length) {
-			throw new IllegalArgumentException ("The sbId and rank arrays do not have the same number of dimensions.");
+			throw new IllegalArgumentException (
+               "The sbId and rank arrays do not have the same number of dimensions.");
         }
 		numberReturned = sbId.length;		
 		this.sbId = sbId;
@@ -133,7 +141,19 @@ public class BestSB {
 		selection = 0;
 		nothing = null;
 	}
+    
+    /**
+      * Constructor which includes sblites
+      */
+	public BestSB(String[] sbId, SBLite[] sbLites, String[] scoreString, double[] score, double[] success, 
+			double[] rank, DateTime time) {
+        this(sbId, scoreString, score, success, rank, time);
+        this.sbLites = sbLites;
+    }
 
+    
+
+    
 	/**
 	 * Get the number of units returned.  This may be 0, in which case there were
 	 * no units that could be selected at this time.
@@ -161,6 +181,9 @@ public class BestSB {
 		return sbId;
 	}
 	
+    public SBLite[] getSBLites() {
+        return sbLites;
+    }
 	/**
 	 * Get the NothingCanBeScheduled object, if there is one.  If there is no
 	 * NothingCanBeScheduled cobject, null is returned.

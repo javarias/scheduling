@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.41 2005/09/27 14:49:34 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.42 2005/11/22 23:31:00 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -883,5 +883,57 @@ public class ALMAArchive implements Archive {
         return result;
     }
 
+
+    /**
+      * Run a given query given. The UID of the results are returned.
+      * @param query
+      * @param schema
+      * @return String[] UIDs of the results
+      *
+      */
+    public String[] query(String query, String schema) throws SchedulingException { 
+        Vector res_tmp= new Vector();
+        try {
+            Cursor cursor = archOperationComp.queryDirty(query, schema);
+            if(cursor == null) {
+                throw new SchedulingException ("SCHEDULING: Error querying archive for PPR");
+            }
+            while(cursor.hasNext()){
+                QueryResult res = cursor.next();
+                //logger.info(res.xml);
+                //logger.info(res.identifier);
+                res_tmp.add(res.identifier);
+            }
+            String[] res = new String[res_tmp.size()];
+            for(int i=0; i < res_tmp.size(); i++){
+                res[i] = (String)res_tmp.elementAt(i);
+            }
+            return res;
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        }
+    }
+
+    public ObsProject retrieve(String uid) throws SchedulingException {
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieveDirty(uid);
+            ObsProject obsProj= (ObsProject)
+                entityDeserializer.deserializeEntity(xml, ObsProject.class);
+            return obsProj;
+        } catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        } catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        } catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        } catch(EntityException e){
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException(e);
+        }
+    }
     
 }
