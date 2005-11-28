@@ -86,7 +86,7 @@ import alma.scheduling.Define.SchedulingException;
  */
 public class GUI extends JFrame {
     private GUIController controller;
-    private boolean loggedIn;
+    //private boolean loggedIn;
     private Object[][] sbRowInfo;
     private JTable sbTable;
     private TableModel sbTableModel;
@@ -162,7 +162,9 @@ public class GUI extends JFrame {
             }
         });
         setVisible(true);
-        loggedIn = false;
+
+        displaySBInfo(controller.getDefaultProjectId());
+        displayProjectInfo(controller.getDefaultProjectId());
     }
 
     /**
@@ -207,14 +209,14 @@ public class GUI extends JFrame {
      *
      */
     private void createButtons(JToolBar bar) {
-        sessionStateButton = new JButton("Login");
+        sessionStateButton = new JButton("Logout");
         sessionStateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!loggedIn) {
-                    login();
-                } else {
+//                if(!loggedIn) {
+  //                  login();
+    //            } else {
                     logout();
-                }
+      //          }
             }
         });
 
@@ -282,20 +284,27 @@ public class GUI extends JFrame {
      * Creates a login window and returns the contents that the user 
      * entered. 
      */
-    private void login(){
+    public void login(String login){
+        try{
+            controller.setLogin(login);
+        } catch(SchedulingException e){
+            JOptionPane.showMessageDialog(this, e.toString(), "", 
+                JOptionPane.WARNING_MESSAGE);
+            //loggedIn = false;
+            return;
+        }
+      /*
         try{
             String login = JOptionPane.showInputDialog(this,"Please log in.");
-            controller.setLogin(login);
         } catch(SchedulingException e) {
             JOptionPane.showMessageDialog(this, e.toString(), "", 
                 JOptionPane.WARNING_MESSAGE);
             //loggedIn = false;
             return;
         }
-        displaySBInfo(controller.getDefaultProjectId());
-        displayProjectInfo(controller.getDefaultProjectId());
-        sessionStateButton.setText("Logout");
-        loggedIn = true;
+        */
+        //sessionStateButton.setText("Logout");
+        //loggedIn = true;
     }
 
     private void displayProjectInfo(String id){
@@ -332,13 +341,16 @@ public class GUI extends JFrame {
         try{
            // controller.setLogin("");
             controller.endSession();
+            exit();
+            /*
             sessionStateButton.setText("Login");
             mainViewPane.getViewport().removeAll();
             createDefaultMainViewPane();
             mainViewPane.getViewport().repaint();
             sbViewPane.getViewport().removeAll();
             sbViewPane.getViewport().repaint();
-            loggedIn = false;
+            */
+            //loggedIn = false;
         } catch(Exception ex){}
         //do other things to insure user is logged out.
         //ie: close scheduler, etc

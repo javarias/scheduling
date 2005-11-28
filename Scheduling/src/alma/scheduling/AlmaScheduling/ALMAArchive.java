@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.42 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.43 2005/11/28 21:41:57 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -330,6 +330,29 @@ public class ALMAArchive implements Archive {
         }
 
     }
+
+    /**
+      *
+      */
+    private ObsProject getObsProject(String id) throws SchedulingException {
+        ObsProject proj;
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            proj = (ObsProject) entityDeserializer.deserializeEntity(xml, ObsProject.class);
+        }catch(Exception e){
+            throw new SchedulingException (e);
+        }
+        return proj;
+    }
+        
+    /**
+      *
+      */
+    public SB[] getSBsForProject(String projId) throws SchedulingException {
+        Project p = getProject(projId);
+        return p.getAllSBs();
+    }
+    
     /**
       * Gets all the schedblock references from the ObsUnitSetTChoice.
       */

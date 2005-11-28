@@ -1,15 +1,22 @@
 
 package alma.scheduling.GUI.InteractiveSchedGUI;
 
-import alma.scheduling.AlmaScheduling.ALMAArchive;
 import alma.entity.xmlbinding.obsproject.*;
+import alma.scheduling.Define.SB;
+import alma.scheduling.AlmaScheduling.ALMAArchive;
+import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.acs.container.ContainerServices;
 
 public class ArchiveQueryWindowController implements Runnable {
 
     private ALMAArchive archive;
     private ArchiveQueryWindow gui;
     private String[] queryResults;
+    private ContainerServices containerServices;
+    private SchedulerConfiguration config;
+    private GUIController loggedInController;
 
+    /////// CONSTRUCTORS ///////
     public ArchiveQueryWindowController(){
         gui = new ArchiveQueryWindow();
     }
@@ -17,6 +24,16 @@ public class ArchiveQueryWindowController implements Runnable {
     public ArchiveQueryWindowController(ALMAArchive a) {
         this.archive = a;
     }
+
+    public ArchiveQueryWindowController(SchedulerConfiguration c, 
+                                        ALMAArchive a,
+                                        ContainerServices cs){
+        this.config = c;
+        this.archive = a;
+        this.containerServices = cs;
+    }
+
+    ////////////////////////////
 
     public String[] queryProjectAndPi(String name, String pi) {
         String projectStr, piStr;
@@ -58,6 +75,23 @@ public class ArchiveQueryWindowController implements Runnable {
         ArchiveQueryWindow archiveQuery = new ArchiveQueryWindow(this);
     }
 
+    public void loginToInteractiveProject(String projectId, String pi) {
+        try {
+            //need to get SBs from project to add to empty SBQueue
+            SB[] sbs = archive.getSBsForProject(projectId);
+            for(int i=0; i < sbs.length; i++){
+                sbs[i].setType(SB.INTERACTIVE);
+            }
+            config.getQueue().add(sbs);
+
+            loggedInController = new GUIController(config, containerServices);
+            Thread t = containerServices.getThreadFactory().newThread(loggedInController);
+            t.start();
+            loggedInController.setLogin(pi);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args){
         try {

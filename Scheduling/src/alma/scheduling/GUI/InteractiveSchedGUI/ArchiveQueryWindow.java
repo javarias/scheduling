@@ -19,7 +19,9 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
@@ -199,6 +201,12 @@ public class ArchiveQueryWindow extends JFrame {
         };
         projTable = new JTable(projTableModel);
         projTable.setPreferredScrollableViewportSize(new Dimension(550,100));
+        projTable.addFocusListener(new FocusListener() {
+                public void focusGained(FocusEvent fe) {
+                }
+                public void focusLost(FocusEvent fe) {
+                }
+        });
         JScrollPane projListPane = new JScrollPane(projTable);
         
         JPanel p = new JPanel();
@@ -215,6 +223,7 @@ public class ArchiveQueryWindow extends JFrame {
         JButton b = new JButton("Login");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                loginToProject();
             }
         });
         p.add(b);
@@ -232,6 +241,15 @@ public class ArchiveQueryWindow extends JFrame {
         });
         p.add(b);
         return p;
+    }
+
+    private void loginToProject() {
+        int row = projTable.getSelectedRow();
+        String id = (String)projRowInfo[row][3]; //uid of selected project
+        String pi = (String)projRowInfo[row][1];
+        controller.loginToInteractiveProject(id, pi);
+
+        exit();
     }
 
     /**

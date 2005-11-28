@@ -65,13 +65,14 @@ import alma.scheduling.MasterScheduler.MasterScheduler;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.scheduling.Scheduler.*;
-import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
+//import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
+import alma.scheduling.GUI.InteractiveSchedGUI.ArchiveQueryWindowController;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.39 2005/11/09 23:54:09 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.40 2005/11/28 21:41:57 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -487,23 +488,26 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             Policy s_policy = createPolicy();
 
-            sbQueue.get(0).setType(SB.INTERACTIVE);
+            //sbQueue.get(0).setType(SB.INTERACTIVE);
         
             String[] antennas = null; 
             try {
                 antennas = control.getIdleAntennas();
             }catch(Exception ex) {
-                //e.printStackTrace();
                 throw ex;
             }
             String arrayname = createArray(antennas, "interactive");
         
             SchedulerConfiguration config = new SchedulerConfiguration(
-                Thread.currentThread(), false, true, sbQueue, sbQueue.size(), 0, 
+                Thread.currentThread(), false, true, new SBQueue(), 0, 0, 
                 arrayname, clock, control, operator, telescope, manager, s_policy, 
                 logger);
             logger.info("SCHEDULING: Array name == "+arrayname);
-            GUIController interactiveGUI = new GUIController(config, containerServices);
+
+            //GUIController interactiveGUI = new GUIController(config, containerServices);
+            //Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
+            ArchiveQueryWindowController interactiveGUI = 
+                new ArchiveQueryWindowController(config, archive, containerServices);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
             scheduler_thread.start();
         } catch (Exception e) {
