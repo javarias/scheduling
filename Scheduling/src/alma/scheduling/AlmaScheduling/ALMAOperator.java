@@ -52,7 +52,7 @@ public class ALMAOperator implements Operator {
     //logger
     private Logger logger;
     //The Operator Component.
-    private alma.exec.Operator execOperator;
+    private alma.exec.Scheduling_to_TelescopeOperator execSchedOperator;
     /**
       *
       */
@@ -75,6 +75,7 @@ public class ALMAOperator implements Operator {
       * @return String The reply from the operator if there was one
       */
     public String send(String message, String arrayName) {
+        /*
         String reply ="";
         try{
             execOperator = alma.exec.OperatorHelper.narrow(
@@ -86,7 +87,8 @@ public class ALMAOperator implements Operator {
         } catch(ContainerException e) {
             logger.info("SCHEDULING: Operator component not available, scheduling will pick.");
             return "TIMEOUT:Operator component not available";
-        }
+        }*/
+        return "not implemented yet";
     }
 
     /**
@@ -137,12 +139,12 @@ public class ALMAOperator implements Operator {
             */
             //ask operator now to select!
             try{
-                execOperator = alma.exec.OperatorHelper.narrow(
-                        containerServices.getComponent("EXEC_OPERATOR"));
+                execSchedOperator = alma.exec.Scheduling_to_TelescopeOperatorHelper.narrow(
+                        containerServices.getComponent("EXEC_SCHEDULINGOPERATOR"));
 
-                execOperator.selectSB(message.getMessageId(), arrayName, best.getSBLites(), 5);
+                execSchedOperator.selectSB(message.getMessageId(), arrayName, best.getSBLites(), 5);
                         
-                containerServices.releaseComponent("EXEC_OPERATOR");
+                containerServices.releaseComponent("EXEC_SCHEDULINGOPERATOR");
             } catch(ContainerException e) {
                 logger.info("SCHEDULING: Operator component not available, "+
                         "scheduling will pick.");
