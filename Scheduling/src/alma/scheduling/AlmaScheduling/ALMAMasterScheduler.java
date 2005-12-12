@@ -72,7 +72,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.40 2005/11/28 21:41:57 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.41 2005/12/12 14:29:24 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -145,7 +145,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.publisher = new ALMAPublishEvent(containerServices);
         this.messageQueue = new MessageQueue();
         this.operator = new ALMAOperator(containerServices, messageQueue);
-        this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher);
+        this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher, clock);
         this.control = new ALMAControl(containerServices, manager);
         this.telescope = new ALMATelescope();
         
@@ -337,7 +337,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             }catch(Exception e) {
                 e.printStackTrace();
             }
-            String arrayname = createArray(antennas, "dynamic");
+            String arrayname = createArray(antennas, ArrayModeEnum.QUEUED);
             //then create a config 
             SchedulerConfiguration config = new SchedulerConfiguration(
                     Thread.currentThread(), true, true, sbs, sbs.size(), 5, 
@@ -428,7 +428,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             //TODO Eventually populate s_policy with info from the schedulingPolicy
             Policy s_policy = createPolicy();
             // regular sb scheduling
-            String arrayname = createArray(regularSbAntennas, "dynamic");
+            String arrayname = createArray(regularSbAntennas, ArrayModeEnum.DYNAMIC);
         
             SchedulerConfiguration config = new SchedulerConfiguration(
                 Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
@@ -462,7 +462,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     private void scheduleSpecialSBs(String[] specialSbAntennas)  throws InvalidOperationEx {
         try {
-            String specialSBarrayname = createArray(specialSbAntennas, "dynamic");
+            String specialSBarrayname = createArray(specialSbAntennas, ArrayModeEnum.DYNAMIC);
             //
             Policy specialPolicy = createPolicy();
             SchedulerConfiguration specialConfig = new SchedulerConfiguration(
@@ -496,7 +496,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             }catch(Exception ex) {
                 throw ex;
             }
-            String arrayname = createArray(antennas, "interactive");
+            String arrayname = createArray(antennas, ArrayModeEnum.INTERACTIVE);
         
             SchedulerConfiguration config = new SchedulerConfiguration(
                 Thread.currentThread(), false, true, new SBQueue(), 0, 0, 
@@ -507,7 +507,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             //GUIController interactiveGUI = new GUIController(config, containerServices);
             //Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
             ArchiveQueryWindowController interactiveGUI = 
-                new ArchiveQueryWindowController(config, archive, containerServices);
+                new ArchiveQueryWindowController(config, containerServices);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
             scheduler_thread.start();
         } catch (Exception e) {
@@ -609,7 +609,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @return String
       * @throws InvalidOperation
       */
-    public String createArray(String[] antennaIdList, String schedulingMode)
+    public String createArray(String[] antennaIdList, ArrayModeEnum schedulingMode)
         throws InvalidOperationEx {
         
         String name;
