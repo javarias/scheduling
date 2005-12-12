@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.32 2005/09/27 14:49:34 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.33 2005/12/12 21:36:11 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -659,7 +659,7 @@ public class ProjectUtil {
         //    setups[0] = setup;
         //    targetList[0].setSpectralSpec(setups);
         //} else {
-    		setup = targetList[0].getSpectralSpec();
+    		setup = targetList[0].getTargetTChoice().getSpectralSpec();
         //}
         //////
 		alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
