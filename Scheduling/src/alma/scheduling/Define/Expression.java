@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Expression.java,v 1.4 2005/12/12 14:29:05 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
@@ -132,7 +132,8 @@ public class Expression {
 		for (int i = 0; i < functionName.length; ++i) {
 			try {
 				classObj = obj[i].getClass();
-				method[i] = classObj.getMethod("compute",null);
+				method[i] = classObj.getMethod("compute");
+				//method[i] = classObj.getMethod("compute",null);
 			} catch (NoSuchMethodException err) {
 				System.out.println("Invalid syntax defining functions! " +
 					"There is no \"compute()\" method in " + classObj.getName());
@@ -146,7 +147,8 @@ public class Expression {
 	 */
 	public static float execute(int n) {
 		try {
-			Double d =  (Double)(method[n].invoke(obj[n],null));
+            Double d =  (Double)(method[n].invoke(obj[n]));
+            //Double d =  (Double)(method[n].invoke(obj[n],null));
 			return (float)d.doubleValue();
 		} catch (Exception err) {
 			System.out.println("Oops! This isn't supposed to happen.");
