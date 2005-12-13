@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import java.awt.Component;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -59,7 +60,7 @@ public class ArchiveQueryWindow extends JFrame {
         setBounds(inset, inset, screenSize.width - inset*2, 
             screenSize.height - inset*2);
         setTitle("Interactive Scheduling GUI");
-        setSize(400, 200);
+        setSize(600, 200);
         setTitle("Archive Query");
 
         getContentPane().setLayout(new BorderLayout());
@@ -134,7 +135,7 @@ public class ArchiveQueryWindow extends JFrame {
       *
       */
     private JPanel makeQueryButtonPanel(){
-        JPanel p = new JPanel();
+        JPanel p = new JPanel(new FlowLayout());
 
         JButton b = new JButton("Search");
         b.addActionListener(new ActionListener() {
@@ -170,7 +171,6 @@ public class ArchiveQueryWindow extends JFrame {
         try {
             main.removeAll();
         }catch(Exception e) { /* don't care if it complains */ }
-        setSize(600, 200);
         main.add(makeDisplayPanel(results), BorderLayout.CENTER);
         main.add(makeDisplayButtonPanel(), BorderLayout.SOUTH);
         main.validate();
@@ -230,6 +230,14 @@ public class ArchiveQueryWindow extends JFrame {
         b = new JButton("Search Again");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                try {
+                    main.removeAll();
+                }catch(Exception ex) { /* don't care if it complains */ }
+                JLabel l = new JLabel("Query on the following parameters.");
+                main.add(l, BorderLayout.NORTH);
+                main.add(makeQueryPanel(), BorderLayout.CENTER);
+                main.add(makeQueryButtonPanel(), BorderLayout.SOUTH);
+                main.validate();
             }
         });
         p.add(b);

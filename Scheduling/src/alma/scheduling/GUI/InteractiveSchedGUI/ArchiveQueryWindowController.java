@@ -3,13 +3,19 @@ package alma.scheduling.GUI.InteractiveSchedGUI;
 
 import alma.entity.xmlbinding.obsproject.*;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.AlmaScheduling.ALMAArchive;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 import alma.acs.container.ContainerServices;
+import alma.scheduling.AlmaScheduling.ALMAOperator;
+import alma.scheduling.AlmaScheduling.ALMAClock;
+import alma.scheduling.Event.Publishers.PublishEvent;
 
 public class ArchiveQueryWindowController implements Runnable {
 
-    private ALMAArchive archive;
+    private ProjectManager manager;
     private ArchiveQueryWindow gui;
     private String[] queryResults;
     private ContainerServices containerServices;
@@ -21,15 +27,14 @@ public class ArchiveQueryWindowController implements Runnable {
         gui = new ArchiveQueryWindow();
     }
     
-    public ArchiveQueryWindowController(ALMAArchive a) {
-        this.archive = a;
+    public ArchiveQueryWindowController(ProjectManager m) {
+        this.manager = m;
     }
 
     public ArchiveQueryWindowController(SchedulerConfiguration c, 
-                                        ALMAArchive a,
                                         ContainerServices cs){
         this.config = c;
-        this.archive = a;
+        this.manager = c.getProjectManager();
         this.containerServices = cs;
     }
 
@@ -47,7 +52,9 @@ public class ArchiveQueryWindowController implements Runnable {
         String query = new String("/prj:ObsProject[prj:pI[\""+pi+
                 "\"] and prj:projectName [\""+name+"\"]]");
         try {
-            queryResults = archive.query(query, schema);
+            //project manager's func will be archiveQuery(query, schema);
+            //queryResults = archive.query(query, schema);
+            queryResults = manager.archiveQuery(query, schema);
             /*
             System.out.println(results.length);
             for(int i=0; i < results.length; i++){
@@ -61,24 +68,29 @@ public class ArchiveQueryWindowController implements Runnable {
 
     public ObsProject retrieveProject(String uid){
         try{
-            return archive.retrieve(uid);
+            //project manager's func will be archiveRetrieve(uid)
+            //return archive.retrieve(uid);
+            return (ObsProject)manager.archiveRetrieve(uid);
         }catch(Exception e){
             return null;
         }
     }
 
-    public void stopArchive() {
-        archive.releaseArchiveComponents();
+    public void stopArchive() throws SchedulingException {
+        //project manager's func will be archiveReleaseComponents
+        //archive.releaseArchiveComponents();
+        manager.archiveReleaseComponents();
     }
 
     public void run(){
-        ArchiveQueryWindow archiveQuery = new ArchiveQueryWindow(this);
+        ArchiveQueryWindow archiveQueryGui = new ArchiveQueryWindow(this);
     }
 
     public void loginToInteractiveProject(String projectId, String pi) {
         try {
             //need to get SBs from project to add to empty SBQueue
-            SB[] sbs = archive.getSBsForProject(projectId);
+            //SB[] sbs = archive.getSBsForProject(projectId);
+            SB[] sbs = manager.getSBsForProject(projectId);
             for(int i=0; i < sbs.length; i++){
                 sbs[i].setType(SB.INTERACTIVE);
             }
@@ -97,10 +109,17 @@ public class ArchiveQueryWindowController implements Runnable {
         try {
             alma.acs.component.client.ComponentClient c = 
                 new alma.acs.component.client.ComponentClient(null, System.getProperty("ACS.manager"), "test");
-            ALMAArchive a = new ALMAArchive(c.getContainerServices(), 
-                    new alma.scheduling.AlmaScheduling.ALMAClock());
+            alma.scheduling.AlmaScheduling.ALMAProjectManager m = 
+                
+                new alma.scheduling.AlmaScheduling.ALMAProjectManager(
+                        c.getContainerServices(), 
+                        (ALMAOperator)null, 
+                        new ALMAArchive(c.getContainerServices(), new ALMAClock()),
+                        new SBQueue(),
+                        (PublishEvent)null, 
+                        (ALMAClock)null);
 
-            ArchiveQueryWindowController ctrl = new ArchiveQueryWindowController(a);
+            ArchiveQueryWindowController ctrl = new ArchiveQueryWindowController(m);
             ctrl.run();
             
         } catch(Exception e){}

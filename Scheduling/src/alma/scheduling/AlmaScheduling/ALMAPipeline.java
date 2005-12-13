@@ -46,7 +46,7 @@ import alma.pipelinescience.SciPipeScheduler;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.11 2005/02/28 17:09:59 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.12 2005/12/13 14:26:13 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -57,6 +57,8 @@ public class ALMAPipeline implements SciPipeline {
     private SciPipeScheduler pipelineComp;
     //entity serializer
     private EntitySerializer entitySerializer;
+
+    private boolean pipelineAvailable=false;
     
     /**
       *
@@ -76,9 +78,10 @@ public class ALMAPipeline implements SciPipeline {
             pipelineComp = alma.pipelinescience.SciPipeSchedulerHelper.narrow(
                 containerServices.getComponent("PIPELINE_SCIPIPEMANAGER"));
             
+            pipelineAvailable = true;
         } catch(ContainerException e) {
-            logger.severe("SCHEDULING: Error getting pipeline component");
-            e.printStackTrace();
+            logger.severe("SCHEDULING: Science Pipeline is not available.");
+            pipelineAvailable = false;
         }
     }
 
@@ -86,11 +89,13 @@ public class ALMAPipeline implements SciPipeline {
       * Release pipeline comp
       */
     public void releasePipelineComp() {
-        try {
-            containerServices.releaseComponent("PIPELINE_SCIPIPEMANAGER");
-        }catch(Exception e) {
-            logger.severe("SCHEDULING: error releasing pipeline comp.");
-            e.printStackTrace();
+        if(pipelineAvailable) {
+            try {
+                containerServices.releaseComponent("PIPELINE_SCIPIPEMANAGER");
+            }catch(Exception e) {
+                logger.severe("SCHEDULING: error releasing pipeline comp.");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -125,7 +130,6 @@ public class ALMAPipeline implements SciPipeline {
     public void start(String pprString) throws SchedulingException {
         
         logger.info("SCHEDULING: Starting the science pipeline");
-        //processRequest();
     }
     /**
       * @param SciPipelineRequest
@@ -135,6 +139,10 @@ public class ALMAPipeline implements SciPipeline {
         throws SchedulingException {
 
         return null;
+    }
+
+    public boolean isPipelineAvailable() {
+        return pipelineAvailable;
     }
 
 }

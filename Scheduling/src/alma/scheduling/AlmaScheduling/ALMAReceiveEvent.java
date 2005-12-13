@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.28 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.29 2005/12/13 14:26:13 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -100,6 +100,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ExecBlockStartedEvent The event sent out by the control subsystem.
      */ 
     public void receive(ExecBlockStartedEvent e) {
+        processExecBlockStartedEvent(e);
+    }
+
+    private void processExecBlockStartedEvent(ExecBlockStartedEvent e) {
         //the processes below are still being thought out and may not be the
         //best way to do what needs to be done.
         try {
@@ -134,20 +138,25 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     }
 
     public void receive(ExecBlockEndedEvent e) {
+        processExecBlockEndedEvent(e);
+    }
+
+    private void processExecBlockEndedEvent(ExecBlockEndedEvent e) {
         try{
             logger.info("SCHEDULING: Event reason = end");
             logger.info("SCHEDULING: Received sb end event from control.");
             logger.info("SCHEDULING: end time is "+ e.endTime);
             //create a control event internal to scheduling.
             //this object contains the info from controls event which sched wants
-            ArrayTime at = new ArrayTime(e.endTime);
+            //ArrayTime at = new ArrayTime(e.endTime);
+            DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
             ControlEvent ce = new ControlEvent(e.execId, e.sbId, e.arrayName, 
-                 e.status.value(), at.arrayTimeToDateTime());
+                 e.status.value(), endEb);//at.arrayTimeToDateTime());
             //update the sb with the new info from the event
             updateSB(ce);
             //eb = createExecBlock(e);
             ExecBlock eb = retrieveExecBlock(e.execId);
-            DateTime endEb = at.arrayTimeToDateTime();
+            //DateTime endEb = at.arrayTimeToDateTime();
             logger.info("********************************");
             logger.info("SCHEDULING: Setting end time for: "+e.execId);
             logger.info("SCHEDULING: end time is "+ e.endTime);
@@ -164,6 +173,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace();
         }
+
 
     }
     
@@ -326,15 +336,21 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ControlEvent The event from control
      */
     private void startPipeline(ControlEvent e) {
-        String result = null;
-        SciPipelineRequest ppr=null;
-        try {
-            ppr = manager.createSciPipelineRequest(e.getSBId(), "Empty Comment");
-            manager.startPipeline(ppr);
-        } catch(Exception ex) {
-            logger.severe("SCHEDULING: error starting the science pipeline");
-            ex.printStackTrace();
-        }
+        //check if we want to start the pipeline.
+        boolean startPipeline = manager.isPipelineNeeded(e.getSBId());
+        if(startPipeline) { //returned true and we want to start the pipeline
+
+            String result = null;
+            SciPipelineRequest ppr=null;
+            try {
+                ppr = manager.createSciPipelineRequest(e.getSBId(), "Empty Comment");
+                manager.startPipeline(ppr);
+            } catch(Exception ex) {
+                logger.severe("SCHEDULING: error starting the science pipeline");
+                ex.printStackTrace();
+            }
+        } //else { //returned false so not starting the pipeline.. ie do nothing..
+        //}
     }
 
     /**

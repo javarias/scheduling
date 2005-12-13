@@ -133,8 +133,8 @@ public class GUIController implements Runnable {
                 System.out.println("SCHEDULING: There are new SBs.");
                 SB[] sbs = ((ALMAProjectManager)config.getProjectManager()).getNewSBs(newProj, oldProj);
                 for(int i=0; i < sbs.length; i++){
-                    System.out.println("adding sb "+ i);
-                    System.out.println("Stupid sb has id = "+ sbs[i].getId());
+                    //System.out.println("adding sb "+ i);
+                    //System.out.println("Stupid sb has id = "+ sbs[i].getId());
                     addSB(sbs[i]);
                 }
                 System.out.println("size of sb queue = "+ config.getQueue().size());
@@ -165,6 +165,7 @@ public class GUIController implements Runnable {
     public String getDefaultProjectId() {
         return defaultProjectId;
     }
+
     public void setDefaultProjectId(String id) {
         defaultProjectId = id;
     }
@@ -239,6 +240,14 @@ public class GUIController implements Runnable {
         config.getProjectManager().getProjectManagerTaskControl().interruptTask();
     }
     
+    /**
+      *
+      */
+    public void openArchiveQueryWindow() {
+        //need to get the archive or change ArchiveQueryWindow to not have a direct archive
+        //connection..
+    }
+    
     ////////////////////////////////////////////////////
 
     /**
@@ -246,7 +255,6 @@ public class GUIController implements Runnable {
       */
     public void run() {
         this.gui = new GUI(this);
-        //ArchiveQueryWindowController archiveQuery = new ArchiveQueryWindowController();
     }
 
     /**

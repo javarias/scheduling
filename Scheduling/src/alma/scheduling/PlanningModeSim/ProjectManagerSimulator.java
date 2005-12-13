@@ -167,4 +167,15 @@ public class ProjectManagerSimulator
     public Project getProject(String projId) throws SchedulingException{
         return null;
     }
+    public String[] archiveQuery(String query, String schema) throws SchedulingException {
+        return null;
+    }
+    public Object archiveRetrieve(String uid) throws SchedulingException{
+        return null;
+    }
+    public void archiveReleaseComponents() throws SchedulingException {
+    }
+    public SB[] getSBsForProject(String projId) throws SchedulingException{
+        return null;
+    }
 }

@@ -36,7 +36,7 @@ import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 
 /**
- * @version $Id: ProjectManager.java,v 1.9 2005/10/31 21:08:40 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.10 2005/12/13 14:26:13 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -110,13 +110,30 @@ public class ProjectManager implements Runnable,
         return session;
     }
 
+    ////////////////////////////////////////////////////////////
+    // Methods needed by ACS/REAL mode but not for simulator
+    ////////////////////////////////////////////////////////////
     public void sendStartSessionEvent(ObservedSession session){
     }
 
     public void sendEndSessionEvent(ObservedSession session) {
     }
+
     public Project getProject(String projId) throws SchedulingException{
         return null;
     }
+
+    public String[] archiveQuery(String query, String schema) throws SchedulingException {
+        return null;
+    }
+    public Object archiveRetrieve(String uid) throws SchedulingException {
+        return null;
+    }
+    public void archiveReleaseComponents()  throws SchedulingException {
+    }
+    public SB[] getSBsForProject(String projId) throws SchedulingException {
+        return null;
+    }
+
     
 }

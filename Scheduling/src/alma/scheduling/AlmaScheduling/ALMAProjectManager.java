@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.49 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.50 2005/12/13 14:26:13 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -72,8 +72,14 @@ public class ALMAProjectManager extends ProjectManager {
     private ALMAOperator oper;
     //TODO temporary
     private Vector specialSBs;
+    private ALMAClock clock;
 
-    public ALMAProjectManager(ContainerServices cs, ALMAOperator o, ALMAArchive a, SBQueue q, PublishEvent p) {
+    public ALMAProjectManager(ContainerServices cs, 
+                              ALMAOperator o, 
+                              ALMAArchive a, 
+                              SBQueue q, 
+                              PublishEvent p, 
+                              ALMAClock c) {
         super();
         this.containerServices = cs;
         this.logger = cs.getLogger();
@@ -84,6 +90,7 @@ public class ALMAProjectManager extends ProjectManager {
         this.psQueue = new ProjectStatusQueue();
         this.pQueue = new ProjectQueue();
         this.pipeline = new ALMAPipeline(cs);
+        this.clock = c;
         pQueue.add(pollArchive());
         specialSBs = new Vector();
         querySpecialSBs();
@@ -659,6 +666,23 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return session;
     }
+
+
+    /**
+      *
+      */
+    public boolean isPipelineNeeded(String sbid) {
+        boolean needed = false;
+        SB sb = sbQueue.get(sbid);
+        Program prog = sb.getParent();
+        if(prog.getDataReductionProcedureName() == null || 
+                prog.getDataReductionProcedureName().equals("") ) {
+            needed = false;
+        } else {
+            needed = true;
+        }
+        return needed;
+    }
     
     /**
       * Creates a SciPipelineRequest with the given program and comment string.
@@ -666,7 +690,6 @@ public class ALMAProjectManager extends ProjectManager {
       * @param s A comment about the science pipeline request
       * @return SciPipelineRequest
       */
-    //public SciPipelineRequest createSciPipelineRequest(Program p, String s)
     public SciPipelineRequest createSciPipelineRequest(String sbid, String s)
         throws SchedulingException {
 
@@ -795,5 +818,19 @@ public class ALMAProjectManager extends ProjectManager {
         System.out.println("SCHEDULING: difference between p1 & p2 = "+size);
         System.out.println("SCHEDULING: size of newSBs = "+x);
         return newSBs;
+    }
+
+
+    public String[] archiveQuery(String query, String schema) throws SchedulingException  {
+        return archive.query(query, schema);
+    }
+    public Object archiveRetrieve(String uid) throws SchedulingException {
+        return archive.retrieve(uid);
+    }
+    public void archiveReleaseComponents() throws SchedulingException  {
+        archive.releaseArchiveComponents();
+    }
+    public SB[] getSBsForProject(String projId) throws SchedulingException {
+        return archive.getSBsForProject(projId);
     }
 }

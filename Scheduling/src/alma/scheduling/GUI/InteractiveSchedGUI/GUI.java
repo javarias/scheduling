@@ -116,7 +116,11 @@ public class GUI extends JFrame {
         JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
         JMenuItem howto = new JMenuItem("HowTo");
-        //fileMenu.add(howto);
+        howto.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                }
+        });
+        fileMenu.add(howto);
         JMenuItem quit = new JMenuItem("Exit", KeyEvent.VK_X);;
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -125,6 +129,27 @@ public class GUI extends JFrame {
         });
         fileMenu.add(quit);
         menuBar.add(fileMenu);
+        JMenuItem searchagain = new JMenuItem("Search");
+        searchagain.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int res = confirmNewSearch();
+                    if(res == JOptionPane.YES_OPTION){
+                        //bring back archive query window.
+                        //controller. 
+                        //close this window
+                        //can't close before bringing back other one.
+                        exit();
+                    } else if( res == JOptionPane.NO_OPTION) {
+                    //same thing as cancel
+                    //do nothing
+                    } else if( res == JOptionPane.CANCEL_OPTION) {
+                    //same thing as no
+                    //do nothing
+                    }
+                }
+        });
+        fileMenu.add(searchagain);
+        /*
         JMenu projectMenu = new JMenu("Projects");
         String[] ids = controller.getProjectIds();
         JMenuItem pItem;
@@ -139,6 +164,7 @@ public class GUI extends JFrame {
             projectMenu.add(pItem);
         }
         menuBar.add(projectMenu);
+        */
         setJMenuBar(menuBar);
         toolbar = new JToolBar();
         toolbar.setFloatable(false);
@@ -165,6 +191,14 @@ public class GUI extends JFrame {
 
         displaySBInfo(controller.getDefaultProjectId());
         displayProjectInfo(controller.getDefaultProjectId());
+    }
+
+    private int confirmNewSearch() {
+        return JOptionPane.showConfirmDialog(this, 
+              "If you do another search, you will close this current interactive session.\n"+
+              "Do you really want to do this?",
+              "Are you sure?",
+               JOptionPane.YES_NO_CANCEL_OPTION);
     }
 
     /**
