@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.43 2005/11/28 21:41:57 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.44 2005/12/14 20:23:20 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -919,7 +919,7 @@ public class ALMAArchive implements Archive {
         try {
             Cursor cursor = archOperationComp.queryDirty(query, schema);
             if(cursor == null) {
-                throw new SchedulingException ("SCHEDULING: Error querying archive for PPR");
+                throw new SchedulingException ("SCHEDULING: Error querying archive");
             }
             while(cursor.hasNext()){
                 QueryResult res = cursor.next();

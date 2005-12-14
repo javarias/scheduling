@@ -107,7 +107,7 @@ import alma.scheduling.AlmaScheduling.ALMAProjectManager;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.7 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.8 2005/12/14 20:23:20 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -221,7 +221,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		projectId = projId;//interactiveSB.getProject().getId();
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " started.";
-		operator.send(msg, config.getArrayName());
+		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
 
@@ -243,7 +243,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		projectId = null;
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " ended.";
-		operator.send(msg, config.getArrayName());
+		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 		config.normalEnd(clock.getDateTime());
 	}
@@ -354,11 +354,17 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (!sb.getStatus().isStarted()) {
 			config.decrementSbsNotStarted();
 		}
+        if(sb.getStatus().getStartTime() == null) {
+            sb.setStartTime(clock.getDateTime());
+        }
+        sb.setRunning();
+        logger.info("############### SB's status = "+sb.getStatus().toString());
+        logger.info("############### SB's starttime = "+sb.getStatus().getStartTime());
 		control.execSB(config.getArrayName(),best);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been started.";
-		operator.send(msg, config.getArrayName());
+		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
 
@@ -385,7 +391,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been stopped.";
-		operator.send(msg, config.getArrayName());
+		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
 

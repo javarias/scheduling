@@ -190,7 +190,8 @@ public class GUIController implements Runnable {
             SB selectedSB = config.getQueue().get(sb_id);
             //selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
             selectedSB.setStartTime(config.getClock().getDateTime());
-            config.getControl().execSB(config.getArrayName(), sb_id);
+            //config.getControl().execSB(config.getArrayName(), sb_id);
+            scheduler.execute(sb_id);
         } catch(SchedulingException e) {
             System.out.println("SCHEDULING: error in executing the sb.");
             e.printStackTrace();
@@ -244,8 +245,11 @@ public class GUIController implements Runnable {
       *
       */
     public void openArchiveQueryWindow() {
-        //need to get the archive or change ArchiveQueryWindow to not have a direct archive
-        //connection..
+        ArchiveQueryWindowController interactiveGUI =
+                new ArchiveQueryWindowController(config, containerServices);
+        Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
+        scheduler_thread.start();
+
     }
     
     ////////////////////////////////////////////////////

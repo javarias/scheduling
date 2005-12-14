@@ -89,7 +89,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.33 2005/12/12 21:36:11 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.34 2005/12/14 20:23:20 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -638,40 +638,77 @@ public class ProjectUtil {
 
 		}
 		
+        //////////////////////////////////////////////////////////
+        //
+        // Optical Camera Target stuff
+        // IMPORTANT NOTE: see important notes for ObsTarget stuff below
+        //
+        //////////////////////////////////////////////////////////
+        OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
+        if(opticalTargetList.length > 0) {
+            System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
+            SpectralSpecT setup = opticalTargetList[0].getTargetTChoice().getSpectralSpec();
+
+            ArrayList eqList = new ArrayList ();
+		    for (int i = 0; i < opticalTargetList.length; ++i) {
+	    		FieldSourceT fieldSource = opticalTargetList[i].getFieldSource();
+    			if (fieldSource == null)
+			    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
+		    				sb.getSchedBlockId());
+	    		SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
+    			if (coord == null)
+			    	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
+		    				sb.getSchedBlockId());
+	    		LongitudeT lng = coord.getLongitude(); 	// in degrees
+    			double ra = lng.getContent();
+			    LatitudeT lat = coord.getLatitude();	// in degrees
+		    	double dec = lat.getContent();
+	    		String coordType = coord.getSystem().toString(); // must be J2000
+    			if (!coordType.equals("J2000"))
+			    	throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+		    	Equatorial eq = new Equatorial((ra /24.0),dec);
+	    		eqList.add(eq);
+    		}
+		    Equatorial[] eqArray = new Equatorial [eqList.size()];
+	    	eqArray = (Equatorial[])eqList.toArray(eqArray);
+    		if (eqArray.length == 1) {
+		    	Target target = new Target (eqArray[0],3600.0,3600.0);
+	    		sb.setTarget(target);
+    		} else {
+		    	Target target = new Target (eqArray);
+	    		sb.setTarget(target);
+    		}
+
+        } else {
+            System.out.println("SCHEDULING: No optical camera targets");
+        }
+        
+        //////////////////////////////////////////////////////////
+        //
+        // ObsTarget stuff
+        //
+        //////////////////////////////////////////////////////////
+        
 		// Set the frequency and frequency band.
 		// IMPORTANT NOTE!
 		// We are using the rest frequency and receiver band from the first member of
 		// the frequency setup that is in the Obstarget list.  This probably isn't the
 		// right way to do it.
 		ObsTargetT[] targetList = sched.getObsTarget();
-		if (targetList == null || targetList.length == 0)
-			throw new SchedulingException("There is no ObsTargetT object in the scheduling block with id " + 
-					sb.getSchedBlockId());
-        
-        //Sohaila: modified coz of errors.
-        SpectralSpecT setup;
-		//if (targetList[0].getSpectralSpecCount() < 1){
-		//	throw new SchedulingException("There is no SpectralSpec object in the scheduling block with id " + 
-		//			sb.getSchedBlockId());
-            
-        //    SpectralSpecT[] setups = new SpectralSpecT[1];
-        //    setup = new SpectralSpecT();
-        //    setups[0] = setup;
-        //    targetList[0].setSpectralSpec(setups);
-        //} else {
-    		setup = targetList[0].getTargetTChoice().getSpectralSpec();
-        //}
-        //////
-		alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
-		if (freqSetup == null) {
-			sb.setCenterFrequency(0.0);
-			sb.setFrequencyBand(null);
-		} else {
-			sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
-			String band = freqSetup.getReceiverBand().toString();
-			FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
-			sb.setFrequencyBand(freq);
-		}
+		//if (targetList != null ){//
+        if(targetList.length > 0) {
+            SpectralSpecT setup = targetList[0].getTargetTChoice().getSpectralSpec();
+
+		    alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
+	    	if (freqSetup == null) {
+    			sb.setCenterFrequency(0.0);
+			    sb.setFrequencyBand(null);
+		    } else {
+	    		sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
+    			String band = freqSetup.getReceiverBand().toString();
+			    FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
+		    	sb.setFrequencyBand(freq);
+	    	}
 		
 		// Set the target
 		// IMPORTANT NOTE!
@@ -679,42 +716,38 @@ public class ProjectUtil {
 		// We are going to take the list of ObsTargets and construct an IRREGULAR shape,
 		// which is really a rectangular area that includes all targets.  If there is only
 		// one target, we will add a one-degree rectangle around it.
-		ArrayList eqList = new ArrayList ();
-		for (int i = 0; i < targetList.length; ++i) {
-            /*
-			FieldSpecT fieldSpec = targetList[i].getFieldSpec();
-			if (fieldSpec == null)
-				throw new SchedulingException("There is no FieldSpecT object in the scheduling block with id " + 
-						sb.getSchedBlockId());
-                        */
-//			FieldSourceT fieldSource = fieldSpec.getFieldSource();
-			FieldSourceT fieldSource = targetList[i].getFieldSource();
-			if (fieldSource == null)
-				throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
-						sb.getSchedBlockId());
-			SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
-			if (coord == null)
-				throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
-						sb.getSchedBlockId());
-			LongitudeT lng = coord.getLongitude(); 	// in degrees
-			double ra = lng.getContent();
-			LatitudeT lat = coord.getLatitude();	// in degrees
-			double dec = lat.getContent();
-			String coordType = coord.getSystem().toString(); // must be J2000
-			if (!coordType.equals("J2000"))
-				throw new SchedulingException(coordType + " is not supported.  Must be J2000");
-			Equatorial eq = new Equatorial((ra /24.0),dec);
-			eqList.add(eq);
-		}
-		Equatorial[] eqArray = new Equatorial [eqList.size()];
-		eqArray = (Equatorial[])eqList.toArray(eqArray);
-		if (eqArray.length == 1) {
-			Target target = new Target (eqArray[0],3600.0,3600.0);
-			sb.setTarget(target);
-		} else {
-			Target target = new Target (eqArray);
-			sb.setTarget(target);
-		}
+    		ArrayList eqList = new ArrayList ();
+		    for (int i = 0; i < targetList.length; ++i) {
+	    		FieldSourceT fieldSource = targetList[i].getFieldSource();
+    			if (fieldSource == null)
+			    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
+		    				sb.getSchedBlockId());
+	    		SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
+    			if (coord == null)
+			    	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
+		    				sb.getSchedBlockId());
+	    		LongitudeT lng = coord.getLongitude(); 	// in degrees
+    			double ra = lng.getContent();
+			    LatitudeT lat = coord.getLatitude();	// in degrees
+		    	double dec = lat.getContent();
+	    		String coordType = coord.getSystem().toString(); // must be J2000
+    			if (!coordType.equals("J2000"))
+			    	throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+		    	Equatorial eq = new Equatorial((ra /24.0),dec);
+	    		eqList.add(eq);
+    		}
+		    Equatorial[] eqArray = new Equatorial [eqList.size()];
+	    	eqArray = (Equatorial[])eqList.toArray(eqArray);
+    		if (eqArray.length == 1) {
+		    	Target target = new Target (eqArray[0],3600.0,3600.0);
+	    		sb.setTarget(target);
+    		} else {
+		    	Target target = new Target (eqArray);
+	    		sb.setTarget(target);
+    		}
+        } else {
+            System.out.println("SCHEDULING: No obs targets");
+        }
 				
 		// Return the newly create SB.
 		return sb;

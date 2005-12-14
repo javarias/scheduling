@@ -121,21 +121,13 @@ public class GUI extends JFrame {
                 }
         });
         fileMenu.add(howto);
-        JMenuItem quit = new JMenuItem("Exit", KeyEvent.VK_X);;
-        quit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                exit();
-            }
-        });
-        fileMenu.add(quit);
-        menuBar.add(fileMenu);
         JMenuItem searchagain = new JMenuItem("Search");
         searchagain.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     int res = confirmNewSearch();
                     if(res == JOptionPane.YES_OPTION){
                         //bring back archive query window.
-                        //controller. 
+                        controller.openArchiveQueryWindow();
                         //close this window
                         //can't close before bringing back other one.
                         exit();
@@ -149,6 +141,14 @@ public class GUI extends JFrame {
                 }
         });
         fileMenu.add(searchagain);
+        JMenuItem quit = new JMenuItem("Exit", KeyEvent.VK_X);;
+        quit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                exit();
+            }
+        });
+        fileMenu.add(quit);
+        menuBar.add(fileMenu);
         /*
         JMenu projectMenu = new JMenu("Projects");
         String[] ids = controller.getProjectIds();
@@ -327,18 +327,6 @@ public class GUI extends JFrame {
             //loggedIn = false;
             return;
         }
-      /*
-        try{
-            String login = JOptionPane.showInputDialog(this,"Please log in.");
-        } catch(SchedulingException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "", 
-                JOptionPane.WARNING_MESSAGE);
-            //loggedIn = false;
-            return;
-        }
-        */
-        //sessionStateButton.setText("Logout");
-        //loggedIn = true;
     }
 
     private void displayProjectInfo(String id){
@@ -466,16 +454,20 @@ public class GUI extends JFrame {
         SB sb = controller.getSB((String)sbRowInfo[row][3]);
         //String name, target, status, upri, spri, weather;
 
-        selectedSBView.setText("SB Name:                "+ sbRowInfo[row][0] +"\n"+
-                               "SB Target: \n"+
+        selectedSBView.setText("SB Name:                "+ sbRowInfo[row][0] +"\n");
+        try {
+            selectedSBView.append("SB Target: \n"+
                                "   RA  (deg):           "+sb.getTarget().getCenter().getRaInDegrees()+"\n"+
-                               "   Dec (deg):           "+sb.getTarget().getCenter().getDecInDegrees()+"\n\n"+
-                               "SB Frequency: \n"+
+                               "   Dec (deg):           "+sb.getTarget().getCenter().getDecInDegrees()+"\n\n");
+        } catch(NullPointerException ex) {}
+        try{
+            selectedSBView.append("SB Frequency: \n"+
                                "   Center Frequency:    "+sb.getCenterFrequency()+"\n"+
                                "   Frequency Band:      "+sb.getFrequencyBand().getName()+"\n"+       
                                "      Low:              "+sb.getFrequencyBand().getLowFrequency()+"\n"+
-                               "      High:             "+sb.getFrequencyBand().getHighFrequency()+"\n\n"+
-                               "SB Status:              "+sb.getStatus()+"\n"+
+                               "      High:             "+sb.getFrequencyBand().getHighFrequency()+"\n\n");
+        } catch(NullPointerException ex) {}
+        selectedSBView.append("SB Status:              "+sb.getStatus()+"\n"+
                                "SB User Priority:       "+sb.getUserPriority()+"\n"+
                                "SB Scientific Priority: "+sb.getScientificPriority()+"\n" +
                                " \n\n Eventually will have success, etc..");

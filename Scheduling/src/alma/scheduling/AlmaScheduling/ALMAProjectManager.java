@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.50 2005/12/13 14:26:13 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.51 2005/12/14 20:23:20 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -286,6 +286,8 @@ public class ALMAProjectManager extends ProjectManager {
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
         logger.info("##########################");
         logger.info("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
+        logger.info("sb's status in PM = "+completed.getStatus().getStatus());
+        logger.info("sb's starttime in PM = "+completed.getStatus().getStartTime());
         logger.info("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
         if(completed.getNumberExec() > completed.getMaximumNumberOfRepeats()  ){
@@ -822,7 +824,24 @@ public class ALMAProjectManager extends ProjectManager {
 
 
     public String[] archiveQuery(String query, String schema) throws SchedulingException  {
-        return archive.query(query, schema);
+        //only return the ones which the project manager knows.
+        String[] tmp = archive.query(query, schema);
+        logger.info("@@@@@@@@ Archive returned "+tmp.length);
+        Vector v_uids = new Vector();
+        for(int i=0;i< tmp.length; i++) {
+            logger.info(tmp[i]);
+            if(pQueue.isExists(tmp[i])){
+                v_uids.add(tmp[i]);
+            }
+        }
+        
+        logger.info("@@@@@@@@ in pQueue there are "+pQueue.size());
+        String[] p_uids = new String[v_uids.size()];
+        for(int i=0; i < v_uids.size(); i++){
+            p_uids[i] =(String) v_uids.elementAt(i);
+        }
+        logger.info("@@@@@@@@ p_uids size = "+p_uids.length);
+        return p_uids;
     }
     public Object archiveRetrieve(String uid) throws SchedulingException {
         return archive.retrieve(uid);
@@ -831,6 +850,12 @@ public class ALMAProjectManager extends ProjectManager {
         archive.releaseArchiveComponents();
     }
     public SB[] getSBsForProject(String projId) throws SchedulingException {
-        return archive.getSBsForProject(projId);
+        SB[] sbsFromArchive = archive.getSBsForProject(projId);
+        SB[] sbsFromPM = new SB[sbsFromArchive.length];
+        for(int i=0; i < sbsFromArchive.length; i++) {
+            sbsFromPM[i] = sbQueue.get(sbsFromArchive[i].getId());
+        }
+        return sbsFromPM;
+        //return archive.getSBsForProject(projId);
     }
 }

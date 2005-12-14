@@ -52,14 +52,7 @@ public class ArchiveQueryWindowController implements Runnable {
         String query = new String("/prj:ObsProject[prj:pI[\""+pi+
                 "\"] and prj:projectName [\""+name+"\"]]");
         try {
-            //project manager's func will be archiveQuery(query, schema);
-            //queryResults = archive.query(query, schema);
             queryResults = manager.archiveQuery(query, schema);
-            /*
-            System.out.println(results.length);
-            for(int i=0; i < results.length; i++){
-                System.out.println(results[i]);
-            }*/
         } catch(Exception e) {
             queryResults[0] = new String(e.toString());
         }
@@ -89,7 +82,6 @@ public class ArchiveQueryWindowController implements Runnable {
     public void loginToInteractiveProject(String projectId, String pi) {
         try {
             //need to get SBs from project to add to empty SBQueue
-            //SB[] sbs = archive.getSBsForProject(projectId);
             SB[] sbs = manager.getSBsForProject(projectId);
             for(int i=0; i < sbs.length; i++){
                 sbs[i].setType(SB.INTERACTIVE);
