@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.51 2005/12/14 20:23:20 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.52 2005/12/14 20:24:06 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -834,13 +834,10 @@ public class ALMAProjectManager extends ProjectManager {
                 v_uids.add(tmp[i]);
             }
         }
-        
-        logger.info("@@@@@@@@ in pQueue there are "+pQueue.size());
         String[] p_uids = new String[v_uids.size()];
         for(int i=0; i < v_uids.size(); i++){
             p_uids[i] =(String) v_uids.elementAt(i);
         }
-        logger.info("@@@@@@@@ p_uids size = "+p_uids.length);
         return p_uids;
     }
     public Object archiveRetrieve(String uid) throws SchedulingException {
