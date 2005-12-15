@@ -1,7 +1,4 @@
-1 - ----------T--:--:--.--- FINE: ready to talk with components!
-1 - ----------T--:--:--.--- INFO: component 'alma.acs.component.client.ComponentClient' requested AdvancedContainerServices
-1 - ----------T--:--:--.--- FINER: No CDB entry found for 'SCHEDULING_CHANNEL' channel
-1 - ----------T--:--:--.--- FINER: No CDB entry found for 'SCHEDULING_CHANNEL' channel
-1 - ----------T--:--:--.--- INFO: SCHED_TEST: received StartSessionEvent Event
-1 - ----------T--:--:--.--- INFO: SCHED_TEST: Received NothingCanBeScheduledEvent
-1 - ----------T--:--:--.--- INFO: SCHED_TEST: received EndSessionEvent Event
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] component 'alma.acs.component.client.ComponentClient' requested AdvancedContainerServices
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] SCHED_TEST: received StartSessionEvent Event
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] SCHED_TEST: received EndSessionEvent Event
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] SCHED_TEST: Received NothingCanBeScheduledEvent
