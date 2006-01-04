@@ -135,6 +135,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 		SB[] sbs = queue.getAll();
 		if (sbs == null) {
 			error("No SBs to execute");
+            logger.info("SCHEDULING: No sbs to execute");
             return true;
 		}
         String[] ids = queue.getAllIds();
@@ -176,11 +177,11 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
     public void run() {
         try {
-        while(true) {
-            if(execute()) {
-                break;
+            while(true) {
+                if(execute()) {
+                    break;
+                }
             }
-        }
         } catch(Exception e){
             e.printStackTrace();
         }
