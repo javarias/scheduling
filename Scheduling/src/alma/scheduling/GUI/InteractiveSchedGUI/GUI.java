@@ -304,8 +304,8 @@ public class GUI extends JFrame {
     private void updateSBView(){
         try {
             controller.getSBUpdates();
-            System.out.println("Updating project with id = "
-                     + controller.getDefaultProjectId());
+            //System.out.println("Updating project with id = "
+            //         + controller.getDefaultProjectId());
 
             displaySBInfo(controller.getDefaultProjectId());
 

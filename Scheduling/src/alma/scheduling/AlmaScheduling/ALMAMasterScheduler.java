@@ -72,7 +72,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.41 2005/12/12 14:29:24 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.42 2006/01/04 14:52:49 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -248,7 +248,7 @@ public class ALMAMasterScheduler extends MasterScheduler
      * Temporary method to populate a Policy
      * @return Policy
      */
-    private Policy createPolicy() {
+    public Policy createPolicy() {
         Policy policy = new Policy();
         policy.setId("Temp ID");
         policy.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
@@ -310,6 +310,30 @@ public class ALMAMasterScheduler extends MasterScheduler
         
         return policy;
     }
+
+    /**
+      * Creates a scheduler configuration
+      */
+    public SchedulerConfiguration createSchedulerConfiguration(boolean special, 
+                                                               Object sbs,
+                                                               boolean dynamic,
+                                                               boolean synchronous,
+                                                               int sleepTime,
+                                                               String arrayName,
+                                                               Policy policy) {
+        if(special){
+            return new SchedulerConfiguration(
+                    Thread.currentThread(), dynamic, manager.getSpecialSBs(),
+                    arrayName, clock, control, operator, telescope, 
+                    manager, policy, logger);
+        } else {
+     
+            return new SchedulerConfiguration(
+                    Thread.currentThread(), dynamic, synchronous, (SBQueue)sbs, 
+                    ((SBQueue)sbs).size(), sleepTime, arrayName, clock, control,
+                    operator, telescope, manager, policy, logger);
+        }
+    }
     
     /**
      * Starts scheduling using a specific list of scheduling block Ids.
@@ -339,15 +363,16 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             String arrayname = createArray(antennas, ArrayModeEnum.QUEUED);
             //then create a config 
-            SchedulerConfiguration config = new SchedulerConfiguration(
-                    Thread.currentThread(), true, true, sbs, sbs.size(), 5, 
-                    arrayname, clock, control, operator, telescope, manager, s_policy, 
-                    logger);
-                    
+            SchedulerConfiguration config = 
+                createSchedulerConfiguration(
+                        false, sbs, true, true, 5, arrayname, s_policy);
+                
             //a scheduler and go from there!
-            DynamicScheduler scheduler = new DynamicScheduler(config);
+            //DynamicScheduler scheduler = new DynamicScheduler(config);
+            QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
             scheduler_thread.start();
+            /*
             while(!stopCommand) {
                 try {
                     scheduler_thread.join();
@@ -359,7 +384,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                         manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
                     }
                 }
-            }
+            }*/
             if(!config.isOperational()) {
                 logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
             }
@@ -430,10 +455,14 @@ public class ALMAMasterScheduler extends MasterScheduler
             // regular sb scheduling
             String arrayname = createArray(regularSbAntennas, ArrayModeEnum.DYNAMIC);
         
-            SchedulerConfiguration config = new SchedulerConfiguration(
-                Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
-                arrayname, clock, control, operator, telescope, manager, s_policy, 
-                logger);
+            SchedulerConfiguration config = 
+                createSchedulerConfiguration (
+                        false, sbQueue, true, true, 5, arrayname, s_policy);
+
+               // new SchedulerConfiguration(
+               // Thread.currentThread(), true, true, sbQueue, sbQueue.size(), 5, 
+               // arrayname, clock, control, operator, telescope, manager, s_policy, 
+               // logger);
             DynamicScheduler scheduler = new DynamicScheduler(config);
             Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
             schedulerThread.start();
@@ -465,10 +494,15 @@ public class ALMAMasterScheduler extends MasterScheduler
             String specialSBarrayname = createArray(specialSbAntennas, ArrayModeEnum.DYNAMIC);
             //
             Policy specialPolicy = createPolicy();
-            SchedulerConfiguration specialConfig = new SchedulerConfiguration(
-                    Thread.currentThread(), true, manager.getSpecialSBs(),
-                    specialSBarrayname, clock, control, operator, telescope, 
-                    manager, specialPolicy, logger);
+            SchedulerConfiguration specialConfig = 
+                createSchedulerConfiguration( 
+                        true, manager.getSpecialSBs(), true, true, 
+                            0, specialSBarrayname, specialPolicy);
+                
+                //new SchedulerConfiguration(
+                  //  Thread.currentThread(), true, manager.getSpecialSBs(),
+                    //specialSBarrayname, clock, control, operator, telescope, 
+                    //manager, specialPolicy, logger);
             SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
             Thread specialSchedulerThread = 
                 containerServices.getThreadFactory().newThread(specialScheduler);
@@ -498,16 +532,22 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             String arrayname = createArray(antennas, ArrayModeEnum.INTERACTIVE);
         
-            SchedulerConfiguration config = new SchedulerConfiguration(
-                Thread.currentThread(), false, true, new SBQueue(), 0, 0, 
-                arrayname, clock, control, operator, telescope, manager, s_policy, 
-                logger);
+            SchedulerConfiguration config = 
+                createSchedulerConfiguration(
+                        false, new SBQueue(), false, true, 0, arrayname, s_policy);
+
+               // new SchedulerConfiguration(
+               // Thread.currentThread(), false, true, new SBQueue(), 0, 0, 
+               // arrayname, clock, control, operator, telescope, manager, s_policy, 
+               // logger);
             logger.info("SCHEDULING: Array name == "+arrayname);
 
             //GUIController interactiveGUI = new GUIController(config, containerServices);
             //Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
+            InteractiveScheduler scheduler = new InteractiveScheduler(config);
             ArchiveQueryWindowController interactiveGUI = 
-                new ArchiveQueryWindowController(config, containerServices);
+                new ArchiveQueryWindowController(scheduler, containerServices);
+                //new ArchiveQueryWindowController(config, containerServices);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
             scheduler_thread.start();
         } catch (Exception e) {

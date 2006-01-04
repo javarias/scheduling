@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.6 2005/09/19 17:10:52 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.7 2006/01/04 14:52:49 sslucero Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -19,7 +19,7 @@
 
 DEBUG = on
 #COMPONENT_HELPERS=on
-USER_JFLAGS= -deprecation
+USER_JFLAGS= -deprecation #-Xlint
 
 #
 # Jarfiles and their directories

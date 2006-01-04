@@ -7,6 +7,7 @@ import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.AlmaScheduling.ALMAArchive;
+import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.AlmaScheduling.ALMAOperator;
@@ -19,6 +20,7 @@ public class ArchiveQueryWindowController implements Runnable {
     private ArchiveQueryWindow gui;
     private String[] queryResults;
     private ContainerServices containerServices;
+    private InteractiveScheduler scheduler;
     private SchedulerConfiguration config;
     private GUIController loggedInController;
 
@@ -31,10 +33,13 @@ public class ArchiveQueryWindowController implements Runnable {
         this.manager = m;
     }
 
-    public ArchiveQueryWindowController(SchedulerConfiguration c, 
+    //public ArchiveQueryWindowController(SchedulerConfiguration c, 
+    public ArchiveQueryWindowController(InteractiveScheduler s,
                                         ContainerServices cs){
-        this.config = c;
-        this.manager = c.getProjectManager();
+        //this.config = c;
+        this.scheduler = s;
+        this.config = scheduler.getConfiguration();
+        this.manager = config.getProjectManager();
         this.containerServices = cs;
     }
 
@@ -88,7 +93,7 @@ public class ArchiveQueryWindowController implements Runnable {
             }
             config.getQueue().add(sbs);
 
-            loggedInController = new GUIController(config, containerServices);
+            loggedInController = new GUIController(scheduler, containerServices);
             Thread t = containerServices.getThreadFactory().newThread(loggedInController);
             t.start();
             loggedInController.setLogin(pi);
@@ -98,7 +103,7 @@ public class ArchiveQueryWindowController implements Runnable {
     }
 
     public static void main(String[] args){
-        try {
+       /* try {
             alma.acs.component.client.ComponentClient c = 
                 new alma.acs.component.client.ComponentClient(null, System.getProperty("ACS.manager"), "test");
             alma.scheduling.AlmaScheduling.ALMAProjectManager m = 
@@ -115,6 +120,7 @@ public class ArchiveQueryWindowController implements Runnable {
             ctrl.run();
             
         } catch(Exception e){}
+        */
 
     }
 }

@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.52 2005/12/14 20:24:06 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.53 2006/01/04 14:52:49 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -846,13 +846,16 @@ public class ALMAProjectManager extends ProjectManager {
     public void archiveReleaseComponents() throws SchedulingException  {
         archive.releaseArchiveComponents();
     }
+
     public SB[] getSBsForProject(String projId) throws SchedulingException {
         SB[] sbsFromArchive = archive.getSBsForProject(projId);
+        if(sbsFromArchive == null || sbsFromArchive.length == 0) {
+            throw new SchedulingException("No SBs in this project");
+        }
         SB[] sbsFromPM = new SB[sbsFromArchive.length];
         for(int i=0; i < sbsFromArchive.length; i++) {
             sbsFromPM[i] = sbQueue.get(sbsFromArchive[i].getId());
         }
         return sbsFromPM;
-        //return archive.getSBsForProject(projId);
     }
 }

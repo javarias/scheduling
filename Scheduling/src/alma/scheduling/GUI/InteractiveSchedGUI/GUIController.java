@@ -51,18 +51,16 @@ public class GUIController implements Runnable {
     private InteractiveScheduler scheduler;
     private ContainerServices containerServices;
 
-    public GUIController(SchedulerConfiguration s, ContainerServices cs) {
-        this.config = s;
+    //public GUIController(SchedulerConfiguration s, ContainerServices cs) {
+    public GUIController(InteractiveScheduler s, ContainerServices cs) {
+        this.scheduler = s;
+        this.config = scheduler.getConfiguration();
         this.containerServices = cs;
+        //this.scheduler = new InteractiveScheduler(config);
         try {
-            this.scheduler = new InteractiveScheduler(config);
-            try {
-                String[] tmp = getProjectIds();
-                defaultProjectId = tmp[0];
-            } catch(Exception e) {
-            }
-        } catch(SchedulingException e) {
-           // throw new SchedulingException("Problem starting interactive scheduling", e);
+            String[] tmp = getProjectIds();
+            defaultProjectId = tmp[0];
+        } catch(Exception e) {
         }
     }
 
@@ -246,7 +244,7 @@ public class GUIController implements Runnable {
       */
     public void openArchiveQueryWindow() {
         ArchiveQueryWindowController interactiveGUI =
-                new ArchiveQueryWindowController(config, containerServices);
+                new ArchiveQueryWindowController(scheduler, containerServices);
         Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
         scheduler_thread.start();
 

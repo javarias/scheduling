@@ -108,7 +108,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.8 2005/09/20 20:07:13 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.9 2006/01/04 14:52:49 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -236,10 +236,19 @@ public class SchedulerConfiguration extends TaskControl {
 	 * Create a Scheduler Configuration object for the regular SBs.
 	 */
 	public SchedulerConfiguration(Thread masterScheduler,
-			boolean dynamic, boolean synchronous, SBQueue queue, int bestNumber,
-            int sleepTime, String name, Clock clock, Control control,
-			Operator operator, Telescope telescope, 
-			ProjectManager projectManager, Policy policy, Logger log) {
+		                          boolean dynamic, 
+                                  boolean synchronous, 
+                                  SBQueue queue, 
+                                  int bestNumber,
+                                  int sleepTime, 
+                                  String name, 
+                                  Clock clock, 
+                                  Control control,
+                                  Operator operator, 
+                                  Telescope telescope, 
+                                  ProjectManager projectManager,
+                                  Policy policy, 
+                                  Logger log) {
            
 
 		super(masterScheduler);
@@ -275,10 +284,17 @@ public class SchedulerConfiguration extends TaskControl {
     /**
       * Creates a Scheduler Configuration object for SpecialSBs.
       */
-    public SchedulerConfiguration(Thread masterScheduler, boolean dynamic, 
-            Vector sbs, String name, Clock clock, Control control, Operator operator,
-            Telescope telescope, ProjectManager projectManager,
-            Policy policy, Logger log) {
+    public SchedulerConfiguration(Thread masterScheduler,
+                                  boolean dynamic, 
+                                  Vector sbs, 
+                                  String name, 
+                                  Clock clock, 
+                                  Control control, 
+                                  Operator operator,
+                                  Telescope telescope, 
+                                  ProjectManager projectManager,
+                                  Policy policy, 
+                                  Logger log) {
 
         super (masterScheduler);
         this.dynamic = dynamic;
