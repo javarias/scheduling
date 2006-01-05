@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.53 2006/01/04 14:52:49 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.54 2006/01/05 15:10:32 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -139,7 +139,7 @@ public class ALMAProjectManager extends ProjectManager {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        System.out.println("# of special sbs = "+specialSBs.size());
+        logger.info("# of special sbs = "+specialSBs.size());
     }
 
     public Vector getSpecialSBs() {
@@ -291,18 +291,18 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
         if(completed.getNumberExec() > completed.getMaximumNumberOfRepeats()  ){
-            System.out.println("###########set to complete####");
-            System.out.println("Setting end time for "+eb.getId());
-            System.out.println(" # exec = "+completed.getNumberExec());
-            System.out.println(" # repeats = "+completed.getMaximumNumberOfRepeats());
-            System.out.println("#################################");
+            logger.info("###########set to complete####");
+            logger.info("Setting end time for "+eb.getId());
+            logger.info(" # exec = "+completed.getNumberExec());
+            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.info("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         } else { //set it to ready
-            System.out.println("##########set to ready###########");
-            System.out.println("Setting end time for "+eb.getId());
-            System.out.println(" # exec = "+completed.getNumberExec());
-            System.out.println(" # repeats = "+completed.getMaximumNumberOfRepeats());
-            System.out.println("#################################");
+            logger.info("##########set to ready###########");
+            logger.info("Setting end time for "+eb.getId());
+            logger.info(" # exec = "+completed.getNumberExec());
+            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.info("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
@@ -427,7 +427,7 @@ public class ALMAProjectManager extends ProjectManager {
     public void createObservedSession(ExecBlock eb) {
 
         String sbid = eb.getParent().getId();
-        System.out.println("EB's parent id = "+sbid);
+        logger.info("EB's parent id = "+sbid);
         Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
         //session.setSessionId(ProjectUtil.genPartId());
@@ -782,9 +782,9 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public SB[] getNewSBs(Project p1, Project p2) {
         SB[] sb1 = p1.getAllSBs();
-        System.out.println("new proj has "+sb1.length+" sbs");
+        logger.info("new proj has "+sb1.length+" sbs");
         SB[] sb2 = p2.getAllSBs();
-        System.out.println("old proj has "+sb2.length+" sbs");
+        logger.info("old proj has "+sb2.length+" sbs");
         if(sb1.length <= sb2.length) {
             logger.info("SCHEDULING: There are no new sbs! The new project has size "+
                     + sb1.length +" and the old project has size "+ sb2.length);
@@ -797,28 +797,28 @@ public class ALMAProjectManager extends ProjectManager {
         for(int i=0; i < sb1.length; i++){ //Call this 'i' loop
             for(int j=0; j < sb2.length; j++){ //Call this 'j' loop
                 if(sb1[i].getId().equals(sb2[j].getId())){ 
-                    System.out.println("sb is there. not adding");
+                    logger.info("sb is there. not adding");
                     isThere = true;
                 }
                 if(isThere){
-                    System.out.println("break out of j loop only (hopefully)");
+                    logger.info("break out of j loop only (hopefully)");
                     isThere = false;
                     break; //out of 'j' loop
                 } else {
-                    System.out.println("sb is not there. adding");
+                    logger.info("sb is not there. adding");
                     //add to newSBs
-                    System.out.println("new sbs's id == "+sb1[i].getId());
+                    logger.info("new sbs's id == "+sb1[i].getId());
                     newSBs[x] = sb1[i];
-                    System.out.println("new sbs's id == "+newSBs[x].getId());
+                    logger.info("new sbs's id == "+newSBs[x].getId());
                     x++;
                     
                 }
             }
-            System.out.println(" in getNewSBs i = "+i);
+            logger.info(" in getNewSBs i = "+i);
         }
         
-        System.out.println("SCHEDULING: difference between p1 & p2 = "+size);
-        System.out.println("SCHEDULING: size of newSBs = "+x);
+        logger.info("SCHEDULING: difference between p1 & p2 = "+size);
+        logger.info("SCHEDULING: size of newSBs = "+x);
         return newSBs;
     }
 
