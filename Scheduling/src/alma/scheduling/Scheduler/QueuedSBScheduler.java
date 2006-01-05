@@ -40,7 +40,7 @@ import alma.scheduling.Define.Project;
 
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.AlmaScheduling.ALMAProjectManager;
-
+import alma.scheduling.NothingCanBeScheduledEnum;
 /**
  */
 public class QueuedSBScheduler extends Scheduler implements Runnable {
@@ -60,6 +60,8 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	
 	// The interactive queue.
 	private SBQueue queue;
+
+    private int tmpCount=1;
 	
 	/**
 	 * Create an scheduler.
@@ -132,17 +134,33 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
             return false;
         }
-		SB[] sbs = queue.getAll();
-		if (sbs == null) {
-			error("No SBs to execute");
+        logger.info("SCHEDULING: Queued scheduler execute # "+tmpCount);
+        tmpCount++;
+		SB[] sbs = queue.getReady();
+        logger.info("%%%%%%%%%%%%%%%%%%%");
+        logger.info("length of ready sbs = "+sbs.length);
+        logger.info("%%%%%%%%%%%%%%%%%%%");
+		if (sbs == null || sbs.length == 0) {
+			//error("No SBs to execute");
             logger.info("SCHEDULING: No sbs to execute");
             return true;
 		}
-        String[] ids = queue.getAllIds();
+        String[] ids = queue.getAllReadyIds();
+		if (ids == null) {
+			//error("No ready SBs to execute");
+            logger.info("SCHEDULING: No sbs ready to execute");
+            return true;
+		}
         String[] scores = new String[ids.length];
         double[] d = new double[ids.length];
 		BestSB best = new BestSB (ids, scores, d, d, d, clock.getDateTime());
         SB sb = queue.get(best.getSelection());
+        //TODO need to check that if there are more than one sbs in queue then selection 
+        //     count needs to be increased.
+        if(sb.getStatus().getStatus().equals("complete")){
+            logger.info("SCHEDULING: SB "+sb.getId()+" is completed.");
+            return true;
+        }
 		config.startExecSB(sb.getId());
 		if (!sb.getStatus().isStarted()) {
 			config.decrementSbsNotStarted();
@@ -150,7 +168,13 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         if(sb.getStatus().getStartTime() == null) {
             sb.setStartTime(clock.getDateTime());
         }
-        sb.setRunning();
+        try {
+            sb.setRunning();
+        } catch(Exception e) {
+            logger.info("SCHEDULING: Cannot set sb to running state.");
+            logger.info(e.toString());
+            return true;
+        }
 		control.execSB(config.getArrayName(),best);
         return false;
 	}
@@ -182,6 +206,8 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
                     break;
                 }
             }
+            ((ALMAProjectManager)config.getProjectManager())
+                .publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
         } catch(Exception e){
             e.printStackTrace();
         }

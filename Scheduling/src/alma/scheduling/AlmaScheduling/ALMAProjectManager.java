@@ -58,7 +58,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.54 2006/01/05 15:10:32 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.55 2006/01/05 20:47:55 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -290,7 +290,7 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("sb's starttime in PM = "+completed.getStatus().getStartTime());
         logger.info("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
-        if(completed.getNumberExec() > completed.getMaximumNumberOfRepeats()  ){
+        if( (completed.getNumberExec() +1) > completed.getMaximumNumberOfRepeats()  ){
             logger.info("###########set to complete####");
             logger.info("Setting end time for "+eb.getId());
             logger.info(" # exec = "+completed.getNumberExec());

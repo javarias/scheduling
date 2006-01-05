@@ -72,7 +72,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.43 2006/01/04 17:14:21 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.44 2006/01/05 20:47:55 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -372,19 +372,18 @@ public class ALMAMasterScheduler extends MasterScheduler
             QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
             scheduler_thread.start();
-            /*
-            while(!stopCommand) {
+            while(true) {
                 try {
                     scheduler_thread.join();
                     break;
                 } catch(InterruptedException e) {
-                    if(config.isNothingToSchedule()){
-                        config.respondStop();
+//                    if(config.isNothingToSchedule()){
+                        //config.respondStop();
                         logger.info("SCHEDULING: interrupted sched thread in MS");
                         manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
-                    }
+  //                  }
                 }
-            }*/
+            }
             if(!config.isOperational()) {
                 logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
             }
