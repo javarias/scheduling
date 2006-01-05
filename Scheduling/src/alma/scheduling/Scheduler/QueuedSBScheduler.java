@@ -154,7 +154,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         String[] scores = new String[ids.length];
         double[] d = new double[ids.length];
 		BestSB best = new BestSB (ids, scores, d, d, d, clock.getDateTime());
-        SB sb = queue.get(best.getSelection());
+        SB sb = sbs[best.getSelection()];
         //TODO need to check that if there are more than one sbs in queue then selection 
         //     count needs to be increased.
         if(sb.getStatus().getStatus().equals("complete")){
