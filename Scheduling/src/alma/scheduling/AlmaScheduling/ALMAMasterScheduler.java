@@ -72,7 +72,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.44 2006/01/05 20:47:55 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.45 2006/01/13 16:14:05 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -344,6 +344,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     	throws InvalidOperationEx {
 
         try {    
+            manager.checkForProjectUpdates();
             //create a queue of sbs with these ids, 
             SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
             if(sbs == null || sbs.size() ==0){
@@ -510,6 +511,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public void startInteractiveScheduling() throws InvalidOperationEx {
         try {
+            manager.checkForProjectUpdates();
             Policy s_policy = createPolicy();
 
             String[] antennas = null; 
