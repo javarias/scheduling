@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.44 2005/12/14 20:23:20 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.45 2006/01/18 14:28:50 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -397,6 +397,47 @@ public class ALMAArchive implements Archive {
             throw new SchedulingException (e);
         }
         return sb;
+    }
+
+    /**
+      *
+      */
+    public SBLite[] getSBLites() {
+        SBLite[] sbliteArray=null;
+        SBLite sblite;
+        Vector<SBLite> sbliteVector = new Vector<SBLite>();
+        try {
+            Project[] projects = getAllProject();
+            for(int i=0; i < projects.length; i++){
+                //get all the sbs of this project
+                SB[] sbs = projects[i].getAllSBs ();
+                for(int j=0; j < sbs.length; j++) {
+                    sblite = new SBLite();
+                    sblite.schedBlockRef = sbs[j].getId();
+                    sblite.projectRef = sbs[j].getProject().getId();
+                    sblite.obsUnitsetRef = "";
+                    sblite.sbName = sbs[j].getSBName();
+                    sblite.projectName = sbs[j].getProject().getProjectName();
+                    sblite.PI = sbs[j].getProject().getPI();
+                    sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
+                    sblite.ra = sbs[j].getTarget().getCenter().getRa();
+                    sblite.dec = sbs[j].getTarget().getCenter().getDec();
+                    sblite.freq = 0;//sbs[j].getFrequencyBand().getHighFrequency();
+                    sblite.maxTime = 0;
+                    sblite.score = 0;
+                    sblite.success = 0; 
+                    sblite.rank = 0 ;
+
+                    sbliteVector.add(sblite);
+                }
+            }
+            sbliteArray = new SBLite[sbliteVector.size()];
+            sbliteArray = sbliteVector.toArray(sbliteArray);
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return sbliteArray;
     }
 
 

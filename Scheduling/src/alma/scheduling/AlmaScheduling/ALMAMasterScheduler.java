@@ -72,7 +72,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.45 2006/01/13 16:14:05 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.46 2006/01/18 14:28:50 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -576,6 +576,13 @@ public class ALMAMasterScheduler extends MasterScheduler
         SchedulingInfo schedInfo =
             new SchedulingInfo(comment, currentTime, timeZone, arrayInfo);
         return schedInfo;
+    }
+
+    /**
+      *
+      */
+    public SBLite[] getSBLites() {
+        return archive.getSBLites();
     }
 
     /**
