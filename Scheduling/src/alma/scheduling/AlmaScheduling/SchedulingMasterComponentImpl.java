@@ -44,7 +44,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.16 2005/06/20 20:58:09 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.17 2006/01/27 17:24:18 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -77,7 +77,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: initSubsysPass1() method called");
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                m_containerServices.getComponent("SCHEDULING_MASTERSCHEDULER"));
+                m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
         } catch (ContainerException e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass1.");
             //set the ms to null just to be safe..
@@ -102,7 +102,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    m_containerServices.getComponent("SCHEDULING_MASTERSCHEDULER"));
+                    m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
         } catch (ContainerException e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass2.");
@@ -124,6 +124,29 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       */
     public void reinitSubsystem() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: reinitSubsystem() method called.");
+        try {
+            if(masterScheduler == null) {
+                masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+                    m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+            } else {
+                m_containerServices.releaseComponent(masterScheduler.name());
+                masterScheduler = null;
+                masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+                    m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+            }
+        } catch (ContainerException e) {
+            m_logger.severe("SCHEDULING MC: error reinitializing Scheduling Subsystem...");
+            //set the ms to null just to be safe..
+            masterScheduler = null;
+            e.printStackTrace();
+            try {
+                doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
+            } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
+                ex.printStackTrace();
+                throw new AcsStateActionException(ex);
+            }
+            throw new AcsStateActionException(e);
+        }
     }
 
     /**
@@ -133,7 +156,8 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: shutDownSubsysPass1() method called");
         try {
             if(masterScheduler != null) {
-                m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
+                //m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
+                m_containerServices.releaseComponent(masterScheduler.name());
                 masterScheduler = null;
             }
         } catch(Exception e) {
@@ -157,7 +181,8 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: shutDownSubsysPass2() method called");
         try {
             if(masterScheduler != null) {
-                m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
+                //m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
+                m_containerServices.releaseComponent(masterScheduler.name());
                 masterScheduler = null;
             }
         } catch(Exception e) {
