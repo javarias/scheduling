@@ -37,7 +37,7 @@ s/Cancelling: [0-9]*/Cancelling: xxxxxx/g
 s/Heartbeat check requested for: [0-9]*/Heartbeat check requested for: xxxxx/g
 s/Client with handle [0-9]* not respoding/Client with handle xxxxx not respoding/g
 s/Registering client with handle: [0-9]*/Registering client with handle: xxxxx/g
-s/CDB\: '[a-z,A-z,0-9]*'/CDB\: 'WS'/g
+s/CDB\: '[a-z,A-Z,0-9]*'/CDB\: 'WS'/g
 s/spawn rlogin [a-z,A-Z,0-9]*/rlogin LCU/g
 s/l[a-z,A-Z,0-9]*->/LCU->/g
 s/task spawned: id = 0x[0-9,a-f]*, name = t[0-9]*/task spawned/g
