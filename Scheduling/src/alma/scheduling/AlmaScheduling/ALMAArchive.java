@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.45 2006/01/18 14:28:50 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.46 2006/02/16 16:18:40 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -726,7 +726,7 @@ public class ALMAArchive implements Archive {
      */
     private void getArchiveComponents() {
         try {
-            org.omg.CORBA.Object obj = containerServices.getComponent("ARCHIVE_CONNECTION");
+            org.omg.CORBA.Object obj = containerServices.getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
             logger.info("got ARCHIVE CONNECTION stub of type " + obj.getClass().getName());
             this.archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(obj);
                 //containerServices.getComponent("ARCHIVE_CONNECTION"));
