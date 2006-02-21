@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.37 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.38 2006/02/21 14:55:17 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -129,7 +129,7 @@ public class ALMAControl implements Control {
         
         AutomaticArrayCommand ctrl = getAutomaticArray(arrayName);
         try{
-            ctrl.observeNow(sbId, sessionId); 
+            ctrl.observe(sbId, sessionId, 0L); 
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
@@ -216,6 +216,13 @@ public class ALMAControl implements Control {
      */
     public void destroyArray(String name) throws SchedulingException {
         try {
+	    logger.info("SCHEDULING about to destroy array "+name);
+            for(int i=0; i < controllers.size(); i++){
+	        if( ((AutomaticArrayCommand)controllers.elementAt(i)).getName().equals(name)) {
+	      	    controllers.removeElementAt(i);
+		}
+	    }
+	    containerServices.releaseComponent(name);
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
             throw new SchedulingException(e1); 

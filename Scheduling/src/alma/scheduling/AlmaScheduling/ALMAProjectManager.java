@@ -27,6 +27,7 @@ package alma.scheduling.AlmaScheduling;
 
 
 import java.util.Vector;
+import java.util.ArrayList;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
@@ -58,7 +59,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.55 2006/01/05 20:47:55 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.56 2006/02/21 14:58:39 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -91,9 +92,15 @@ public class ALMAProjectManager extends ProjectManager {
         this.pQueue = new ProjectQueue();
         this.pipeline = new ALMAPipeline(cs);
         this.clock = c;
-        pQueue.add(pollArchive());
+        pQueue = new ProjectQueue();
+        psQueue = new ProjectStatusQueue();
+        sbQueue = new SBQueue();
         specialSBs = new Vector();
-        querySpecialSBs();
+        try  {
+            pollArchive();
+            querySpecialSBs();
+        } catch(Exception e) {
+        }
     }
 
     /**
@@ -109,8 +116,10 @@ public class ALMAProjectManager extends ProjectManager {
                 logger.info("SCHEDULING: ProjectManager Interrupted!");
             }
             if(!stopCommand){
-                pQueue.add(pollArchive());
-                querySpecialSBs();
+                try {
+                    pollArchive();
+                    querySpecialSBs();
+                } catch(Exception e) {}
             }
         }
     }
@@ -147,7 +156,10 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     public void checkForProjectUpdates() {
-        pQueue.add(pollArchive());
+        try {
+            pollArchive();
+        } catch(Exception e) {
+        }
     }
 
     /** 
@@ -155,7 +167,6 @@ public class ALMAProjectManager extends ProjectManager {
      * scheduling blocks added. This function will eventually poll for new 
      * projects.
      *
-     */
     private Project[] pollArchive() {
         logger.info("SCHEDULING: Polling ARCHIVE");
         boolean sb_present = false;
@@ -167,14 +178,32 @@ public class ALMAProjectManager extends ProjectManager {
             logger.info("SCHEDULING: getting projectstatus'");
             for(int i=0; i < projs.length;i++){
                 if(pQueue.isExists(projs[i].getId())){
-                    //don't do anything coz the project already exists in the queue! 
-                    logger.info("SCHEDULING: Project already in queue");
+                    //actually check if the timestamps are the same, if they're different
+                    //and the new project's time is greater than the one in the queue
+                    //replace the one in the queue.. NOTE: will also have to tell the sbQueue
+                    //to update somehow..
+                    
+                    logger.info("SCHEDULING: Project already in queue, checking if its been updated");
+                    DateTime old_proj_time = pQueue.get(projs[i].getId()).getTimeOfUpdate();
+                    DateTime new_proj_time = projs[i].getTimeOfUpdate();
+                    if(old_proj_time.compareTo(new_proj_time) == 0) {
+                        logger.info("times are equal!");
+
+                    } else if(old_proj_time.compareTo(new_proj_time) == 1) {
+                        logger.info("this project has been updated!");
+                        //pQueue.replace(ProjectUtil.
+                    } else { // the update time is less than the orig. == problem..
+                        logger.severe("this should not have happened...");
+
+                    }
+                    //TODO: update project status too
                 } else {
 
                     //get the projectStatus of each project. if its in the queue don't map!
                     String psId = projs[i].getProjectStatusId();
                     if(psQueue.isExists(psId)) {
                         logger.info("SCHEDULING: PS already exists in queue. Not Mapping");
+                        
                     } else {
                         ProjectStatus ps;
                         try {
@@ -223,6 +252,7 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return projs;
     }
+     */
     
     /**
       * For Scheduling an ordered list of sbs we still need to map the to their projects
@@ -430,7 +460,6 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("EB's parent id = "+sbid);
         Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
-        //session.setSessionId(ProjectUtil.genPartId());
         session.setSessionId(eb.getSessionId());
         session.setProgram(p);
         session.setStartTime(new DateTime(System.currentTimeMillis()));
@@ -447,7 +476,6 @@ public class ALMAProjectManager extends ProjectManager {
         }
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
-            //ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
             ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
@@ -710,7 +738,6 @@ public class ALMAProjectManager extends ProjectManager {
         //proj.setProgram(prog2);
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
-            //ps = ProjectUtil.map(proj, new DateTime(System.currentTimeMillis()));
             ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
@@ -822,7 +849,31 @@ public class ALMAProjectManager extends ProjectManager {
         return newSBs;
     }
 
+    public void updateSBQueue(Project p) {
+        // get SBs from the project
+        SB[] sbs = p.getAllSBs();
+        // replace existing ones & add new ones
+    }
 
+    public void getUpdates() {
+        try {
+            pollArchive();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    ///////////////////////////////////////////////////////////////
+    // Archive stuff
+    ///////////////////////////////////////////////////////////////
+
+
+    /**
+      * Queries the archive on the given query and schema. Assumes you're looking for
+      * projects. Should change this eventually...
+      * Then it checks that the project exists in the queue and then returns all the 
+      * project ids.
+      *
+      */
     public String[] archiveQuery(String query, String schema) throws SchedulingException  {
         //only return the ones which the project manager knows.
         String[] tmp = archive.query(query, schema);
@@ -857,5 +908,213 @@ public class ALMAProjectManager extends ProjectManager {
             sbsFromPM[i] = sbQueue.get(sbsFromArchive[i].getId());
         }
         return sbsFromPM;
+    }
+    
+    ///////////////////////////////////////////////////////////////
+        // PollArchiveStuff
+    ///////////////////////////////////////////////////////////////
+    /**
+      * 
+      */
+    private void pollArchive() throws SchedulingException {
+        Project[] projectList = new Project[0];
+        Vector<ProjectStatus> tmpPS = new Vector<ProjectStatus>();
+        ProjectStatus ps;
+        Vector<SB> tmpSBs = new Vector<SB>();
+    
+        try {
+            // Get all Projects, SBs and PS's from the archive
+            projectList = archive.getAllProject();
+            logger.info("ProjectList size =  "+projectList.length);
+            ArrayList<Project> projects = new ArrayList<Project>(projectList.length);
+            for(int i=0; i < projectList.length; i++) {
+                projects.add(projectList[i]);
+            }
+            logger.info("Projects size =  "+projects.size());
+            for(int i=0; i < projects.size(); i++) {
+                //if project status is complete don't add
+                ps = archive.getProjectStatus( projects.get(i) );
+                //check if project status is complete
+                logger.info("PS status = "+ps.getStatus().getState().toString());
+                if(!ps.getStatus().getState().toString().equals("complete")){
+                    tmpPS.add(ps);
+                    SB[] sbs = archive.getSBsForProject( projects.get(i).getId() );
+                    for(int j=0; j< sbs.length; j++){
+                        tmpSBs.add( sbs[j] );
+                    }
+                } else {
+                    logger.info("PS status = "+ps.getStatus().getState().toString());
+                    //project status says project is complete.
+                    //take PS out of tmpPS
+                    tmpPS = removePSElement(tmpPS, projects.get(i).getProjectStatusId());
+                    //take project's sbs out of tmpSBs
+                    tmpSBs = removeSBElements(tmpSBs, projects.get(i).getId());
+                    //take project out of the temp Project array so it
+                    //doesn't get put into the pQueue.
+                    projects.remove(i);
+                    //TODO: Should check if its in the queues already and remove
+                }
+            }
+
+            logger.info("projects = "+projects.size());
+            logger.info("tmp ps = "+tmpPS.size());
+            logger.info("tmp sbs " +tmpSBs.size());
+            
+            // For all the stuff gotten above from the archive, determine if
+            // they are new (then add them), if the are updated (then updated)
+            // or the same (then do nothing)
+            Project newProject;
+            Project oldProject;
+            ProjectStatus newPS;
+            ProjectStatus oldPS;
+               
+            for(int i=0; i < projects.size(); i++){
+                newProject = projects.get(i);
+                //does project exist in queue?
+                if(pQueue.isExists( newProject.getId() )){
+                    oldProject = pQueue.get(newProject.getId());
+                    //yes it is so check if project needs to be updated, check if 
+                    if(newProject.getTimeOfUpdate().compareTo(oldProject.getTimeOfUpdate()) == 1 ){
+                        //needs updating
+                        pQueue.replace(newProject);
+                    } else if(newProject.getTimeOfUpdate().compareTo(oldProject.getTimeOfUpdate()) == 0 ){
+                        // DO NOTHING hasn't been updated
+                    } else if(newProject.getTimeOfUpdate().compareTo(oldProject.getTimeOfUpdate()) == -1 ){
+                        // TODO should throw an error coz the old project has been updated and the new one hasnt
+                    } else {
+                        //TODO Throw an error here
+                    }
+                    //check if PS needs to be updated 
+                    newPS = getPS(tmpPS, newProject.getId());
+                    oldPS = psQueue.get(newPS.getProjectStatusEntity().getEntityId());
+                    if(newPS.getTimeOfUpdate().compareTo(oldPS.getTimeOfUpdate()) == 1 ){
+                        //needs updating
+                        psQueue.updateProjectStatus(newPS);
+                    } else if(newPS.getTimeOfUpdate().compareTo(oldPS.getTimeOfUpdate()) == 0 ){
+                        // DO NOTHING hasn't been updated
+                    } else if(newPS.getTimeOfUpdate().compareTo(oldPS.getTimeOfUpdate()) == -1 ){
+                        // TODO should throw an error coz the old project has been updated and the new one hasnt
+                    } else {
+                        //TODO Throw an error here
+                    }
+
+                    //TODO if the sbs need updating and if there are new ones to add
+                    SB[] currSBs = getSBs( tmpSBs, newProject.getId() );
+                    SB newSB, oldSB;
+                    for(int j=0; j < currSBs.length; j++){
+                        newSB = currSBs[j];
+                        if( sbQueue.isExists(newSB.getId()) ){
+                            logger.info("Sb not new");
+                            oldSB = sbQueue.get(newSB.getId());
+                            //check if it needs to be updated, if yes then update
+                            if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 1) {
+                                logger.info("Sb needs updating");
+                                sbQueue.replace(newSB);
+                            }else if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 0) {
+                                // DO NOTHING, hasn't been updated
+                            }else if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == -1) {
+                                // TODO should throw an error coz the old sb has been updated and the new one hasnt
+                            } else {
+                                //TODO Throw an error
+                            }
+                        } else {
+                            //not in queue, so add it.
+                            logger.info("SB new, adding");
+                            sbQueue.add(newSB);
+                        }
+                    }
+                } else {
+                    logger.info("Project new, adding");
+                    //no it isn't so add project to queue, 
+                    pQueue.add(newProject);
+                    //add its project status to project status queue
+                    psQueue.add( getPS( tmpPS, newProject.getId() ) );
+                    //and sbs to sbqueue
+                    sbQueue.add( getSBs(tmpSBs, newProject.getId() ) );
+                    
+                }
+            }
+        } catch(Exception e) {
+            throw new SchedulingException(e);
+        }
+        logger.info("Size of pQueue = "+pQueue.size());
+        logger.info("Size of psQueue = "+psQueue.size());
+        logger.info("Size of sbQueue = "+sbQueue.size());
+    }
+
+    /**
+      * Removes the project status element with the given id from the vector 
+      * and returns the new vector.
+      * To be used only with pollArchive and the vector holding the ProjectStatus'.
+      * @param v The Vector holind all the projectStatus gotten during a pollArchive
+      * @param s The id of the project status to be removed.
+      * @return Vector REturn the vector minus one element
+      */
+    private Vector removePSElement(Vector v, String s) {
+        for(int i=0; i < v.size(); i++){
+            if(((ProjectStatus)v.elementAt(i)).getProjectStatusEntity().
+                    getEntityId().equals(s)) {
+                v.remove(i);
+            }
+        }
+        return v;
+    }
+
+    /**
+      * Removes all the sbs from the vector which belong to a given project.
+      * To be used only with the pollAchive and the vector holding the sbs.
+      * @param v The vector holding all the SBs gotten from all the projects in a pollarchive
+      * @param s The id of the project which the sbs to be removed belong to
+      * @return Vector The vector with all the sbs, minus the one(s) taken out
+      */
+    private Vector removeSBElements(Vector v, String s) {
+        for(int i=0; i < v.size(); i++) {
+            if(((SB)v.elementAt(i)).getProject().getId().equals(s) ){
+                v.remove(i);
+            }
+        }
+        return v;
+    }
+
+    /**
+      * Get the Project status for the given project id
+      * To be used only with the pollArchive and the vector holding the projectStatus'
+      * @param v The vector of project status'
+      * @param s The project Id
+      * @return ProjectStatus The project status with the given id.
+      */
+    private ProjectStatus getPS(Vector v, String s) {
+        ProjectStatus ps=null;
+        for(int i=0; i < v.size(); i++) {
+            ps = (ProjectStatus)v.elementAt(i);
+            if(ps.getObsProjectRef().getEntityId().equals(s) ){
+                return ps;
+            }
+        }
+        return null;
+    
+    }
+
+
+    /**
+      * Get all the SBs from the given vector which belong to the given project.
+      * @param v The vector containing all SBs gotten from pollarchive
+      * @param s The projectId
+      * @return SB[] The array of all SBs for the given project
+      */
+    private SB[] getSBs(Vector v, String s) {
+        Vector<SB> sbsV = new Vector<SB>();
+        SB sb;
+        for(int i=0; i < v.size(); i++) {
+            sb = (SB)v.elementAt(i);
+            if (sb.getProject().getId().equals(s)){
+                sbsV.add(sb);
+            }
+        }
+        SB[] sbs = new SB[sbsV.size()];
+        for(int i=0; i < sbsV.size(); i++){
+            sbs[i] = (SB)sbsV.elementAt(i);
+        }
+        return sbs;
     }
 }

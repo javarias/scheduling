@@ -55,6 +55,7 @@ import alma.scheduling.Define.Priority;
 import alma.scheduling.Define.FrequencyBand;
 import alma.scheduling.Define.Equatorial;
 import alma.scheduling.Define.Target;
+import alma.scheduling.Define.Source;
 
 import java.util.ArrayList;
 
@@ -89,7 +90,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.34 2005/12/14 20:23:20 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.35 2006/02/21 14:58:39 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -344,7 +345,6 @@ public class ProjectUtil {
 	 */
 	static public Project map(ObsProject p, SchedBlock[] b, ProjectStatus s, DateTime now) 
 		throws SchedulingException {
-		
 		// First, we get the project data as if the status is a dummy.
 		Project project = initialize(p,b,s.getProjectStatusEntity().getEntityId(),now);
 		
@@ -390,7 +390,9 @@ public class ProjectUtil {
 									   obs.getVersion(),
 									   obs.getPI());
 		project.setProjectStatusId(projectStatusEntityId);
-		project.setTimeOfCreation(now);
+        if(project.getTimeOfCreation() == null) {
+    		project.setTimeOfCreation(now);
+        }
 		project.setTimeOfUpdate(now);
 		//project.setBreakpoint(null); Sohaila: Took out coz in Define/Project this throws an error!
 		
@@ -435,13 +437,11 @@ public class ProjectUtil {
                 if(((Program)m[i]).getObsUnitSetStatusId() == null) {
 				    ((Program)m[i]).setObsUnitSetStatusId(genPartId());
                 }             
-                    //System.out.println("part id for program member, prog");
 				setProgramMember((Program)m[i]);
 			} else {
                 if(((SB)m[i]).getSbStatusId() == null) {
 				    ((SB)m[i]).setSbStatusId(genPartId());
                 }
-                //System.out.println("part id for program member, sb");
 				setSBMember((SB)m[i]);
 			}
 		}
@@ -572,6 +572,396 @@ public class ProjectUtil {
 	 */
 	static private SB initialize(SchedBlockRefT schedRef, SchedBlock[] schedArray, boolean[] schedUsed, Project project, Program parent, DateTime now) 
 		throws SchedulingException {
+
+    		SB sb = new SB (schedRef.getEntityId());
+            try {
+    
+    		sb.setSbStatusId(null); // This comes from ProjectStatus.
+	    	sb.setProject(project);
+		    sb.setTimeOfCreation(now);
+    		sb.setTimeOfUpdate(now);
+            //System.out.println("SB parent part id (in sb initialize PU)"+parent.getObsUnitSetStatusId());
+		    sb.setParent(parent);
+
+		// We need to use the entityId to get the SchedBlock from the sched array.
+    		SchedBlock sched = null;
+	    	for (int i = 0; i < schedArray.length; ++i) {
+		    	if (schedArray[i].getSchedBlockEntity().getEntityId().equals(sb.getSchedBlockId())) {
+			    	sched = schedArray[i];
+				    schedUsed[i] = true;
+    				break;
+	    		}
+		    }
+    		if (sched == null)
+	    		throw new SchedulingException("The scheduling block with id " + sb.getSchedBlockId() +
+		    			" is not in the specified SchedBlock array.");
+		
+            sb.setSBName(sched.getName());
+	    	// There are some problems here that we need to fix after R2.
+		    sb.setScientificPriority(Priority.MEDIUM); // Can't find this in ObsPrep << Problem.
+    		sb.setUserPriority(Priority.MEDIUM);
+	    	sb.setScienceGoal(null);
+		    sb.setWeatherConstraint(null);
+    		sb.setRequiredInitialSetup(null);
+	    	sb.setImagingScript(null);
+		    
+		// Set the observing script.
+    		sb.setObservingScript(sched.getObsProcedure().getObsProcScript());
+	    	if (sched.hasStandardMode())
+		        	sb.setStandardScript(sched.getStandardMode());
+	    	else    
+    			sb.setStandardScript(false);
+
+		// Set the time and repeat count.
+		// IMPORTANT NOTE!
+		// We must have a maximum time.  If it is not present, we will arbitrarily assign 30 minutes.
+		// If there is no repeat count, we assume it to be 0.
+		// We are also assuming that time is in minutes and that the repeat count is acutally
+		// the number of executions (and not the number of repetitions).
+	    	SchedBlockControlT ctrl = sched.getSchedBlockControl();
+    		if (ctrl == null) {
+		    	sb.setMaximumTimeInSeconds(1800);
+	    		sb.setMaximumNumberOfRepeats(0);
+    		} else {
+		    	TimeT tt = ctrl.getSBMaximumTime();
+	    		if (tt == null) {
+    				sb.setMaximumTimeInSeconds(1800); 
+			    } else {
+		    		double maxTime = tt.getContent();
+	    			sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
+    			}
+			    int repeatcount = ctrl.getRepeatCount();
+		    	if (repeatcount < 1)
+	    			throw new SchedulingException("Invalid repeat count (" + repeatcount + ").");
+            //set to -1 because the first run is the original one. Not considered a 'repeat'
+			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
+            //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
+    			sb.setMaximumNumberOfRepeats(repeatcount); 
+
+    		}
+		
+        //////////////////////////////////////////////////////////
+        //
+        // Optical Camera Target stuff
+        // IMPORTANT NOTE: see important notes for ObsTarget stuff below
+        //
+        //////////////////////////////////////////////////////////
+            OpticalCameraControlT opticalcameraControl = sched.getOpticalCameraControl();
+            OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
+            if(opticalTargetList.length > 0) {
+                System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
+    	        //try{
+	            //    SpectralSpecT setup = opticalTargetList[0].getTargetTChoice().getSpectralSpec();
+     	        //} catch(NullPointerException npe) {
+    	        //}
+
+                ArrayList eqList = new ArrayList ();
+                Source sbSource;
+        	    for (int i = 0; i < opticalTargetList.length; ++i) {
+	    	    	FieldSourceT fieldSource = opticalTargetList[i].getFieldSource();
+    	    		if (fieldSource == null)
+	    		    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
+    		    				sb.getSchedBlockId());
+	    	    	SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
+    	    		if (coord == null)
+	    		    	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
+    		    				sb.getSchedBlockId());
+	    		    LongitudeT lng = coord.getLongitude(); 	// in degrees
+    		    	double ra = lng.getContent();
+		    	    LatitudeT lat = coord.getLatitude();	// in degrees
+	    	    	double dec = lat.getContent();
+    	    		String coordType = coord.getSystem().toString(); // must be J2000
+    			    if (!coordType.equals("J2000"))
+			        	throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+		        	Equatorial eq = new Equatorial((ra /24.0),dec);
+	        		eqList.add(eq);
+                    sbSource = new Source();
+                    try {
+                        sbSource.setSourceName(fieldSource.getSourceName());
+                    } catch(Exception e) {
+                        sbSource.setSourceName("Source was not named.");
+                    }
+                    try {
+                        sbSource.setSolarSystemObj(fieldSource.getSolarSystemObject().toString());
+                    } catch(Exception e) {
+                        sbSource.setSolarSystemObj("Not a solar system object.");
+                    }
+                    SourcePropertyT[] sourceProperties = fieldSource.getSourceProperty();
+                    try {
+                        sbSource.setNumberSourceProperties(fieldSource.getSourcePropertyCount());
+                        //only really care about the first one!
+                        sbSource.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
+                    } catch(Exception e){}
+                    try {
+                        sbSource.setMinMagnitude(opticalcameraControl.getMinMagnitude().getValue());
+                        sbSource.setMaxMagnitude(opticalcameraControl.getMaxMagnitude().getValue());
+                    } catch(Exception e){}
+                    sb.addSource(sbSource);
+        		}
+		        Equatorial[] eqArray = new Equatorial [eqList.size()];
+	        	eqArray = (Equatorial[])eqList.toArray(eqArray);
+        		if (eqArray.length == 1) {
+    		    	Target target = new Target (eqArray[0],3600.0,3600.0);
+	    		    sb.setTarget(target);
+    		    } else {
+		        	Target target = new Target (eqArray);
+	        		sb.setTarget(target);
+        		}
+
+            } else {
+                System.out.println("SCHEDULING: No optical camera targets");
+            }
+        
+        //////////////////////////////////////////////////////////
+        //
+        // ObsTarget stuff
+        //
+        //////////////////////////////////////////////////////////
+        
+		// Set the frequency and frequency band.
+		// IMPORTANT NOTE!
+		// We are using the rest frequency and receiver band from the first member of
+		// the frequency setup that is in the Obstarget list.  This probably isn't the
+		// right way to do it.
+    		ObsTargetT[] targetList = sched.getObsTarget();
+            if(targetList.length > 0) {
+                SpectralSpecT setup = targetList[0].getTargetTChoice().getSpectralSpec();
+
+    		    alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
+	    	    if (freqSetup == null) {
+    	    		sb.setCenterFrequency(0.0);
+       			    sb.setFrequencyBand(null);
+		        } else {
+	        		sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
+        			String band = freqSetup.getReceiverBand().toString();
+    			    FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
+		    	    sb.setFrequencyBand(freq);
+	    	    }
+		
+		// Set the target
+		// IMPORTANT NOTE!
+		// Targets are a problem.
+		// We are going to take the list of ObsTargets and construct an IRREGULAR shape,
+		// which is really a rectangular area that includes all targets.  If there is only
+		// one target, we will add a one-degree rectangle around it.
+    		    ArrayList eqList = new ArrayList ();
+                Source sbSource;
+		        for (int i = 0; i < targetList.length; ++i) {
+	        		FieldSourceT fieldSource = targetList[i].getFieldSource();
+    		        if (fieldSource == null)
+    			    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
+		        				sb.getSchedBlockId());
+	        		SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
+        			if (coord == null)
+			        	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
+		        				sb.getSchedBlockId());
+	        		LongitudeT lng = coord.getLongitude(); 	// in degrees
+                    try {
+            			double ra = lng.getContent();
+    			    LatitudeT lat = coord.getLatitude();	// in degrees
+		    	        double dec = lat.getContent();
+    		    	    Equatorial eq = new Equatorial((ra /24.0),dec);
+    	    		    eqList.add(eq);
+                    } catch(Exception e) {
+                        System.out.println("Equatorial not created");
+                    }
+	    	    	String coordType = coord.getSystem().toString(); // must be J2000
+    	    		if (!coordType.equals("J2000"))
+	    		    	throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                    sbSource = new Source();
+                    if(fieldSource.getSourceName() != null){
+                        sbSource.setSourceName(fieldSource.getSourceName());
+                    } else {
+                        sbSource.setSourceName("Source was not named.");
+                    }
+                    //if(fieldSource.getSolarSystemObject().toString() != null){
+		    try {
+                        sbSource.setSolarSystemObj(fieldSource.getSolarSystemObject().toString());
+                    } catch(Exception e) {
+                        sbSource.setSolarSystemObj("Not a solar system object.");
+                    }
+                    SourcePropertyT[] sourceProperties = fieldSource.getSourceProperty();
+                    if(sourceProperties != null) {
+                        sbSource.setNumberSourceProperties(fieldSource.getSourcePropertyCount());
+                        //only really care about the first one!
+                        sbSource.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
+                    }
+                    if(freqSetup != null) {
+                        //don't think units are set for frequency...
+                        sbSource.setRestFrequency(freqSetup.getRestFrequency().getContent(), "");
+                        sbSource.setTransition(freqSetup.getTransitionName());
+                    }
+                    sb.addSource(sbSource);
+    		    }
+		        Equatorial[] eqArray = new Equatorial [eqList.size()];
+	        	eqArray = (Equatorial[])eqList.toArray(eqArray);
+        		if (eqArray.length == 1) {
+		        	Target target = new Target (eqArray[0],3600.0,3600.0);
+	        		sb.setTarget(target);
+        		} else {
+    		    	Target target = new Target (eqArray);
+	    		    sb.setTarget(target);
+    		    }
+            } else {
+                System.out.println("SCHEDULING: No obs targets");
+            }
+				
+		// Return the newly create SB.
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+		return sb;
+	}
+	
+	/**
+	 * Update the specified Project object using the specified ProjectStatus object.
+	 * @param project
+	 * @param status
+	 * @param now
+	 * @throws SchedulingException
+	 */
+	static private void update(Project project, ProjectStatus status, DateTime now) 
+		throws SchedulingException {
+		//throw new SchedulingException("The ProjectUtil.update(Project project, ProjectStatus status, DateTime now) method is not implemented at the present time.");
+            //System.out.println("UPDATING THE PROJECT BECAUSE IT HAS AN EXISTING PROJECT STATUS");
+		// TODO We will implement this after R2.  For R2, all projects we execute will be created from
+		//	scratch and will be initialized.  For this we won't need a previously created "real" ProjectStatus.
+            //Project updatedProject = updateProject(project, now);
+
+	}
+    
+    
+    static public Project updateProject(ObsProject obs, Project project, SchedBlock[] sched, DateTime now) 
+        throws SchedulingException {
+        
+            project.setTimeOfUpdate(now);
+            //project.setBreakpoint(null); Sohaila: Took out coz in Define/Project this throws an error!
+		
+            // To check if all SchedBlocks are used, we will create an array
+            // of booleans and check them off as we use them.
+            boolean[] schedUsed = new boolean [sched.length];
+    		for (int i = 0; i < schedUsed.length; ++i){
+	    		schedUsed[i] = false;
+            }
+		
+            // Initialize the obsProgram.
+    		Program program = updateProgram(obs.getObsProgram().getObsPlan(), project.getProgram(), 
+                    sched, schedUsed, project, null, now);
+	    	project.setProgram(program);
+		
+            // Make sure that all the scheduling blocks in the sched array have been accounted for.
+		    for (int i = 0; i < schedUsed.length; ++i) {
+			    if (!schedUsed[i])
+				    throw new SchedulingException("SchedBlock with name " + 
+					    	sched[i].getName() + " and id " + 
+						    sched[i].getSchedBlockEntity().getEntityId() +
+    						" was not used in the initialization process.");
+	    	}
+		
+		// Now, set all the partIds in the project status.
+            Program p = project.getProgram();
+            setProgramMember(p);
+		
+            project.setProgram(program);
+		// Mark the project as ready.  (This also initializes the totals.)
+            project.setReady(now);
+		
+		// Now, validate the project
+            validate(project);
+		
+            return project;
+    }
+   
+
+    
+    
+    static private Program updateProgram(ObsUnitSetT set, Program prog, SchedBlock[] sched, 
+			boolean[] schedUsed, Project project, Program parent,  
+			DateTime now) throws SchedulingException {
+
+        if(set.getEntityPartId() == null) {
+            set.setEntityPartId(genPartId());
+        }
+
+		Program program;
+        if(prog == null) {
+            program = new Program (set.getEntityPartId());
+		    program.setTimeOfCreation(now);
+		    program.setProject(project);
+		    program.setParent(parent);
+		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
+		// We get SciPipelineRequest and Sessions from the ProjectStatus. 
+            program.setScientificPriority(Priority.MEDIUM); // Where is this in ObsPrep?
+            program.setUserPriority(Priority.MEDIUM);
+            program.setFlowControl(null);
+            program.setNotify(null);
+            program.setScienceGoal(null);
+            program.setWeatherConstraint(null);
+            program.setCenterFrequency(0.0);
+            program.setFrequencyBand(null);
+            program.setRequiredInitialSetup(null);
+
+        } else {
+            program = prog;
+        }
+
+		program.setDataReductionProcedureName(set.getScienceProcessingScript());
+        try {
+            Object[] params = new Object[5];
+            params[0] = set.getDataProcessingParameters().getAngularResolution();
+            params[1] = set.getDataProcessingParameters().getVelocityResolution();
+            params[2] = set.getDataProcessingParameters().getTBSensitivityGoal();
+            params[3] = set.getDataProcessingParameters().getRMSGoal();
+            params[4] = set.getDataProcessingParameters().getProjectType();
+    		program.setDataReductonParameters(params);
+        } catch(Exception e) {
+		    program.setDataReductonParameters(null);
+        }
+		// Assign the members of this set: either Program or SB objects.
+		if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
+			ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
+            // TODO: get existing memebers, need to update them if they already exist
+            // or use partId to get existing memeber inside loop below
+            // for that we need partId stuff stored in project which is given
+            // for update
+			Program memberProgram = null;
+			for (int i = 0; i < setMember.length; ++i) {
+                Program p = (Program)program.getMember(setMember[i].getEntityPartId());
+				memberProgram = updateProgram(setMember[i], p, sched,schedUsed,project,program,now);
+				program.addMember(memberProgram);
+			}
+		}
+		if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
+			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
+			SB memberSB = null;
+			for (int i = 0; i < setMember.length; ++i) {
+				memberSB = initialize(setMember[i],sched,schedUsed,project,program,now);
+				program.addMember(memberSB);
+			}
+		}
+		
+		// Set the MaximumTimeInSeconds from the members.
+        // recalculate in case there are more SBs added
+		int maxTime = 0;
+		ProgramMember[] member = program.getMember();
+		for (int i = 0; i < member.length; ++i) {
+			if (member[i] instanceof Program) {
+				maxTime += ((Program)member[i]).getMaximumTimeInSeconds();
+			} else
+				maxTime += ((SB)member[i]).getMaximumTimeInSeconds();
+		}
+		program.setMaximumTimeInSeconds(maxTime);
+		
+		// Return the newly created program.
+		program.setTimeOfUpdate(now);
+		return program;
+    }
+
+
+    /*
+    static private SB initialize(SchedBlockRefT schedRef, SchedBlock[] schedArray,
+            boolean[] schedUsed, Project project, Program parent, DateTime now) 
+        		throws SchedulingException {
 		SB sb = new SB (schedRef.getEntityId());
 
 		sb.setSbStatusId(null); // This comes from ProjectStatus.
@@ -695,7 +1085,6 @@ public class ProjectUtil {
 		// the frequency setup that is in the Obstarget list.  This probably isn't the
 		// right way to do it.
 		ObsTargetT[] targetList = sched.getObsTarget();
-		//if (targetList != null ){//
         if(targetList.length > 0) {
             SpectralSpecT setup = targetList[0].getTargetTChoice().getSpectralSpec();
 
@@ -752,23 +1141,8 @@ public class ProjectUtil {
 		// Return the newly create SB.
 		return sb;
 	}
-	
-	/**
-	 * Update the specified Project object using the specified ProjectStatus object.
-	 * @param project
-	 * @param status
-	 * @param now
-	 * @throws SchedulingException
-	 */
-	static private void update(Project project, ProjectStatus status, DateTime now) 
-		throws SchedulingException {
-		//throw new SchedulingException("The ProjectUtil.update(Project project, ProjectStatus status, DateTime now) method is not implemented at the present time.");
-            System.out.println("UPDATING THE PROJECT BECAUSE IT HAS AN EXISTING PROJECT STATUS");
-		// TODO We will implement this after R2.  For R2, all projects we execute will be created from
-		//	scratch and will be initialized.  For this we won't need a previously created "real" ProjectStatus.
-
-	}
-	
+*/
+    
 	//////////////////////////////////////////////////////////////////////
 	// End of private methods are used to support the		 			//
 	// "map(ObsProject p, SchedBlock[] b, ProjectStatus s)" method.		//
@@ -1171,4 +1545,40 @@ public class ProjectUtil {
 	// "map(Project project, DateTime now)" method.				//
 	//////////////////////////////////////////////////////////////
 	
+    static public ObsProject addPartIds(ObsProject obs) throws SchedulingException {
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        //System.out.println("in addPartIds");
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        ObsUnitSetT set = obs.getObsProgram().getObsPlan();
+        if(set.getEntityPartId() == null) {
+            String id = genPartId();
+            //System.out.println("part id = "+id);
+            set.setEntityPartId(id);
+        }
+        doObsUnitSetIds(set);
+        return obs;
+        /*if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
+            //System.out.println("More than one obs unit sets");
+			ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
+			for (int i = 0; i < setMember.length; ++i) {
+				memberProgram = getObsUnitSet(setMember[i]);
+            }
+        }
+        */
+        
+    }
+    static private void doObsUnitSetIds(ObsUnitSetT set) {
+        if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
+			ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
+			for (int i = 0; i < setMember.length; ++i) {
+                if(setMember[i].getEntityPartId() == null) {
+                    String id = genPartId();
+                    //System.out.println("part id ous = "+id);
+                    setMember[i].setEntityPartId(id);
+                }
+				doObsUnitSetIds(setMember[i]);
+            }
+        }
+
+    }
 }
