@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MASTER xmlns="urn:schemas-cosylab-com:MASTER:1.0"
+        useStaticDevConfig="false"
+        useTestAntennaImpl="false"
+        useTestScriptExecImpl="false">
+  <device devname="CONTROL/ALMA001"
+          idl="IDL:alma/Control/Antenna:1.0"
+          container="CONTROL/Test/cppContainer"
+          implementation="antenna"
+          nodenumber="-1"
+          identifier="Generic">
+<!--     <subdevices> -->
+<!--       <device devname="OpticalTelescope" -->
+<!--               idl="IDL:alma/Control/OpticalTelescope:1.0" -->
+<!--               container="CONTROL/Test/cppContainer" -->
+<!--               implementation="OpticalTelescope" -->
+<!--               nodenumber="0x1f" -->
+<!--               identifier="Generic"/> -->
+<!--       <device devname="FrameGrabber" -->
+<!--               idl="IDL:alma/Control/FrameGrabber:1.0" -->
+<!--               container="CONTROL/Test/cppContainer" -->
+<!--               implementation="FrameGrabber" -->
+<!--               nodenumber="-1" -->
+<!--               identifier="Generic"/> -->
+<!--       <device devname="MountController" -->
+<!--               idl="IDL:alma/Control/MountController:1.0" -->
+<!--               container="CONTROL/Test/cppContainer" -->
+<!--               implementation="MountController" -->
+<!--               nodenumber="-1" -->
+<!--               identifier="Generic"> -->
+<!--         <subdevices> -->
+<!--           <device devname="Mount" -->
+<!--                   idl="IDL:alma/Control/MountVA:1.0" -->
+<!--                   container="CONTROL/Test/cppContainer" -->
+<!--                   implementation="MountVA" -->
+<!--                   nodenumber="0x00" -->
+<!--                   identifier="Generic"/> -->
+<!--           <device devname="Metrology" -->
+<!--                   idl="IDL:alma/Control/MetrologyVA:1.0" -->
+<!--                   container="CONTROL/Test/cppContainer" -->
+<!--                   implementation="MetrologyVA" -->
+<!--                   nodenumber="0x01" -->
+<!--                   identifier="Generic"/> -->
+<!--         </subdevices> -->
+<!--       </device> -->
+<!--     </subdevices> -->
+  </device>
+</MASTER>

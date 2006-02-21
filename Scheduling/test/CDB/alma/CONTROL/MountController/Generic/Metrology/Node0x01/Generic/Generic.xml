@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+@(#) $Id: Generic.xml,v 1.2 2006/02/21 17:08:42 sslucero Exp $
+
+Copyright (C) 2004,2005
+Associated Universities, Inc. Washington DC, USA.
+
+Produced for the ALMA project
+
+This library is free software; you can redistribute it and/or modify
+it it under the terms of the GNU Library General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 675 Massachusetts Ave, Cambridge, MA, 02139, USA.
+
+Correspondence concerning ALMA should be addressed as follows:
+Internet email: alma-sw-admin@nrao.edu
+-->
+
+<MetrologyVA xmlns="urn:schemas-cosylab-com:MetrologyVA:1.0" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:amb="urn:schemas-cosylab-com:AmbDevice:1.0">
+  <tilt1X>
+    <amb:rcaMap relative_address="20480" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="16"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt1X>
+  <tilt1Y>
+    <amb:rcaMap relative_address="20480" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="32"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt1Y>
+  <tilt1Temperature>
+    <amb:rcaMap relative_address="20480" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="48"
+			scale="0.1"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt1Temperature>
+  <tilt2X>
+    <amb:rcaMap relative_address="20481" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="16"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt2X>
+  <tilt2Y>
+    <amb:rcaMap relative_address="20481" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="32"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt2Y>
+  <tilt2Temperature>
+    <amb:rcaMap relative_address="20481" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="48"
+			scale="0.1"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt2Temperature>
+  <tilt3X>
+    <amb:rcaMap relative_address="20482" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="16"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt3X>
+  <tilt3Y>
+    <amb:rcaMap relative_address="20482" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="32"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt3Y>
+  <tilt3Temperature>
+    <amb:rcaMap relative_address="20482" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="48"
+			scale="0.1"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt3Temperature>
+  <tilt4X>
+    <amb:rcaMap relative_address="20483" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="16"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt4X>
+  <tilt4Y>
+    <amb:rcaMap relative_address="20483" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="32"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt4Y>
+  <tilt4Temperature>
+    <amb:rcaMap relative_address="20483" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="48"
+			scale="0.1"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt4Temperature>
+  <tilt5X>
+    <amb:rcaMap relative_address="20484" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="16"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt5X>
+  <tilt5Y>
+    <amb:rcaMap relative_address="20484" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="32"
+			scale="0.01"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt5Y>
+  <tilt5Temperature>
+    <amb:rcaMap relative_address="20484" data_length="6">
+      <amb:linearBitMap numberOfBits="16" fieldWidth="48"
+			scale="0.1"       offset="0" signedData="true"/>
+    </amb:rcaMap>
+  </tilt5Temperature>
+
+  <errors      description = "Errors Detected on CAN bus"
+               format      = "%ld">
+    <amb:rcaMap relative_address="196609" data_length="4">
+      <amb:linearBitMap numberOfBits="32" fieldWidth="32"/>
+    </amb:rcaMap>
+  </errors>
+
+  <transactions description = "Transactions completed on CAN bus"
+                format      = "%ld">
+    <amb:rcaMap relative_address="196610" data_length="4">
+      <amb:linearBitMap numberOfBits="32" fieldWidth="32"/>
+    </amb:rcaMap>
+  </transactions>
+
+  <temperature description = "Temperature from DS18S20"
+               format      = "%ld">
+    <amb:rcaMap relative_address="196611" data_length="4">
+      <amb:ds1820TempBitMap/>
+    </amb:rcaMap>
+  </temperature>
+  <Address/>
+</MetrologyVA>
