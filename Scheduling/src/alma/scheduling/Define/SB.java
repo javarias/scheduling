@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.12 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: SB.java,v 1.13 2006/02/21 14:59:31 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -93,7 +93,7 @@ public class SB implements ProgramMember {
 	private Target target;
 	private double centerFrequency;
 	private FrequencyBand frequencyBand;
-	
+	private ArrayList sources;
 	// LST range in hours -- used to support increased UV coverage.
 	private double lstBegin;
 	private double lstEnd;
@@ -130,6 +130,7 @@ public class SB implements ProgramMember {
 		lstBegin = -1.0;
 		lstEnd = -1.0;
 		exec = new ArrayList ();
+        sources = new ArrayList();
 	}
 	
 	/**
@@ -745,6 +746,19 @@ public class SB implements ProgramMember {
 	public void setSbStatusId(String sbStatusId) {
 		this.sbStatusId = sbStatusId;
 	}
+
+    public int getNumberSources(){
+        return sources.size();
+    }
+
+    public void addSource(Source s){
+        sources.add(s);
+    }
+
+    public Source[] getSource() {
+		Source[] sourcelist = new Source [sources.size()];
+		return (Source[])sources.toArray(sourcelist);
+    }
 
 }
 

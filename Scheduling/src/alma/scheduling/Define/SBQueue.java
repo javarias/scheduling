@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * that can be accessed and updated by multiple threads, viz., the 
  * MasterScheduler and Scheduler objects.
  * 
- * @version $Id: SBQueue.java,v 1.6 2006/01/05 20:47:55 sslucero Exp $
+ * @version $Id: SBQueue.java,v 1.7 2006/02/21 14:59:31 sslucero Exp $
  * @author Allen Farris
  */
 public class SBQueue {
@@ -279,6 +279,13 @@ public class SBQueue {
 		}
 		return false;
 	}
+    public synchronized void replace (SB sb) {
+        for(int i=0; i < queue.size(); i++){
+            if(sb.getId().equals( ((SB)queue.get(i)).getId() ) ){
+                queue.set(i, sb);
+            }
+        }
+    }
 
 	/**
 	 * Get the number of items in the queue.

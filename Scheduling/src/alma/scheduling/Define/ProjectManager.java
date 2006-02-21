@@ -30,7 +30,7 @@ package alma.scheduling.Define;
  * The ProjectManager interface defines public methods needed by various
  * components, both real and simulated.
  * 
- * @version $Id: ProjectManager.java,v 1.7 2005/12/13 14:26:13 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.8 2006/02/21 14:59:31 sslucero Exp $
  * @author Allen Farris
  */
 public interface ProjectManager {
@@ -64,4 +64,6 @@ public interface ProjectManager {
     public Object archiveRetrieve(String uid) throws SchedulingException;
     public void archiveReleaseComponents()  throws SchedulingException;
     public SB[] getSBsForProject(String projId) throws SchedulingException;
+    public ProjectQueue getProjectQueue();
+    public void getUpdates() throws SchedulingException;
 }
