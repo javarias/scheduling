@@ -197,6 +197,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 					" does not match the currently executing SB (" + tmp + ")");
 		}
 		control.stopSB(config.getArrayName(),sbId);
+        control.destroyArray(config.getArrayName());
 	}
 
     public void run() {
@@ -208,6 +209,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             }
             ((ALMAProjectManager)config.getProjectManager())
                 .publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
+            config.getControl().destroyArray(config.getArrayName());
         } catch(Exception e){
             e.printStackTrace();
         }

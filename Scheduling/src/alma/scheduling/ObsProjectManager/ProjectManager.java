@@ -32,11 +32,12 @@ import alma.scheduling.Define.SB;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
+import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 
 /**
- * @version $Id: ProjectManager.java,v 1.10 2005/12/13 14:26:13 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.11 2006/02/21 15:10:42 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -134,6 +135,12 @@ public class ProjectManager implements Runnable,
     public SB[] getSBsForProject(String projId) throws SchedulingException {
         return null;
     }
+
+    public ProjectQueue getProjectQueue() {
+        return null;
+    }
+
+    public void getUpdates() throws SchedulingException {}
 
     
 }

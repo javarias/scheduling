@@ -25,6 +25,7 @@
 package alma.scheduling.GUI.InteractiveSchedGUI;
 
 import java.net.URL;
+import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.Project;
@@ -34,7 +35,7 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
-import alma.scheduling.AlmaScheduling.ALMAProjectManager;
+//import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 /**
  * A controller for the Interactive Scheduling GUI. 
  * All the functionality that is required from the the GUI
@@ -50,12 +51,14 @@ public class GUIController implements Runnable {
     private GUI gui;
     private InteractiveScheduler scheduler;
     private ContainerServices containerServices;
+    private Logger logger;
 
     //public GUIController(SchedulerConfiguration s, ContainerServices cs) {
     public GUIController(InteractiveScheduler s, ContainerServices cs) {
         this.scheduler = s;
         this.config = scheduler.getConfiguration();
         this.containerServices = cs;
+        this.logger = cs.getLogger();
         //this.scheduler = new InteractiveScheduler(config);
         try {
             String[] tmp = getProjectIds();
@@ -101,48 +104,36 @@ public class GUIController implements Runnable {
     }
     
     public void updateProject(Project p) {
-        ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().replace(p);
+        config.getProjectManager().getProjectQueue().replace(p);
     }
 
+    /*
+    public void updateSBs(Project p) {
+        config.getProjectManager().updateSBQueue(p);
+    }*/
+
     public void getSBUpdates() {
-        // get project from archive and compare it with the project in the project queue 
+        System.out.println("Getting SB updates");
         try {
-
-            Project newProj = ((ALMAProjectManager)config.getProjectManager())
-                .getProject(defaultProjectId);
-            Project oldProj = ((ALMAProjectManager)config.getProjectManager())
-                .getProjectQueue().get(defaultProjectId);
-            
-            System.out.println("New project " +newProj.getProgram().getTotalSBs());
-            System.out.println("Old project " +oldProj.getProgram().getTotalSBs());
-            
-            //update new project in project queue
-            updateProject(newProj);
-            
-            if(newProj.getProgram().getTotalSBs() == oldProj.getProgram().getTotalSBs()) {
-                // same number, check that they're all the same
-                // compareSBs will return false if there is a sb in either project that isn't in the other
-                if( !((ALMAProjectManager)config.getProjectManager()).compareSBs(newProj, oldProj) ) {
-                    System.out.println("SCHEDULING: There was a problem comparing.");
-                }
-                System.out.println("Comparing identical sized total sbs");
-                
-            } else if(newProj.getProgram().getTotalSBs() > oldProj.getProgram().getTotalSBs()) {
-                System.out.println("SCHEDULING: There are new SBs.");
-                SB[] sbs = ((ALMAProjectManager)config.getProjectManager()).getNewSBs(newProj, oldProj);
-                for(int i=0; i < sbs.length; i++){
-                    //System.out.println("adding sb "+ i);
-                    //System.out.println("Stupid sb has id = "+ sbs[i].getId());
-                    addSB(sbs[i]);
-                }
-                System.out.println("size of sb queue = "+ config.getQueue().size());
-            } else if(newProj.getProgram().getTotalSBs() < oldProj.getProgram().getTotalSBs()) {
-                System.out.println("SCHEDULING: There were some SBs deleted.");
-                SB[] sbs = ((ALMAProjectManager)config.getProjectManager()).getNewSBs(newProj, oldProj);
-                //there are less sbs
-
+            //tell the project manager to check for updates (pollArchive)
+            config.getProjectManager().getUpdates(); //calls pollArchive
+            //get those updates 
+            SB[] sbs = config.getProjectManager().getSBsForProject(defaultProjectId);
+            for(int i=0; i < sbs.length; i++){
+                sbs[i].setType(SB.INTERACTIVE);
             }
-                
+
+            // update sbQueue
+            for(int i=0; i < sbs.length;i++){
+                //check if its in queue already
+                if(config.getQueue().isExists(sbs[i].getId()) ){
+                    //in queue, replace just in case
+                    config.getQueue().replace(sbs[i]);
+                } else {
+                    //not in queue, add it
+                    config.getQueue().add(sbs[i]);
+                }
+            }
         } catch(Exception e ) {
             e.printStackTrace();
         }
@@ -152,7 +143,7 @@ public class GUIController implements Runnable {
     public String[] getProjectIds() {
         String[] tmp;
         try {
-            tmp = ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().getAllIds();
+            tmp = config.getProjectManager().getProjectQueue().getAllIds();
         } catch(Exception e) {
             tmp = new String[1];
             tmp[0] = "No projects loaded.";
@@ -169,7 +160,7 @@ public class GUIController implements Runnable {
     }
 
     public Project getProject(String id) {
-        return ((ALMAProjectManager)config.getProjectManager()).getProjectQueue().get(id);
+        return config.getProjectManager().getProjectQueue().get(id);
     }
 
     /**
@@ -177,6 +168,7 @@ public class GUIController implements Runnable {
      */
      public void deleteSB(String sb_id) {
         config.getQueue().remove(sb_id);
+        //TODO update listing
      }
 
      /**
@@ -258,6 +250,15 @@ public class GUIController implements Runnable {
     public void run() {
         this.gui = new GUI(this);
     }
+
+    public void exit() {
+        try {
+            config.getControl().destroyArray(config.getArrayName());
+        } catch (Exception e) {
+            logger.severe("Error destroying array "+config.getArrayName());
+        }
+    }
+
 
     /**
       *

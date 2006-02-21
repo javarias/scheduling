@@ -74,6 +74,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.AbstractTableModel;
 
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.Source;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.SchedulingException;
 
@@ -130,7 +131,7 @@ public class GUI extends JFrame {
                         controller.openArchiveQueryWindow();
                         //close this window
                         //can't close before bringing back other one.
-                        exit();
+                        dispose();
                     } else if( res == JOptionPane.NO_OPTION) {
                     //same thing as cancel
                     //do nothing
@@ -166,10 +167,10 @@ public class GUI extends JFrame {
         menuBar.add(projectMenu);
         */
         setJMenuBar(menuBar);
-        toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-        createButtons(toolbar);
-        getContentPane().add(toolbar, BorderLayout.PAGE_START);
+        //toolbar = new JToolBar();
+        //toolbar.setFloatable(false);
+        //createButtons(toolbar);
+        //getContentPane().add(toolbar, BorderLayout.PAGE_START);
 
         int inset = 250;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -285,6 +286,11 @@ public class GUI extends JFrame {
      *
      */
     private void deleteSB() {
+        //TODO
+        //delete from queue
+        //update view with new queue
+        //question: do we delete it from archive/project too?
+
         /*
         String selectedSB = outputView.getSelectedText();
         if(selectedSB != null) {
@@ -304,9 +310,6 @@ public class GUI extends JFrame {
     private void updateSBView(){
         try {
             controller.getSBUpdates();
-            //System.out.println("Updating project with id = "
-            //         + controller.getDefaultProjectId());
-
             displaySBInfo(controller.getDefaultProjectId());
 
         } catch(Exception e) {
@@ -455,24 +458,32 @@ public class GUI extends JFrame {
         //String name, target, status, upri, spri, weather;
 
         selectedSBView.setText("SB Name:                "+ sbRowInfo[row][0] +"\n");
-        try {
-            selectedSBView.append("SB Target: \n"+
-                               "   RA  (deg):           "+sb.getTarget().getCenter().getRaInDegrees()+"\n"+
-                               "   Dec (deg):           "+sb.getTarget().getCenter().getDecInDegrees()+"\n\n");
-        } catch(NullPointerException ex) {}
-        try{
-            selectedSBView.append("SB Frequency: \n"+
-                               "   Center Frequency:    "+sb.getCenterFrequency()+"\n"+
-                               "   Frequency Band:      "+sb.getFrequencyBand().getName()+"\n"+       
-                               "      Low:              "+sb.getFrequencyBand().getLowFrequency()+"\n"+
-                               "      High:             "+sb.getFrequencyBand().getHighFrequency()+"\n\n");
-        } catch(NullPointerException ex) {}
-        selectedSBView.append("SB Status:              "+sb.getStatus()+"\n"+
-                               "SB User Priority:       "+sb.getUserPriority()+"\n"+
-                               "SB Scientific Priority: "+sb.getScientificPriority()+"\n" +
-                               " \n\n Eventually will have success, etc..");
-        
-                            //   "SB Weather Constraints: "+sb.getWeatherConstraint().toString()); //NULL right now..
+//<<<<<<< GUI.java
+        Source[] sources = sb.getSource();
+        int srcLen = sources.length;
+        if(srcLen > 3) {
+            srcLen =3;
+        }
+        for(int i=0; i <  srcLen; i++){
+            try {
+                selectedSBView.append("Source Name = "+sources[i].getSourceName()+"\n");
+            } catch(NullPointerException ex) {}
+            try{
+                selectedSBView.append("    Solar System Object = "+ sources[i].getSolarSystemObj()+"\n");
+            } catch(NullPointerException ex) {}
+            try {
+                selectedSBView.append("    Transitioin = "+sources[i].getTransition()+"\n");
+            } catch(NullPointerException ex) {}
+            try {
+                selectedSBView.append("    Visible Magnitude = "+ sources[i].getVisibleMagnitude()+"\n");
+            } catch(NullPointerException ex) {}
+            try {
+                selectedSBView.append("    Rest Frequency = "+sources[i].getRestFrequency()+"\n");
+            } catch(NullPointerException ex) {}
+        }
+        if(sources.length > 3){
+            selectedSBView.append("Please open project in ALMA-OT to see additional sources.\n");
+        }
 
         selectedSBPane = new JScrollPane(selectedSBView);
         sbDisplayed.add(new JSeparator());
@@ -595,6 +606,7 @@ public class GUI extends JFrame {
      * running on the same JVM.
      */
     public void exit() {
+        controller.exit();
         dispose();
     }
 

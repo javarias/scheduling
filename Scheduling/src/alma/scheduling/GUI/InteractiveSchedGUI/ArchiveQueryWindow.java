@@ -59,9 +59,8 @@ public class ArchiveQueryWindow extends JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset, screenSize.width - inset*2, 
             screenSize.height - inset*2);
-        setTitle("Interactive Scheduling GUI");
         setSize(600, 200);
-        setTitle("Archive Query");
+        setTitle("Interactive Scheduling GUI - Project Search");
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(createMainView());
@@ -86,7 +85,8 @@ public class ArchiveQueryWindow extends JFrame {
         try {
             main.removeAll();
         }catch(Exception e) { /* don't care if it complains */ }
-        JLabel l = new JLabel("Query on the following parameters.");
+       // JLabel l = new JLabel("Query on the following parameters.");
+        JLabel l = new JLabel("Search using the following parameters.");
         main.add(l, BorderLayout.NORTH);
         main.add(makeQueryPanel(), BorderLayout.CENTER);
         main.add(makeQueryButtonPanel(), BorderLayout.SOUTH);
@@ -220,7 +220,7 @@ public class ArchiveQueryWindow extends JFrame {
       */
     private JPanel makeDisplayButtonPanel(){
         JPanel p = new JPanel();
-        JButton b = new JButton("Login");
+        JButton b = new JButton("Select");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 loginToProject();
@@ -233,7 +233,7 @@ public class ArchiveQueryWindow extends JFrame {
                 try {
                     main.removeAll();
                 }catch(Exception ex) { /* don't care if it complains */ }
-                JLabel l = new JLabel("Query on the following parameters.");
+                JLabel l = new JLabel("Search using the following parameters.");
                 main.add(l, BorderLayout.NORTH);
                 main.add(makeQueryPanel(), BorderLayout.CENTER);
                 main.add(makeQueryButtonPanel(), BorderLayout.SOUTH);
@@ -256,8 +256,9 @@ public class ArchiveQueryWindow extends JFrame {
         String id = (String)projRowInfo[row][3]; //uid of selected project
         String pi = (String)projRowInfo[row][1];
         controller.loginToInteractiveProject(id, pi);
-
-        exit();
+        System.out.println("Logging into project with ID = "+id);
+        //exit();
+        dispose();
     }
 
     /**
@@ -271,6 +272,7 @@ public class ArchiveQueryWindow extends JFrame {
       *
       */
     public void exit() {
+        controller.exit();
         dispose();
     }
 }
