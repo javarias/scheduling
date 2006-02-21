@@ -1,0 +1,252 @@
+<?xml version = "1.0" encoding = "ISO-8859-1"?>
+<ExecConfig
+ xmlns:ent="Alma/CommonEntity"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="Alma/Exec/ExecConfig.xsd">
+  <ExecConfigEntity entityId="Stringaaaaaaaaaaaaaaaaaaaaa"
+    entityIdEncrypted="String"
+    entityTypeName="ExecConfig"
+    entityVersion="String"
+    isReadOnly="true"
+    lifecycleState="String"/>
+
+
+
+
+	<!-- =========== property-list =========== -->
+
+	<property-list>
+	
+		<property name="GetTelCalResultsComponent"	value="TELCAL_PUBLISHER"/>
+		<property name="SchedulingComponent"            value="SCHEDULING_MASTERSCHEDULER"/> 
+		<property name="ControlStatusComponent"         value="CONTROL_MASTER_COMP"/>
+		<property name="OperatorServer" 	        value="EXEC_OPERATOR_SERVER"/>
+		<property name="OperatorServerPrivileged" 	value="EXEC_OPERATOR_SERVER_PRIVILEGED"/>
+		<property name=""                               value=""/>
+		<property name=""                               value=""/>
+	        <property name="ConnectToComponentTask:Timeout"              value="5000"/>
+                <property name="DisconnectFromComponentTask:Timeout"         value="5000"/>
+                <property name="StartSubsystemScreeningTask:Timeout"         value="20000"/>
+                <property name="StartMasterComponentMonitoringTask:Timeout"  value="10000"/>
+                <property name="StopConnectivityTask:Timeout"                value="8000"/>
+                <property name="StopIntelligenceTask:Timeout"                value="6000"/>
+		<property name="ITS1:cycleSeconds"                           value="30"/>
+
+                <!-- PLUGINS -->
+      
+                <property name="SubsystemPlugin1"  value="Control Plugin (Air Temp) ,alma.Control.Plugins.ControlAirTempPlugin"/>
+                <property name="SubsystemPlugin2"  value="Control Plugin (Wind) ,alma.Control.Plugins.ControlWindPlugin"/>
+
+                <property name="Exec.Policy"    value="${Exec.Policy}"/>
+                <property name="Exec.Project"   value="${Exec.Project}"/>
+                <property name="Exec.Commands"  value="ExecCommandCenterBuiltinTools.xml"/>
+                <property name="Exec.Tools"     value="ExecExternalTools.xml"/> 
+
+     
+	</property-list>
+
+
+
+
+	<!-- =========== subsystem-list =========== -->
+
+
+
+	<subsystem-list>
+		<subsystem name="ARCHIVE">
+			<component-list>
+				<master name="ARCHIVE_MASTER_COMP">
+				</master>
+				<!--component name="ARCHIVE_CONNECTION"/>
+				<component name="ARCHIVE_IDENTIFIER"/>
+                                <component name="ARCHIVE_BULKSENDER"/>
+                                <component name="ARCHIVE_MONITORSTORE"/>
+                                <component name="ARCHIVE_MONITORRECEIVER"/>
+                                <component name="ARCHIVE_BULKRECEIVER"/>
+                                <component name="BulkDataDistributer"/-->
+			</component-list>
+		</subsystem>
+		<subsystem name="SCHEDULING">
+			<component-list>
+				<master name="SCHEDULING_MASTER_COMP">
+				</master>
+				<!--component name="SCHEDULING_MASTERSCHEDULER"/-->
+			</component-list>
+		</subsystem>
+		<subsystem name="CONTROL">
+			<component-list>
+				<master name="CONTROL_MASTER_COMP">
+				</master>
+                                <!--component name="CONTROL/DelayServer"/-->
+			</component-list>
+		</subsystem>
+		<subsystem name="TELCAL">
+			<component-list>
+				<master name="TELCAL_MASTER_COMP">
+				</master>
+				<!--component name="TELCAL_PARAMETERTUNING"/>
+				<component name="TELCAL_PUBLISHER"/>
+                                <component name="TELCAL_DATAMANAGER"/>
+                                <component name="TELCAL_OFFLINE"/-->
+			</component-list>
+		</subsystem>
+	</subsystem-list> 
+
+
+	    
+    
+    	<!-- =========== runlevel-list =========== -->
+
+   <runlevel-list>
+     <!--
+     Remarks:
+         1) Runlevel names are case insensitive
+         2) A set of Runlevels is auto-generated for each subsystem.
+         For a subsystem named "BlaBla" they are:
+             BlaBla:Shutdown
+       BlaBla:PreInitialized
+       BlaBla:Online
+       BlaBla:Operational
+       BlaBla:ReInitializing
+       BlaBla:PreInitialized_Or_Higher
+       BlaBla:Online_Or_Higher
+       BlaBla:PreShutdown_Or_Lower
+       BlaBla:PreInitialized_Or_Reinitializing
+        -->
+
+       <runlevel name="Alma_Operational">
+           <needs-runlevel name="_Alma_Online_Or_Higher" />
+           <needs-runlevel name="Archive:Operational" />
+           <needs-runlevel name="TelCal:Operational" />
+           <needs-runlevel name="Scheduling:Operational" />
+           <needs-runlevel name="Control:Operational" />
+       </runlevel>
+     
+       <runlevel name="Alma_Online">
+           <needs-runlevel name="Archive:Online_Or_Higher" />
+           <needs-runlevel name="TelCal:Online" />
+           <needs-runlevel name="Scheduling:Online" />
+           <needs-runlevel name="Control:Online" />
+       </runlevel>
+
+
+       <runlevel name="_Alma_Online_Or_Higher">
+           <needs-runlevel name="_Alma_PreInitialized_Or_Higher" />
+           <needs-runlevel name="Archive:Online_or_higher" />
+           <needs-runlevel name="TelCal:Online_or_higher" />
+           <needs-runlevel name="Scheduling:Online_or_higher" />
+           <needs-runlevel name="Control:Online_or_higher" />
+       </runlevel>        
+       <runlevel name="_Alma_PreInitialized_Or_Higher">
+           <needs-runlevel name="Archive:PreInitialized_Or_Higher" />
+           <needs-runlevel name="TelCal:PreInitialized_Or_Higher" />
+           <needs-runlevel name="Scheduling:PreInitialized_Or_Higher" />
+           <needs-runlevel name="Control:PreInitialized_Or_Higher" />
+       </runlevel>  
+
+       <runlevel name="_Alma_PreShutdown_Or_Lower">
+           <needs-runlevel name="Scheduling:PreShutdown_Or_Lower" />
+           <needs-runlevel name="Control:PreShutdown_Or_Lower" />
+           <needs-runlevel name="TelCal:PreShutdown_Or_Lower" />
+           <needs-runlevel name="Archive:PreShutdown_Or_Lower" />
+       </runlevel>
+
+
+       <runlevel name="Alma_Shutdown">
+           <needs-runlevel name="_Alma_PreShutdown_or_Lower" />
+           <needs-runlevel name="Scheduling:Shutdown" />
+           <needs-runlevel name="Control:Shutdown" />
+           <needs-runlevel name="TelCal:Shutdown" />
+           <needs-runlevel name="Archive:Shutdown" />
+       </runlevel>
+
+
+       <runlevel name="Alma_ReInitializing">
+           <needs-runlevel name="Archive:PreInitialized_Or_Reinitializing" />
+           <needs-runlevel name="TelCal:PreInitialized_Or_Reinitializing" />
+           <needs-runlevel name="Scheduling:PreInitialized_Or_Reinitializing" />
+           <needs-runlevel name="Control:PreInitialized_Or_Reinitializing" />
+       </runlevel>
+
+
+       <runlevel name="Alma_PreInitialized">
+           <needs-runlevel name="Archive:PreInitialized_Or_Reinitializing" />
+           <needs-runlevel name="TelCal:PreInitialized_Or_Reinitializing" />
+           <needs-runlevel name="Scheduling:PreInitialized_Or_Reinitializing" />
+           <needs-runlevel name="Control:PreInitialized_Or_Reinitializing" />
+        </runlevel>  
+   </runlevel-list>
+
+
+	<!-- =========== device-list ===========  -->
+   
+   
+   <device-list>
+<!--
+		<device name="preben's aux-host" ipaddr="134.171.29.121" community="public" loc="in preben's office"/>
+		<device name="preben's main-host" ipaddr="134.171.3.25"  community="public" loc="in preben's office"/>
+-->	
+</device-list>
+
+	
+	
+	<!-- =========== event-list =========== -->
+	
+	<!-- 
+	<event channel="monitorstore" name="alma.monitorstream.MonitordataStoreNotificationEvent" system="Archive"/>
+	<event channel="monitorstore" system="Archive" />
+    
+    Note that order of entries matters: wildcard entries must be last.
+	-->
+	
+<!--	
+	<event-list>
+
+		<event channel="monitorstore" name="alma.monitorstream.MonitordataStoreNotificationEvent" system="Archive">
+					<handler javaclass="alma.exec.operatorbase.portable.intelligence.auxiliary.AntennaPointingDataAvailableHandler" />
+		</event>
+
+		<event channel="monitorstream" system="Archive">
+			<handler javaclass="alma.exec.operatorbase.portable.intelligence.auxiliary.AntennaFocusDataAvailableHandler" />
+		</event>
+
+	</event-list>
+-->
+
+<event-list>
+
+<!--     REMOVED AS SUGGESTED  BY MARCUS SCHILLING EMAIL 14 APR 2005
+   
+   <event channel="CONTROLSYSTEM" name="alma.Control.ScanEvent" system="Control">
+      <handler javaclass="alma.exec.operatorbase.portable.intelligence.auxiliary.AntennaPointingDataAvailableHandler" />
+   </event>
+
+   <event channel="TelCalPublisherEventNC" name="alma.TelCalPublisher.FocusReducedEvent" system="TelCal">
+      <handler javaclass="alma.exec.operatorbase.portable.intelligence.auxiliary.AntennaFocusDataAvailableHandler" />
+   </event>
+-->
+
+
+  <event channel="CONTROL_SYSTEM" name="*"/>
+  <event channel="CONTROL_REALTIME" name="*"/>
+  <event channel="CABLE_TRAINING_RESULTS" name="*"/>
+
+  <event channel="monitorstore" name="*"/>
+  <event channel="bulkstore" name="*" />
+
+
+  <event channel="TelCalPublisherEventNC" name="*"/>
+
+  <event channel="SCHEDULING_CHANNEL" name="*"/>
+
+  <event channel="datacapturerNC" name="*"/>
+  <event channel="xmlstore" name="*"/>
+
+</event-list>
+
+
+  
+</ExecConfig>
+
+
+

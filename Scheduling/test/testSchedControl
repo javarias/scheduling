@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo 'Testing a SBs journey through Scheduling to Control'
+acsStartJava alma.scheduling.test.TestScheduling

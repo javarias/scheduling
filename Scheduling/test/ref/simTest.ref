@@ -788,7 +788,7 @@
 1 - INFO: SCHEDULING: Scheduler [Thread-**] (subarray 1): executing af17
 1 - BestSize=4
 1 - INFO: SCHEDULING: ** Scheduler [Thread-**] (subarray 1): best list:
-1 - 	[af18|af18 (AF3_project) [ 114.71, 115 (10, true, false, false, false, true, true),  1 (0.99, 1, 1) ]]
+1 - 	[af18|af18 (AF3_project) [ ---.-------------, ---.-------------(10, true, false, false, false, true, true),  1 (0.99, 1, 1) ]]
 1 - 	[af42|af42 (AF7_project) [ 74.81, 75 (10, false, false, false, true, true, false),  1 (0.99, 1, 1) ]]
 1 - 	[af19|af19 (AF4_project) [ 60.71, 65 (9, false, false, false, true, true, false),  0.93 (0.94, 0.8, 1) ]]
 1 - 	[af43|af43 (AF8_project) [ 60.71, 65 (9, false, false, false, true, true, false),  0.93 (0.94, 0.8, 1) ]]

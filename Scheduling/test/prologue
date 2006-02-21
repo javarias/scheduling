@@ -2,7 +2,8 @@
 
 #Set my CDB
 ACS_CDB=`pwd`
-
+# for archive...
+export CLASSPATH=$CLASSPATH:$ACSROOT/lib/oracle/xmlparserv2.jar 
 #Start ACS & the Manager
 acsStart >& sched_acsStart.log
 
@@ -14,6 +15,8 @@ echo $ACS_INSTANCE > sched_acs_instance.log
 
 #Start a java container named 'java'
 acsStartContainer -java java >& sched_javaContainer.log &
+#Start a java container for the archive
+acsStartContainer -java ARCHIVE/ACC/javaContainer >& sched_archiveContainer.log &
 #Start a python container named 'python'
 acsStartContainer -py python >& sched_pythonContainer.log &
 

@@ -7,7 +7,6 @@ will return existing reference
 Instlling from
 Database points to
 exported
-event
 Attempting to create
 Suppler.subscription_change
 KeyNotFound
@@ -115,3 +114,4 @@ Searching for schema files in:
 \[ POA
 \[ Connected
 switcher class
+

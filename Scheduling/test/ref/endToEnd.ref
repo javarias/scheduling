@@ -1,0 +1,9 @@
+1 - Testing a SBs journey through Scheduling to Control
+1 -  -- alma.scheduling.test.TestScheduling
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] INITPASS1
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] INITPASS2
+1 - sb id to schedule = uid://X----------------/X--------
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] component 'alma.acs.component.client.ComponentClient' requested AdvancedContainerServices
+1 - Got event with correct reason.
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] SHUTDOWNPASS1
+1 - ----------T--:--:--.--- INFO [alma.acs.component.client.ComponentClient] SHUTDOWNPASS2

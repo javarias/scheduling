@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SchedulingPolicy 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:Namespace="Alma/Scheduling/SchedulingPolicy"
+	SchemaLocation="SchedulingPolicy.xsd">
+
+  <name>highSciencePriority</name>
+  <version>1.0</version>
+  <comment>This policy emphasizes scientific priority</comment>
+  <scoreCalculation>ranking * success</scoreCalculation>  
+  <successCalculation>visibility + wind </successCalculation>
+  <rankingCalculation>priority</rankingCalculation>
+  <Factor>
+    <name>visibility</name>
+    <weight>0.5</weight>
+    <definition>1 if the current visibility is &gt;= the 
+      required visibility;
+      otherwise it is the ratio of the current to 
+      required visibility</definition>
+  </Factor>
+  <Factor>
+    <name>wind</name>
+    <weight>0.5</weight>
+    <definition>1 if the current wind velocity is higher than the 
+      maximum required to achieve the desired pointing; 
+      otherwise it is the ratio of the maximum to the 
+      current wind velocity.</definition>
+  </Factor>
+  <Factor>
+    <name>priority</name>
+    <weight>1.0</weight>
+    <definition>The scientific priority assigned by 
+      the TAC.</definition>
+  </Factor>
+</SchedulingPolicy>
