@@ -40,7 +40,7 @@ import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Project;
 
 import alma.scheduling.MasterScheduler.Message;
-import alma.scheduling.AlmaScheduling.ALMAProjectManager;
+//import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 
 /**
  * The InteractiveScheduler class implements the concept of a scheduler
@@ -107,7 +107,7 @@ import alma.scheduling.AlmaScheduling.ALMAProjectManager;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.8 2005/12/14 20:23:20 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.9 2006/02/21 21:30:19 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -210,7 +210,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			error("The specified PI does not match the PI in the interactive scheduling block.");
             return;
 		}*/
-        Project p = ((ALMAProjectManager)config.getProjectManager()).getProject(projId); 
+        Project p = config.getProjectManager().getProject(projId); 
         String tmp = p.getPI();
         if(!PI.equals(tmp)){
 			error("The specified PI does not match the PI in the project.");

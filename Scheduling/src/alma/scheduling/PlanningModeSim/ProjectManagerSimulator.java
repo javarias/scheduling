@@ -25,7 +25,7 @@
  */
  
 package alma.scheduling.PlanningModeSim;
-
+import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Project;
@@ -185,4 +185,5 @@ public class ProjectManagerSimulator
     }
     
     public void getUpdates() throws SchedulingException {}
+    public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason){}
 }

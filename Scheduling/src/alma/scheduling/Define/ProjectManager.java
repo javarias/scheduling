@@ -25,12 +25,12 @@
  */
  
 package alma.scheduling.Define;
-
+import alma.scheduling.NothingCanBeScheduledEnum;
 /**
  * The ProjectManager interface defines public methods needed by various
  * components, both real and simulated.
  * 
- * @version $Id: ProjectManager.java,v 1.8 2006/02/21 14:59:31 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.9 2006/02/21 21:30:19 sslucero Exp $
  * @author Allen Farris
  */
 public interface ProjectManager {
@@ -66,4 +66,5 @@ public interface ProjectManager {
     public SB[] getSBsForProject(String projId) throws SchedulingException;
     public ProjectQueue getProjectQueue();
     public void getUpdates() throws SchedulingException;
+    public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason);
 }

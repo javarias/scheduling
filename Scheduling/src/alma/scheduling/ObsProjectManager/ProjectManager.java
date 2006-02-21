@@ -27,7 +27,7 @@
 package alma.scheduling.ObsProjectManager;
 
 import java.util.logging.Logger; 
-
+import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.Program;
@@ -37,7 +37,7 @@ import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 
 /**
- * @version $Id: ProjectManager.java,v 1.11 2006/02/21 15:10:42 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.12 2006/02/21 21:30:19 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -141,6 +141,6 @@ public class ProjectManager implements Runnable,
     }
 
     public void getUpdates() throws SchedulingException {}
-
+    public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason){}
     
 }

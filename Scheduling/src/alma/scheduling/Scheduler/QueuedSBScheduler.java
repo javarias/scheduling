@@ -39,7 +39,8 @@ import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Project;
 
 import alma.scheduling.MasterScheduler.Message;
-import alma.scheduling.AlmaScheduling.ALMAProjectManager;
+//import alma.scheduling.AlmaScheduling.ALMAProjectManager;
+
 import alma.scheduling.NothingCanBeScheduledEnum;
 /**
  */
@@ -207,7 +208,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
                     break;
                 }
             }
-            ((ALMAProjectManager)config.getProjectManager())
+            config.getProjectManager()
                 .publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
             config.getControl().destroyArray(config.getArrayName());
         } catch(Exception e){
