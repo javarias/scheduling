@@ -35,6 +35,8 @@ public class Source {
     private String solarSystemObj;
     private int numberSourceProperties;
     private double visibleMagnitude;
+    private double minMagnitude;
+    private double maxMagnitude;
     private String restFrequency; // created with a double and units
     private String transition;
         
@@ -48,6 +50,8 @@ public class Source {
         solarSystemObj = null;
         numberSourceProperties =0;
         visibleMagnitude = 0.0;
+        minMagnitude =0.0;
+        maxMagnitude =0.0;
         restFrequency = null;
         transition= null;
     }
