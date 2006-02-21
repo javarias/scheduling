@@ -85,6 +85,22 @@ public class Source {
     }
     
     //////////
+    public void setMinMagnitude(double d){
+        minMagnitude =d;
+    }
+    public double getMinMagnitude(){
+        return minMagnitude;
+    }
+
+    //////////
+    public void setMaxMagnitude(double d){
+        maxMagnitude =d;
+    }
+    public double getMaxMagnitude(){
+        return maxMagnitude;
+    }
+
+    //////////
     public void setRestFrequency(double val, String unit){
         restFrequency = String.valueOf(val) + unit;
     }
