@@ -20,6 +20,5 @@ acsStartContainer -java ARCHIVE/ACC/javaContainer >& sched_archiveContainer.log 
 #Start a python container named 'python'
 acsStartContainer -py python >& sched_pythonContainer.log &
 
-#sleep for 10 seconds to make sure the container comes up! 
-#Hopefully it won't take more than 10 seconds! 
+archvieStart &> sched_archiveStart.log
 sleep 30
