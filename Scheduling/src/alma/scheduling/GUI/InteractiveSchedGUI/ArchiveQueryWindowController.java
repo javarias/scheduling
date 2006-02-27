@@ -7,12 +7,9 @@ import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.AlmaScheduling.ALMAArchive;
 import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
 import alma.acs.container.ContainerServices;
-import alma.scheduling.AlmaScheduling.ALMAOperator;
-import alma.scheduling.AlmaScheduling.ALMAClock;
 import alma.scheduling.Event.Publishers.PublishEvent;
 
 public class ArchiveQueryWindowController implements Runnable {
@@ -121,24 +118,5 @@ public class ArchiveQueryWindowController implements Runnable {
     }
 
     public static void main(String[] args){
-       /* try {
-            alma.acs.component.client.ComponentClient c = 
-                new alma.acs.component.client.ComponentClient(null, System.getProperty("ACS.manager"), "test");
-            alma.scheduling.AlmaScheduling.ALMAProjectManager m = 
-                
-                new alma.scheduling.AlmaScheduling.ALMAProjectManager(
-                        c.getContainerServices(), 
-                        (ALMAOperator)null, 
-                        new ALMAArchive(c.getContainerServices(), new ALMAClock()),
-                        new SBQueue(),
-                        (PublishEvent)null, 
-                        (ALMAClock)null);
-
-            ArchiveQueryWindowController ctrl = new ArchiveQueryWindowController(m);
-            ctrl.run();
-            
-        } catch(Exception e){}
-        */
-
     }
 }
