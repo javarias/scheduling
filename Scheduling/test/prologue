@@ -20,5 +20,5 @@ acsStartContainer -java ARCHIVE/ACC/javaContainer >& sched_archiveContainer.log 
 #Start a python container named 'python'
 acsStartContainer -py python >& sched_pythonContainer.log &
 
-archvieStart &> sched_archiveStart.log
+archiveStart &> sched_archiveStart.log &
 sleep 30
