@@ -17,6 +17,9 @@ echo $ACS_INSTANCE > sched_acs_instance.log
 acsStartContainer -java java >& sched_javaContainer.log &
 #Start a java container for the archive
 acsStartContainer -java ARCHIVE/ACC/javaContainer >& sched_archiveContainer.log &
+acsStartContainer -java ACC/masterContainer >& sched_masterContainer.log &
+acsStartContainer -cpp ACC/cppContainer >& sched_cppContainer.log &
+acsStartContainer -java ACC/ijavaContainer >& sched_acc_javaContainer.log &
 #Start a python container named 'python'
 acsStartContainer -py python >& sched_pythonContainer.log &
 
