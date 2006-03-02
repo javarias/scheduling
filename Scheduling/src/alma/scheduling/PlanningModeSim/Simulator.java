@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.File;
 
 /**
@@ -57,6 +58,8 @@ public class Simulator implements Runnable {
 	 * The container that controls the components.
 	 */
 	private Container container;
+
+    private String outputResultsFilename;
 
 	/**
 	 * Report a severe error to the log and throw an exception.
@@ -228,10 +231,15 @@ public class Simulator implements Runnable {
 			// Let the reporter know we have finished.
 			reporter.schedulingIsComplete(clock.getDateTime(),0,"");
 			
+            outputResultsFilename = reporter.getOutputFilename();
 		} catch (Exception err) {
 			err.printStackTrace();
 			System.out.println("The simulation run has aborted.");
 		}
 	}
+
+    public String getReportFilename() {
+        return outputResultsFilename;
+    }
 
 }

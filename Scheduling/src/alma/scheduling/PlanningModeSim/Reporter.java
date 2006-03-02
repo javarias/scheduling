@@ -499,5 +499,10 @@ public class Reporter extends BasicComponent {
 		out.println("Average weather factor           " + (float)(totalWeather / totalNumber));
 		*/
 	}
+
+
+   public String getOutputFilename(){
+       return input.getOutFile().getName(); 
+   }
 	
 }

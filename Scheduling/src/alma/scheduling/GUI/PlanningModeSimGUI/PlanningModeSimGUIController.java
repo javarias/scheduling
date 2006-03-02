@@ -37,6 +37,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -365,12 +367,15 @@ public class PlanningModeSimGUIController implements Runnable {
             System.out.println("A data file must be properly created " 
                 + "before a simulation can be run.");
         } else {
-            clearInputFields();
             simulator = new Simulator();
             try {
                 simulator.initialize(".", data_filename, "output.txt", "log.txt");
                 Thread t = new Thread(simulator);
                 t.start();
+                try {
+                    t.join();
+                    clearInputFields();
+                } catch(Exception ex) {}
             } catch(Exception e) {
                 System.out.println("Error initializing simulator!");
                 e.printStackTrace();
@@ -399,10 +404,26 @@ public class PlanningModeSimGUIController implements Runnable {
      *  Creates the output views for the results of the simulation.
      */
     private void createSimulationOutputView(JTabbedPane pane) {
-        pane.addTab("SchedBlock Info", 
-                new JScrollPane(new JTextArea()));
-        pane.addTab("Sources - Visibility and Execution", 
-                new JScrollPane(new JTextArea()));
+        File f = new File(simulator.getReportFilename());
+        BufferedReader in = null;
+        StringBuffer doc=null;
+        String line = null;
+        String contents="";
+        try {
+            in = new BufferedReader(new FileReader(f));
+            doc = new StringBuffer();
+            line = in.readLine();
+            while(line != null) {
+                doc.append(line+"\n");
+                line = in.readLine();
+            }
+            in.close();
+            contents = new String(doc);
+        } catch(Exception e) {}
+        pane.addTab("Simulation Output", 
+                new JScrollPane(new JTextArea(contents)));
+        //pane.addTab("Sources - Visibility and Execution", 
+        //        new JScrollPane(new JTextArea()));
     }
 
     
@@ -542,7 +563,7 @@ public class PlanningModeSimGUIController implements Runnable {
         ////////////////////////////////////////////////////////////
         
         } catch(Exception e) {
-            System.out.println("Crap");
+            System.out.println("Error loading files in PMS GUI");
             e.printStackTrace();
         }
     }
