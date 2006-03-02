@@ -209,7 +209,7 @@ public class Reporter extends BasicComponent {
 	private void writeBeginning() {
 		// Write the initial data in the output file. Place this in Reporter.
 		SiteCharacteristics site = input.getSite();
-		out.println("ALMA Simulator Release R2.1 - May 4, 2004");
+		out.println("ALMA Simulator Release R3.1 - 2006");
 		out.println();
 		out.println("Beginning simulation run.  System time: " + DateTime.currentSystemTime());
 		out.println("Input properties from file: " + input.getInputFile().getAbsolutePath());

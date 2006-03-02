@@ -91,10 +91,13 @@ public class PlanningModeSimGUIController implements Runnable {
 
     private Simulator simulator;
     private String data_filename;
+    private boolean simulationDone; //used to know whether to save the properties file or the simulation output
+    private String simOutputContents="";
 
     public PlanningModeSimGUIController() {
         weatherfuncvalues = new Vector();
         freqbands = new Vector();
+        simulationDone = false;
     }
     
     public void run() {
@@ -126,27 +129,26 @@ public class PlanningModeSimGUIController implements Runnable {
     }
 
     protected void saveToFile(String filename) {
-        //Simulation Properties tab
-        stuffFromSimulationPropertiesTab();
-        
-        //Antenna Config Tab
-        stuffFromAntennaConfigTab();
-        //Frequency band tab
-        stuffFromFrequencyTab();
-       
-        //Weather model tab
-        stuffFromWeatherTab();
-       
-        //Weights tab
-        stuffFromAlgorithmWeightsTab();
-              
-        //Projects tab
-        stuffFromProjectsTab();
-       
-        //save all gathered info to a file
-        data_filename = filename;
-        createFile(filename);
-
+        //data_filename = filename;
+        if(!simulationDone) {//save project file 
+            //Simulation Properties tab
+            stuffFromSimulationPropertiesTab();
+            //Antenna Config Tab
+            stuffFromAntennaConfigTab();
+            //Frequency band tab
+            stuffFromFrequencyTab();
+            //Weather model tab
+            stuffFromWeatherTab();
+            //Weights tab
+            stuffFromAlgorithmWeightsTab();
+            //Projects tab
+            stuffFromProjectsTab();
+            //save all gathered info to a file
+            createInputFile(filename);
+        } else { //save simulation output
+            createOutputFile(filename);
+        }
+        System.out.println("done save to file "+filename);
     }
 
     private void stuffFromSimulationPropertiesTab(){
@@ -218,7 +220,7 @@ public class PlanningModeSimGUIController implements Runnable {
     }
 
 
-    private void createFile(String fileName) {
+    private void createInputFile(String fileName) {
         try {
             File f = new File(fileName);
             PrintStream out = new PrintStream(new FileOutputStream(f));
@@ -339,13 +341,22 @@ public class PlanningModeSimGUIController implements Runnable {
                     }
                 }
                 out.println();
-                
-                        
             }
             out.println();
-
+            out.close();
         } catch(Exception ex) {
-            System.out.println("ERROR!");
+            System.out.println("ERROR creating simulation input file!");
+            ex.printStackTrace();
+        }
+    }
+    private void createOutputFile(String filename) {
+        try {
+            File f = new File(filename);
+            PrintStream out = new PrintStream(new FileOutputStream(f));
+            out.println(simOutputContents);
+            out.close();
+        } catch (Exception ex) {
+            System.out.println("ERROR creating simulation output file!");
             ex.printStackTrace();
         }
     }
@@ -374,6 +385,7 @@ public class PlanningModeSimGUIController implements Runnable {
                 t.start();
                 try {
                     t.join();
+                    simulationDone = true;
                     clearInputFields();
                 } catch(Exception ex) {}
             } catch(Exception e) {
@@ -408,7 +420,6 @@ public class PlanningModeSimGUIController implements Runnable {
         BufferedReader in = null;
         StringBuffer doc=null;
         String line = null;
-        String contents="";
         try {
             in = new BufferedReader(new FileReader(f));
             doc = new StringBuffer();
@@ -418,10 +429,10 @@ public class PlanningModeSimGUIController implements Runnable {
                 line = in.readLine();
             }
             in.close();
-            contents = new String(doc);
+            simOutputContents = new String(doc);
         } catch(Exception e) {}
         pane.addTab("Simulation Output", 
-                new JScrollPane(new JTextArea(contents)));
+                new JScrollPane(new JTextArea(simOutputContents)));
         //pane.addTab("Sources - Visibility and Execution", 
         //        new JScrollPane(new JTextArea()));
     }
@@ -570,6 +581,9 @@ public class PlanningModeSimGUIController implements Runnable {
 
     public String promptForProjectFile() {
         return gui.getProjectFile();
+    }
+    public void startingNewSimulation() {
+        simulationDone = false;
     }
 
     //////////////////////////////////////////////

@@ -100,6 +100,7 @@ public class PlanningModeSimGUI extends JFrame {
                 getContentPane().remove(1);
                 getContentPane().add(createContentPanels(),BorderLayout.CENTER);
                 getContentPane().validate();
+                controller.startingNewSimulation();
                 
             }
         });
