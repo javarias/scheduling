@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.7 2006/01/04 14:52:49 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.8 2006/03/06 15:02:37 sslucero Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -24,10 +24,13 @@ USER_JFLAGS= -deprecation #-Xlint
 #
 # Jarfiles and their directories
 #
-JARFILES = scheduling 
+JARFILES = scheduling PMSSimulator
 scheduling_DIRS =  alma/scheduling/
 scheduling_EXTRAS = alma/scheduling/Image/*.jpg
 
+#JARFILES = PMSSimulator
+PMSSimulator_DIRS = alma/scheduling/Scheduler alma/scheduling/Define alma/scheduling/Event alma/scheduling/GUI alma/scheduling/MasterScheduler/ alma/scheduling/ObsProjectManager/ alma/scheduling/PlanningModeSim/
+PMSSimulator_EXTRAS = alma/scheduling/Image/*.jpg
 
 INSTALL_FILES = ../lib/scheduling.jar
 

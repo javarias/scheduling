@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.47 2006/02/21 14:54:28 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.48 2006/03/06 15:02:37 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -434,20 +434,67 @@ public class ALMAArchive implements Archive {
         Vector<SBLite> sbliteVector = new Vector<SBLite>();
         try {
             Project[] projects = getAllProject();
+            String sid,pid,sname,pname,pi,pri;
+            double ra,dec,freq,score,success,rank;
+            long maxT;
             for(int i=0; i < projects.length; i++){
                 //get all the sbs of this project
                 SB[] sbs = projects[i].getAllSBs ();
                 for(int j=0; j < sbs.length; j++) {
                     sblite = new SBLite();
-                    sblite.schedBlockRef = sbs[j].getId();
-                    sblite.projectRef = sbs[j].getProject().getId();
+                    sid = sbs[j].getId();
+                    if(sid == null || sid =="") {
+                        sid = "WARNING: Problem with SB id";
+                    }
+                    sblite.schedBlockRef =sid;
+                    //sblite.schedBlockRef = sbs[j].getId();
+                    pid = sbs[j].getProject().getId();
+                    if(pid ==null||pid=="") {
+                        pid = "WARNING: problem with project id";   
+                    }
+                    sblite.projectRef = pid;
+                    //sblite.projectRef = sbs[j].getProject().getId();
                     sblite.obsUnitsetRef = "";
-                    sblite.sbName = sbs[j].getSBName();
-                    sblite.projectName = sbs[j].getProject().getProjectName();
-                    sblite.PI = sbs[j].getProject().getPI();
-                    sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
-                    sblite.ra = sbs[j].getTarget().getCenter().getRa();
-                    sblite.dec = sbs[j].getTarget().getCenter().getDec();
+                    sname =sbs[j].getSBName();
+                    if(sname == null || sname ==""){
+                        sname = "WARNING: problem with SB name";
+                    }
+                    sblite.sbName =sname;
+                    //sblite.sbName = sbs[j].getSBName();
+                    pname = sbs[j].getProject().getProjectName();
+                    if(pname == null ||pname =="") {
+                        pname = "WARNING: problem with project name";
+                    }
+                    sblite.projectName = pname;
+                    //sblite.projectName = sbs[j].getProject().getProjectName();
+                    pi = sbs[j].getProject().getPI();sbs[j].getProject().getPI();
+                    if(pi == null || pi == ""){
+                        pi = "WARNING: problem with pi";
+                    }
+                    sblite.PI = pi;
+                    //sblite.PI = sbs[j].getProject().getPI();
+                    pri = sbs[j].getProject().getScientificPriority().getPriority();
+                    if(pri == null || pri =="") {
+                        pri = "WARNING: problem with scientific priority";
+                    }
+                    sblite.priority = pri;
+                    //sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
+                    ra = sbs[j].getTarget().getCenter().getRa();
+                    /*
+                    if(ra == null) {
+                        ra = 0.0;
+                    }
+                     */
+                    sblite.ra = ra;
+                    //sblite.ra = sbs[j].getTarget().getCenter().getRa();
+                    dec = sbs[j].getTarget().getCenter().getDec();
+                    /*
+                    if(dec == null) {
+                        dec = 0.0;
+                    }
+                    */
+                    sblite.dec = dec;
+                    //sblite.dec = sbs[j].getTarget().getCenter().getDec();
                     sblite.freq = 0;//sbs[j].getFrequencyBand().getHighFrequency();
                     sblite.maxTime = 0;
                     sblite.score = 0;
@@ -462,6 +509,10 @@ public class ALMAArchive implements Archive {
             
         } catch(Exception e) {
             e.printStackTrace();
+        }
+        if(sbliteArray==null){
+            sbliteArray = new SBLite[1];
+            sbliteArray[0] = new SBLite();
         }
         return sbliteArray;
     }
