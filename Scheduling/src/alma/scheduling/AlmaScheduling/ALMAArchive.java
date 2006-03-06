@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.49 2006/03/06 15:12:43 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.50 2006/03/06 16:24:35 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -429,17 +429,20 @@ public class ALMAArchive implements Archive {
       *
       */
     public SBLite[] getSBLites() {
+	logger.info("SCHEDULING: Called getSBLites");
         SBLite[] sbliteArray=null;
         SBLite sblite;
         Vector<SBLite> sbliteVector = new Vector<SBLite>();
         try {
             Project[] projects = getAllProject();
+//System.out.println("# of projects retrieved in getSBLite = "+projects.length);
             String sid,pid,sname,pname,pi,pri;
             double ra,dec,freq,score,success,rank;
             long maxT;
             for(int i=0; i < projects.length; i++){
                 //get all the sbs of this project
                 SB[] sbs = projects[i].getAllSBs ();
+//System.out.println("# of sbs  retrieved in getSBLite for project "+i+" = "+sbs.length);
                 for(int j=0; j < sbs.length; j++) {
                     sblite = new SBLite();
                     sid = sbs[j].getId();
@@ -479,20 +482,20 @@ public class ALMAArchive implements Archive {
                     }
                     sblite.priority = pri;
                     //sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
-                    ra = sbs[j].getTarget().getCenter().getRa();
-                    /*
-                    if(ra == null) {
-                        ra = 0.0;
-                    }
-                     */
+		    try {
+	                    ra = sbs[j].getTarget().getCenter().getRa();
+	 	    } catch(NullPointerException npe) {
+			logger.info("SCHEDULING: RA object == null in SB, setting to 0.0");
+			ra = 0.0;
+		    }
                     sblite.ra = ra;
                     //sblite.ra = sbs[j].getTarget().getCenter().getRa();
-                    dec = sbs[j].getTarget().getCenter().getDec();
-                    /*
-                    if(dec == null) {
-                        dec = 0.0;
-                    }
-                    */
+		    try {
+	                    dec = sbs[j].getTarget().getCenter().getDec();
+	 	    } catch(NullPointerException npe) {
+			logger.info("SCHEDULING: DEC object == null in SB, setting to 0.0");
+			dec = 0.0;
+		    }
                     sblite.dec = dec;
                     //sblite.dec = sbs[j].getTarget().getCenter().getDec();
                     sblite.freq = 0;//sbs[j].getFrequencyBand().getHighFrequency();
@@ -504,16 +507,27 @@ public class ALMAArchive implements Archive {
                     sbliteVector.add(sblite);
                 }
             }
+	    //logger.info("vector length = "+sbliteVector.size());
             sbliteArray = new SBLite[sbliteVector.size()];
             sbliteArray = sbliteVector.toArray(sbliteArray);
             
+	    //logger.info("sblite array length = "+sbliteArray.length);
         } catch(Exception e) {
+	    logger.info(e.toString());
             e.printStackTrace();
         }
-        if(sbliteArray==null){
+/*  
+      if(sbliteArray==null){
             sbliteArray = new SBLite[1];
             sbliteArray[0] = new SBLite();
         }
+	try {
+System.out.println("sblite array length before return = "+sbliteArray.length);
+} catch(Exception ex) {
+logger.info(ex.toString());
+ex.printStackTrace();
+}
+*/
         return sbliteArray;
     }
 
