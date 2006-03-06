@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.48 2006/03/06 15:02:37 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.49 2006/03/06 15:12:43 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -113,7 +113,7 @@ public class ALMAArchive implements Archive {
                 QueryResult res = cursor.next();
                 try {
                     XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
-                    System.out.println("SpecialSB: "+ xml.xmlString);
+                    //System.out.println("SpecialSB: "+ xml.xmlString);
                     SpecialSB ssb= (SpecialSB)
                         entityDeserializer.deserializeEntity(xml, SpecialSB.class);
                     tmpSpecialSBs.add(ssb);
@@ -179,7 +179,7 @@ public class ALMAArchive implements Archive {
         //logger.info("Getting project status from archive, id = "+ ps_id);
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
-            logger.info("PS xml: "+xml.xmlString);
+            //logger.info("PS xml: "+xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
             ps = ProjectUtil.updateProjectStatus(p);
             updateProjectStatus(ps);
@@ -524,7 +524,7 @@ public class ALMAArchive implements Archive {
     public synchronized void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
         try {
             XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
-            logger.info("SCHEDULING: updated PS: "+xml.xmlString);
+            //logger.info("SCHEDULING: updated PS: "+xml.xmlString);
             XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
             xml2.xmlString = xml.xmlString;
             archOperationComp.update(xml2);
@@ -1011,7 +1011,7 @@ public class ALMAArchive implements Archive {
             }
             while(cursor.hasNext()){
                 QueryResult res = cursor.next();
-                logger.info("PPR xml (in archive)= "+res.xml);
+                //logger.info("PPR xml (in archive)= "+res.xml);
                 result = res.xml;
             }
 
