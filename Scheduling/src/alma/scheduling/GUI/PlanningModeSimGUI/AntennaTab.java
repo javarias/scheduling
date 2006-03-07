@@ -91,7 +91,9 @@ public class AntennaTab extends JScrollPane {
                 JPanel o1 = (JPanel)b.getParent();
                 JPanel o2 = (JPanel)o1.getParent();
                 try { 
-                    o2.remove(1);
+                    Component[] comps = o2.getComponents();
+                    ((JTabbedPane)comps[1]).removeAll();
+                    comps[1].repaint();
                 }catch(Exception ex){}
                 totalAntennas = val;
                 createAntennaConfigTabs(val);
