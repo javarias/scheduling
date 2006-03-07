@@ -97,11 +97,11 @@ public class PlanningModeSimGUI extends JFrame {
         newSim.setMnemonic(KeyEvent.VK_N);
         newSim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                controller.startingNewSimulation();
                 getContentPane().remove(1);
                 getContentPane().add(createContentPanels(),BorderLayout.CENTER);
+                getContentPane().requestFocus();
                 getContentPane().validate();
-                controller.startingNewSimulation();
-                
             }
         });
         file.add(newSim);
