@@ -410,7 +410,6 @@ public class ProjectsTab extends JScrollPane {
         Vector allProjects = new Vector(); //projects vector
         try {
             totalProjects = projectPane.getTabCount();
-            //System.out.println("Total projects = "+totalProjects);
             for(int i=0; i < totalProjects; i++) {
                 Vector v = new Vector();
                 Component scrollPane = projectPane.getComponentAt(i);
@@ -418,9 +417,6 @@ public class ProjectsTab extends JScrollPane {
                 Component[] tabPaneComps = ((JViewport)tabPane[0]).getComponents();
                 JPanel mainPanel = (JPanel)tabPaneComps[0];
                 Component[] mainPanelComps = mainPanel.getComponents();
-                //System.out.println(mainPanelComps.length);
-                //System.out.println(mainPanelComps[0].getClass().getName());
-                //System.out.println(mainPanelComps[1].getClass().getName());
                 JPanel projectInfoPanel = (JPanel)mainPanelComps[0];
                 //JPanel targetsInfoPanel = (JPanel)mainPanelComps[1];
                 JTabbedPane setsTabs = (JTabbedPane) mainPanelComps[1];
@@ -432,8 +428,6 @@ public class ProjectsTab extends JScrollPane {
                 v.add( ((JTextField)projectInfo[7]).getText() ); //number of sets
                 
                 Component[] setsPaneComps = setsTabs.getComponents();
-                //System.out.println(setsPaneComps.length);// The number of sets equals this.
-                //System.out.println(setsPaneComps[0].getClass().getName());//JScrollPane
                 //for each scroll pane in setsPaneComps get the internals.
                 int numberOfSets = setsPaneComps.length;// The number of sets equals this.
                 Vector sets = new Vector();
@@ -456,29 +450,16 @@ public class ProjectsTab extends JScrollPane {
     public Vector getSetsInfo(Component[] comp) throws Exception {
         int len = comp.length;
         Vector setStuff = new Vector();//First 5 = set info stuff, next = target stuff
-        /*System.out.println(len);
-        for(int i=0; i < len; i++){
-            System.out.println(comp[i].getClass().getName());
-        }
-        */
         Component[] setsContents = ((JViewport)comp[0]).getComponents();
         Component[] setsPanel = ((JPanel)setsContents[0]).getComponents();
         
-        //System.out.println(setsPanel.length);
-        //System.out.println(setsPanel[0].getClass().getName());
-        //System.out.println(setsPanel[1].getClass().getName());
         Component[] setsInfo = ((JPanel)setsPanel[0]).getComponents(); //12 items
         setStuff.add(((JTextField)setsInfo[1]).getText());//sets name
         setStuff.add(((JTextField)setsInfo[4]).getText());//freq band
-        setStuff.add((String)((JComboBox)setsInfo[8]).getSelectedItem());//weather cond.
         setStuff.add(((JTextField)setsInfo[6]).getText());//freq
+        setStuff.add((String)((JComboBox)setsInfo[8]).getSelectedItem());//weather cond.
         setStuff.add(((JTextField)setsInfo[10]).getText());//# of targets
-        /*
-        for(int i=0; i < setStuff.size();i++){
-            System.out.println(setStuff.elementAt(i));
-        }
-        */
-        //System.out.println(setsInfo.length);
+        
         Component[] targets = ((JPanel)setsPanel[1]).getComponents();
         Vector targetsInfo = new Vector(targets.length);
         for(int i=0; i < targets.length;i++){
@@ -496,15 +477,16 @@ public class ProjectsTab extends JScrollPane {
      * @return Vector
      */
     public Vector getTargetsInfo(Component[] comp) throws Exception {
+        String tmp;
         int totaltargets = comp.length;
-        Vector target = new Vector(); //holds all the targets info.
+        Vector target = new Vector(); //holds this targets info.
         target.add(((JTextField)comp[1]).getText()); //targetName
         target.add(((JTextField)comp[3]).getText()); //RA
         target.add(((JTextField)comp[5]).getText()); //DEC
         target.add(((JTextField)comp[9]).getText()); //FREQ
         target.add(((JTextField)comp[11]).getText()); //total time
         target.add((String)((JComboBox)comp[15]).getSelectedItem()); //weather
-        target.add(((JTextField)comp[17]).getText()); //repeat count
+        target.add(((JTextField)comp[17]).getText());//repeat count;
            
         return target;
     }
@@ -559,6 +541,8 @@ public class ProjectsTab extends JScrollPane {
             token = new StringTokenizer(s1,";");
             //get the last token
             while(token.hasMoreTokens()){
+                //parse til last one because that is the number of sets
+                //and that is all we care about right here
                 tmp = token.nextToken().trim();
             }
             sets = Integer.parseInt(tmp.trim());
@@ -570,7 +554,9 @@ public class ProjectsTab extends JScrollPane {
                 sets_v.add(s2);
                 v.removeElementAt(0);
                 token = new StringTokenizer(s2, ";");
-                while(token.hasMoreTokens()){
+                while(token.hasMoreTokens()){ 
+                    //parse til last one because that is the number of targets
+                    //and that is all we care about right here
                     tmp = token.nextToken().trim();
                 }
                 targets = Integer.parseInt(tmp.trim());
@@ -582,6 +568,8 @@ public class ProjectsTab extends JScrollPane {
                     targets_v.add(s3);
                     v.removeElementAt(0);
                 }
+                //add target vector for this set under the line describing the set
+                sets_v.add(targets_v);
             }
             projectPane.add("Project "+projects, updateProjectTab(s1, sets_v, targets_v));
             projects++;
@@ -601,9 +589,6 @@ public class ProjectsTab extends JScrollPane {
      * @return JScrollPane
      */
     public JScrollPane updateProjectTab(String projInfo, Vector setsInfo, Vector targetsInfo) {
-        for(int i=0; i< targetsInfo.size(); i++){
-            System.out.println(targetsInfo.elementAt(i));
-        }
         StringTokenizer token = new StringTokenizer(projInfo,";");
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -637,7 +622,7 @@ public class ProjectsTab extends JScrollPane {
         gridbag.setConstraints(l,c);
         p.add(l);
         String sets = token.nextToken();
-        int setscount = Integer.parseInt(sets.trim());
+        //int setscount = Integer.parseInt(sets.trim());
         tf = new JTextField(sets.trim());
         c.gridwidth= GridBagConstraints.REMAINDER;
         gridbag.setConstraints(tf,c);
@@ -646,9 +631,9 @@ public class ProjectsTab extends JScrollPane {
         main.add(p, BorderLayout.NORTH);
         
         JTabbedPane setsPane = new JTabbedPane();
-        for(int i=0; i < setsInfo.size(); i++) {
-            //System.out.println("Target vector size = "+ targetsInfo.size());
-            setsPane.addTab("Set "+(i+1), updateSetPanel((String)setsInfo.elementAt(i), targetsInfo));
+        int setCounter=1;
+        for(int i=0; i < setsInfo.size(); i=i+2) {
+            setsPane.addTab("Set "+setCounter++, updateSetPanel((String)setsInfo.elementAt(i), (Vector)setsInfo.elementAt(i+1)));
         }
         main.add(setsPane, BorderLayout.CENTER);
         main.validate();
@@ -695,7 +680,8 @@ public class ProjectsTab extends JScrollPane {
         l= new JLabel("Frequency");
         gridbag.setConstraints(l,c);
         p.add(l);
-        tf = new JTextField(st.nextToken().trim());
+        String freq = st.nextToken().trim();
+        tf = new JTextField(freq);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(tf,c);
         p.add(tf);  
@@ -703,6 +689,8 @@ public class ProjectsTab extends JScrollPane {
         c.gridwidth = 1;
         gridbag.setConstraints(l,c);
         p.add(l);
+        String weather = st.nextToken().trim();
+        weather = weather.toLowerCase();
         JComboBox cb = new JComboBox();
         cb.addItem("Exceptional");
         cb.addItem("Excellent");
@@ -712,7 +700,6 @@ public class ProjectsTab extends JScrollPane {
         cb.addItem("Poor");
         cb.addItem("Dismal");
         cb.addItem("Any");
-        String weather = st.nextToken().trim();
         if(weather.equals("exceptional")) {
             cb.setSelectedItem("Exceptional");
         } else if(weather.equals("excellent")) { 
@@ -744,9 +731,7 @@ public class ProjectsTab extends JScrollPane {
         main.add(p, BorderLayout.NORTH);
         Vector setTargets = new Vector(t);
         for (int i =0 ; i<t; i++){
-            //System.out.println(targets.elementAt(i));
             setTargets.add(targets.elementAt(i));
-            //targets.removeElementAt(i);
         }
         main.add(updateTargetsField(t,setTargets));
         JScrollPane pane = new JScrollPane(main);

@@ -276,6 +276,9 @@ public class GUI extends JFrame {
         if(row <0 ) {
             JOptionPane.showMessageDialog(this, "Please select an sb");
             return;
+        } else if(row >1){
+            JOptionPane.showMessageDialog(this, "Please select only ONE sb");
+            return;
         }
         String selectedSB = (String)sbRowInfo[row][3];
         controller.executeSB(selectedSB);

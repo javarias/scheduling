@@ -95,6 +95,7 @@ public class PlanningModeSimGUIController implements Runnable {
     private String simOutputContents="";
 
     public PlanningModeSimGUIController() {
+        data_filename=null;
         weatherfuncvalues = new Vector();
         freqbands = new Vector();
         simulationDone = false;
@@ -144,11 +145,22 @@ public class PlanningModeSimGUIController implements Runnable {
             //Projects tab
             stuffFromProjectsTab();
             //save all gathered info to a file
-            createInputFile(filename);
+            int i=filename.lastIndexOf(".");
+            //System.out.println(filename);
+            if(i > 0 ){
+                int extra = filename.length() -i;
+                int len = filename.length() - extra;
+                data_filename = filename.substring(0,len);    
+                //System.out.println("filename with ending taken off = "+data_filename);
+            }else {
+                data_filename= filename;
+            }
+            createInputFile(data_filename);
         } else { //save simulation output
             createOutputFile(filename);
         }
-        System.out.println("done save to file "+filename);
+
+        //System.out.println("done save to file "+filename);
     }
 
     private void stuffFromSimulationPropertiesTab(){
@@ -222,7 +234,7 @@ public class PlanningModeSimGUIController implements Runnable {
 
     private void createInputFile(String fileName) {
         try {
-            File f = new File(fileName);
+            File f = new File(fileName+".txt");
             PrintStream out = new PrintStream(new FileOutputStream(f));
             out.println("Simulation.beginTime = " + startTime);
             out.println("Simulation.endTime = " + endTime);
@@ -295,13 +307,13 @@ public class PlanningModeSimGUIController implements Runnable {
               * in the simulation input.
               */
             out.println("projectSourceType = JavaProperties");
-            out.println("projectSource = project.txt");
+            out.println("projectSource = "+fileName+"_project.txt");
             /** 
               * Create a new file for all the project stuff. Right now this is
               * set to always be called project.txt
               * TODO make it so user can change name of file the projects are stored in.
               */
-            f = new File("project.txt");
+            f = new File(fileName+"_project.txt");
             out = new PrintStream(new FileOutputStream(f));
             out.println("numberProjects = " + totalprojects);
             out.println();
@@ -330,14 +342,20 @@ public class PlanningModeSimGUIController implements Runnable {
                     int numOfTargets= targets.size();
                     for(int k=0; k < numOfTargets;k++){
                         Vector target = (Vector)targets.elementAt(k);
-                        out.println("target."+i+"."+j+"."+k+" = "+
+                        String stuffToPrint =
+                                "target."+i+"."+j+"."+k+" = "+
                                 ((String)target.elementAt(0)) +"; "+ 
                                 ((String)target.elementAt(1)) +"; "+ 
                                 ((String)target.elementAt(2)) +"; "+ 
                                 ((String)target.elementAt(3)) +"; "+ 
-                                ((String)target.elementAt(4)) +"; "+ 
-                                ((String)target.elementAt(5)) +"; "+ 
-                                ((String)target.elementAt(6)) );
+                                ((String)target.elementAt(4)) +"; "+
+                                ((String)target.elementAt(5)) ;
+                        String rc = ((String)target.elementAt(6)) ;
+                        if(!rc.equals("")){
+                            stuffToPrint = stuffToPrint + "; "+ rc;
+                        }
+                        out.println(stuffToPrint);
+                                
                     }
                 }
                 out.println();
@@ -351,7 +369,7 @@ public class PlanningModeSimGUIController implements Runnable {
     }
     private void createOutputFile(String filename) {
         try {
-            File f = new File(filename);
+            File f = new File(filename+".txt");
             PrintStream out = new PrintStream(new FileOutputStream(f));
             out.println(simOutputContents);
             out.close();
@@ -373,14 +391,15 @@ public class PlanningModeSimGUIController implements Runnable {
      * If no file is found with that name the simulation does not run.
      */
     public void runSimulation() {
-        File f = new File(data_filename);
+        File f = new File(data_filename+".txt");
         if(!f.exists()){
+            System.out.println(f.getName());
             System.out.println("A data file must be properly created " 
                 + "before a simulation can be run.");
         } else {
             simulator = new Simulator();
             try {
-                simulator.initialize(".", data_filename, "output.txt", "log.txt");
+                simulator.initialize(".", data_filename+".txt", "output.txt", "log.txt");
                 Thread t = new Thread(simulator);
                 t.start();
                 try {
@@ -444,7 +463,7 @@ public class PlanningModeSimGUIController implements Runnable {
      * displayed in their appropriate fields.
      */
     public void loadFile(String filepathname, String filename) {
-        System.out.println("Opening "+filepathname);
+        //System.out.println("Opening "+filepathname);
         data_filename = filename;
         Vector tab1 = new Vector();
         Vector tab2 = new Vector();
@@ -509,13 +528,13 @@ public class PlanningModeSimGUIController implements Runnable {
             ////////////////////////////////////////////////////////////
             try {
                 String projectfile = fileproperties.getProperty(Tag.projectSource);
-                System.out.println(projectfile);
+                //System.out.println(projectfile);
                 file = new FileInputStream(projectfile);
                 fileproperties.load(file);
-                System.out.println("Project file loaded with project.txt");
+                //System.out.println("Project file loaded with project.txt");
             } catch (Exception e1) {
                 String projFile = promptForProjectFile();
-                System.out.println(projFile);
+                //System.out.println(projFile);
                 try {
                     file = new FileInputStream(projFile);
                     fileproperties.load(file);
@@ -523,16 +542,16 @@ public class PlanningModeSimGUIController implements Runnable {
                     file = new FileInputStream(filepathname);
                     fileproperties.load(file);
                 }
-                System.out.println("Project file loaded with "+projFile);
+                //System.out.println("Project file loaded with "+projFile);
             }
             
             tab6.add(fileproperties.getProperty(Tag.numberProjects));
             int totalprojects = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberProjects));
-            System.out.println(totalprojects);
+            //System.out.println(totalprojects);
             for(int i=0; i<totalprojects; i++) {
                 String s = fileproperties.getProperty(Tag.project+"."+i);
-                System.out.println(s);
+                //System.out.println(s);
                 StringTokenizer token = new StringTokenizer(s,";");
                 int tokencount = token.countTokens();
                 if(tokencount != 4) {
@@ -566,9 +585,6 @@ public class PlanningModeSimGUIController implements Runnable {
                     }
                 }
             }
-            //for(int i=0; i < tab5.size(); i++) {
-            //    System.out.println(tab5.elementAt(i));
-            //}
             projTab.loadValuesFromFile(tab6);
         
         ////////////////////////////////////////////////////////////
@@ -584,6 +600,13 @@ public class PlanningModeSimGUIController implements Runnable {
     }
     public void startingNewSimulation() {
         simulationDone = false;
+        data_filename = null;
+    }
+    public boolean isDataSaved(){
+        if(data_filename != null){
+            return true;
+        }
+        return false;
     }
 
     //////////////////////////////////////////////

@@ -1,3 +1,3 @@
 #!/bin/bash
-
-acsStartJava -endorsed alma.scheduling.PlanningModeSim.RunSimulator . input.txt output.txt log.txt
+#
+acsStartJava -endorsed alma.scheduling.PlanningModeSim.RunSimulator . woo2.txt output.txt log.txt

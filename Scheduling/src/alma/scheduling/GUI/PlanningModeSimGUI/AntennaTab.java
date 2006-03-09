@@ -234,7 +234,7 @@ public class AntennaTab extends JScrollPane {
             if(c[i] instanceof JTextField){
                 antennaConfig.add( ((JTextField)c[i]).getText() );
             } else if(c[i] instanceof YesNoNutator) {
-                System.out.println("nut result: "+((YesNoNutator)c[i]).getResult() );
+                //System.out.println("nut result: "+((YesNoNutator)c[i]).getResult() );
                 antennaConfig.add( ((YesNoNutator)c[i]).getResult() );
             }
         }
@@ -251,7 +251,7 @@ public class AntennaTab extends JScrollPane {
     
     public void setAntennaTotal(int i){
         totalAntennas = i;
-        System.out.println("AntennaTotal = "+i);
+        //System.out.println("AntennaTotal = "+i);
     }
 
     //////////////////////////////////////////////////////
@@ -269,7 +269,7 @@ public class AntennaTab extends JScrollPane {
         StringTokenizer token;
         int antennaNum=1;
         String[] s2= new String[4];
-        System.out.println(val.size());
+        //System.out.println(val.size());
         for(int i=0; i < val.size(); i++) {
             s1 = (String)val.elementAt(i);
             token = new StringTokenizer(s1,"; ");

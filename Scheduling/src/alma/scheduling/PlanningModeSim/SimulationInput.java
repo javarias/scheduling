@@ -755,6 +755,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		WeatherCondition w = null;
 		String[] cond = null;
 		// Set the weather condition.
+        word = word.toLowerCase();
 		if (word.equals("exceptional")) {
 			cond = new String [3];
 			cond[0] = "quality >= 0.9 -> 1.0";

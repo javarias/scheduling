@@ -30,6 +30,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
@@ -41,7 +42,9 @@ import java.awt.event.ActionListener;
 import java.awt.GridBagLayout; 
 import java.awt.GridBagConstraints; 
 
+import java.util.Hashtable;
 import java.lang.Integer;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -55,15 +58,21 @@ import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.JFileChooser;
-import java.awt.Container;
+import javax.swing.filechooser.FileFilter;
 
 public class PlanningModeSimGUI extends JFrame {
     private PlanningModeSimGUIController controller; 
     private int totalSelected=0;
     private JFileChooser chooser;
     private Container contentpane;
+    private JMenuItem newSim;
+    private JMenuItem save;
+    private JMenuItem load;
+    private JMenuItem exit;
+    private final JMenuItem runSim = new JMenuItem("Run Simulation");
 
     public PlanningModeSimGUI(PlanningModeSimGUIController c) {
         this.controller = c;
@@ -88,55 +97,42 @@ public class PlanningModeSimGUI extends JFrame {
 
     private void guiSetup() {
         chooser = new JFileChooser();
+        chooser.setAcceptAllFileFilterUsed(true);
+        chooser.setFileFilter(new TxtFileFilter());
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
         menuBar.add(file);
 
-        JMenuItem newSim = new JMenuItem("New Simulation");
+        newSim = new JMenuItem("New Simulation");
+        save = new JMenuItem("Save As");
+        load = new JMenuItem("Load");
+        exit = new JMenuItem("Exit");
+        
         newSim.setMnemonic(KeyEvent.VK_N);
         newSim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controller.startingNewSimulation();
-                getContentPane().remove(1);
-                getContentPane().add(createContentPanels(),BorderLayout.CENTER);
-                getContentPane().requestFocus();
-                getContentPane().validate();
+                doNewSimulationAction();
             }
         });
         file.add(newSim);
         
-        JMenuItem save = new JMenuItem("Save As");
         save.setMnemonic(KeyEvent.VK_S);
         save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String s = createFileChooser("save");
-                if (s != null) {
-                    controller.saveToFile(chooser.getSelectedFile().getPath());
-                } else {
-                    System.out.println("Canceled Save, s == null");
-                }
+                doSaveAction();
             }
         });
         file.add(save);
 
-        JMenuItem load = new JMenuItem("Load");
         load.setMnemonic(KeyEvent.VK_L);
         load.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String s = createFileChooser("load");
-                if(s != null) {
-                    controller.loadFile(chooser.getSelectedFile().getPath(),
-                                        chooser.getSelectedFile().getName());
-                } else{
-                    System.out.println("Canceled load, s == null!");
-                }
-
+                doLoadAction();
             }
         });
         file.add(load);
 
-        JMenuItem exit = new JMenuItem("Exit");
         exit.setMnemonic(KeyEvent.VK_X);
         exit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -148,11 +144,10 @@ public class PlanningModeSimGUI extends JFrame {
         JMenu simulation = new JMenu("Simulation");
         simulation.setMnemonic(KeyEvent.VK_S);
             
-        JMenuItem runSim = new JMenuItem("Run Simulation");
         runSim.setMnemonic(KeyEvent.VK_R);
         runSim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                controller.runSimulation();
+                doRunSimulationAction();
             }
         });
 
@@ -178,6 +173,36 @@ public class PlanningModeSimGUI extends JFrame {
         getContentPane().add(createGUIHeader(),BorderLayout.NORTH);
         getContentPane().add(createContentPanels(),BorderLayout.CENTER);
         setVisible(true);
+    }
+    private void doSaveAction(){
+        String s = createFileChooser("save");
+        if (s != null) {
+            controller.saveToFile(chooser.getSelectedFile().getName());
+        } else {
+            System.out.println("Canceled Save");
+        }
+    }
+    private void doLoadAction(){
+        String s = createFileChooser("load");
+        if(s != null) {
+            controller.loadFile(chooser.getSelectedFile().getPath(),
+                                chooser.getSelectedFile().getName());
+        } else{
+            System.out.println("Canceled load");
+        }
+    }
+    private void doNewSimulationAction(){
+        runSim.setEnabled(true);
+        controller.startingNewSimulation();
+        getContentPane().remove(1);
+        getContentPane().add(createContentPanels(),BorderLayout.CENTER);
+        getContentPane().requestFocus();
+        getContentPane().validate();
+    }
+    private void doRunSimulationAction(){
+        doSaveAction();
+        controller.runSimulation();
+        runSim.setEnabled(false);
     }
 
     private JPanel createGUIHeader() {
@@ -215,7 +240,7 @@ public class PlanningModeSimGUI extends JFrame {
     public String getProjectFile() {
         String s = createFileChooser("load");
         if(s == null) {
-            System.out.println("Canceled project load, s == null!");
+            System.out.println("Canceled project load");
         }
         return chooser.getSelectedFile().getPath();
     }
@@ -223,4 +248,46 @@ public class PlanningModeSimGUI extends JFrame {
     public void exit() {
         dispose();
     }
+
+   
+    class TxtFileFilter extends FileFilter {
+        private Hashtable filters = null;
+        public TxtFileFilter(){
+            filters = new Hashtable();
+            addExtension("txt");
+        }
+
+        public boolean accept(File f){
+            if(f!=null){
+                if(f.isDirectory()){
+                    return true;
+                }
+                String extension = getExtension(f);
+                if(extension !=null && filters.get(getExtension(f)) != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void addExtension(String extension){
+            if(filters == null){
+                filters = new Hashtable(3);
+            }
+            filters.put(extension.toLowerCase(), this);
+        }
+        public String getDescription(){
+            return "TextFile";
+        }
+        public String getExtension (File f){
+            if(f !=null){
+                String filename=f.getName();
+                int i=filename.lastIndexOf(".");
+                if(i>0 && i<filename.length()-1) {
+                    return filename.substring(i+1).toLowerCase();
+                }
+            }
+            return null;
+        }
+
+    } //end of TxtFileFilter class
 }
