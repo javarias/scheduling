@@ -1,0 +1,30 @@
+Required JAVA Version:
+   
+   * Java 1.5
+
+Quick Start Guide:
+
+    Included in this installation is an example simulation project. It is 
+contained in the input.txt file and corresponding project.txt files. To run 
+this quick example, simply run the runDynamicSchedulingSimulator script. Or 
+to quickly run the GUI, run the runDynamicSchedulingSimulatorGUI script and 
+load in the input.txt file.
+
+
+Details of each file:
+
+   * SchedulingInterfaces.jar - Scheduling's interface executables
+   * PMSimulator.jar - Scheduling's application executables
+   * input.txt - Java properties file which contains the information about the 
+     example project
+   * project.txt - Java properties file which is referenced in the input.txt 
+     file
+   * runDynamicSchedulingSimulator - bash script to run the example project
+   * runDynamicSchedulingSimulatorGUI - bash script to run the GUI (which will allow 
+     you to input a simulation project and then run the simulation)
+   
+Additional Information: 
+
+   * http://almasw.hq.eso.org/almasw/bin/view/SCHEDULING/UserTest2006
+    
+
