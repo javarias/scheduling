@@ -3,7 +3,7 @@ PROLOGUE prologue
 1 allTests allTests
 2 simTest runSim 
 3 pubTest testPublisher
-4 specialSBTest testStoreSpecialSB
+#4 specialSBTest testStoreSpecialSB
 #5 endToEnd testSchedControl
 EPILOGUE epilogue
 #EPILOGUE stopALMA
