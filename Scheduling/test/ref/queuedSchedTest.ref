@@ -1,0 +1,34 @@
+1 - Testing a SBs journey through Scheduling to Control
+1 - .----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling#testTestQueuedScheduling] -------------------------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling#testTestQueuedScheduling] ComponentClientTestCase#setUp()
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] TestQueuedScheduling: Setup complete
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] INITPASS1
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] INITPASS2
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling#testTestQueuedScheduling] component 'alma.scheduling.test.TestQueuedScheduling' requested AdvancedContainerServices
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] SB id = uid://X----------------/X--------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] SB id = uid://X----------------/X--------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] SB id = uid://X----------------/X--------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] SB id = uid://X----------------/X--------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got start session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] StartSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] EndSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got end session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got start session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] StartSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] EndSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got end session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got start session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] StartSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got end session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] EndSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got start session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] StartSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] EndSession id = X---.-------------
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got end session event
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] Got nothing can be scheduled event with correct reason.
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] SHUTDOWNPASS1
+1 - ----------T--:--:--.--- INFO [alma.scheduling.test.TestQueuedScheduling] SHUTDOWNPASS2
+1 - 
+1 - 
+1 - OK (1 test)
+1 - 

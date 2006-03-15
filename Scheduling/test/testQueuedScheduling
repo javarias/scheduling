@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#cd otStuff
+ALMA-OT -batch import-save.py Project_001.aot &> almaot.log
+ALMA-OT -batch import-save.py Project_001.aot &> almaot.log
+ALMA-OT -batch import-save.py Project_001.aot &> almaot.log
+ALMA-OT -batch import-save.py Project_001.aot &> almaot.log
+#cd ..
+echo 'Testing a SBs journey through Scheduling to Control'
+acsStartJava -endorsed junit.textui.TestRunner alma.scheduling.test.TestQueuedScheduling
