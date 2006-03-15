@@ -14,14 +14,17 @@ export ACS_INSTANCE=`grep -m 1 "For this ACS session, please do an" sched_acsSta
 echo $ACS_INSTANCE > sched_acs_instance.log
 
 #Start a java container named 'java'
-acsStartContainer -java java >& sched_javaContainer.log &
+#acsStartContainer -java java >& sched_javaContainer.log &
 #Start a java container for the archive
 acsStartContainer -java ARCHIVE/ACC/javaContainer >& sched_archiveContainer.log &
 acsStartContainer -java ACC/masterContainer >& sched_masterContainer.log &
 acsStartContainer -cpp ACC/cppContainer >& sched_cppContainer.log &
-acsStartContainer -java ACC/ijavaContainer >& sched_acc_javaContainer.log &
+acsStartContainer -java ACC/javaContainer >& sched_acc_javaContainer.log &
 #Start a python container named 'python'
-acsStartContainer -py python >& sched_pythonContainer.log &
+acsStartContainer -py CONTROL/ACC/pythonContainer >& sched_pythonContainer.log &
 
+archiveWebServicesStart &> archiveWebServicesStart.log
 archiveStart &> sched_archiveStart.log &
+archiveCleanTest &> archiveClean.log
 sleep 30
+archiveLoadSchema -u $ACSROOT/idl &>archiveloadSchema.log

@@ -5,7 +5,7 @@
         useTestScriptExecImpl="false">
   <device devname="CONTROL/ALMA001"
           idl="IDL:alma/Control/Antenna:1.0"
-          container="CONTROL/Test/cppContainer"
+          container="ACC/cppContainer"
           implementation="antenna"
           nodenumber="-1"
           identifier="Generic">

@@ -7,6 +7,6 @@
        Name="ARCHIVE_MASTER_COMP" 
        Code="alma.archive.manager.ArchiveSubsystemMasterHelper" 
        Type="IDL:alma/archive/ArchiveSubsystemMasterIF:1.0" 
-       Container="ACC/masterContainer"                             
+       Container="ARCHIVE/ACC/javaContainer"                             
        Default="true"
 />

@@ -42,9 +42,6 @@ import alma.scheduling.AlmaScheduling.ALMAMasterScheduler;
 public class EndToEndTest extends ComponentClientTestCase {
 
     private Logger logger=null;
-   // private ArchiveConnection archConnComp=null;
-   // private Operational archOperComp=null;
-   // private Identifier archIdentComp=null;
     private boolean exitFlag = false;
 
     public EndToEndTest() throws Exception {
