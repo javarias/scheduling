@@ -117,6 +117,11 @@ public class ArchiveQueryWindowController implements Runnable {
         }
     }
 
+    public void close() {
+        exit();
+        loggedInController.close();
+    }
+
     public static void main(String[] args){
     }
 }

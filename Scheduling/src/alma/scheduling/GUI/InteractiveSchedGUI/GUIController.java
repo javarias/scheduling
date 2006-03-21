@@ -53,7 +53,6 @@ public class GUIController implements Runnable {
     private ContainerServices containerServices;
     private Logger logger;
 
-    //public GUIController(SchedulerConfiguration s, ContainerServices cs) {
     public GUIController(InteractiveScheduler s, ContainerServices cs) {
         this.scheduler = s;
         this.config = scheduler.getConfiguration();
@@ -257,6 +256,11 @@ public class GUIController implements Runnable {
         } catch (Exception e) {
             logger.severe("Error destroying array "+config.getArrayName());
         }
+    }
+
+    public void close() {
+        //gui's exit calls ctrler's exit so no need to call it again..
+        this.gui.exit();
     }
 
 

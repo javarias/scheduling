@@ -26,6 +26,7 @@
 
 package alma.scheduling.AlmaScheduling;
 
+import java.util.Vector;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.acs.nc.*;
@@ -72,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.47 2006/02/21 14:58:39 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.48 2006/03/21 20:39:34 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -113,6 +114,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Receiver pipeline_nc;
     // event receiver for all events
     private ALMAReceiveEvent eventreceiver;
+    private Vector is_controllers;
     
     /** 
      * Constructor
@@ -134,7 +136,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     
         //Start the MasterScheduler Thread! 
         this.msThread.start();
-        
+        this.is_controllers = new Vector(); 
         this.containerServices = cs;
         this.instanceName = containerServices.getName();
         this.logger = containerServices.getLogger();
@@ -204,6 +206,10 @@ public class ALMAMasterScheduler extends MasterScheduler
      * From ComponentLifecycle interface
      */
     public void cleanUp() {
+        for(int i=0; i < is_controllers.size(); i++){
+            ((ArchiveQueryWindowController)is_controllers.elementAt(i)).close();
+        }
+            
         super.setStopCommand(true);
         this.manager.setStopCommand(true);
         this.manager.managerStopped();
@@ -533,6 +539,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 new ArchiveQueryWindowController(scheduler, containerServices);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
             scheduler_thread.start();
+            is_controllers.add(interactiveGUI);
         } catch (Exception e) {
             InvalidOperation e1 = new InvalidOperation ("startInteractiveScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
