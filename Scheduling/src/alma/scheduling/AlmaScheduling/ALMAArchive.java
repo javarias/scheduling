@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.51 2006/03/09 17:16:34 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.52 2006/03/21 18:37:53 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -107,7 +107,7 @@ public class ALMAArchive implements Archive {
                 logger.severe("SCHEDULING: cursor was null when querying SpecialSB");
                 return null;
             } else {
-                logger.info("SCHEDULING: cursor not null when querying Special SB!");
+                logger.finest("SCHEDULING: cursor not null when querying Special SB!");
             }
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
@@ -127,6 +127,7 @@ public class ALMAArchive implements Archive {
             for(int i=0; i < tmpSpecialSBs.size();i++) {
                 sbs[i] = (SpecialSB)tmpSpecialSBs.elementAt(i);
             }
+            logger.info("SCHEDULING: Scheduling found "+sbs.length+" special SBs");
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
@@ -151,7 +152,7 @@ public class ALMAArchive implements Archive {
         for(int i=0; i < obsProj.length; i++) {
             ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
             if(ps == null) { //no project status for this project. so create one
-                 logger.info("SCHEDULING: no ps for this project");
+                 logger.warning("SCHEDULING: no ps for this project");
             } else {
             //TODO should check project queue.. if project exists don't map a new one.
                 SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
@@ -165,7 +166,7 @@ public class ALMAArchive implements Archive {
         for(int i=0; i < tmp_projects.size();i++) {
             projects[i] = (Project)tmp_projects.elementAt(i);
         }
-	//logger.info("returning "+projects.length+" from getAllProject");
+	    logger.info("SCHEDULING: Scheduling found "+projects.length+" projects");
         return projects;
     }
 
@@ -351,7 +352,9 @@ public class ALMAArchive implements Archive {
                 sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
                 
             }
-            logger.info("SCHEDULING: (in archive) project has "+sbs.length+" sbs");
+            logger.info("SCHEDULING: Scheduling found that project ("+
+                    p.getObsProjectEntity().getEntityId() +") has "+
+                    sbs.length+" sbs");
             return sbs;
         }
 
