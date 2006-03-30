@@ -118,8 +118,15 @@ public class ArchiveQueryWindowController implements Runnable {
     }
 
     public void close() {
-        exit();
-        loggedInController.close();
+        try {
+            loggedInController.close();
+        } catch(Exception e) { 
+            logger.severe("SCHEDULING: error in aqw_ctrl = "+e.toString());
+            e.printStackTrace();
+            exit();
+        }
+    	archiveQueryGui.dispose();
+    	logger.info("SCHEDULING: In ArchiveQueryController, closing called");
     }
 
     public static void main(String[] args){

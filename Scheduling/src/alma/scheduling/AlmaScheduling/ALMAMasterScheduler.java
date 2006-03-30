@@ -73,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.48 2006/03/21 20:39:34 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.49 2006/03/30 22:09:54 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -206,10 +206,16 @@ public class ALMAMasterScheduler extends MasterScheduler
      * From ComponentLifecycle interface
      */
     public void cleanUp() {
+        logger.info("SCHEDULING: cleaning up scheduling component for shutdown.");
         for(int i=0; i < is_controllers.size(); i++){
-            ((ArchiveQueryWindowController)is_controllers.elementAt(i)).close();
+            logger.info("SCHEDULING: trying to release interactive gui # "+i+" in MS");
+    	    try {
+	            ((ArchiveQueryWindowController)is_controllers.elementAt(i)).close();
+	        } catch(Exception e){
+        		logger.severe("SCHEDULING: error = "+e.toString());
+		        e.printStackTrace();
+	        }
         }
-            
         super.setStopCommand(true);
         this.manager.setStopCommand(true);
         this.manager.managerStopped();

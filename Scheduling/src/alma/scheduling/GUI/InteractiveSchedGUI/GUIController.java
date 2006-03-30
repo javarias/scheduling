@@ -259,8 +259,9 @@ public class GUIController implements Runnable {
     }
 
     public void close() {
-        //gui's exit calls ctrler's exit so no need to call it again..
-        this.gui.exit();
+    	logger.info("SCHEDULING: closing IS gui controller!");
+        this.gui.dispose();
+        exit();
     }
 
 
