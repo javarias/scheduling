@@ -81,7 +81,7 @@ public class ArchiveQueryWindowController implements Runnable {
     }
 
     public void run(){
-        ArchiveQueryWindow archiveQueryGui = new ArchiveQueryWindow(this);
+        gui = new ArchiveQueryWindow(this);
     }
 
     public void loginToInteractiveProject(String projectId, String pi) {
@@ -125,7 +125,7 @@ public class ArchiveQueryWindowController implements Runnable {
             e.printStackTrace();
             exit();
         }
-    	archiveQueryGui.dispose();
+    	gui.dispose();
     	logger.info("SCHEDULING: In ArchiveQueryController, closing called");
     }
 
