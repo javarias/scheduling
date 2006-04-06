@@ -281,7 +281,12 @@ public class GUI extends JFrame {
             return;
         }
         String selectedSB = (String)sbRowInfo[row][3];
-        controller.executeSB(selectedSB);
+        try {
+            controller.executeSB(selectedSB);
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(
+                this, e.toString(), "Error executing SB", JOptionPane.ERROR_MESSAGE);
+        }
         
     }
 
@@ -289,6 +294,8 @@ public class GUI extends JFrame {
      *
      */
     private void deleteSB() {
+        JOptionPane.showMessageDialog(
+            this, "Can't delete a SB yet","Not Implemented", JOptionPane.WARNING_MESSAGE);
         //TODO
         //delete from queue
         //update view with new queue
@@ -316,7 +323,9 @@ public class GUI extends JFrame {
             displaySBInfo(controller.getDefaultProjectId());
 
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
+            JOptionPane.showMessageDialog(
+                this, e.toString(), "Error updating view", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -328,7 +337,7 @@ public class GUI extends JFrame {
         try{
             controller.setLogin(login);
         } catch(SchedulingException e){
-            JOptionPane.showMessageDialog(this, e.toString(), "", 
+            JOptionPane.showMessageDialog(this, e.toString(), "Error logging in", 
                 JOptionPane.WARNING_MESSAGE);
             //loggedIn = false;
             return;
@@ -595,6 +604,12 @@ public class GUI extends JFrame {
      * Stops the current SB from executing.
      */ 
     public void stopSB() {
+        try {
+            controller.stopSB();
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(
+                this, e.toString(), "Error Stopping SB", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**

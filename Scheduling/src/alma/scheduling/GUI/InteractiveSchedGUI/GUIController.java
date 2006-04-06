@@ -173,7 +173,7 @@ public class GUIController implements Runnable {
      /**
        *
        */
-     public void executeSB(String sb_id) {
+     public void executeSB(String sb_id) throws SchedulingException {
         try {
             //Set the start time
             SB selectedSB = config.getQueue().get(sb_id);
@@ -183,9 +183,30 @@ public class GUIController implements Runnable {
             scheduler.execute(sb_id);
         } catch(SchedulingException e) {
             System.out.println("SCHEDULING: error in executing the sb.");
-            e.printStackTrace();
+            e.printStackTrace(System.err);
+            throw new SchedulingException (e);
         }
 
+    }
+
+    public void stopSB() throws SchedulingException {
+        SB[] runningSB ;
+        try {
+            //get the sb from the config's queue that is currently set to 'running'
+            //should only get one here, but if by chance we do get more, stop them all!
+            runningSB = config.getQueue().getRunning();
+            if(runningSB.length > 1){
+                logger.warning("SCHEDULING: There was more than one SB running interactively on the same array!");
+            }
+            String id;
+            for(int i=0; i < runningSB.length; i++){ //stop them all, just in case might throw ctrl into error
+                id = runningSB[i].getId();
+                config.getControl().stopSB(config.getArrayName(), id);
+            }
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Error stopping SB(s). "+ e.toString());
+            throw new SchedulingException (e);
+        }
     }
 
     /**

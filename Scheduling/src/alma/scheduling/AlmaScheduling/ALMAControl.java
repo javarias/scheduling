@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.38 2006/02/21 14:55:17 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.39 2006/04/06 22:11:30 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -61,7 +61,7 @@ public class ALMAControl implements Control {
     // control system component
     private ControlMaster control_system;
     //list of current automatic array controllers
-    private Vector controllers;
+    private Vector auto_controllers;
     //list of current manual array monitors.
     private Vector manualArrays;
     //logger
@@ -74,7 +74,7 @@ public class ALMAControl implements Control {
         this.containerServices = cs;
         this.manager = m;
         this.logger = cs.getLogger();
-        this.controllers = new Vector();
+        this.auto_controllers = new Vector();
         manualArrays = new Vector();
         this.observedSessions = new Vector();
         try {
@@ -171,15 +171,15 @@ public class ALMAControl implements Control {
     public String createArray(String[] antenna) throws SchedulingException {
         if(antenna == null || antenna.length == 0) {
             throw new SchedulingException
-                ("SCHEDULING: Cannot create a subarray with out any antennas!");
+                ("SCHEDULING: Cannot create an array with out any antennas!");
         }
         try {
             if(control_system == null) {
                 logger.severe("SCHEDULING: control system == null..");
                 throw new SchedulingException("SCHEDULING: Error with ControlMaster Component.");
             }
-            if(controllers == null) { 
-                logger.severe("SCHEDULING: controllers == null..");
+            if(auto_controllers == null) { 
+                logger.severe("SCHEDULING: auto_controllers == null..");
                 throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
             String arrayName = control_system.createAutomaticArray(antenna);
@@ -189,7 +189,7 @@ public class ALMAControl implements Control {
                 logger.severe("SCHEDULING: ctrl is null");
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
-            controllers.add(ctrl);
+            auto_controllers.add(ctrl);
             logger.info("SCHEDULING: array controller id = "+ ctrl.getName());
             logger.info("SCHEDULING: "+ctrl.getName()+" has "+antenna.length+" antennas");
             return ctrl.getName();
@@ -206,7 +206,32 @@ public class ALMAControl implements Control {
     }
 
     public String createManualArray(String[] antenna) throws SchedulingException {
-        return "";
+        //String name="";
+        if(antenna == null || antenna.length==0){
+            throw new SchedulingException
+                ("SCHEDULING: Cannot create an array with out any antennas!");
+        }
+        try {
+            if(control_system == null){
+                logger.severe("SCHEDULING: control system == null..");
+                throw new SchedulingException("SCHEDULING: Error with ControlMaster Component.");
+            }
+            if(manualArrays == null) {
+                logger.severe("SCHEDULING: manualArrays == null..");
+                throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
+            }
+            String arrayName = control_system.createManualArray(antenna);
+            manualArrays.add(arrayName);
+            //ManualArrayMonitor mon = alma.Control.
+            logger.info("SCHEDULING: Array "+arrayName+" created with "+antenna.length+" antennas.");
+            return arrayName;
+        } catch(InvalidRequest e1) {
+            throw new SchedulingException
+                ("SCHEDULING: Control error: "+ e1.toString());
+        } catch(InaccessibleException e2) {
+            throw new SchedulingException
+                ("SCHEDULING: Control error: "+ e2.toString());
+        } 
     }
     
 
@@ -216,13 +241,14 @@ public class ALMAControl implements Control {
      */
     public void destroyArray(String name) throws SchedulingException {
         try {
-	    logger.info("SCHEDULING about to destroy array "+name);
-            for(int i=0; i < controllers.size(); i++){
-	        if( ((AutomaticArrayCommand)controllers.elementAt(i)).getName().equals(name)) {
-	      	    controllers.removeElementAt(i);
-		}
-	    }
-	    containerServices.releaseComponent(name);
+    	    logger.info("SCHEDULING about to destroy array "+name);
+            for(int i=0; i < auto_controllers.size(); i++){
+	            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i)).getName().equals(name)) {
+	          	    auto_controllers.removeElementAt(i);
+                }
+	        }
+            
+            containerServices.releaseComponent(name);
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
             throw new SchedulingException(e1); 
@@ -311,10 +337,10 @@ public class ALMAControl implements Control {
             return allInfo;
         }catch(InaccessibleException e){
             //TODO do something better here eventually
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return null;
         } catch (Exception ex){
-            ex.printStackTrace();
+            ex.printStackTrace(System.err);
             return null;
         }
     }
@@ -351,10 +377,10 @@ public class ALMAControl implements Control {
       */
     private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
         logger.info("SCHEDULING: looking for subarray with id = "+ name);
-        for(int i=0; i < controllers.size(); i++){
-            if( ((AutomaticArrayCommand)controllers.elementAt(i)).getName().equals(name)) {
+        for(int i=0; i < auto_controllers.size(); i++){
+            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i)).getName().equals(name)) {
                 logger.info("SCHEDULING: found subarray with id = "+ name);
-                return (AutomaticArrayCommand)controllers.elementAt(i);
+                return (AutomaticArrayCommand)auto_controllers.elementAt(i);
             }
         }
         return null;
@@ -410,7 +436,7 @@ public class ALMAControl implements Control {
             containerServices.releaseComponent("CONTROL_MASTER");
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error releasing control comp.");
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 }

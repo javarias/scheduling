@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
-
 import alma.scheduling.StartSessionEvent;
 import alma.scheduling.EndSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEvent;
@@ -56,10 +55,11 @@ import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.specialsb.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
+//import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.56 2006/02/21 14:58:39 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.57 2006/04/06 22:11:30 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -537,6 +537,13 @@ public class ALMAProjectManager extends ProjectManager {
         //session.addExec(eb);
         String sessionId = new String(ProjectUtil.genPartId());
         sessionStart(sessionId, sbid);
+        /*
+        IDLEntityRef sessionRef = new IDLEntityRef();
+        sessionRef.entityId = sb.getProject().getProjectStatusId();
+        sessionRef.partId = sessionId;
+        sessionRef.entityTypeName = "ProjectStatus";
+        sessionRef.instanceVersion = "1.0";
+        */
         logger.info("SCHEDULING: Session id == "+sessionId);
         try {
             long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());

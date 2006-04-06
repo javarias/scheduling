@@ -73,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.49 2006/03/30 22:09:54 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.50 2006/04/06 22:11:30 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -352,7 +352,7 @@ public class ALMAMasterScheduler extends MasterScheduler
      * @param sbList
      * @throws InvalidOperationEx
      */
-    public void startQueueScheduling(String[] sbList)
+    public void startQueueScheduling(String[] sbList)//, String arrayName)
     	throws InvalidOperationEx {
 
         try {    
@@ -521,6 +521,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     /**
       * @throws InvalidOperationEx
       */
+    //public void startInteractiveScheduling(String arrayName) throws InvalidOperationEx {
     public void startInteractiveScheduling() throws InvalidOperationEx {
         try {
             manager.checkForProjectUpdates();
@@ -655,9 +656,21 @@ public class ALMAMasterScheduler extends MasterScheduler
     public String createArray(String[] antennaIdList, ArrayModeEnum schedulingMode)
         throws InvalidOperationEx {
         
-        String name;
+        String name="";
         try {             
-            name = control.createArray(antennaIdList);
+            if(schedulingMode == ArrayModeEnum.MANUAL) {
+                logger.info("SCHEDULING: Creating an array for manual mode");
+                name = control.createManualArray(antennaIdList);
+            } else if(schedulingMode == ArrayModeEnum.DYNAMIC){
+                logger.info("SCHEDULING: Creating an array for dynamic mode");
+                name = control.createArray(antennaIdList);
+            } else if(schedulingMode == ArrayModeEnum.QUEUED){
+                logger.info("SCHEDULING: Creating an array for queued mode");
+                name = control.createArray(antennaIdList);
+            } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
+                logger.info("SCHEDULING: Creating an array for interactive mode");
+                name = control.createArray(antennaIdList);
+            }
         } catch(SchedulingException e) {
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
