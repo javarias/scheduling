@@ -25,6 +25,8 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.util.logging.Logger;
+
 import alma.ACS.MasterComponentImpl.*;
 import alma.ACS.MasterComponentImpl.statemachine.*;
 import alma.acs.genfw.runtime.sm.*;
@@ -41,10 +43,13 @@ import alma.acs.component.ComponentLifecycleException;
 
 import alma.scheduling.MasterSchedulerIF;
 
+import alma.acs.component.client.ComponentClient;
+import alma.acs.commandcenter.meta.*;
+
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.17 2006/01/27 17:24:18 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.18 2006/04/06 22:11:12 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -158,6 +163,8 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             if(masterScheduler != null) {
                 //m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
                 m_containerServices.releaseComponent(masterScheduler.name());
+                ReallyShutdownScheduling woo = new ReallyShutdownScheduling(m_logger);
+                woo.forceMasterSchedulerShutdown();
                 masterScheduler = null;
             }
         } catch(Exception e) {
@@ -200,4 +207,22 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
 
     ////////////////////////////////////////////////////////////////
 
+    class ReallyShutdownScheduling extends ComponentClient {
+
+        public ReallyShutdownScheduling(Logger l) throws Exception {
+            super(l, System.getProperty("ACS.manager"), "SchedulingMC");
+        }
+        
+        public void forceMasterSchedulerShutdown() throws Exception {
+            m_logger.info("SCHEDULING MC = Get MaciSuperFactory");
+            MaciSupervisorFactory factory = 
+                new MaciSupervisorFactory(m_logger, acsCorba.getORB()); 
+            
+            m_logger.info("SCHEDULING MC = Get MaciSuper");
+            IMaciSupervisor im = factory.giveMaciSupervisor(
+                    System.getProperty("ACS.manager"), m_logger);
+                    
+            im.forceReleaseComponent("SCHEDULING_MASTERSCHEDULER");
+        }
+    }
 }
