@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.39 2006/04/06 22:11:30 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.40 2006/04/10 19:18:56 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -142,6 +142,18 @@ public class ALMAControl implements Control {
     }
 
 
+    public void stopAllSchedulingOnAllAutomaticArrays() throws SchedulingException{
+        try {
+            String[] all = getAllAutomaticArrays();
+            for(int i=0; i < all.length; i++){
+                getAutomaticArray(all[i]).stop();
+            }
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Error stopping all scheduling.");
+            e.printStackTrace(System.err);
+            throw new SchedulingException(e);
+        }
+    }
     /**
      *
      * @throws SchedulingException

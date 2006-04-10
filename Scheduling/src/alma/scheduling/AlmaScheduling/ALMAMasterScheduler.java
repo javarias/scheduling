@@ -73,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.50 2006/04/06 22:11:30 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.51 2006/04/10 19:18:56 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -115,6 +115,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     // event receiver for all events
     private ALMAReceiveEvent eventreceiver;
     private Vector is_controllers;
+    private Vector all_schedulers;
     
     /** 
      * Constructor
@@ -137,6 +138,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         //Start the MasterScheduler Thread! 
         this.msThread.start();
         this.is_controllers = new Vector(); 
+        this.all_schedulers = new Vector();
         this.containerServices = cs;
         this.instanceName = containerServices.getName();
         this.logger = containerServices.getLogger();
@@ -383,6 +385,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             //a scheduler and go from there!
             //DynamicScheduler scheduler = new DynamicScheduler(config);
             QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
+            all_schedulers.add(scheduler);
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
             scheduler_thread.start();
             while(true) {
@@ -472,6 +475,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                         false, sbQueue, true, true, 5, arrayname, s_policy);
 
             DynamicScheduler scheduler = new DynamicScheduler(config);
+            all_schedulers.add(scheduler);
             Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
             schedulerThread.start();
             while(!stopCommand) {
@@ -510,6 +514,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             Thread specialSchedulerThread = 
                 containerServices.getThreadFactory().newThread(specialScheduler);
             specialSchedulerThread.start();
+            all_schedulers.add(specialScheduler);
         }catch(Exception e) {
             InvalidOperation e1 = new InvalidOperation("scheduleSpecialSBs", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -523,6 +528,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     //public void startInteractiveScheduling(String arrayName) throws InvalidOperationEx {
     public void startInteractiveScheduling() throws InvalidOperationEx {
+        logger.info("SCHEDULING: startInteractiveScheduling called");
         try {
             manager.checkForProjectUpdates();
             Policy s_policy = createPolicy();
@@ -547,6 +553,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(interactiveGUI);
             scheduler_thread.start();
             is_controllers.add(interactiveGUI);
+            all_schedulers.add(scheduler);
         } catch (Exception e) {
             InvalidOperation e1 = new InvalidOperation ("startInteractiveScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -560,8 +567,10 @@ public class ALMAMasterScheduler extends MasterScheduler
      * @throws InvalidOperationEx
      */
     public void stopScheduling() throws InvalidOperationEx {
+        logger.info("SCHEDULING: Stop all scheduling called from OMC");
         try {
             super.stopScheduling();
+            control.stopAllSchedulingOnAllAutomaticArrays();
         } catch(Exception e) {
             InvalidOperation e1 = new InvalidOperation("stopScheduling",e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);

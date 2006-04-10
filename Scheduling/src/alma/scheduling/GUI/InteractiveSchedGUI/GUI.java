@@ -272,14 +272,15 @@ public class GUI extends JFrame {
      */
     private void executeSB() {
         stopSBButton.setEnabled(true);
-        int row = sbTable.getSelectedRow();
-        if(row <0 ) {
+        int rowCount = sbTable.getSelectedRowCount();
+        if(rowCount ==0 ) {
             JOptionPane.showMessageDialog(this, "Please select an sb");
             return;
-        } else if(row >1){
+        } else if(rowCount >1){
             JOptionPane.showMessageDialog(this, "Please select only ONE sb");
             return;
         }
+        int row = sbTable.getSelectedRow();
         String selectedSB = (String)sbRowInfo[row][3];
         try {
             controller.executeSB(selectedSB);
