@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.6 2006/04/11 22:17:50 sslucero Exp $
+ * @version $Id: Expression.java,v 1.7 2006/04/11 22:50:14 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
