@@ -472,7 +472,6 @@ public class GUI extends JFrame {
         //String name, target, status, upri, spri, weather;
 
         selectedSBView.setText("SB Name:                "+ sbRowInfo[row][0] +"\n");
-//<<<<<<< GUI.java
         Source[] sources = sb.getSource();
         int srcLen = sources.length;
         if(srcLen > 3) {
