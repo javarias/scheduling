@@ -285,7 +285,7 @@ public class GUI extends JFrame {
         try {
             controller.executeSB(selectedSB);
         } catch(Exception e) {
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             JOptionPane.showMessageDialog(
                 this, e.toString(), "Error executing SB", JOptionPane.ERROR_MESSAGE);
         }
@@ -325,7 +325,7 @@ public class GUI extends JFrame {
             displaySBInfo(controller.getDefaultProjectId());
 
         } catch(Exception e) {
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             JOptionPane.showMessageDialog(
                 this, e.toString(), "Error updating view", JOptionPane.ERROR_MESSAGE);
         }

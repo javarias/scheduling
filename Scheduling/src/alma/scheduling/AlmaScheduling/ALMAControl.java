@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.41 2006/04/11 21:13:37 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.42 2006/04/11 21:28:42 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -150,7 +150,7 @@ public class ALMAControl implements Control {
             }
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error stopping all scheduling.");
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             throw new SchedulingException(e);
         }
     }
@@ -165,12 +165,12 @@ public class ALMAControl implements Control {
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
-            e1.printStackTrace(System.err);
+            e1.printStackTrace(System.out);
             throw new SchedulingException(e1);
         } catch(InaccessibleException e2) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e2.toString());
-            e2.printStackTrace(System.err);
+            e2.printStackTrace(System.out);
             throw new SchedulingException(e2);
         }
     }
@@ -351,10 +351,10 @@ public class ALMAControl implements Control {
             return allInfo;
         }catch(InaccessibleException e){
             //TODO do something better here eventually
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             return null;
         } catch (Exception ex){
-            ex.printStackTrace(System.err);
+            ex.printStackTrace(System.out);
             return null;
         }
     }
@@ -450,7 +450,7 @@ public class ALMAControl implements Control {
             containerServices.releaseComponent("CONTROL_MASTER");
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error releasing control comp.");
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
         }
     }
 }
