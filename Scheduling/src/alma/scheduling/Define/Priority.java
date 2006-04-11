@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * 		<li> BACKGROUND	(1)
  * </ul>
  * 
- * @version $Id: Priority.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Priority.java,v 1.4 2006/04/11 21:13:37 sslucero Exp $
  * @author Allen Farris
  */
 public class Priority {
@@ -193,7 +193,7 @@ public class Priority {
 			p = new Priority("mediumMinus");
 			System.out.println("priority is " + p);
 		} catch (Exception err) {
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 		}
 	}
 }

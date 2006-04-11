@@ -47,7 +47,7 @@ public class GenProject extends Properties {
 			out = new PrintStream (new FileOutputStream(outFilename,false));
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not create file " + outFilename);
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			System.exit(0);
 		}
 
@@ -57,7 +57,7 @@ public class GenProject extends Properties {
 			super.load(file);
 		} catch (IOException err) {
 			System.out.println("Could not open file " + inFilename);
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 		
@@ -273,7 +273,7 @@ public class GenProject extends Properties {
 			x = Double.parseDouble(s);
 		} catch (NumberFormatException err) {
 			System.out.println("Invalid syntax in " + s);
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 		return x;
@@ -304,7 +304,7 @@ public class GenProject extends Properties {
 				low = Integer.parseInt(t);
 			} catch (NumberFormatException err) {
 				System.out.println("Invalid syntax in " + s);
-				err.printStackTrace();
+				err.printStackTrace(System.out);
 				System.exit(0);
 			}
 			t = s.substring(n2 + 1,n3).trim();
@@ -316,7 +316,7 @@ public class GenProject extends Properties {
 				high = Integer.parseInt(t);
 			} catch (NumberFormatException err) {
 				System.out.println("Invalid syntax in " + s);
-				err.printStackTrace();
+				err.printStackTrace(System.out);
 				System.exit(0);
 			}
 			return random(low,high);
@@ -325,7 +325,7 @@ public class GenProject extends Properties {
 			x = Integer.parseInt(s);
 		} catch (NumberFormatException err) {
 			System.out.println("Invalid syntax in " + s);
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 		return x;
@@ -356,7 +356,7 @@ public class GenProject extends Properties {
 				low = Double.parseDouble(t);
 			} catch (NumberFormatException err) {
 				System.out.println("Invalid syntax in " + s);
-				err.printStackTrace();
+				err.printStackTrace(System.out);
 				System.exit(0);
 			}
 			t = s.substring(n2 + 1,n3).trim();
@@ -368,7 +368,7 @@ public class GenProject extends Properties {
 				high = Double.parseDouble(t);
 			} catch (NumberFormatException err) {
 				System.out.println("Invalid syntax in " + s);
-				err.printStackTrace();
+				err.printStackTrace(System.out);
 				System.exit(0);
 			}
 			return random(low,high);
@@ -377,7 +377,7 @@ public class GenProject extends Properties {
 			x = Double.parseDouble(s);
 		} catch (NumberFormatException err) {
 			System.out.println("Invalid syntax in " + s);
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 		return x;

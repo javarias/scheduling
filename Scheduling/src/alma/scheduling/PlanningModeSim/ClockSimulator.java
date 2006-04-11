@@ -287,7 +287,7 @@ public class ClockSimulator extends BasicComponent implements Clock {
 		try {
 			logfile = new FileHandler(logFilename);
 		} catch (IOException ioerr) {
-			 ioerr.printStackTrace();
+			 ioerr.printStackTrace(System.out);
 			 System.exit(0);
 		}
 		// The log file will be an XML file.

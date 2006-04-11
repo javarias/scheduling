@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.4 2005/12/12 14:29:05 sslucero Exp $
+ * @version $Id: Expression.java,v 1.5 2006/04/11 21:13:37 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
@@ -152,7 +152,7 @@ public class Expression {
 			return (float)d.doubleValue();
 		} catch (Exception err) {
 			System.out.println("Oops! This isn't supposed to happen.");
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 		return 0.0F;

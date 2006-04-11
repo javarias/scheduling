@@ -364,7 +364,7 @@ public class PlanningModeSimGUIController implements Runnable {
             out.close();
         } catch(Exception ex) {
             System.out.println("ERROR creating simulation input file!");
-            ex.printStackTrace();
+            ex.printStackTrace(System.out);
         }
     }
     private void createOutputFile(String filename) {
@@ -375,7 +375,7 @@ public class PlanningModeSimGUIController implements Runnable {
             out.close();
         } catch (Exception ex) {
             System.out.println("ERROR creating simulation output file!");
-            ex.printStackTrace();
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -409,7 +409,7 @@ public class PlanningModeSimGUIController implements Runnable {
                 } catch(Exception ex) {}
             } catch(Exception e) {
                 System.out.println("Error initializing simulator!");
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
         }
     }
@@ -591,7 +591,7 @@ public class PlanningModeSimGUIController implements Runnable {
         
         } catch(Exception e) {
             System.out.println("Error loading files in PMS GUI");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 

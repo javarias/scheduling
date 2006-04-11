@@ -90,7 +90,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.35 2006/02/21 14:58:39 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.36 2006/04/11 21:13:37 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -808,7 +808,7 @@ public class ProjectUtil {
 				
 		// Return the newly create SB.
         }catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
 		return sb;
 	}
@@ -1209,7 +1209,7 @@ public class ProjectUtil {
             return ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
         } catch(Exception e){
             System.out.println("SCHEDULING: Error updating ProjectStatus.");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             return null;
         }
     }

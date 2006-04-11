@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.52 2006/03/21 18:37:53 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.53 2006/04/11 21:13:37 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -119,7 +119,7 @@ public class ALMAArchive implements Archive {
                     tmpSpecialSBs.add(ssb);
                 }catch(Exception e) {
                     logger.severe("SCHEDULING: "+e.toString());
-                    e.printStackTrace();
+                    e.printStackTrace(System.out);
                     throw new SchedulingException (e);
                 }
             }
@@ -185,7 +185,7 @@ public class ALMAArchive implements Archive {
             ps = ProjectUtil.updateProjectStatus(p);
             updateProjectStatus(ps);
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             throw new SchedulingException(e);
         }
         return ps;
@@ -200,7 +200,7 @@ public class ALMAArchive implements Archive {
             //logger.info("PROJECT STATUS: "+ xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             throw new SchedulingException(e);
         }
         return ps;
@@ -230,7 +230,7 @@ public class ALMAArchive implements Archive {
                 one = false;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             throw new SchedulingException(e);
         }
         return ps;
@@ -274,7 +274,7 @@ public class ALMAArchive implements Archive {
                     //archOperationComp.update(xml);
                 }catch(Exception e) {
                     logger.severe("SCHEDULING: "+e.toString());
-                    e.printStackTrace();
+                    e.printStackTrace(System.out);
                     throw new SchedulingException (e);
                 }
             }
@@ -329,10 +329,10 @@ public class ALMAArchive implements Archive {
                     "SCHEDULING: error serializing ProjectStatus entity.");
         } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: illegal entity error");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: ArchiveInternalError");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return newPS;
     }
@@ -515,7 +515,7 @@ public class ALMAArchive implements Archive {
             
         } catch(Exception e) {
 	    logger.info(e.toString());
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return sbliteArray;
     }
@@ -532,7 +532,7 @@ public class ALMAArchive implements Archive {
             xml2.xmlString = xml.xmlString;
             archOperationComp.update(xml2);
         } catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             throw new SchedulingException (e);
         }
     }
@@ -765,10 +765,10 @@ public class ALMAArchive implements Archive {
             archOperationComp.store(ppr_struct);
         } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: illegal entity error");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: ArchiveInternalError");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         */
     }
@@ -785,16 +785,16 @@ public class ALMAArchive implements Archive {
             ppr = archOperationComp.retrieveDirty(ppr_id);
         } catch (MalformedURI e) { 
             logger.severe("SCHEDULING: MalformedURI ");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } catch (ArchiveInternalError e) {
             logger.severe("SCHEDULING: ArchiveInternalError");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } catch (NotFound e) {
             logger.severe("SCHEDULING: Entity not found");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } //catch(EntityException e) {
             //logger.severe("SCHEDULING: error getting entity's ID");
-          //  e.printStackTrace();
+          //  e.printStackTrace(System.out);
        // }
         return ppr;
     }
@@ -996,7 +996,7 @@ public class ALMAArchive implements Archive {
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not update the SB after the "+
                 "exec block event was received!");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -1021,7 +1021,7 @@ public class ALMAArchive implements Archive {
             //query the archive for the pipelineprocessing requestthe pipelineprocessing request..
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error getting the PPR String.");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return result;
     }

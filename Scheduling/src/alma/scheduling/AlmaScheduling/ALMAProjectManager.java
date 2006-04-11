@@ -59,7 +59,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.57 2006/04/06 22:11:30 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.58 2006/04/11 21:13:37 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -146,7 +146,7 @@ public class ALMAProjectManager extends ProjectManager {
 
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         logger.info("# of special sbs = "+specialSBs.size());
     }
@@ -248,7 +248,7 @@ public class ALMAProjectManager extends ProjectManager {
             }
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error polling archive: "+e.toString());
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return projs;
     }
@@ -389,7 +389,7 @@ public class ALMAProjectManager extends ProjectManager {
             archive.updateProjectStatus(ps);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not update project status in archive!");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         //return ids;
     }
@@ -433,7 +433,7 @@ public class ALMAProjectManager extends ProjectManager {
             archive.updateSB(e);
         }catch(SchedulingException ex) {
             logger.severe("SCHEDULING: error updating sb");
-            ex.printStackTrace();
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -481,7 +481,7 @@ public class ALMAProjectManager extends ProjectManager {
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
             logger.severe("SCHEDULING: error mapping PS with Session");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         //return session;
     }
@@ -506,7 +506,7 @@ public class ALMAProjectManager extends ProjectManager {
             archive.updateProjectStatus(ps);
         } catch(Exception e){
             logger.severe("SCHEDULING: error updating PS with session");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -556,7 +556,7 @@ public class ALMAProjectManager extends ProjectManager {
             publisher.publish(start_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send start session event!");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return sessionId;
     }
@@ -598,7 +598,7 @@ public class ALMAProjectManager extends ProjectManager {
             publisher.publish(end_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send end session event!");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -750,7 +750,7 @@ public class ALMAProjectManager extends ProjectManager {
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
             logger.severe("SCHEDULING: error mapping PS with PPR");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return ppr;
     }
@@ -773,7 +773,7 @@ public class ALMAProjectManager extends ProjectManager {
             pipeline.releasePipelineComp();
         } catch(Exception e){
             logger.severe("SCHEDULING: error releasing pipeline comp from PM");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -866,7 +866,7 @@ public class ALMAProjectManager extends ProjectManager {
         try {
             pollArchive();
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
     ///////////////////////////////////////////////////////////////

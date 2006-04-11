@@ -104,7 +104,7 @@ public class ArchiveQueryWindowController implements Runnable {
 	    loggedInController.setDefaultProjectId(projectId);
             loggedInController.setLogin(pi);
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -122,7 +122,7 @@ public class ArchiveQueryWindowController implements Runnable {
             loggedInController.close();
         } catch(Exception e) { 
             logger.severe("SCHEDULING: error in aqw_ctrl = "+e.toString());
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             exit();
         }
     	gui.dispose();

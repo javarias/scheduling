@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.8 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.9 2006/04/11 21:13:37 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -315,7 +315,7 @@ class R3Policy extends PolicyType {
 			    	success[i] = list[i].getSuccess();
 				    rank[i] = list[i].getRank();
                 } catch(NullPointerException npe) {
-                    npe.printStackTrace();
+                    npe.printStackTrace(System.out);
                 }   
 			}
 			best = new BestSB (id, getSBLites(list), scoreString, score, success, rank, clock.getDateTime());
@@ -648,7 +648,7 @@ class R3Policy extends PolicyType {
 				x =  w.evaluate();
             }
 		} catch (Exception err) {
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 		}
 		return x;
 	}

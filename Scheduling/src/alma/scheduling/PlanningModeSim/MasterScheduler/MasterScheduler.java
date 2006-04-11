@@ -175,7 +175,7 @@ public class MasterScheduler extends BasicComponent {
 						clock.advance(advanceTheClock);
 						config.respondContinue();
 					} else {
-						ex.printStackTrace();
+						ex.printStackTrace(System.out);
 						throw new IllegalStateException("Why are we being interrupted?");
 					}
 				}

@@ -34,7 +34,7 @@ public class SpecialSBScheduler extends Scheduler implements Runnable {
                 config.getControl().setAntennaOfflineNow(antennas[i]);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         config.normalEnd(clock.getDateTime());
         logger.info(name() + " has ended!");

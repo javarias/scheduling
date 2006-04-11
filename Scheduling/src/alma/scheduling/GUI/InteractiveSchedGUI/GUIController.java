@@ -134,7 +134,7 @@ public class GUIController implements Runnable {
                 }
             }
         } catch(Exception e ) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         
     }
@@ -183,7 +183,7 @@ public class GUIController implements Runnable {
             scheduler.execute(sb_id);
         } catch(SchedulingException e) {
             System.out.println("SCHEDULING: error in executing the sb.");
-            e.printStackTrace(System.err);
+            e.printStackTrace(System.out);
             throw new SchedulingException (e);
         }
 
@@ -201,7 +201,8 @@ public class GUIController implements Runnable {
             String id;
             for(int i=0; i < runningSB.length; i++){ //stop them all, just in case might throw ctrl into error
                 id = runningSB[i].getId();
-                config.getControl().stopSB(config.getArrayName(), id);
+                //config.getControl().stopSB(config.getArrayName(), id);
+                scheduler.stop(id);
             }
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error stopping SB(s). "+ e.toString());

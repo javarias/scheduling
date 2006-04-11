@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.7 2005/09/20 20:07:13 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.8 2006/04/11 21:13:37 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -84,7 +84,7 @@ public class ALMAPublishEvent extends PublishEvent {
             logger.info("SCHEDULING: Event Sent!");
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error publishing event.");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -158,7 +158,7 @@ public class ALMAPublishEvent extends PublishEvent {
             logger.info("SCHEDULING: published nothing can be scheduled event");
         }
         }catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 

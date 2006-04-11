@@ -73,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.51 2006/04/10 19:18:56 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.52 2006/04/11 21:13:37 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -215,7 +215,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 	            ((ArchiveQueryWindowController)is_controllers.elementAt(i)).close();
 	        } catch(Exception e){
         		logger.severe("SCHEDULING: error = "+e.toString());
-		        e.printStackTrace();
+		        e.printStackTrace(System.out);
 	        }
         }
         super.setStopCommand(true);
@@ -374,7 +374,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             try {
                 antennas = control.getIdleAntennas();
             }catch(Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
             String arrayname = createArray(antennas, ArrayModeEnum.QUEUED);
             //then create a config 
@@ -427,7 +427,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             try {
                 allAntennas = control.getIdleAntennas();
             }catch(Exception e){
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
             //if there are fixed and regular sbs split antennas.
             //TODO when special sbs are changed to have antenna names included, the

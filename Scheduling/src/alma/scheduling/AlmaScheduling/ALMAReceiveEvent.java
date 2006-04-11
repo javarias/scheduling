@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.29 2005/12/13 14:26:13 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.30 2006/04/11 21:13:37 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -133,7 +133,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //startSession(eb);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
-            ex.printStackTrace();
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -171,7 +171,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             deleteFinishedEB(eb);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
-            ex.printStackTrace();
+            ex.printStackTrace(System.out);
         }
 
 
@@ -309,7 +309,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             manager.createObservedSession(eb);
         }catch(Exception ex) {
             logger.severe("SCHEDULING: error! ");
-            ex.printStackTrace();
+            ex.printStackTrace(System.out);
         }
     }
 
@@ -325,7 +325,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             manager.sendEndSessionEvent(eb);
         } catch(Exception e) {
             logger.severe("SCHEDULING: error! ");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 
@@ -347,7 +347,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 manager.startPipeline(ppr);
             } catch(Exception ex) {
                 logger.severe("SCHEDULING: error starting the science pipeline");
-                ex.printStackTrace();
+                ex.printStackTrace(System.out);
             }
         } //else { //returned false so not starting the pipeline.. ie do nothing..
         //}

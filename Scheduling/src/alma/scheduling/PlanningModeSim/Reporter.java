@@ -358,7 +358,7 @@ public class Reporter extends BasicComponent {
 			
 			
 		} catch (SchedulingException err) {
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 	}
@@ -473,7 +473,7 @@ public class Reporter extends BasicComponent {
 				}
 			}
 		} catch (SchedulingException err) {
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.exit(0);
 		}
 

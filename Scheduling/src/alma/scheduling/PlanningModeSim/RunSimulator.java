@@ -59,7 +59,7 @@ public class RunSimulator {
 		try {
 			sim.initialize(args[0],args[1],args[2],args[3]);
 		} catch (SimulationException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			System.exit(0);
 		}
 		Thread t = new Thread (sim);

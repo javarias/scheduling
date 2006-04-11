@@ -211,7 +211,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             config.getProjectManager().publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
             config.getControl().destroyArray(config.getArrayName());
         } catch(Exception e){
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
 

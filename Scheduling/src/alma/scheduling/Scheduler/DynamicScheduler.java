@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.10 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.11 2006/04/11 21:13:37 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -330,7 +330,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                 config.getQueue().clear();
                 config.getProjectManager().getProjectManagerTaskControl().interruptTask();
                 logger.severe("SCHEDULING: error!");
-                e.printStackTrace();
+                e.printStackTrace(System.out);
                 return true;
             }
     		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());

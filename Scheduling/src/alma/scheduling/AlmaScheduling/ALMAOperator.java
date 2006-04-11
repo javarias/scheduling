@@ -114,7 +114,7 @@ public class ALMAOperator implements Operator {
         } catch(Exception e) {
             logger.severe("SCHEDULING: error adding a message!");
             logger.severe(e.toString());
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         String bestSBId= best.getBestSelection(); //used when Exec's operator times out
         if(bestSBId == null) {
@@ -134,7 +134,7 @@ public class ALMAOperator implements Operator {
             } catch(Exception e) {
                 logger.severe("SCHEDULING: error getting MasterScheduler Component!");
                 logger.severe(e.toString());
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
             */
             //ask operator now to select!
@@ -198,7 +198,7 @@ public class ALMAOperator implements Operator {
                 Thread.sleep(delay);
             }catch(InterruptedException e) {
                 //System.out.println("interrupted in selected SB timer");
-                //e.printStackTrace();
+                //e.printStackTrace(System.out);
             }
         }
     }

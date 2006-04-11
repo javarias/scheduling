@@ -233,7 +233,7 @@ public class Simulator implements Runnable {
 			
             outputResultsFilename = reporter.getOutputFilename();
 		} catch (Exception err) {
-			err.printStackTrace();
+			err.printStackTrace(System.out);
 			System.out.println("The simulation run has aborted.");
 		}
 	}

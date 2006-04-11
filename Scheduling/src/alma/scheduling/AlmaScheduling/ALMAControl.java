@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.40 2006/04/10 19:18:56 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.41 2006/04/11 21:13:37 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -165,10 +165,12 @@ public class ALMAControl implements Control {
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
+            e1.printStackTrace(System.err);
             throw new SchedulingException(e1);
         } catch(InaccessibleException e2) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e2.toString());
+            e2.printStackTrace(System.err);
             throw new SchedulingException(e2);
         }
     }

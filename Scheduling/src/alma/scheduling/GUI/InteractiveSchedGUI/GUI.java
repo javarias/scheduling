@@ -285,6 +285,7 @@ public class GUI extends JFrame {
         try {
             controller.executeSB(selectedSB);
         } catch(Exception e) {
+            e.printStackTrace(System.err);
             JOptionPane.showMessageDialog(
                 this, e.toString(), "Error executing SB", JOptionPane.ERROR_MESSAGE);
         }

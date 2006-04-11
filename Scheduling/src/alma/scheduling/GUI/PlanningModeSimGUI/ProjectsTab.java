@@ -439,7 +439,7 @@ public class ProjectsTab extends JScrollPane {
                 allProjects.add(v);
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
         return allProjects;
     }

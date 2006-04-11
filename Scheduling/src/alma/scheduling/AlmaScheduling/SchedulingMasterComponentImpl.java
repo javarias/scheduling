@@ -49,7 +49,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.18 2006/04/06 22:11:12 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.19 2006/04/11 21:13:37 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -87,12 +87,12 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass1.");
             //set the ms to null just to be safe..
             masterScheduler = null;
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             //set scheduling MC to error state. 
             try {
                 doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
             } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.out);
                 throw new AcsStateActionException(ex);
             }
             throw new AcsStateActionException(e);
@@ -113,11 +113,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass2.");
             //set the ms to null just to be safe..
             masterScheduler = null;
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             try {
                 doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
             } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.out);
                 throw new AcsStateActionException(ex);
             }
             throw new AcsStateActionException(e);
@@ -143,11 +143,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             m_logger.severe("SCHEDULING MC: error reinitializing Scheduling Subsystem...");
             //set the ms to null just to be safe..
             masterScheduler = null;
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             try {
                 doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
             } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.out);
                 throw new AcsStateActionException(ex);
             }
             throw new AcsStateActionException(e);
@@ -169,11 +169,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             }
         } catch(Exception e) {
             m_logger.severe("SCHEDULING MC: error releasing MasterScheduler component in Pass1.");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             try {
                 doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
             } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.out);
                 throw new AcsStateActionException(ex);
             }
             throw new AcsStateActionException(e);
@@ -194,11 +194,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             }
         } catch(Exception e) {
             m_logger.severe("SCHEDULING MC: error releasing MasterScheduler component in Pass2.");
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             try {
                 doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
             } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.out);
                 throw new AcsStateActionException(ex);
             }
             throw new AcsStateActionException(e);
