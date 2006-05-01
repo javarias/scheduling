@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * A Program is a hierarchical tree whose leaves are SB objects. 
  * It is an ObsProgram as viewed by the scheduling subsystem.
  * 
- * @version $Id: Program.java,v 1.7 2005/03/29 20:49:16 sslucero Exp $
+ * @version $Id: Program.java,v 1.8 2006/05/01 15:44:57 sslucero Exp $
  * @author Allen Farris
  */
 public class Program implements ProgramMember {
@@ -275,6 +275,7 @@ public class Program implements ProgramMember {
 				((SB)x[i]).setReady(time);
 		}
 	}
+   
 	public void setTotals() {
 		ProgramMember[] x = getMember();
 		for (int i = 0; i < x.length; ++i) {
@@ -290,7 +291,29 @@ public class Program implements ProgramMember {
 			}
 		}
 	}
-	
+
+    public void clearTotals() {
+        totalSBs = 0;
+        totalPrograms = 0;
+        totalRequiredTimeInSeconds =0;
+    }
+    public void updateTotals() {
+        clearTotals();
+        ProgramMember[] x = getMember();
+        for(int i=0; i < x.length; i++){
+			if (x[i] instanceof Program) {
+				((Program)x[i]).updateTotals();
+				++totalPrograms;
+				totalPrograms +=((Program)x[i]).getTotalPrograms(); 
+				totalSBs +=((Program)x[i]).getTotalSBs(); 
+				totalRequiredTimeInSeconds += ((Program)x[i]).getTotalRequiredTimeInSeconds();
+			} else {
+				++totalSBs;
+				totalRequiredTimeInSeconds += ((SB)x[i]).getTotalRequiredTimeInSeconds();
+			}
+        }
+    }
+
 	/**
 	 * When a project breakpoint is cleared, all of its Programs and their 
 	 * members enter the ready state.  Therefore, the setReady method
@@ -500,6 +523,22 @@ public class Program implements ProgramMember {
                 member.set(i, mem);
             }
         }
+        //System.out.println("size of member array after a "+mem.getClass().getName()+" update "+member.size());
+    }
+
+    /**
+      * Checks to see if this particular member already exists.
+      * @return true if member exists, false if not present.
+      */
+    public boolean memberExists(String id) {
+        ProgramMember x=null;
+        for(int i=0; i < member.size(); i++){
+            x=(ProgramMember)member.get(i);
+            if(x.getId().equals(id)){
+                return true;
+            }
+        }
+        return false;
     }
 
 	/**
@@ -553,6 +592,7 @@ public class Program implements ProgramMember {
 	 */
 	public void addMember(Program x) {
 		member.add(x);
+        //System.out.println("size of program array ="+member.size());
 	}
 
 	/**
@@ -561,6 +601,7 @@ public class Program implements ProgramMember {
 	 */
 	public void addMember(SB x) {
 		member.add(x);
+        //System.out.println("size of sb array ="+member.size());
 	}
 	
 	// Methods for adding and accessing observed sessions.
@@ -916,7 +957,7 @@ public class Program implements ProgramMember {
 	/**
 	 * @param dataReductionParameters The dataReductionParameters to set.
 	 */
-	public void setDataReductonParameters(Object[] dataReductionParameters) {
+	public void setDataReductionParameters(Object[] dataReductionParameters) {
 		this.dataReductionParameters = dataReductionParameters;
 	}
 

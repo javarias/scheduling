@@ -26,7 +26,6 @@
  
 package alma.scheduling.Define;
 
-import alma.scheduling.SBLite;
 
 /**
  * The BestSB class is information that is returned by a dynamic scheduling
@@ -39,7 +38,7 @@ import alma.scheduling.SBLite;
  * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
  * object that designates why nothing could be scheduled.
  * 
- * @version $Id: BestSB.java,v 1.8 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: BestSB.java,v 1.9 2006/05/01 15:44:57 sslucero Exp $
  * @author Allen Farris
  */
 public class BestSB {
@@ -50,7 +49,7 @@ public class BestSB {
 	 */
 	private int numberReturned;
 
-    private SBLite[] sbLites;
+    private LiteSB[] liteSBs;
 	/**
 	 * The array of SB-ds that are to be considered, in rank order highest to lowest. 
 	 */
@@ -145,10 +144,10 @@ public class BestSB {
     /**
       * Constructor which includes sblites
       */
-	public BestSB(String[] sbId, SBLite[] sbLites, String[] scoreString, double[] score, double[] success, 
+	public BestSB(String[] sbId, LiteSB[] lites, String[] scoreString, double[] score, double[] success, 
 			double[] rank, DateTime time) {
         this(sbId, scoreString, score, success, rank, time);
-        this.sbLites = sbLites;
+        this.liteSBs = lites;
     }
 
     
@@ -181,8 +180,8 @@ public class BestSB {
 		return sbId;
 	}
 	
-    public SBLite[] getSBLites() {
-        return sbLites;
+    public LiteSB[] getLiteSBs() {
+        return liteSBs;
     }
 	/**
 	 * Get the NothingCanBeScheduled object, if there is one.  If there is no

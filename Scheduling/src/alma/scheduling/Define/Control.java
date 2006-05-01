@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version $Id: Control.java,v 1.9 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: Control.java,v 1.10 2006/05/01 15:44:57 sslucero Exp $
  * @author Allen Farris
  */
 public interface Control {
@@ -118,4 +118,9 @@ public interface Control {
 
     public void setAntennaOnlineNow(String antennaId) 
         throws SchedulingException;
+    /**
+      * Stop all scheduling currently happening!
+      */
+    public void stopAllScheduling() throws SchedulingException ;
+    
 }
