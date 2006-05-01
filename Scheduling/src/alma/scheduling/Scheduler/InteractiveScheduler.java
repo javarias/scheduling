@@ -38,6 +38,7 @@ import alma.scheduling.Define.Telescope;
 import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Project;
+import alma.scheduling.Define.Status;
 
 import alma.scheduling.MasterScheduler.Message;
 //import alma.scheduling.AlmaScheduling.ALMAProjectManager;
@@ -107,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.9 2006/02/21 21:30:19 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.10 2006/05/01 18:59:17 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -141,6 +142,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			config.errorEnd(msg,clock.getDateTime());
 			error(msg);
 		}
+        config.getLog().info("SCHEDULING: Interactive scheduler created");
 	}
 	
 	/**
@@ -379,6 +381,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (!sessionStarted) {
 			error("Invalid operation. There is no session underway.");
 		}
+        System.out.println("Is sb executing? "+ config.isSBExecuting());
 		if (!config.isSBExecuting()) {
 			error("Invalid operation. There is no scheduling block currently executing.");
 		}
@@ -387,7 +390,16 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			error("The SB specified in the stop method (" + sbId +
 					" does not match the currently executing SB (" + tmp + ")");
 		}
+        SB sb = queue.get(sbId);
+        logger.info("SCHEDULING: Before stop, sb status = "+sb.getStatus().toString());
 		control.stopSB(config.getArrayName(),sbId);
+        logger.info("SCHEDULING: after stop, sb status = "+sb.getStatus().toString());
+        sb.execEnd(null, clock.getDateTime(), Status.READY);
+        //setting the sb status will be handled in the project manager eventually
+        //but for now we set it here and disgard the exec block
+        //TODO delete next 2 lines when control sends execblockendedevent in stop.
+        
+        config.endExecSB(sbId);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been stopped.";

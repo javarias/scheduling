@@ -271,7 +271,6 @@ public class GUI extends JFrame {
      *
      */
     private void executeSB() {
-        stopSBButton.setEnabled(true);
         int rowCount = sbTable.getSelectedRowCount();
         if(rowCount ==0 ) {
             JOptionPane.showMessageDialog(this, "Please select an sb");
@@ -284,12 +283,13 @@ public class GUI extends JFrame {
         String selectedSB = (String)sbRowInfo[row][3];
         try {
             controller.executeSB(selectedSB);
+            stopSBButton.setEnabled(true);
         } catch(Exception e) {
             e.printStackTrace(System.out);
             JOptionPane.showMessageDialog(
                 this, e.toString(), "Error executing SB", JOptionPane.ERROR_MESSAGE);
+            stopSBButton.setEnabled(false);
         }
-        
     }
 
     /**
@@ -299,12 +299,10 @@ public class GUI extends JFrame {
         JOptionPane.showMessageDialog(
             this, "Can't delete a SB yet","Not Implemented", JOptionPane.WARNING_MESSAGE);
         //TODO
-        //delete from queue
-        //update view with new queue
         //question: do we delete it from archive/project too?
 
-        /*
-        String selectedSB = outputView.getSelectedText();
+        int row = sbTable.getSelectedRow();
+        String selectedSB = (String)sbRowInfo[row][3];
         if(selectedSB != null) {
             controller.deleteSB(selectedSB);
             //clear();
@@ -313,7 +311,7 @@ public class GUI extends JFrame {
             selectedSB = JOptionPane.showInputDialog(this, "Enter SB id", "Delete SB", 
                 JOptionPane.PLAIN_MESSAGE);
             controller.deleteSB(selectedSB);
-        }*/
+        }
     }
 
     /**
@@ -607,9 +605,11 @@ public class GUI extends JFrame {
     public void stopSB() {
         try {
             controller.stopSB();
+            stopSBButton.setEnabled(false);
         } catch(Exception e) {
             JOptionPane.showMessageDialog(
                 this, e.toString(), "Error Stopping SB", JOptionPane.ERROR_MESSAGE);
+            stopSBButton.setEnabled(true);
         }
     }
 
@@ -625,8 +625,9 @@ public class GUI extends JFrame {
      * running on the same JVM.
      */
     public void exit() {
-        controller.exit();
         dispose();
+        controller.exit();
+	System.out.println("SCHEDULING: IS GUI exit called");
     }
 
     /**

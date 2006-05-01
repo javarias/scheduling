@@ -257,7 +257,6 @@ public class ArchiveQueryWindow extends JFrame {
         String pi = (String)projRowInfo[row][1];
         controller.loginToInteractiveProject(id, pi);
         System.out.println("Logging into project with ID = "+id);
-        //exit();
         dispose();
     }
 
@@ -272,7 +271,7 @@ public class ArchiveQueryWindow extends JFrame {
       *
       */
     public void exit() {
-        controller.exit();
         dispose();
+        controller.exit();
     }
 }

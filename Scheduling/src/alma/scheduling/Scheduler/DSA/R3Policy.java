@@ -25,10 +25,10 @@
  */
 package alma.scheduling.Scheduler.DSA;
 
-import alma.scheduling.SBLite;
 
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.LiteSB;
 import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.Telescope;
 import alma.scheduling.Define.ProjectManager;
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.10 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.11 2006/05/01 18:59:17 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -160,16 +160,6 @@ class R3Policy extends PolicyType {
 		unit = new R3Unit [sb.length];
 		SiteCharacteristics site = telescope.getSite();
         
-        /*
-        System.out.println("In R3Policy");
-        System.out.println("longitude = "+ site.getLongitude());
-        System.out.println("latitude = "+ site.getLatitude());
-        System.out.println("timeZone = "+ site.getTimeZone());
-        System.out.println("altitude = "+ site.getAltitude());
-        System.out.println("minimumElevationAngle = "+ site.getMinimumElevationAngle());
-        System.out.println("numberAntennas = "+ site.getNumberAntennas());
-        System.out.println("band = "+ site.getBand());
-        */
 		for (int i = 0; i < unit.length; ++i) {
 			unit[i] = new R3Unit (sb[i],site);
 		}
@@ -318,15 +308,15 @@ class R3Policy extends PolicyType {
                     npe.printStackTrace(System.out);
                 }   
 			}
-			best = new BestSB (id, getSBLites(list), scoreString, score, success, rank, clock.getDateTime());
+			best = new BestSB (id, getLiteSBs(list), scoreString, score, success, rank, clock.getDateTime());
 		}
 		return best;
 	}
 
-    private SBLite[] getSBLites(R3Unit[] u) {
-        SBLite[] lites = new SBLite[u.length];
+    private LiteSB[] getLiteSBs(R3Unit[] u) {
+        LiteSB[] lites = new LiteSB[u.length];
         for(int i=0; i < u.length; i++){
-            lites[i] = u[i].getSBLite();
+            lites[i] = u[i].getLiteSB();
         }
         return lites;
     }

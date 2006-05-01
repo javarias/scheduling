@@ -27,17 +27,17 @@ package alma.scheduling.Scheduler.DSA;
 
 import alma.scheduling.Define.Equatorial;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.LiteSB;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SiteCharacteristics;
 
-import alma.scheduling.SBLite;
 
 import java.text.NumberFormat;
 
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.8 2005/11/22 23:31:00 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.9 2006/05/01 18:59:17 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -47,9 +47,9 @@ class R3Unit extends SchedulingUnit {
       */
 	private SB sb;
     /**
-      * The sblite for this SB/R3Unit
+      * The liteSB for this SB/R3Unit
       */
-    private SBLite sblite;
+    private LiteSB liteSB;
     /**
       * The Score
       */
@@ -214,8 +214,8 @@ class R3Unit extends SchedulingUnit {
 		dform = NumberFormat.getInstance();
 		dform.setMaximumFractionDigits(2);
 
-        //create SBLite for operator's consideration
-        createSBLite();
+        //create LiteSB for operator's consideration
+        createLiteSB();
 		
 	}
 
@@ -527,26 +527,25 @@ class R3Unit extends SchedulingUnit {
    
     /////////////////////////////////////////////////////////
 
-    private void createSBLite() {
-        sblite = new SBLite();
-        sblite.schedBlockRef = sb.getId();
-        sblite.projectRef = sb.getProject().getId();
-        sblite.obsUnitsetRef = "";
-        sblite.sbName = sb.getSBName();
-        sblite.projectName = sb.getProject().getProjectName();
-        sblite.PI = sb.getProject().getPI();
-        sblite.priority = sb.getProject().getScientificPriority().getPriority();
-        sblite.ra = sb.getTarget().getCenter().getRa();
-        sblite.dec = sb.getTarget().getCenter().getDec();
-        sblite.freq = sb.getFrequencyBand().getHighFrequency();
-        sblite.maxTime = 0;
-        sblite.score = score;
-        sblite.success = success; 
-        sblite.rank = rank ;
+    private void createLiteSB() {
+        liteSB = new LiteSB(sb.getId(),
+                            sb.getProject().getId(),
+                            "",
+                            sb.getSBName(),
+                            sb.getProject().getProjectName(),
+                            sb.getProject().getPI(),
+                            sb.getProject().getScientificPriority().getPriority(),
+                            sb.getTarget().getCenter().getRa(),
+                            sb.getTarget().getCenter().getDec(),
+                            sb.getFrequencyBand().getHighFrequency(),
+                            0,
+                            score, 
+                            success,
+                            rank);
     }
 
-    public SBLite getSBLite() {
-        return null;
+    public LiteSB getLiteSB() {
+        return liteSB;
     }
     /////////////////////////////////////////////////////////
 

@@ -302,5 +302,6 @@ public class ControlSimulator extends BasicComponent implements Control {
         throws SchedulingException {
 		// Don't need it in the simulation.
     }
+    public void stopAllScheduling() throws SchedulingException {}
 }
 

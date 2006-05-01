@@ -16,16 +16,15 @@ public class ArchiveQueryWindowController implements Runnable {
 
     private Logger logger;
     private ProjectManager manager;
-    private ArchiveQueryWindow gui;
     private String[] queryResults;
     private ContainerServices containerServices;
     private InteractiveScheduler scheduler;
     private SchedulerConfiguration config;
     private GUIController loggedInController;
+    private ArchiveQueryWindow archiveQueryGui; 
 
     /////// CONSTRUCTORS ///////
     public ArchiveQueryWindowController(){
-        gui = new ArchiveQueryWindow();
     }
     
     public ArchiveQueryWindowController(ProjectManager m) {
@@ -33,9 +32,7 @@ public class ArchiveQueryWindowController implements Runnable {
     }
 
     //public ArchiveQueryWindowController(SchedulerConfiguration c, 
-    public ArchiveQueryWindowController(InteractiveScheduler s,
-                                        ContainerServices cs){
-        //this.config = c;
+    public ArchiveQueryWindowController(InteractiveScheduler s, ContainerServices cs){ //this.config = c; this.logger = cs.getLogger();
         this.logger = cs.getLogger();
         this.scheduler = s;
         this.config = scheduler.getConfiguration();
@@ -81,7 +78,7 @@ public class ArchiveQueryWindowController implements Runnable {
     }
 
     public void run(){
-        gui = new ArchiveQueryWindow(this);
+        archiveQueryGui= new ArchiveQueryWindow(this);
     }
 
     public void loginToInteractiveProject(String projectId, String pi) {
@@ -101,7 +98,7 @@ public class ArchiveQueryWindowController implements Runnable {
             loggedInController = new GUIController(scheduler, containerServices);
             Thread t = containerServices.getThreadFactory().newThread(loggedInController);
             t.start();
-	    loggedInController.setDefaultProjectId(projectId);
+	        loggedInController.setDefaultProjectId(projectId);
             loggedInController.setLogin(pi);
         } catch(Exception e) {
             e.printStackTrace(System.out);
@@ -113,19 +110,21 @@ public class ArchiveQueryWindowController implements Runnable {
 	    logger.info("SCHEDULING: Finished with control array "+config.getArrayName()+", telling control to destroy it.");
             config.getControl().destroyArray(config.getArrayName());
         } catch(Exception e) {
+	        logger.severe(e.toString());
             logger.severe("SCHEDULING: Error destroying array "+config.getArrayName());
+            e.printStackTrace(System.out);
         }
     }
 
     public void close() {
-        try {
+	    try {
             loggedInController.close();
         } catch(Exception e) { 
             logger.severe("SCHEDULING: error in aqw_ctrl = "+e.toString());
             e.printStackTrace(System.out);
             exit();
         }
-    	gui.dispose();
+    	archiveQueryGui.dispose();
     	logger.info("SCHEDULING: In ArchiveQueryController, closing called");
     }
 

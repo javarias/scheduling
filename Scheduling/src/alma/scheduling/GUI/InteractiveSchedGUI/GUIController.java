@@ -174,6 +174,10 @@ public class GUIController implements Runnable {
        *
        */
      public void executeSB(String sb_id) throws SchedulingException {
+        //first check if anything is already running
+  //      if(config.getQueue().getRunning().length >0 ) {
+  //         throw new SchedulingException("There is a SB Already running!");
+  //      }
         try {
             //Set the start time
             SB selectedSB = config.getQueue().get(sb_id);
@@ -182,12 +186,13 @@ public class GUIController implements Runnable {
             //config.getControl().execSB(config.getArrayName(), sb_id);
             scheduler.execute(sb_id);
         } catch(SchedulingException e) {
-            System.out.println("SCHEDULING: error in executing the sb.");
+            System.out.println("SCHEDULING: error in executing the sb. "+e.toString());
             e.printStackTrace(System.out);
-            throw new SchedulingException (e);
+            throw new SchedulingException(e);
         }
 
     }
+    
 
     public void stopSB() throws SchedulingException {
         SB[] runningSB ;
@@ -276,16 +281,16 @@ public class GUIController implements Runnable {
         try {
             config.getControl().destroyArray(config.getArrayName());
         } catch (Exception e) {
-            logger.severe("Error destroying array "+config.getArrayName());
+            logger.severe("SCHEDULING: in IS-GC error = "+e.toString());
+            logger.severe("SCHEDULING: Error destroying array "+config.getArrayName());
         }
     }
 
     public void close() {
     	logger.info("SCHEDULING: closing IS gui controller!");
         this.gui.dispose();
-        exit();
+	    exit();
     }
-
 
     /**
       *
