@@ -73,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.53 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.54 2006/05/01 18:10:42 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -153,7 +153,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.control = new ALMAControl(containerServices, manager);
         this.telescope = new ALMATelescope();
         
-        logger.config("SCHEDULING: MasterScheduler initialized");
+        logger.info("SCHEDULING: MasterScheduler initialized");
     }
 
     /**
@@ -349,68 +349,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
     }
     
-    /**
-     * Starts scheduling using a specific list of scheduling block Ids.
-     * @param sbList
-     * @throws InvalidOperationEx
-     */
-    public void startQueueScheduling(String[] sbList)//, String arrayName)
-    	throws InvalidOperationEx {
-
-        try {    
-            manager.checkForProjectUpdates();
-            //create a queue of sbs with these ids, 
-            SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
-            if(sbs == null || sbs.size() ==0){
-                InvalidOperation e1 = new InvalidOperation("startQueueScheduling",
-                        "Cannot schedule without a SB queue");
-                AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-                throw e2.toInvalidOperationEx();
-            }
-            //create policy
-            Policy s_policy = createPolicy();
-            //create an array
-            String[] antennas = null;
-            try {
-                antennas = control.getIdleAntennas();
-            }catch(Exception e) {
-                e.printStackTrace(System.out);
-            }
-            String arrayname = createArray(antennas, ArrayModeEnum.QUEUED);
-            //then create a config 
-            SchedulerConfiguration config = 
-                createSchedulerConfiguration(
-                        false, sbs, true, true, 5, arrayname, s_policy);
-                
-            //a scheduler and go from there!
-            //DynamicScheduler scheduler = new DynamicScheduler(config);
-            QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
-            all_schedulers.add(scheduler);
-            Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
-            scheduler_thread.start();
-            while(true) {
-                try {
-                    scheduler_thread.join();
-                    break;
-                } catch(InterruptedException e) {
-//                    if(config.isNothingToSchedule()){
-                        //config.respondStop();
-                        logger.info("SCHEDULING: interrupted sched thread in MS");
-                        manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
-  //                  }
-                }
-            }
-            if(!config.isOperational()) {
-                logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
-            }
-            //destroyArray(arrayname);
-        } catch (Exception e){
-            InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            throw e2.toInvalidOperationEx();
-        }
-            
-	}
+///// START of Executive_to_Scheduling interface implementation
 
     /**
      * Starts scheduling using a specific Scheduling Policy
@@ -425,6 +364,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         
             String[] allAntennas = null;
             try {
+                //gets the available antennas from control
                 allAntennas = control.getIdleAntennas();
             }catch(Exception e){
                 e.printStackTrace(System.out);
@@ -459,70 +399,69 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
     }
 
+    /**
+     * Starts scheduling using a specific list of scheduling block Ids.
+     * @param sbList
+     * @throws InvalidOperationEx
+     */
+    public void startQueueScheduling(String[] sbList)
+    	throws InvalidOperationEx {
 
-    private void scheduleRegularSBs(String[] regularSbAntennas) throws InvalidOperationEx {
-        try {
-            //store scheduling policy int the archive.
-            //archive.storeSchedulingPolicy(schedulingPolicy);
-        
-            //TODO Eventually populate s_policy with info from the schedulingPolicy
+        try {    
+            manager.checkForProjectUpdates();
+            //create a queue of sbs with these ids, 
+            SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
+            if(sbs == null || sbs.size() ==0){
+                InvalidOperation e1 = new InvalidOperation("startQueueScheduling",
+                        "Cannot schedule without a SB queue");
+                AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+                throw e2.toInvalidOperationEx();
+            }
+            //create policy
             Policy s_policy = createPolicy();
-            // regular sb scheduling
-            String arrayname = createArray(regularSbAntennas, ArrayModeEnum.DYNAMIC);
-        
+            //create an array
+            String[] antennas = null;
+            try {
+                antennas = control.getIdleAntennas();
+            }catch(Exception e) {
+                e.printStackTrace(System.out);
+            }
+            String arrayname = createArray(antennas, ArrayModeEnum.QUEUED);
+            //then create a config 
             SchedulerConfiguration config = 
-                createSchedulerConfiguration (
-                        false, sbQueue, true, true, 5, arrayname, s_policy);
-
-            DynamicScheduler scheduler = new DynamicScheduler(config);
-            all_schedulers.add(scheduler);
-            Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
-            schedulerThread.start();
-            while(!stopCommand) {
+                createSchedulerConfiguration(
+                        false, sbs, true, true, 5, arrayname, s_policy);
+                
+            //a scheduler and go from there!
+            //DynamicScheduler scheduler = new DynamicScheduler(config);
+            logger.info("SCHEDULING: Master Scheduler creating queued scheduler");
+            QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
+            Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
+            scheduler_thread.start();
+            while(true) {
                 try {
-                    schedulerThread.join();
+                    scheduler_thread.join();
                     break;
-                } catch(InterruptedException ex) {
-                    if(config.isNothingToSchedule()){
-                        config.respondStop();
-                        logger.info("SCHEDULING: interrupted regular sched thread in MS");
+                } catch(InterruptedException e) {
+//                    if(config.isNothingToSchedule()){
+                        //config.respondStop();
+                        logger.finest("SCHEDULING: interrupted sched thread in MS");
                         manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
-                    }
+  //                  }
                 }
             }
             if(!config.isOperational()) {
-                logger.info("SCHEDULING: Scheduler has ended at " + config.getActualEndTime());
+                logger.info("SCHEDULING: Queued scheduler has ended at " + config.getActualEndTime());
             }
-            destroyArray(arrayname);
-        } catch(Exception e) {
-            InvalidOperation e1 = new InvalidOperation("scheduleRegularSBs", e.toString());
+            //destroyArray(arrayname);
+        } catch (Exception e){
+            e.printStackTrace(System.out);
+            InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }
-    }
-
-    private void scheduleSpecialSBs(String[] specialSbAntennas)  throws InvalidOperationEx {
-        try {
-            String specialSBarrayname = createArray(specialSbAntennas, ArrayModeEnum.DYNAMIC);
-            //
-            Policy specialPolicy = createPolicy();
-            SchedulerConfiguration specialConfig = 
-                createSchedulerConfiguration( 
-                        true, manager.getSpecialSBs(), true, true, 
-                            0, specialSBarrayname, specialPolicy);
-            SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
-            Thread specialSchedulerThread = 
-                containerServices.getThreadFactory().newThread(specialScheduler);
-            specialSchedulerThread.start();
-            all_schedulers.add(specialScheduler);
-        }catch(Exception e) {
-            InvalidOperation e1 = new InvalidOperation("scheduleSpecialSBs", e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            throw e2.toInvalidOperationEx();
-        }
-       
-    }
-
+            
+	}
     /**
       * @throws InvalidOperationEx
       */
@@ -545,7 +484,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 createSchedulerConfiguration(
                         false, new SBQueue(), false, true, 0, arrayname, s_policy);
 
-            logger.info("SCHEDULING: Array name == "+arrayname);
+            logger.info("SCHEDULING: Starting interactive scheduling on array "+arrayname);
 
             InteractiveScheduler scheduler = new InteractiveScheduler(config);
             ArchiveQueryWindowController interactiveGUI = 
@@ -567,8 +506,9 @@ public class ALMAMasterScheduler extends MasterScheduler
      * @throws InvalidOperationEx
      */
     public void stopScheduling() throws InvalidOperationEx {
-        logger.info("SCHEDULING: Stop all scheduling called from OMC");
+        logger.info("SCHEDULING: Stop scheduling called. Will Stop activitiy on ALL schedulers");
         try {
+            control.stopAllScheduling();
             super.stopScheduling();
             control.stopAllSchedulingOnAllAutomaticArrays();
         } catch(Exception e) {
@@ -607,7 +547,9 @@ public class ALMAMasterScheduler extends MasterScheduler
     public SBLite[] getSBLites() {
         return archive.getSBLites();
     }
-
+///// END of Executive_to_Scheduling interface implementation
+    
+///// START of TelescopeOperator_to_Scheduling interface implementation
     /**
      * 
      * @param String
@@ -621,20 +563,20 @@ public class ALMAMasterScheduler extends MasterScheduler
             if(logger == null) {
                 System.out.println("SCHEDULING: logger is null!");
             }
-            logger.info("SCHEDULING: in MS. MessageID = "+messageId);
-            logger.info("SCHEDULING: in MS. Reply (sb id) = "+reply);
-            logger.info("SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
+            logger.fine("SCHEDULING: in MS. MessageID = "+messageId);
+            logger.fine("SCHEDULING: in MS. Reply (sb id) = "+reply);
+            logger.fine("SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
        
             if(messageQueue.size() < 1) {
-                logger.info("SCHEDULING: in MS. MessageQueue was empty. " +
+                logger.warning("SCHEDULING: in MS. MessageQueue was empty. " +
                     "Try starting with startScheduling function!");
                 return;
             }   
             
             Message item = messageQueue.getMessage(messageId);
-            logger.info("SCHEDULING: in MS. Got message with id="+item.getMessageId());
+            logger.fine("SCHEDULING: in MS. Got message with id="+item.getMessageId());
             item.setReply(reply);
-            logger.info("SCHEDULING: in MS. message = "+ messageId + 
+            logger.fine("SCHEDULING: in MS. message = "+ messageId + 
                 " gotten and reply = "+ reply + " sent.");
             item.getTimer().interrupt();
         }catch(Exception e) {
@@ -719,8 +661,8 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @param String
       */
     public void executeSB(String sbId, String name, String when) {
-        logger.info ("SCHEDULING: executing SB "+sbId+" on array "
-                +name+" at time "+when);
+        //logger.finest ("SCHEDULING: executing SB "+sbId+" on array "
+          //      +name+" at time "+when);
     }
 
     /**
@@ -760,9 +702,72 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public void activeMode(String antennaId) throws InvalidOperationEx {
     }
-     
+///// END TelescopeOperator_to_Scheduling interface implementation
     /////////////////////////////////////////////////////////////////////
     // Internal MasterScheduler Functions.
     /////////////////////////////////////////////////////////////////////
+
+    private void scheduleRegularSBs(String[] regularSbAntennas) throws InvalidOperationEx {
+        try {
+            //store scheduling policy int the archive.
+            //archive.storeSchedulingPolicy(schedulingPolicy);
+        
+            //TODO Eventually populate s_policy with info from the schedulingPolicy
+            Policy s_policy = createPolicy();
+            // regular sb scheduling
+            String arrayname = createArray(regularSbAntennas, ArrayModeEnum.DYNAMIC);
+        
+            SchedulerConfiguration config = 
+                createSchedulerConfiguration (
+                        false, sbQueue, true, true, 5, arrayname, s_policy);
+
+            logger.info("SCHEDULING: Master Scheduler creating dynamic scheduler for regular SBs");
+            DynamicScheduler scheduler = new DynamicScheduler(config);
+            Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
+            schedulerThread.start();
+            while(!stopCommand) {
+                try {
+                    schedulerThread.join();
+                    break;
+                } catch(InterruptedException ex) {
+                    if(config.isNothingToSchedule()){
+                        config.respondStop();
+                        logger.finest("SCHEDULING: interrupted regular sched thread in MS");
+                        manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
+                    }
+                }
+            }
+            if(!config.isOperational()) {
+                logger.info("SCHEDULING: Dynamic Scheduler has ended at " + config.getActualEndTime());
+            }
+            destroyArray(arrayname);
+        } catch(Exception e) {
+            InvalidOperation e1 = new InvalidOperation("scheduleRegularSBs", e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            throw e2.toInvalidOperationEx();
+        }
+    }
+
+    private void scheduleSpecialSBs(String[] specialSbAntennas)  throws InvalidOperationEx {
+        try {
+            String specialSBarrayname = createArray(specialSbAntennas, ArrayModeEnum.DYNAMIC);
+            //
+            Policy specialPolicy = createPolicy();
+            SchedulerConfiguration specialConfig = 
+                createSchedulerConfiguration( 
+                        true, manager.getSpecialSBs(), true, true, 
+                            0, specialSBarrayname, specialPolicy);
+            logger.info("SCHEDULING: Master Scheduler creating dynamic scheduler for special SBs");
+            SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
+            Thread specialSchedulerThread = 
+                containerServices.getThreadFactory().newThread(specialScheduler);
+            specialSchedulerThread.start();
+        }catch(Exception e) {
+            InvalidOperation e1 = new InvalidOperation("scheduleSpecialSBs", e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            throw e2.toInvalidOperationEx();
+        }
+       
+    }
     
 }    

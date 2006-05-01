@@ -27,10 +27,12 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 
+import alma.scheduling.SBLite;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
 import alma.scheduling.Define.Operator;
+import alma.scheduling.Define.LiteSB;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.NothingCanBeScheduled;
@@ -118,7 +120,7 @@ public class ALMAOperator implements Operator {
         }
         String bestSBId= best.getBestSelection(); //used when Exec's operator times out
         if(bestSBId == null) {
-            logger.info("SCHEDULING: best sb id == null. no visible targets");
+            logger.finest("SCHEDULING: best sb id == null. no visible targets");
             best = new BestSB(new NothingCanBeScheduled(
                         new DateTime(System.currentTimeMillis()),
                             NothingCanBeScheduled.NoVisibleTargets, ""));
@@ -142,7 +144,14 @@ public class ALMAOperator implements Operator {
                 execSchedOperator = alma.exec.Scheduling_to_TelescopeOperatorHelper.narrow(
                         containerServices.getComponent("EXEC_SCHEDULINGOPERATOR"));
 
-                execSchedOperator.selectSB(message.getMessageId(), arrayName, best.getSBLites(), 5);
+                LiteSB[] liteSB = best.getLiteSBs();
+                SBLite[] sbLites = new SBLite[liteSB.length];
+                for(int i=0;i< liteSB.length; i++) {
+                    sbLites[i] = convertToSBLite(liteSB[i]);
+                }
+                
+                //execSchedOperator.selectSB(message.getMessageId(), arrayName, best.getSBLites(), 5);
+                execSchedOperator.selectSB(message.getMessageId(), arrayName, sbLites, 5);
                         
                 containerServices.releaseComponent("EXEC_SCHEDULINGOPERATOR");
             } catch(ContainerException e) {
@@ -153,12 +162,30 @@ public class ALMAOperator implements Operator {
         }
         try {
             timer.join();
-            logger.info("SCHEDULING: timer joined!");
+            logger.finest("SCHEDULING: timer joined!");
         } catch(InterruptedException e) {
             //logger.info("SCHEDULING: timer was interrupted!");
         }
-        logger.info("SCHEDULING: best sb id = "+message.getReply());
+        logger.finest("SCHEDULING: best sb id = "+message.getReply());
         return message.getReply();
+    }
+    private SBLite convertToSBLite(LiteSB l){
+        SBLite sb= new SBLite();
+        sb.schedBlockRef = l.getSBRef();
+        sb.projectRef = l.getProjRef();
+        sb.obsUnitsetRef = l.getOUSRef();
+        sb.sbName = l.getSBName();
+        sb.projectName = l.getProjName();
+        sb.PI = l.getPI();
+        sb.priority = l.getPri();
+        sb.ra = l.getRA();
+        sb.dec = l.getDEC();
+        sb.freq = l.getFreq();
+        sb.maxTime =l.getMaxTime();
+        sb.score =l.getScore();
+        sb.success = l.getSuccess();
+        sb.rank = l.getRank();
+        return sb;
     }
     
     /**

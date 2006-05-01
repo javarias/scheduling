@@ -31,6 +31,8 @@ import java.util.Vector;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 
+import alma.asdmIDLTypes.IDLEntityRef;
+
 import alma.scheduling.ArrayInfo;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArrayStateEnum;
@@ -52,7 +54,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.43 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.44 2006/05/01 18:10:42 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -60,7 +62,7 @@ public class ALMAControl implements Control {
     private ContainerServices containerServices;
     // control system component
     private ControlMaster control_system;
-    //list of current automatic array controllers
+    //list of current automatic array auto_controllers
     private Vector auto_controllers;
     //list of current manual array monitors.
     private Vector manualArrays;
@@ -79,7 +81,6 @@ public class ALMAControl implements Control {
         this.observedSessions = new Vector();
         try {
             org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL/MASTER");
-            logger.info("got CONTROL_MASTER stub of type " + obj.getClass().getName());
             control_system = alma.Control.ControlMasterHelper.narrow(obj);
                // containerServices.getComponent("CONTROL_MASTER_COMP"));
             //control_system = (ControlMaster)alma.Control.ControlMasterHelper.narrow(
@@ -123,13 +124,18 @@ public class ALMAControl implements Control {
         throws SchedulingException {
 
         //send out start of session
-        String sessionId = manager.sendStartSessionEvent(sbId);
+        IDLEntityRef sessionRef = manager.sendStartSessionEvent(sbId);
         logger.info("SCHEDULING: Sending BestSBs to Control!");
         logger.info("SCHEDULING: Array being used has name = "+arrayName);
         
         AutomaticArrayCommand ctrl = getAutomaticArray(arrayName);
         try{
-            ctrl.observe(sbId, sessionId, 0L); 
+            IDLEntityRef sbRef = new IDLEntityRef();
+            sbRef.entityId = sbId;
+            sbRef.partId = "";
+            sbRef.entityTypeName = "SchedBlock";
+            sbRef.instanceVersion = "1.0";
+            ctrl.observe(sbRef, sessionRef, 0L); 
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
@@ -161,7 +167,9 @@ public class ALMAControl implements Control {
     public void stopSB(String name, String id) throws SchedulingException {
         AutomaticArrayCommand ctrl = getAutomaticArray(name);
         try{
+            logger.info("SCHEDULING: Stopping scheduling on array "+name);
             ctrl.stop(); 
+            removeAutomaticArray(false, name);
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
@@ -172,6 +180,18 @@ public class ALMAControl implements Control {
             logger.severe("SCHEDULING: Problem was: "+e2.toString());
             e2.printStackTrace(System.out);
             throw new SchedulingException(e2);
+        }
+    }
+
+    public void stopAllScheduling() throws SchedulingException {
+        try {
+            for(int i=0; i < auto_controllers.size(); i++){
+                ((AutomaticArrayCommand)auto_controllers.elementAt(i)).stop();
+            }
+            removeAutomaticArray(true,"");
+        } catch(Exception e) {
+            e.printStackTrace(System.out);
+            throw new SchedulingException (e);
         }
     }
 
@@ -204,7 +224,7 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             auto_controllers.add(ctrl);
-            logger.info("SCHEDULING: array controller id = "+ ctrl.getName());
+            logger.info("SCHEDULING: Scheduling created array = "+ ctrl.getName());
             logger.info("SCHEDULING: "+ctrl.getName()+" has "+antenna.length+" antennas");
             return ctrl.getName();
         } catch(InvalidRequest e1) {
@@ -220,7 +240,6 @@ public class ALMAControl implements Control {
     }
 
     public String createManualArray(String[] antenna) throws SchedulingException {
-        //String name="";
         if(antenna == null || antenna.length==0){
             throw new SchedulingException
                 ("SCHEDULING: Cannot create an array with out any antennas!");
@@ -245,7 +264,7 @@ public class ALMAControl implements Control {
         } catch(InaccessibleException e2) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e2.toString());
-        } 
+        }
     }
     
 
@@ -370,7 +389,7 @@ public class ALMAControl implements Control {
     public String[] getIdleAntennas() throws SchedulingException {
         try{
             String[] antennas = control_system.getAvailableAntennas();
-            logger.info("SCHEDULING: Got "+ antennas.length +" antennas");
+            logger.info("SCHEDULING: Got "+ antennas.length +" idle antennas");
             return antennas;
         } catch(InaccessibleException e1) {
             throw new SchedulingException
@@ -390,14 +409,36 @@ public class ALMAControl implements Control {
       * @throws SchedulingException
       */
     private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
-        logger.info("SCHEDULING: looking for subarray with id = "+ name);
+        logger.info("SCHEDULING: looking for array with id = "+ name);
         for(int i=0; i < auto_controllers.size(); i++){
             if( ((AutomaticArrayCommand)auto_controllers.elementAt(i)).getName().equals(name)) {
-                logger.info("SCHEDULING: found subarray with id = "+ name);
+                logger.info("SCHEDULING: found array with id = "+ name);
                 return (AutomaticArrayCommand)auto_controllers.elementAt(i);
             }
         }
         return null;
+    }
+
+    /**
+      * This will remove the automatic arrays from the controller vector if the 'all' boolean 
+      * is true. If it is false it will look for the array with the 'name' and remove just that 
+      * one.
+      * TODO: check if there is more than one array with the given name.. could be problomatic
+      */
+    private void removeAutomaticArray(boolean all, String name) throws SchedulingException {
+        if(all) {
+            logger.finest("SCHEDULING: Removing AutomaticArray objects from queue.");
+            auto_controllers.removeAllElements();
+            return;
+        }
+        for(int i=0; i < auto_controllers.size() ;i++){
+            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i)).getName().equals(name)) {
+                auto_controllers.removeElementAt(i);
+                return;
+            }
+        }
+        throw new SchedulingException("Array ("+name+") does not exist.. cannot remove");
+        
     }
     
     private ManualArrayMonitor getManualArray(String name) throws SchedulingException {
@@ -431,14 +472,22 @@ public class ALMAControl implements Control {
         try {
             control_system.setAntennaMode(antennaId, AntennaMode.OFFLINE, true);
         } catch(InvalidRequest e1) {
+            e1.printStackTrace(System.out);
+            throw new SchedulingException(e1);
         } catch(InaccessibleException e2){
+            e2.printStackTrace(System.out);
+            throw new SchedulingException(e2);
         }
     }
     public void setAntennaOnlineNow(String antennaId) throws SchedulingException {
         try {
             control_system.setAntennaMode(antennaId, AntennaMode.ONLINE, true);
         } catch(InvalidRequest e1) {
+            e1.printStackTrace(System.out);
+            throw new SchedulingException(e1);
         } catch(InaccessibleException e2){
+            e2.printStackTrace(System.out);
+            throw new SchedulingException(e2);
         }
     }
 

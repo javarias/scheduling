@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.31 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.32 2006/05/01 18:10:42 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -100,9 +100,19 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ExecBlockStartedEvent The event sent out by the control subsystem.
      */ 
     public void receive(ExecBlockStartedEvent e) {
-        processExecBlockStartedEvent(e);
+        ProcessExecBlockStartedEvent p = new ProcessExecBlockStartedEvent(e);
+        Thread t = new Thread(p);
+        t.start();
     }
 
+    public void receive(ExecBlockEndedEvent e) {
+        ProcessExecBlockEndedEvent p = new ProcessExecBlockEndedEvent(e);
+        Thread t = new Thread(p);
+        t.start();
+    }
+
+    /*
+      TODO TAKE This out eventually
     private void processExecBlockStartedEvent(ExecBlockStartedEvent e) {
         //the processes below are still being thought out and may not be the
         //best way to do what needs to be done.
@@ -135,12 +145,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
             ex.printStackTrace(System.out);
         }
-    }
+    }*/
 
-    public void receive(ExecBlockEndedEvent e) {
-        processExecBlockEndedEvent(e);
-    }
 
+    /*
     private void processExecBlockEndedEvent(ExecBlockEndedEvent e) {
         try{
             logger.info("SCHEDULING: Event reason = end");
@@ -173,18 +181,8 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace(System.out);
         }
+        */
 
-
-    }
-    
-    /**
-     * Event sent by the control system indication what the status of the control
-     * system is.
-     * @param ControlSystemStatusEvent
-    public void receive(ControlSystemStatusEvent e) {
-        logger.info("SCHEDULING: Received Control System's status event.");
-    }
-     */
 
 ////////////////////////
 // SciPipeline
@@ -279,9 +277,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       */
     private ExecBlock createExecBlock(ExecBlockStartedEvent event) {
         // System.out.println("EXECBLOCK in event id = "+event.execID);
-        ExecBlock eb = new ExecBlock(event.execId, event.arrayName);
+        ExecBlock eb = new ExecBlock(event.execId.entityId, event.arrayName);
         // do this to get SB id over to PM, will be replaced with proper SB
-        eb.setParent(new SB(event.sbId));
+        eb.setParent(new SB(event.sbId.entityId));
         return eb;
     }
     
@@ -390,6 +388,97 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                 currentEB.removeElementAt(i);
                 break;
             }
+        }
+    }
+///////////////////////////////////////////////////////////////////////////
+/////////////////nested classes for event processing threads///////////////
+///////////////////////////////////////////////////////////////////////////
+    public class ProcessExecBlockStartedEvent implements Runnable{
+        private ExecBlockStartedEvent event;
+        
+        public ProcessExecBlockStartedEvent(ExecBlockStartedEvent e) {
+            event = e;
+        }
+        public void run(){
+            processExecBlockStartedEvent(event);
+        }
+    }
+    private void processExecBlockStartedEvent(ExecBlockStartedEvent e) {
+        //the processes below are still being thought out and may not be the
+        //best way to do what needs to be done.
+        try {
+            logger.info("SCHEDULING: Event reason = started");
+            logger.info("SCHEDULING: Received sb start event from control.");
+            logger.info("SCHEDULING: ebid = "+  e.execId); 
+            logger.info("SCHEDULING: sbid =" + e.sbId );
+            logger.info("SCHEDULING: session id ="+ e.sessionId);
+            logger.info("SCHEDULING: arrayname = "+ e.arrayName);
+            logger.info("SCHEDULING: start time = "+ e.startTime);
+            //create an execblock internal to scheduling. 
+            ExecBlock eb = createExecBlock(e);
+            ArrayTime at = new ArrayTime(e.startTime);
+            DateTime startEb = at.arrayTimeToDateTime();
+            logger.info("********************************");
+            logger.info("SCHEDULING: Setting start time for: "+e.execId);
+            logger.info("SCHEDULING: start time is : "+e.startTime);
+            logger.info("SCHEDULING: start time is : "+startEb.toString());
+            logger.info("********************************");
+            eb.setStartTime(startEb);
+            eb.setTimeOfCreation(startEb);
+            eb.setTimeOfUpdate(startEb);
+            //eb.setSessionId(e.sessionId);
+            eb.setSessionId(e.sessionId.partId);
+            currentEB.add(eb);
+            createObservedSession(eb);
+            //send out a start session event.
+            //startSession(eb);
+        } catch(Exception ex) {
+            logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
+            ex.printStackTrace(System.out);
+        }
+    }
+
+
+    public class ProcessExecBlockEndedEvent implements Runnable{
+        private ExecBlockEndedEvent event;
+        
+        public ProcessExecBlockEndedEvent(ExecBlockEndedEvent e) {
+            event = e;
+        }
+        public void run(){
+            processExecBlockEndedEvent(event);
+        }
+    }
+    private void processExecBlockEndedEvent(ExecBlockEndedEvent e) {
+        try{
+            logger.info("SCHEDULING: Event reason = end");
+            logger.info("SCHEDULING: Received sb end event from control.");
+            logger.info("SCHEDULING: end time is "+ e.endTime);
+            //create a control event internal to scheduling.
+            //this object contains the info from controls event which sched wants
+            //ArrayTime at = new ArrayTime(e.endTime);
+            DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
+            ControlEvent ce = new ControlEvent(e.execId.entityId, e.sbId.entityId, e.arrayName, e.status.value(), endEb);//at.arrayTimeToDateTime());
+            //update the sb with the new info from the event
+            updateSB(ce);
+            //eb = createExecBlock(e);
+            ExecBlock eb = retrieveExecBlock(e.execId.entityId);
+            //DateTime endEb = at.arrayTimeToDateTime();
+            logger.info("********************************");
+            logger.info("SCHEDULING: Setting end time for: "+e.execId);
+            logger.info("SCHEDULING: end time is "+ e.endTime);
+            logger.info("SCHEDULING: end time is "+ endEb.toString());
+            logger.info("********************************");
+            eb.setEndTime(endEb, Status.COMPLETE);
+            eb.setTimeOfUpdate(endEb);
+            //send out an end session event
+            endSession(eb);
+            sbCompleted(eb);
+            startPipeline(ce);
+            deleteFinishedEB(eb);
+        } catch(Exception ex) {
+            logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
+            ex.printStackTrace(System.out);
         }
     }
 }

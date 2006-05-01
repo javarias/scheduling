@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.9 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.10 2006/05/01 18:10:42 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -79,9 +79,9 @@ public class ALMAPublishEvent extends PublishEvent {
         try {
             NothingCanBeScheduledEvent event = 
                 new NothingCanBeScheduledEvent(reason, time, comment);
-            logger.info("SCHEDULING: Event created!");
+            logger.finest("SCHEDULING: Event created!");
             sched_nc.publish(event);
-            logger.info("SCHEDULING: Event Sent!");
+            logger.finest("SCHEDULING: Event Sent!");
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error publishing event.");
             e.printStackTrace(System.out);
@@ -107,16 +107,16 @@ public class ALMAPublishEvent extends PublishEvent {
      * @param String The ObsUnitSet's ID
      * @param String The SB's ID
      */
-    public void publish(long start_time, String session_id, String ouc_id, String sb_id) {
+   // public void publish(long start_time, String session_id, String ouc_id, String sb_id) {
         
-        StartSessionEvent event = new StartSessionEvent();//start_time, session_id, ouc_id, sb_id);
-        event.startTime = start_time;
-        event.sessionId = session_id;
-        event.obsUnitSetId = ouc_id;
-        event.sbId = sb_id;
-        sched_nc.publish(event);    
+     //   StartSessionEvent event = new StartSessionEvent();//start_time, session_id, ouc_id, sb_id);
+       // event.startTime = start_time;
+       // event.sessionId = session_id;
+        //event.obsUnitSetId = ouc_id;
+       // event.sbId = sb_id;
+       // sched_nc.publish(event);    
 
-    }
+    //}
 
     /**
      * Publishes an EndSession event.
@@ -125,37 +125,37 @@ public class ALMAPublishEvent extends PublishEvent {
      * @param String The session's ID
      * @param String The ObsUnitSet's ID
      */
-    public void publish(long end_time, String session_id, String ouc_id) {
+   // public void publish(long end_time, String session_id, String ouc_id) {
 
-        EndSessionEvent event = new EndSessionEvent();
-        event.endTime = end_time;
-        event.sessionId = session_id;
-        event.obsUnitSetId = ouc_id;
-        sched_nc.publish(event);
-    }
+     //   EndSessionEvent event = new EndSessionEvent();
+       // event.endTime = end_time;
+       // event.sessionId = session_id;
+       // event.obsUnitSetId = ouc_id;
+       // sched_nc.publish(event);
+   // }
 
     /**
       * @param Object
       */
     public void publish(Object event) {
-        logger.info("SCHEDULING: event's class == "+
+        logger.finest("SCHEDULING: event's class == "+
             event.getClass().getName());
         String eventClass = event.getClass().getName();
         try {
         if(event instanceof StartSessionEvent) {
-            logger.info("SCHEDULING: about to publish start session event");
+            logger.finest("SCHEDULING: about to publish start session event");
             sched_nc.publish((StartSessionEvent)event);
-            logger.info("SCHEDULING: published start session event");
+            logger.finest("SCHEDULING: published start session event");
             
         } else if(event instanceof EndSessionEvent) {
-            logger.info("SCHEDULING: about to publish end session event");
+            logger.finest("SCHEDULING: about to publish end session event");
             sched_nc.publish((EndSessionEvent)event);
-            logger.info("SCHEDULING: published end session event");
+            logger.finest("SCHEDULING: published end session event");
 
         } else if(event instanceof NothingCanBeScheduledEvent) {
-            logger.info("SCHEDULING: about to publish nothing can be scheduled event");
+            logger.finest("SCHEDULING: about to publish nothing can be scheduled event");
             sched_nc.publish((NothingCanBeScheduledEvent)event);
-            logger.info("SCHEDULING: published nothing can be scheduled event");
+            logger.finest("SCHEDULING: published nothing can be scheduled event");
         }
         }catch(Exception e) {
             e.printStackTrace(System.out);
@@ -168,7 +168,7 @@ public class ALMAPublishEvent extends PublishEvent {
       *
       */
     public void disconnect() {
-        logger.info("SCHEDULING: Disconnecting from Scheduling NC");
+        logger.finest("SCHEDULING: Disconnecting from Scheduling NC");
         sched_nc.deactivate();
     }
 }

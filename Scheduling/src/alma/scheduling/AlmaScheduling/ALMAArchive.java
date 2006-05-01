@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.54 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.55 2006/05/01 18:10:42 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -80,7 +80,8 @@ public class ALMAArchive implements Archive {
     //Entity Serializer - prepares entites for the archive
     private EntitySerializer entitySerializer;
     //The DateTime of the last query for SBs
-    private DateTime lastSBquery;
+    private DateTime lastSpecialSBQuery;
+    private DateTime lastProjectQuery;
     
     //ALMA Clock
     private ALMAClock clock;
@@ -127,7 +128,8 @@ public class ALMAArchive implements Archive {
             for(int i=0; i < tmpSpecialSBs.size();i++) {
                 sbs[i] = (SpecialSB)tmpSpecialSBs.elementAt(i);
             }
-            logger.info("SCHEDULING: Scheduling found "+sbs.length+" special SBs");
+            logger.info("SCHEDULING: Scheduling found "+sbs.length+" special SBs archived");
+            lastSpecialSBQuery = clock.getDateTime();
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
@@ -166,7 +168,8 @@ public class ALMAArchive implements Archive {
         for(int i=0; i < tmp_projects.size();i++) {
             projects[i] = (Project)tmp_projects.elementAt(i);
         }
-	    logger.info("SCHEDULING: Scheduling found "+projects.length+" projects");
+	    logger.info("SCHEDULING: Scheduling converted "+projects.length+
+                " Projects from ObsProject found archived.");
         return projects;
     }
 
@@ -174,13 +177,14 @@ public class ALMAArchive implements Archive {
         return null;
     }
 
-    public ProjectStatus getProjectStatus(Project p) throws SchedulingException {
+    public synchronized ProjectStatus getProjectStatus(Project p) throws SchedulingException {
         ProjectStatus ps = null;
         String ps_id = p.getProjectStatusId();
         //logger.info("Getting project status from archive, id = "+ ps_id);
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
-            //logger.info("PS xml: "+xml.xmlString);
+            logger.info("Getting PS for Project");
+            logger.info("PS xml: "+xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
             ps = ProjectUtil.updateProjectStatus(p);
             updateProjectStatus(ps);
@@ -191,13 +195,14 @@ public class ALMAArchive implements Archive {
         return ps;
     }
 
-    public ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
+    public synchronized ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
         ProjectStatus ps = null;
         String ps_id = p.getProjectStatusRef().getEntityId();
         try {
 	    //logger.info("Retrieving project status "+ps_id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
-            //logger.info("PROJECT STATUS: "+ xml.xmlString);
+            logger.info("Getting PS for ObsProject");
+            logger.info("PROJECT STATUS: "+ xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
         } catch(Exception e) {
             e.printStackTrace(System.out);
@@ -246,12 +251,13 @@ public class ALMAArchive implements Archive {
         String query = new String("/prj:ObsProject");
         String schema = new String("ObsProject");
         try {
+            checkArchiveStillActive();
             Cursor cursor = archOperationComp.queryDirty(query,schema);
             if(cursor == null) {
                 logger.severe("SCHEDULING: cursor was null when querying ObsProjects");
                 return null;
             } else {
-                logger.info("SCHEDULING: cursor not null!");
+                logger.finest("SCHEDULING: cursor not null!");
             }
             while(cursor.hasNext()) {
                 QueryResult res = cursor.next();
@@ -282,15 +288,13 @@ public class ALMAArchive implements Archive {
             for(int i=0; i < tmpObsProject.size();i++) {
                 projects[i] = (ObsProject)tmpObsProject.elementAt(i);
             }
+            lastProjectQuery = clock.getDateTime();
+            logger.info("SCHEDULING: Scheduling found "+projects.length+
+                    " projects archived.");
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
         }
-        /*
-        if(projects == null){
-            projects = new ObsProject[1];
-            projects[0]= new ObsProject();
-        }*/
         return projects;
 
     }
@@ -299,7 +303,7 @@ public class ALMAArchive implements Archive {
       * Creates a 'dummy' ProjectStatus and stores it in the archive.
       */
     private ProjectStatus createDummyProjectStatus(ObsProject p) throws SchedulingException {
-        logger.info("SCHEDULING: creating a project status for a project");
+        logger.finest("SCHEDULING: creating a project status for a project");
         //project doesn't have a ProjectStatus, so create one for it now and archive it
         String proj_id = p.getObsProjectEntity().getEntityId();
         ProjectStatus newPS = new ProjectStatus();
@@ -311,7 +315,7 @@ public class ALMAArchive implements Archive {
         obsProjRef.setEntityId(proj_id);
         newPS.setObsProjectRef(obsProjRef);
 
-        logger.info("ps-sched: creating ps for project "+ p.getObsProjectEntity().getEntityId() );
+        logger.finest("ps-sched: creating ps for project "+ p.getObsProjectEntity().getEntityId() );
 
         try {
             containerServices.assignUniqueEntityId(newPS.getProjectStatusEntity());
@@ -342,7 +346,7 @@ public class ALMAArchive implements Archive {
       */
     private SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
-            logger.info("SCHEDULING: no sbs stuff available in project");
+            logger.severe("SCHEDULING: no sbs stuff available in project");
             throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
@@ -352,8 +356,8 @@ public class ALMAArchive implements Archive {
                 sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
                 
             }
-            logger.info("SCHEDULING: Scheduling found that project ("+
-                    p.getObsProjectEntity().getEntityId() +") has "+
+            logger.info("SCHEDULING: Scheduling found that project "+
+                    p.getObsProjectEntity().getEntityId() +" has "+
                     sbs.length+" sbs");
             return sbs;
         }
@@ -385,9 +389,10 @@ public class ALMAArchive implements Archive {
     /**
       * Gets all the schedblock references from the ObsUnitSetTChoice.
       */
-    private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) {
+    private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) throws SchedulingException {
         if(choice == null) {
-            logger.info("SCHEDULING: choice is null..");
+            logger.severe("SCHEDULING: choice is null..");
+            throw new SchedulingException("ObsUnitSetTChoice == null");
         }
         if(choice.getObsUnitSetCount() == 0) {
             return choice.getSchedBlockRef();
@@ -432,7 +437,7 @@ public class ALMAArchive implements Archive {
       *
       */
     public SBLite[] getSBLites() {
-	logger.info("SCHEDULING: Called getSBLites");
+	    logger.info("SCHEDULING: Called getSBLites");
         SBLite[] sbliteArray=null;
         SBLite sblite;
         Vector<SBLite> sbliteVector = new Vector<SBLite>();
@@ -461,6 +466,7 @@ public class ALMAArchive implements Archive {
                     sblite.projectRef = pid;
                     //sblite.projectRef = sbs[j].getProject().getId();
                     sblite.obsUnitsetRef = "";
+
                     sname =sbs[j].getSBName();
                     if(sname == null || sname ==""){
                         sname = "WARNING: problem with SB name";
@@ -488,7 +494,7 @@ public class ALMAArchive implements Archive {
 		            try {
 	                    ra = sbs[j].getTarget().getCenter().getRa();
         	 	    } catch(NullPointerException npe) {
-		            	logger.info("SCHEDULING: RA object == null in SB, setting to 0.0");
+		            	logger.warning("SCHEDULING: RA object == null in SB, setting to 0.0");
             			ra = 0.0;
 		            }
                     sblite.ra = ra;
@@ -496,7 +502,7 @@ public class ALMAArchive implements Archive {
         		    try {
 	                    dec = sbs[j].getTarget().getCenter().getDec();
 	 	            } catch(NullPointerException npe) {
-            			logger.info("SCHEDULING: DEC object == null in SB, setting to 0.0");
+            			logger.warning("SCHEDULING: DEC object == null in SB, setting to 0.0");
 			            dec = 0.0;
         		    }
                     sblite.dec = dec;
@@ -514,7 +520,7 @@ public class ALMAArchive implements Archive {
             sbliteArray = sbliteVector.toArray(sbliteArray);
             
         } catch(Exception e) {
-	    logger.info(e.toString());
+	        logger.severe(e.toString());
             e.printStackTrace(System.out);
         }
         return sbliteArray;
@@ -530,8 +536,10 @@ public class ALMAArchive implements Archive {
             //logger.info("SCHEDULING: updated PS: "+xml.xmlString);
             XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
             xml2.xmlString = xml.xmlString;
+            logger.info("About to save PS: "+xml2.xmlString);
             archOperationComp.update(xml2);
         } catch(Exception e){
+            logger.severe("SCHEDULING: error updating PS in archive, "+e.toString());
             e.printStackTrace(System.out);
             throw new SchedulingException (e);
         }
@@ -806,13 +814,13 @@ public class ALMAArchive implements Archive {
      */
     private void getArchiveComponents() {
         try {
+            logger.info("SCHEDULING: Getting archive components");
             org.omg.CORBA.Object obj = containerServices.getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
-            logger.info("got ARCHIVE CONNECTION stub of type " + obj.getClass().getName());
             this.archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(obj);
-                //containerServices.getComponent("ARCHIVE_CONNECTION"));
-            //TODO take this out eventually
+            
             this.archConnectionComp.getAdministrative("SCHEDULING").init();
             this.archOperationComp = archConnectionComp.getOperational("SCHEDULING");
+            
         } catch(ContainerException e) {
             logger.severe("SCHEDULING: ContainerException: "+e.toString());
         } catch (ArchiveException e) {
@@ -831,13 +839,32 @@ public class ALMAArchive implements Archive {
         logger.fine("SCHEDULING: The ALMAArchive has been constructed.");
     }
 
+    public void checkArchiveStillActive() {
+        logger.info("SCHEDULING: Checking archive connection.");
+        try {
+            if(archConnectionComp == null) {
+                logger.finest("SCHEDULING: Getting archive components");
+                getArchiveComponents();
+            }else {
+                logger.finest("SCHEDULING: Archive connection fine.");
+            }
+        }catch(NullPointerException npe){
+            getArchiveComponents();
+        } catch(Exception e){
+            logger.severe("SCHEDULING: Error with archive components: "+e.toString());
+            e.printStackTrace(System.out);
+        }
+        
+    }
+
     /**
       * Releases all the archive components.
       * TODO: find out how to release operational one..
       */
     public void releaseArchiveComponents() {
         try {
-            containerServices.releaseComponent("ARCHIVE_CONNECTION");
+            //containerServices.releaseComponent("ARCHIVE_CONNECTION");
+            containerServices.releaseComponent(archConnectionComp.name()); 
         } catch (Exception e) {
         }
     }
@@ -1000,10 +1027,11 @@ public class ALMAArchive implements Archive {
         }
     }
 
-    public String getPPRString(ProjectStatus ps, String pprId) {
+    public synchronized String getPPRString(ProjectStatus ps, String pprId) {
         String result = "";
         try {
             updateProjectStatus(ps);
+            logger.info("SCHEDULING: Just updated ps, now gonna query ppr");
 
             String query = new String("/ps:ProjectStatus//ps:PipelineProcessingRequest[@entityPartId='"+pprId+"']");
             String schema = new String("ProjectStatus");
@@ -1016,6 +1044,7 @@ public class ALMAArchive implements Archive {
                 QueryResult res = cursor.next();
                 //logger.info("PPR xml (in archive)= "+res.xml);
                 result = res.xml;
+                logger.info("SCHEDULING: PPR string: "+result);
             }
 
             //query the archive for the pipelineprocessing requestthe pipelineprocessing request..

@@ -34,7 +34,7 @@ import alma.acs.container.ComponentHelper;
 
 /**
  * @author alma-component-helper-generator-tool
- * @version $Id: MasterSchedulerIFHelper.java,v 1.4 2006/03/23 17:52:54 sslucero Exp $
+ * @version $Id: MasterSchedulerIFHelper.java,v 1.5 2006/05/01 18:10:42 sslucero Exp $
  */
 public class MasterSchedulerIFHelper extends ComponentHelper
 {
@@ -75,5 +75,4 @@ public class MasterSchedulerIFHelper extends ComponentHelper
     protected String[] _getComponentMethodsExcludedFromInvocationLogging() {
         return new String[] {"OFFSHOOT::alma.ACS.ROstringSeq#get_sync"};
     }
-
 }

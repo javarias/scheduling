@@ -55,11 +55,12 @@ import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.specialsb.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
-//import alma.asdmIDLTypes.IDLEntityRef;
+import alma.asdmIDLTypes.IDLEntityRef;
+
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.59 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.60 2006/05/01 18:10:42 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -113,7 +114,6 @@ public class ALMAProjectManager extends ProjectManager {
             try {
                 Thread.sleep(60*5000);
             }catch(InterruptedException e) {
-                logger.info("SCHEDULING: ProjectManager Interrupted!");
             }
             if(!stopCommand){
                 try {
@@ -148,7 +148,7 @@ public class ALMAProjectManager extends ProjectManager {
         } catch(Exception e) {
             e.printStackTrace(System.out);
         }
-        logger.info("# of special sbs = "+specialSBs.size());
+        logger.finest("# of special sbs = "+specialSBs.size());
     }
 
     public Vector getSpecialSBs() {
@@ -162,97 +162,6 @@ public class ALMAProjectManager extends ProjectManager {
         }
     }
 
-    /** 
-     * Check the archive periodically to see if there have been any additional
-     * scheduling blocks added. This function will eventually poll for new 
-     * projects.
-     *
-    private Project[] pollArchive() {
-        logger.info("SCHEDULING: Polling ARCHIVE");
-        boolean sb_present = false;
-        Project[] projs = new Project[0];
-        try {
-            String[] ids;
-            logger.info("SCHEDULING: getting projects");
-            projs = archive.getAllProject();
-            logger.info("SCHEDULING: getting projectstatus'");
-            for(int i=0; i < projs.length;i++){
-                if(pQueue.isExists(projs[i].getId())){
-                    //actually check if the timestamps are the same, if they're different
-                    //and the new project's time is greater than the one in the queue
-                    //replace the one in the queue.. NOTE: will also have to tell the sbQueue
-                    //to update somehow..
-                    
-                    logger.info("SCHEDULING: Project already in queue, checking if its been updated");
-                    DateTime old_proj_time = pQueue.get(projs[i].getId()).getTimeOfUpdate();
-                    DateTime new_proj_time = projs[i].getTimeOfUpdate();
-                    if(old_proj_time.compareTo(new_proj_time) == 0) {
-                        logger.info("times are equal!");
-
-                    } else if(old_proj_time.compareTo(new_proj_time) == 1) {
-                        logger.info("this project has been updated!");
-                        //pQueue.replace(ProjectUtil.
-                    } else { // the update time is less than the orig. == problem..
-                        logger.severe("this should not have happened...");
-
-                    }
-                    //TODO: update project status too
-                } else {
-
-                    //get the projectStatus of each project. if its in the queue don't map!
-                    String psId = projs[i].getProjectStatusId();
-                    if(psQueue.isExists(psId)) {
-                        logger.info("SCHEDULING: PS already exists in queue. Not Mapping");
-                        
-                    } else {
-                        ProjectStatus ps;
-                        try {
-                            ps = ProjectUtil.updateProjectStatus(projs[i]);
-                            psQueue.add(ps);
-                            archive.updateProjectStatus(ps);
-                        } catch(Exception e) {
-                        //    ps = archive.queryProjectStatus(projs[i].getId());
-                        }
-                    }
-                }
-            }
-            logger.info("SCHEDULING: Number of PS in queue = "+psQueue.size());
-            logger.info("SCHEDULING: Number of projects = "+pQueue.size());
-            logger.info("SCHEDULING: Number of projects returned = "+projs.length);
-            for(int i=0; i < projs.length;i++) {
-                logger.info("SCHEDULING: sched blocks in Project ( "+projs[i].getId()+" ) = "+
-                        projs[i].getTotalSBs());
-                SB[] sbs = projs[i].getAllSBs();    
-                for(int j=0; j < sbs.length; j++){
-                    ids = sbQueue.getAllIds();
-                    String tmp_id = sbs[j].getId();
-                    if(ids.length == 0) { //nothing in the SBQueue
-                        logger.info("SCHEDULING: id's length == 0");
-                        sb_present = false;
-                    }
-                    for(int k=0; k < ids.length; k++) {
-                        if(tmp_id.equals(ids[k])) { 
-                            //SB already in queue
-                            sb_present = true;
-                            break;
-                        } else {
-                            //SB not in queue
-                            sb_present = false;
-                        }
-                    }
-                    if(!sb_present){
-                        logger.info("SCHEDULING: sbpresent false; adding "+tmp_id +" to queue");
-                        sbQueue.add(sbs[j]);
-                    }
-                }
-            }
-        }catch(Exception e) {
-            logger.severe("SCHEDULING: Error polling archive: "+e.toString());
-            e.printStackTrace(System.out);
-        }
-        return projs;
-    }
-     */
     
     /**
       * For Scheduling an ordered list of sbs we still need to map the to their projects
@@ -285,9 +194,9 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public void sessionStart(String sessionId, String sb_id) {
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
-        logger.info("SCHEDULING:(session info) Session ("+sessionId+") has started.");
-        logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
-        logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
+        logger.finest("SCHEDULING:(session info) Session ("+sessionId+") has started.");
+        logger.finest("SCHEDULING:(session info) Project id = "+proj_id+".");
+        logger.finest("SCHEDULING:(session info) SB id = "+sb_id+".");
         //send message to operator
         //oper.send("Session ("+sessionId+") has started for Sb ("+sb_id+").");
         
@@ -297,12 +206,12 @@ public class ALMAProjectManager extends ProjectManager {
       * Log that the session has ended and send a message to the Operator
       */
     public void sessionEnd(String sessionId, String sb_id) {
-        logger.info("sb id = "+sb_id);
+        logger.finest("sb id = "+sb_id);
         String proj_id = (sbQueue.get(sb_id)).getProject().getId();
-        logger.info("Proj id= "+proj_id);
-        logger.info("SCHEDULING:(session info) Session ("+sessionId+") has ended.");
-        logger.info("SCHEDULING:(session info) Project id = "+proj_id+".");
-        logger.info("SCHEDULING:(session info) SB id = "+sb_id+".");
+        logger.finest("Proj id= "+proj_id);
+        logger.finest("SCHEDULING:(session info) Session ("+sessionId+") has ended.");
+        logger.finest("SCHEDULING:(session info) Project id = "+proj_id+".");
+        logger.finest("SCHEDULING:(session info) SB id = "+sb_id+".");
         //send message to operator
         //oper.send("Session ("+sessionId+") has ended for Sb ("+sb_id+").");
     }
@@ -314,25 +223,25 @@ public class ALMAProjectManager extends ProjectManager {
     public void setSBComplete(ExecBlock eb) {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
-        logger.info("##########################");
-        logger.info("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
-        logger.info("sb's status in PM = "+completed.getStatus().getStatus());
-        logger.info("sb's starttime in PM = "+completed.getStatus().getStartTime());
-        logger.info("##########################");
+        logger.finest("##########################");
+        logger.finest("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
+        logger.finest("sb's status in PM = "+completed.getStatus().getStatus());
+        logger.finest("sb's starttime in PM = "+completed.getStatus().getStartTime());
+        logger.finest("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
         if( (completed.getNumberExec() +1) > completed.getMaximumNumberOfRepeats()  ){
-            logger.info("###########set to complete####");
-            logger.info("Setting end time for "+eb.getId());
-            logger.info(" # exec = "+completed.getNumberExec());
-            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
-            logger.info("#################################");
+            logger.finest("###########set to complete####");
+            logger.finest("Setting end time for "+eb.getId());
+            logger.finest(" # exec = "+completed.getNumberExec());
+            logger.finest(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.finest("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         } else { //set it to ready
-            logger.info("##########set to ready###########");
-            logger.info("Setting end time for "+eb.getId());
-            logger.info(" # exec = "+completed.getNumberExec());
-            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
-            logger.info("#################################");
+            logger.finest("##########set to ready###########");
+            logger.finest("Setting end time for "+eb.getId());
+            logger.finest(" # exec = "+completed.getNumberExec());
+            logger.finest(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.finest("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
@@ -351,14 +260,14 @@ public class ALMAProjectManager extends ProjectManager {
       * 
       * 
       */
-    public void updateProjectStatus(ExecBlock eb) {
+    public synchronized void updateProjectStatus(ExecBlock eb) {
         //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
-        logger.info ("in PM, ps update");
+        logger.finest ("in PM, ps update");
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
-        logger.info("SCHEDULING: SB id = " +sb.getId());
+        logger.finest("SCHEDULING: SB id = " +sb.getId());
         String proj_id = sb.getProject().getId();
-        logger.info("SCHEDULING: project id = " +proj_id);
+        logger.finest("SCHEDULING: project id = " +proj_id);
         
         ProjectStatus[] allPS = psQueue.getAll();
         ProjectStatus ps = null;
@@ -369,7 +278,7 @@ public class ALMAProjectManager extends ProjectManager {
             }
         }
         //ids[0] = ps.getProjectStatusEntity().getEntityId(); //for pipeline back in ALMAReceiveEvent
-        logger.info("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
+        logger.finest("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
 
         /**
           * For R2 there is the assumption that there is only one SB inside one ObsUnitSet
@@ -398,11 +307,11 @@ public class ALMAProjectManager extends ProjectManager {
  
      //TODO: Rename this method.
     public SBStatusT[] parseObsUnitSetStatus(ObsUnitSetStatusT set) {
-        logger.info("SCHEDULING: Set PartID = "+set.getEntityPartId());
+        logger.finest("SCHEDULING: Set PartID = "+set.getEntityPartId());
         SBStatusT[] sbs = null;
         ObsUnitSetStatusT[] obs = null;
         if(set.getObsUnitSetStatusTChoice().getObsUnitSetStatusCount() > 0) {
-            logger.info("SCHEDULING: more than one obs unit set status in PS");
+            logger.finest("SCHEDULING: more than one obs unit set status in PS");
             obs = set.getObsUnitSetStatusTChoice().getObsUnitSetStatus();
             for(int i=0; i< obs.length; i++) {
                 sbs = parseObsUnitSetStatus(obs[i]);
@@ -454,10 +363,10 @@ public class ALMAProjectManager extends ProjectManager {
       *
       * Gets called from ALMAReceiveEvent
       */
-    public void createObservedSession(ExecBlock eb) {
+    public synchronized void createObservedSession(ExecBlock eb) {
 
         String sbid = eb.getParent().getId();
-        logger.info("EB's parent id = "+sbid);
+        logger.finest("EB's parent id = "+sbid);
         Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
         session.setSessionId(eb.getSessionId());
@@ -471,7 +380,7 @@ public class ALMAProjectManager extends ProjectManager {
         Program prog =  addProgram(p);
         Project proj = prog.getProject();
         if(proj == null) {
-            logger.info("SCHEDULING: project was null!!!"); //should never happen.
+            logger.severe("SCHEDULING: project was null!!!"); //should never happen.
             //throw new Exception("SCHEDULING: Error with project structure!"); TODO Add this eventually
         }
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
@@ -489,8 +398,8 @@ public class ALMAProjectManager extends ProjectManager {
     /**
       * Updates the observng session information.
       */
-    public void updateObservedSession(Project p, ProjectStatus ps, String sessionId, String endTime){
-        logger.info("SCHEDULING: updating session with end time.");
+    public synchronized void updateObservedSession(Project p, ProjectStatus ps, String sessionId, String endTime){
+        logger.finest("SCHEDULING: updating session with end time.");
         try {
             ObservedSession[] allSes = searchPrograms(p.getProgram(), sessionId).getAllSession();
 
@@ -530,35 +439,58 @@ public class ALMAProjectManager extends ProjectManager {
     public void sendStartSessionEvent(ObservedSession session) {
     }
     */
-    public String sendStartSessionEvent(String sbid) {
+    //public String sendStartSessionEvent(String sbid) {
+    public IDLEntityRef sendStartSessionEvent(String sbid) {
         SB sb = sbQueue.get(sbid);
         //in future will be done in scheduler.
         //ObservedSession session = createObservedSession(sb.getParent(),eb);
         //session.addExec(eb);
+        //the entity which contains the session is the project status
         String sessionId = new String(ProjectUtil.genPartId());
         sessionStart(sessionId, sbid);
-        /*
         IDLEntityRef sessionRef = new IDLEntityRef();
         sessionRef.entityId = sb.getProject().getProjectStatusId();
         sessionRef.partId = sessionId;
         sessionRef.entityTypeName = "ProjectStatus";
-        sessionRef.instanceVersion = "1.0";
-        */
-        logger.info("SCHEDULING: Session id == "+sessionId);
+        sessionRef.instanceVersion ="1.0";
+        IDLEntityRef sbRef = new IDLEntityRef();
+        sbRef.entityId = sbid;
+        sbRef.partId ="";
+        sbRef.entityTypeName = "SchedBlock";
+        sbRef.instanceVersion ="1.0";
+        //try and tell quicklook pipeline a session is about to start
+        String title="";
+        if(!sb.getProject().getProjectName().equals("")){
+            title = sb.getProject().getProjectName();
+        }else {
+            title = "undefined_project_name";
+        }
+        if(!sb.getSBName().equals("")){
+            title = title + sb.getSBName();
+        } else {
+            title = title +"undefined_sb_name";
+        }
+        logger.info("SCHEDULING: title for quicklook = "+title);
         try {
+            pipeline.startQuickLookSession(sessionRef, sbRef, title);
+        } catch (Exception e){
+            logger.warning("SCHEDULING: Quick look not available.");
+        }
+        try {
+            logger.info("SCHEDULING: Session with id == "+sessionId+" (start event sent)");
             long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
             StartSessionEvent start_event = new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-                    sessionId,
-                    sb.getParent().getId(),
-                    sbid);
+                    sessionRef,
+                    sbRef);
                     
             publisher.publish(start_event);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Failed to send start session event!");
             e.printStackTrace(System.out);
         }
-        return sessionId;
+        //return sessionId;
+        return sessionRef;
     }
 
 
@@ -583,17 +515,29 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusT obsProgram = ps.getObsProgramStatus();
         
         SessionT session = getSession(eb);
-        logger.info("SCHEDULING: session found!");
+        logger.finest("SCHEDULING: session found!");
         session.setEndTime(endTime);
-        logger.info("SCHEDULING: sbid = " +sbid);
-        logger.info("SCHEDULING: session part id = "+session.getEntityPartId());
+        logger.finest("SCHEDULING: sbid = " +sbid);
+        logger.finest("SCHEDULING: session part id = "+session.getEntityPartId());
         sessionEnd(session.getEntityPartId(), sbid);
         updateObservedSession(proj, ps, session.getEntityPartId(), endTime);
+        IDLEntityRef sessionRef = new IDLEntityRef();
+        sessionRef.entityId=sb.getProject().getProjectStatusId();
+        sessionRef.partId=session.getEntityPartId();
+        sessionRef.entityTypeName = "ProjectStatus";
+        sessionRef.instanceVersion ="1.0";
+        IDLEntityRef sbRef = new IDLEntityRef();
+        sbRef.entityId = sbid;
+        sbRef.partId ="";
+        sbRef.entityTypeName = "SchedBlock";
+        sbRef.instanceVersion ="1.0";
+        //try and tell quicklook pipeline a session is about to end
+        pipeline.endQuickLookSession(sessionRef, sbRef);
         try {
             EndSessionEvent end_event = new EndSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-                    session.getEntityPartId(),
-                    obsProgram.getEntityPartId(),
+                    sessionRef,
+                    sbRef,
                     allExecIds);
             publisher.publish(end_event);
         } catch(Exception e) {
@@ -620,7 +564,7 @@ public class ALMAProjectManager extends ProjectManager {
             logger.severe("SCHEDULING: PM: returned set is null! (looking for session)");
         }
         SessionT[] sessions = set.getSession();
-        logger.info("SCHEDULING: in PM getSession, length = "+sessions.length);
+        logger.finest("SCHEDULING: in PM getSession, length = "+sessions.length);
         if(sessions.length != 0) {//if this is the wrong set of sessions i screwed up..
             gotSession = sessionExists(eb, sessions);
             if(gotSession) {
@@ -656,7 +600,7 @@ public class ALMAProjectManager extends ProjectManager {
         ExecBlockRefT[] execblocks = ses.getExecBlockRef();
         for(int i=0; i < execblocks.length; i++){
             if (execblocks[i].getExecBlockId().equals(ebid)){
-                logger.info("SCHEDULING: Session found! returning true");
+                logger.finest("SCHEDULING: Session found! returning true");
                 return true;
             }
         }
@@ -675,7 +619,7 @@ public class ALMAProjectManager extends ProjectManager {
             ExecBlockRefT[] execblocks = all[i].getExecBlockRef();
             for(int j=0; j < execblocks.length; j++){
                 if (execblocks[j].getExecBlockId().equals(execid)){
-                    logger.info("SCHEDULING: Session found! returning true");
+                    logger.finest("SCHEDULING: Session found! returning true");
                     return true;
                 }
             }
@@ -695,7 +639,7 @@ public class ALMAProjectManager extends ProjectManager {
             ExecBlockRefT[] execblocks = session.getExecBlockRef();
             for(int j=0; j < execblocks.length; j++){
                 if (execblocks[j].getExecBlockId().equals(execid)){
-                    logger.info("SCHEDULING: Session found! returning session");
+                    logger.finest("SCHEDULING: Session found! returning session");
                     return session;
                 }
             }
@@ -727,11 +671,11 @@ public class ALMAProjectManager extends ProjectManager {
       * @param s A comment about the science pipeline request
       * @return SciPipelineRequest
       */
-    public SciPipelineRequest createSciPipelineRequest(String sbid, String s)
+    public synchronized SciPipelineRequest createSciPipelineRequest(String sbid, String s)
         throws SchedulingException {
 
         //use sbid to get the program 
-        logger.info("SCHEDULING: Creating PPR in PM");
+        logger.finest("SCHEDULING: Creating PPR in PM");
         SB sb = sbQueue.get(sbid);
         Program prog = sb.getParent();
         //System.out.println("sb parent's part id = "+prog.getObsUnitSetStatusId());
@@ -790,7 +734,7 @@ public class ALMAProjectManager extends ProjectManager {
         SB[] sb1 = p1.getAllSBs();
         SB[] sb2 = p2.getAllSBs();
         if(sb1.length != sb2.length) {
-            logger.info("SCHEDULING: Comparing sb lists. Size is different so false return"
+            logger.finest("SCHEDULING: Comparing sb lists. Size is different so false return"
                     + sb1.length +" : "+ sb2.length);
             return false;
         }
@@ -816,11 +760,11 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public SB[] getNewSBs(Project p1, Project p2) {
         SB[] sb1 = p1.getAllSBs();
-        logger.info("new proj has "+sb1.length+" sbs");
+        logger.finest("new proj has "+sb1.length+" sbs");
         SB[] sb2 = p2.getAllSBs();
-        logger.info("old proj has "+sb2.length+" sbs");
+        logger.finest("old proj has "+sb2.length+" sbs");
         if(sb1.length <= sb2.length) {
-            logger.info("SCHEDULING: There are no new sbs! The new project has size "+
+            logger.finest("SCHEDULING: There are no new sbs! The new project has size "+
                     + sb1.length +" and the old project has size "+ sb2.length);
             return null;
         }
@@ -831,28 +775,28 @@ public class ALMAProjectManager extends ProjectManager {
         for(int i=0; i < sb1.length; i++){ //Call this 'i' loop
             for(int j=0; j < sb2.length; j++){ //Call this 'j' loop
                 if(sb1[i].getId().equals(sb2[j].getId())){ 
-                    logger.info("sb is there. not adding");
+                    logger.finest("sb is there. not adding");
                     isThere = true;
                 }
                 if(isThere){
-                    logger.info("break out of j loop only (hopefully)");
+                    logger.finest("break out of j loop only (hopefully)");
                     isThere = false;
                     break; //out of 'j' loop
                 } else {
-                    logger.info("sb is not there. adding");
+                    logger.finest("sb is not there. adding");
                     //add to newSBs
-                    logger.info("new sbs's id == "+sb1[i].getId());
+                    logger.finest("new sbs's id == "+sb1[i].getId());
                     newSBs[x] = sb1[i];
-                    logger.info("new sbs's id == "+newSBs[x].getId());
+                    logger.finest("new sbs's id == "+newSBs[x].getId());
                     x++;
                     
                 }
             }
-            logger.info(" in getNewSBs i = "+i);
+            logger.finest(" in getNewSBs i = "+i);
         }
         
-        logger.info("SCHEDULING: difference between p1 & p2 = "+size);
-        logger.info("SCHEDULING: size of newSBs = "+x);
+        logger.finest("SCHEDULING: difference between p1 & p2 = "+size);
+        logger.finest("SCHEDULING: size of newSBs = "+x);
         return newSBs;
     }
 
@@ -884,10 +828,10 @@ public class ALMAProjectManager extends ProjectManager {
     public String[] archiveQuery(String query, String schema) throws SchedulingException  {
         //only return the ones which the project manager knows.
         String[] tmp = archive.query(query, schema);
-        logger.info("@@@@@@@@ Archive returned "+tmp.length);
+        logger.finest("@@@@@@@@ Archive returned "+tmp.length);
         Vector v_uids = new Vector();
         for(int i=0;i< tmp.length; i++) {
-            logger.info(tmp[i]);
+            logger.finest(tmp[i]);
             if(pQueue.isExists(tmp[i])){
                 v_uids.add(tmp[i]);
             }
@@ -924,6 +868,7 @@ public class ALMAProjectManager extends ProjectManager {
       * 
       */
     private void pollArchive() throws SchedulingException {
+        logger.info("SCHEDULING: polling archive for (eventually new/updated) projects");
         Project[] projectList = new Project[0];
         Vector<ProjectStatus> tmpPS = new Vector<ProjectStatus>();
         ProjectStatus ps;
@@ -932,17 +877,17 @@ public class ALMAProjectManager extends ProjectManager {
         try {
             // Get all Projects, SBs and PS's from the archive
             projectList = archive.getAllProject();
-            logger.info("ProjectList size =  "+projectList.length);
+            logger.finest("ProjectList size =  "+projectList.length);
             ArrayList<Project> projects = new ArrayList<Project>(projectList.length);
             for(int i=0; i < projectList.length; i++) {
                 projects.add(projectList[i]);
             }
-            logger.info("Projects size =  "+projects.size());
+            logger.finest("Projects size =  "+projects.size());
             for(int i=0; i < projects.size(); i++) {
                 //if project status is complete don't add
                 ps = archive.getProjectStatus( projects.get(i) );
                 //check if project status is complete
-                logger.info("PS status = "+ps.getStatus().getState().toString());
+                logger.finest("PS status = "+ps.getStatus().getState().toString());
                 if(!ps.getStatus().getState().toString().equals("complete")){
                     tmpPS.add(ps);
                     SB[] sbs = archive.getSBsForProject( projects.get(i).getId() );
@@ -950,7 +895,7 @@ public class ALMAProjectManager extends ProjectManager {
                         tmpSBs.add( sbs[j] );
                     }
                 } else {
-                    logger.info("PS status = "+ps.getStatus().getState().toString());
+                    logger.finest("PS status = "+ps.getStatus().getState().toString());
                     //project status says project is complete.
                     //take PS out of tmpPS
                     tmpPS = removePSElement(tmpPS, projects.get(i).getProjectStatusId());
@@ -963,9 +908,9 @@ public class ALMAProjectManager extends ProjectManager {
                 }
             }
 
-            logger.info("projects = "+projects.size());
-            logger.info("tmp ps = "+tmpPS.size());
-            logger.info("tmp sbs " +tmpSBs.size());
+            logger.finest("projects = "+projects.size());
+            logger.finest("tmp ps = "+tmpPS.size());
+            logger.finest("tmp sbs " +tmpSBs.size());
             
             // For all the stuff gotten above from the archive, determine if
             // they are new (then add them), if the are updated (then updated)
@@ -1011,11 +956,11 @@ public class ALMAProjectManager extends ProjectManager {
                     for(int j=0; j < currSBs.length; j++){
                         newSB = currSBs[j];
                         if( sbQueue.isExists(newSB.getId()) ){
-                            logger.info("Sb not new");
+                            logger.finest("Sb not new");
                             oldSB = sbQueue.get(newSB.getId());
                             //check if it needs to be updated, if yes then update
                             if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 1) {
-                                logger.info("Sb needs updating");
+                                logger.finest("Sb needs updating");
                                 sbQueue.replace(newSB);
                             }else if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 0) {
                                 // DO NOTHING, hasn't been updated
@@ -1026,12 +971,12 @@ public class ALMAProjectManager extends ProjectManager {
                             }
                         } else {
                             //not in queue, so add it.
-                            logger.info("SB new, adding");
+                            logger.finest("SB new, adding");
                             sbQueue.add(newSB);
                         }
                     }
                 } else {
-                    logger.info("Project new, adding");
+                    logger.finest("Project new, adding");
                     //no it isn't so add project to queue, 
                     pQueue.add(newProject);
                     //add its project status to project status queue
@@ -1044,9 +989,9 @@ public class ALMAProjectManager extends ProjectManager {
         } catch(Exception e) {
             throw new SchedulingException(e);
         }
-        logger.info("Size of pQueue = "+pQueue.size());
-        logger.info("Size of psQueue = "+psQueue.size());
-        logger.info("Size of sbQueue = "+sbQueue.size());
+        logger.finest("Size of pQueue = "+pQueue.size());
+        logger.finest("Size of psQueue = "+psQueue.size());
+        logger.finest("Size of sbQueue = "+sbQueue.size());
     }
 
     /**

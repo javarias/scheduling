@@ -41,12 +41,15 @@ import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.SchedulingException;
 
-import alma.pipelinescience.SciPipeScheduler;
+import alma.pipelinescience.SciPipeManager;
+import alma.pipelineql.QlDisplayManager;
+
+import alma.asdmIDLTypes.IDLEntityRef;
 
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.14 2006/05/01 14:13:25 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.15 2006/05/01 18:10:42 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -54,11 +57,14 @@ public class ALMAPipeline implements SciPipeline {
     //logger
     private Logger logger;
     //science pipeline component
-    private SciPipeScheduler pipelineComp;
+    private SciPipeManager sci_pipelineComp;
+    //quicklook display component
+    private QlDisplayManager quicklookComp;
     //entity serializer
     private EntitySerializer entitySerializer;
 
-    private boolean pipelineAvailable=false;
+    private boolean sci_pipelineAvailable=false;
+    private boolean ql_startOk=false;
     
     /**
       *
@@ -74,14 +80,23 @@ public class ALMAPipeline implements SciPipeline {
      * Connect to the pipeline components
      */
     private void getPipelineComponents() {
+        logger.info("About to connect to Science Pipeline Component");
         try {
-            pipelineComp = alma.pipelinescience.SciPipeSchedulerHelper.narrow(
-                containerServices.getComponent("PIPELINE_SCIPIPEMANAGER"));
+            sci_pipelineComp = alma.pipelinescience.SciPipeManagerHelper.narrow(
+                containerServices.getDefaultComponent("IDL:alma/pipelinescience/SciPipeManager:1.0"));
             
-            pipelineAvailable = true;
+            sci_pipelineAvailable = true;
         } catch(ContainerException e) {
-            logger.severe("SCHEDULING: Science Pipeline is not available.");
-            pipelineAvailable = false;
+            logger.severe("SCHEDULING: Science Pipeline Component is not available.");
+            sci_pipelineAvailable = false;
+        }
+        logger.info("About to connect to QuickLook Pipeline Component");
+        try {
+            quicklookComp = alma.pipelineql.QlDisplayManagerHelper.narrow(
+                containerServices.getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0"));
+        } catch(ContainerException e){
+            logger.severe("SCHEDULING: QuickLook Pipeline Component is not available.");
+            ql_startOk = false;
         }
     }
 
@@ -89,13 +104,19 @@ public class ALMAPipeline implements SciPipeline {
       * Release pipeline comp
       */
     public void releasePipelineComp() {
-        if(pipelineAvailable) {
+        if(sci_pipelineAvailable) {
             try {
-                containerServices.releaseComponent("PIPELINE_SCIPIPEMANAGER");
+                containerServices.releaseComponent(sci_pipelineComp.name());
             }catch(Exception e) {
-                logger.severe("SCHEDULING: error releasing pipeline comp.");
+                logger.severe("SCHEDULING: error releasing science pipeline comp.");
                 e.printStackTrace(System.out);
             }
+        }
+        try {
+            containerServices.releaseComponent(quicklookComp.name());
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: error releasing quicklook pipeline comp.");
+            e.printStackTrace(System.out);
         }
     }
 
@@ -108,8 +129,8 @@ public class ALMAPipeline implements SciPipeline {
     public String processRequest(String ppr) {
         String requestResult = null;
         try { 
-            requestResult = pipelineComp.processRequest(ppr);
-            logger.info("SCHEDULING: result returned from Pipeline = "+ requestResult);
+            requestResult = sci_pipelineComp.processRequest(ppr);
+            logger.finest("SCHEDULING: result returned from Pipeline = "+ requestResult);
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error sending request to pipeline");
             e.printStackTrace(System.out);
@@ -129,7 +150,7 @@ public class ALMAPipeline implements SciPipeline {
       */
     public void start(String pprString) throws SchedulingException {
         
-        logger.info("SCHEDULING: Starting the science pipeline");
+        logger.finest("SCHEDULING: Starting the science pipeline");
     }
     /**
       * @param SciPipelineRequest
@@ -142,9 +163,36 @@ public class ALMAPipeline implements SciPipeline {
     }
 
     public boolean isPipelineAvailable() {
-        return pipelineAvailable;
+        return sci_pipelineAvailable;
     }
 
+    //////////////////////////////////////////////
+    // Quicklook operations
+    //////////////////////////////////////////////
+
+    public void startQuickLookSession(IDLEntityRef sessionR,
+                                      IDLEntityRef sbR,
+                                      String title){
+        try {
+            quicklookComp.startQlSession(sessionR, sbR, title);
+            logger.info("SCHEDULING: Told QL session is about to start");
+            ql_startOk = true;
+        }catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
+            logger.warning("SCHEDULING: Caught quicklook error when session starts, should keep going with sb session");
+            ql_startOk = false;
+        }
+    }
+    public void endQuickLookSession(IDLEntityRef sessionR, 
+                                    IDLEntityRef sbR) {
+        if(ql_startOk){
+            try {
+                quicklookComp.endQlSession(sessionR, sbR);
+                logger.info("SCHEDULING: Told QL session is about to end");
+            }catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
+                logger.warning("SCHEDULING: Caught quicklook error when session ends");
+            }
+        }
+    }
 }
 
 

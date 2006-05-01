@@ -32,11 +32,6 @@ import alma.ACS.MasterComponentImpl.statemachine.*;
 import alma.acs.genfw.runtime.sm.*;
 import alma.ACS.ComponentStates;
 import alma.ACS.MasterComponentPackage.*;
-/*
-import alma.ACS.SUBSYSSTATE_AVAILABLE;
-import alma.ACS.SUBSYSSTATE_OPERATIONAL;
-import alma.ACS.SUBSYSSTATE_ONLINE;
-*/
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.component.ComponentLifecycleException;
@@ -49,7 +44,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.20 2006/05/01 14:13:25 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.21 2006/05/01 18:10:42 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -188,8 +183,8 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         m_logger.info("SCHEDULING MC: shutDownSubsysPass2() method called");
         try {
             if(masterScheduler != null) {
-                //m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
-                m_containerServices.releaseComponent(masterScheduler.name());
+                m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
+                //m_containerServices.releaseComponent(masterScheduler.name());
                 masterScheduler = null;
             }
         } catch(Exception e) {
