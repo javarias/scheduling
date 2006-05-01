@@ -73,7 +73,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.52 2006/04/11 21:13:37 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.53 2006/05/01 14:13:25 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {

@@ -59,7 +59,7 @@ import alma.entity.xmlbinding.projectstatus.types.*;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.58 2006/04/11 21:13:37 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.59 2006/05/01 14:13:25 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services

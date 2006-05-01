@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.9 2006/04/11 21:13:37 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.10 2006/05/01 14:13:25 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {

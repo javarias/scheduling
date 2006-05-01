@@ -46,7 +46,7 @@ import alma.pipelinescience.SciPipeScheduler;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.13 2006/04/11 21:13:37 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.14 2006/05/01 14:13:25 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services

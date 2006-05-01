@@ -52,7 +52,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.42 2006/04/11 21:28:42 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.43 2006/05/01 14:13:25 sslucero Exp $
  */
 public class ALMAControl implements Control {
     

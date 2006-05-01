@@ -49,7 +49,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.19 2006/04/11 21:13:37 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.20 2006/05/01 14:13:25 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
