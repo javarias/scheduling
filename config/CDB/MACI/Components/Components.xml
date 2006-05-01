@@ -41,15 +41,30 @@
             -->
 <!-- ************ PIPELINE *************** -->
       
-      <_ Name="PIPELINE_SCIPIPEMANAGER"
+      <!-- <_ Name="PIPELINE_SCIPIPEMANAGER"
 	         Code="alma.pipelinescience.components.SciPipeManagerHelper"
 	         Type="IDL:alma/pipelinescience/SciPipeManager:1.0"
-		     Container="java"/>
+		     Container="java"/> -->
+   <_ Name="PIPELINE_SCIPIPEMANAGER"
+      Code="Acssim.Servants.Simulator"
+      Type="IDL:alma/pipelinescience/SciPipeManager:1.0"
+      Container="python"/>
+   
 <!-- ************ CONTROL **************** -->
-      <_ Name="CONTROL_MASTER_COMP" 
+<!--      <_ Name="CONTROL_MASTER_COMP" 
             Code="alma.Control.ControlMaster.ControlSystemComponentCreator"
             Type="IDL:alma/Control/ControlSystem:1.0"
-            Container="java" />
+            Container="java" /> -->
+
+      <_ Name="CONTROL_MASTER"
+         Code="Acssim.Servants.Simulator"
+         Type="IDL:alma/ControlCommon/Master:1.0"
+         Container="python"/>
+         
+      <_ Name="ARRAY1"
+         Code="Acssim.Servants.Simulator"
+         Type="IDL:alma/Control/AutomaticArrayCommand:1.0"
+         Container="python"/>
 
            
 <!-- ************ OBSPREP **************** -->
