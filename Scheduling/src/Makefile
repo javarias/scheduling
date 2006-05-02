@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.9 2006/03/09 16:37:42 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.10 2006/05/02 19:50:11 sslucero Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -31,7 +31,6 @@ scheduling_EXTRAS = alma/scheduling/Image/*.jpg
 PMSimulator_DIRS = alma/scheduling/Scheduler alma/scheduling/Define alma/scheduling/Event alma/scheduling/GUI alma/scheduling/MasterScheduler/ alma/scheduling/ObsProjectManager/ alma/scheduling/PlanningModeSim/
 PMSimulator_EXTRAS = alma/scheduling/Image/*.jpg
 
-INSTALL_FILES = ../lib/scheduling.jar
 
 #>>>>> END OF standard rules
 
