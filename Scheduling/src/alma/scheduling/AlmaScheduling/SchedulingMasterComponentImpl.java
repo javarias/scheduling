@@ -44,7 +44,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.21 2006/05/01 18:10:42 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.22 2006/05/03 21:00:35 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -202,6 +202,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
 
     ////////////////////////////////////////////////////////////////
 
+    /**
+      * I know I should do this but I really want the master scheduler to go away
+      * when my master component releases it. So this stays until ACS gives me a
+      * better solution!
+      */
     class ReallyShutdownScheduling extends ComponentClient {
 
         public ReallyShutdownScheduling(Logger l) throws Exception {
@@ -209,15 +214,16 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         }
         
         public void forceMasterSchedulerShutdown() throws Exception {
-            m_logger.info("SCHEDULING MC = Get MaciSuperFactory");
+            m_logger.info("SCHEDULING MC: Get MaciSuperFactory");
             MaciSupervisorFactory factory = 
                 new MaciSupervisorFactory(m_logger, acsCorba.getORB()); 
             
-            m_logger.info("SCHEDULING MC = Get MaciSuper");
+            m_logger.info("SCHEDULING MC: Get MaciSuper");
             IMaciSupervisor im = factory.giveMaciSupervisor(
                     System.getProperty("ACS.manager"), m_logger);
                     
             im.forceReleaseComponent("SCHEDULING_MASTERSCHEDULER");
+            m_logger.info("SCHEDULING MC: MaciSuper forced release of MASTERSCHEDULER");
         }
     }
 }
