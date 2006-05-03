@@ -41,6 +41,7 @@ import alma.scheduling.Define.DateTime;
 import alma.scheduling.AlmaScheduling.ALMAPublishEvent;
 import alma.Control.ControlSystemChangeOfStateEvent;
 
+import alma.asdmIDLTypes.IDLEntityRef;
 
 public class TestALMAPublishEvent {
     private ContainerServices container;
@@ -120,12 +121,25 @@ public class TestALMAPublishEvent {
             Thread.sleep(5000);
             
             long startTime = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
-            StartSessionEvent event1 = new StartSessionEvent(startTime, "session id", "ous part id", "sb id");
+            IDLEntityRef sessRef = new IDLEntityRef();
+            sessRef.entityId = "project status id";
+            sessRef.partId = "session part id";
+            sessRef.entityTypeName = "ProjectStatus";
+            sessRef.instanceVersion = "1.0";
+            IDLEntityRef sbRef = new IDLEntityRef();
+            sbRef.entityId = "sb id";
+            sbRef.partId = "sb part id";
+            sbRef.entityTypeName = "SchedBlock";
+            sbRef.instanceVersion = "1.0";
+            //startTime, "session id", "ous part id", "sb id");
+            StartSessionEvent event1 = new StartSessionEvent(
+                    startTime, sessRef, sbRef);
             
             publisher.publish(event1);
             
             NothingCanBeScheduledEvent event2 = new NothingCanBeScheduledEvent(
-                    NothingCanBeScheduledEnum.OTHER, (new DateTime(System.currentTimeMillis())).toString(), "");
+                    NothingCanBeScheduledEnum.OTHER, (
+                        new DateTime(System.currentTimeMillis())).toString(), "");
             
             publisher.publish(event2);       
 
@@ -135,7 +149,8 @@ public class TestALMAPublishEvent {
             String[] exec_ids = new String[2];
             exec_ids[0] = "exec id 1";
             exec_ids[1] = "exec id 2";
-            EndSessionEvent event3 = new EndSessionEvent(endTime, "session id", "ous id", exec_ids);
+            EndSessionEvent event3 = new EndSessionEvent(
+                    endTime, sessRef, sbRef, exec_ids);
 
             publisher.publish(event3);
 

@@ -1,10 +1,9 @@
-#PROLOGUE startUpALMA
 PROLOGUE prologue
 1 allTests allTests
 2 simTest runSim 
 3 pubTest testPublisher
 #4 queuedSchedTest testQueuedScheduling
 4 specialSBTest testStoreSpecialSB
-#5 endToEnd testSchedControl
+5 psTest testProjectStatus
+#6 queuedSchedTest testQueuedScheduling
 EPILOGUE epilogue
-#EPILOGUE stopALMA

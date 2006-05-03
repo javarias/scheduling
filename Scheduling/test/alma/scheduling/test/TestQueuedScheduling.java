@@ -64,11 +64,11 @@ public class TestQueuedScheduling extends ComponentClientTestCase {
     }
     public void receive(StartSessionEvent event){
 	logger.info("Got start session event");
-	logger.info("StartSession id = "+event.sessionId);
+	//logger.info("StartSession id = "+event.partId);
     }
     public void receive(EndSessionEvent event){
 	logger.info("Got end session event");
-	logger.info("EndSession id = "+event.sessionId);
+	//logger.info("EndSession id = "+event.partId);
     }
     public void receive(ExecBlockStartedEvent event){
 	logger.info("Got eb started event");

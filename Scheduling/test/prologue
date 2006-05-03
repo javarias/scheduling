@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #Set my CDB
-ACS_CDB=`pwd`
+export ACS_CDB=`pwd`
 # for archive...
 export CLASSPATH=$CLASSPATH:$ACSROOT/lib/oracle/xmlparserv2.jar 
 #Start ACS & the Manager
@@ -14,17 +14,22 @@ export ACS_INSTANCE=`grep -m 1 "For this ACS session, please do an" sched_acsSta
 echo $ACS_INSTANCE > sched_acs_instance.log
 
 #Start a java container named 'java'
-#acsStartContainer -java java >& sched_javaContainer.log &
+acsStartContainer -java ACC/javaContainer >& sched_javaContainer.log &
+acsStartContainer -cpp ACC/cppContainer >& sched_cppContainer.log &
+acsStartContainer -java ACC/masterContainer >& sched_masterContainer.log &
 #Start a java container for the archive
 acsStartContainer -java ARCHIVE/ACC/javaContainer >& sched_archiveContainer.log &
 acsStartContainer -java ACC/masterContainer >& sched_masterContainer.log &
 acsStartContainer -cpp ACC/cppContainer >& sched_cppContainer.log &
-acsStartContainer -java ACC/javaContainer >& sched_acc_javaContainer.log &
+acsStartContainer -cpp CONTROL/Test/cppContainer >& sched_test_cppContainer.log &
 #Start a python container named 'python'
 acsStartContainer -py CONTROL/ACC/pythonContainer >& sched_pythonContainer.log &
 
+sleep 10
 archiveWebServicesStart &> archiveWebServicesStart.log
 archiveStart &> sched_archiveStart.log &
+
+archiveLoadSchema $ACSROOT/idl $INTROOT/idl $MODROOT/idl &> archiveLoadSchema.log &
 archiveCleanTest &> archiveClean.log
 sleep 30
 archiveLoadSchema -u $ACSROOT/idl $INTROOT/idl $MODROOT/idl &>archiveloadSchema.log

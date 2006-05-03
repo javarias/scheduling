@@ -47,27 +47,38 @@ public class TestALMAArchive extends ComponentClientTestCase {
         super.tearDown();
     }
     
-    public void testGetAllProject() {
+    public void testGetAllProject() throws Exception  {
         try {
             Project[] p = archive.getAllProject();
             assertNotNull(p);
         } catch (Exception e) {
             m_logger.severe("SCHED_TEST: Error");
             e.printStackTrace();
+            throw new Exception(e);
         }
     }
-    public void testGetAllSB() {
+    public void testGetAllSB() throws Exception {
         try {
             SB[] sb = archive.getAllSB();
             assertNotNull(sb);
         } catch(Exception e) {
             m_logger.severe("SCHED_TEST: Error");
             e.printStackTrace();
+            throw new Exception(e);
         }
     }
+    public void testGetNewProjects() throws Exception{
+        try {
+
+        } catch (Exception e) {
+            m_logger.severe("SCHED_TEST: Error");
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+    }
+          
     
     public static void main(String[] args) {
-        //junit.textui.TestRunner.run(TestALMAArchive.class);
         alma.acs.testsupport.tat.TATJUnitRunner.run(TestALMAArchive.class);
     }
 }
