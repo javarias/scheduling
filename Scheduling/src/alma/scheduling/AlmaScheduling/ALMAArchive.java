@@ -63,7 +63,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.55 2006/05/01 18:10:42 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.56 2006/05/04 17:00:05 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1033,7 +1033,7 @@ public class ALMAArchive implements Archive {
             updateProjectStatus(ps);
             logger.info("SCHEDULING: Just updated ps, now gonna query ppr");
 
-            String query = new String("/ps:ProjectStatus//ps:PipelineProcessingRequest[@entityPartId='"+pprId+"']");
+            String query = new String("/ps:ProjectStatus//ps:PipelineProcessingRequest[@entityPartId=\""+pprId+"\"]");
             String schema = new String("ProjectStatus");
             
             Cursor cursor = archOperationComp.queryDirty(query,schema);

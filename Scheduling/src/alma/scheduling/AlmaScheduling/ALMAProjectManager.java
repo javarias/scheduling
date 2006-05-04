@@ -60,7 +60,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.60 2006/05/01 18:10:42 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.61 2006/05/04 17:00:05 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -112,7 +112,7 @@ public class ALMAProjectManager extends ProjectManager {
         super.run();
         while(!stopCommand) {
             try {
-                Thread.sleep(60*5000);
+                Thread.sleep(60*15000);
             }catch(InterruptedException e) {
             }
             if(!stopCommand){
