@@ -1,10 +1,6 @@
 #*******************************************************************************
 #
-<<<<<<< Makefile
-# "@(#) $Id: Makefile,v 1.11 2006/05/03 21:39:05 sslucero Exp $"
-=======
-# "@(#) $Id: Makefile,v 1.11 2006/05/03 21:39:05 sslucero Exp $"
->>>>>>> 1.7.4.3
+# "@(#) $Id: Makefile,v 1.12 2006/05/04 20:18:01 sslucero Exp $"
 #
 # Makefile of Scheduling Module
 #
