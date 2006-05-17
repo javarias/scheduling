@@ -1,0 +1,87 @@
+   <ObsProject almatype="APDM::ObsProject" xsi:type="ObsProject">
+      <ObsProjectEntity 
+         entityId="uid://X000000000000011a/X0000000f"
+         entityIdEncrypted="-- id encryption not yet implemented --"
+         entityTypeName="ObsProject" 
+         schemaVersion="1" 
+         documentVersion="1"/>
+      <ObsProposalRef 
+         entityId="uid://X000000000000011a/X00000010" 
+         entityTypeName="ObsProposal"/>
+      <ProjectStatusRef 
+         valid="true" 
+         xsi:type="java:alma.scheduling.projectstatus.data.ProjectStatusRefData"
+         entityId="uid://X000000000000011a/X00000013" 
+         entityTypeName="ProjectStatus"/>
+      <projectName>Optical Pointing</projectName>
+      <pI>Deb Shepherd</pI>
+      <version>1</version>
+      <ObsProgram almatype="APDM::ObsProgram">
+         <ObsPlan almatype="APDM::ObsUnitSet">
+            <status/>
+            <name>OP ObsUnitSet</name>
+            <ObsUnitControl almatype="APDM::ObsUnitControl">
+               <maximumTime unit="sec">3600.0</maximumTime>
+               <estimatedExecutionTime unit="sec"/>
+               <CalibrationRequirements almatype="APDM::CalibrationRequirements">
+                  <pointingAccuracy unit="arcsec">0.1</pointingAccuracy>
+               </CalibrationRequirements>
+            </ObsUnitControl>
+            <UnitDependencies almatype="APDM::UnitDependencies">
+               <executionCount>1</executionCount>
+               <delay unit="sec"/>
+               <expression/>
+            </UnitDependencies>
+            <scienceProcessingScript/>
+            <DataProcessingParameters almatype="APDM::DataProcessingParameters" projectType="Continuum">
+               <angularResolution unit="arcsec"/>
+               <velocityResolution referenceSystem="topo">
+                  <val:centerVelocity unit="km/s"/>
+               </velocityResolution>
+               <tBSensitivityGoal unit="K"/>
+               <rMSGoal unit="Jy"/>
+            </DataProcessingParameters>
+            <FlowControl almatype="APDM::FlowControl">
+               <controlScript/>
+            </FlowControl>
+            <ObsUnitSet almatype="APDM::ObsUnitSet" entityPartId="1141079323206 1457720384">
+               <status/>
+               <name>Optical Pointing</name>
+               <ObsUnitControl almatype="APDM::ObsUnitControl">
+                  <maximumTime unit="sec">3600.0</maximumTime>
+                  <estimatedExecutionTime unit="sec"/>
+                  <CalibrationRequirements almatype="APDM::CalibrationRequirements">
+                     <pointingAccuracy unit="arcsec">0.1</pointingAccuracy>
+                  </CalibrationRequirements>
+               </ObsUnitControl>
+               <UnitDependencies almatype="APDM::UnitDependencies">
+                  <executionCount>50</executionCount>
+                  <delay unit="sec"/>
+                  <expression/>
+               </UnitDependencies>
+               <scienceProcessingScript/>
+               <DataProcessingParameters almatype="APDM::DataProcessingParameters" projectType="Continuum">
+                  <angularResolution unit="arcsec"/>
+                  <velocityResolution referenceSystem="topo">
+                     <val:centerVelocity unit="km/s"/>
+                  </velocityResolution>
+                  <tBSensitivityGoal unit="K"/>
+                  <rMSGoal unit="Jy"/>
+               </DataProcessingParameters>
+               <FlowControl almatype="APDM::FlowControl">
+                  <controlScript/>
+               </FlowControl>
+               <SchedBlockRef 
+                  valid="true" 
+                  xsi:type="java:alma.obsprep.bo.schedblock.data.SchedBlockRefData"
+                  entityId="uid://X000000000000011a/X00000011"
+                  entityTypeName="SchedBlock"/>
+               <SchedBlockRef 
+                  valid="true" 
+                  xsi:type="java:alma.obsprep.bo.schedblock.data.SchedBlockRefData"
+                  entityId="uid://X000000000000011a/X00000014" 
+                  entityTypeName="SchedBlock"/>
+            </ObsUnitSet>
+         </ObsPlan>
+      </ObsProgram>
+   </ObsProject>

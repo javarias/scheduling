@@ -1,0 +1,526 @@
+<SchedBlock almatype="APDM::SchedBlock" xsi:type="SchedBlock">
+      <prj:status>READY</prj:status>
+      <prj:name>dss.2.20star.trcOP</prj:name>
+      <prj:ObsUnitControl almatype="APDM::ObsUnitControl">
+         <prj:maximumTime unit="sec">3600.0</prj:maximumTime>
+         <prj:estimatedExecutionTime unit="sec"/>
+         <prj:CalibrationRequirements almatype="APDM::CalibrationRequirements">
+            <prj:pointingAccuracy unit="arcsec">0.1</prj:pointingAccuracy>
+         </prj:CalibrationRequirements>
+      </prj:ObsUnitControl>
+      <prj:UnitDependencies almatype="APDM::UnitDependencies">
+         <prj:executionCount>1</prj:executionCount>
+         <prj:delay unit="sec"/>
+         <prj:expression/>
+      </prj:UnitDependencies>
+      <prj:ObsProjectRef entityId="uid://X000000000000011a/X0000000f" entityTypeName="ObsProject"/>
+      <SchedBlockEntity entityId="uid://X000000000000011a/X00000014" entityIdEncrypted="-- id encryption not yet implemented --" entityTypeName="SchedBlock" schemaVersion="1" documentVersion="1" timestamp="2006-03-03T22:27:28.754"/>
+      <standardMode>true</standardMode>
+      <ObsProcedure almatype="APDM::ObsProcedure">
+         <obsProcScript>
+         "This is another script"
+         </obsProcScript>
+      </ObsProcedure>
+      <OpticalCameraControl almatype="APDM::OpticalCameraControl">
+         <elevationLimit unit="degrees">15.0</elevationLimit>
+         <antennaPositionTolerance unit="arcsec">0.1</antennaPositionTolerance>
+         <minMagnitude>
+            <val:value>14.0</val:value>
+         </minMagnitude>
+         <maxMagnitude>
+            <val:value>0.0</val:value>
+         </maxMagnitude>
+      </OpticalCameraControl>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <val:longitude unit="deg">1.87544681</val:longitude>
+               <val:latitude unit="deg">0.88009465</val:latitude>
+            </sourceCoordinates>
+            <sourceName>philippe</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj0:centerVelocity unit="km/s">0.0</prj0:centerVelocity>
+            </sourceVelocity>
+            <sourceEphemeris/>
+            <pMRA unit="mas/yr">6.6</pMRA>
+            <pMDec unit="mas/yr">1.0</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <Reference almatype="APDM::Reference">
+               <referenceCoordinates system="J2000">
+                  <prj1:longitude unit="deg"/>
+                  <prj2:latitude unit="deg"/>
+               </referenceCoordinates>
+               <intTimeReference unit="sec"/>
+               <intTimeSource unit="sec"/>
+            </Reference>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">2.0758692704951963E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+         <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement">
+            <samplingInterval unit="sec"/>
+         </TotalPowerMeasurement>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj3:longitude unit="deg">249.2084393</prj3:longitude>
+               <prj4:latitude unit="deg">9.1333797</prj4:latitude>
+            </sourceCoordinates>
+            <sourceName>961_154_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj5:centerVelocity unit="km/s">0.0</prj5:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">11.7</pMRA>
+            <pMDec unit="mas/yr">-2.1</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">9.61</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.0375284158180127E-8</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj6:longitude unit="deg">252.4094997</prj6:longitude>
+               <prj7:latitude unit="deg">12.29497978</prj7:latitude>
+            </sourceCoordinates>
+            <sourceName>970_1403_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj8:centerVelocity unit="km/s">0.0</prj8:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-8.4</pMRA>
+            <pMDec unit="mas/yr">-13.9</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">2.195836500973188E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj9:longitude unit="deg">260.26821841</prj9:longitude>
+               <prj0:latitude unit="deg">8.89538181</prj0:latitude>
+            </sourceCoordinates>
+            <sourceName>978_136_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj1:centerVelocity unit="km/s">0.0</prj1:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">13.5</pMRA>
+            <pMDec unit="mas/yr">-5.3</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.7717400399431236E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj2:longitude unit="deg">259.76558053</prj2:longitude>
+               <prj3:latitude unit="deg">12.37417433</prj3:latitude>
+            </sourceCoordinates>
+            <sourceName>986_909_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj4:centerVelocity unit="km/s">0.0</prj4:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-1.7</pMRA>
+            <pMDec unit="mas/yr">-25.2</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">4.46</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.3564381629092674E-8</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj5:longitude unit="deg">266.17568297</prj5:longitude>
+               <prj6:latitude unit="deg">9.21326292</prj6:latitude>
+            </sourceCoordinates>
+            <sourceName>994_729_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj7:centerVelocity unit="km/s">0.0</prj7:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">1.3</pMRA>
+            <pMDec unit="mas/yr">-11.6</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">4.835039205916214E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj8:longitude unit="deg">266.87641245</prj8:longitude>
+               <prj9:latitude unit="deg">14.46095032</prj9:latitude>
+            </sourceCoordinates>
+            <sourceName>1006_2409_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj0:centerVelocity unit="km/s">0.0</prj0:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-5.9</pMRA>
+            <pMDec unit="mas/yr">-10.5</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">2.582260190634601E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj1:longitude unit="deg">274.45840697</prj1:longitude>
+               <prj2:latitude unit="deg">10.93051988</prj2:latitude>
+            </sourceCoordinates>
+            <sourceName>1014_1013_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj3:centerVelocity unit="km/s">0.0</prj3:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">5.9</pMRA>
+            <pMDec unit="mas/yr">-6.6</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.1835864919618606E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj4:longitude unit="deg">275.4965476</prj4:longitude>
+               <prj5:latitude unit="deg">13.42703401</prj5:latitude>
+            </sourceCoordinates>
+            <sourceName>1022_1476_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj6:centerVelocity unit="km/s">0.0</prj6:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">1.7</pMRA>
+            <pMDec unit="mas/yr">2.1</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.823055960681068E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj7:longitude unit="deg">282.73174682</prj7:longitude>
+               <prj8:latitude unit="deg">11.00503594</prj8:latitude>
+            </sourceCoordinates>
+            <sourceName>1030_2542_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj9:centerVelocity unit="km/s">0.0</prj9:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-0.2</pMRA>
+            <pMDec unit="mas/yr">0.2</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.7362009919014156E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj0:longitude unit="deg">283.4441583</prj0:longitude>
+               <prj1:latitude unit="deg">8.57347735</prj1:latitude>
+            </sourceCoordinates>
+            <sourceName>1039_1074_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj2:centerVelocity unit="km/s">0.0</prj2:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-1.8</pMRA>
+            <pMDec unit="mas/yr">-7.9</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.6580590751089166E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj3:longitude unit="deg">283.53417101</prj3:longitude>
+               <prj4:latitude unit="deg">12.80146082</prj4:latitude>
+            </sourceCoordinates>
+            <sourceName>1047_680_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj5:centerVelocity unit="km/s">0.0</prj5:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-14.0</pMRA>
+            <pMDec unit="mas/yr">-3.8</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">3.940941607322866E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj6:longitude unit="deg">292.93010052</prj6:longitude>
+               <prj7:latitude unit="deg">9.08829115</prj7:latitude>
+            </sourceCoordinates>
+            <sourceName>1055_1908_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj8:centerVelocity unit="km/s">0.0</prj8:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-7.4</pMRA>
+            <pMDec unit="mas/yr">0.2</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.127197456175514E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj9:longitude unit="deg">292.36018952</prj9:longitude>
+               <prj0:latitude unit="deg">11.86027398</prj0:latitude>
+            </sourceCoordinates>
+            <sourceName>1063_1594_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj1:centerVelocity unit="km/s">0.0</prj1:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">8.4</pMRA>
+            <pMDec unit="mas/yr">15.9</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.4008769839545832E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj2:longitude unit="deg">300.03409653</prj2:longitude>
+               <prj3:latitude unit="deg">7.76061106</prj3:latitude>
+            </sourceCoordinates>
+            <sourceName>1071_2543_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj4:centerVelocity unit="km/s">0.0</prj4:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">36.3</pMRA>
+            <pMDec unit="mas/yr">-0.1</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">19.79</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">4.401492842868162E-8</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj5:longitude unit="deg">301.56033037</prj5:longitude>
+               <prj6:latitude unit="deg">12.8231607</prj6:latitude>
+            </sourceCoordinates>
+            <sourceName>1080_18_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <prj7:centerVelocity unit="km/s">0.0</prj7:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-2.5</pMRA>
+            <pMDec unit="mas/yr">-2.5</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.7029425618775533E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <prj8:longitude unit="deg">308.6896539</prj8:longitude>
+               <prj9:latitude unit="deg">9.36331717</prj9:latitude>
+            </sourceCoordinates>
+            <sourceName>1088_100_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <val0:centerVelocity unit="km/s">0.0</val0:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">0.9</pMRA>
+            <pMDec unit="mas/yr">-18.7</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.1303163247386977E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <val1:longitude unit="deg">309.9885854</val1:longitude>
+               <val2:latitude unit="deg">11.35318108</val2:latitude>
+            </sourceCoordinates>
+            <sourceName>1096_505_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <val3:centerVelocity unit="km/s">0.0</val3:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">10.7</pMRA>
+            <pMDec unit="mas/yr">-6.4</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">3.6074473386419156E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <val4:longitude unit="deg">315.7306419</val4:longitude>
+               <val5:latitude unit="deg">7.75085995</val5:latitude>
+            </sourceCoordinates>
+            <sourceName>1103_1721_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <val6:centerVelocity unit="km/s">0.0</val6:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-2.1</pMRA>
+            <pMDec unit="mas/yr">-1.9</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">1.5718098282039204E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <OpticalCameraTarget almatype="APDM::OpticalCameraTarget">
+         <OpticalCameraSpec almatype="APDM::OpticalCameraSpec" filter="night">
+            <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+         </OpticalCameraSpec>
+         <FieldSource almatype="APDM::FieldSource">
+            <sourceCoordinates system="J2000">
+               <val7:longitude unit="deg">315.08342437</val7:longitude>
+               <val8:latitude unit="deg">11.3765643</val8:latitude>
+            </sourceCoordinates>
+            <sourceName>1111_146_1</sourceName>
+            <sourceVelocity referenceSystem="topo">
+               <val9:centerVelocity unit="km/s">0.0</val9:centerVelocity>
+            </sourceVelocity>
+            <pMRA unit="mas/yr">-3.1</pMRA>
+            <pMDec unit="mas/yr">-1.3</pMDec>
+            <nonSiderealMotion>false</nonSiderealMotion>
+            <parallax unit="mas">0.0</parallax>
+            <SourceProperty almatype="APDM::SourceProperty">
+               <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+               <sourceFluxI unit="Jy">2.5234807724805806E-9</sourceFluxI>
+            </SourceProperty>
+         </FieldSource>
+      </OpticalCameraTarget>
+      <PerformanceGoals almatype="APDM::PerformanceGoals">
+         <representativeFrequency unit="GHz"/>
+         <minAcceptableAngResolution unit="arcsec"/>
+         <maxAcceptableAngResolution unit="arcsec"/>
+      </PerformanceGoals>
+      <Preconditions almatype="APDM::Preconditions">
+         <val0:baselineCal>false</val0:baselineCal>
+         <val1:polarization>false</val1:polarization>
+         <val2:minAllowedHA unit="degrees"/>
+         <val3:maxAllowedHA unit="degrees"/>
+         <val4:WeatherConstraints almatype="APDM::WeatherConstraints">
+            <val4:maxPWVC unit="mm"/>
+            <val4:seeing unit="arcsec"/>
+            <val4:phaseStability unit="degrees"/>
+         </val4:WeatherConstraints>
+      </Preconditions>
+      <SchedBlockControl almatype="APDM::SchedBlockControl">
+         <repeatCount>1</repeatCount>
+         <sBMaximumTime unit="sec">3600.0</sBMaximumTime>
+      </SchedBlockControl>
+   </SchedBlock>
