@@ -43,10 +43,9 @@ import alma.scheduling.Define.Target;
 import alma.scheduling.Define.Equatorial;
 import alma.scheduling.Define.Antenna;
 
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.ArrayList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -179,6 +178,8 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	 * The time in seconds to advance the clock when nothing can be scheduled.
 	 */
 	private int advanceClock;
+
+    private Map<String, String[]> weatherConstraintsMap;
 	
 	/**
 	 * Create a SimulationInput object.
@@ -324,24 +325,28 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
         String antDesc = null;
         String antName = null;
         String antPad = null;
-        int antLoc = -1;
+        int antLocX = -1;
+        int antLocY = -1;
+        int antLocZ = -1;
         boolean hasNutator = false;
         String[] vals = null;
         for(int i=0; i < numberAntennas; i++){
             antDesc = getString(Tag.antenna +"."+ i);
             vals = antDesc.split(";", -1);
-            if(vals.length < 4) {
+            if(vals.length < 6) { //1:name, 2:x_loc 3:y_loc 4:z_loc 5:padName 6:nutator
 				error("Invalid number of antenna config parameters in " + antDesc);
 			}
             try {
                 antName = vals[0].trim();
-                antLoc = Integer.parseInt(vals[1].trim());
-                antPad = vals[2].trim();
-                hasNutator = Boolean.getBoolean(vals[3].trim());
+                antLocX = Integer.parseInt(vals[1].trim());
+                antLocY = Integer.parseInt(vals[2].trim());
+                antLocZ = Integer.parseInt(vals[3].trim());
+                antPad = vals[4].trim();
+                hasNutator = Boolean.getBoolean(vals[5].trim());
             } catch(Exception e) {
                 error("Invalid format for antenna.");
             }
-            antenna[i] = new Antenna(antName, antLoc, antPad, hasNutator);
+            antenna[i] = new Antenna(antName, antLocX, antLocY, antLocZ, antPad, hasNutator);
         }
 		// 6. Get setup time parameter -- 
 		// The time in seconds to change to a different observing setup.
@@ -355,6 +360,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		// The time in seconds to advance the clock when nothing can be scheduled.
 		advanceClock = getInt(Tag.advanceClock);
 
+        getWeatherConstraints();
 		logger.info(instanceName + ".initialized");
 	}
 
@@ -384,6 +390,88 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			error("ProjectSourceType must be JavaProperties at this time.");
 		}
 	}
+    private void getWeatherConstraints() throws SimulationException {
+        weatherConstraintsMap = new LinkedHashMap<String, String[]>();
+        StringTokenizer st;
+        //for exceptional do
+        String tmp1 = getString(Tag.exceptionalWC);
+        st = new StringTokenizer(tmp1,";");
+        String[] tmp2 = new String[st.countTokens()];
+        int i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("exceptional", tmp2);
+        //for excellent do
+        tmp1 = getString(Tag.excellentWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("excellent", tmp2);
+        //for good do
+        tmp1 = getString(Tag.goodWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("good", tmp2);
+        
+        //for average do
+        tmp1 = getString(Tag.averageWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("average", tmp2);
+
+        //for below average do
+        tmp1 = getString(Tag.belowaverageWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("belowaverage", tmp2);
+
+        //for poor do
+        tmp1 = getString(Tag.poorWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("poor", tmp2);
+
+        //for dismal do
+        tmp1 = getString(Tag.dismalWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("dismal", tmp2);
+
+        //for any do
+        tmp1 = getString(Tag.anyWC);
+        st = new StringTokenizer(tmp1,";");
+        tmp2 = new String[st.countTokens()];
+        i=0;
+        while(st.hasMoreTokens()){
+            tmp2[i++] = st.nextToken();
+        }
+        weatherConstraintsMap.put("any", tmp2);
+
+    }
 
 	public void cleanUp() {
 		logger.info(instanceName + ".stopped");
@@ -752,66 +840,66 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	private WeatherCondition validateWeatherCondition(String word)
 		throws SimulationException {
 		// Validate the weather word.
-		WeatherCondition w = null;
-		String[] cond = null;
+		//WeatherCondition w = null;
+		//String[] cond = null;
 		// Set the weather condition.
         word = word.toLowerCase();
-		if (word.equals("exceptional")) {
+        //System.out.println("*************");
+        //System.out.println(word);
+        String[] cond = weatherConstraintsMap.get(word);
+        return new WeatherCondition(cond);
+    }
+	/*	if (word.equals("exceptional")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.9 -> 1.0";
-			cond[1] = "quality >= 0.8 -> 0.8";
-			cond[2] = "quality <  0.8 -> 0.0";
+			cond[0] = "wind < 0.9 -> 1.0";
+			cond[1] = "wind <= 0.9 -> 0.8";
+			cond[2] = "wind > 0.9 -> 0.0";
 			w = new WeatherCondition (cond);
 		} else if (word.equals("excellent")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.8 -> 1.0";
-			cond[1] = "quality >= 0.7 -> 0.8";
-			cond[2] = "quality <  0.7 -> 0.0";
+			cond[0] = "wind < 1.0 -> 1.0";
+			cond[1] = "wind <= 1.0 -> 0.8";
+			cond[2] = "wind >  1.0 -> 0.0";
 			w = new WeatherCondition (cond);
-		}
-		else if (word.equals("good")) {
+		} else if (word.equals("good")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.7 -> 1.0";
-			cond[1] = "quality >= 0.6 -> 0.8";
-			cond[2] = "quality <  0.6 -> 0.0";
+			cond[0] = "wind < 1.5 -> 1.0";
+			cond[1] = "wind <= 1.5 -> 0.8";
+			cond[2] = "wind >  1.5 -> 0.0";
 			w = new WeatherCondition (cond);
-		}
-		else if (word.equals("average")) {
+		} else if (word.equals("average")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.6 -> 1.0";
-			cond[1] = "quality >= 0.5 -> 0.8";
-			cond[2] = "quality <  0.5 -> 0.0";
+			cond[0] = "wind < 2.0 -> 1.0";
+			cond[1] = "wind <= 2.0 -> 0.8";
+			cond[2] = "wind >  2.0 -> 0.0";
 			w = new WeatherCondition (cond);
-		}
-		else if (word.equals("belowAverage")) {
+		} else if (word.equals("belowAverage")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.5 -> 1.0";
-			cond[1] = "quality >= 0.4 -> 0.8";
-			cond[2] = "quality <  0.4 -> 0.0";
+			cond[0] = "wind < 2.5 -> 1.0";
+			cond[1] = "wind <= 2.5 -> 0.8";
+			cond[2] = "wind >  2.5 -> 0.0";
 			w = new WeatherCondition (cond);
-		}
-		else if (word.equals("poor")) {
+		} else if (word.equals("poor")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.4 -> 1.0";
-			cond[1] = "quality >= 0.3 -> 0.8";
-			cond[2] = "quality <  0.3 -> 0.0";
+			cond[0] = "wind < 3.5 -> 1.0";
+			cond[1] = "wind <= 3.5 -> 0.8";
+			cond[2] = "wind >  3.5 -> 0.0";
 			w = new WeatherCondition (cond);
-		}
-		else if (word.equals("dismal")) {
+		} else if (word.equals("dismal")) {
 			cond = new String [3];
-			cond[0] = "quality >= 0.3 -> 1.0";
-			cond[1] = "quality >= 0.2 -> 0.8";
-			cond[2] = "quality <  0.2 -> 0.0";
+			cond[0] = "wind < 4.3 -> 1.0";
+			cond[1] = "wind <= 4.2 -> 0.8";
+			cond[2] = "wind >  4.2 -> 0.0";
 			w = new WeatherCondition (cond);
-		}
-		else if (word.equals("any")) {
+		} else if (word.equals("any")) {
 			cond = new String [1];
-			cond[0] = "quality >= 0.0 -> 1.0";
+			cond[0] = "wind >= 0.0 -> 1.0";
 			w = new WeatherCondition (cond);
 		} else
 			error("Invalid weather condition " + word);
 		return w;
 	}
+    */
 
 	private void doTargets(Program set, String weatherWord, String[] value, ArrayList unitList) 
 		throws SimulationException {

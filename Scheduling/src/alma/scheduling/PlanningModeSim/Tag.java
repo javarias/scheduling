@@ -80,4 +80,12 @@ public class Tag {
 	public static final String band						= "FrequencyBand";
 	public static final String projectSourceType		= "projectSourceType";
 	public static final String projectSource			= "projectSource";
+	public static final String exceptionalWC			= "WeatherConstraints.exceptional";
+	public static final String excellentWC  			= "WeatherConstraints.excellent";
+	public static final String goodWC       			= "WeatherConstraints.good";
+	public static final String averageWC            	= "WeatherConstraints.average";
+	public static final String belowaverageWC			= "WeatherConstraints.belowaverage";
+	public static final String poorWC		        	= "WeatherConstraints.poor";
+	public static final String dismalWC     			= "WeatherConstraints.dismal";
+	public static final String anyWC        			= "WeatherConstraints.any";
 }
