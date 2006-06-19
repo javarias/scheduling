@@ -42,6 +42,7 @@ import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityException;
 
 import alma.xmlstore.Operational;
+import alma.xmlstore.Identifier;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.ArchiveConnectionPackage.*;
 import alma.xmlstore.OperationalPackage.*;
@@ -63,7 +64,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.56 2006/05/04 17:00:05 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.57 2006/06/19 14:12:36 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -71,6 +72,7 @@ public class ALMAArchive implements Archive {
     private ContainerServices containerServices;
     // The archive's components
     private ArchiveConnection archConnectionComp;
+    private Identifier archIdentifierComp;
     private Operational archOperationComp;
     //TODO should check project queue.. if project exists don't map a new one.
     //The logger
@@ -81,6 +83,7 @@ public class ALMAArchive implements Archive {
     private EntitySerializer entitySerializer;
     //The DateTime of the last query for SBs
     private DateTime lastSpecialSBQuery;
+    private DateTime lastSBQuery;
     private DateTime lastProjectQuery;
     
     //ALMA Clock
@@ -94,6 +97,15 @@ public class ALMAArchive implements Archive {
         this.logger = cs.getLogger();
         this.clock = c;
         getArchiveComponents();
+    }
+    //
+    public String getIdForScheduler() throws SchedulingException {
+        try {
+            String[] s = archIdentifierComp.getUIDs((short)1);
+            return s[0];
+        }catch(Exception e) {
+            throw new SchedulingException (e);
+        }
     }
     
     //Special SB stuff (TODO right now its temporary)
@@ -250,38 +262,47 @@ public class ALMAArchive implements Archive {
         ObsProject[] projects=null;
         String query = new String("/prj:ObsProject");
         String schema = new String("ObsProject");
+        XmlEntityStruct xml =null;
         try {
             checkArchiveStillActive();
-            Cursor cursor = archOperationComp.queryDirty(query,schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying ObsProjects");
-                return null;
+            if(lastProjectQuery != null) {
+                try{
+                    logger.info("Last query time = "+lastProjectQuery.toString());
+                    String[] newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString());
+                    ObsProject p=null;
+                    for(int i=0; i <  newArchUpdates.length; i++){
+                        xml = archOperationComp.retrieveDirty( newArchUpdates[i] );
+                        logger.info("timestamp = "+xml.timeStamp);
+                        p = (ObsProject)entityDeserializer.deserializeEntity(xml, ObsProject.class);
+                        tmpObsProject.add(p);
+                    } 
+                }catch(Exception e){
+                    logger.severe("SCHEDULING: Error "+e.toString());
+                    e.printStackTrace();
+                }
             } else {
-                logger.finest("SCHEDULING: cursor not null!");
-            }
-            while(cursor.hasNext()) {
-                QueryResult res = cursor.next();
-                try {
-                    XmlEntityStruct xml = archOperationComp.retrieveDirty(res.identifier);
-                    //logger.info("PROJECT : "+ xml.xmlString);
-                    //System.out.println("PROJECT taken out of archive: "+ xml.xmlString);
-                    ObsProject obsProj= (ObsProject)
-                        entityDeserializer.deserializeEntity(xml, ObsProject.class);
-                            //"alma.entity.xmlbinding.obsproject.ObsProject"));
-                    //logger.info("SCHEDULING: xml struct timestamp = "+xml.timeStamp);
-                    //logger.info("SCHEDULING: entityT timestamp = "+obsProj.getObsProjectEntity().getTimestamp());
-		    //logger.info("Project deserialized.. time stamp = "+obsProj.getObsProjectEntity().getTimestamp());
-                    tmpObsProject.add(obsProj);
-                    //obsProj = ProjectUtil.addPartIds(obsProj);
-                    //XmlEntityStruct p_xml = entitySerializer.serializeEntity(
-                     //       obsProj, obsProj.getObsProjectEntity());
-                    //xml.xmlString = p_xml.xmlString;
-                    //System.out.println("project with generated part ids"+xml.xmlString);
-                    //archOperationComp.update(xml);
-                }catch(Exception e) {
-                    logger.severe("SCHEDULING: "+e.toString());
-                    e.printStackTrace(System.out);
-                    throw new SchedulingException (e);
+                //nothing's been queried yet 
+                Cursor cursor = archOperationComp.queryDirty(query,schema);
+                if(cursor == null) {
+                    logger.severe("SCHEDULING: cursor was null when querying ObsProjects");
+                    return null;
+                } else {
+                    logger.finest("SCHEDULING: cursor not null!");
+                }
+                while(cursor.hasNext()) {
+                    QueryResult res = cursor.next();
+                    try {
+                        xml = archOperationComp.retrieveDirty(res.identifier);
+                        //logger.info("PROJECT : "+ xml.xmlString);
+                        //System.out.println("PROJECT taken out of archive: "+ xml.xmlString);
+                        ObsProject obsProj= (ObsProject)
+                            entityDeserializer.deserializeEntity(xml, ObsProject.class);
+                        tmpObsProject.add(obsProj);
+                    }catch(Exception e) {
+                        logger.severe("SCHEDULING: "+e.toString());
+                        e.printStackTrace(System.out);
+                        throw new SchedulingException (e);
+                    }
                 }
             }
             projects = new ObsProject[tmpObsProject.size()];
@@ -289,8 +310,7 @@ public class ALMAArchive implements Archive {
                 projects[i] = (ObsProject)tmpObsProject.elementAt(i);
             }
             lastProjectQuery = clock.getDateTime();
-            logger.info("SCHEDULING: Scheduling found "+projects.length+
-                    " projects archived.");
+            logger.info("SCHEDULING: Scheduling found "+projects.length+" projects archived.");
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
@@ -820,6 +840,9 @@ public class ALMAArchive implements Archive {
             
             this.archConnectionComp.getAdministrative("SCHEDULING").init();
             this.archOperationComp = archConnectionComp.getOperational("SCHEDULING");
+            this.archIdentifierComp = alma.xmlstore.IdentifierHelper.narrow(
+                    containerServices.getDefaultComponent(
+                        "IDL:alma/xmlstore/Identifier:1.0"));
             
         } catch(ContainerException e) {
             logger.severe("SCHEDULING: ContainerException: "+e.toString());

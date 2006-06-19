@@ -64,6 +64,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
     private int tmpCount=1;
 	
+    public QueuedSBScheduler(){}
 	/**
 	 * Create an scheduler.
 	 * @param config The scheduler configuration that controls this interactive scheduler.
@@ -87,6 +88,21 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	public SchedulerConfiguration getConfiguration() {
 		return config;
 	}
+    public void setConfiguration(SchedulerConfiguration c) {
+        super.setConfiguration(c);
+        config = c;
+        try {
+    		// Validate the configuration object.
+	    	String msg = validateInteractiveConfig();
+		    if (msg != null) {
+	            config.errorEnd(msg,clock.getDateTime());
+    			error(msg);
+    		}
+            config.getLog().info("SCHEDULING: Queued Scheduler created");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 * Validate the interactive scheduler configuration.
@@ -127,7 +143,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	 * @param sbId the ID of the SB to execute.
 	 * @throws SchedulingException 
 	 */
-	public boolean execute() throws SchedulingException {
+	public boolean executeSBs() throws SchedulingException {
 		/*if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");
 		}
@@ -205,7 +221,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
     public void run() {
         try {
             while(true) {
-                if(execute()) {
+                if(executeSBs()) {
                     break;
                 }
             }

@@ -56,6 +56,7 @@ public class ArchiveQueryWindowController implements Runnable {
         try {
             queryResults = manager.archiveQuery(query, schema);
         } catch(Exception e) {
+            e.printStackTrace();
             queryResults[0] = new String(e.toString());
         }
         return queryResults;

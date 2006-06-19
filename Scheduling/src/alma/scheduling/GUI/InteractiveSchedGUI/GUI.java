@@ -182,8 +182,7 @@ public class GUI extends JFrame {
         JPanel p = new JPanel(new GridLayout(1,2));
         p.add(createOutputView());
         getContentPane().add(p);
-        addWindowListener(new WindowAdapter() 
-        {
+        addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 exit();
             }

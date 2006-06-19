@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.11 2006/05/01 18:59:17 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.12 2006/06/19 14:12:36 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -536,7 +536,7 @@ class R3Policy extends PolicyType {
 			sb = u.getSB();
 			pEl = positionEl(u);
 			pMax = positionMax(u);
-			w = weather(sb);
+			w = weather(sb, u.getMaxElevation());
 			u.setPositionEl(pEl);
 			u.setPositionMax(pMax);
 			u.setWeather(w);
@@ -550,7 +550,11 @@ class R3Policy extends PolicyType {
 				u.setSuccess(0.0);
                 //System.out.println("Bad success calculation");
 			} else {
-				u.setSuccess((positionElW * pEl + positionMaxW * pMax + weatherW * w) / (positionElW + positionMaxW + weatherW));
+                double tmp = 
+                    (positionElW * pEl + positionMaxW * pMax + weatherW * w) / 
+                        (positionElW + positionMaxW + weatherW);
+                System.out.println("Calculated success = "+tmp);
+				u.setSuccess(tmp);
 			}
 		}
 	}
@@ -630,12 +634,18 @@ class R3Policy extends PolicyType {
 		
 	}
 	
-	private double weather(SB sb) {
+	private double weather(SB sb, double el) {
+        //System.out.println("CALLING WEATHER");
 		double x = 1.0;
+        int baseline=1;
 		try {
 			WeatherCondition w = sb.getWeatherConstraint();
+            //System.out.println(w.toString());
 			if (w != null){
-				x =  w.evaluate();
+				x =  w.evaluate(new Double(sb.getCenterFrequency()), 
+                                new Double(el), 
+                                new Integer(baseline));
+            //System.out.println("Weather weight = "+x);
             }
 		} catch (Exception err) {
 			err.printStackTrace(System.out);
