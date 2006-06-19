@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.14 2006/06/01 20:53:53 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.15 2006/06/19 20:12:49 sslucero Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -26,12 +26,13 @@ USER_JFLAGS= -deprecation #-Xlint
 #
 
 JARFILES = DynamicSchedulingSubsystem schedulingComp 
+schedulingComp_DIRS =  alma/scheduling/AlmaScheduling
 DynamicSchedulingSubsystem_DIRS = alma/scheduling/Scheduler alma/scheduling/Define alma/scheduling/Event alma/scheduling/GUI alma/scheduling/MasterScheduler alma/scheduling/ObsProjectManager alma/scheduling/PlanningModeSim
 DynamicSchedulingSubsystem_EXTRAS = alma/scheduling/Image/*.jpg
 #PMSimulator_EXTRAS = alma/scheduling/Image/*.jpg
 
 #COMPONENTS_JARFILES = schedulingComp 
-schedulingComp_DIRS =  alma/scheduling/AlmaScheduling
+#schedulingComp_DIRS =  alma/scheduling/AlmaScheduling
 #INSTALL_FILES = ../lib/scheduling.jar
 
 #>>>>> END OF standard rules

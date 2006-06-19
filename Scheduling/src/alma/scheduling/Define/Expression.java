@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.9 2006/06/19 14:12:10 sslucero Exp $
+ * @version $Id: Expression.java,v 1.10 2006/06/19 20:12:49 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
@@ -132,7 +132,12 @@ public class Expression {
 		for (int i = 0; i < functionName.length; ++i) {
 			try {
 				classObj = obj[i].getClass();
-				method[i] = classObj.getMethod("compute", Double.class, Double.class);
+                //System.out.println(classObj.getName());
+                if (!classObj.getName().equals("alma.scheduling.PlanningModeSim.RmsModel")){
+    				method[i] = classObj.getMethod("compute", Double.class, Double.class);
+                } else {
+    				method[i] = classObj.getMethod("compute", Double.class, Double.class, Integer.class);
+                }
 				//method[i] = classObj.getMethod("compute",null);
 			} catch (NoSuchMethodException err) {
                 err.printStackTrace();
@@ -149,6 +154,8 @@ public class Expression {
 	public static float execute(int n, Object... args) {
 		try {
             //System.out.println("In execute: class name = "+obj[n].getClass().getName());
+            //System.out.println(n);
+            //System.out.println(method[n].toString());
             Double d =  (Double)(method[n].invoke(obj[n], args));
             //Double d =  (Double)(method[n].invoke(obj[n],null));
             //System.out.println("Value in expression = "+d.doubleValue());

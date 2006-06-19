@@ -174,8 +174,8 @@ public class Simulator implements Runnable {
 		// Form the DateTime for the LST.
 		DateTime lstBegin = DateTime.add(beginCivil,(lstHrs / 24.0));
 		clock.setTime(lstBegin);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println(clock.getDateTime());
+        //System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
+        //System.out.println(clock.getDateTime());
 		// This clock is now an LST clock.
 		// Now we need to set the beginning and ending times to LST times.
 		DateTime endCivil = input.getEndCivilTime();

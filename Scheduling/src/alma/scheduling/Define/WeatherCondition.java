@@ -83,7 +83,7 @@ import java.util.StringTokenizer;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version $Id: WeatherCondition.java,v 1.4 2006/06/19 14:12:10 sslucero Exp $
+ * @version $Id: WeatherCondition.java,v 1.5 2006/06/19 20:12:49 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherCondition {
@@ -135,7 +135,9 @@ public class WeatherCondition {
             currName = (new StringTokenizer(condition[i].toString(),",")).nextToken();
             //System.out.println("Current eval on "+currName);
             if(prevName == null) {
-                if(condition[i].evaluate(args)){
+                //System.out.println(currName +":"+args.length);
+                //if(condition[i].evaluate(args)){
+                if(evaluateCondition(condition[i], currName, args)){
                     doesCurrNameHaveValue = true;
                     if(value ==0.0F){
                         value = result[i];
@@ -144,7 +146,8 @@ public class WeatherCondition {
                     }
                 }
             } else if (currName.equals(prevName) && !doesCurrNameHaveValue) {
-                if(condition[i].evaluate(args)){
+                if(evaluateCondition(condition[i], currName, args)){
+                //if(condition[i].evaluate(args)){
                     doesCurrNameHaveValue = true;
                     if(value ==0.0F){
                         value = result[i];
@@ -154,7 +157,8 @@ public class WeatherCondition {
                 }
             } else if (!currName.equals(prevName)) {
                 doesCurrNameHaveValue = false;
-                if(condition[i].evaluate(args)){
+                if(evaluateCondition(condition[i], currName, args)){
+                //if(condition[i].evaluate(args)){
                     doesCurrNameHaveValue = true;
                     if(value ==0.0F){
                         value = result[i];
@@ -171,6 +175,14 @@ public class WeatherCondition {
         }
         return value;
 	}
+    private boolean evaluateCondition(Expression exp, String name, Object... args){
+        if(name.equals("rms") ){
+            return exp.evaluate(args);
+        } else {
+            return exp.evaluate(args[0], args[1]);
+        }
+    }
+            
         /*
         System.out.println("evaluating");
         System.out.println("number of conditions = "+condition.length);
