@@ -37,7 +37,7 @@ package alma.scheduling.Define;
  * <li> its current project, unit set, and scheduling unit.
  * </ul>
  * 
- * @version $Id: Subarray.java,v 1.4 2005/06/20 20:58:09 sslucero Exp $
+ * @version $Id: Subarray.java,v 1.5 2006/06/19 14:12:10 sslucero Exp $
  * @author Allen Farris
  */
 public class Subarray {
@@ -52,10 +52,13 @@ public class Subarray {
 	private String currentProject;
 	private String currentProgram;
 	private String currentSB;
+    private double maxBaseline;
+    private double minBaseline;
 	
 	public Subarray (String name, Antenna[] antenna) {
 		this.arrayName = name;
 		this.antenna = antenna;
+        calcMaxBaseline();
 		setBusy();
 		this.currentFrequencyBand = new FrequencyBand ("",0.0,0.0);
 		this.currentFrequency = 0.0;
@@ -134,7 +137,43 @@ public class Subarray {
 	public synchronized FrequencyBand getStandbyFrequencyBand() {
 		return standbyFrequencyBand;
 	}
+    
+    public double getMaxBaseline() {
+        return maxBaseline;
+    }
 
+
+    public void calcMaxBaseline() {
+        int ants = antenna.length;
+        int totalBaselines = (ants*(ants-1))/2;
+        double[] alldistances = new double[totalBaselines];
+        //for every antenna calculate distance to every other antenna
+        double tmp;
+        for(int i=0; i < antenna.length; i++){
+            for(int j=0; j<antenna.length; j++){
+                tmp =calcDistance(antenna[i], antenna[j]); 
+                if (tmp > 0.0 ){
+                    alldistances[totalBaselines--] = tmp;
+                } //else antnna is in same spot! so no baseline!
+            }
+        }
+        double max=0;
+        for(int i=0; i < alldistances.length; i++) {
+            if(alldistances[i] > max) max = alldistances[i];
+        }
+        maxBaseline = max;
+    }
+    
+    public double calcDistance(Antenna a, Antenna b){
+        double distance = 
+            Math.sqrt( 
+                Math.pow( (a.getXLocation() - b.getXLocation()), 2) +
+                Math.pow( (a.getYLocation() - b.getYLocation()), 2) +
+                Math.pow( (a.getZLocation() - b.getZLocation()), 2) 
+            );
+        return distance;
+    }
+    
 	/**
 	 * @param band
 	 * @param d
@@ -161,5 +200,6 @@ public class Subarray {
 		standbyFrequencyBand = band;
 		standbyFrequency = d;
 	}
+
 
 }

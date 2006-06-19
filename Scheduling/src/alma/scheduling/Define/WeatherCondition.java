@@ -26,6 +26,7 @@
  
 package alma.scheduling.Define;
 
+import java.util.StringTokenizer;
 /**
  * The WeatherCondition class defines a measure of the favorable conditions 
  * under which a scheduling block may be executed.  After being created, the principle 
@@ -82,7 +83,7 @@ package alma.scheduling.Define;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version $Id: WeatherCondition.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: WeatherCondition.java,v 1.4 2006/06/19 14:12:10 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherCondition {
@@ -115,18 +116,80 @@ public class WeatherCondition {
 			condition[i] = new Expression(x[i].substring(0,n));
 		}
 	}
+
+    //create a weather condition based on a condition-word 
+    //which is associated with pre-defined condition strings.
+    //public WeatherCondition(String conditionWord) {
+    //}
 	
 	/**
 	 * The evaluate method returns a floating point number between 0.0 and 1.0,
 	 * as a measure of the favorablity rating.
 	 */
-	public float evaluate() {
+	public float evaluate(Object... args) {
+        float value =0.0F; 
+        String currName = null;
+        String prevName = null;
+        boolean doesCurrNameHaveValue = false;
 		for (int i = 0; i < condition.length; ++i) {
-			if (condition[i].evaluate())
-				return result[i];
-		}
-		return 0.0F;
+            currName = (new StringTokenizer(condition[i].toString(),",")).nextToken();
+            //System.out.println("Current eval on "+currName);
+            if(prevName == null) {
+                if(condition[i].evaluate(args)){
+                    doesCurrNameHaveValue = true;
+                    if(value ==0.0F){
+                        value = result[i];
+                    } else {
+                        value = value * result[i];
+                    }
+                }
+            } else if (currName.equals(prevName) && !doesCurrNameHaveValue) {
+                if(condition[i].evaluate(args)){
+                    doesCurrNameHaveValue = true;
+                    if(value ==0.0F){
+                        value = result[i];
+                    } else {
+                        value = value * result[i];
+                    }
+                }
+            } else if (!currName.equals(prevName)) {
+                doesCurrNameHaveValue = false;
+                if(condition[i].evaluate(args)){
+                    doesCurrNameHaveValue = true;
+                    if(value ==0.0F){
+                        value = result[i];
+                    } else {
+                        value = value * result[i];
+                    }
+                }
+            } else {
+                //already have a value for it
+                //basically ....
+                //(currName.equals(prevName && doesCurrNameHaveValue == true) == true
+            }
+            prevName = currName;
+        }
+        return value;
 	}
+        /*
+        System.out.println("evaluating");
+        System.out.println("number of conditions = "+condition.length);
+        float combinedValue = 0.0F;
+        String tmp;
+        String name;
+		for (int i = 0; i < condition.length; ++i) {
+            String[] types = condition[i].getFunctionNames();
+            System.out.println(condition[i].toString());
+            for(int j =0; j < types.length; j++){
+                System.out.println("condition "+i+"'s name = "+types[j]);
+            }
+			if (condition[i].evaluate(args)) {
+                System.out.println("RESULT = "+result[i]);
+				return result[i];
+            }
+		}
+		return combinedValue;
+        */
 
 	/**
 	 * The toString method returns that targets together with the parsed

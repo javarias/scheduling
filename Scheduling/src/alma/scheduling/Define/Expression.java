@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.8 2006/05/01 15:44:57 sslucero Exp $
+ * @version $Id: Expression.java,v 1.9 2006/06/19 14:12:10 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
@@ -132,9 +132,10 @@ public class Expression {
 		for (int i = 0; i < functionName.length; ++i) {
 			try {
 				classObj = obj[i].getClass();
-				method[i] = classObj.getMethod("compute");
+				method[i] = classObj.getMethod("compute", Double.class, Double.class);
 				//method[i] = classObj.getMethod("compute",null);
 			} catch (NoSuchMethodException err) {
+                err.printStackTrace();
 				System.out.println("Invalid syntax defining functions! " +
 					"There is no \"compute()\" method in " + classObj.getName());
 				System.exit(0);
@@ -145,10 +146,12 @@ public class Expression {
 	/**
 	 * A static method to evaluate the function given its index.
 	 */
-	public static float execute(int n) {
+	public static float execute(int n, Object... args) {
 		try {
-            Double d =  (Double)(method[n].invoke(obj[n]));
+            //System.out.println("In execute: class name = "+obj[n].getClass().getName());
+            Double d =  (Double)(method[n].invoke(obj[n], args));
             //Double d =  (Double)(method[n].invoke(obj[n],null));
+            //System.out.println("Value in expression = "+d.doubleValue());
 			return (float)d.doubleValue();
 		} catch (Exception err) {
 			System.out.println("Oops! This isn't supposed to happen.");
@@ -175,7 +178,7 @@ public class Expression {
 	/**
 	 * Evaluate the logical expression.
 	 */
-	public boolean evaluate() {
+	public boolean evaluate(Object... args) {
 		if (list.isEmpty())
 			return false;
 		
@@ -192,7 +195,7 @@ public class Expression {
 				p = (Pair)list.get(i);
 				switch (p.type) {
 				case NAME:
-					f1 = execute(((Integer)(p.value)).intValue());
+					f1 = execute(((Integer)(p.value)).intValue(), args);
 					stack.push(new Pair(FLOAT,new Float(f1)));
 					break;
 				case FLOAT:

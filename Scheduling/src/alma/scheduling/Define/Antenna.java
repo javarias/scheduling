@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * <li> its standby frequency band and standby frequency.
  * </ul>
  * 
- * @version $Id: Antenna.java,v 1.6 2005/09/29 17:43:51 sslucero Exp $
+ * @version $Id: Antenna.java,v 1.7 2006/06/19 14:12:10 sslucero Exp $
  * @author Allen Farris
  */
 public class Antenna {
@@ -52,6 +52,9 @@ public class Antenna {
 	private String antennaId;
     // antenna's location
 	private int locationId;
+    private int locX;
+    private int locY;
+    private int locZ;
     // antenna's pad name
     private String padName;
     //if antenna has a nutator
@@ -111,6 +114,18 @@ public class Antenna {
 		this.nutator = nutator; 
 		setOffline();
 	}
+    /**
+      * Best constructor coz it has X, Y & Z location for antenna..
+      */
+	public Antenna(String antennaId, int x, int y, int z, String padName, boolean nutator) {
+		this.antennaId = antennaId;
+        this.locX = x;
+        this.locY = y;
+        this.locZ = z;
+		this.padName = padName;
+		this.nutator = nutator; 
+		setOffline();
+	}
 
 	/**
 	 * Get the number that identifies this antenna.
@@ -130,6 +145,15 @@ public class Antenna {
 	public synchronized int getLocationId() {
 		return locationId;
 	}
+    public synchronized int getXLocation(){
+        return locX;
+    }
+    public synchronized int getYLocation(){
+        return locY;
+    }
+    public synchronized int getZLocation(){
+        return locZ;
+    }
 
     public synchronized String getPadName() {
         return padName;
@@ -150,6 +174,12 @@ public class Antenna {
 	public synchronized void moveTo(int locationId) {
 		this.locationId = locationId;
 	}
+
+    public synchronized void moveTo(int x, int y, int z) {
+        this.locX=x;
+        this.locY=y;
+        this.locZ=z;
+    }
 
 	/**
 	 * Is this antenna allocated to a subarray?
