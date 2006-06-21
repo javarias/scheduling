@@ -66,7 +66,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.55 2006/06/19 14:12:36 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.56 2006/06/21 14:35:55 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -536,7 +536,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void createQueuedScheduler() 
     //public String createQueuedScheduler(String arrayName) 
         throws InvalidOperationEx{
-            int orig_count = q_sched_count;
+            /*int orig_count = q_sched_count;
             try{
                 q_sched_count++;
                 ComponentSpec spec = new ComponentSpec("QueuedScheduler."+q_sched_count,
@@ -556,6 +556,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
                 throw e2.toInvalidOperationEx();
             }
+            */
             
     }
     /**
