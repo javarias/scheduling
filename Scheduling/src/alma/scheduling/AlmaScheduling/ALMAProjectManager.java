@@ -51,6 +51,7 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
+import alma.scheduling.SBLite;
 import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.specialsb.*;
 import alma.entity.xmlbinding.projectstatus.*;
@@ -60,7 +61,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.61 2006/05/04 17:00:05 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.62 2006/06/21 17:22:55 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -159,6 +160,7 @@ public class ALMAProjectManager extends ProjectManager {
         try {
             pollArchive();
         } catch(Exception e) {
+            e.printStackTrace(System.out);
         }
     }
 
@@ -868,6 +870,9 @@ public class ALMAProjectManager extends ProjectManager {
       * 
       */
     private void pollArchive() throws SchedulingException {
+        logger.info("project Queue size at start of pollarchive = "+pQueue.size());
+        logger.info("sb queue size at start of pollarchive = "+sbQueue.size());
+        logger.info("ps queue size at start of pollarchive = "+psQueue.size());
         logger.info("SCHEDULING: polling archive for (eventually new/updated) projects");
         Project[] projectList = new Project[0];
         Vector<ProjectStatus> tmpPS = new Vector<ProjectStatus>();
@@ -886,7 +891,7 @@ public class ALMAProjectManager extends ProjectManager {
             for(int i=0; i < projects.size(); i++) {
                 //if project status is complete don't add
                 ps = archive.getProjectStatus( projects.get(i) );
-                //check if project status is complete
+                //check if proj04ect status is complete
                 logger.finest("PS status = "+ps.getStatus().getState().toString());
                 if(!ps.getStatus().getState().toString().equals("complete")){
                     tmpPS.add(ps);
@@ -989,9 +994,9 @@ public class ALMAProjectManager extends ProjectManager {
         } catch(Exception e) {
             throw new SchedulingException(e);
         }
-        logger.finest("Size of pQueue = "+pQueue.size());
-        logger.finest("Size of psQueue = "+psQueue.size());
-        logger.finest("Size of sbQueue = "+sbQueue.size());
+        logger.info("Size of pQueue = "+pQueue.size());
+        logger.info("Size of psQueue = "+psQueue.size());
+        logger.info("Size of sbQueue = "+sbQueue.size());
     }
 
     /**
@@ -1068,5 +1073,95 @@ public class ALMAProjectManager extends ProjectManager {
             sbs[i] = (SB)sbsV.elementAt(i);
         }
         return sbs;
+    }
+    public SBLite[] getSBLites() {
+        logger.info("SCHEDULING: Called getSBLites");
+        SBLite[] sbliteArray=null;
+        SBLite sblite;
+        Vector<SBLite> sbliteVector = new Vector<SBLite>();
+        try {
+            pollArchive();
+            Project[] projects = pQueue.getAll();
+//System.out.println("# of projects retrieved in getSBLite = "+projects.length);
+            String sid,pid,sname,pname,pi,pri;
+            double ra,dec,freq,score,success,rank;
+            long maxT;
+            for(int i=0; i < projects.length; i++){
+                //get all the sbs of this project
+                SB[] sbs = projects[i].getAllSBs ();
+//System.out.println("# of sbs  retrieved in getSBLite for project "+i+" = "+sbs.length);
+                for(int j=0; j < sbs.length; j++) {
+                    sblite = new SBLite();
+                    sid = sbs[j].getId();
+                    if(sid == null || sid =="") {
+                        sid = "WARNING: Problem with SB id";
+                    }
+                    sblite.schedBlockRef =sid;
+                    //sblite.schedBlockRef = sbs[j].getId();
+                    pid = sbs[j].getProject().getId();
+                    if(pid ==null||pid=="") {
+                        pid = "WARNING: problem with project id";   
+                    }
+                    sblite.projectRef = pid;
+                    //sblite.projectRef = sbs[j].getProject().getId();
+                    sblite.obsUnitsetRef = "";
+
+                    sname =sbs[j].getSBName();
+                    if(sname == null || sname ==""){
+                        sname = "WARNING: problem with SB name";
+                    }
+                    sblite.sbName =sname;
+                    //sblite.sbName = sbs[j].getSBName();
+                    pname = sbs[j].getProject().getProjectName();
+                    if(pname == null ||pname =="") {
+                        pname = "WARNING: problem with project name";
+                    }
+                    sblite.projectName = pname;
+                    //sblite.projectName = sbs[j].getProject().getProjectName();
+                    pi = sbs[j].getProject().getPI();sbs[j].getProject().getPI();
+                    if(pi == null || pi == ""){
+                        pi = "WARNING: problem with pi";
+                    }
+                    sblite.PI = pi;
+                    //sblite.PI = sbs[j].getProject().getPI();
+                    pri = sbs[j].getProject().getScientificPriority().getPriority();
+                    if(pri == null || pri =="") {
+                        pri = "WARNING: problem with scientific priority";
+                    }
+                    sblite.priority = pri;
+                    //sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
+		            try {
+	                    ra = sbs[j].getTarget().getCenter().getRa();
+        	 	    } catch(NullPointerException npe) {
+		            	logger.warning("SCHEDULING: RA object == null in SB, setting to 0.0");
+            			ra = 0.0;
+		            }
+                    sblite.ra = ra;
+                    //sblite.ra = sbs[j].getTarget().getCenter().getRa();
+        		    try {
+	                    dec = sbs[j].getTarget().getCenter().getDec();
+	 	            } catch(NullPointerException npe) {
+            			logger.warning("SCHEDULING: DEC object == null in SB, setting to 0.0");
+			            dec = 0.0;
+        		    }
+                    sblite.dec = dec;
+                    //sblite.dec = sbs[j].getTarget().getCenter().getDec();
+                    sblite.freq = 0;//sbs[j].getFrequencyBand().getHighFrequency();
+                    sblite.maxTime = 0;
+                    sblite.score = 0;
+                    sblite.success = 0; 
+                    sblite.rank = 0 ;
+
+                    sbliteVector.add(sblite);
+                }
+            }
+            sbliteArray = new SBLite[sbliteVector.size()];
+            sbliteArray = sbliteVector.toArray(sbliteArray);
+            
+        } catch(Exception e) {
+	        logger.severe(e.toString());
+            e.printStackTrace(System.out);
+        }
+        return sbliteArray;
     }
 }

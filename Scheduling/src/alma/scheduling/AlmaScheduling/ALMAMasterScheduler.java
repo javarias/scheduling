@@ -66,7 +66,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.56 2006/06/21 14:35:55 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.57 2006/06/21 17:22:55 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -557,7 +557,6 @@ public class ALMAMasterScheduler extends MasterScheduler
                 throw e2.toInvalidOperationEx();
             }
             */
-            
     }
     /**
       * @throws InvalidOperationEx
@@ -644,7 +643,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       *
       */
     public SBLite[] getSBLites() {
-        return archive.getSBLites();
+        return manager.getSBLites();
     }
 ///// END of Executive_to_Scheduling interface implementation
     

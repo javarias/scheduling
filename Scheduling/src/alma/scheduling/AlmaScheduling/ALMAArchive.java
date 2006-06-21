@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import java.util.Vector;
 
 import alma.scheduling.Define.*;
-import alma.scheduling.SBLite;
+//import alma.scheduling.SBLite;
 
 import alma.xmlentity.XmlEntityStruct;
 
@@ -64,7 +64,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.57 2006/06/19 14:12:36 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.58 2006/06/21 17:22:55 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -268,7 +268,14 @@ public class ALMAArchive implements Archive {
             if(lastProjectQuery != null) {
                 try{
                     logger.info("Last query time = "+lastProjectQuery.toString());
-                    String[] newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString());
+                    String[] newArchUpdates =new String[0];
+                    try {
+                        newArchUpdates = archOperationComp.queryRecent(lastProjectQuery.toString()+".000", schema);
+                        //newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString());
+                        logger.info("There are "+newArchUpdates.length+" new project updates!");
+                    } catch(Exception e){
+                        e.printStackTrace(System.out);
+                    }
                     ObsProject p=null;
                     for(int i=0; i <  newArchUpdates.length; i++){
                         xml = archOperationComp.retrieveDirty( newArchUpdates[i] );
@@ -278,7 +285,7 @@ public class ALMAArchive implements Archive {
                     } 
                 }catch(Exception e){
                     logger.severe("SCHEDULING: Error "+e.toString());
-                    e.printStackTrace();
+                    e.printStackTrace(System.out);
                 }
             } else {
                 //nothing's been queried yet 
@@ -456,13 +463,15 @@ public class ALMAArchive implements Archive {
     /**
       *
       */
+    /*
     public SBLite[] getSBLites() {
 	    logger.info("SCHEDULING: Called getSBLites");
         SBLite[] sbliteArray=null;
         SBLite sblite;
         Vector<SBLite> sbliteVector = new Vector<SBLite>();
         try {
-            Project[] projects = getAllProject();
+            pollArchive();
+            //Project[] projects = getAllProject();
 //System.out.println("# of projects retrieved in getSBLite = "+projects.length);
             String sid,pid,sname,pname,pi,pri;
             double ra,dec,freq,score,success,rank;
@@ -545,6 +554,7 @@ public class ALMAArchive implements Archive {
         }
         return sbliteArray;
     }
+    */
 
 
     /**
