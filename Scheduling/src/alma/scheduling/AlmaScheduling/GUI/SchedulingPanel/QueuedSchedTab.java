@@ -6,12 +6,12 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
-import alma.scheduling.QueuedScheduling;
+//import alma.scheduling.QueuedScheduling;
 
 public class QueuedSchedTab extends JScrollPane {
     private ContainerServices container;
     private Logger logger;
-    private QueuedScheduling schedulerComp;
+    //private QueuedScheduling schedulerComp;
     
     public QueuedSchedTab(ContainerServices cs){
         container = cs;
@@ -30,16 +30,22 @@ public class QueuedSchedTab extends JScrollPane {
     }
        
     private JPanel createQueryView(){
-        JPanel p = new JPanel();
+        JPanel p = new JPanel(new GridLayout(2,1));
         p.setBorder(new TitledBorder("Search"));
-        p.add(new JLabel("Project Name:"));
-        p.add(new JTextField());
-        p.add(new JLabel("PI Name:"));
-        p.add(new JTextField());
+        JPanel top = new JPanel();
+        top.add(new JLabel("Project Name:"));
+        top.add(new JTextField());
+        top.add(new JLabel("PI Name:"));
+        top.add(new JTextField());
+        JPanel buttons = new JPanel();
         JButton search = new JButton("Search");
         JButton clear = new JButton("Clear");
         JButton allSBs = new JButton("Get All SBs");
-
+        buttons.add(search);
+        buttons.add(clear);
+        buttons.add(allSBs);
+        p.add(top);
+        p.add(buttons);
         return p;
     }
     private JPanel createDisplayView(){
