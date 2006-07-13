@@ -64,7 +64,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.58 2006/06/21 17:22:55 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.59 2006/07/13 13:17:31 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -195,8 +195,8 @@ public class ALMAArchive implements Archive {
         //logger.info("Getting project status from archive, id = "+ ps_id);
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
-            logger.info("Getting PS for Project");
-            logger.info("PS xml: "+xml.xmlString);
+            //logger.info("Getting PS for Project");
+            //logger.info("PS xml: "+xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
             ps = ProjectUtil.updateProjectStatus(p);
             updateProjectStatus(ps);
@@ -213,8 +213,8 @@ public class ALMAArchive implements Archive {
         try {
 	    //logger.info("Retrieving project status "+ps_id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
-            logger.info("Getting PS for ObsProject");
-            logger.info("PROJECT STATUS: "+ xml.xmlString);
+            //logger.info("Getting PS for ObsProject");
+            //logger.info("PROJECT STATUS: "+ xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
         } catch(Exception e) {
             e.printStackTrace(System.out);
@@ -270,6 +270,7 @@ public class ALMAArchive implements Archive {
                     logger.info("Last query time = "+lastProjectQuery.toString());
                     String[] newArchUpdates =new String[0];
                     try {
+                        logger.info("SCHEDULING: sent to archive as "+lastProjectQuery.toString()+".000");
                         newArchUpdates = archOperationComp.queryRecent(lastProjectQuery.toString()+".000", schema);
                         //newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString());
                         logger.info("There are "+newArchUpdates.length+" new project updates!");
@@ -383,9 +384,11 @@ public class ALMAArchive implements Archive {
                 sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
                 
             }
+            /*
             logger.info("SCHEDULING: Scheduling found that project "+
                     p.getObsProjectEntity().getEntityId() +" has "+
                     sbs.length+" sbs");
+                    */
             return sbs;
         }
 
@@ -566,7 +569,7 @@ public class ALMAArchive implements Archive {
             //logger.info("SCHEDULING: updated PS: "+xml.xmlString);
             XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
             xml2.xmlString = xml.xmlString;
-            logger.info("About to save PS: "+xml2.xmlString);
+            //logger.info("About to save PS: "+xml2.xmlString);
             archOperationComp.update(xml2);
         } catch(Exception e){
             logger.severe("SCHEDULING: error updating PS in archive, "+e.toString());
