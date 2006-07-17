@@ -91,7 +91,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.39 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.40 2006/07/17 21:23:01 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -591,8 +591,8 @@ public class ProjectUtil {
             
             //TODO Need to split all this stuff up...
             
-    		SB sb = new SB (schedRef.getEntityId());
-            try {
+    	SB sb = new SB (schedRef.getEntityId());
+        try {
     
     		sb.setSbStatusId(null); // This comes from ProjectStatus.
 	    	sb.setProject(project);
@@ -624,11 +624,11 @@ public class ProjectUtil {
 		    
 		// Set the observing script.
     		sb.setObservingScript(sched.getObsProcedure().getObsProcScript());
-	    	if (sched.hasStandardMode())
+	    	if (sched.hasStandardMode()){
 		        	sb.setStandardScript(sched.getStandardMode());
-	    	else    
+            }else {
     			sb.setStandardScript(false);
-
+            }
 		// Set the time and repeat count.
 		// IMPORTANT NOTE!
 		// We must have a maximum time.  If it is not present, we will arbitrarily assign 30 minutes.
@@ -648,106 +648,90 @@ public class ProjectUtil {
 	    			sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
     			}
 			    int repeatcount = ctrl.getRepeatCount();
-		    	if (repeatcount < 1)
+		    	if (repeatcount < 1){
 	    			throw new SchedulingException("Invalid repeat count (" + repeatcount + ").");
+                }
             //set to -1 because the first run is the original one. Not considered a 'repeat'
 			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
     			sb.setMaximumNumberOfRepeats(repeatcount); 
 
     		}
-		
-        //////////////////////////////////////////////////////////
-        //
-        // Optical Camera Target stuff
-        // IMPORTANT NOTE: see important notes for ObsTarget stuff below
-        //
-        //////////////////////////////////////////////////////////
-            OpticalCameraControlT opticalcameraControl = sched.getOpticalCameraControl();
-            OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
-            if(opticalTargetList.length > 0) {
-                //System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
-                ArrayList oc_eqList = new ArrayList ();
-                Source oc_sbSource=null;
-                
-        	    for (int i = 0; i < opticalTargetList.length; ++i) {
-                    oc_sbSource = createOpticalSBSource(opticalcameraControl, opticalTargetList[i], oc_eqList);
-                    sb.addSource(oc_sbSource);
-        		}
-		        Equatorial[] eqArray = new Equatorial [oc_eqList.size()];
-	        	eqArray = (Equatorial[])oc_eqList.toArray(eqArray);
-        		if (eqArray.length == 1) {
-    		    	Target target = new Target (eqArray[0],3600.0,3600.0);
-	    		    sb.setTarget(target);
-    		    } else {
-		        	Target target = new Target (eqArray);
-	        		sb.setTarget(target);
-        		}
+            
+            FieldSourceT[] fieldSources = sched.getFieldSource();
+            FieldSourceT fs;
+            TargetT[] targets = sched.getTarget();
+            Source source;
+            SkyCoordinatesT coord;
+            String fs_id;
+            Equatorial[] eq = new Equatorial[targets.length];
+            //OpticalPointingParametersT op_params = sched.getOpticalPointingParameters();
+            String[] op_params_list;
+            for(int i=0; i < targets.length; i++){
+                fs_id = targets[i].getFieldSourceId();
+                fs = getFieldSourceFromList(fieldSources, fs_id);
+                if(fs == null){
+	    	        throw new SchedulingException(
+                            "There is no FieldSourceT object in the scheduling block");
+                }
+                coord = fs.getSourceCoordinates();
+    	        if (coord == null){
+        	       	throw new SchedulingException(
+                            "There is no SkyCoordinatesT object in the scheduling block");
+                }
+                LongitudeT lng = coord.getLongitude();
+                double ra = lng.getContent();
+                LatitudeT lat = coord.getLatitude();
+                double dec = lat.getContent();
+    	        String coordType = coord.getSystem().toString(); // must be J2000
+                if (!coordType.equals("J2000")){
+                    throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                }  
+                eq[i] = new Equatorial((ra /24.0),dec);
+                source = new Source();
+                //TODO add source stuff..
+                try {
+                    source.setSourceName(fs.getSourceName());
+                } catch(Exception e) {
+                    source.setSourceName("Source was not named.");
+                }
+                try {
+                    source.setSolarSystemObj(fs.getSolarSystemObject().toString());
+                } catch(Exception e) {
+                    source.setSolarSystemObj("Not a solar system object.");
+                }
+                SourcePropertyT[] sourceProperties = fs.getSourceProperty();
+                try {
+                    source.setNumberSourceProperties(fs.getSourcePropertyCount());
+                    //only really care about the first one!
+                    source.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
+                } catch(Exception e){}
+                try {
+                    //TODO FIX Eventaully to get REAL values from SchedBlockChoice2
+                    source.setMinMagnitude(1);
+                    //source.setMinMagnitude(op_params.getMinMagnitude().getValue());
+                    source.setMaxMagnitude(-1);
+                    //source.setMaxMagnitude(op_params.getMaxMagnitude().getValue());
+                } catch(Exception e){}
 
-            } else {
-                //System.out.println("SCHEDULING: No optical camera targets");
+                sb.addSource(source);
             }
-        
-        //////////////////////////////////////////////////////////
-        //
-        // ObsTarget stuff
-        //
-        //////////////////////////////////////////////////////////
-        
-		// Set the frequency and frequency band.
-		// IMPORTANT NOTE!
-		// We are using the rest frequency and receiver band from the first member of
-		// the frequency setup that is in the Obstarget list.  This probably isn't the
-		// right way to do it.
-    		ObsTargetT[] targetList = sched.getObsTarget();
-            if(targetList.length > 0) {
-                SpectralSpecT setup = targetList[0].getTargetTChoice().getSpectralSpec();
-
-    		    FrequencySetupT freqSetup = setup.getFrequencySetup();
-	    	    if (freqSetup == null) {
-    	    		sb.setCenterFrequency(0.0);
-       			    sb.setFrequencyBand(null);
-		        } else {
-	        		sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
-        			String band = freqSetup.getReceiverBand().toString();
-    			    FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
-		    	    sb.setFrequencyBand(freq);
-	    	    }
-		
-		// Set the target
-		// IMPORTANT NOTE!
-		// Targets are a problem.
-		// We are going to take the list of ObsTargets and construct an IRREGULAR shape,
-		// which is really a rectangular area that includes all targets.  If there is only
-		// one target, we will add a one-degree rectangle around it.
-    		    ArrayList o_eqList = new ArrayList ();
-                Source o_sbSource=null;
-		        for (int i = 0; i < targetList.length; ++i) {
-                    o_sbSource = createObsTargetSource(targetList[i], o_eqList, freqSetup);
-
-                    sb.addSource(o_sbSource);
-    		    }
-		        Equatorial[] eqArray = new Equatorial [o_eqList.size()];
-	        	eqArray = (Equatorial[])o_eqList.toArray(eqArray);
-        		if (eqArray.length == 1) {
-		        	Target target = new Target (eqArray[0],3600.0,3600.0);
-	        		sb.setTarget(target);
-        		} else {
-    		    	Target target = new Target (eqArray);
-	    		    sb.setTarget(target);
-    		    }
-            } //else {
-               // System.out.println("SCHEDULING: No obs targets");
-           // }
-				
-		// Return the newly create SB.
-        }catch(Exception e) {
-            e.printStackTrace(System.out);
+        }catch(Exception e){
+            e.printStackTrace();    
         }
 		return sb;
 	}
+    private static FieldSourceT getFieldSourceFromList(FieldSourceT[] fs, String id){
+        for(int i=0; i < fs.length; i++){
+            if(fs[i].getEntityPartId().equals(id)){
+                return fs[i];
+            }
+        }
+        return null;
+    }
+
 //////////////                    
-    public static Source createOpticalSBSource(OpticalCameraControlT oc_ctrl, 
+ /*   public static Source createOpticalSBSource(OpticalCameraControlT oc_ctrl, 
             OpticalCameraTargetT target, ArrayList allEqs) 
                 throws SchedulingException { //target == opticalTargetList[i]
 
@@ -755,12 +739,10 @@ public class ProjectUtil {
         FieldSourceT fieldSource = target.getFieldSource();
     	if (fieldSource == null){
 	    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block");// with id " + 
-    	        //sb.getSchedBlockId());
         }
 	    SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
     	if (coord == null){
 	       	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block"); //with id " + 
-    		//	sb.getSchedBlockId());
         }
 	    LongitudeT lng = coord.getLongitude(); 	// in degrees
     	double ra = lng.getContent();
@@ -816,7 +798,7 @@ public class ProjectUtil {
             Equatorial eq = new Equatorial((ra /24.0),dec);
             eqList.add(eq);
         } catch(Exception e) {
-            //System.out.println("Equatorial not created");
+            System.out.println("Equatorial not created");
         }
         String coordType = coord.getSystem().toString(); // must be J2000
         if (!coordType.equals("J2000"))
@@ -848,7 +830,7 @@ public class ProjectUtil {
             sbSource.setTransition(freq.getTransitionName());
         }
         return sbSource;
-    }
+    }*/
 ///////////////                    
 	
 	/**
@@ -869,6 +851,7 @@ public class ProjectUtil {
 	}
     
     
+    /*
     static public Project updateProject(ObsProject obs, Project project, SchedBlock[] sched, DateTime now) 
         throws SchedulingException {
         
@@ -1109,7 +1092,7 @@ public class ProjectUtil {
         //////////////////////////////////////////////////////////
         OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
         if(opticalTargetList.length > 0) {
-            //System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
+            System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
             SpectralSpecT setup = opticalTargetList[0].getTargetTChoice().getSpectralSpec();
 
             ArrayList eqList = new ArrayList ();
@@ -1142,9 +1125,9 @@ public class ProjectUtil {
 	    		sb.setTarget(target);
     		}
 
-        }// else {
-           // System.out.println("SCHEDULING: No optical camera targets");
-       // }
+        } else {
+            System.out.println("SCHEDULING: No optical camera targets");
+        }
         
         //////////////////////////////////////////////////////////
         //
@@ -1207,14 +1190,14 @@ public class ProjectUtil {
 		    	Target target = new Target (eqArray);
 	    		sb.setTarget(target);
     		}
-        } //else {
-          //  System.out.println("SCHEDULING: No obs targets");
-       // }
+        } else {
+            System.out.println("SCHEDULING: No obs targets");
+        }
 				
 		// Return the newly create SB.
 		return sb;
 	}
-    
+   */ 
 	//////////////////////////////////////////////////////////////////////
 	// End of private methods are used to support the		 			//
 	// "map(ObsProject p, SchedBlock[] b, ProjectStatus s)" method.		//
@@ -1283,7 +1266,7 @@ public class ProjectUtil {
         try {
             return ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
         } catch(Exception e){
-            //System.out.println("SCHEDULING: Error updating ProjectStatus.");
+            System.out.println("SCHEDULING: Error updating ProjectStatus.");
             e.printStackTrace(System.out);
             return null;
         }
@@ -1528,7 +1511,7 @@ public class ProjectUtil {
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
         if(parm != null) {
-            //System.out.println("Params = "+parm.length);
+            System.out.println("Params = "+parm.length);
             PipelineParameterT[] pparams = new PipelineParameterT[parm.length];
 		    for (int i = 0; i < parm.length; ++i){
                 pparams[i] = new PipelineParameterT();
@@ -1563,13 +1546,13 @@ public class ProjectUtil {
                     pparams[i].setName("ProjectType");
                     pparams[i].setValue(parm[i].toString());
                 } else {
-                    //System.out.println("Class type for data processing param is: "+parm[i].getClass().getName());
+                    System.out.println("Class type for data processing param is: "+parm[i].getClass().getName());
                 }
             }
     		target.setPipelineParameter(pparams);
-        }// else {
-            //System.out.println("Params = null!");
-       // }
+        } else {
+            System.out.println("Params = null!");
+        }
 		// OK, we're done.
 		return target;
 	}
