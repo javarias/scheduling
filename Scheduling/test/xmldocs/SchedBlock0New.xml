@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SchedBlock xmlns="Alma/ObsPrep/SchedBlock"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    almatype="APDM::SchedBlock" xsi:type="SchedBlock">
+    <ns1:status xmlns:ns1="Alma/ObsPrep/ObsProject"></ns1:status>
+    <ns2:name xmlns:ns2="Alma/ObsPrep/ObsProject"></ns2:name>
+    <ns3:ObsUnitControl xmlns:ns3="Alma/ObsPrep/ObsProject" almatype="APDM::ObsUnitControl">
+        <ns3:maximumTime unit="sec"/>
+        <ns3:estimatedExecutionTime unit="sec"/>
+        <ns3:CalibrationRequirements almatype="APDM::CalibrationRequirements">
+            <ns3:pointingAccuracy unit="arcsec"/>
+        </ns3:CalibrationRequirements>
+    </ns3:ObsUnitControl>
+    <ns4:UnitDependencies xmlns:ns4="Alma/ObsPrep/ObsProject" almatype="APDM::UnitDependencies">
+        <ns4:executionCount>1</ns4:executionCount>
+        <ns4:delay unit="sec"/>
+        <ns4:expression></ns4:expression>
+    </ns4:UnitDependencies>
+    <SchedBlockEntity entityId="uid://Xa4b436dbd898d30b/X00000006"
+        entityIdEncrypted="-- id encryption not yet implemented --" entityTypeName="SchedBlock"/>
+    <SpectralSpec almatype="APDM::SpectralSpec">
+        <identifier>ReferenceId-4</identifier>
+        <integrationTime unit="s">2.0</integrationTime>
+        <dynamicRange>1.0</dynamicRange>
+        <lO1Frequency unit="GHz"/>
+        <CorrelatorConfig almatype="APDM::CorrelatorConfig">
+            <integrationDuration>1</integrationDuration>
+            <subScanDuration>1</subScanDuration>
+            <BaseBandConfig almatype="APDM::BaseBandConfig"
+                sideBand="lsb" dataProducts="AUTO_CROSS_PRODUCTS" windowFunction="Hanning">
+                <baseBandIndex>0</baseBandIndex>
+                <bBC>1</bBC>
+                <cAM>16</cAM>
+                <bin0Duration unit="sec">1.0</bin0Duration>
+                <bin1Duration unit="sec">2.0</bin1Duration>
+                <numSwitchCycles>1</numSwitchCycles>
+                <aPCDataSets>2</aPCDataSets>
+                <channelAverageDuration unit="sec">2.0</channelAverageDuration>
+                <centerFrequency unit="GHz">111.0</centerFrequency>
+                <lO2Frequency unit="GHz"/>
+            </BaseBandConfig>
+        </CorrelatorConfig>
+        <FrequencySetup almatype="APDM::FrequencySetup" receiverBand="3">
+            <restFrequency unit="GHz">111.0</restFrequency>
+            <transitionName></transitionName>
+        </FrequencySetup>
+    </SpectralSpec>
+    <FieldSource almatype="APDM::FieldSource">
+        <sourceCoordinates system="J2000">
+            <ns5:longitude xmlns:ns5="Alma/ValueTypes" unit="deg">15.0</ns5:longitude>
+            <ns6:latitude xmlns:ns6="Alma/ValueTypes" unit="deg">2.0</ns6:latitude>
+        </sourceCoordinates>
+        <sourceName>target1</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns7:centerVelocity xmlns:ns7="Alma/ValueTypes" unit="km/s">3.0</ns7:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris></sourceEphemeris>
+        <pMRA unit="deg/s">1.0</pMRA>
+        <pMDec unit="deg/s">2.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="arcsec">4.0</parallax>
+        <identifier>ReferenceId-3</identifier>
+        <OffsetPointingPattern almatype="APDM::OffsetPointingPattern" type="point">
+            <phaseCenterCoordinates>
+                <ns8:longitude xmlns:ns8="Alma/ValueTypes" unit="deg">2.777777777777778E-4</ns8:longitude>
+                <ns9:latitude xmlns:ns9="Alma/ValueTypes" unit="deg">5.555555555555556E-4</ns9:latitude>
+            </phaseCenterCoordinates>
+        </OffsetPointingPattern>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns10:longitude xmlns:ns10="Alma/ValueTypes" unit="deg"/>
+                <ns11:latitude xmlns:ns11="Alma/ValueTypes" unit="deg"/>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+    </FieldSource>
+    <ScienceParameters almatype="APDM::ScienceParameters">
+        <identifier>ReferenceId-1</identifier>
+        <representativeBandwidth unit="GHz">1.0</representativeBandwidth>
+        <representativeFrequency unit="GHz">111.0</representativeFrequency>
+        <sensitivityGoal unit="mJy">1.0</sensitivityGoal>
+    </ScienceParameters>
+    <ObsProcedure almatype="APDM::ObsProcedure">
+        <obsProcScript></obsProcScript>
+    </ObsProcedure>
+    <OpticalCameraControl almatype="APDM::OpticalCameraControl">
+        <elevationLimit unit="degrees"/>
+        <antennaPositionTolerance unit="arcsec"/>
+        <minMagnitude/>
+        <maxMagnitude/>
+    </OpticalCameraControl>
+    <Preconditions almatype="APDM::Preconditions">
+        <ns12:minAllowedHA xmlns:ns12="Alma/ObsPrep/ObsProject" unit="degrees"/>
+        <ns13:maxAllowedHA xmlns:ns13="Alma/ObsPrep/ObsProject" unit="degrees"/>
+        <ns14:WeatherConstraints xmlns:ns14="Alma/ObsPrep/ObsProject" almatype="APDM::WeatherConstraints">
+            <ns14:maxPWVC unit="mm"/>
+            <ns14:seeing unit="arcsec"/>
+            <ns14:phaseStability unit="degrees"/>
+        </ns14:WeatherConstraints>
+    </Preconditions>
+    <SchedBlockControl almatype="APDM::SchedBlockControl">
+        <repeatCount>1</repeatCount>
+        <sBMaximumTime unit="sec"/>
+    </SchedBlockControl>
+    <SchedulingConstraints almatype="APDM::SchedulingConstraints">
+        <representativeFrequency unit="GHz"/>
+        <minAcceptableAngResolution unit="arcsec"/>
+        <maxAcceptableAngResolution unit="arcsec"/>
+    </SchedulingConstraints>
+    <Target almatype="APDM::Target">
+        <identifier>ReferenceId-0</identifier>
+        <abstractInstrumentSpecId>ReferenceId-4</abstractInstrumentSpecId>
+        <fieldSourceId>ReferenceId-3</fieldSourceId>
+        <observingParametersIdList>ReferenceId-1</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement">
+            <samplingInterval unit="sec"/>
+        </TotalPowerMeasurement>
+    </Target>
+</SchedBlock>
