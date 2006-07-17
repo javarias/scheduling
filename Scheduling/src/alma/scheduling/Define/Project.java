@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An Project is an observing project as viewed by the
  * scheduling subsystem. 
  * 
- * @version $Id: Project.java,v 1.6 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Project.java,v 1.7 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class Project implements ProjectMember {
@@ -61,6 +61,7 @@ public class Project implements ProjectMember {
 	// The time at which a breakpoint was entered.  If the Project is not
 	// in a breakpoint, then breakpointTime is null.
 	protected DateTime breakpointTime;
+    protected String projectVersion;
 
 	/**
 	 * Construct an Project.
@@ -77,6 +78,7 @@ public class Project implements ProjectMember {
 		status = new Status ();
 		program = null;
 		breakpointTime = null;
+        this.projectVersion = projectVersion;
 	}
 
 	public void setMemberLink() {
@@ -306,6 +308,10 @@ public class Project implements ProjectMember {
 		return projectName;
 	}
 
+    public String getProjectVersion() {
+        return projectVersion;
+    }
+
 	/**
 	 * @return Returns the proposalId.
 	 */
@@ -365,7 +371,7 @@ public class Project implements ProjectMember {
 	/**
 	 * @return Returns the numberUnitsFailed.
 	 */
-	public int getNumberSBFailed() {
+	public int getNumberSBsFailed() {
 		return program.getNumberSBsFailed();
 	}
 	

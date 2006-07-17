@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.10 2006/06/19 20:12:49 sslucero Exp $
+ * @version $Id: Expression.java,v 1.11 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
@@ -136,7 +136,7 @@ public class Expression {
                 if (!classObj.getName().equals("alma.scheduling.PlanningModeSim.RmsModel")){
     				method[i] = classObj.getMethod("compute", Double.class, Double.class);
                 } else {
-    				method[i] = classObj.getMethod("compute", Double.class, Double.class, Integer.class);
+    				method[i] = classObj.getMethod("compute", Double.class, Double.class, Double.class);
                 }
 				//method[i] = classObj.getMethod("compute",null);
 			} catch (NoSuchMethodException err) {

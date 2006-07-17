@@ -3,10 +3,12 @@ package alma.scheduling.AlmaScheduling.GUI.SchedulingPanel;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
 import alma.Control.ControlMaster;
+import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.MasterSchedulerIF;
 
 public class CreateArrayFrame extends JDialog {
@@ -22,7 +24,8 @@ public class CreateArrayFrame extends JDialog {
     private Object[][] antennaRowInfoA;
     private Object[][] antennaRowInfoB;
     private String[] availableAntennas;
-    private String[] arrayAntennas;
+    //private String[] arrayAntennas;
+    private Vector<String> allArrays;
 
     
     public CreateArrayFrame(ContainerServices cs) {
@@ -30,6 +33,7 @@ public class CreateArrayFrame extends JDialog {
         this.container = cs;
         this.logger = cs.getLogger();
         int inset = 260;
+        allArrays = new Vector<String>();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset, screenSize.width- inset*2,
                 screenSize.height - inset *2);
@@ -55,12 +59,12 @@ public class CreateArrayFrame extends JDialog {
     private JPanel createAntennaListA(){
         JPanel p = new JPanel();
         final String[] antennaColumnInfoA= {"Antenna"};
-        antennaRowInfoA = new Object[20][1];
-        //antennaRowInfoA = new Object[availableAntennas.length][1];
-        for(int i=0; i < 20; i++){
-        //for(int i=0; i < availableAntennas.length; i++){
-         //   antennaRowInfoA[i][0] = availableAntennas[i];
-            antennaRowInfoA[i][0] ="antenna."+i;
+        //antennaRowInfoA = new Object[20][1];
+        antennaRowInfoA = new Object[availableAntennas.length][1];
+        //for(int i=0; i < 20; i++){
+        for(int i=0; i < availableAntennas.length; i++){
+            antennaRowInfoA[i][0] = availableAntennas[i];
+         //   antennaRowInfoA[i][0] ="antenna."+i;
         }
         antennaTableModelA = new AbstractTableModel(){
             public int getColumnCount() { return antennaColumnInfoA.length; }
@@ -121,6 +125,12 @@ public class CreateArrayFrame extends JDialog {
     private JPanel actionButtons(){
         JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton createArrayB = new JButton("Create");
+        createArrayB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                createArray();
+                exit();
+            }
+        });
         JButton cancelB = new JButton("Cancel");
         cancelB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -260,6 +270,30 @@ public class CreateArrayFrame extends JDialog {
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void createArray() {
+        //make sure there are antennas in the B column
+        if(antennaRowInfoB.length < 1) {
+            JOptionPane.showMessageDialog(this, 
+                    "You need to select at least one antenna",
+                    "Nothing Selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        //create list of antennas picked
+        String[] antennas= new String[antennaRowInfoB.length];
+        for(int i=0; i < antennaRowInfoB.length; i++){
+            antennas[i] = (String)antennaRowInfoB[i][0];
+            System.out.println(antennas[i]);
+        }
+        String arrayName;
+        try {
+            arrayName = masterScheduler.createArray(antennas,ArrayModeEnum.DYNAMIC);
+            allArrays.add(arrayName);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void releaseComponentRefs() {

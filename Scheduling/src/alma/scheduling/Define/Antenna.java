@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * <li> its standby frequency band and standby frequency.
  * </ul>
  * 
- * @version $Id: Antenna.java,v 1.7 2006/06/19 14:12:10 sslucero Exp $
+ * @version $Id: Antenna.java,v 1.8 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class Antenna {
@@ -52,9 +52,9 @@ public class Antenna {
 	private String antennaId;
     // antenna's location
 	private int locationId;
-    private int locX;
-    private int locY;
-    private int locZ;
+    private double locX;
+    private double locY;
+    private double locZ;
     // antenna's pad name
     private String padName;
     //if antenna has a nutator
@@ -117,7 +117,7 @@ public class Antenna {
     /**
       * Best constructor coz it has X, Y & Z location for antenna..
       */
-	public Antenna(String antennaId, int x, int y, int z, String padName, boolean nutator) {
+	public Antenna(String antennaId, double x, double y, double z, String padName, boolean nutator) {
 		this.antennaId = antennaId;
         this.locX = x;
         this.locY = y;
@@ -145,13 +145,13 @@ public class Antenna {
 	public synchronized int getLocationId() {
 		return locationId;
 	}
-    public synchronized int getXLocation(){
+    public synchronized double getXLocation(){
         return locX;
     }
-    public synchronized int getYLocation(){
+    public synchronized double getYLocation(){
         return locY;
     }
-    public synchronized int getZLocation(){
+    public synchronized double getZLocation(){
         return locZ;
     }
 
@@ -175,7 +175,7 @@ public class Antenna {
 		this.locationId = locationId;
 	}
 
-    public synchronized void moveTo(int x, int y, int z) {
+    public synchronized void moveTo(double x, double y, double z) {
         this.locX=x;
         this.locY=y;
         this.locZ=z;

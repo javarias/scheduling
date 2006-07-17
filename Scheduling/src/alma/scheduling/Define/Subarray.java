@@ -37,7 +37,7 @@ package alma.scheduling.Define;
  * <li> its current project, unit set, and scheduling unit.
  * </ul>
  * 
- * @version $Id: Subarray.java,v 1.5 2006/06/19 14:12:10 sslucero Exp $
+ * @version $Id: Subarray.java,v 1.6 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class Subarray {
@@ -144,17 +144,29 @@ public class Subarray {
 
 
     public void calcMaxBaseline() {
+        //System.out.println("*****************");
+        //System.out.println("*****************");
+        //System.out.println("Calculating max baseline with "+antenna.length+" antennas");
+        //System.out.println("*****************");
+        //System.out.println("*****************");
         int ants = antenna.length;
-        int totalBaselines = (ants*(ants-1))/2;
+        int totalBaselines = (ants*(ants-1));
+        int baselineCtr=0;
+        //System.out.println(totalBaselines);
         double[] alldistances = new double[totalBaselines];
         //for every antenna calculate distance to every other antenna
         double tmp;
         for(int i=0; i < antenna.length; i++){
-            for(int j=0; j<antenna.length; j++){
-                tmp =calcDistance(antenna[i], antenna[j]); 
-                if (tmp > 0.0 ){
-                    alldistances[totalBaselines--] = tmp;
-                } //else antnna is in same spot! so no baseline!
+            for(int j=0; j<antenna.length ; j++){
+                if(i != j) { //don't compare same antenna!
+                    //System.out.println("i="+i);
+                    //System.out.println("j="+j);
+                    tmp =calcDistance(antenna[i], antenna[j]); 
+                    //System.out.println("distance="+tmp);
+                    if (tmp > 0.0 ){
+                        alldistances[baselineCtr++] = tmp;
+                    } //else antnna is in same spot! so no baseline!
+                } 
             }
         }
         double max=0;
@@ -162,9 +174,15 @@ public class Subarray {
             if(alldistances[i] > max) max = alldistances[i];
         }
         maxBaseline = max;
+        //System.out.println("MB = "+ max);
     }
     
     public double calcDistance(Antenna a, Antenna b){
+        //System.out.println("A: "+a.getXLocation()+":"+a.getYLocation()+":"+a.getZLocation());
+        //System.out.println("B: "+b.getXLocation()+":"+b.getYLocation()+":"+b.getZLocation());
+        //System.out.println("1: "+ (a.getXLocation() - b.getXLocation()));//, 2) );
+        //System.out.println("2: "+ (a.getYLocation() - b.getYLocation()));//, 2) );
+        //System.out.println("3: "+ (a.getZLocation() - b.getZLocation()));//, 2) );
         double distance = 
             Math.sqrt( 
                 Math.pow( (a.getXLocation() - b.getXLocation()), 2) +

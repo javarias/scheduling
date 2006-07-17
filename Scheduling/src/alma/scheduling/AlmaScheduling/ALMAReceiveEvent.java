@@ -35,7 +35,7 @@ import alma.entity.xmlbinding.projectstatus.*;
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
-import alma.acs.util.UTCUtility;
+//import alma.acs.util.UTCUtility;
 
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.32 2006/05/01 18:10:42 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.33 2006/07/17 20:53:49 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -416,8 +416,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.info("SCHEDULING: start time = "+ e.startTime);
             //create an execblock internal to scheduling. 
             ExecBlock eb = createExecBlock(e);
-            ArrayTime at = new ArrayTime(e.startTime);
-            DateTime startEb = at.arrayTimeToDateTime();
+            DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
+            //ArrayTime at = new ArrayTime(e.startTime);
+            //DateTime startEb = at.arrayTimeToDateTime();
             logger.info("********************************");
             logger.info("SCHEDULING: Setting start time for: "+e.execId);
             logger.info("SCHEDULING: start time is : "+e.startTime);

@@ -91,7 +91,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.38 2006/05/01 18:10:42 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.39 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -666,7 +666,7 @@ public class ProjectUtil {
             OpticalCameraControlT opticalcameraControl = sched.getOpticalCameraControl();
             OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
             if(opticalTargetList.length > 0) {
-                System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
+                //System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
                 ArrayList oc_eqList = new ArrayList ();
                 Source oc_sbSource=null;
                 
@@ -685,7 +685,7 @@ public class ProjectUtil {
         		}
 
             } else {
-                System.out.println("SCHEDULING: No optical camera targets");
+                //System.out.println("SCHEDULING: No optical camera targets");
             }
         
         //////////////////////////////////////////////////////////
@@ -736,9 +736,9 @@ public class ProjectUtil {
     		    	Target target = new Target (eqArray);
 	    		    sb.setTarget(target);
     		    }
-            } else {
-                System.out.println("SCHEDULING: No obs targets");
-            }
+            } //else {
+               // System.out.println("SCHEDULING: No obs targets");
+           // }
 				
 		// Return the newly create SB.
         }catch(Exception e) {
@@ -816,7 +816,7 @@ public class ProjectUtil {
             Equatorial eq = new Equatorial((ra /24.0),dec);
             eqList.add(eq);
         } catch(Exception e) {
-            System.out.println("Equatorial not created");
+            //System.out.println("Equatorial not created");
         }
         String coordType = coord.getSystem().toString(); // must be J2000
         if (!coordType.equals("J2000"))
@@ -1109,7 +1109,7 @@ public class ProjectUtil {
         //////////////////////////////////////////////////////////
         OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
         if(opticalTargetList.length > 0) {
-            System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
+            //System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
             SpectralSpecT setup = opticalTargetList[0].getTargetTChoice().getSpectralSpec();
 
             ArrayList eqList = new ArrayList ();
@@ -1142,9 +1142,9 @@ public class ProjectUtil {
 	    		sb.setTarget(target);
     		}
 
-        } else {
-            System.out.println("SCHEDULING: No optical camera targets");
-        }
+        }// else {
+           // System.out.println("SCHEDULING: No optical camera targets");
+       // }
         
         //////////////////////////////////////////////////////////
         //
@@ -1207,9 +1207,9 @@ public class ProjectUtil {
 		    	Target target = new Target (eqArray);
 	    		sb.setTarget(target);
     		}
-        } else {
-            System.out.println("SCHEDULING: No obs targets");
-        }
+        } //else {
+          //  System.out.println("SCHEDULING: No obs targets");
+       // }
 				
 		// Return the newly create SB.
 		return sb;
@@ -1283,7 +1283,7 @@ public class ProjectUtil {
         try {
             return ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
         } catch(Exception e){
-            System.out.println("SCHEDULING: Error updating ProjectStatus.");
+            //System.out.println("SCHEDULING: Error updating ProjectStatus.");
             e.printStackTrace(System.out);
             return null;
         }
@@ -1528,7 +1528,7 @@ public class ProjectUtil {
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
         if(parm != null) {
-            System.out.println("Params = "+parm.length);
+            //System.out.println("Params = "+parm.length);
             PipelineParameterT[] pparams = new PipelineParameterT[parm.length];
 		    for (int i = 0; i < parm.length; ++i){
                 pparams[i] = new PipelineParameterT();
@@ -1563,13 +1563,13 @@ public class ProjectUtil {
                     pparams[i].setName("ProjectType");
                     pparams[i].setValue(parm[i].toString());
                 } else {
-                    System.out.println("Class type for data processing param is: "+parm[i].getClass().getName());
+                    //System.out.println("Class type for data processing param is: "+parm[i].getClass().getName());
                 }
             }
     		target.setPipelineParameter(pparams);
-        } else {
-            System.out.println("Params = null!");
-        }
+        }// else {
+            //System.out.println("Params = null!");
+       // }
 		// OK, we're done.
 		return target;
 	}

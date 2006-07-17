@@ -505,12 +505,6 @@ public class GUI extends JFrame {
     }
     private void removeSelectedSBView() {
         selectedSBView.removeAll();
-        /*
-        JScrollPane tmp1 = (JScrollPane)selectedSBView.getParent();
-        JViewport tmp2 = (JViewport)tmp1.getParent();
-        JPanel tmp3 = (JPanel)tmp2.getParent();
-        tmp3.removeAll();
-        */
     }
 
     private JPanel sbButtonView(){

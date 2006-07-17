@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * (See ftp://ftp.omg.org/pub/docs/formal/97-12-21.pdf)
  * It is the number of 100 ns since 1582-10-15 00:00:00.
  * 
- * @version $Id: ArrayTime.java,v 1.6 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: ArrayTime.java,v 1.7 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class ArrayTime {
@@ -55,7 +55,7 @@ public class ArrayTime {
         //long unixTime = (time - 122192928000000000L) / 10000L; 
         double acs_jd = 2299160.5; //acs base time as JD
         double jd = acs_jd + (acsTime / 864000000000.0);
-        System.out.println("JD = "+jd);
+        //System.out.println("JD = "+jd);
         return  new DateTime(jd);
     }
      

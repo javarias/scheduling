@@ -19,8 +19,10 @@ import alma.acs.container.ContainerServices;
 //import com.sun.java.swing.plaf.windows.WindowsIconFactory;
 
 public class MainSchedTabPane extends JTabbedPane {
+    private final String[] schedColumnInfo = {"Name", "ArrayName","Type","Status"};
     private Logger logger;
     private int schedulerCount=0;
+    private Vector<SchedulerTab> schedulerInfo;
     private TableModel schedulerTableModel;
     private JTable schedulerTable;
     private JPopupMenu rightClickMenu;
@@ -33,7 +35,6 @@ public class MainSchedTabPane extends JTabbedPane {
 
     public MainSchedTabPane(ContainerServices cs){
         super(JTabbedPane.TOP);
-        //getParent().setContentPane(desktop);
         container = cs;
         try {
             logger = cs.getLogger();
@@ -49,7 +50,7 @@ public class MainSchedTabPane extends JTabbedPane {
             }
         });
         openWindows = new Vector<Window>();
-        //showCreateArrayPopup();
+        schedulerInfo = new Vector<SchedulerTab>();
     }
 
     private void getMasterSchedulerRef(){
@@ -59,9 +60,7 @@ public class MainSchedTabPane extends JTabbedPane {
                     "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             logger.info("SCHEDULING_PANEL: Got MS");
         } catch (Exception e) {
-            //logger.severe("SCHEDULING_PANEL: Error getting MS");
             masterScheduler = null;
-            //e.printStackTrace();
         }
         createRightClickMenu();
     }
@@ -87,7 +86,6 @@ public class MainSchedTabPane extends JTabbedPane {
     private JPanel topSection(){
         JPanel p = new JPanel(new GridLayout(4,2));
         p.setBorder(new TitledBorder("Scheduler Info"));
-        //p.setSize( new Dimension(200, 75));
         //1
         p.add(new JLabel("Active Schedulers"));
         p.add(new JLabel("0"));
@@ -112,7 +110,6 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void createSchedulerTableModel(){
-        final String[] schedColumnInfo = {"Name", "ArrayName","Type","Status"};
         schedRowInfo = new Object[1][schedColumnInfo.length];
         schedulerTableModel = new AbstractTableModel() {
             public int getColumnCount() { return schedColumnInfo.length; }
@@ -122,34 +119,139 @@ public class MainSchedTabPane extends JTabbedPane {
             public void setValueAt(Object val, int row, int col) { schedRowInfo[row][col]= val; }
         };
         schedulerTable = new JTable(schedulerTableModel);
-        Dimension d = new Dimension(200, 75);
+        Dimension d = new Dimension(250, 75);
         schedulerTable.setPreferredScrollableViewportSize(d);
     }
 
-    private JPanel bottomSection(){
-        JPanel p = new JPanel(new GridLayout(4,2));
-        p.setBorder(new TitledBorder("Scheduler Details"));
-        p.add(new JLabel("Detail 1"));
-        p.add(new JLabel());
-        p.add(new JLabel("Detail 2"));
-        p.add(new JLabel());
-        p.add(new JLabel("Detail 3"));
-        p.add(new JLabel());
-        p.add(new JLabel("Detail 4"));
-        p.add(new JLabel());
-        return p;
+    private void updateSchedulerTable(SchedulerTab t){
+        schedulerInfo.add(t);
+        schedRowInfo = new Object[schedulerInfo.size()][schedColumnInfo.length];
+        for(int i=0; i < schedulerInfo.size(); i++){
+            schedRowInfo[i][0] = schedulerInfo.elementAt(i).getSchedulerName(); 
+            schedRowInfo[i][1] = schedulerInfo.elementAt(i).getArrayName();
+            schedRowInfo[i][2] = schedulerInfo.elementAt(i).getSchedulerType();
+            schedRowInfo[i][3] = "N/A";
+        }
     }
+    private void removeRowFromSchedulerTable(SchedulerTab tab) {
+        //get tab from schedulerInfo vector
+        int x = getTabPositionInVector(tab);
+        if(x!= -1) {
+            schedulerInfo.removeElementAt(x);
+        }
+        //delete row that matches this tab
+        int y = getTabPositionInRow(tab);
+        if(y != -1) {
+            if(schedRowInfo.length >1){
+                Object[][] temp = schedRowInfo;
+                schedRowInfo = new Object[temp.length -1][temp[0].length];
+                for(int i=0; i < temp.length; i++){
+                    if(y != i){
+                        schedRowInfo[i] = temp[i];
+                    } else {
+                    }
+                }
+            } else {
+                Object[][] temp = schedRowInfo;
+                schedRowInfo = new Object[0][temp[0].length];
+                //there's only one, make sure it matches and then remove it!
+            }
+        }
+
+    }
+    private int getTabPositionInVector(SchedulerTab tab){
+        for(int i=0; i< schedulerInfo.size(); i++){
+            if(schedulerInfo.elementAt(i).getArrayName().equals(tab.getArrayName()) &&
+               schedulerInfo.elementAt(i).getSchedulerName().equals(tab.getSchedulerName()) &&
+               schedulerInfo.elementAt(i).getSchedulerType().equals(tab.getSchedulerType())){
+                  return i;
+            }
+        }
+        return -1;
+    }
+    private int getTabPositionInRow(SchedulerTab tab){
+        for(int i=0; i< schedRowInfo.length; i++){
+            if(schedRowInfo[i][0].equals(tab.getSchedulerName()) &&
+               schedRowInfo[i][1].equals(tab.getArrayName()) &&
+               schedRowInfo[i][2].equals(tab.getSchedulerType())){
+                  return i;
+            }
+        }
+        return -1;
+    }
+
+    private JPanel bottomSection(){
+        JPanel p1 = new JPanel(new BorderLayout());
+        JPanel p2 = new JPanel(new GridLayout(2,2));
+        p2.setPreferredSize(new Dimension(50,50));
+        p1.setBorder(new TitledBorder("Start Schedulers"));
+        JButton b = new JButton("Create Array");
+        b.setToolTipText("Create an array");
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                showCreateArrayPopup();
+            }
+        });
+        p2.add(b);
+        b = new JButton("Queued");
+        b.setToolTipText("Create a Queued Scheduler");
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                //prompt to select an array
+                String arrayname = ShowArrayFrame.showArraySelectFrame(container);
+                if(arrayname.equals("") || arrayname == null) {
+                    return;
+                }
+                System.out.println("Selected array = "+arrayname);
+                addTab("QS - "+arrayname,createQueuedSchedulingView(arrayname)); 
+            }
+        });
+        p2.add(b);
+        b = new JButton("Interactive");
+        b.setToolTipText("Create an Interactive Scheduler");
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                //prompt to select an array
+                String arrayname = ShowArrayFrame.showArraySelectFrame(container);
+                if(arrayname.equals("") || arrayname == null) {
+                    return;
+                }
+                System.out.println("Selected array = "+arrayname);
+                try {
+                    String is = masterScheduler.startInteractiveScheduling1(
+                        arrayname);
+                    addTab("IS - "+arrayname,
+                        createInteractiveSchedulingView(is, arrayname)); 
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        p2.add(b);
+        b = new JButton("Dynamic");
+        b.setToolTipText("Not yet implemented");
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+            //TODO get array name here somehow
+                addTab("DS", createDynamicSchedulingView());
+            }
+        });
+        p2.add(b);
+        p1.add(p2, BorderLayout.CENTER);
+        return p1;
+    }
+
     private void createRightClickMenu(){
         rightClickMenu = new JPopupMenu("Master Scheduler Functions");
         JMenuItem menuItem;
         if(masterScheduler!=null){
-            menuItem = new JMenuItem("Get brief SB info");
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event){
+        //    menuItem = new JMenuItem("Get brief SB info");
+        //    menuItem.addActionListener(new ActionListener() {
+        //        public void actionPerformed(ActionEvent event){
                 // call masterScheduler.getSBLites();
-                }
-            });
-            rightClickMenu.add(menuItem);
+        //        }
+        //    });
+        //    rightClickMenu.add(menuItem);
             menuItem = new JMenuItem("Detach");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -160,27 +262,51 @@ public class MainSchedTabPane extends JTabbedPane {
             menuItem = new JMenuItem("Get Array Info");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
+                    ShowArrayFrame f = new ShowArrayFrame(container);
+                    f.setVisible(true);
                 }
             });
             rightClickMenu.add(menuItem);
-            menuItem = new JMenuItem("Create an Array");
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event){
-                    showCreateArrayPopup();
-                }
-            });
-            rightClickMenu.add(menuItem);
-            menuItem = new JMenuItem("Create Queued Scheduler");
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event){
-                    //createQueuedScheduler();
-                    //prompt to create array
-                    // use array name in tab title
-                    String arrayname ="Array 1";
-                    addTab("QS - "+arrayname,createQueuedSchedulingView()); 
-                }
-            });
-            rightClickMenu.add(menuItem);
+            //menuItem = new JMenuItem("Create an Array");
+            //menuItem.addActionListener(new ActionListener() {
+            //    public void actionPerformed(ActionEvent event){
+            //        showCreateArrayPopup();
+            //    }
+            //});
+            //rightClickMenu.add(menuItem);
+            //menuItem = new JMenuItem("Create Queued Scheduler");
+            //menuItem.addActionListener(new ActionListener() {
+            //    public void actionPerformed(ActionEvent event){
+            //        //prompt to select an array
+            //        String arrayname = ShowArrayFrame.showArraySelectFrame(container);
+            //        if(arrayname.equals("") || arrayname == null) {
+            //            return;
+            //        }
+            //        System.out.println("Selected array = "+arrayname);
+            //        addTab("QS - "+arrayname,createQueuedSchedulingView(arrayname)); 
+            //    }
+            //});
+            //rightClickMenu.add(menuItem);
+            //menuItem = new JMenuItem("Start Interactive Session");
+            //menuItem.addActionListener(new ActionListener() {
+            //    public void actionPerformed(ActionEvent event){
+            //        //prompt to select an array
+            //        String arrayname = ShowArrayFrame.showArraySelectFrame(container);
+            //        if(arrayname.equals("") || arrayname == null) {
+            //            return;
+            //        }
+            //        System.out.println("Selected array = "+arrayname);
+            //        try {
+            //            String is = masterScheduler.startInteractiveScheduling1(
+            //                arrayname);
+            //            addTab("IS - "+arrayname,
+            //                createInteractiveSchedulingView(is, arrayname)); 
+            //        } catch(Exception e){
+            //            e.printStackTrace();
+            //        }
+            //    }
+            //});
+            //rightClickMenu.add(menuItem);
             menuItem = new JMenuItem("Disconnect Master Scheduler");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -197,32 +323,33 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
-            menuItem = new JMenuItem("Create an Array");
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event){
-                    showCreateArrayPopup();
-                }
-            });
-            rightClickMenu.add(menuItem);
         }
         addMouseListener(new PopupListener());
     }
     
 
-    public void addScheduler(String name) {
-        schedulerCount++;
-        addTab("Scheduler."+schedulerCount,
-                createInteractiveSchedulingView());
-    }
-    private JScrollPane createInteractiveSchedulingView() {
-        return new InteractiveSchedTab();
+    private JScrollPane createInteractiveSchedulingView
+        (String schedname, String arrayname) {
+        
+        logger.info("SCHEDULING_PANEL: Start Interactive Scheduling ");
+        SchedulerTab tab =new InteractiveSchedTab(container, schedname, arrayname); 
+        updateSchedulerTable(tab);
+        return (JScrollPane)tab;
     }
     
+    private JScrollPane createDynamicSchedulingView() {
+        logger.info ("SCHEDULING_PANEL: Start dynamic scheduling");
+        SchedulerTab tab = new DynamicSchedTab(container,"DS","arrayname");
+        updateSchedulerTable(tab);
+        return(JScrollPane)tab;
+    }
     //first create a queued scheduler tab
     //then query for SBs(sblites)
-    private JScrollPane createQueuedSchedulingView(){
+    private JScrollPane createQueuedSchedulingView(String arrayname){
         logger.info("SCHEDULING_PANEL: Start Queued Scheduling ");
-        return new QueuedSchedTab(container);
+        SchedulerTab tab =new QueuedSchedTab(container, arrayname); 
+        updateSchedulerTable(tab);
+        return (JScrollPane)tab;
     }
 
     private void showCreateArrayPopup() {
@@ -231,6 +358,11 @@ public class MainSchedTabPane extends JTabbedPane {
    //     System.out.println(getParent().getParent().getParent().getClass().getName());
         openWindows.add(f);
         //Frame parent = JOptionPane.getFrameForComponent(this);
+    }
+    private void showSelectArrayPopup() {
+        ShowArrayFrame f = new ShowArrayFrame(container);
+        f.setVisible(true);
+        openWindows.add(f);
     }
 
     private void showErrorPopup() {
@@ -307,6 +439,9 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     public void closeTabEvent(MouseEvent e, int tabIndex) {
+        SchedulerTab tab = (SchedulerTab)getComponentAt(tabIndex);
+        tab.exit();
+        removeRowFromSchedulerTable(tab);
         EventListener close[] = getListeners(CloseTabListener.class);
         overTabIndex = tabIndex;
         for(int i=0; i< close.length; i++){

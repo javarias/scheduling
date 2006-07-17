@@ -44,7 +44,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.22 2006/05/03 21:00:35 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.23 2006/07/17 20:53:49 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -203,7 +203,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     ////////////////////////////////////////////////////////////////
 
     /**
-      * I know I should do this but I really want the master scheduler to go away
+      * I know I shouldnt do this but I really want the master scheduler to go away
       * when my master component releases it. So this stays until ACS gives me a
       * better solution!
       */

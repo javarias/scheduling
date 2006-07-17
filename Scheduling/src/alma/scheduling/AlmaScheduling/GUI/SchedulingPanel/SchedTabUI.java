@@ -25,12 +25,10 @@ public class SchedTabUI extends BasicTabbedPaneUI {
         closeB = new JButton(WindowsIconFactory.createFrameCloseIcon());
         closeB.setSize(BUTTONSIZE-1, BUTTONSIZE-1);
         closeB.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e){
-                    System.out.println("Close pressed!");
-                }
-                });
-        //WindowsIconFactory.createFrameCloseIcon().paintIcon(closeB,
-          //  img.createGraphics(), 0, 0);
+            public void actionPerformed(ActionEvent e){
+                System.out.println("Close pressed!");
+            }
+        });
     }
 
         	

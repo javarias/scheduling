@@ -325,9 +325,9 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
         String antDesc = null;
         String antName = null;
         String antPad = null;
-        int antLocX = -1;
-        int antLocY = -1;
-        int antLocZ = -1;
+        double antLocX = -1.0;
+        double antLocY = -1.0;
+        double antLocZ = -1.0;
         boolean hasNutator = false;
         String[] vals = null;
         for(int i=0; i < numberAntennas; i++){
@@ -338,9 +338,9 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			}
             try {
                 antName = vals[0].trim();
-                antLocX = Integer.parseInt(vals[1].trim());
-                antLocY = Integer.parseInt(vals[2].trim());
-                antLocZ = Integer.parseInt(vals[3].trim());
+                antLocX = Double.parseDouble(vals[1].trim());
+                antLocY = Double.parseDouble(vals[2].trim());
+                antLocZ = Double.parseDouble(vals[3].trim());
                 antPad = vals[4].trim();
                 hasNutator = Boolean.getBoolean(vals[5].trim());
             } catch(Exception e) {

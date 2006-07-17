@@ -28,9 +28,11 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.Vector;
 import java.util.ArrayList;
+
 import alma.acs.container.ContainerServices;
 import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
+
 import alma.scheduling.StartSessionEvent;
 import alma.scheduling.EndSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEvent;
@@ -52,6 +54,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 import alma.scheduling.SBLite;
+import alma.scheduling.ProjectLite;
 import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.specialsb.*;
 import alma.entity.xmlbinding.projectstatus.*;
@@ -61,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.62 2006/06/21 17:22:55 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.63 2006/07/17 20:53:49 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -867,7 +870,8 @@ public class ALMAProjectManager extends ProjectManager {
         // PollArchiveStuff
     ///////////////////////////////////////////////////////////////
     /**
-      * 
+      * polls the archive for new/updated projects
+      * then updates the queues (project queue, sb queue & project status queue)
       */
     private void pollArchive() throws SchedulingException {
         logger.info("project Queue size at start of pollarchive = "+pQueue.size());
@@ -992,6 +996,7 @@ public class ALMAProjectManager extends ProjectManager {
                 }
             }
         } catch(Exception e) {
+            e.printStackTrace(System.out);
             throw new SchedulingException(e);
         }
         logger.info("Size of pQueue = "+pQueue.size());
@@ -1074,8 +1079,69 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return sbs;
     }
+
+    private SBLite createSBLite(String id) {
+        String sid,pid,sname,pname,pi,pri;
+        double ra,dec,freq,score,success,rank;
+        long maxT;
+        SB sb = sbQueue.get(id);
+        SBLite sblite = new SBLite();
+        sid = sb.getId();
+        if(id == null || id =="") {
+            id = "WARNING: Problem with SB id";
+        }
+        sblite.schedBlockRef =id;
+        pid = sb.getProject().getId();
+        if(pid ==null||pid=="") {
+            pid = "WARNING: problem with project id";   
+        }
+        sblite.projectRef = pid;
+        sblite.obsUnitsetRef = "";
+
+        sname =sb.getSBName();
+        if(sname == null || sname ==""){
+            sname = "WARNING: problem with SB name";
+        }
+        sblite.sbName =sname;
+        pname = sb.getProject().getProjectName();
+        if(pname == null ||pname =="") {
+            pname = "WARNING: problem with project name";
+        }
+        sblite.projectName = pname;
+        pi = sb.getProject().getPI();
+        if(pi == null || pi == ""){
+            pi = "WARNING: problem with pi";
+        }
+        sblite.PI = pi;
+        pri = sb.getProject().getScientificPriority().getPriority();
+        if(pri == null || pri =="") {
+            pri = "WARNING: problem with scientific priority";
+        }
+        sblite.priority = pri;
+        try {
+            ra = sb.getTarget().getCenter().getRa();
+        } catch(NullPointerException npe) {
+            logger.warning("SCHEDULING: RA object == null in SB, setting to 0.0");
+            ra = 0.0;
+        }
+        sblite.ra = ra;
+        try {
+            dec = sb.getTarget().getCenter().getDec();
+        } catch(NullPointerException npe) {
+            logger.warning("SCHEDULING: DEC object == null in SB, setting to 0.0");
+            dec = 0.0;
+        }
+        sblite.dec = dec;
+        sblite.freq = 0;
+        sblite.maxTime = 0;
+        sblite.score = 0;
+        sblite.success = 0; 
+        sblite.rank = 0 ;
+        return sblite;
+    }
+
     public SBLite[] getSBLites() {
-        logger.info("SCHEDULING: Called getSBLites");
+        logger.info("SCHEDULING: Called getSBLites()");
         SBLite[] sbliteArray=null;
         SBLite sblite;
         Vector<SBLite> sbliteVector = new Vector<SBLite>();
@@ -1083,75 +1149,11 @@ public class ALMAProjectManager extends ProjectManager {
             pollArchive();
             Project[] projects = pQueue.getAll();
 //System.out.println("# of projects retrieved in getSBLite = "+projects.length);
-            String sid,pid,sname,pname,pi,pri;
-            double ra,dec,freq,score,success,rank;
-            long maxT;
             for(int i=0; i < projects.length; i++){
                 //get all the sbs of this project
                 SB[] sbs = projects[i].getAllSBs ();
-//System.out.println("# of sbs  retrieved in getSBLite for project "+i+" = "+sbs.length);
                 for(int j=0; j < sbs.length; j++) {
-                    sblite = new SBLite();
-                    sid = sbs[j].getId();
-                    if(sid == null || sid =="") {
-                        sid = "WARNING: Problem with SB id";
-                    }
-                    sblite.schedBlockRef =sid;
-                    //sblite.schedBlockRef = sbs[j].getId();
-                    pid = sbs[j].getProject().getId();
-                    if(pid ==null||pid=="") {
-                        pid = "WARNING: problem with project id";   
-                    }
-                    sblite.projectRef = pid;
-                    //sblite.projectRef = sbs[j].getProject().getId();
-                    sblite.obsUnitsetRef = "";
-
-                    sname =sbs[j].getSBName();
-                    if(sname == null || sname ==""){
-                        sname = "WARNING: problem with SB name";
-                    }
-                    sblite.sbName =sname;
-                    //sblite.sbName = sbs[j].getSBName();
-                    pname = sbs[j].getProject().getProjectName();
-                    if(pname == null ||pname =="") {
-                        pname = "WARNING: problem with project name";
-                    }
-                    sblite.projectName = pname;
-                    //sblite.projectName = sbs[j].getProject().getProjectName();
-                    pi = sbs[j].getProject().getPI();sbs[j].getProject().getPI();
-                    if(pi == null || pi == ""){
-                        pi = "WARNING: problem with pi";
-                    }
-                    sblite.PI = pi;
-                    //sblite.PI = sbs[j].getProject().getPI();
-                    pri = sbs[j].getProject().getScientificPriority().getPriority();
-                    if(pri == null || pri =="") {
-                        pri = "WARNING: problem with scientific priority";
-                    }
-                    sblite.priority = pri;
-                    //sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
-		            try {
-	                    ra = sbs[j].getTarget().getCenter().getRa();
-        	 	    } catch(NullPointerException npe) {
-		            	logger.warning("SCHEDULING: RA object == null in SB, setting to 0.0");
-            			ra = 0.0;
-		            }
-                    sblite.ra = ra;
-                    //sblite.ra = sbs[j].getTarget().getCenter().getRa();
-        		    try {
-	                    dec = sbs[j].getTarget().getCenter().getDec();
-	 	            } catch(NullPointerException npe) {
-            			logger.warning("SCHEDULING: DEC object == null in SB, setting to 0.0");
-			            dec = 0.0;
-        		    }
-                    sblite.dec = dec;
-                    //sblite.dec = sbs[j].getTarget().getCenter().getDec();
-                    sblite.freq = 0;//sbs[j].getFrequencyBand().getHighFrequency();
-                    sblite.maxTime = 0;
-                    sblite.score = 0;
-                    sblite.success = 0; 
-                    sblite.rank = 0 ;
-
+                    sblite = createSBLite(sbs[j].getId());
                     sbliteVector.add(sblite);
                 }
             }
@@ -1163,5 +1165,47 @@ public class ALMAProjectManager extends ProjectManager {
             e.printStackTrace(System.out);
         }
         return sbliteArray;
+    }
+
+    public SBLite[] getSBLite(String[] ids) {
+        logger.info("SCHEDULING: Called getSBLite(ids)");
+        SBLite[] sblites = new SBLite[ids.length];
+        SBLite sblite;
+        for(int i=0; i < ids.length; i++){
+            sblite = createSBLite(ids[i]);
+            sblites[i] = sblite;
+        }
+        return sblites;
+    }
+
+    public ProjectLite[] getProjectLites(String[] ids) {
+        logger.info("SCHEDULING: Called getProjectLites(ids)");
+        ProjectLite[] projectliteArray=new ProjectLite[ids.length];
+        ProjectLite projectlite;
+        Project p;
+        SB[] sbs;
+        String[] sbids;
+        for(int i=0; i < ids.length; i++){
+            p = pQueue.get(ids[i]);
+            projectlite = new ProjectLite();
+            projectlite.uid = p.getId();
+            projectlite.projectName = p.getProjectName();
+            projectlite.piName = p.getPI();
+            projectlite.version = p.getProjectVersion();
+            projectlite.status = p.getStatus().getStatus();
+            projectlite.creationTime = p.getTimeOfCreation().toString();
+            projectlite.totalSBs = String.valueOf(p.getTotalSBs());
+            projectlite.completeSBs = String.valueOf(p.getNumberSBsCompleted());
+            projectlite.failedSBs = String.valueOf(p.getNumberSBsFailed());
+            sbs = p.getAllSBs();
+            sbids = new String[sbs.length];
+            for(int j=0; j < sbs.length;j++){
+                sbids[j] = sbs[j].getId();
+            }
+            projectlite.allSBIds = sbids;
+
+            projectliteArray[i] = projectlite;
+        }
+        return projectliteArray;
     }
 }

@@ -64,7 +64,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.59 2006/07/13 13:17:31 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.60 2006/07/17 20:53:49 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -159,10 +159,12 @@ public class ALMAArchive implements Archive {
      * @throws SchedulingException
      */
 	public Project[] getAllProject() throws SchedulingException {
+        try {
         Project[] projects = null;
         Vector tmp_projects = new Vector();
         
         ObsProject[] obsProj = getAllObsProjects();
+        logger.info("obsproject length = "+obsProj.length);
         for(int i=0; i < obsProj.length; i++) {
             ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
             if(ps == null) { //no project status for this project. so create one
@@ -183,6 +185,9 @@ public class ALMAArchive implements Archive {
 	    logger.info("SCHEDULING: Scheduling converted "+projects.length+
                 " Projects from ObsProject found archived.");
         return projects;
+        } catch (Exception e) {
+            throw new SchedulingException (e);
+        }
     }
 
     public Project checkProjectForUpdates(String id) throws SchedulingException {
@@ -209,13 +214,16 @@ public class ALMAArchive implements Archive {
 
     public synchronized ProjectStatus getProjectStatusForObsProject(ObsProject p) throws SchedulingException {
         ProjectStatus ps = null;
-        String ps_id = p.getProjectStatusRef().getEntityId();
         try {
+            String ps_id = p.getProjectStatusRef().getEntityId();
 	    //logger.info("Retrieving project status "+ps_id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
             //logger.info("Getting PS for ObsProject");
             //logger.info("PROJECT STATUS: "+ xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
+        } catch(NullPointerException npe){
+            logger.warning("SCHEDULING: Project had no Project Status. Creating one.");
+            ps = createDummyProjectStatus(p);
         } catch(Exception e) {
             e.printStackTrace(System.out);
             throw new SchedulingException(e);

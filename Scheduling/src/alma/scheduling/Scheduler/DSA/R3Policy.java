@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.12 2006/06/19 14:12:36 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.13 2006/07/17 20:53:49 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -637,14 +637,16 @@ class R3Policy extends PolicyType {
 	private double weather(SB sb, double el) {
         //System.out.println("CALLING WEATHER");
 		double x = 1.0;
-        int baseline=1;
+        double baseline=300.0;
 		try {
 			WeatherCondition w = sb.getWeatherConstraint();
+            baseline = telescope.getArray(arrayName).getMaxBaseline();
+            //System.out.println("Using Baseline: "+baseline);
             //System.out.println(w.toString());
 			if (w != null){
 				x =  w.evaluate(new Double(sb.getCenterFrequency()), 
                                 new Double(el), 
-                                new Integer(baseline));
+                                new Double(baseline));
             //System.out.println("Weather weight = "+x);
             }
 		} catch (Exception err) {

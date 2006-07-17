@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.10 2006/05/01 18:59:17 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.11 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -129,6 +129,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	// The interactive queue.
 	private SBQueue queue;
 	
+    public InteractiveScheduler() {}
 	/**
 	 * Create an interactive scheduler.
 	 * @param config The scheduler configuration that controls this interactive scheduler.
@@ -136,6 +137,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 */
 	public InteractiveScheduler(SchedulerConfiguration config) throws SchedulingException {
 		super(config);
+        super.setType("interactive");
 		// Validate the configuration object.
 		String msg = validateInteractiveConfig();
 		if (msg != null) {
@@ -143,8 +145,14 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			error(msg);
 		}
         config.getLog().info("SCHEDULING: Interactive scheduler created");
+
 	}
 	
+    public void setConfiguration(SchedulerConfiguration c) {
+        //config = c;
+        super.setConfiguration(c);
+    }
+
 	/**
 	 * Get this InteractiveScheduler's SchedulerConfiguration object.
 	 * @return the SchedulerConfiguration
@@ -369,6 +377,15 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 	}
+
+    public void stop() throws SchedulingException {
+        try {
+            String sbid = config.getCurrentSBId();
+            stop(sbid);
+        } catch (Exception e) {
+            throw new SchedulingException (e); 
+        }
+    }
 
 	/**
 	 * Stop the currently executing SB.

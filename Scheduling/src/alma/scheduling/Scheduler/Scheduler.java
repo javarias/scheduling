@@ -27,14 +27,14 @@ package alma.scheduling.Scheduler;
 
 import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
 import alma.scheduling.Define.Clock;
-
+import alma.scheduling.Define.SchedulingException;
 import java.util.logging.Logger;
 
 /**
  * The Scheduler class is an abstract class that forms the basis for
  * the DynamicScheduler and InteractiveScheduler classes.
  * 
- * @version $Id: Scheduler.java,v 1.13 2006/06/19 20:12:49 sslucero Exp $
+ * @version $Id: Scheduler.java,v 1.14 2006/07/17 20:53:49 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -90,12 +90,12 @@ abstract public class Scheduler {
     public String getId(){
         return id;
     }
-    public void setType(String t) throws Exception {
+    public void setType(String t) throws SchedulingException {
         t = t.toLowerCase();
         if(t.equals("interactive") || t.equals("queued") || t.equals("dynamic") ){
             type =t;
         } else {
-            throw new Exception("Invaild Scheduler type");
+            throw new SchedulingException("Invaild Scheduler type");
         }
     }
         
