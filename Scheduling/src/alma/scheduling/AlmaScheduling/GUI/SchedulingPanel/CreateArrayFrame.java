@@ -340,7 +340,10 @@ public class CreateArrayFrame extends JDialog {
             }
             allArrays.add(arrayName);
         } catch(Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.toString()+
+                    "\nMake sure these antennas are really available to "+
+                    "create this array. Also check state of Control System.", 
+                    "Error creating array", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;

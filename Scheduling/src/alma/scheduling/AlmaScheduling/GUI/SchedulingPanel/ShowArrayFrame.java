@@ -30,8 +30,9 @@ public class ShowArrayFrame extends JDialog {
     private JPanel arrayDisplayPanel;
     private JScrollPane selectedArrayPane;
     private JTextArea selectedArrayView;
+    private boolean canSelect;
     
-    public ShowArrayFrame(ContainerServices cs) {
+    public ShowArrayFrame(ContainerServices cs, boolean b) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();
@@ -45,6 +46,7 @@ public class ShowArrayFrame extends JDialog {
         setTitle("Array Selector");
         setModal(true);
         getComponentRefs();
+        canSelect = b;
         getContentPane().add(createArrayTable(), BorderLayout.CENTER);
         getContentPane().add(actionButtons(), BorderLayout.SOUTH);
         getArrays();
@@ -87,7 +89,7 @@ public class ShowArrayFrame extends JDialog {
             public void mouseReleased(MouseEvent e){}
         });
         JScrollPane pane = new JScrollPane(arrayTable);
-        centerDisplayPanel.add(pane, BorderLayout.CENTER);
+        centerDisplayPanel.add(pane, BorderLayout.NORTH);
         return centerDisplayPanel;
     }
 
@@ -97,9 +99,11 @@ public class ShowArrayFrame extends JDialog {
         arrayDisplayPanel = new JPanel();
         if(row<0){
             Component[] c = centerDisplayPanel.getComponents();
-            if(c.length > 1) {
-                centerDisplayPanel.remove(1);
-            }
+            try {
+                if(c.length > 1) {
+                    centerDisplayPanel.remove(1);
+                }
+            } catch(Exception e){}
             centerDisplayPanel.validate();
             centerDisplayPanel.repaint();
 
@@ -107,13 +111,18 @@ public class ShowArrayFrame extends JDialog {
             validate();
             return;
         }
+        try {
+            centerDisplayPanel.remove(1);
+        } catch(Exception e){}
         selectedArrayView = new JTextArea();
-        selectedArrayView.setLineWrap(true);
-        selectedArrayView.setPreferredSize(new Dimension(275, 100));
-        //selectedArrayView.setText("Array: "+((String)arrayRowInfo[row][0]));
-        selectedArrayView.setText(getArrayInfo((String)arrayRowInfo[row][0]));
         selectedArrayPane = new JScrollPane(selectedArrayView);
+        
+        selectedArrayView.setLineWrap(true);
+        selectedArrayView.setText(getArrayInfo((String)arrayRowInfo[row][0]));
+        selectedArrayPane.setPreferredSize(new Dimension(275, 100));
+
         arrayDisplayPanel .add(selectedArrayPane);
+        //centerDisplayPanel.add(selectedArrayPane , BorderLayout.CENTER);
         centerDisplayPanel.add(arrayDisplayPanel , BorderLayout.SOUTH);
         centerDisplayPanel.validate();
     }
@@ -160,7 +169,8 @@ public class ShowArrayFrame extends JDialog {
             }
         } catch (Exception e){
             s = "Problem getting array info. \n";
-            s = s+ ": "+e.toString();
+            s = s+ e.toString() +"\n";
+            s = s+ "Best action is to destroy the array and re-create it. \n";
         }
         return s;
     }
@@ -198,6 +208,9 @@ public class ShowArrayFrame extends JDialog {
                 selectArray();
             }
         });
+        if(!canSelect){
+            createArrayB.setEnabled(false);
+        }
         JButton cancelB = new JButton("Cancel");
         cancelB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -256,6 +269,14 @@ public class ShowArrayFrame extends JDialog {
                 e.printStackTrace();
             }
         }
+        getArrays();
+        try {
+            centerDisplayPanel.remove(1);
+            centerDisplayPanel.repaint();
+        } catch(Exception e){}
+        //try {
+          //  arrayDisplayPanel.removeAll();
+        //} catch(Exception e){}
     }
 
     private void getComponentRefs(){
@@ -293,9 +314,9 @@ public class ShowArrayFrame extends JDialog {
     }
 
     
-    public static String showArraySelectFrame(ContainerServices cs) {
+    public static String showArraySelectFrame(ContainerServices cs, boolean x) {
         try {
-            ShowArrayFrame f = new ShowArrayFrame(cs);
+            ShowArrayFrame f = new ShowArrayFrame(cs, x);
             f.setVisible(true);
         }catch(Exception e) {
             e.printStackTrace();

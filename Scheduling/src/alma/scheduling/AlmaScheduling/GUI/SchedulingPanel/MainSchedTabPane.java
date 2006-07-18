@@ -197,8 +197,13 @@ public class MainSchedTabPane extends JTabbedPane {
         b.setToolTipText("Create a Queued Scheduler");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
+                //check to see if MS is connected.
+                if(masterScheduler == null){
+                    showConnectToMSMessage();
+                    return;
+                }
                 //prompt to select an array
-                String arrayname = ShowArrayFrame.showArraySelectFrame(container);
+                String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                 if(arrayname.equals("") || arrayname == null) {
                     return;
                 }
@@ -211,8 +216,13 @@ public class MainSchedTabPane extends JTabbedPane {
         b.setToolTipText("Create an Interactive Scheduler");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
+                //check to see if MS is connected.
+                if(masterScheduler == null){
+                    showConnectToMSMessage();
+                    return;
+                }
                 //prompt to select an array
-                String arrayname = ShowArrayFrame.showArraySelectFrame(container);
+                String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                 if(arrayname.equals("") || arrayname == null) {
                     return;
                 }
@@ -229,17 +239,29 @@ public class MainSchedTabPane extends JTabbedPane {
         });
         p2.add(b);
         b = new JButton("Dynamic");
-        b.setToolTipText("Not yet implemented");
+        b.setToolTipText("Create a Dynamic Scheduler");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
-            //TODO get array name here somehow
+                //check to see if MS is connected.
+                if(masterScheduler == null){
+                    showConnectToMSMessage();
+                    return;
+                }
                 //ask if they are going to create their own array
                 String arrayname = null;
                 if(pickTheirOwnArray()) {
                 //bring up array selector!
-                    arrayname = ShowArrayFrame.showArraySelectFrame(container);
+                    arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
+                    //here means when arrayname == "" user has canceled manual \
+                    //array creation.. cannot continue from this point so exits
+                    if(arrayname.equals("")){
+                        showErrorMessage(
+                            "Cannot create Dynamic Scheduler without an array!");
+                        return;
+                    }
                 }else {
-                    arrayname="";
+                    //here with arrayname == to "" means scheduler will create array
+                    arrayname = "";
                 }
                 addTab("DS", createDynamicSchedulingView(arrayname));
             }
@@ -247,6 +269,15 @@ public class MainSchedTabPane extends JTabbedPane {
         p2.add(b);
         p1.add(p2, BorderLayout.CENTER);
         return p1;
+    }
+
+    private void showConnectToMSMessage(){
+        JOptionPane.showMessageDialog(this,"Not connected to the MasterScheduler",
+                "Not Connected", JOptionPane.ERROR_MESSAGE);
+    }
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, 
+                "Task not completed.", JOptionPane.ERROR_MESSAGE);
     }
 
     private boolean pickTheirOwnArray() {
@@ -264,13 +295,6 @@ public class MainSchedTabPane extends JTabbedPane {
         rightClickMenu = new JPopupMenu("Master Scheduler Functions");
         JMenuItem menuItem;
         if(masterScheduler!=null){
-        //    menuItem = new JMenuItem("Get brief SB info");
-        //    menuItem.addActionListener(new ActionListener() {
-        //        public void actionPerformed(ActionEvent event){
-                // call masterScheduler.getSBLites();
-        //        }
-        //    });
-        //    rightClickMenu.add(menuItem);
             menuItem = new JMenuItem("Detach");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -281,7 +305,7 @@ public class MainSchedTabPane extends JTabbedPane {
             menuItem = new JMenuItem("Get Array Info");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
-                    ShowArrayFrame f = new ShowArrayFrame(container);
+                    ShowArrayFrame f = new ShowArrayFrame(container, false);
                     f.setVisible(true);
                 }
             });
@@ -337,11 +361,6 @@ public class MainSchedTabPane extends JTabbedPane {
    //     System.out.println(getParent().getParent().getParent().getClass().getName());
         openWindows.add(f);
         //Frame parent = JOptionPane.getFrameForComponent(this);
-    }
-    private void showSelectArrayPopup() {
-        ShowArrayFrame f = new ShowArrayFrame(container);
-        f.setVisible(true);
-        openWindows.add(f);
     }
 
     private void showErrorPopup() {

@@ -556,6 +556,11 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     private void logoutOfProject(){
+        try {
+            scheduler.endSession();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 //////////////////////////////////////
@@ -623,7 +628,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
     }
     
-    public class CheckArchiveEvent implements Runnable {
+    class CheckArchiveEvent implements Runnable {
         private XmlStoreNotificationEvent event;
         
         public CheckArchiveEvent(XmlStoreNotificationEvent e) {

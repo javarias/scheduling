@@ -54,7 +54,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.46 2006/07/18 19:51:58 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.47 2006/07/18 22:47:30 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -238,6 +238,10 @@ public class ALMAControl implements Control {
         } catch (alma.acs.container.ContainerException e3) {
             throw new SchedulingException
                 ("SCHEDULING: Error getting AutomaticArrayCommand component." +e3.toString());
+        } catch (Exception e4) {
+            throw new SchedulingException
+                ("SCHEDULING: Error" +e4.toString());
+
         }
     }
 

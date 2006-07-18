@@ -67,7 +67,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.60 2006/07/18 19:51:58 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.61 2006/07/18 22:47:30 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -894,6 +894,11 @@ public class ALMAMasterScheduler extends MasterScheduler
 
             logger.info("SCHEDULING: Master Scheduler creating dynamic scheduler for regular SBs");
             DynamicScheduler scheduler = new DynamicScheduler(config);
+            //get UID for scheduler
+            String id = archive.getIdForScheduler();
+            scheduler.setId(id);
+            //add to Map
+            allSchedulers.put(id, scheduler);
             Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
             schedulerThread.start();
             while(!stopCommand) {
@@ -930,6 +935,11 @@ public class ALMAMasterScheduler extends MasterScheduler
                             0, specialSBarrayname, specialPolicy);
             logger.info("SCHEDULING: Master Scheduler creating dynamic scheduler for special SBs");
             SpecialSBScheduler specialScheduler = new SpecialSBScheduler(specialConfig);
+            //get UID for scheduler
+            String id = archive.getIdForScheduler();
+            specialScheduler.setId(id);
+            //add to Map
+            allSchedulers.put(id, specialScheduler);
             Thread specialSchedulerThread = 
                 containerServices.getThreadFactory().newThread(specialScheduler);
             specialSchedulerThread.start();
