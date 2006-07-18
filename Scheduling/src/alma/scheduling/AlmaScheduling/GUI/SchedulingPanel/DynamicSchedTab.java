@@ -10,6 +10,7 @@ import alma.scheduling.*;
 
 //acs stuff
 import alma.acs.container.*;
+import alma.xmlentity.XmlEntityStruct;
 
 public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] sbColumnInfo = {"SB Name", "PI", "UID"};
@@ -27,6 +28,7 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     private TableModel sbTableModel;
     private JTable sbTable;
     private Object[][] sbRowInfo;
+    private boolean schedulerCreateArray;
 
 //////////////////////////////////////
     public DynamicSchedTab(ContainerServices cs, String s, String an){
@@ -34,7 +36,13 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
         logger = cs.getLogger();
         schedulername = s;
         arrayname = an;
+        if(arrayname.equals("")){
+            schedulerCreateArray = true;
+        } else{
+            schedulerCreateArray = false;
+        }
         type = "dynamic";
+        getComponentRefs();
         mainPanel = new JPanel(new GridLayout (3,1));
         sbRowInfo= new Object[0][sbColumnInfo.length];
         createDynamicSchedulingView();
@@ -52,11 +60,19 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
         mainPanel.add(sbTablePanel);
         createSBDetails();
         mainPanel.add(sbDetailPanel);
-        createBottomView();
-        mainPanel.add(bottomView);
+        //createBottomView();
+        //mainPanel.add(bottomView);
         //mainPanel.add(p);
 
         validate();
+        try {
+            startScheduling();
+    
+        } catch (Exception e){
+            e.printStackTrace();
+            logger.severe("SCHEDULING_PANEL: dynamic scheduling did not start due to "+ e.toString());
+                    
+        }
     }
 
     private void createSBTableView(){
@@ -113,6 +129,17 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     }
     
 //////////////////////////////////////
+
+    private void startScheduling() throws Exception {
+        XmlEntityStruct policy = new XmlEntityStruct();
+        if(schedulerCreateArray){
+            masterScheduler.startScheduling(policy);
+        } else {
+            masterScheduler.startScheduling1(policy, arrayname);
+        }
+    }
+//////////////////////////////////////
+
 
 //SchedulerTab interface implementation
     public String getSchedulerName(){

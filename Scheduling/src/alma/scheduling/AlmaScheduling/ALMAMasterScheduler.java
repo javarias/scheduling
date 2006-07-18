@@ -67,7 +67,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.58 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.59 2006/07/18 15:16:10 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -421,6 +421,11 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
     public void startScheduling1(XmlEntityStruct schedulingPolicy, String arrayname) 
         throws InvalidOperationEx {
+    }
+
+    private void dynamicScheduling(XmlEntityStruct schedulingPolicy, 
+            String arrayname) throws InvalidOperationEx{
+        //TODO eventually use this inside the startScheduling methods
     }
 
     /**
@@ -940,7 +945,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         return allSchedulers.get(id);
     }
     
-    // Interactive_PI_to_Scheduling interface
 
     public String[] queryForProject(String projname, String piname) 
         throws InvalidOperationEx {
@@ -959,7 +963,17 @@ public class ALMAMasterScheduler extends MasterScheduler
         return results;
         
     }
-    
+    // Dynamic_Scheduler_to_MasterScheduler
+    public String getArrayName(String schedulerId){
+        Scheduler scheduler = getScheduler(schedulerId);
+        return scheduler.getArrayName();
+    }
+
+    public SBLite[] getDynamicSBs(String schedulerId){
+        return null;
+    }
+
+    // Interactive_Scheduler_to_MasterScheduler
     public void executeInteractiveSB(String sbId, String schedulerId) 
         throws InvalidOperationEx, NoSuchSBEx {
 

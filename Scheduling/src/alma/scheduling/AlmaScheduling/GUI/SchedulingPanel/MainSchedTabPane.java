@@ -233,12 +233,31 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
             //TODO get array name here somehow
-                addTab("DS", createDynamicSchedulingView());
+                //ask if they are going to create their own array
+                String arrayname = null;
+                if(pickTheirOwnArray()) {
+                //bring up array selector!
+                    arrayname = ShowArrayFrame.showArraySelectFrame(container);
+                }else {
+                    arrayname="";
+                }
+                addTab("DS", createDynamicSchedulingView(arrayname));
             }
         });
         p2.add(b);
         p1.add(p2, BorderLayout.CENTER);
         return p1;
+    }
+
+    private boolean pickTheirOwnArray() {
+        int answer = JOptionPane.showConfirmDialog(this, 
+                "Do you need to create your own array?", "Array Needed?",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if(answer == JOptionPane.YES_OPTION){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void createRightClickMenu(){
@@ -267,46 +286,6 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
-            //menuItem = new JMenuItem("Create an Array");
-            //menuItem.addActionListener(new ActionListener() {
-            //    public void actionPerformed(ActionEvent event){
-            //        showCreateArrayPopup();
-            //    }
-            //});
-            //rightClickMenu.add(menuItem);
-            //menuItem = new JMenuItem("Create Queued Scheduler");
-            //menuItem.addActionListener(new ActionListener() {
-            //    public void actionPerformed(ActionEvent event){
-            //        //prompt to select an array
-            //        String arrayname = ShowArrayFrame.showArraySelectFrame(container);
-            //        if(arrayname.equals("") || arrayname == null) {
-            //            return;
-            //        }
-            //        System.out.println("Selected array = "+arrayname);
-            //        addTab("QS - "+arrayname,createQueuedSchedulingView(arrayname)); 
-            //    }
-            //});
-            //rightClickMenu.add(menuItem);
-            //menuItem = new JMenuItem("Start Interactive Session");
-            //menuItem.addActionListener(new ActionListener() {
-            //    public void actionPerformed(ActionEvent event){
-            //        //prompt to select an array
-            //        String arrayname = ShowArrayFrame.showArraySelectFrame(container);
-            //        if(arrayname.equals("") || arrayname == null) {
-            //            return;
-            //        }
-            //        System.out.println("Selected array = "+arrayname);
-            //        try {
-            //            String is = masterScheduler.startInteractiveScheduling1(
-            //                arrayname);
-            //            addTab("IS - "+arrayname,
-            //                createInteractiveSchedulingView(is, arrayname)); 
-            //        } catch(Exception e){
-            //            e.printStackTrace();
-            //        }
-            //    }
-            //});
-            //rightClickMenu.add(menuItem);
             menuItem = new JMenuItem("Disconnect Master Scheduler");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -337,9 +316,9 @@ public class MainSchedTabPane extends JTabbedPane {
         return (JScrollPane)tab;
     }
     
-    private JScrollPane createDynamicSchedulingView() {
+    private JScrollPane createDynamicSchedulingView(String arrayname) {
         logger.info ("SCHEDULING_PANEL: Start dynamic scheduling");
-        SchedulerTab tab = new DynamicSchedTab(container,"DS","arrayname");
+        SchedulerTab tab = new DynamicSchedTab(container,"DS",arrayname);
         updateSchedulerTable(tab);
         return(JScrollPane)tab;
     }
