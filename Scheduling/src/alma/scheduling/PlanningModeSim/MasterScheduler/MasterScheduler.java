@@ -132,7 +132,7 @@ public class MasterScheduler extends BasicComponent {
 
 			// Create an array.
 			String[] ant = control.getIdleAntennas();
-			String arrayName = control.createArray(ant);
+			String arrayName = control.createArray(ant, "dynamic");
 			
 			// Create a scheduler configuration.
 			SBQueue queue = new SBQueue ();

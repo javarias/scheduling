@@ -114,7 +114,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 		return null;
 	}
 
-	public String createArray(String[] antenna) throws SchedulingException {
+	public String createArray(String[] antenna, String mode) throws SchedulingException {
 		Antenna x = null;
 		for (int i = 0; i < antenna.length; ++i) {
 			x = getAntenna(antenna[i]);

@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  * The Scheduler class is an abstract class that forms the basis for
  * the DynamicScheduler and InteractiveScheduler classes.
  * 
- * @version $Id: Scheduler.java,v 1.14 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: Scheduler.java,v 1.15 2006/07/18 19:51:58 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -84,12 +84,19 @@ abstract public class Scheduler {
 		"] (array " + arrayName + ")";
     }
 
+    // get methods
     public String getType(){
         return type;
     }
     public String getId(){
         return id;
     }
+    public String getArrayName(){
+        return arrayName;
+    }
+
+        
+    // Set methods
     public void setType(String t) throws SchedulingException {
         t = t.toLowerCase();
         if(t.equals("interactive") || t.equals("queued") || t.equals("dynamic") ){

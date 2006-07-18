@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version $Id: Control.java,v 1.10 2006/05/01 15:44:57 sslucero Exp $
+ * @version $Id: Control.java,v 1.11 2006/07/18 19:51:58 sslucero Exp $
  * @author Allen Farris
  */
 public interface Control {
@@ -79,7 +79,7 @@ public interface Control {
 	 * @param antenna The list of antennas that are to make up the sub-array.
 	 * @return The id of the newly created sub-array. 
 	 */
-	public String createArray(String[] antenna)
+	public String createArray(String[] antenna, String mode)
 		throws SchedulingException;
 	
 	/**

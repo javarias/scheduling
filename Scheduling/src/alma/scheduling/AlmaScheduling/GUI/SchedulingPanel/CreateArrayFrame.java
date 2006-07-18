@@ -26,6 +26,7 @@ public class CreateArrayFrame extends JDialog {
     private String[] availableAntennas;
     //private String[] arrayAntennas;
     private Vector<String> allArrays;
+    private String arrayMode;
 
     
     public CreateArrayFrame(ContainerServices cs) {
@@ -52,7 +53,7 @@ public class CreateArrayFrame extends JDialog {
         p.add(createAntennaListA(), BorderLayout.WEST);
         p.add(transferButtons(),BorderLayout.CENTER);
         p.add(createAntennaListB(), BorderLayout.EAST);
-        p.add(actionButtons(),BorderLayout.SOUTH);
+        p.add(createSouthPanel(),BorderLayout.SOUTH);
         return p;
     }
 
@@ -122,13 +123,44 @@ public class CreateArrayFrame extends JDialog {
         p.add(new JLabel());
         return p;
     }
+
+    private JPanel createSouthPanel() {
+        JPanel p = new JPanel();
+        p.add(selectModeView(), BorderLayout.NORTH);
+        p.add(actionButtons(), BorderLayout.SOUTH);
+        return p;
+    }
+
+    private JPanel selectModeView() {
+        JPanel p = new JPanel();
+        String[] modeList = {"Dynamic", "Interactive", "Queued", "Manual"};
+        JComboBox pickMode = new JComboBox(modeList);
+        //starts with a 0 index, so 2 = queued
+        pickMode.setSelectedIndex(2);
+        updateMode((String)pickMode.getSelectedItem());
+        pickMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                JComboBox combo = (JComboBox)e.getSource();
+                String mode = (String)combo.getSelectedItem();
+                updateMode(mode);
+            }
+        });
+        p.add(pickMode, BorderLayout.CENTER);
+        return p;
+    }
+
+    private void updateMode(String mode){
+        arrayMode = mode;
+    }
+    
     private JPanel actionButtons(){
         JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton createArrayB = new JButton("Create");
         createArrayB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                createArray();
-                exit();
+                if(createArray()) {
+                    exit();
+                }
             }
         });
         JButton cancelB = new JButton("Cancel");
@@ -272,13 +304,13 @@ public class CreateArrayFrame extends JDialog {
         }
     }
 
-    private void createArray() {
+    private boolean createArray() {
         //make sure there are antennas in the B column
         if(antennaRowInfoB.length < 1) {
             JOptionPane.showMessageDialog(this, 
                     "You need to select at least one antenna",
                     "Nothing Selected", JOptionPane.WARNING_MESSAGE);
-            return;
+            return false;
         }
         //create list of antennas picked
         String[] antennas= new String[antennaRowInfoB.length];
@@ -288,11 +320,30 @@ public class CreateArrayFrame extends JDialog {
         }
         String arrayName;
         try {
-            arrayName = masterScheduler.createArray(antennas,ArrayModeEnum.DYNAMIC);
+            if(arrayMode.equals("Dynamic")){
+                arrayName = masterScheduler.createArray(
+                        antennas,ArrayModeEnum.DYNAMIC);
+            } else if(arrayMode.equals("Interactive")){
+                arrayName = masterScheduler.createArray(
+                        antennas,ArrayModeEnum.INTERACTIVE);
+            } else if(arrayMode.equals("Queued")) {
+                arrayName = masterScheduler.createArray(
+                        antennas,ArrayModeEnum.QUEUED);
+            } else if(arrayMode.equals("Manual")){
+                arrayName = masterScheduler.createArray(
+                        antennas,ArrayModeEnum.MANUAL);
+            } else {
+                //this should never happen!
+                logger.severe("SCHEDULING_PANEL: No array created. InvalidMode");
+                JOptionPane.showMessageDialog(this,"Invalid array mode. No array created", "Invalid Mode", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
             allArrays.add(arrayName);
         } catch(Exception e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
 
     }
 

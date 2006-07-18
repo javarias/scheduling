@@ -67,7 +67,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.59 2006/07/18 15:16:10 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.60 2006/07/18 19:51:58 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -773,13 +773,13 @@ public class ALMAMasterScheduler extends MasterScheduler
                 name = control.createManualArray(antennaIdList);
             } else if(schedulingMode == ArrayModeEnum.DYNAMIC){
                 logger.info("SCHEDULING: Creating an array for dynamic mode");
-                name = control.createArray(antennaIdList);
+                name = control.createArray(antennaIdList, "dynamic");
             } else if(schedulingMode == ArrayModeEnum.QUEUED){
                 logger.info("SCHEDULING: Creating an array for queued mode");
-                name = control.createArray(antennaIdList);
+                name = control.createArray(antennaIdList, "queued");
             } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
                 logger.info("SCHEDULING: Creating an array for interactive mode");
-                name = control.createArray(antennaIdList);
+                name = control.createArray(antennaIdList, "interactive");
             }
         } catch(SchedulingException e) {
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);

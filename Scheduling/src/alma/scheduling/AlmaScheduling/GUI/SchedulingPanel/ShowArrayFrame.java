@@ -9,6 +9,9 @@ import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
 import alma.Control.ControlMaster;
 import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.ArrayStateEnum;
+import alma.scheduling.ArrayInfo;
+import alma.scheduling.SchedulingInfo;
 import alma.scheduling.MasterSchedulerIF;
 
 public class ShowArrayFrame extends JDialog {
@@ -107,7 +110,8 @@ public class ShowArrayFrame extends JDialog {
         selectedArrayView = new JTextArea();
         selectedArrayView.setLineWrap(true);
         selectedArrayView.setPreferredSize(new Dimension(275, 100));
-        selectedArrayView.setText("Array: "+((String)arrayRowInfo[row][0]));
+        //selectedArrayView.setText("Array: "+((String)arrayRowInfo[row][0]));
+        selectedArrayView.setText(getArrayInfo((String)arrayRowInfo[row][0]));
         selectedArrayPane = new JScrollPane(selectedArrayView);
         arrayDisplayPanel .add(selectedArrayPane);
         centerDisplayPanel.add(arrayDisplayPanel , BorderLayout.SOUTH);
@@ -134,6 +138,54 @@ public class ShowArrayFrame extends JDialog {
             validate();
         } catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private String getArrayInfo(String name) {
+        String s="";
+        try {
+            SchedulingInfo info = masterScheduler.getArrayInfo();
+            ArrayInfo a_info;
+            for(int i=0; i <  info.array.length; i++){
+                a_info = info.array[i];
+                if(a_info.arrayName.equals(name)){
+                    s = "Array Name: "+a_info.arrayName+"\n";
+                    s = s+ "Mode: "+getArrayModeString(a_info.mode)+"\n";
+                    s = s+ "State: "+getArrayStateString(a_info.state)+"\n";
+                    s = s+ "Running Project: "+a_info.projectName+"\n";
+                    s = s+ "Current SB: "+a_info.SBName+"\n";
+                    s = s+ "Completion Time: "+a_info.completionTime+"\n";
+                    s = s+ "Comment: "+a_info.comment+"\n";
+                }
+            }
+        } catch (Exception e){
+            s = "Problem getting array info. \n";
+            s = s+ ": "+e.toString();
+        }
+        return s;
+    }
+
+    private String getArrayModeString(ArrayModeEnum e){
+        if(e.value() == 0){
+            return "Dynamic";
+        } else if (e.value() ==1){
+            return "Interactive";
+        }else if(e.value() == 2){
+            return "Queued";
+        } else if(e.value()==3){
+            return "Manual";
+        } else {
+            return "Invalid Array Mode: "+e.value();
+        }
+         
+    }
+    private String getArrayStateString(ArrayStateEnum e){
+        if(e.value() == 0){
+            return "Busy";
+        } else if(e.value() == 1){
+            return "Idle";
+        } else {
+            return "Invalide Array State: "+e.value(); 
         }
     }
 
