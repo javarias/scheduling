@@ -64,7 +64,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.60 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.61 2006/07/20 22:07:23 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -635,7 +635,7 @@ public class ALMAArchive implements Archive {
             }
             ObsProject proj=null;
             QueryResult res = cursor.next();
-            //deprecated method; will have to retrieve objsproject with res.identifier thing
+            //TODO deprecated method; will have to retrieve objsproject with res.identifier thing
             proj = (ObsProject)entityDeserializer.deserializeEntity(res.xml,ObsProject.class); 
             if(cursor.hasNext()){
                 throw new SchedulingException("SCHEDULING: getting proj with sb ref, should only be one proj!");

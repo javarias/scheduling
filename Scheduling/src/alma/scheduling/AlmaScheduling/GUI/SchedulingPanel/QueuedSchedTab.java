@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
 import alma.acs.util.UTCUtility;
-import alma.xmlstore.XmlStoreNotificationEvent;
 //scheduling stuff
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SBLite;
@@ -56,7 +55,6 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
             consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
-            consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             consumer.consumerReady();
         } catch (Exception e) {
             e.printStackTrace();
@@ -284,11 +282,6 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         String sbid = e.sbId.entityId;
         DateTime end_time = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
     }
-    public void receive(XmlStoreNotificationEvent event) {
-        CheckArchiveEvent processor = new CheckArchiveEvent(event);
-        Thread t = new Thread(processor);
-        t.start();
-    }    
 
     /**
       * Takes the sb id that comes with the exec block event and compares it to the 
@@ -320,7 +313,9 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     public void exit() {
         try{
             container.releaseComponent(masterScheduler.name());
-            run.stop();
+            try {
+                run.stop();
+            }catch(Exception e){}
             run = null;
             thread = null;
             consumer.disconnect();
@@ -332,42 +327,6 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
 
 
 ///////////////////////////////////////    
-   public boolean isUidPartOfThisSession(String uid) {
-       /*
-        int size = allSessionUIDs.size();
-        for(int i=0; i < size; i++){
-            if(allSessionUIDs.elementAt(i).equals(uid)){
-                return true;
-            }
-        }
-        */
-        return false;
-    }
-   
-    public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e){
-        String uid = e.uid;
-        //check to see if the uid being stored/updated in archive is something
-        //that we care about. if its not, ignore it!
-        if(!isUidPartOfThisSession(uid)) {
-            return;
-        }
-        alma.xmlstore.operationType type = e.operation;
-        if(type == alma.xmlstore.operationType.STORED_XML){
-        } else if(type == alma.xmlstore.operationType.UPDATED_XML){
-        } else if(type == alma.xmlstore.operationType.DELETED_XML){
-        }
-    }
-    
-    class CheckArchiveEvent implements Runnable {
-        private XmlStoreNotificationEvent event;
-        
-        public CheckArchiveEvent(XmlStoreNotificationEvent e) {
-            event = e;
-        }
-        public void run(){
-            processXmlStoreNotificationEvent(event);
-        }
-    }
 
 ///////////////////////////////////////    
     class PopupListener extends MouseAdapter {

@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.63 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.64 2006/07/20 22:07:23 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1169,6 +1169,11 @@ public class ALMAProjectManager extends ProjectManager {
 
     public SBLite[] getSBLite(String[] ids) {
         logger.info("SCHEDULING: Called getSBLite(ids)");
+        try {
+            pollArchive();
+        } catch(Exception e) {
+            return null;
+        }
         SBLite[] sblites = new SBLite[ids.length];
         SBLite sblite;
         for(int i=0; i < ids.length; i++){
@@ -1179,6 +1184,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     public ProjectLite[] getProjectLites(String[] ids) {
+        getUpdates();
         logger.info("SCHEDULING: Called getProjectLites(ids)");
         ProjectLite[] projectliteArray=new ProjectLite[ids.length];
         ProjectLite projectlite;

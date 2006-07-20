@@ -7,22 +7,37 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
-//acs stuff
+//acs stuff & other alma stuff
 import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
+import alma.acs.entityutil.EntityDeserializer;
+import alma.entity.xmlbinding.obsproject.*;
+import alma.entity.xmlbinding.schedblock.*;
+import alma.xmlstore.XmlStoreNotificationEvent;
+import alma.xmlstore.Operational;
+import alma.xmlstore.Identifier;
+import alma.xmlstore.ArchiveConnection;
+import alma.xmlstore.ArchiveConnectionPackage.*;
+import alma.xmlstore.OperationalPackage.*;
+import alma.xmlstore.ArchiveInternalError;
+import alma.xmlstore.Cursor;
+import alma.xmlstore.CursorPackage.QueryResult;
+import alma.xmlentity.XmlEntityStruct;
 //scheduling stuff
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Define.Project;
 import alma.scheduling.Interactive_PI_to_Scheduling;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.AlmaScheduling.ALMASchedulingUtility;
 import alma.scheduling.GUI.InteractiveSchedGUI.OpenOT;
 //
-import alma.entity.xmlbinding.obsproject.*;
-import alma.xmlstore.XmlStoreNotificationEvent;
 
 public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
+    private ArchiveConnection archiveConnection;
+    private Operational archive;
+    private EntityDeserializer entityDeserializer;
     private String arrayname;
     private String schedulername;
     private String type;
@@ -59,7 +74,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         arrayname = an;
         type = "interactive";
         schedulername = s;
-        allSessionUIDs = new Vector<String>();
+        //allSessionUIDs = new Vector<String>();
+        setToNull();
         getComponentRefs();
         logger.info("Interactive Sched Tab created");
         createSearchView();
@@ -70,7 +86,20 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         } catch (Exception e){
             e.printStackTrace();
         }
+        entityDeserializer = EntityDeserializer.getEntityDeserializer(container.getLogger());
     }
+    
+    private void setToNull(){
+        currentProjectId = null;
+        currentProjectLite = null;
+        currentProjectSBs = null;
+        allSessionUIDs = new Vector<String>();
+        sbRowInfo = null;
+        sbTable = null;
+        projRowInfo = null;
+        projTable = null;
+    }
+    
     private void getComponentRefs() {
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
@@ -129,7 +158,6 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    System.out.println("searching!");
                     String projectStr =projectQueryTF.getText(); 
                     String piStr =piQueryTF.getText();
                     if(projectStr.equals("")){ projectStr = "*"; } 
@@ -185,7 +213,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         //set default project id
         int row = projTable.getSelectedRow();
         currentProjectId = (String)projRowInfo[row][3];
-        addUIDToSesson(currentProjectId);
+        addUIDToSession(currentProjectId);
         currentProjectLite = getProjectLiteForId(currentProjectId); 
         //create interactive scheduling view
         createInteractiveSchedulingView();
@@ -266,6 +294,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             public void mouseReleased(MouseEvent e){}
         });
         JScrollPane projListPane = new JScrollPane(projTable);
+        projTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         JPanel p = new JPanel();
         p.add(projListPane);
         try {
@@ -303,6 +332,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             sbRowInfo[i][1] = currentProjectSBs[i].priority;
             sbRowInfo[i][2] = String.valueOf(currentProjectSBs[i].freq);
             sbRowInfo[i][3] = currentProjectSBs[i].schedBlockRef;
+            addUIDToSession((String)sbRowInfo[i][3]);
         }
         sbTableModel = new AbstractTableModel() {
             public int getColumnCount() { return sbColumnInfo.length; }
@@ -312,6 +342,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             public void setValueAt(Object val, int row, int col) { sbRowInfo[row][col] = val; }
         };
         sbTable = new JTable(sbTableModel);
+        sbTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         sbTable.setPreferredScrollableViewportSize(new Dimension(200,100));
         sbTable.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
@@ -544,7 +575,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 
     private void modify() {
         try {
-            OpenOT ot = new OpenOT("",container);
+            OpenOT ot = new OpenOT(currentProjectId,container);
             Thread t = container.getThreadFactory().newThread(ot);
             t.start();
         } catch(Exception e) {
@@ -552,10 +583,27 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
     }
 
+    private void updateSBRowInfo(){
+        System.out.println("updating SB Row info and table"); 
+        for(int i=0; i < currentProjectSBs.length; i++){
+            System.out.println((String)sbRowInfo[i][0]);
+            sbRowInfo[i][0] = currentProjectSBs[i].sbName;
+            System.out.println(currentProjectSBs[i].sbName);
+            sbRowInfo[i][1] = currentProjectSBs[i].priority;
+            sbRowInfo[i][2] = String.valueOf(currentProjectSBs[i].freq);
+            sbRowInfo[i][3] = currentProjectSBs[i].schedBlockRef;
+        }
+        sbTable.validate();
+        sbTable.repaint();
+        tableDisplayPanel.validate();
+        validate();
+    }
+
     private void remove(){
     }
 
     private void logoutOfProject(){
+        setToNull();
         try {
             scheduler.endSession();
         } catch(Exception e){
@@ -591,43 +639,126 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
 ///////////////////////////////////////     
+    private void connectToArchive() throws SchedulingException {
+        try{
+            archiveConnection = alma.xmlstore.ArchiveConnectionHelper.narrow(
+                    container.getDefaultComponent(
+                        "IDL:alma/xmlstore/ArchiveConnection:1.0"));
+            archiveConnection.getAdministrative("SCHEDULING_PANEL").init();
+            archive = archiveConnection.getOperational("SCHEDULING_PANEL");
+            logger.info("SCHEDULING_PANEL: connected to archive");
+        } catch(Exception e){
+            logger.severe("SCHEDULING_PANEL: error connecting to archive, "+e.toString());
+            throw new SchedulingException(e);
+        }
+    }
+    private void disconnectFromArchive() throws SchedulingException {
+        try{
+       //     container.releaseComponent(archive.name());
+            container.releaseComponent(archiveConnection.name());
+            logger.info("SCHEDULING_PANEL: released archive components");
+        }catch (Exception e){
+            logger.severe("SCHEDULING_PANEL: error releasing archive comps.");
+            throw new SchedulingException(e);
+        }
+        
+    }
+///////////////////////////////////////     
 
     public void receive(XmlStoreNotificationEvent event) {
+        logger.info("SCHEDULING_PANEL: Got XML Store event");
         CheckArchiveEvent processor = new CheckArchiveEvent(event);
         Thread t = new Thread(processor);
         t.start();
     }
 
-    public void addUIDToSesson(String uid) {
-        if(isUidPartOfThisSession(uid)){
-            return;
-        }
+    private void addUIDToSession(String uid) {
+        //if(isUidPartOfThisSession(uid)){
+          //  return;
+        //}
         allSessionUIDs.add(uid);
     }
-    public boolean isUidPartOfThisSession(String uid) {
+    private void updateExistingEntity(String uid) {
         int size = allSessionUIDs.size();
         for(int i=0; i < size; i++){
+            logger.info("in vector, uid = "+allSessionUIDs.elementAt(i));
+            logger.info("comparing it to "+uid);
             if(allSessionUIDs.elementAt(i).equals(uid)){
-                return true;
+                System.out.println("EQUAL");
+                try{
+                    //already in the list so update whole list and validate
+                    currentProjectSBs = masterScheduler.getSBLite(currentProjectLite.allSBIds); 
+                 //   Thread.sleep(5);
+                    updateSBRowInfo();
+                    return;
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
             }
         }
-        return false;
     }
+
+    private void addNewEntity(String uid) {
+        try {
+            XmlEntityStruct xml = archive.retrieveDirty(uid);
+            if(xml.entityTypeName.equals("SchedBlock")){
+                SchedBlock sb = (SchedBlock)entityDeserializer.deserializeEntity(xml,SchedBlock.class);
+                String projectID = sb.getObsProjectRef().getEntityId();
+                if(projectID.equals(currentProjectId)){
+                    String[] ids = {uid};
+                    SBLite[] newSB = masterScheduler.getSBLite( ids );
+                    int oldLen = currentProjectSBs.length;
+                    int newLen = oldLen +1;
+                    SBLite[] addOneMoreSBLite = new SBLite[newLen];
+                    addOneMoreSBLite = currentProjectSBs;
+                    addOneMoreSBLite[oldLen] = new SBLite();// 0 indexed arrays so (newLen - 1) == oldLen
+                    addOneMoreSBLite[oldLen] = newSB[0]; //only asked for one so will get only one.
+                    currentProjectSBs = addOneMoreSBLite;
+                    validate();
+                    logger.info("SCHEDULING_PANEL: adding new SB");
+                }
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+        //need to connect to the archive now and get the entity 
+        //so that we can see what class it is
+
+        //if it is an SB, check to see if the projectRef's id is the current projects
+        //if it is a project, its most likely not our current one or the is it 
+        //part of the session method would have seen it,
+        
+        //if its the proposal then it shouldne't be updated..
+        // if its the project status we can update views
    
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e){
         String uid = e.uid;
         //check to see if the uid being stored/updated in archive is something
         //that we care about. if its not, ignore it!
-        if(!isUidPartOfThisSession(uid)) {
-            return;
-        }
+        //if(isUidPartOfThisSession(uid)) {
+        //    return;
+        //}
+        logger.info("uid = "+uid);
         alma.xmlstore.operationType type = e.operation;
         if(type == alma.xmlstore.operationType.STORED_XML){
+            logger.info("operation = store");
+            //check here to see if what is stored has our project's reference
+            logger.info("SCHEDULING_PANEL: got store for entity "+uid);
+            addNewEntity(uid);
         } else if(type == alma.xmlstore.operationType.UPDATED_XML){
+            logger.info("operation = update");
+            //check here to see if what is updated belongs in our queue of sbs 
+            //or is our project/ps's uids
+            logger.info("SCHEDULING_PANEL: got update for entity "+uid);
+            updateExistingEntity(uid);
         } else if(type == alma.xmlstore.operationType.DELETED_XML){
+            logger.info("operation = delete");
+            //shouldn't happen but check
         }
     }
-    
+
+        
     class CheckArchiveEvent implements Runnable {
         private XmlStoreNotificationEvent event;
         

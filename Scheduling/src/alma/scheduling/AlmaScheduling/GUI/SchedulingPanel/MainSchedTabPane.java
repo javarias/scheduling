@@ -119,6 +119,7 @@ public class MainSchedTabPane extends JTabbedPane {
             public void setValueAt(Object val, int row, int col) { schedRowInfo[row][col]= val; }
         };
         schedulerTable = new JTable(schedulerTableModel);
+        schedulerTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         Dimension d = new Dimension(250, 75);
         schedulerTable.setPreferredScrollableViewportSize(d);
     }
@@ -132,6 +133,7 @@ public class MainSchedTabPane extends JTabbedPane {
             schedRowInfo[i][2] = schedulerInfo.elementAt(i).getSchedulerType();
             schedRowInfo[i][3] = "N/A";
         }
+        schedulerTable.repaint();
     }
     private void removeRowFromSchedulerTable(SchedulerTab tab) {
         //get tab from schedulerInfo vector
