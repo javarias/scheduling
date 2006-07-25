@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.33 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.34 2006/07/25 14:11:48 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -110,78 +110,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         Thread t = new Thread(p);
         t.start();
     }
-
-    /*
-      TODO TAKE This out eventually
-    private void processExecBlockStartedEvent(ExecBlockStartedEvent e) {
-        //the processes below are still being thought out and may not be the
-        //best way to do what needs to be done.
-        try {
-            logger.info("SCHEDULING: Event reason = started");
-            logger.info("SCHEDULING: Received sb start event from control.");
-            logger.info("SCHEDULING: ebid = "+  e.execId); 
-            logger.info("SCHEDULING: sbid =" + e.sbId );
-            logger.info("SCHEDULING: session id ="+ e.sessionId);
-            logger.info("SCHEDULING: arrayname = "+ e.arrayName);
-            logger.info("SCHEDULING: start time = "+ e.startTime);
-            //create an execblock internal to scheduling. 
-            ExecBlock eb = createExecBlock(e);
-            ArrayTime at = new ArrayTime(e.startTime);
-            DateTime startEb = at.arrayTimeToDateTime();
-            logger.info("********************************");
-            logger.info("SCHEDULING: Setting start time for: "+e.execId);
-            logger.info("SCHEDULING: start time is : "+e.startTime);
-            logger.info("SCHEDULING: start time is : "+startEb.toString());
-            logger.info("********************************");
-            eb.setStartTime(startEb);
-            eb.setTimeOfCreation(startEb);
-            eb.setTimeOfUpdate(startEb);
-            eb.setSessionId(e.sessionId);
-            currentEB.add(eb);
-            createObservedSession(eb);
-            //send out a start session event.
-            //startSession(eb);
-        } catch(Exception ex) {
-            logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
-            ex.printStackTrace(System.out);
-        }
-    }*/
-
-
-    /*
-    private void processExecBlockEndedEvent(ExecBlockEndedEvent e) {
-        try{
-            logger.info("SCHEDULING: Event reason = end");
-            logger.info("SCHEDULING: Received sb end event from control.");
-            logger.info("SCHEDULING: end time is "+ e.endTime);
-            //create a control event internal to scheduling.
-            //this object contains the info from controls event which sched wants
-            //ArrayTime at = new ArrayTime(e.endTime);
-            DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
-            ControlEvent ce = new ControlEvent(e.execId, e.sbId, e.arrayName, 
-                 e.status.value(), endEb);//at.arrayTimeToDateTime());
-            //update the sb with the new info from the event
-            updateSB(ce);
-            //eb = createExecBlock(e);
-            ExecBlock eb = retrieveExecBlock(e.execId);
-            //DateTime endEb = at.arrayTimeToDateTime();
-            logger.info("********************************");
-            logger.info("SCHEDULING: Setting end time for: "+e.execId);
-            logger.info("SCHEDULING: end time is "+ e.endTime);
-            logger.info("SCHEDULING: end time is "+ endEb.toString());
-            logger.info("********************************");
-            eb.setEndTime(endEb, Status.COMPLETE);
-            eb.setTimeOfUpdate(endEb);
-            //send out an end session event
-            endSession(eb);
-            sbCompleted(eb);
-            startPipeline(ce);
-            deleteFinishedEB(eb);
-        } catch(Exception ex) {
-            logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
-            ex.printStackTrace(System.out);
-        }
-        */
 
 
 ////////////////////////
@@ -409,19 +337,19 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         try {
             logger.info("SCHEDULING: Event reason = started");
             logger.info("SCHEDULING: Received sb start event from control.");
-            logger.info("SCHEDULING: ebid = "+  e.execId); 
-            logger.info("SCHEDULING: sbid =" + e.sbId );
-            logger.info("SCHEDULING: session id ="+ e.sessionId);
+            logger.info("SCHEDULING: ebid = "+  e.execId.entityId); 
+            logger.info("SCHEDULING: sbid =" + e.sbId.entityId );
+            logger.info("SCHEDULING: session id ="+ e.sessionId.entityId);
             logger.info("SCHEDULING: arrayname = "+ e.arrayName);
-            logger.info("SCHEDULING: start time = "+ e.startTime);
+            DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
+            logger.info("SCHEDULING: start time = "+ startEb.toString());
             //create an execblock internal to scheduling. 
             ExecBlock eb = createExecBlock(e);
-            DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
             //ArrayTime at = new ArrayTime(e.startTime);
             //DateTime startEb = at.arrayTimeToDateTime();
             logger.info("********************************");
-            logger.info("SCHEDULING: Setting start time for: "+e.execId);
-            logger.info("SCHEDULING: start time is : "+e.startTime);
+            logger.info("SCHEDULING: Setting start time for: "+e.execId.entityId);
+            //logger.info("SCHEDULING: start time is : "+e.startTime);
             logger.info("SCHEDULING: start time is : "+startEb.toString());
             logger.info("********************************");
             eb.setStartTime(startEb);
@@ -454,11 +382,11 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         try{
             logger.info("SCHEDULING: Event reason = end");
             logger.info("SCHEDULING: Received sb end event from control.");
-            logger.info("SCHEDULING: end time is "+ e.endTime);
+            DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
+            logger.info("SCHEDULING: end time is "+ endEb.toString());
             //create a control event internal to scheduling.
             //this object contains the info from controls event which sched wants
             //ArrayTime at = new ArrayTime(e.endTime);
-            DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
             ControlEvent ce = new ControlEvent(e.execId.entityId, e.sbId.entityId, e.arrayName, e.status.value(), endEb);//at.arrayTimeToDateTime());
             //update the sb with the new info from the event
             updateSB(ce);
@@ -466,10 +394,11 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             ExecBlock eb = retrieveExecBlock(e.execId.entityId);
             //DateTime endEb = at.arrayTimeToDateTime();
             logger.info("********************************");
-            logger.info("SCHEDULING: Setting end time for: "+e.execId);
-            logger.info("SCHEDULING: end time is "+ e.endTime);
+            logger.info("SCHEDULING: Setting end time for: "+e.execId.entityId);
+            //logger.info("SCHEDULING: end time is "+ e.endTime);
             logger.info("SCHEDULING: end time is "+ endEb.toString());
             logger.info("********************************");
+            //TODO change this when we start getting exec block end events for all reasons
             eb.setEndTime(endEb, Status.COMPLETE);
             eb.setTimeOfUpdate(endEb);
             //send out an end session event
