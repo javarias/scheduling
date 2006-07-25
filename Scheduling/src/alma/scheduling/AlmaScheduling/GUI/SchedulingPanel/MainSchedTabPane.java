@@ -315,13 +315,17 @@ public class MainSchedTabPane extends JTabbedPane {
 
     private boolean pickTheirOwnArray() {
         int answer = JOptionPane.showConfirmDialog(this, 
-                "Do you need to create your own array?", "Array Needed?",
+                "Right now you don't get to pick your array for DS","Array Needed?",
+                //"Do you need to create your own array?", "Array Needed?",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        /* TODO: Uncomment this when they do get to pick an array for DS.
         if(answer == JOptionPane.YES_OPTION){
             return true;
         } else {
             return false;
         }
+        */
+        return false;
     }
 
     private void createRightClickMenu(){

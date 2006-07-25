@@ -485,6 +485,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         int row = projTable.getSelectedRow();
         String id = (String)projRowInfo[row][3];
         JTextArea info = new JTextArea();
+        info.setEditable(false);
         try {
             ProjectLite p = getProjectLiteForId(id);
             info.append("Project Name = "+p.projectName +"\n");
@@ -518,6 +519,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         int row = sbTable.getSelectedRow();
         String id =(String)sbRowInfo[row][3];
         JTextArea info = new JTextArea();
+        info.setEditable(false);
         SBLite sb = getSBLiteForId(id);
         try{
             info.append("SB Name: "+sb.sbName+"\n");

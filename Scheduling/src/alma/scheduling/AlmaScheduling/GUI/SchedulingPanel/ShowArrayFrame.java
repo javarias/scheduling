@@ -140,6 +140,7 @@ public class ShowArrayFrame extends JDialog {
             centerDisplayPanel.remove(1);
         } catch(Exception e){}
         selectedArrayView = new JTextArea();
+        selectedArrayView.setEditable(false);
         selectedArrayPane = new JScrollPane(selectedArrayView);
         
         selectedArrayView.setLineWrap(true);
