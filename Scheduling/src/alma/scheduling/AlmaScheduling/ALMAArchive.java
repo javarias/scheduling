@@ -64,7 +64,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.61 2006/07/20 22:07:23 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.62 2006/07/25 13:14:50 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -279,8 +279,8 @@ public class ALMAArchive implements Archive {
                     String[] newArchUpdates =new String[0];
                     try {
                         logger.info("SCHEDULING: sent to archive as "+lastProjectQuery.toString()+".000");
-                        newArchUpdates = archOperationComp.queryRecent(lastProjectQuery.toString()+".000", schema);
-                        //newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString());
+                        //newArchUpdates = archOperationComp.queryRecent(lastProjectQuery.toString()+".000", schema);
+                        newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString()+".000");
                         logger.info("There are "+newArchUpdates.length+" new project updates!");
                     } catch(Exception e){
                         e.printStackTrace(System.out);
