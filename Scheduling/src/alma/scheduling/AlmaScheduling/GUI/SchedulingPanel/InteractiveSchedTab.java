@@ -35,6 +35,8 @@ import alma.scheduling.GUI.InteractiveSchedGUI.OpenOT;
 //
 
 public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
+    private final String[] projColumnInfo = {"Project Name", "PI", "Version"};
+    private final String[] sbColumnInfo = { "SB Name", "Priority", "Freq."};
     private ArchiveConnection archiveConnection;
     private Operational archive;
     private EntityDeserializer entityDeserializer;
@@ -61,6 +63,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private TableModel projTableModel;
     private ProjectLite[] projects;
     private Object[][] sbRowInfo;
+    private int columnIndex =0;
     private JTable sbTable;
     private TableModel sbTableModel;
     private Consumer consumer = null;
@@ -174,7 +177,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         b.setToolTipText("Clear text in search fields");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-          //      clearTFs();
+                clearTFs();
             }
         });
         p2.add(b);
@@ -202,6 +205,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         return search;
     }
 
+    private void clearTFs() {
+        projectQueryTF.setText("");
+        piQueryTF.setText("");
+    }
     private void loginToInteractiveScheduling() {
         if(!checkSomethingSelected()){
             return;
@@ -274,7 +281,6 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                 projRowInfo[0][2] = "N/A";
                 projRowInfo[0][3] = "N/A";
         }
-        final String[] projColumnInfo = {"Project Name", "PI", "Version"};
         projTableModel = new AbstractTableModel() {
             public int getColumnCount() { return projColumnInfo.length; }
             public String getColumnName(int column) { return projColumnInfo[column]; }
@@ -295,6 +301,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         });
         JScrollPane projListPane = new JScrollPane(projTable);
         projTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        manageProjTableColumnSize();
+         ((DefaultTableCellRenderer)projTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         JPanel p = new JPanel();
         p.add(projListPane);
         try {
@@ -303,9 +311,28 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         tableDisplayPanel.add(p);
         validate();
     }
+    private void manageProjTableColumnSize() {
+        TableColumn column;
+        for(int j=0; j < projColumnInfo.length; j++){
+            column = projTable.getColumnModel().getColumn(j);
+            int w = column.getWidth();
+            int n = projTable.getRowCount();
+            for (int i = 0; i < n; i ++) {
+                TableCellRenderer r = projTable.getCellRenderer(i, j);
+                Component c = r.getTableCellRendererComponent(
+                        projTable,
+                        projTable.getValueAt(i, j),
+                        false,
+                        false,
+                        i,
+                        j);
+                w = Math.max(w, c.getPreferredSize().width);
+            }
+            column.setPreferredWidth(w+5);
+        }
+    }
 
     private void displayProjectSBs() {
-        final String[] sbColumnInfo = { "SB Name", "Priority", "Freq."};
         sbRowInfo = new Object[currentProjectLite.allSBIds.length][4];
         currentProjectSBs= new SBLite[1]; 
         try {
@@ -344,6 +371,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         sbTable = new JTable(sbTableModel);
         sbTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         sbTable.setPreferredScrollableViewportSize(new Dimension(200,100));
+        manageSBTableColumnSize();
+        ((DefaultTableCellRenderer)sbTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         sbTable.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
                 showSBInfo();
@@ -361,7 +390,26 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         } catch(Exception e) {/*don't care if it complains*/}
         tableDisplayPanel.add(p);
         validate();
-            
+    }
+    private void manageSBTableColumnSize(){
+        TableColumn column;
+        for(int j=0; j < sbColumnInfo.length; j++){
+            column  = sbTable.getColumnModel().getColumn(j);
+            int w = column.getWidth();
+            int n = sbTable.getRowCount();
+            for (int i = 0; i < n; i ++) {
+                TableCellRenderer r = sbTable.getCellRenderer(i, j);
+                Component c = r.getTableCellRendererComponent(
+                        sbTable,
+                        sbTable.getValueAt(i, j),
+                        false,
+                        false,
+                        i,
+                        j);
+                w = Math.max(w, c.getPreferredSize().width);
+            }
+            column.setPreferredWidth(w+5);   
+        }
     }
 
     private ProjectLite getProjectLiteForId(String id){
@@ -511,7 +559,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         });
         p1.add(b);
         b = new JButton("Modify");
-        b.setToolTipText("Not implemented yet");
+        b.setToolTipText("Opens the ALMA-OT");
         b.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     modify();
@@ -593,6 +641,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             sbRowInfo[i][2] = String.valueOf(currentProjectSBs[i].freq);
             sbRowInfo[i][3] = currentProjectSBs[i].schedBlockRef;
         }
+        manageSBTableColumnSize();
         sbTable.validate();
         sbTable.repaint();
         tableDisplayPanel.validate();

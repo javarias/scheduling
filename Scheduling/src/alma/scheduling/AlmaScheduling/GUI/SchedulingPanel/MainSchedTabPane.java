@@ -19,7 +19,8 @@ import alma.acs.container.ContainerServices;
 //import com.sun.java.swing.plaf.windows.WindowsIconFactory;
 
 public class MainSchedTabPane extends JTabbedPane {
-    private final String[] schedColumnInfo = {"Name", "ArrayName","Type","Status"};
+    private final String[] schedColumnInfo = 
+        {"Scheduler Name", "Array Name","Type","Status"};
     private Logger logger;
     private int schedulerCount=0;
     private Vector<SchedulerTab> schedulerInfo;
@@ -32,7 +33,6 @@ public class MainSchedTabPane extends JTabbedPane {
     private int overTabIndex;
     private JDesktopPane desktop;
     private Vector<Window> openWindows;
-
     public MainSchedTabPane(ContainerServices cs){
         super(JTabbedPane.TOP);
         container = cs;
@@ -110,7 +110,7 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void createSchedulerTableModel(){
-        schedRowInfo = new Object[1][schedColumnInfo.length];
+        schedRowInfo = new Object[0][schedColumnInfo.length];
         schedulerTableModel = new AbstractTableModel() {
             public int getColumnCount() { return schedColumnInfo.length; }
             public String getColumnName(int column) { return schedColumnInfo[column]; }
@@ -122,6 +122,34 @@ public class MainSchedTabPane extends JTabbedPane {
         schedulerTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         Dimension d = new Dimension(250, 75);
         schedulerTable.setPreferredScrollableViewportSize(d);
+        ((DefaultTableCellRenderer)schedulerTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        manageTableColumnSize();
+    }
+    private void manageTableColumnSize(){
+        TableColumn column;
+        int prev=0;
+        for(int j=0; j < schedColumnInfo.length; j++){
+            column = schedulerTable.getColumnModel().getColumn(j);
+            int w = column.getWidth();
+            int n = schedulerTable.getRowCount();
+            for (int i = 0; i < n; i ++) {
+                TableCellRenderer r = schedulerTable.getCellRenderer(i, j);
+                Component c = r.getTableCellRendererComponent(
+                        schedulerTable,
+                        schedulerTable.getValueAt(i, j),
+                        false,
+                        false,
+                        i,
+                        j);
+                w = Math.max(w, c.getPreferredSize().width);
+            }
+            /*
+            if(prev < 58 || w < 58){
+                prev = 58;
+                w = 58;
+            }*/
+            column.setPreferredWidth(w+5);
+        }
     }
 
     private void updateSchedulerTable(SchedulerTab t){
@@ -133,6 +161,7 @@ public class MainSchedTabPane extends JTabbedPane {
             schedRowInfo[i][2] = schedulerInfo.elementAt(i).getSchedulerType();
             schedRowInfo[i][3] = "N/A";
         }
+        manageTableColumnSize();
         schedulerTable.repaint();
     }
     private void removeRowFromSchedulerTable(SchedulerTab tab) {
@@ -160,7 +189,9 @@ public class MainSchedTabPane extends JTabbedPane {
             }
         }
 
+        manageTableColumnSize();
     }
+
     private int getTabPositionInVector(SchedulerTab tab){
         for(int i=0; i< schedulerInfo.size(); i++){
             if(schedulerInfo.elementAt(i).getArrayName().equals(tab.getArrayName()) &&
@@ -312,6 +343,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
+            /*
             menuItem = new JMenuItem("Disconnect Master Scheduler");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -319,7 +351,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
-
+            */
         } else {
             menuItem = new JMenuItem("Connect To MasterScheduler");
             menuItem.addActionListener(new ActionListener() {

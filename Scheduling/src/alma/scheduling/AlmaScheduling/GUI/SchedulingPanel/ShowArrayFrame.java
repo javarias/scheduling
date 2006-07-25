@@ -30,6 +30,7 @@ public class ShowArrayFrame extends JDialog {
     private JPanel arrayDisplayPanel;
     private JScrollPane selectedArrayPane;
     private JTextArea selectedArrayView;
+    private int columnIndex = 0;
     private boolean canSelect;
     
     public ShowArrayFrame(ContainerServices cs, boolean b) {
@@ -72,7 +73,7 @@ public class ShowArrayFrame extends JDialog {
         };
         arrayTable = new JTable(arrayTableModel);
         arrayTable.setPreferredScrollableViewportSize(new Dimension(275,100));
-        arrayTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        //arrayTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         arrayTable.addFocusListener(new FocusListener(){
             public void focusGained(FocusEvent e){
                 addArrayDetails();
@@ -88,9 +89,33 @@ public class ShowArrayFrame extends JDialog {
             public void mousePressed(MouseEvent e){ }
             public void mouseReleased(MouseEvent e){}
         });
+        //manageTableColumnSize();
+        //((DefaultTableCellRenderer)arrayTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         JScrollPane pane = new JScrollPane(arrayTable);
         centerDisplayPanel.add(pane, BorderLayout.NORTH);
         return centerDisplayPanel;
+    }
+
+    private void manageTableColumnSize(){
+        TableColumn column = arrayTable.getColumnModel().getColumn(columnIndex);
+        int w = column.getWidth();
+        int n = arrayTable.getRowCount();
+        for (int i = 0; i < n; i ++) {
+            TableCellRenderer r = arrayTable.getCellRenderer(i, this.columnIndex);
+            Component c = r.getTableCellRendererComponent(
+                    arrayTable,
+                    arrayTable.getValueAt(i, columnIndex),
+                    false,
+                    false,
+                    i,
+                    columnIndex);
+            w = Math.max(w, c.getPreferredSize().width);
+        }
+        System.out.println(w);
+        if(w < 270) {
+            w = 270;
+        }
+        column.setPreferredWidth(w+5);
     }
 
     private void addArrayDetails(){
@@ -142,6 +167,7 @@ public class ShowArrayFrame extends JDialog {
                 arrayRowInfo[allArrays][0] = manArrays[i];
                 arrayRowInfo[allArrays][1] = "Manual";
             }
+            //manageTableColumnSize();
             arrayTable.repaint();
             arrayTable.revalidate();
             validate();

@@ -67,7 +67,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.61 2006/07/18 22:47:30 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.62 2006/07/25 19:39:35 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -432,22 +432,12 @@ public class ALMAMasterScheduler extends MasterScheduler
      * Starts scheduling using a specific list of scheduling block Ids.
      * @param sbList
      * @throws InvalidOperationEx
+     * @deprecated Use startQueuedScheduling(String[] sbList, String arrayname)
      */
     public void startQueueScheduling(String[] sbList)
     	throws InvalidOperationEx {
 
         try {    
-            manager.checkForProjectUpdates();
-            //create a queue of sbs with these ids, 
-            SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
-            if(sbs == null || sbs.size() ==0){
-                InvalidOperation e1 = new InvalidOperation("startQueueScheduling",
-                        "Cannot schedule without a SB queue");
-                AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-                throw e2.toInvalidOperationEx();
-            }
-            //create policy
-            Policy s_policy = createPolicy();
             //create an array
             String[] antennas = null;
             try {
@@ -457,32 +447,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             String arrayname = createArray(antennas, ArrayModeEnum.QUEUED);
             //then create a config 
-            SchedulerConfiguration config = 
-                createSchedulerConfiguration(
-                        false, sbs, true, true, 5, arrayname, s_policy);
-                
-            //a scheduler and go from there!
-            //DynamicScheduler scheduler = new DynamicScheduler(config);
-            logger.info("SCHEDULING: Master Scheduler creating queued scheduler");
-            QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
-            Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
-            scheduler_thread.start();
-            while(true) {
-                try {
-                    scheduler_thread.join();
-                    break;
-                } catch(InterruptedException e) {
-//                    if(config.isNothingToSchedule()){
-                        //config.respondStop();
-                        logger.finest("SCHEDULING: interrupted sched thread in MS");
-                        manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
-  //                  }
-                }
-            }
-            if(!config.isOperational()) {
-                logger.info("SCHEDULING: Queued scheduler has ended at " + config.getActualEndTime());
-            }
-            //destroyArray(arrayname);
+            startQueuedScheduling(sbList, arrayname);
         } catch (Exception e){
             e.printStackTrace(System.out);
             InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());

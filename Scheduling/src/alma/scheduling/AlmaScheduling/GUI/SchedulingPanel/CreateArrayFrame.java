@@ -27,6 +27,7 @@ public class CreateArrayFrame extends JDialog {
     //private String[] arrayAntennas;
     private Vector<String> allArrays;
     private String arrayMode;
+    private int columnIndex = 0;
 
     
     public CreateArrayFrame(ContainerServices cs) {
@@ -54,6 +55,8 @@ public class CreateArrayFrame extends JDialog {
         p.add(transferButtons(),BorderLayout.CENTER);
         p.add(createAntennaListB(), BorderLayout.EAST);
         p.add(createSouthPanel(),BorderLayout.SOUTH);
+        manageColumnSizesInA();
+        manageColumnSizesInB();
         return p;
     }
 
@@ -66,6 +69,7 @@ public class CreateArrayFrame extends JDialog {
         for(int i=0; i < availableAntennas.length; i++){
             antennaRowInfoA[i][0] = availableAntennas[i];
          //   antennaRowInfoA[i][0] ="antenna."+i;
+            //System.out.println(availableAntennas[i].length());
         }
         antennaTableModelA = new AbstractTableModel(){
             public int getColumnCount() { return antennaColumnInfoA.length; }
@@ -74,14 +78,37 @@ public class CreateArrayFrame extends JDialog {
             public Object getValueAt(int row, int col) { return antennaRowInfoA[row][col]; }
             public void setValueAt(Object val, int row, int col) { antennaRowInfoA[row][col]= val; }
         };
+
         antennaTableA = new JTable(antennaTableModelA);
-        antennaTableA.setDragEnabled(true);
-        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        //antennaTableA.setDragEnabled(true);
+        //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         antennaTableA.setPreferredScrollableViewportSize(new Dimension(100,75));
         JScrollPane pane = new JScrollPane(antennaTableA);
         pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         p.add(pane);
         return p;
+    }
+    private void manageColumnSizesInA(){
+        TableColumn column = antennaTableA.getColumnModel().getColumn(columnIndex);
+        int w = column.getWidth();
+        int n = antennaTableA.getRowCount();
+        for (int i = 0; i < n; i ++) {
+            TableCellRenderer r = antennaTableA.getCellRenderer(i, this.columnIndex);
+            Component c = r.getTableCellRendererComponent(
+                    antennaTableA,
+                    antennaTableA.getValueAt(i, columnIndex),
+                    false,
+                    false,
+                    i,
+                    columnIndex);
+            w = Math.max(w, c.getPreferredSize().width);
+        }
+        if(w< 95){
+            w = 95;
+        }
+        column.setPreferredWidth(w+5);   
+        ((DefaultTableCellRenderer)antennaTableA.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
     }
 
     private JPanel createAntennaListB(){
@@ -97,10 +124,33 @@ public class CreateArrayFrame extends JDialog {
         };
         antennaTableB = new JTable(antennaTableModelB);
         antennaTableB.setPreferredScrollableViewportSize(new Dimension(100,75));
-        antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        //antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         JScrollPane pane = new JScrollPane(antennaTableB);
         p.add(pane);
         return p;
+    }
+
+    private void manageColumnSizesInB(){
+        TableColumn column = antennaTableB.getColumnModel().getColumn(columnIndex);
+        int w = column.getWidth();
+        int n = antennaTableB.getRowCount();
+        for (int i = 0; i < n; i ++) {
+            TableCellRenderer r = antennaTableB.getCellRenderer(i, this.columnIndex);
+            Component c = r.getTableCellRendererComponent(
+                    antennaTableB,
+                    antennaTableB.getValueAt(i, columnIndex),
+                    false,
+                    false,
+                    i,
+                    columnIndex);
+            w = Math.max(w, c.getPreferredSize().width);
+        }
+        if(w< 95){
+            w = 95;
+        }
+        column.setPreferredWidth(w+5);    
+        ((DefaultTableCellRenderer)antennaTableB.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
     }
 
     private JPanel transferButtons() {
@@ -110,6 +160,8 @@ public class CreateArrayFrame extends JDialog {
         addToArray.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 moveAntennasToArrayColumn();
+                manageColumnSizesInA();
+                manageColumnSizesInB();
             }
         });
         p.add(addToArray);
@@ -117,6 +169,8 @@ public class CreateArrayFrame extends JDialog {
         removeFromArray.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 moveAntennasOutOfArrayColumn();
+                manageColumnSizesInA();
+                manageColumnSizesInB();
             }
         });
         p.add(removeFromArray);
@@ -185,7 +239,7 @@ public class CreateArrayFrame extends JDialog {
 
     private void moveAntennasToArrayColumn() {
         int[] rows = antennaTableA.getSelectedRows();
-        System.out.println("number of selected rows in A = "+rows.length);
+        //System.out.println("number of selected rows in A = "+rows.length);
         if(rows.length == 0 || rows == null){
             JOptionPane.showMessageDialog(this, "You need to select an antenna",
                     "Nothing Selected", JOptionPane.WARNING_MESSAGE);
@@ -232,7 +286,7 @@ public class CreateArrayFrame extends JDialog {
 
     private void moveAntennasOutOfArrayColumn() {
         int[] rows = antennaTableB.getSelectedRows();
-        System.out.println("number of selected rows in b = "+rows.length);
+        //System.out.println("number of selected rows in b = "+rows.length);
         if(rows.length == 0 || rows == null){
             JOptionPane.showMessageDialog(this, "You need to select an antenna",
                     "Nothing Selected", JOptionPane.WARNING_MESSAGE);

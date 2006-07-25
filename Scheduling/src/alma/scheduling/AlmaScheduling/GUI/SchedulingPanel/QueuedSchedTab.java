@@ -39,6 +39,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private RunQueuedScheduling run;
     private Consumer consumer=null;
     private String[] sb_ids;
+    private JPanel statusDisplayPanel;
 
     public QueuedSchedTab(ContainerServices cs, String an){
         container = cs;
@@ -178,6 +179,37 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         Dimension d = new Dimension(200,75);
         sbTable.setPreferredScrollableViewportSize(d);
         sbTable.setToolTipText("Hold the ctrl key down to select multiple SBs");
+        sbTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        ((DefaultTableCellRenderer)sbTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        manageSBTableColumnSize();
+    }
+
+    private void manageSBTableColumnSize() {
+        TableColumn column;
+        int prev=0;
+        for(int j=0; j < sbColumnInfo.length; j++){
+            column = sbTable.getColumnModel().getColumn(j);
+            int w = column.getWidth();
+            int n = sbTable.getRowCount();
+            for (int i = 0; i < n; i ++) {
+                TableCellRenderer r = sbTable.getCellRenderer(i, j);
+                Component c = r.getTableCellRendererComponent(
+                        sbTable,
+                        sbTable.getValueAt(i, j),
+                        false,
+                        false,
+                        i,
+                        j);
+                w = Math.max(w, c.getPreferredSize().width);
+            }
+            
+            //if(prev < 62 || w < 62){
+            if( w < 62){
+                w = 62;
+            }
+            
+            column.setPreferredWidth(w+5);
+        }
     }
     
     private void updateAllSBList() {
@@ -190,6 +222,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             }
             JPanel p =(JPanel) sbTable.getParent().getParent().getParent();
             p.setBorder(new TitledBorder("All SBs"));
+            manageSBTableColumnSize();
             sbTable.repaint();
             sbTable.revalidate();
             validate();
@@ -247,6 +280,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         }
         JPanel p =(JPanel) sbTable.getParent().getParent().getParent();
         p.setBorder(new TitledBorder("Scheduler's SBs"));
+        manageSBTableColumnSize();
         sbTable.repaint();
         sbTable.revalidate();
         validate();
@@ -257,6 +291,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         sb_ids = new String[sbRowInfo.length];
         for(int i=0; i < sbRowInfo.length; i++){
             sb_ids[i] = (String)sbRowInfo[i][2];
+            System.out.println(sb_ids[i]);
         }
         try {
             run = new RunQueuedScheduling(
