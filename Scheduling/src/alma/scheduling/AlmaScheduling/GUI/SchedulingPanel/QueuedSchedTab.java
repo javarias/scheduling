@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
+import java.util.Vector;
 import java.util.logging.Logger;
 //acs stuff
 import alma.acs.container.ContainerServices;
@@ -28,6 +29,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private MasterSchedulerIF masterScheduler = null;
     private SBLite[] sblites=null;
     private TableModel sbTableModel;
+    private TableModel queueTableModel;
     private JTable sbTable;
     private JTable queueTable;
     private JTextField projectTF, piTF;
@@ -56,7 +58,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         logger.info("SCHEDULING_PANEL: QueuedScheduling Panel created");
         sbRowInfo = new Object[0][sbColumnInfo.length];
         queueRowInfo = new Object[0][sbColumnInfo.length];
-        getViewport().add(createStartupView());        
+        createStartupView();        
+        getViewport().add(mainPanel);
         getMasterSchedulerRef();
         //createRightClickMenu();
         schedulername = "QS_"+arrayname;
@@ -83,15 +86,15 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         }
     }
 
-    private JPanel createStartupView() {
-        JPanel p = new JPanel(new GridLayout(4, 1));
-        p.setBorder(new TitledBorder("QueuedScheduling"));
-        p.add(createQueryView());
-        p.add(createDisplayAllSB());
-        p.add(createDetailDisplayView());
-        p.add(createQueueListView());
+    private void createStartupView() {
+        mainPanel = new JPanel(new GridLayout(4, 1));
+        mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
+        mainPanel.add(createQueryView());
+        mainPanel.add(createDisplayAllSB());
+        mainPanel.add(createDetailDisplayView());
+        mainPanel.add(createQueueListView());
         manageTableColumnSize();
-        return p;
+   //     return mainPanel;
     }
        
     private JPanel createQueryView(){
@@ -132,13 +135,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         buttons1.add(search);
         buttons1.add(clear);
         buttons1.add(allSBs);
-        //JPanel buttons2 = new JPanel();//new GridLayout(1,3,15,15));
-       // buttons2.add(new JLabel());
-      //  buttons2.add(start);
-     //   buttons2.add(new JLabel());
         p.add(top);
         p.add(buttons1);
-     //   p.add(buttons2);
         return p;
     }
 
@@ -154,6 +152,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         addToQueue.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     addSBsToQueue();
+                    validate();
                 }
         });
         addToQueue.setToolTipText("Add selected SBs to scheduler queue");
@@ -165,15 +164,6 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         return sbTablePanel;
     }
 
-    private void addSBsToQueue() {
-        //get list of sbs to add,
-        //check their uid to make sure they're not in queue already
-        //if all NOT ok display popup and return
-        //if all ok add to queueRowInfo
-        queueTable.repaint();
-        validate();
-        
-    }
 
     private JPanel createDetailDisplayView(){
         JPanel p = new JPanel();
@@ -185,26 +175,15 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         queueListPanel = new JPanel(new BorderLayout());
         queueListPanel.setBorder(new TitledBorder("Queue for Scheduler"));
 
-        //queueRowInfo = new Object[0][sbColumnInfo.length];
-        queueTable = new JTable(queueRowInfo, sbColumnInfo);
-        queueTable.setPreferredScrollableViewportSize(new Dimension(200,75));
-        queueTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        ((DefaultTableCellRenderer)queueTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        createQueueTableModel();
         queueScrollPane = new JScrollPane(queueTable);
         JPanel p = new JPanel();
         p.add(queueScrollPane);
-        //manageTableColumnSize();//queueTable, queueRowInfo.length);
-
         queueListPanel.add(p, BorderLayout.CENTER);
         
         JButton start = new JButton("Schedule");
         start.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            //pass the selected SBs to the master scheduler
-            //and then the MS will create a queued scheduler.
-            // the tab's view will then change to show only the 
-            //sbs which were passed to the queued scheduler.
-                //showSchedulerSBList();
                 createQueuedSchedulingView();
 
             } 
@@ -244,6 +223,24 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         ((DefaultTableCellRenderer)sbTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         //manageTableColumnSize();//sbTable, sbRowInfo.length);
     }
+
+    private void createQueueTableModel(){
+        queueTableModel = new AbstractTableModel() {
+            public int getColumnCount() { return sbColumnInfo.length; }
+            public String getColumnName(int column) { return sbColumnInfo[column]; }
+            public int getRowCount() { return queueRowInfo.length;     }
+            public Object getValueAt(int row, int col) { return queueRowInfo[row][col]; }
+            public void setValueAt(Object val, int row, int col) { queueRowInfo[row][col]= val; }
+        };
+        queueTable = new JTable(queueTableModel);
+        queueTable.doLayout();
+        queueTable.setPreferredScrollableViewportSize(new Dimension(200,75));
+        //queueTable.setToolTipText("Hold the ctrl key down to select multiple SBs");
+        queueTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        ((DefaultTableCellRenderer)queueTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+    }
+
+
 
     private void manageTableColumnSize(){//JTable t, int rows) {
         TableColumn column;
@@ -302,78 +299,114 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             }
             sbTable.repaint();
             System.out.println("got "+ sblites.length+" sb lites ");
-            //JPanel p =(JPanel) sbTable.getParent().getParent().getParent();
             sbTablePanel.setBorder(new TitledBorder("All SBs"));
             sbTablePanel.repaint();
-            manageTableColumnSize();//bTable, sbRowInfo.length);
+            manageTableColumnSize();
             sbTable.revalidate();
             validate();
         }
     }
 
-    private void createRightClickMenu() {
-        ////rightClickMenu = new JPopupMenu();
-        JMenuItem menuItem;
-        menuItem = new JMenuItem("Start Queued Scheduling");
-        menuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            //pass the selected SBs to the master scheduler
-            //and then the MS will create a queued scheduler.
-            // the tab's view will then change to show only the 
-            //sbs which were passed to the queued scheduler.
-                //showSchedulerSBList();
-                createQueuedSchedulingView();
-
-            } 
-        });
-        //rightClickMenu.add(menuItem);
-        addMouseListener(new PopupListener());
-    }
-
-    private void createQueuedSchedulingView() {
-        int[] rows = queueTable.getSelectedRows();
+    private void addSBsToQueue() {
+        //get list of sbs to add,
+        int[] rows = sbTable.getSelectedRows();
         if(rows.length == 0 || rows == null){
             JOptionPane.showMessageDialog(this, 
                     "You need to select at least one SB",
                     "Nothing Selected", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        getViewport().removeAll();
-        JPanel p = new JPanel(new GridLayout(4, 1));
-        p.setBorder(new TitledBorder("QueuedScheduling"));
-        p.add(createDisplayAllSB());
-        showSchedulerSBList(rows);
-        getViewport().add(p);
-        startQueuedScheduler();
+        if(queueRowInfo.length ==0) {
+            queueRowInfo = new Object[rows.length][sbColumnInfo.length];
+            System.out.println("row len = "+rows.length);
+            for(int i=0;i< rows.length;i++){
+                queueRowInfo[i][0] = sbRowInfo[rows[i]][0];
+                queueRowInfo[i][1] = sbRowInfo[rows[i]][1];
+                queueRowInfo[i][2] = sbRowInfo[rows[i]][2];
+            }
+        } else {
+            //check their uid to make sure they're not in queue already
+            Vector<Object[]> newQueue = new Vector<Object[]>();
+            for(int i=0; i < queueRowInfo.length; i++){
+                newQueue.add(queueRowInfo[i]);
+            }
+            Object[][] possibleSBsToAdd = new Object[rows.length][sbColumnInfo.length] ;
+            for(int i=0; i < rows.length; i++){
+                possibleSBsToAdd[i] = sbRowInfo[rows[i]];
+            }   
+            boolean add = true;
+            int ctr =0;
+            for(int i=0; i< possibleSBsToAdd.length; i++){
+                for(int j=0; j < queueRowInfo.length; j++){
+                    if(possibleSBsToAdd[i][2] == queueRowInfo[j][2]){
+                        System.out.println("already there not adding");
+                        add = false;
+                        break;
+                    }
+                }
+                if(add){
+                    newQueue.add(possibleSBsToAdd[i]);
+                }
+                add= true;
+            }
+            queueRowInfo = new Object[newQueue.size()][sbColumnInfo.length];
+            for(int i=0; i< newQueue.size();i++){
+                queueRowInfo[i] = newQueue.elementAt(i);
+                System.out.println("queue row info = "+ queueRowInfo[i][2]);
+            }
+        }
+
+        System.out.println(queueRowInfo.length);
+        queueTable.repaint();
+        queueScrollPane.repaint();
+        queueListPanel.repaint();
         manageTableColumnSize();
+        queueTable.revalidate();
+        validate();
     }
 
-    private void showSchedulerSBList(int[] rows) {
-        //System.out.println(rows.length);
-        //System.out.println(sbRowInfo.length);
-        Object[][] sbsForScheduler = new Object[rows.length][3];
-        for(int i=0; i <  rows.length; i++){
-            sbsForScheduler[i] = sbRowInfo[rows[i]];
+    private void createQueuedSchedulingView() {
+        if(queueRowInfo.length == 0){
+            JOptionPane.showMessageDialog(this, 
+                    "You need to add at least one SB to queue",
+                    "Nothing added", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        sbRowInfo = new Object[sbsForScheduler.length][3];
-        for(int i=0; i < sbsForScheduler.length; i++){
-            sbRowInfo[i][0] = sbsForScheduler[i][0];
-            sbRowInfo[i][1] = sbsForScheduler[i][1];
-            sbRowInfo[i][2] = sbsForScheduler[i][2];
-        }
-        //JPanel p =(JPanel) sbTable.getParent().getParent().getParent();
-        sbTablePanel.setBorder(new TitledBorder("Scheduler's SBs"));
-        manageTableColumnSize();//sbTable, sbRowInfo.length);
-        sbTable.repaint();
-        sbTable.revalidate();
+        displayQueuedSchedulerView();
+        startQueuedScheduler();
+        manageTableColumnSize();
         validate();
+    }
+    private void displayQueuedSchedulerView() {
+        try {
+            mainPanel.removeAll();
+        } catch(Exception e){}
+        mainPanel.setLayout(new GridLayout(2, 1));
+        mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
+        queueListPanel = new JPanel(new BorderLayout());
+        queueListPanel.setBorder(new TitledBorder("Scheduler's SBs"));
+        createQueueTableModel();
+        queueScrollPane = new JScrollPane(queueTable);
+        System.out.println(queueRowInfo.length);
+        JPanel p = new JPanel();
+        p.add(queueScrollPane);
+        queueListPanel.add(p, BorderLayout.CENTER);
+        JPanel p2 = new JPanel();
+        JButton stop = new JButton("Stop Current SB");
+        p2.add(new JLabel());
+        p2.add(stop);
+        p2.add(new JLabel());
+        queueListPanel.add(p2, BorderLayout.SOUTH);
+        queueListPanel.repaint();
+        mainPanel.add(queueListPanel);
+        mainPanel.validate();
     }
 
     private void startQueuedScheduler() {
         //get uids of sbs to send to MS to make queued scheduler
-        sb_ids = new String[sbRowInfo.length];
-        for(int i=0; i < sbRowInfo.length; i++){
-            sb_ids[i] = (String)sbRowInfo[i][2];
+        sb_ids = new String[queueRowInfo.length];
+        for(int i=0; i < queueRowInfo.length; i++){
+            sb_ids[i] = (String)queueRowInfo[i][2];
             System.out.println(sb_ids[i]);
         }
         try {

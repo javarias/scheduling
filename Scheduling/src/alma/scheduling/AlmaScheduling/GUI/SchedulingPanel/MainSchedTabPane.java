@@ -475,14 +475,17 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     public void closeTabEvent(MouseEvent e, int tabIndex) {
-        SchedulerTab tab = (SchedulerTab)getComponentAt(tabIndex);
-        tab.exit();
-        removeRowFromSchedulerTable(tab);
+        closeTab(tabIndex);
         EventListener close[] = getListeners(CloseTabListener.class);
         overTabIndex = tabIndex;
         for(int i=0; i< close.length; i++){
             ((CloseTabListener)close[i]).closeOperation(e);
         }
+    }
+    private void closeTab(int i) {
+        SchedulerTab tab = (SchedulerTab)getComponentAt(i);
+        tab.exit();
+        removeRowFromSchedulerTable(tab);
     }
 
     public void exit() {
@@ -499,6 +502,13 @@ public class MainSchedTabPane extends JTabbedPane {
             }
         }catch(Exception e){
             //logger.warning("SCHEDULING_PANEL: Error
+        }
+        try {
+            int all= getComponentCount();
+            for(int i=0; i < all;i++){
+                closeTab(i);
+            }
+        } catch (Exception e) {
         }
     }
 ///////////////////////////////////////////////////////
