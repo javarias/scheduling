@@ -393,6 +393,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         queueListPanel.add(p, BorderLayout.CENTER);
         JPanel p2 = new JPanel();
         JButton stop = new JButton("Stop Current SB");
+        stop.setToolTipText("Not yet Implemented!");
         p2.add(new JLabel());
         p2.add(stop);
         p2.add(new JLabel());

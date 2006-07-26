@@ -68,6 +68,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private TableModel sbTableModel;
     private Consumer consumer = null;
     private Vector<String> allSessionUIDs;
+    private OpenOT ot;
+    private Thread openot_thread=null;
     
     public InteractiveSchedTab(ContainerServices cs, String s, String an){
         mainPanel = new JPanel(new BorderLayout());//new GridLayout(4,1));
@@ -625,9 +627,9 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 
     private void modify() {
         try {
-            OpenOT ot = new OpenOT(currentProjectId,container);
-            Thread t = container.getThreadFactory().newThread(ot);
-            t.start();
+            ot = new OpenOT(currentProjectId,container);
+            openot_thread = container.getThreadFactory().newThread(ot);
+            openot_thread.start();
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -683,6 +685,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             container.releaseComponent(scheduler.name());
             container.releaseComponent(masterScheduler.name());
             consumer.disconnect();
+            if(openot_thread !=null){
+                openot_thread=null;
+                ot=null;
+            }
         } catch(Exception e){
             e.printStackTrace();
         }
