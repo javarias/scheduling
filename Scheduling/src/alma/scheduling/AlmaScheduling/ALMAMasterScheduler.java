@@ -67,7 +67,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.62 2006/07/25 19:39:35 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.63 2006/07/26 19:34:10 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -437,6 +437,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void startQueueScheduling(String[] sbList)
     	throws InvalidOperationEx {
 
+            logger.warning("SCHEDULING: This method will disappear soon!");
+            logger.warning("SCHEDULING: Use startQueuedScheduling(sbList, arrayName)");
         try {    
             //create an array
             String[] antennas = null;
@@ -454,7 +456,6 @@ public class ALMAMasterScheduler extends MasterScheduler
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }
-            
 	}
     
     public void startQueuedScheduling(String[] sbList, String arrayname)
@@ -530,6 +531,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     //public void startInteractiveScheduling(String arrayName) throws InvalidOperationEx {
     public void startInteractiveScheduling() throws InvalidOperationEx {
         logger.info("SCHEDULING: startInteractiveScheduling called");
+        logger.warning("SCHEDULING: this method will go away soon!");
+        logger.warning("SCHEDULING: please use startInteractiveScheduling1(arrayname)");
         try {
             manager.checkForProjectUpdates();
             Policy s_policy = createPolicy();
