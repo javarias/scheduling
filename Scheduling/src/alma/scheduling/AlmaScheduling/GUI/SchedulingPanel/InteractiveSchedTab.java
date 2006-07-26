@@ -196,7 +196,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         b.setToolTipText("Not yet implemented. Just close the tab for now.");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-               // exit();
+                exit();
             //  and close tab somehow.
             }
         });
@@ -692,7 +692,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         } catch(Exception e){
             e.printStackTrace();
         }
-        System.out.println("Exiting Interactive Scheduler on array "+arrayname);
+        logger.info("Exiting Interactive Scheduler on array "+arrayname);
     }
 
 ///////////////////////////////////////     

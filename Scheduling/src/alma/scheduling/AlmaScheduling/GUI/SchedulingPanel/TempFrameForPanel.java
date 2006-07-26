@@ -46,6 +46,7 @@ public class TempFrameForPanel extends JFrame{
     }
 
     public void exit(){
+        System.out.println("Calling exit in TempFrameForSchedulingPanel");
         mainSchedPanel.exit();
         dispose();
     }

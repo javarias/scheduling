@@ -490,6 +490,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
     public void exit() {
         //release all components.
+        logger.info("SCHEDULING_PANEL: in exit of MainSchedulingTab");
         //make sure there are no open dialogs/frames/etc..
         try {
             container.releaseComponent(masterScheduler.name());
