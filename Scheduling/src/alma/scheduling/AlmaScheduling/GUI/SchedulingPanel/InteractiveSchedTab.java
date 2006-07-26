@@ -723,10 +723,12 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 ///////////////////////////////////////     
 
     public void receive(XmlStoreNotificationEvent event) {
-        logger.info("SCHEDULING_PANEL: Got XML Store event");
+        logger.info("SCHEDULING_PANEL: Got XML Store event, not doing anything with it now.");
+        /*
         CheckArchiveEvent processor = new CheckArchiveEvent(event);
         Thread t = new Thread(processor);
         t.start();
+        */
     }
 
     private void addUIDToSession(String uid) {
