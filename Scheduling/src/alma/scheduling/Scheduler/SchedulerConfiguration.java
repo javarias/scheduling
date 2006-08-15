@@ -108,7 +108,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.12 2006/08/15 13:34:33 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.13 2006/08/15 22:57:42 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -644,7 +644,11 @@ public class SchedulerConfiguration extends TaskControl {
         if(currentSB == null || currentSB.equals("")) {
             return false;
         } else {
-            return true;
+            if(getQueue().getRunning().length > 0){
+                return true;        
+            } else {
+                return false;
+            }
         }
         //return currentSB == null;
     }
