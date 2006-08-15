@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.65 2006/08/15 20:52:35 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.66 2006/08/15 22:08:09 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -236,6 +236,7 @@ public class ALMAProjectManager extends ProjectManager {
 	    //If this SB has reached its maximum number of repeats set it to complete.
         if(completed.getIndefiniteRepeat()) {
             logger.info("SCHEDULING: This sb ("+completed.getId()+") has an indefinite repeat count");
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
             return;
         }
         
