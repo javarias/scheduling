@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.15 2006/08/15 20:51:31 sslucero Exp $
+ * @version $Id: SB.java,v 1.16 2006/08/15 22:37:12 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -367,7 +367,10 @@ public class SB implements ProgramMember {
 					totalUsedTimeInSeconds += maximumTimeInSeconds;
 					// If the maximum number of repeats has been reached ...
                     //System.out.println("In SB: "+getNumberExec() +" : "+maximumNumberOfRepeats);
-				    if (getNumberExec() >= maximumNumberOfRepeats) {
+                    if(getIndefiniteRepeat() ){
+				 		parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
+				 		status.setReady();
+                    } else if (getNumberExec() >= maximumNumberOfRepeats) {
 						// ... then mark it complete and set its end time.
                         //System.out.println("Status = "+ status.getStatus());
                         //System.out.println("started = "+ status.getStartTime().toString());
