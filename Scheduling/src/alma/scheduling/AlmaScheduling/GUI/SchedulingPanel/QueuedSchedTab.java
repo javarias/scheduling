@@ -409,6 +409,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         statusDisplayTA.setEditable(false); //read only log!
         JScrollPane sp = new JScrollPane(statusDisplayTA);
         statusDisplayPanel.add(sp);
+        mainPanel.add(statusDisplayPanel);
         mainPanel.validate();
     }
 
@@ -441,13 +442,13 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             if(sbname.startsWith("Something odd happened")){
                 statusDisplayTA.append(sbname);
             } else {
+                System.out.println("Got ExecBlockStartedEvent and sb belongs");
                 statusDisplayTA.append("Execution started for SB: "+sbname);
                 updateSBStatusInfoInTable(sbid, "RUNNING");
             }
         }
     }
     public void receive(ExecBlockEndedEvent e){
-        System.out.println("Got ExecBlockEndedEvent");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         DateTime end_time = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
@@ -457,6 +458,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             if(sbname.startsWith("Something odd happened")){
                 statusDisplayTA.append(sbname);
             } else {
+                System.out.println("Got ExecBlockEndedEvent and sb belongs");
                 statusDisplayTA.append("Execution ended for SB: "+sbname);
                 String completion;
                 switch(e.status.value()) {
@@ -496,6 +498,10 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             if(queueRowInfo[i][3] == id){ //comparing uids
                 queueRowInfo[i][2] = status; //updating status if uids match
                 queueTable.repaint();
+                queueScrollPane.repaint();
+                queueListPanel.repaint();
+                manageTableColumnSize();
+                queueTable.revalidate();
                 validate();
                 return;
             }
