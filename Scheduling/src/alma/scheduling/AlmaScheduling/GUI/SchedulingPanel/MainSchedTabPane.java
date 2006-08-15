@@ -486,8 +486,7 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
     private void closeTab(int i) {
-        //System.out.println("Closing tab at index "+i);
-        SchedulerTab tab = (SchedulerTab)getComponentAt(i-1);
+        SchedulerTab tab = (SchedulerTab)getComponentAt(i);
         tab.exit();
         removeRowFromSchedulerTable(tab);
         remove(i);
