@@ -46,7 +46,8 @@ public class MainSchedTabPane extends JTabbedPane {
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
-                remove(overTabIndex);
+                closeTab(overTabIndex);
+                //remove(overTabIndex);
             }
         });
         openWindows = new Vector<Window>();
@@ -483,9 +484,11 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
     private void closeTab(int i) {
+        System.out.println("Closing tab at index "+i);
         SchedulerTab tab = (SchedulerTab)getComponentAt(i);
         tab.exit();
         removeRowFromSchedulerTable(tab);
+        remove(i);
     }
 
     public void exit() {

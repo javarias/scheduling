@@ -622,6 +622,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             scheduler.stopSB();
         }catch(Exception e){
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error when trying to stop an sb: "+e.toString(),
+                    "Stop SB Error", JOptionPane.ERROR_MESSAGE);
+            return;
+                    
         }
     }
 
