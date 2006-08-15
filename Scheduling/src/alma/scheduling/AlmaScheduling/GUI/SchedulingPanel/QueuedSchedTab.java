@@ -22,7 +22,7 @@ import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
 
 public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
-    private final String[] sbColumnInfo = {"SB Name", "PI", "UID"};
+    private final String[] sbColumnInfo = {"SB Name", "PI","Exec Status", "UID"};
     private ContainerServices container;
     private Logger logger;
     //private JPopupMenu rightClickMenu;
@@ -50,6 +50,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private JPanel infoPanel;
     private JPanel queueListPanel;
     private JPanel statusDisplayPanel;
+    private JTextArea statusDisplayTA;
 
     public QueuedSchedTab(ContainerServices cs, String an){
         container = cs;
@@ -295,7 +296,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             for(int i=0; i < sblites.length; i++){
                 sbRowInfo[i][0] = sblites[i].sbName;
                 sbRowInfo[i][1] = sblites[i].PI;
-                sbRowInfo[i][2] = sblites[i].schedBlockRef;
+                sbRowInfo[i][2] = "Waiting";
+                sbRowInfo[i][3] = sblites[i].schedBlockRef;
             }
             sbTable.repaint();
             System.out.println("got "+ sblites.length+" sb lites ");
@@ -323,6 +325,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
                 queueRowInfo[i][0] = sbRowInfo[rows[i]][0];
                 queueRowInfo[i][1] = sbRowInfo[rows[i]][1];
                 queueRowInfo[i][2] = sbRowInfo[rows[i]][2];
+                queueRowInfo[i][3] = sbRowInfo[rows[i]][3];
             }
         } else {
             //check their uid to make sure they're not in queue already
@@ -338,7 +341,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             int ctr =0;
             for(int i=0; i< possibleSBsToAdd.length; i++){
                 for(int j=0; j < queueRowInfo.length; j++){
-                    if(possibleSBsToAdd[i][2] == queueRowInfo[j][2]){
+                    if(possibleSBsToAdd[i][3] == queueRowInfo[j][3]){ //comparing UIDs which are in last column.
                         System.out.println("already there not adding");
                         add = false;
                         break;
@@ -352,7 +355,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             queueRowInfo = new Object[newQueue.size()][sbColumnInfo.length];
             for(int i=0; i< newQueue.size();i++){
                 queueRowInfo[i] = newQueue.elementAt(i);
-                System.out.println("queue row info = "+ queueRowInfo[i][2]);
+                System.out.println("queue row info = "+ queueRowInfo[i][3]); //uid
             }
         }
 
@@ -400,6 +403,12 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         queueListPanel.add(p2, BorderLayout.SOUTH);
         queueListPanel.repaint();
         mainPanel.add(queueListPanel);
+        //execution log window.
+        statusDisplayPanel = new JPanel();
+        statusDisplayTA = new JTextArea();
+        statusDisplayTA.setEditable(false); //read only log!
+        JScrollPane sp = new JScrollPane(statusDisplayTA);
+        statusDisplayPanel.add(sp);
         mainPanel.validate();
     }
 
@@ -407,7 +416,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         //get uids of sbs to send to MS to make queued scheduler
         sb_ids = new String[queueRowInfo.length];
         for(int i=0; i < queueRowInfo.length; i++){
-            sb_ids[i] = (String)queueRowInfo[i][2];
+            sb_ids[i] = (String)queueRowInfo[i][3]; //uid
             System.out.println(sb_ids[i]);
         }
         try {
@@ -422,19 +431,76 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     }
     // Receive methods for NC
     public void receive(ExecBlockStartedEvent e){
-        System.out.println("Got ExecBlockStartedEvent");
+        //System.out.println("Got ExecBlockStartedEvent");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         boolean belongs = ebForThisScheduler(sbid);
         DateTime start_time = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
+        if(belongs) {
+            String sbname = getSBNameFromID(sbid);
+            if(sbname.startsWith("Something odd happened")){
+                statusDisplayTA.append(sbname);
+            } else {
+                statusDisplayTA.append("Execution started for SB: "+sbname);
+                updateSBStatusInfoInTable(sbid, "RUNNING");
+            }
+        }
     }
     public void receive(ExecBlockEndedEvent e){
         System.out.println("Got ExecBlockEndedEvent");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         DateTime end_time = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
+        boolean belongs = ebForThisScheduler(sbid);
+        if(belongs) {
+            String sbname = getSBNameFromID(sbid);
+            if(sbname.startsWith("Something odd happened")){
+                statusDisplayTA.append(sbname);
+            } else {
+                statusDisplayTA.append("Execution ended for SB: "+sbname);
+                String completion;
+                switch(e.status.value()) {
+                    case 0:
+                        completion ="FAILED";
+                        break;
+                    case 1:
+                        completion ="SUCCESS";
+                        break;
+                    case 2:
+                        completion ="PARTIAL";
+                        break;
+                    case 3:
+                        completion ="TIMEOUT";
+                        break;
+                    default:
+                        completion ="ERROR";
+                        break;
+                }
+                statusDisplayTA.append("Execution completion status = "+completion);
+                updateSBStatusInfoInTable(sbid, completion);
+            }
+        }
+        statusDisplayPanel.validate();
+    }
+    private String getSBNameFromID(String id) {
+        for(int i=0; i < sblites.length; i++){
+            if(sblites[i].schedBlockRef.equals(id)){
+                return sblites[i].sbName;
+            }
+        }
+        return "Something odd happened.. sb ("+id+") somehow thought it was part of this session.";
     }
 
+    private void updateSBStatusInfoInTable(String id, String status) {
+        for(int i=0; i < queueRowInfo.length; i++) {
+            if(queueRowInfo[i][3] == id){ //comparing uids
+                queueRowInfo[i][2] = status; //updating status if uids match
+                queueTable.repaint();
+                validate();
+                return;
+            }
+        }
+    }
     /**
       * Takes the sb id that comes with the exec block event and compares it to the 
       * sbs being run by this scheduler.
