@@ -43,6 +43,7 @@ public class MainSchedTabPane extends JTabbedPane {
         }
         getMasterSchedulerRef();
         addTab("Main",createMainView());
+        //System.out.println("added main, tab count ="+getTabCount());
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
@@ -241,8 +242,9 @@ public class MainSchedTabPane extends JTabbedPane {
                 if(arrayname.equals("") || arrayname == null) {
                     return;
                 }
-                System.out.println("Selected array = "+arrayname);
+                logger.info("Selected array = "+arrayname);
                 addTab("QS - "+arrayname,createQueuedSchedulingView(arrayname)); 
+                //System.out.println("added QS, tab count ="+getTabCount());
             }
         });
         p2.add(b);
@@ -260,12 +262,13 @@ public class MainSchedTabPane extends JTabbedPane {
                 if(arrayname.equals("") || arrayname == null) {
                     return;
                 }
-                System.out.println("Selected array = "+arrayname);
+                logger.info("Selected array = "+arrayname);
                 try {
                     String is = masterScheduler.startInteractiveScheduling1(
                         arrayname);
                     addTab("IS - "+arrayname,
                         createInteractiveSchedulingView(is, arrayname)); 
+                    //System.out.println("added IS, tab count ="+getTabCount());
                 } catch(Exception e){
                     e.printStackTrace();
                 }
@@ -298,6 +301,7 @@ public class MainSchedTabPane extends JTabbedPane {
                     arrayname = "";
                 }
                 addTab("DS", createDynamicSchedulingView(arrayname));
+                //System.out.println("added DS, tab count ="+getTabCount());
             }
         });
         p2.add(b);
@@ -397,7 +401,6 @@ public class MainSchedTabPane extends JTabbedPane {
     private void showCreateArrayPopup() {
         CreateArrayFrame f = new CreateArrayFrame(container);
         f.setVisible(true);
-   //     System.out.println(getParent().getParent().getParent().getClass().getName());
         openWindows.add(f);
         //Frame parent = JOptionPane.getFrameForComponent(this);
     }
@@ -414,7 +417,7 @@ public class MainSchedTabPane extends JTabbedPane {
       *     Ecole des Mines de Nantes, France
       */
 	public void detachTab(int index) {
-        System.out.println(index);
+        //System.out.println(index);
 		if (index < 0 || index >= getTabCount())
 			return;
 
@@ -476,7 +479,6 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     public void closeTabEvent(MouseEvent e, int tabIndex) {
-        closeTab(tabIndex);
         EventListener close[] = getListeners(CloseTabListener.class);
         overTabIndex = tabIndex;
         for(int i=0; i< close.length; i++){
@@ -484,8 +486,8 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
     private void closeTab(int i) {
-        System.out.println("Closing tab at index "+i);
-        SchedulerTab tab = (SchedulerTab)getComponentAt(i);
+        //System.out.println("Closing tab at index "+i);
+        SchedulerTab tab = (SchedulerTab)getComponentAt(i-1);
         tab.exit();
         removeRowFromSchedulerTable(tab);
         remove(i);

@@ -630,13 +630,17 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     private void modify() {
+        JOptionPane.showMessageDialog(this, "Please use ALMA-OT from command line for now.",
+                "Use ALMA-OT", JOptionPane.INFORMATION_MESSAGE );
+
+        /*
         try {
             ot = new OpenOT(currentProjectId,container);
             openot_thread = container.getThreadFactory().newThread(ot);
             openot_thread.start();
         } catch(Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void updateSBRowInfo(){
