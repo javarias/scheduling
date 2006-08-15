@@ -440,10 +440,10 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         if(belongs) {
             String sbname = getSBNameFromID(sbid);
             if(sbname.startsWith("Something odd happened")){
-                statusDisplayTA.append(sbname);
+                statusDisplayTA.append(sbname+"\n");
             } else {
                 System.out.println("Got ExecBlockStartedEvent and sb belongs");
-                statusDisplayTA.append("Execution started for SB: "+sbname);
+                statusDisplayTA.append("Execution started for SB: "+sbname+"\n");
                 updateSBStatusInfoInTable(sbid, "RUNNING");
             }
         }
@@ -456,10 +456,10 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         if(belongs) {
             String sbname = getSBNameFromID(sbid);
             if(sbname.startsWith("Something odd happened")){
-                statusDisplayTA.append(sbname);
+                statusDisplayTA.append(sbname+"\n");
             } else {
                 System.out.println("Got ExecBlockEndedEvent and sb belongs");
-                statusDisplayTA.append("Execution ended for SB: "+sbname);
+                statusDisplayTA.append("Execution ended for SB: "+sbname+"\n");
                 String completion;
                 switch(e.status.value()) {
                     case 0:
@@ -478,7 +478,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
                         completion ="ERROR";
                         break;
                 }
-                statusDisplayTA.append("Execution completion status = "+completion);
+                statusDisplayTA.append("Execution completion status = "+completion+"\n");
                 updateSBStatusInfoInTable(sbid, completion);
             }
         }
@@ -538,6 +538,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         try{
             container.releaseComponent(masterScheduler.name());
             try {
+                thread.interrupt();
                 run.stop();
             }catch(Exception e){}
             run = null;

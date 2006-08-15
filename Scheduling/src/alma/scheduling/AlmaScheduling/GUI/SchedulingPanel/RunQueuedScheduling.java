@@ -1,5 +1,6 @@
 package alma.scheduling.AlmaScheduling.GUI.SchedulingPanel;
 
+import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.MasterSchedulerIF;
 
@@ -8,11 +9,13 @@ public class RunQueuedScheduling implements Runnable {
     private MasterSchedulerIF masterScheduler = null;
     private String[] sb_ids;
     private String arrayname;
+    private Logger logger;
     
     public RunQueuedScheduling(ContainerServices cs, String[] ids, String array){
         sb_ids = ids;
         arrayname = array;
         container = cs;
+        logger =cs.getLogger();
         getMS();
     }
     private void  getMS(){
@@ -24,15 +27,18 @@ public class RunQueuedScheduling implements Runnable {
             }
         } catch(Exception e){
             e.printStackTrace();
+            logger.severe("Error in RunQueuedScheduling: "+e.toString());
         }
     }
     private void releaseMS(){
         try {
             if(masterScheduler != null){
                 container.releaseComponent(masterScheduler.name());
+                
             }
         } catch(Exception e){
             e.printStackTrace();
+            logger.severe("Error in RunQueuedScheduling: "+e.toString());
         }
     }
 
@@ -46,14 +52,16 @@ public class RunQueuedScheduling implements Runnable {
         } catch(Exception e) {
             releaseMS();
             e.printStackTrace();
+            logger.severe("Error in RunQueuedScheduling: "+e.toString());
         }
     }
     
     public void stop() {
         try {
-            container.releaseComponent(masterScheduler.name());
+            releaseMS();
         } catch (Exception e){
             e.printStackTrace();
+            logger.severe("Error in RunQueuedScheduling: "+e.toString());
         }
     }
 }
