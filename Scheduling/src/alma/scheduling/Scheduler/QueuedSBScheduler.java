@@ -98,7 +98,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	            config.errorEnd(msg,clock.getDateTime());
     			error(msg);
     		}
-            config.getLog().info("SCHEDULING: Queued Scheduler created");
+            config.getLog().info("SCHEDULING: Queued Scheduler configuration set");
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -150,6 +150,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         */
         if(config.getQueue().getRunning().length > 0) {
 
+            logger.info("SCHEDULING: Queued scheduler sees something already running");
             return false;
         }
         logger.info("SCHEDULING: Queued scheduler execute # "+tmpCount);
