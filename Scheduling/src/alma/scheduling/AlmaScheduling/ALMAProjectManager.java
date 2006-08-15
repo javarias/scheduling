@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.66 2006/08/15 22:08:09 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.67 2006/08/15 22:39:46 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -228,31 +228,36 @@ public class ALMAProjectManager extends ProjectManager {
     public void setSBComplete(ExecBlock eb) {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
-        logger.finest("##########################");
-        logger.finest("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
-        logger.finest("sb's status in PM = "+completed.getStatus().getStatus());
-        logger.finest("sb's starttime in PM = "+completed.getStatus().getStartTime());
-        logger.finest("##########################");
+        logger.info("##########################");
+        logger.info("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
+        logger.info("sb's status in PM = "+completed.getStatus().getStatus());
+        logger.info("sb's starttime in PM = "+completed.getStatus().getStartTime());
+        logger.info("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
         if(completed.getIndefiniteRepeat()) {
             logger.info("SCHEDULING: This sb ("+completed.getId()+") has an indefinite repeat count");
-            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
+	    try {
+	        completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
+		logger.info("completed sb now has status = "+completed.getStatus().getStatus());
+	    }catch (Exception e){ 
+		logger.severe(e.toString());
+	    }
             return;
         }
         
         if( (completed.getNumberExec() +1) > completed.getMaximumNumberOfRepeats()  ){
-            logger.finest("###########set to complete####");
-            logger.finest("Setting end time for "+eb.getId());
-            logger.finest(" # exec = "+completed.getNumberExec());
-            logger.finest(" # repeats = "+completed.getMaximumNumberOfRepeats());
-            logger.finest("#################################");
+            logger.info("###########set to complete####");
+            logger.info("Setting end time for "+eb.getId());
+            logger.info(" # exec = "+completed.getNumberExec());
+            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.info("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         } else { //set it to ready
-            logger.finest("##########set to ready###########");
-            logger.finest("Setting end time for "+eb.getId());
-            logger.finest(" # exec = "+completed.getNumberExec());
-            logger.finest(" # repeats = "+completed.getMaximumNumberOfRepeats());
-            logger.finest("#################################");
+            logger.info("##########set to ready###########");
+            logger.info("Setting end time for "+eb.getId());
+            logger.info(" # exec = "+completed.getNumberExec());
+            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.info("#################################");
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
