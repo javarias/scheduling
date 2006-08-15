@@ -91,7 +91,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.40 2006/07/17 21:23:01 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.41 2006/08/15 20:52:35 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -655,6 +655,7 @@ public class ProjectUtil {
 			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
     			sb.setMaximumNumberOfRepeats(repeatcount); 
+                sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
 
     		}
             
