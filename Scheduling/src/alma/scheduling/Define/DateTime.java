@@ -50,7 +50,7 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version $Id: DateTime.java,v 1.8 2005/09/26 20:23:00 sslucero Exp $
+ * @version $Id: DateTime.java,v 1.9 2006/08/16 13:24:59 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {
@@ -685,7 +685,13 @@ public class DateTime {
 	 * @return The local sideral time in hours.
 	 */
 	public double getLocalSiderealTime() {
-		return getGreenwichMeanSiderealTime() - longitudeInHours;
+		double x = getGreenwichMeanSiderealTime() - longitudeInHours;
+        if(x<0)
+                x+= 24.0;
+        if(x> 24.0)
+            x-= 24.0;
+        return x;
+                
 	}
 
 	/**
@@ -714,7 +720,7 @@ public class DateTime {
 	// * @param c the local clock
 	// * @return
 	//*/
-	/*static public DateTime lstToLocalTime(double lst, Date d) {
+	static public DateTime lstToLocalTime(double lst, Date d) {
 		// (1) Find the Greenwich mean sideral time.
 		double gmst = lst + longitudeInHours;
 		// (2) For this date, calculate the sideral time at 0h UT.
@@ -732,6 +738,7 @@ public class DateTime {
 		// (3) Then calulate the Greenwich mean time for this Greenwich mean sideral time.
 		double ut = (gmst - theta) / 1.00273790935;
 		// (4) Finally, apply the time zone correction.
+        /*
 		ut -= convertToUT;
 		System.out.println(">>> gmst " + gmst);
 		System.out.println(">>> x " + x);
@@ -739,26 +746,30 @@ public class DateTime {
 		System.out.println(">>> y " + y);
 		System.out.println(">>> theta " + theta);
 		System.out.println(">>> ut " + ut);
+        */
 		x = new DateTime(d,ut);
 		return x;
 	}
+    
 	static public void main(String[] args) {
-		DateTime.setClockCoordinates(107.6177275,34.0787491666667,-7);
+		DateTime.setClockCoordinates(-106.905917, 34.068693, -6);
+		//DateTime.setClockCoordinates(107.6177275, 34.0787491666667,-7);
 		System.out.println("Timezone is MST.");
 
 		long currentSystemTime = System.currentTimeMillis();
-		DateTime current  = new DateTime(currentSystemTime / 86400000.0 + 2440587.5);
+		DateTime current  = new DateTime(currentSystemTime);// / 86400000.0 + 2440587.5);
 		System.out.println("The current time, as a DateTime is " + current.toString());
 		System.out.println("The currrent system time is " + currentSystemTime);
+        
 		
 		double lst = current.getLocalSiderealTime();
 		System.out.println("lst = " + lst);
 		
-		Date day = new Date (2004,2,12);
+		Date day = new Date (2006,8,14);
 		DateTime x = DateTime.lstToLocalTime(lst,day);
 		System.out.println("Lst to local = " + x);
-	}*/
-
+	}
+    
 	/**
 	 * Get the conversion factor that converts local time to UT, i.e.
 	 * the factor, in units of fractions of a day, that must be added 
