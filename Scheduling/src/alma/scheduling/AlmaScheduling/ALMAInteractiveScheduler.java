@@ -78,9 +78,15 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     }
 
     public void cleanUp(){
+        aboutToAbort();
     }
 
     public void aboutToAbort() {
+        try {
+            container.releaseComponent(masterScheduler.name());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     /////////////////////////////////////////////////////////////////////
 
@@ -146,6 +152,8 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws InvalidOperationEx, NoSuchSBEx {
 
         try {
+            logger.info("sb id: "+sbId);
+            logger.info("scheduler id: "+schedulerId);
             masterScheduler.executeInteractiveSB(sbId, schedulerId);
         } catch(Exception e){
             logger.severe("SCHEDULING: executeSB in IS_COMP"+e.toString());
