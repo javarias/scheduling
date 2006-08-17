@@ -61,6 +61,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	
 	// The interactive queue.
 	private SBQueue queue;
+    private String[] sbsNotDone;
 
     private int tmpCount=1;
 	
@@ -150,29 +151,28 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         */
         if(config.getQueue().getRunning().length > 0) {
 
-            logger.info("SCHEDULING: Queued scheduler sees something already running");
             return false;
         }
         logger.info("SCHEDULING: Queued scheduler execute # "+tmpCount);
         tmpCount++;
-		SB[] sbs = queue.getReady();
-        logger.info("%%%%%%%%%%%%%%%%%%%");
-        logger.info("length of ready sbs = "+sbs.length);
-        logger.info("%%%%%%%%%%%%%%%%%%%");
-		if (sbs == null || sbs.length == 0) {
+		//SB[] sbs = queue.getReady();
+        //logger.info("%%%%%%%%%%%%%%%%%%%");
+        //logger.info("length of ready sbs = "+sbs.length);
+        //logger.info("%%%%%%%%%%%%%%%%%%%");
+		if (sbsNotDone == null || sbsNotDone.length == 0) {
 			//error("No SBs to execute");
             logger.info("SCHEDULING: No sbs to execute");
             return true;
 		}
-        String[] ids = queue.getAllReadyIds();
-		if (ids == null) {
+        //String[] ids = queue.getAllReadyIds();
+		//if (ids == null) {
 			//error("No ready SBs to execute");
-            logger.info("SCHEDULING: No sbs ready to execute");
-            return true;
-		}
-        String[] scores = new String[ids.length];
-        double[] d = new double[ids.length];
-		BestSB best = new BestSB (ids, scores, d, d, d, clock.getDateTime());
+            //logger.info("SCHEDULING: No sbs ready to execute");
+            //return true;
+		//}
+        String[] scores = new String[idsNotDone.length];
+        double[] d = new double[idsNotDone.length];
+		BestSB best = new BestSB (idsNotDone, scores, d, d, d, clock.getDateTime());
         SB sb = sbs[best.getSelection()];
         //TODO need to check that if there are more than one sbs in queue then selection 
         //     count needs to be increased.
@@ -195,8 +195,26 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             return true;
         }
 		control.execSB(config.getArrayName(),best);
+        takeIdFromSBsNotDone(sb.getId());
         return false;
 	}
+
+    private void takeIdFromSBsNotDone(String id) {
+        String[] newIdList;
+        for(int i=0; i < sbsNotDone.length;i++){
+            if(sbsNotDone[i].equals(id)){
+                newIdList = new String[sbsNotDone.length -1];
+                int ctr = 0;
+                for(int j=0; j< sbsNotDone.length; j++){
+                    if(j != i){
+                        newIdList[ctr++] = sbsNotDone[j]; 
+                    }
+                }
+            }
+        }
+        sbsNotDone = new String[newIdList.length];
+        sbsNotDone = newIdList;
+    }
 
 	/**
 	 * Stop the currently executing SB.
@@ -221,6 +239,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
     public void run() {
         try {
+            sbsNotDone = queue.getAllIDs();
             while(true) {
                 if(executeSBs()) {
                     break;
