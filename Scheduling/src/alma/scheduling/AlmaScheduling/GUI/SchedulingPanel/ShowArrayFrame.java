@@ -25,7 +25,7 @@ public class ShowArrayFrame extends JDialog {
     private Object[][] arrayRowInfo;
     private String[] autoArrays;
     private String[] manArrays;
-    private static String selectedArray="";
+    private static String selectedArray;//="";
     private JPanel centerDisplayPanel;
     private JPanel arrayDisplayPanel;
     private JScrollPane selectedArrayPane;
@@ -51,6 +51,7 @@ public class ShowArrayFrame extends JDialog {
         getContentPane().add(createArrayTable(), BorderLayout.CENTER);
         getContentPane().add(actionButtons(), BorderLayout.SOUTH);
         getArrays();
+        selectedArray="";
         addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e){
                 addArrayDetails();

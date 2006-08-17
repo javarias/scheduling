@@ -23,6 +23,7 @@ import alma.xmlstore.ArchiveInternalError;
 import alma.xmlstore.Cursor;
 import alma.xmlstore.CursorPackage.QueryResult;
 import alma.xmlentity.XmlEntityStruct;
+import alma.Control.ExecBlockEndedEvent;
 //scheduling stuff
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
@@ -36,7 +37,7 @@ import alma.scheduling.GUI.InteractiveSchedGUI.OpenOT;
 
 public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] projColumnInfo = {"Project Name", "PI", "Version"};
-    private final String[] sbColumnInfo = { "SB Name", "Priority", "Freq."};
+    private final String[] sbColumnInfo = { "SB Name","Status", "Priority", "Freq."};
     private ArchiveConnection archiveConnection;
     private Operational archive;
     private EntityDeserializer entityDeserializer;
@@ -67,6 +68,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private JTable sbTable;
     private TableModel sbTableModel;
     private Consumer consumer = null;
+    private Consumer ctrl_consumer = null;
     private Vector<String> allSessionUIDs;
     private OpenOT ot;
     private Thread openot_thread=null;
@@ -88,6 +90,9 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,container);
             consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             consumer.consumerReady();
+            ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
+            ctrl_consumer.consumerReady();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -335,7 +340,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     private void displayProjectSBs() {
-        sbRowInfo = new Object[currentProjectLite.allSBIds.length][4];
+        sbRowInfo = new Object[currentProjectLite.allSBIds.length][5]; //5th is uid
         currentProjectSBs= new SBLite[1]; 
         try {
             currentProjectSBs = masterScheduler.getSBLite(currentProjectLite.allSBIds); 
@@ -358,10 +363,11 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         for(int i=0; i < currentProjectSBs.length; i++){
             sbRowInfo[i][0] = currentProjectSBs[i].sbName;
-            sbRowInfo[i][1] = currentProjectSBs[i].priority;
-            sbRowInfo[i][2] = String.valueOf(currentProjectSBs[i].freq);
-            sbRowInfo[i][3] = currentProjectSBs[i].schedBlockRef;
-            addUIDToSession((String)sbRowInfo[i][3]);
+            sbRowInfo[i][1] = "STATUS";
+            sbRowInfo[i][2] = currentProjectSBs[i].priority;
+            sbRowInfo[i][3] = String.valueOf(currentProjectSBs[i].freq);
+            sbRowInfo[i][4] = currentProjectSBs[i].schedBlockRef;
+            addUIDToSession((String)sbRowInfo[i][4]);
         }
         sbTableModel = new AbstractTableModel() {
             public int getColumnCount() { return sbColumnInfo.length; }
@@ -519,7 +525,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             return;
         }
         int row = sbTable.getSelectedRow();
-        String id =(String)sbRowInfo[row][3];
+        String id =(String)sbRowInfo[row][4];
         JTextArea info = new JTextArea();
         info.setEditable(false);
         SBLite sb = getSBLiteForId(id);
@@ -600,10 +606,11 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         //get selected sb
         int row = sbTable.getSelectedRow();
-        String sbId =(String) sbRowInfo[row][3];
+        String sbId =(String) sbRowInfo[row][4];
         //send sb to scheduler comp to be executed
         try {
             scheduler.executeSB(sbId);
+            updateSBStatusInTable(sbId, "RUNNING");
         }catch(Exception e){} 
     }
     private boolean isSBTableSelectStatusGood() {
@@ -649,9 +656,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             System.out.println((String)sbRowInfo[i][0]);
             sbRowInfo[i][0] = currentProjectSBs[i].sbName;
             System.out.println(currentProjectSBs[i].sbName);
-            sbRowInfo[i][1] = currentProjectSBs[i].priority;
-            sbRowInfo[i][2] = String.valueOf(currentProjectSBs[i].freq);
-            sbRowInfo[i][3] = currentProjectSBs[i].schedBlockRef;
+            sbRowInfo[i][1] = "STATUS";
+            sbRowInfo[i][2] = currentProjectSBs[i].priority;
+            sbRowInfo[i][3] = String.valueOf(currentProjectSBs[i].freq);
+            sbRowInfo[i][4] = currentProjectSBs[i].schedBlockRef;
         }
         manageSBTableColumnSize();
         sbTable.validate();
@@ -659,6 +667,19 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         tableDisplayPanel.validate();
         validate();
     }
+
+    private void updateSBStatusInTable(String sbid, String status) {
+        for(int i=0;i< sbRowInfo.length;i++){
+            if(sbRowInfo[i][4].equals(sbid)){
+                sbRowInfo[i][1] = status;
+                sbTable.validate();
+                sbTable.repaint();
+                tableDisplayPanel.validate();
+                validate();
+            }
+        }
+    }
+
 
     private void remove(){
     }
@@ -688,9 +709,11 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     public void exit() {
+        logger.info("EXIT IN IS");
         try{
+            //disconnectFromArchive();
             logger.info("About to release "+scheduler.name());
-            container.releaseComponent(scheduler.name());
+            container.releaseComponent(schedulername);
             container.releaseComponent(masterScheduler.name());
             consumer.disconnect();
             if(openot_thread !=null){
@@ -704,6 +727,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
 ///////////////////////////////////////     
+    /*
     private void connectToArchive() throws SchedulingException {
         try{
             archiveConnection = alma.xmlstore.ArchiveConnectionHelper.narrow(
@@ -728,6 +752,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         
     }
+    */
 ///////////////////////////////////////     
 
     public void receive(XmlStoreNotificationEvent event) {
@@ -739,6 +764,47 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         */
     }
 
+    public void receive(ExecBlockEndedEvent e){
+        String exec_id = e.execId.entityId;
+        String sbid = e.sbId.entityId;
+        boolean belongs = ebForThisScheduler(sbid);
+        if(belongs){
+            String completion;
+            switch(e.status.value()) {
+                case 0:
+                    completion ="FAILED";
+                    break;
+                case 1:
+                    completion ="SUCCESS";
+                    break;
+                case 2:
+                    completion ="PARTIAL";
+                    break;
+                case 3:
+                    completion ="TIMEOUT";
+                    break;
+                default:
+                    completion ="ERROR";
+                    break;
+            }
+            updateSBStatusInTable(sbid, completion);
+        }
+    }
+
+    /**
+      * Takes the sb id that comes with the exec block event and compares it to the 
+      * sbs being run by this scheduler.
+      * @return true if there is a match
+      */
+    private boolean ebForThisScheduler(String sb){
+        for(int i=0; i < currentProjectSBs.length; i++){
+            if(currentProjectSBs[i].schedBlockRef.equals(sb)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private void addUIDToSession(String uid) {
         //if(isUidPartOfThisSession(uid)){
           //  return;
@@ -765,6 +831,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
     }
 
+    /*
     private void addNewEntity(String uid) {
         try {
             XmlEntityStruct xml = archive.retrieveDirty(uid);
@@ -789,6 +856,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             e.printStackTrace();
         }
     }
+    */
         //need to connect to the archive now and get the entity 
         //so that we can see what class it is
 
@@ -812,7 +880,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             logger.info("operation = store");
             //check here to see if what is stored has our project's reference
             logger.info("SCHEDULING_PANEL: got store for entity "+uid);
-            addNewEntity(uid);
+            //addNewEntity(uid);
         } else if(type == alma.xmlstore.operationType.UPDATED_XML){
             logger.info("operation = update");
             //check here to see if what is updated belongs in our queue of sbs 

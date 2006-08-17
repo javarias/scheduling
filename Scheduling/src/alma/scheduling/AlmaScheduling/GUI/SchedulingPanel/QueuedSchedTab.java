@@ -343,7 +343,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
                 for(int j=0; j < queueRowInfo.length; j++){
                     if(possibleSBsToAdd[i][3] == queueRowInfo[j][3]){ //comparing UIDs which are in last column.
                         System.out.println("already there not adding");
-                        add = false;
+                        //check repeat count, add if not maxed out repeat count.
+                        //add = false; TODO add this back in once its possible to check the repeat count.
                         break;
                     }
                 }
@@ -536,12 +537,15 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     public void exit() {
+        logger.info("EXIT IN QS");
         try{
             container.releaseComponent(masterScheduler.name());
             try {
                 thread.interrupt();
                 run.stop();
-            }catch(Exception e){}
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             run = null;
             thread = null;
             consumer.disconnect();

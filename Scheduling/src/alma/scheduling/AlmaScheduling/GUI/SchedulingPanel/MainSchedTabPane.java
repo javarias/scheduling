@@ -47,6 +47,7 @@ public class MainSchedTabPane extends JTabbedPane {
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
+                logger.info("in close operation");
                 closeTab(overTabIndex);
                 //remove(overTabIndex);
             }
@@ -479,6 +480,7 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     public void closeTabEvent(MouseEvent e, int tabIndex) {
+        logger.info("in close tab event");
         EventListener close[] = getListeners(CloseTabListener.class);
         overTabIndex = tabIndex;
         for(int i=0; i< close.length; i++){
@@ -486,6 +488,7 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
     private void closeTab(int i) {
+        logger.info("in close tab");
         SchedulerTab tab = (SchedulerTab)getComponentAt(i);
         tab.exit();
         removeRowFromSchedulerTable(tab);
@@ -511,6 +514,7 @@ public class MainSchedTabPane extends JTabbedPane {
         try {
             int all= getComponentCount();
             for(int i=0; i < all;i++){
+                logger.info("calling closetab in exit");
                 closeTab(i);
             }
         } catch (Exception e) {
