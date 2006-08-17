@@ -404,8 +404,9 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         queueListPanel.repaint();
         mainPanel.add(queueListPanel);
         //execution log window.
-        statusDisplayPanel = new JPanel();
+        statusDisplayPanel = new JPanel(new GridLayout(1,1));
         statusDisplayTA = new JTextArea();
+        statusDisplayTA.setLineWrap(true);
         statusDisplayTA.setEditable(false); //read only log!
         JScrollPane sp = new JScrollPane(statusDisplayTA);
         statusDisplayPanel.add(sp);
