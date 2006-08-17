@@ -134,7 +134,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         topPanel.setBorder(new TitledBorder("Search"));
         tableDisplayPanel = new JPanel();
         tableDisplayPanel.setBorder(new TitledBorder("Projects"));
-        selectionDetailPanel = new JPanel();
+        selectionDetailPanel = new JPanel(new GridLayout(1,1));
         selectionDetailPanel.setBorder(new TitledBorder("Project Details"));
         buttonPanel = new JPanel();
         mainPanel.add(topPanel, BorderLayout.NORTH);
@@ -250,7 +250,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         tableDisplayPanel = new JPanel();
         tableDisplayPanel.setBorder(new TitledBorder("Project's SBs"));
         displayProjectSBs();
-        selectionDetailPanel = new JPanel();
+        selectionDetailPanel = new JPanel(new GridLayout(1,1));
         selectionDetailPanel.setBorder(new TitledBorder("SB Details"));
         buttonPanel.add(sessionButtonView());
         mainPanel.add(topPanel, BorderLayout.NORTH);
@@ -609,6 +609,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         String sbId =(String) sbRowInfo[row][4];
         //send sb to scheduler comp to be executed
         try {
+            System.out.println("SB "+sbId+" being sent to schedler");
             scheduler.executeSB(sbId);
             updateSBStatusInTable(sbId, "RUNNING");
         }catch(Exception e){} 
@@ -686,11 +687,13 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 
     private void logoutOfProject(){
         setToNull();
+        /*
         try {
             scheduler.endSession();
         } catch(Exception e){
             e.printStackTrace();
         }
+        */
     }
 
 //////////////////////////////////////
@@ -710,6 +713,11 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 
     public void exit() {
         logger.info("EXIT IN IS");
+        try {
+            scheduler.endSession();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         try{
             //disconnectFromArchive();
             logger.info("About to release "+scheduler.name());

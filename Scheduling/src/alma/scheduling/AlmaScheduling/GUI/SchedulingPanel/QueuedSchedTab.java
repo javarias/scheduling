@@ -342,7 +342,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             for(int i=0; i< possibleSBsToAdd.length; i++){
                 for(int j=0; j < queueRowInfo.length; j++){
                     if(possibleSBsToAdd[i][3] == queueRowInfo[j][3]){ //comparing UIDs which are in last column.
-                        System.out.println("already there not adding");
+                        System.out.println("already there, will be executed twice.");
                         //check repeat count, add if not maxed out repeat count.
                         //add = false; TODO add this back in once its possible to check the repeat count.
                         break;
@@ -496,17 +496,23 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     private void updateSBStatusInfoInTable(String id, String status) {
+        try {
         for(int i=0; i < queueRowInfo.length; i++) {
             if(queueRowInfo[i][3] == id){ //comparing uids
                 queueRowInfo[i][2] = status; //updating status if uids match
+                queueTable.validate();
                 queueTable.repaint();
-                queueScrollPane.repaint();
-                queueListPanel.repaint();
-                manageTableColumnSize();
-                queueTable.revalidate();
+                //queueScrollPane.repaint();
+                queueListPanel.validate();
+                //manageTableColumnSize();
+                //queueTable.revalidate();
                 validate();
+                logger.info("Table should be updated now!");
                 return;
             }
+        }
+        } catch(Exception e){
+        e.printStackTrace();
         }
     }
     /**
