@@ -6,8 +6,34 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.15 2005/09/29 21:14:47 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.16 2006/08/17 22:22:46 sslucero Exp $"
 
+***** General *****
+- DO NOT USE Scheduling Panel in OMC!!!!! 
+- Use 'runSchedulingPanel' after the scheduling master component is operations. It will start the new interfaces of scheduling to the rest of the system. 
+- Control still does not report back (sending an exec block end event) when there is an error in the scheduling blocks execution.
+- A null pointer error from control is thrown when stop is called on an SB.
+- In the Search text fields, just leave blank for now (yes this is a high priority to fix soon).
+
+***** Queued Scheduling *****
+
+- New Policy: scheduler does not look at repeat count and repeat the sb in the queue up til its repeat count. If you want to repeat it many times, you must add it to the queue that many times.
+- When the scheduler is finished it tells control to destroy the array
+
+***** Interactive Scheduling *****
+
+- SB is run once when execute button clicked. to run it many times you must interactively execute it again once its finished.
+- When the scheduler is finished it does not tell control to destroy the array
+- When you search again, keep in mind that the next project you select will be run on the same array! To get a new array you must exit the interactive scheduler and create a new one.
+- Using the OT through interactive scheduling is currently put on hold. To modify the project open the OT externally. However, the interactive session will not recognize the updates unless you re-open the session (yes this is a high priority, will be fixed soon).
+
+
+
+***** Dynmic Scheduling *****
+- Has not been tested with new scheduling panel.
+
+---------------------------------------------------------------------------
+OLD RELEASE NOTES BELOW: kept just coz.... not relevant
 
 Important Comments:
     For MONTHLY-2005-09:
