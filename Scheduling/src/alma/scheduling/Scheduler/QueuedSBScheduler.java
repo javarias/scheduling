@@ -155,7 +155,10 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         }
         logger.info("SCHEDULING: Queued scheduler execute # "+tmpCount);
         tmpCount++;
-		//SB[] sbs = queue.getReady();
+
+        //TODO might be problem here not matching the sbsNotDone list
+		SB[] sbs = queue.getReady();
+
         //logger.info("%%%%%%%%%%%%%%%%%%%");
         //logger.info("length of ready sbs = "+sbs.length);
         //logger.info("%%%%%%%%%%%%%%%%%%%");
@@ -170,9 +173,10 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             //logger.info("SCHEDULING: No sbs ready to execute");
             //return true;
 		//}
-        String[] scores = new String[idsNotDone.length];
-        double[] d = new double[idsNotDone.length];
-		BestSB best = new BestSB (idsNotDone, scores, d, d, d, clock.getDateTime());
+        String[] scores = new String[sbsNotDone.length];
+        double[] d = new double[sbsNotDone.length];
+		BestSB best = new BestSB (sbsNotDone, scores, d, d, d, clock.getDateTime());
+        //TODO might be problem here not matching the sbsNotDone list
         SB sb = sbs[best.getSelection()];
         //TODO need to check that if there are more than one sbs in queue then selection 
         //     count needs to be increased.
@@ -200,7 +204,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	}
 
     private void takeIdFromSBsNotDone(String id) {
-        String[] newIdList;
+        String[] newIdList=null;
         for(int i=0; i < sbsNotDone.length;i++){
             if(sbsNotDone[i].equals(id)){
                 newIdList = new String[sbsNotDone.length -1];
@@ -212,8 +216,10 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
                 }
             }
         }
-        sbsNotDone = new String[newIdList.length];
-        sbsNotDone = newIdList;
+        if(newIdList != null) {
+            sbsNotDone = new String[newIdList.length];
+            sbsNotDone = newIdList;
+        }
     }
 
 	/**
@@ -239,7 +245,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
     public void run() {
         try {
-            sbsNotDone = queue.getAllIDs();
+            sbsNotDone = queue.getAllIds();
             while(true) {
                 if(executeSBs()) {
                     break;
