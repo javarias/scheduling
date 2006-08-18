@@ -6,7 +6,7 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.16 2006/08/17 22:22:46 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.17 2006/08/18 03:02:54 sslucero Exp $"
 
 ***** General *****
 - DO NOT USE Scheduling Panel in OMC!!!!! 
@@ -14,6 +14,8 @@ Version:
 - Control still does not report back (sending an exec block end event) when there is an error in the scheduling blocks execution.
 - A null pointer error from control is thrown when stop is called on an SB.
 - In the Search text fields, just leave blank for now (yes this is a high priority to fix soon).
+- Indefinite Repeating scheduling blocks are supported.
+- Scheduling blocks with a repeat count > 0 are supported however once their repeat count is reached an exception might be thrown in Interactive & queued scheduling (another top priority bug which needs fixing!)
 
 ***** Queued Scheduling *****
 
