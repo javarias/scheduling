@@ -108,7 +108,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.13 2006/08/15 22:57:42 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.14 2006/08/23 21:36:08 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -195,7 +195,6 @@ public class SchedulerConfiguration extends TaskControl {
 	private String currentSB;
     // The previously executed SB.
     private String previousSB;
-
 	
 	public synchronized void startExecSB(String sbId) {
         System.out.println("**********************");
