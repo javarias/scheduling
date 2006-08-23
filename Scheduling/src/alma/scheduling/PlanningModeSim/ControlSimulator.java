@@ -31,6 +31,7 @@ import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.LiteSB;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Control;
@@ -56,6 +57,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 	private ProjectManagerSimulator project;
 	private TelescopeSimulator telescope;
 	private ArchiveSimulator archive;
+    private WeatherModel weather;
 	
 	private int setUpTimeInSec;
 	private int changeProjectTimeInSec;
@@ -79,6 +81,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 		clock = (ClockSimulator)containerServices.getComponent(Container.CLOCK);
 		project = (ProjectManagerSimulator)containerServices.getComponent(Container.PROJECT_MANAGER);
 		telescope = (TelescopeSimulator)containerServices.getComponent(Container.TELESCOPE);
+        weather = (WeatherModel)containerServices.getComponent(Container.WEATHER_MODEL);
 		SimulationInput input = (SimulationInput)containerServices.getComponent(Container.SIMULATION_INPUT);
 		archive = (ArchiveSimulator)containerServices.getComponent(Container.ARCHIVE);
 		setUpTimeInSec = input.getSetUpTimeInSec();
@@ -218,7 +221,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 			ex.setBest(best);
 			// Store it in the archive.
 			archive.newExec(ex);
-
+            //Create execution statistics 
 			// Advance the clock (which simulates executing the scheduling unit).
 			clock.advance(sb.getMaximumTimeInSeconds());
 			DateTime end = clock.getDateTime();
@@ -236,8 +239,54 @@ public class ControlSimulator extends BasicComponent implements Control {
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
 			}
+            double el = sb.getTarget().getElMax();
+            double f = sb.getCenterFrequency();
+            double bl = s.getMaxBaseline();
+            ExecutionStatistics stats = createExecutionStatistics(name, sb, best, ex, s, el, f, bl);
+            archive.addExecutionStatistics(stats);
 	}
 
+    private ExecutionStatistics createExecutionStatistics(
+            String arrayname, SB sb, BestSB b, ExecBlock eb, Subarray sub,
+            double el, double freq, double baseline) {
+        LiteSB[] l = b.getLiteSBs();
+        LiteSB sblite=null;
+        for(int i=0; i<l.length; i++){
+            if(l[i].getSBName().equals(sb.getSBName())){
+                sblite = l[i];
+                break;
+            }
+        }
+        ExecutionStatistics e = new ExecutionStatistics();
+        e.setExecId(eb.getId());
+        e.setArrayName(arrayname);
+        e.setStartTime(eb.getStatus().getStartTime().toString());
+        e.setEndTime(eb.getStatus().getEndTime().toString());
+        if(sblite != null){
+            e.setScore(sblite.getScore());
+            e.setSuccess(sblite.getSuccess());
+            e.setRank(sblite.getRank());
+        }else{
+            e.setScore(0.0);
+            e.setSuccess(0.0);
+            e.setRank(0.0);
+        }
+        e.setProjectName(sb.getProject().getProjectName());
+        e.setSBName(sb.getSBName());
+        e.setPriority(sb.getScientificPriority().toString());
+        e.setFrequency(sub.getCurrentFrequency());
+        e.setRA(sb.getTarget().getMax().getRa());
+        e.setDEC(sb.getTarget().getMax().getDec());
+        e.setWeatherConstraint(sb.getWeatherConstraint().toString());
+        e.setLSTRise(sb.getTarget().getLstRise());
+        e.setLSTMax(sb.getTarget().getLstMax());
+        e.setLSTSet(sb.getTarget().getLstSet());
+        //gotta get currect conditions
+        e.setOpacity(weather.getCurrentOpacity(clock.getDateTime(), freq, el));
+        e.setRMS(weather.getCurrentRMS(clock.getDateTime(), freq, el, baseline));
+        e.setWind(weather.getCurrentWindSpeed(clock.getDateTime()));
+        return e;
+    }
 	/* (non-Javadoc)
 	 * @see ALMA.scheduling.master_scheduler.ControlProxy#getActiveSubarray()
 	 */

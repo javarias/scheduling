@@ -61,7 +61,7 @@ public class RealWeatherModel {
                                 Integer.parseInt(st.nextToken()), 
                                 Integer.parseInt(st.nextToken())) ,
                             new Time(new Double(st.nextToken())) );
-                    tmp = st.nextToken();
+                    tmp = st.nextToken(); //value
                     dataMap.put(dt, new Double(tmp));
                 } catch(Exception e){
                     //System.out.println("Ignoring bad line: "+line);
@@ -99,6 +99,10 @@ public class RealWeatherModel {
     public double compute(Object... args) {
         //System.out.println("COMPUTING REAL WEATHER MODEL");
         return compute(clock.getDateTime(), args);
+    }
+
+    public double compute(Double d1, Double d2){
+        return compute(clock.getDateTime());
     }
 
     /**

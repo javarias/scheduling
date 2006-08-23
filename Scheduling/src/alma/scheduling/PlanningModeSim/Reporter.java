@@ -29,6 +29,7 @@ package alma.scheduling.PlanningModeSim;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Date;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.BestSB;
@@ -39,6 +40,7 @@ import alma.scheduling.Define.NothingCanBeScheduled;
 import alma.scheduling.Define.Priority;
 
 import java.util.logging.Level;
+import java.util.HashMap;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +60,8 @@ public class Reporter extends BasicComponent {
 	private ArchiveSimulator archive;
 	private SimulationInput input;
 	private PrintStream out;
+	private PrintStream graph;
+	private PrintStream execStatsOut;
 	
 	private DateTime beginTime;
 	private DateTime endTime;
@@ -200,6 +204,7 @@ public class Reporter extends BasicComponent {
 		try {
 			// Create the output text file.
 			out = new PrintStream (new FileOutputStream (input.getOutFile()));
+            execStatsOut = new PrintStream(new FileOutputStream(input.getStatsFile()));
 		} catch (IOException ioerr) {
 			 error("Could not open file " + input.getOutFile().getAbsolutePath() + " -- " + ioerr.toString());
 		}
@@ -229,19 +234,20 @@ public class Reporter extends BasicComponent {
 	}
 	
 	private void writeEnding(DateTime endTime) {
-		//showSummary(out,endTime);
+		showSummary(out,endTime);
 		projectSummary(out,endTime);
 		statistics(out,endTime);
+        detailedExecutionStatistics(execStatsOut);
 	}
 	
-	private void showSummary(PrintStream out, DateTime endTime) {
+	private void showSummary(PrintStream o, DateTime endTime) {
 		
-		out.println();
-		out.println("Sources - Visibility and Executions");
-		out.println("\t(\'-\' is visible   \'+\' is visible and was executed");
-		out.println("\t(\'X\' max elevation   \'*\' max elevation and was executed)");
-		out.println();
-		double lst = 0.0;
+		o.println();
+		o.println("Sources - Visibility and Executions");
+		o.println("\t(\'-\' is visible   \'+\' is visible and was executed");
+		o.println("\t(\'X\' max elevation   \'*\' max elevation and was executed)");
+		o.println();
+		//double lst = 0.0;
 		final int scale = 48;
 		final double scaleFactor = 2.0;
 		char[] s = new char [scale];
@@ -259,7 +265,7 @@ public class Reporter extends BasicComponent {
 		try {
 			unit = archive.getAllSB();
 		} catch (SchedulingException err) {
-			err.printStackTrace(out);
+			err.printStackTrace(o);
 			System.exit(0);
 		}
 		for (int i = 0; i < unit.length; ++i) {
@@ -279,7 +285,7 @@ public class Reporter extends BasicComponent {
 			try {
 				ex = archive.getExec(unit[i]);
 			} catch (SchedulingException err) {
-				err.printStackTrace(out);
+				err.printStackTrace(o);
 				System.exit(0);
 			}
 			for (int j = 0; j < ex.length; ++j) {
@@ -289,7 +295,7 @@ public class Reporter extends BasicComponent {
 					iex = (int)(td * scaleFactor + 0.5);
 					if (iex > (scale - 1))
 						iex = 0;
-					if (s[iex] == ' ') out.println("Something's wrong here!" + ex[j].getParent());
+					if (s[iex] == ' ') o.println("Something's wrong here!" + ex[j].getParent());
 					else if (s[iex] == '-') s[iex] = '+';
 					else if (s[iex] == 'X') s[iex] = '*';
 					else if (s[iex] == '+') s[iex] = '+';
@@ -303,19 +309,68 @@ public class Reporter extends BasicComponent {
 			line = new String (s);
 			id = unit[i].getId();
 			id = id + blank.substring(id.length());
-			out.println(id + " |" + line + "|");
+			o.println(id + " |" + line + "|");
 		}
 		id = blank;
-		out.println(id + " |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|");
-		out.println(id + " |0   2   4   6   8  10  12  14  16  18  20  22   |");
-		out.println(id + "                        LST ");
+		o.println(id + " |+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|");
+		o.println(id + " |0   2   4   6   8  10  12  14  16  18  20  22   |");
+		o.println(id + "                        LST ");
 			
 	}
+
+    private void detailedScheduleSummary(PrintStream o, DateTime endTime){
+		String blank = "               ";//15 blank spaces
+		final int scale = 71;
+		final double scaleFactor = 2.0;
+        Date startDay = input.getBeginTime().getDate();
+        Date endDay = input.getEndTime().getDate();
+		String id = null;
+		ExecBlock[] ex = null;
+		SB[] unit = null; // These units are really scheduling units.
+        //double td = 0.0;
+        //double tdEnd = 0.0;
+        Date ex_start=null;
+        String line=null;
+		try {
+			unit = archive.getAllSB();
+		} catch (SchedulingException err) {
+			err.printStackTrace(o);
+			System.exit(0);
+		}
+        HashMap<Date, String> graphLines =new HashMap();
+		for (int i = 0; i < unit.length; ++i) {
+			try {
+				ex = archive.getExec(unit[i]);
+			} catch (SchedulingException err) {
+				err.printStackTrace(o);
+				System.exit(0);
+			}
+            for(int j=0;j < ex.length; ++j) {
+                ex_start = ex[j].getStatus().getStartTime().getDate();
+                if( (line = graphLines.get(ex_start)) != null){
+                    line = "additional line stuff";
+                   // graphLines.add(ex_start, line);
+                }else {//add a new line
+                    line = new String("new line stuff");
+                   // graphLines.add(ex_start, line);
+                }
+            }
+            id = unit[i].getId();
+            id = id + blank.substring(id.length());
+        }
+        id = blank;
+		o.println(id + 
+            "|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|");
+		o.println(id + 
+            "0     2     4     6     8     10    12    14    16    18    20    22    24");
+		o.println(id + 
+            "                                    LST ");
+    }
 	
-	private void projectSummary(PrintStream out, DateTime endTime) {
-		out.println();
-		out.println("Project Summary");
-		out.println();
+	private void projectSummary(PrintStream o, DateTime endTime) {
+		o.println();
+		o.println("Project Summary");
+		o.println();
 		Project[] prj = null;
 		DateTime t = null;
 		try {
@@ -340,20 +395,20 @@ public class Reporter extends BasicComponent {
 				}
 			}
 			for (int i = 0; i < prj.length; ++i) {
-				out.println("Project " + prj[i].getObsProjectId() + " priority: " + prj[i].getScientificPriority());
-				out.println("\tNumber of scheduling blocks completed  " + prj[i].getNumberSBsCompleted());
-				out.println("\tNumber of scheduling blocks incomplete " + 
+				o.println("Project " + prj[i].getObsProjectId() + " priority: " + prj[i].getScientificPriority());
+				o.println("\tNumber of scheduling blocks completed  " + prj[i].getNumberSBsCompleted());
+				o.println("\tNumber of scheduling blocks incomplete " + 
 						(prj[i].getTotalSBs() - prj[i].getNumberSBsCompleted()));
 				t = prj[i].getStatus().getStartTime();
 				if (t == null || t.isNull())
-					out.println("\tStart time: never started");
+					o.println("\tStart time: never started");
 				else
-					out.println("\tStart time: " + t);
+					o.println("\tStart time: " + t);
 				t = prj[i].getStatus().getEndTime();
 				if (t == null || t.isNull())
-					out.println("\tEnd time:   never ended");
+					o.println("\tEnd time:   never ended");
 				else
-					out.println("\tEnd time:   " + t);				
+					o.println("\tEnd time:   " + t);				
 			}
 			
 			
@@ -363,10 +418,10 @@ public class Reporter extends BasicComponent {
 		}
 	}
 	
-	private void statistics(PrintStream out, DateTime endTime) {
-		out.println();
-		out.println("Scheduling Statistics");
-		out.println();
+	private void statistics(PrintStream o, DateTime endTime) {
+		o.println();
+		o.println("Scheduling Statistics");
+		o.println();
 
 		double totalTime = 0.0;
 		double totalScienceTime = 0.0;
@@ -390,7 +445,7 @@ public class Reporter extends BasicComponent {
 		} catch (SchedulingException err) {
 			String msg = "Reporter.error: Error accessing archive! " + err.toString();
 			logger.severe(msg);
-			out.println(msg);
+			o.println(msg);
 			return;
 		}
 		totalNumber = ex.length;
@@ -423,23 +478,23 @@ public class Reporter extends BasicComponent {
 		
 		dform.setMaximumFractionDigits(2);
 		
-		out.println("Number of executions             " + totalNumber); 		
+		o.println("Number of executions             " + totalNumber); 		
 				
-		out.println();
-		out.println("Efficiency (%)                   " + dform.format(efficiency * 100.0));
-		out.println("Weighted Efficiency  (%)         " + dform.format(weightedEfficiency * 100.0 ));
-		out.println("% of science time executed       " + dform.format((totalScienceTime / possibleScienceTime) * 100.0));
+		o.println();
+		o.println("Efficiency (%)                   " + dform.format(efficiency * 100.0));
+		o.println("Weighted Efficiency  (%)         " + dform.format(weightedEfficiency * 100.0 ));
+		o.println("% of science time executed       " + dform.format((totalScienceTime / possibleScienceTime) * 100.0));
 
-		out.println();
-		out.println("Total time (hours)               " + dform.format(totalTime));
-		out.println("Total science time (hours)       " + dform.format(totalScienceTime));
-		out.println("Possible science time (hours)    " + dform.format(possibleScienceTime));
-		out.println("Number of scheduling blocks      " + totalSBs);
+		o.println();
+		o.println("Total time (hours)               " + dform.format(totalTime));
+		o.println("Total science time (hours)       " + dform.format(totalScienceTime));
+		o.println("Possible science time (hours)    " + dform.format(possibleScienceTime));
+		o.println("Number of scheduling blocks      " + totalSBs);
 
-		out.println();
-		out.println("Average score                    " + dform.format(avScore));
-		out.println("Average success factor (%)       " + dform.format(avSuccess));
-		out.println("Average rank                     " + dform.format(avRank));
+		o.println();
+		o.println("Average score                    " + dform.format(avScore));
+		o.println("Average success factor (%)       " + dform.format(avSuccess));
+		o.println("Average rank                     " + dform.format(avRank));
 
 		
 		
@@ -500,9 +555,25 @@ public class Reporter extends BasicComponent {
 		*/
 	}
 
+    
+    private void detailedExecutionStatistics(PrintStream o) {
+        ExecutionStatistics[] stats;
+        try {
+            stats = archive.getAllExecutionStatistics();
+            if (stats.length > 0) {
+                o.println(stats[0].getColumnsInfoString());
+                for(int i=0; i < stats.length; i++){
+                    o.println(stats[i].toString());
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+    }
 
-   public String getOutputFilename(){
-       return input.getOutFile().getName(); 
-   }
+    public String getOutputFilename(){
+        return input.getOutFile().getName(); 
+    }
 	
 }

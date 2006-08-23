@@ -90,6 +90,8 @@ public class Simulator implements Runnable {
 		File inputFile = new File (directory,inputFilename);
 		File logFile = new File (directory,logFilename);
 		File outFile = new File (directory,outputFilename);
+        File graphFile = new File(directory, "graph_"+outputFilename);
+        File statsFile = new File(directory, "stats_"+outputFilename);
 			
 		// Make sure the input file exists.
 		if (!inputFile.exists()) {
@@ -132,7 +134,7 @@ public class Simulator implements Runnable {
 		ProjectManagerSimulator projectManager = (ProjectManagerSimulator)container.getComponent(Container.PROJECT_MANAGER);
 		
 		// Set the filename for the simulator input.
-		input.setFiles(inputFile,outFile,logFile);
+		input.setFiles(inputFile, outFile, logFile, graphFile, statsFile);
 		
 		// Initialize the components
 		

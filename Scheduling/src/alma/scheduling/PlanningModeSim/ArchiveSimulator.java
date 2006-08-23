@@ -58,6 +58,8 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 	private SB[] unit;
 	private Policy[] policy;
 	private ArrayList sExec;
+	private ArrayList execStats;
+
 	private boolean initialLoad;
 
 	public ArchiveSimulator() {
@@ -78,6 +80,7 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 	public void initialize() throws SimulationException {
 		clock = (ClockSimulator)containerServices.getComponent(Container.CLOCK);
 		sExec = new ArrayList ();
+        execStats = new ArrayList();
 		logger.info(instanceName + ".initialized");
 	}
 
@@ -277,6 +280,15 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 		}*/
 		return x;
 	}
+
+    public void addExecutionStatistics(ExecutionStatistics e) {
+        execStats.add(e);
+    }
+
+    public ExecutionStatistics[] getAllExecutionStatistics() throws SchedulingException{
+        ExecutionStatistics[] tmp = new ExecutionStatistics[execStats.size()];
+        return (ExecutionStatistics[])execStats.toArray(tmp);
+    }
 	
     public void storePipelineProcessingRequest(SciPipelineRequest ppr) {}
     public String storeSession(Session s) { return null; }

@@ -29,7 +29,7 @@ package alma.scheduling.PlanningModeSim;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 
 import java.util.ArrayList;
-
+import alma.scheduling.Define.DateTime;
 /**
  * Description 
  * 
@@ -215,5 +215,54 @@ public class WeatherModel extends BasicComponent {
             return null;
         }
 	}
+
+    public double getCurrentOpacity(DateTime t, double freq, double el) {
+        OpacityModel op=null;
+        double val=0.0;
+        for(int i=0; i < realModel.length; i++){
+            if(realModel[i].getName().equals("opacity")){
+                op = (OpacityModel)realModel[i];
+                break;
+            }
+        }
+        if(op != null){
+            val = op.compute(t, freq, el);
+        }
+        System.out.println("Opacity computed for current cond. = "+val);
+        return val;
+    }
+
+    public double getCurrentRMS(DateTime t, double freq, double el, double bl) {
+        RmsModel rms =null;
+        double val=0.0;
+        for(int i=0; i < realModel.length; i++){
+            if(realModel[i].getName().equals("rms")){
+                rms = (RmsModel)realModel[i];
+                break;
+            }
+        }
+        if(rms != null){
+            val = rms.compute(t, freq, el, bl);
+        }
+        System.out.println("rms computed for current cond. = "+val);
+        return val;
+    }
+    
+    public double getCurrentWindSpeed(DateTime t) {
+        WindSpeedModel w=null;
+        double val=0.0;
+        for(int i=0; i<realModel.length; i++){
+            if(realModel[i].getName().equals("wind")){
+                w = (WindSpeedModel)realModel[i];
+                break;
+            }
+        }
+        if(w != null) {
+            val = w.compute(t);
+        }
+        System.out.println("Wind computed for current cond. = "+val);
+        return val;
+    }
+        
 	
 }

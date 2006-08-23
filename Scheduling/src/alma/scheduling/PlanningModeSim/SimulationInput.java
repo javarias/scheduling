@@ -91,6 +91,14 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	 * The log file.
 	 */
 	private File logFile;
+    /**
+      * The graph file
+      */
+	private File graphFile;
+    /**
+      * The statistics file
+      */
+	private File statsFile;
 
 	/**
 	 * The name of the output file.
@@ -218,10 +226,12 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	 * Set the filename to be used in loading the properties files -- done by the Simulator.
 	 * @param filename
 	 */
-	public void setFiles (File in, File out, File log) {
+	public void setFiles (File in, File out, File log, File graph, File stats) {
 		this.inputFile = in;
 		this.outFile = out;
 		this.logFile = log;
+        this.graphFile = graph;
+        this.statsFile = stats;
 	} 
 	
 	public void initialize() throws SimulationException {
@@ -849,57 +859,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
         String[] cond = weatherConstraintsMap.get(word);
         return new WeatherCondition(cond);
     }
-	/*	if (word.equals("exceptional")) {
-			cond = new String [3];
-			cond[0] = "wind < 0.9 -> 1.0";
-			cond[1] = "wind <= 0.9 -> 0.8";
-			cond[2] = "wind > 0.9 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("excellent")) {
-			cond = new String [3];
-			cond[0] = "wind < 1.0 -> 1.0";
-			cond[1] = "wind <= 1.0 -> 0.8";
-			cond[2] = "wind >  1.0 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("good")) {
-			cond = new String [3];
-			cond[0] = "wind < 1.5 -> 1.0";
-			cond[1] = "wind <= 1.5 -> 0.8";
-			cond[2] = "wind >  1.5 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("average")) {
-			cond = new String [3];
-			cond[0] = "wind < 2.0 -> 1.0";
-			cond[1] = "wind <= 2.0 -> 0.8";
-			cond[2] = "wind >  2.0 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("belowAverage")) {
-			cond = new String [3];
-			cond[0] = "wind < 2.5 -> 1.0";
-			cond[1] = "wind <= 2.5 -> 0.8";
-			cond[2] = "wind >  2.5 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("poor")) {
-			cond = new String [3];
-			cond[0] = "wind < 3.5 -> 1.0";
-			cond[1] = "wind <= 3.5 -> 0.8";
-			cond[2] = "wind >  3.5 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("dismal")) {
-			cond = new String [3];
-			cond[0] = "wind < 4.3 -> 1.0";
-			cond[1] = "wind <= 4.2 -> 0.8";
-			cond[2] = "wind >  4.2 -> 0.0";
-			w = new WeatherCondition (cond);
-		} else if (word.equals("any")) {
-			cond = new String [1];
-			cond[0] = "wind >= 0.0 -> 1.0";
-			w = new WeatherCondition (cond);
-		} else
-			error("Invalid weather condition " + word);
-		return w;
-	}
-    */
 
 	private void doTargets(Program set, String weatherWord, String[] value, ArrayList unitList) 
 		throws SimulationException {
@@ -982,7 +941,8 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			// in the center of a 2-degree square box.
 			// We will place each sheduling unit in the program unit set.
 		
-			u = new SB(targetName);
+			u = new SB(targetName); //in simulation the id and the name are the same.
+            u.setSBName(targetName);
 			t = new Target (new Equatorial(ra,dec),sizeTargetBox,sizeTargetBox);
 			u.setTarget(t);
 			u.setCenterFrequency(frequency);
@@ -1105,6 +1065,13 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	public File getLogFile() {
 		return logFile;
 	}
+	public File getGraphFile() {
+		return graphFile;
+	}
+
+    public File getStatsFile(){
+        return statsFile;
+    }
 
 	/**
 	 * @return
