@@ -37,7 +37,7 @@ import java.text.NumberFormat;
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.9 2006/05/01 18:59:17 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.10 2006/08/23 21:34:21 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -343,6 +343,7 @@ class R3Unit extends SchedulingUnit {
       */
 	public void setScore(double d) {
 		score = d;
+        liteSB.setScore(d);
 	}
 
     /**
@@ -358,6 +359,7 @@ class R3Unit extends SchedulingUnit {
       */
 	public void setSuccess(double d) {
 		success = d;
+        liteSB.setSuccess(d);
 	}
 
     /**
@@ -373,6 +375,7 @@ class R3Unit extends SchedulingUnit {
       */
 	public void setRank(double d) {
 		rank = d;
+        liteSB.setRank(d);
 	}
 
     /**

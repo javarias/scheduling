@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.13 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.14 2006/08/23 21:34:21 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -409,8 +409,8 @@ class R3Policy extends PolicyType {
 	private R3Unit[] topList() {
 		class Pair {
 			Pair (int a, double b) {
-				this.a = a;
-				this.b = b;
+				this.a = a; //position
+				this.b = b; //score value
 			}
 			int a;
 			double b;
@@ -553,7 +553,7 @@ class R3Policy extends PolicyType {
                 double tmp = 
                     (positionElW * pEl + positionMaxW * pMax + weatherW * w) / 
                         (positionElW + positionMaxW + weatherW);
-                System.out.println("Calculated success = "+tmp);
+                //System.out.println("Calculated success = "+tmp);
 				u.setSuccess(tmp);
 			}
 		}
