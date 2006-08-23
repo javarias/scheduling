@@ -158,7 +158,7 @@ public class LiteSB {
     public void setScore(double d){
         score=d;
     }
-    public void setSucces(double d){
+    public void setSuccess(double d){
         success=d;
     }
     public void setRank(double d){

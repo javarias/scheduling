@@ -83,7 +83,7 @@ import java.util.StringTokenizer;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version $Id: WeatherCondition.java,v 1.5 2006/06/19 20:12:49 sslucero Exp $
+ * @version $Id: WeatherCondition.java,v 1.6 2006/08/23 20:48:37 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherCondition {
@@ -133,10 +133,8 @@ public class WeatherCondition {
         boolean doesCurrNameHaveValue = false;
 		for (int i = 0; i < condition.length; ++i) {
             currName = (new StringTokenizer(condition[i].toString(),",")).nextToken();
-            //System.out.println("Current eval on "+currName);
+            condition[i] = scaleCondition(condition[i], args);
             if(prevName == null) {
-                //System.out.println(currName +":"+args.length);
-                //if(condition[i].evaluate(args)){
                 if(evaluateCondition(condition[i], currName, args)){
                     doesCurrNameHaveValue = true;
                     if(value ==0.0F){
@@ -147,7 +145,6 @@ public class WeatherCondition {
                 }
             } else if (currName.equals(prevName) && !doesCurrNameHaveValue) {
                 if(evaluateCondition(condition[i], currName, args)){
-                //if(condition[i].evaluate(args)){
                     doesCurrNameHaveValue = true;
                     if(value ==0.0F){
                         value = result[i];
@@ -158,7 +155,6 @@ public class WeatherCondition {
             } else if (!currName.equals(prevName)) {
                 doesCurrNameHaveValue = false;
                 if(evaluateCondition(condition[i], currName, args)){
-                //if(condition[i].evaluate(args)){
                     doesCurrNameHaveValue = true;
                     if(value ==0.0F){
                         value = result[i];
@@ -175,6 +171,36 @@ public class WeatherCondition {
         }
         return value;
 	}
+
+    /**
+      * In this method we want to scale the value coming from the real weather data file
+      * or the actual weather stations, so that its scaled in accordance to the sb we want 
+      * to schedule.
+      * NOTE: If the scaling changes it must also be changed in PlanningModeSim's opacityModel 
+      * and/or RmsModel
+      * The scales objects will be 2 or 3 objects. Frequency, Elevation, (and possibly) max Baseline
+      */
+    private Expression scaleCondition(Expression e, Object... scales) {
+        StringTokenizer st = new StringTokenizer(e.toString(), ",");
+        String word = st.nextToken();
+        word = word.trim();
+        String s_val = st.nextToken();
+        s_val = s_val.trim();
+        double val = (new Double(s_val)).doubleValue();
+        String oper = st.nextToken();
+        if(word.equals("opacity")){
+            val = val * 
+                (((Double)scales[0]).doubleValue() / 225) * 
+                ( 1 / Math.sin(((Double)scales[1]).doubleValue()));
+        }else if(word.equals("rms")){
+            val = val * (((Double)scales[0]).doubleValue() /11.2) * 
+                    (Math.sin(36*Math.PI/180) / Math.sin(((Double)scales[1]).doubleValue())) * 
+                    Math.pow( (((Double)scales[2]).doubleValue() / 300), (1/3) ) ;
+        }
+        Expression expr = new Expression(word+" "+oper+" "+val );
+        return expr;
+    }
+    
     private boolean evaluateCondition(Expression exp, String name, Object... args){
         if(name.equals("rms") ){
             return exp.evaluate(args);
@@ -183,25 +209,6 @@ public class WeatherCondition {
         }
     }
             
-        /*
-        System.out.println("evaluating");
-        System.out.println("number of conditions = "+condition.length);
-        float combinedValue = 0.0F;
-        String tmp;
-        String name;
-		for (int i = 0; i < condition.length; ++i) {
-            String[] types = condition[i].getFunctionNames();
-            System.out.println(condition[i].toString());
-            for(int j =0; j < types.length; j++){
-                System.out.println("condition "+i+"'s name = "+types[j]);
-            }
-			if (condition[i].evaluate(args)) {
-                System.out.println("RESULT = "+result[i]);
-				return result[i];
-            }
-		}
-		return combinedValue;
-        */
 
 	/**
 	 * The toString method returns that targets together with the parsed
