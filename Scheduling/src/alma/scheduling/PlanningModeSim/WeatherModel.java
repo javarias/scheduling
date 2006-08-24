@@ -228,7 +228,6 @@ public class WeatherModel extends BasicComponent {
         if(op != null){
             val = op.compute(t, freq, el);
         }
-        System.out.println("Opacity computed for current cond. = "+val);
         return val;
     }
 
@@ -244,7 +243,6 @@ public class WeatherModel extends BasicComponent {
         if(rms != null){
             val = rms.compute(t, freq, el, bl);
         }
-        System.out.println("rms computed for current cond. = "+val);
         return val;
     }
     
@@ -260,7 +258,6 @@ public class WeatherModel extends BasicComponent {
         if(w != null) {
             val = w.compute(t);
         }
-        System.out.println("Wind computed for current cond. = "+val);
         return val;
     }
         
