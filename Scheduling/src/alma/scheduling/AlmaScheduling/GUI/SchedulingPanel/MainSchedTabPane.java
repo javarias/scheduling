@@ -13,8 +13,9 @@ import java.util.logging.Logger;
 
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SBLite;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
 
-import alma.acs.container.ContainerServices;
+//import alma.acs.container.ContainerServices;
 //import javax.swing.plaf.basic.BasicTabbedPaneUI;
 //import com.sun.java.swing.plaf.windows.WindowsIconFactory;
 
@@ -28,12 +29,13 @@ public class MainSchedTabPane extends JTabbedPane {
     private JTable schedulerTable;
     private JPopupMenu rightClickMenu;
     private Object[][] schedRowInfo;
-    private ContainerServices container;
+    private PluginContainerServices container;
     private MasterSchedulerIF masterScheduler;
     private int overTabIndex;
     private JDesktopPane desktop;
     private Vector<Window> openWindows;
-    public MainSchedTabPane(ContainerServices cs){
+
+    public MainSchedTabPane(PluginContainerServices cs){
         super(JTabbedPane.TOP);
         container = cs;
         try {
@@ -41,6 +43,10 @@ public class MainSchedTabPane extends JTabbedPane {
         } catch(Exception e) {
             logger = Logger.getLogger("OfflineMode");
         }
+        setup();
+    }
+
+    private void setup() {
         getMasterSchedulerRef();
         addTab("Main",createMainView());
         //System.out.println("added main, tab count ="+getTabCount());
@@ -225,6 +231,10 @@ public class MainSchedTabPane extends JTabbedPane {
         b.setToolTipText("Create an array");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
+                if(masterScheduler == null){
+                    showConnectToMSMessage();
+                    return;
+                }
                 showCreateArrayPopup();
             }
         });

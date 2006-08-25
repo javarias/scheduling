@@ -1,17 +1,19 @@
 package alma.scheduling.AlmaScheduling.GUI.SchedulingPanel;
 
 import java.util.logging.Logger;
-import alma.acs.container.ContainerServices;
+//import alma.acs.container.ContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+
 import alma.scheduling.MasterSchedulerIF;
 
 public class RunQueuedScheduling implements Runnable {
-    private ContainerServices container;
+    private PluginContainerServices container;
     private MasterSchedulerIF masterScheduler = null;
     private String[] sb_ids;
     private String arrayname;
     private Logger logger;
     
-    public RunQueuedScheduling(ContainerServices cs, String[] ids, String array){
+    public RunQueuedScheduling(PluginContainerServices cs, String[] ids, String array){
         sb_ids = ids;
         arrayname = array;
         container = cs;

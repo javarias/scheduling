@@ -6,7 +6,9 @@ import java.awt.*;
 import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
-import alma.acs.container.ContainerServices;
+//import alma.acs.container.ContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+
 import alma.Control.ControlMaster;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.MasterSchedulerIF;
@@ -16,7 +18,7 @@ public class CreateArrayFrame extends JDialog {
     private MasterSchedulerIF masterScheduler;
     private ControlMaster control;
     private Logger logger;
-    private ContainerServices container;
+    private PluginContainerServices container;
     private TableModel antennaTableModelA;
     private TableModel antennaTableModelB;
     private JTable antennaTableA;
@@ -30,7 +32,7 @@ public class CreateArrayFrame extends JDialog {
     private int columnIndex = 0;
 
     
-    public CreateArrayFrame(ContainerServices cs) {
+    public CreateArrayFrame(PluginContainerServices cs) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();

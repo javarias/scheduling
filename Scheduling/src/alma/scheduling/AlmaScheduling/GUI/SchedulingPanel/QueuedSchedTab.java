@@ -9,7 +9,7 @@ import javax.swing.table.*;
 import java.util.Vector;
 import java.util.logging.Logger;
 //acs stuff
-import alma.acs.container.ContainerServices;
+//import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
 import alma.acs.util.UTCUtility;
 //scheduling stuff
@@ -21,9 +21,12 @@ import alma.scheduling.Define.DateTime;
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
 
+import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+
+
 public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] sbColumnInfo = {"SB Name", "PI","Exec Status", "UID"};
-    private ContainerServices container;
+    private PluginContainerServices container;
     private Logger logger;
     //private JPopupMenu rightClickMenu;
     private MasterSchedulerIF masterScheduler = null;
@@ -52,7 +55,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private JPanel statusDisplayPanel;
     private JTextArea statusDisplayTA;
 
-    public QueuedSchedTab(ContainerServices cs, String an){
+    public QueuedSchedTab(PluginContainerServices cs, String an){
         container = cs;
         arrayname = an;
         logger = cs.getLogger();

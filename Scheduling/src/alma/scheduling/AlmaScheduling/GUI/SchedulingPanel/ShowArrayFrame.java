@@ -6,20 +6,21 @@ import java.awt.*;
 import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
-import alma.acs.container.ContainerServices;
+//import alma.acs.container.ContainerServices;
 import alma.Control.ControlMaster;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArrayStateEnum;
 import alma.scheduling.ArrayInfo;
 import alma.scheduling.SchedulingInfo;
 import alma.scheduling.MasterSchedulerIF;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
 
 public class ShowArrayFrame extends JDialog {
 
     private MasterSchedulerIF masterScheduler;
     private ControlMaster control;
     private Logger logger;
-    private ContainerServices container;
+    private PluginContainerServices container;
     private TableModel arrayTableModel;
     private JTable arrayTable;
     private Object[][] arrayRowInfo;
@@ -33,7 +34,7 @@ public class ShowArrayFrame extends JDialog {
     private int columnIndex = 0;
     private boolean canSelect;
     
-    public ShowArrayFrame(ContainerServices cs, boolean b) {
+    public ShowArrayFrame(PluginContainerServices cs, boolean b) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();
@@ -342,7 +343,7 @@ public class ShowArrayFrame extends JDialog {
     }
 
     
-    public static String showArraySelectFrame(ContainerServices cs, boolean x) {
+    public static String showArraySelectFrame(PluginContainerServices cs, boolean x) {
         try {
             ShowArrayFrame f = new ShowArrayFrame(cs, x);
             f.setVisible(true);

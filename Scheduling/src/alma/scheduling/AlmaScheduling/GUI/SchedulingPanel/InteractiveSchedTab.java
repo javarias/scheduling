@@ -8,7 +8,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 //acs stuff & other alma stuff
-import alma.acs.container.ContainerServices;
+//import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.entity.xmlbinding.obsproject.*;
@@ -34,6 +34,7 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.AlmaScheduling.ALMASchedulingUtility;
 import alma.scheduling.GUI.InteractiveSchedGUI.OpenOT;
 //
+import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
 
 public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] projColumnInfo = {"Project Name", "PI", "Version"};
@@ -47,7 +48,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private String currentProjectId;
     private ProjectLite currentProjectLite;
     private SBLite[] currentProjectSBs;
-    private ContainerServices container;
+    private PluginContainerServices container;
     private Interactive_PI_to_Scheduling scheduler;
     private MasterSchedulerIF masterScheduler;
     private Logger logger;
@@ -73,7 +74,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private OpenOT ot;
     private Thread openot_thread=null;
     
-    public InteractiveSchedTab(ContainerServices cs, String s, String an){
+    public InteractiveSchedTab(PluginContainerServices cs, String s, String an){
         mainPanel = new JPanel(new BorderLayout());//new GridLayout(4,1));
         getViewport().add(mainPanel);
         container = cs;
@@ -764,12 +765,12 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 ///////////////////////////////////////     
 
     public void receive(XmlStoreNotificationEvent event) {
-        logger.info("SCHEDULING_PANEL: Got XML Store event, not doing anything with it now.");
-        /*
+        //logger.info("SCHEDULING_PANEL: Got XML Store event, not doing anything with it now.");
+        
         CheckArchiveEvent processor = new CheckArchiveEvent(event);
         Thread t = new Thread(processor);
         t.start();
-        */
+        
     }
 
     public void receive(ExecBlockEndedEvent e){
@@ -839,7 +840,6 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
     }
 
-    /*
     private void addNewEntity(String uid) {
         try {
             XmlEntityStruct xml = archive.retrieveDirty(uid);
@@ -864,7 +864,6 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             e.printStackTrace();
         }
     }
-    */
         //need to connect to the archive now and get the entity 
         //so that we can see what class it is
 
@@ -888,7 +887,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             logger.info("operation = store");
             //check here to see if what is stored has our project's reference
             logger.info("SCHEDULING_PANEL: got store for entity "+uid);
-            //addNewEntity(uid);
+            addNewEntity(uid);
         } else if(type == alma.xmlstore.operationType.UPDATED_XML){
             logger.info("operation = update");
             //check here to see if what is updated belongs in our queue of sbs 
