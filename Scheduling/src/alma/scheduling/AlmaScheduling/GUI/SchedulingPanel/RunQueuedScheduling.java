@@ -2,7 +2,7 @@ package alma.scheduling.AlmaScheduling.GUI.SchedulingPanel;
 
 import java.util.logging.Logger;
 //import alma.acs.container.ContainerServices;
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 import alma.scheduling.MasterSchedulerIF;
 

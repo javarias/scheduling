@@ -34,7 +34,7 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.AlmaScheduling.ALMASchedulingUtility;
 import alma.scheduling.GUI.InteractiveSchedGUI.OpenOT;
 //
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] projColumnInfo = {"Project Name", "PI", "Version"};

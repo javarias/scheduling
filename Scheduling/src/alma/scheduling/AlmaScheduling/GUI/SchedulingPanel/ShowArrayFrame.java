@@ -13,7 +13,7 @@ import alma.scheduling.ArrayStateEnum;
 import alma.scheduling.ArrayInfo;
 import alma.scheduling.SchedulingInfo;
 import alma.scheduling.MasterSchedulerIF;
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class ShowArrayFrame extends JDialog {
 

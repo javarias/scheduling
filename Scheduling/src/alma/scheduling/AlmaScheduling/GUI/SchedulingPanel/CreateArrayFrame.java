@@ -7,7 +7,7 @@ import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
 //import alma.acs.container.ContainerServices;
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 import alma.Control.ControlMaster;
 import alma.scheduling.ArrayModeEnum;

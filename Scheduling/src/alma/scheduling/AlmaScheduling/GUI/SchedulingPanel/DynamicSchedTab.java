@@ -12,7 +12,7 @@ import alma.scheduling.*;
 //import alma.acs.container.*;
 import alma.xmlentity.XmlEntityStruct;
 
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] sbColumnInfo = {"SB Name", "PI", "UID"};

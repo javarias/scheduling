@@ -21,7 +21,7 @@ import alma.scheduling.Define.DateTime;
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
 
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 
 public class QueuedSchedTab extends JScrollPane implements SchedulerTab {

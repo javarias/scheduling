@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 //import alma.acs.component.client.ComponentClient;
 
 //exec plugin stuff
-import alma.exec.extension.subsystemplugin.SubsystemPlugin.*;
+import alma.exec.extension.subsystemplugin.*;
 
 public class ExecFrameForPanel extends JFrame implements SubsystemPlugin {
 //    private ContainerServices cs;
