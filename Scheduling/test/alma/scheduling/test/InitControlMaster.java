@@ -363,7 +363,7 @@ public class InitControlMaster extends ComponentClientTestCase {
 //            devConfigs[0].UniqueIdentifier = "Generic";
 
             // Pass the DeviceConfig structure to the Master.
-            m_master.fillAntennaTables((short) 1, devConfigs);
+            m_master.fillAntennaTables((short) 1, devConfigs, false);
 
             // Initialize the Master component.
             m_master.startupPass1();
