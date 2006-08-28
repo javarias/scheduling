@@ -25,32 +25,6 @@ public class ExecFrameForPanel extends JPanel implements SubsystemPlugin {
     private Logger logger;
     
     public ExecFrameForPanel(){
-        /*
-        int inset = 250;
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(inset, inset, screenSize.width - inset*2, 
-            screenSize.height - inset*2);
-        setSize(325, 600);
-        
-        JMenuBar menubar = new JMenuBar();
-        JMenu filemenu = new JMenu("File");
-        filemenu.setMnemonic(KeyEvent.VK_F);
-        JMenuItem exit = new JMenuItem("Exit", KeyEvent.VK_X);
-        exit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                exit();
-            }
-        });
-        filemenu.add(exit);
-        menubar.add(filemenu);
-        setJMenuBar(menubar);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                exit();
-            }
-        });
-
-        */
         setLayout(new BorderLayout());
         createMainSchedPanel(cs);
         add(mainSchedPanel,BorderLayout.CENTER);
