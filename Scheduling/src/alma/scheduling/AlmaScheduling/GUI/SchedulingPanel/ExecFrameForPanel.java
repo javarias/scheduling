@@ -5,10 +5,11 @@ import java.awt.event.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.BorderLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 import java.util.logging.Logger;
 //acs stuff
 //import alma.acs.container.ContainerServices;
@@ -17,14 +18,13 @@ import java.util.logging.Logger;
 //exec plugin stuff
 import alma.exec.extension.subsystemplugin.*;
 
-public class ExecFrameForPanel extends JFrame implements SubsystemPlugin {
+public class ExecFrameForPanel extends JPanel implements SubsystemPlugin {
 //    private ContainerServices cs;
     private PluginContainerServices cs;
     private MainSchedTabPane mainSchedPanel;
     private Logger logger;
     
     public ExecFrameForPanel(){
-        super("SchedulingPanel");
         /*
         int inset = 250;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -50,10 +50,11 @@ public class ExecFrameForPanel extends JFrame implements SubsystemPlugin {
             }
         });
 
-        createMainSchedPanel(cs);
-        add(mainSchedPanel);
-        setVisible(true);
         */
+        setLayout(new BorderLayout());
+        createMainSchedPanel(cs);
+        add(mainSchedPanel,BorderLayout.CENTER);
+        setVisible(true);
     }
 
     public void setServices(PluginContainerServices ctrl) {
@@ -78,7 +79,7 @@ public class ExecFrameForPanel extends JFrame implements SubsystemPlugin {
     }
 
 
-    private void createMainSchedPanel(ContainerServices cs) {
+    private void createMainSchedPanel(PluginContainerServices cs) {
         mainSchedPanel = new MainSchedTabPane(cs);
     }
 

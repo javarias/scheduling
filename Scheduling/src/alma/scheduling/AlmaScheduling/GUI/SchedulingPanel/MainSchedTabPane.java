@@ -29,7 +29,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private JTable schedulerTable;
     private JPopupMenu rightClickMenu;
     private Object[][] schedRowInfo;
-    private PluginContainerServices container;
+    public PluginContainerServices container;
     private MasterSchedulerIF masterScheduler;
     private int overTabIndex;
     private JDesktopPane desktop;
@@ -47,7 +47,10 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void setup() {
+        logger.info("SCHEDULING_PANEL: in setup for SP.");
         getMasterSchedulerRef();
+        openWindows = new Vector<Window>();
+        schedulerInfo = new Vector<SchedulerTab>();
         addTab("Main",createMainView());
         //System.out.println("added main, tab count ="+getTabCount());
         super.setUI(new SchedTabUI());
@@ -58,17 +61,19 @@ public class MainSchedTabPane extends JTabbedPane {
                 //remove(overTabIndex);
             }
         });
-        openWindows = new Vector<Window>();
-        schedulerInfo = new Vector<SchedulerTab>();
     }
 
     private void getMasterSchedulerRef(){
+        logger.info("SCHEDULING_PANEL: about to try and get MS reference");
         try {
-            masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                container.getDefaultComponent(
-                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+            masterScheduler =
+                alma.scheduling.MasterSchedulerIFHelper.narrow(
+                    container.getDefaultComponent(
+                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             logger.info("SCHEDULING_PANEL: Got MS");
         } catch (Exception e) {
+            logger.info("SCHEDULING_PANEL: failed to get MS reference, "+e.toString());
+            e.printStackTrace();
             masterScheduler = null;
         }
         createRightClickMenu();
@@ -97,8 +102,9 @@ public class MainSchedTabPane extends JTabbedPane {
         p.setBorder(new TitledBorder("Scheduler Info"));
         //1
         p.add(new JLabel("Active Schedulers"));
-        p.add(new JLabel("0"));
+        p.add(new JLabel(""+schedulerInfo.size()+""));
         //2
+        /*
         p.add(new JLabel("Dynamic Schedulers "));
         p.add(new JLabel("0"));
         //3
@@ -107,6 +113,7 @@ public class MainSchedTabPane extends JTabbedPane {
         //4
         p.add(new JLabel("Interactive Schedulers "));
         p.add(new JLabel("0"));
+        */
         return p;
     }
 
