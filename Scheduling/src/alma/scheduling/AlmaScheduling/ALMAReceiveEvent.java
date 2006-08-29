@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.34 2006/07/25 14:11:48 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.35 2006/08/29 17:39:05 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -343,6 +343,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.info("SCHEDULING: arrayname = "+ e.arrayName);
             DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
             logger.info("SCHEDULING: start time = "+ startEb.toString());
+            logger.info("SCHEDULING: SB ("+e.sbId.entityId+") started at "+startEb.toString()+" on "+e.arrayName);
             //create an execblock internal to scheduling. 
             ExecBlock eb = createExecBlock(e);
             //ArrayTime at = new ArrayTime(e.startTime);
@@ -398,6 +399,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //logger.info("SCHEDULING: end time is "+ e.endTime);
             logger.info("SCHEDULING: end time is "+ endEb.toString());
             logger.info("********************************");
+            logger.info("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+". ASDM/ExecBlock = "+e.execId.entityId);
             //TODO change this when we start getting exec block end events for all reasons
             eb.setEndTime(endEb, Status.COMPLETE);
             eb.setTimeOfUpdate(endEb);
