@@ -102,9 +102,8 @@ public class MainSchedTabPane extends JTabbedPane {
         p.setBorder(new TitledBorder("Scheduler Info"));
         //1
         p.add(new JLabel("Active Schedulers"));
-        p.add(new JLabel(""+schedulerInfo.size()+""));
+        p.add(new JLabel("0"));
         //2
-        /*
         p.add(new JLabel("Dynamic Schedulers "));
         p.add(new JLabel("0"));
         //3
@@ -113,7 +112,6 @@ public class MainSchedTabPane extends JTabbedPane {
         //4
         p.add(new JLabel("Interactive Schedulers "));
         p.add(new JLabel("0"));
-        */
         return p;
     }
 

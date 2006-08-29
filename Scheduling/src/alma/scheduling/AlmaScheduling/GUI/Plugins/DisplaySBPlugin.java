@@ -24,15 +24,20 @@
  *
  */
 
-package alma.scheduling.AlmaScheduling.Plugins;
+package alma.scheduling.AlmaScheduling.GUI.Plugins;
 
 import java.util.logging.Logger;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.BorderLayout;
+import java.awt.event.*;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.table.TableModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.border.TitledBorder;
 
 import alma.exec.extension.subsystemplugin.*;
 
@@ -42,14 +47,17 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   * Plugin GUI for Exec 
   *
-  * @version $Id: DisplaySBPlugin.java,v 1.1 2006/08/28 20:52:08 sslucero Exp $
+  * @version $Id: DisplaySBPlugin.java,v 1.2 2006/08/29 17:14:38 sslucero Exp $
   */
 public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
 
     private PluginContainerServices cs;
     private Logger logger;
-    private MasterSchedulerIF ms;
+    private MasterSchedulerIF ms = null;
     private Object[][] sbRowInfo;
+    private JTable sbTable;
+    private JPanel eastPanel;
+    private JPanel westPanel;
     
     public void setServices(PluginContainerServices c) {
         this.cs = c;
@@ -57,47 +65,48 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
     }
     
     public void start () throws Exception {
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS));
+        setLayout(new GridLayout(1,2));
         startPlugin();
+        setVisible(true);
     }
 
     public boolean runRestricted (boolean b) throws Exception {
         return b;
     }
-    public void stop() throws Exception{}
+    public void stop() throws Exception{
+        releaseMS();
+    }
 
     //////////////////////////////////////////////////////
 
-    protected void startPlugin() {
+    private void startPlugin() {
         try {
             getMS();
-            displayStatus();
-            displaySbLites();
+            setup();
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
     }
 
-    protected void getMS() {
-        try{
-            ms = (MasterSchedulerIF)cs.getComponent("SCHEDULING_MASTERSCHEDULER");
-                //alma.scheduling.MasterSchedulerIFHelper.narrow(
-                //m_containerServices.getDefaultComponent(
-                //    "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+    private void setup() {
+        eastPanel = new JPanel();
+        eastPanel.setBorder(new TitledBorder("All SBs"));
+        westPanel = new JPanel(new BorderLayout());
+        
+        displaySbLites();
+        displayDetails();
+        displayRefreshButton();
+        add(eastPanel);
+        add(westPanel);
+    }
 
-        } catch(Exception e) {
-            logger.severe("SCHED Plugin: Could not get master scheduler ref.");
-            e.printStackTrace(System.out);
-        }
-            
-    }
-    protected void displayStatus() {
-    }
-    protected void displaySbLites(){
+    private void displaySbLites(){
         final String[] sbColumnInfo = {"SB Name", "UID"};
         Dimension d = new Dimension(200,100);
         JPanel tablePanel = new JPanel();
-        SBLite[] sblites = ms.getSBLites();  
+        //populateSbRowInfo();
+        SBLite[] sblites= null;
+        sblites = ms.getSBLites();  
         sbRowInfo = new Object[sblites.length][2];
         for(int i=0; i < sblites.length; i++){
             sbRowInfo[i][0] = sblites[i].sbName;
@@ -112,11 +121,74 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
             public void setValueAt(Object val, int row, int col) 
                 { sbRowInfo[row][col] = val; }
         };
-        JTable sbTable= new JTable(sbTableModel);
+        sbTable = new JTable(sbTableModel);
         sbTable.setPreferredScrollableViewportSize(d);
         tablePanel.add(sbTable);
-        this.add(tablePanel, BorderLayout.CENTER);
+        eastPanel.add(tablePanel);
     }
 
+    private void displayDetails() {
+        JPanel p = new JPanel();
+        p.setBorder(new TitledBorder("SB Details"));
+        westPanel.add(p, BorderLayout.CENTER);
+    }
+
+    private void displayRefreshButton() {
+        JPanel p = new JPanel(new GridLayout(1,3));
+        JButton b = new JButton("Refresh");
+        b.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    updateSBTable();
+                }
+        });
+        p.add(new JLabel());
+        p.add(b);
+        p.add(new JLabel());
+        westPanel.add(p,BorderLayout.SOUTH);
+    }
+
+    private void getMS() {
+        try{
+            if(ms == null) {
+                ms = alma.scheduling.MasterSchedulerIFHelper.narrow(
+                        cs.getDefaultComponent(
+                            "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+            }
+        } catch(Exception e) {
+            logger.severe("SCHED Plugin: Could not get master scheduler ref.");
+            e.printStackTrace(System.out);
+        }
+    }
+
+    private void releaseMS() {
+        try {
+            if(ms != null){
+                cs.releaseComponent(ms.name());
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    private void populateSbRowInfo() {
+        SBLite[] sblites= null;
+        try {
+            sblites = ms.getSBLites();  
+            sbRowInfo = new Object[sblites.length][2];
+            for(int i=0; i < sblites.length; i++){
+                sbRowInfo[i][0] = sblites[i].sbName;
+                sbRowInfo[i][1] = sblites[i].schedBlockRef;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSBTable() {
+        populateSbRowInfo();
+        sbTable.repaint();
+        validate();
+        
+    }
 }
 

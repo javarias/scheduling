@@ -38,7 +38,7 @@ public class ExecFrameForPanel extends JPanel implements SubsystemPlugin {
 
     public void start() throws Exception {
         createMainSchedPanel(cs);
-        add(mainSchedPanel);
+        add(mainSchedPanel, BorderLayout.CENTER);
     }
     public void stop() throws Exception{
         exit();

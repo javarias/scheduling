@@ -6,7 +6,23 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.17 2006/08/18 03:02:54 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.18 2006/08/29 17:15:01 sslucero Exp $"
+
+********************************************************************
+Changes since the holography release
+
+***** General *****
+- Scheduling panel now must be run from the OMC as a plugin and the following must be added to the ExecConfig.xml file:
+<property name="SubsystemPlugin1"  
+    value="Scheduling Panel ,alma.scheduling.AlmaScheduling.GUI.SchedulingPanel.ExecFrameForPanel"/>
+
+- There is also another plugin provided by scheduling, so please add the following to the ExecConfig.xml also.
+<property name="SubsystemPlugin2"  
+    value="Display All SBs ,alma.scheduling.AlmaScheduling.GUI.Plugins.DisplaySBPlugin"/>
+
+
+********************************************************************
+Release Notes for Holography Release: 2006/08/18
 
 ***** General *****
 - DO NOT USE Scheduling Panel in OMC!!!!! 
