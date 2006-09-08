@@ -44,7 +44,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.24 2006/09/08 16:30:59 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.25 2006/09/08 16:38:20 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -99,8 +99,6 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       */
     public void initSubsysPass2() throws AcsStateActionException {
         m_logger.info("SCHEDULING MC: initSubsysPass2() method called");
-        m_logger.info("SCHEDULING MC: Does nothing in this method");
-        /*
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
@@ -119,7 +117,6 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             }
             throw new AcsStateActionException(e);
         }
-        */
     }
 
     /**
