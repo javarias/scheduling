@@ -67,7 +67,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.63 2006/07/26 19:34:10 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.64 2006/09/08 16:30:59 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -580,7 +580,6 @@ public class ALMAMasterScheduler extends MasterScheduler
                 alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
                     containerServices.getDynamicComponent(x, false));
             interactiveComps.add(schedComp);
-
             /* create interactive scheduler */
             
             SchedulerConfiguration config = 
@@ -596,6 +595,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             String id = archive.getIdForScheduler();
             scheduler.setId(id);
             schedComp.setSchedulerId(id);
+            String name = schedComp.name();
             //add to Map
             allSchedulers.put(id, scheduler);
             
@@ -606,12 +606,22 @@ public class ALMAMasterScheduler extends MasterScheduler
               //          false, new SBQueue(), false, true, 0, arrayname, s_policy);
            // ((InteractiveScheduler)sched).setConfiguration(config);
             /////
-            return schedComp.name();
+            return name;
         } catch(Exception e){
             InvalidOperation e1 = new InvalidOperation(
                     "startInteractiveScheduling1", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
+        }
+    }
+
+    public void stopInteractiveScheduler(String n){
+        for (int i=0; i < interactiveComps.size(); i++){
+            Interactive_PI_to_Scheduling comp = (Interactive_PI_to_Scheduling)interactiveComps.elementAt(i);
+            if(comp.name().equals(n)) {
+                logger.info("SCHEDULING: Stopping interactive scheduler "+comp.name());
+                containerServices.releaseComponent(comp.name());
+            }
         }
     }
     
@@ -622,10 +632,11 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void stopScheduling() throws InvalidOperationEx {
         logger.info("SCHEDULING: Stop scheduling called. Will Stop activitiy on ALL schedulers");
         try {
-            /*
+           /* 
             for(int i=0; i< interactiveComps.size(); i++){
-                containerServices.releaseComponent(((Interactive_PI_to_Scheduling)
-                     interactiveComps.elementAt(i)).name());
+                Interactive_PI_to_Scheduling comp = (Interactive_PI_to_Scheduling)interactiveComps.elementAt(i);
+                logger.info("SCHEDULING: Stopping component "+comp.name());
+                containerServices.releaseComponent(comp.name());
             }
             */
             control.stopAllScheduling();

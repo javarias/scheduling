@@ -48,7 +48,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
     private void setup() {
         logger.info("SCHEDULING_PANEL: in setup for SP.");
-        getMasterSchedulerRef();
+        getMSRef();
         openWindows = new Vector<Window>();
         schedulerInfo = new Vector<SchedulerTab>();
         addTab("Main",createMainView());
@@ -63,7 +63,7 @@ public class MainSchedTabPane extends JTabbedPane {
         });
     }
 
-    private void getMasterSchedulerRef(){
+    private void getMSRef(){
         logger.info("SCHEDULING_PANEL: about to try and get MS reference");
         try {
             masterScheduler =
@@ -76,14 +76,14 @@ public class MainSchedTabPane extends JTabbedPane {
             e.printStackTrace();
             masterScheduler = null;
         }
-        createRightClickMenu();
+        //createRightClickMenu();
     }
     private void releaseMSRef(){
         if(masterScheduler != null){
             container.releaseComponent(masterScheduler.name());
             masterScheduler = null;
         }
-        createRightClickMenu();
+        //createRightClickMenu();
     }
 
     private JScrollPane createMainView(){
@@ -236,10 +236,12 @@ public class MainSchedTabPane extends JTabbedPane {
         b.setToolTipText("Create an array");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
+                /*
                 if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
+                */
                 showCreateArrayPopup();
             }
         });
@@ -249,10 +251,12 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 //check to see if MS is connected.
+               /*
                 if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
+                */
                 //prompt to select an array
                 String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                 if(arrayname.equals("") || arrayname == null) {
@@ -269,10 +273,12 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 //check to see if MS is connected.
+            /*
                 if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
+                */
                 //prompt to select an array
                 String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                 if(arrayname.equals("") || arrayname == null) {
@@ -280,10 +286,12 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
                 logger.info("Selected array = "+arrayname);
                 try {
+                    getMSRef();
                     String is = masterScheduler.startInteractiveScheduling1(
                         arrayname);
                     addTab("IS - "+arrayname,
                         createInteractiveSchedulingView(is, arrayname)); 
+                    releaseMSRef();
                     //System.out.println("added IS, tab count ="+getTabCount());
                 } catch(Exception e){
                     e.printStackTrace();
@@ -296,10 +304,11 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 //check to see if MS is connected.
-                if(masterScheduler == null){
+                /*if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
+                */
                 //ask if they are going to create their own array
                 String arrayname = null;
                 if(pickTheirOwnArray()) {
@@ -352,7 +361,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private void createRightClickMenu(){
         rightClickMenu = new JPopupMenu("Master Scheduler Functions");
         JMenuItem menuItem;
-        if(masterScheduler!=null){
+        //if(masterScheduler!=null){
             menuItem = new JMenuItem("Detach");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -376,7 +385,6 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
-            */
         } else {
             menuItem = new JMenuItem("Connect To MasterScheduler");
             menuItem.addActionListener(new ActionListener() {
@@ -386,6 +394,7 @@ public class MainSchedTabPane extends JTabbedPane {
             });
             rightClickMenu.add(menuItem);
         }
+            */
         addMouseListener(new PopupListener());
     }
     
@@ -514,11 +523,12 @@ public class MainSchedTabPane extends JTabbedPane {
         //release all components.
         logger.info("SCHEDULING_PANEL: in exit of MainSchedulingTab");
         //make sure there are no open dialogs/frames/etc..
+        /*
         try {
             container.releaseComponent(masterScheduler.name());
         } catch(Exception e){
             logger.warning("SCHEUDLING_PANEL: Error releasing components");
-        }
+        }*/
         try {
             for(int i=0; i<openWindows.size();i++){
                 openWindows.elementAt(i).dispose();

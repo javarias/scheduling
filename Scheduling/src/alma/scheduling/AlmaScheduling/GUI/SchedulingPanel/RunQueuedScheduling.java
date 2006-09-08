@@ -18,9 +18,9 @@ public class RunQueuedScheduling implements Runnable {
         arrayname = array;
         container = cs;
         logger =cs.getLogger();
-        getMS();
+        getMSRef();
     }
-    private void  getMS(){
+    private void getMSRef(){
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
@@ -32,7 +32,7 @@ public class RunQueuedScheduling implements Runnable {
             logger.severe("Error in RunQueuedScheduling: "+e.toString());
         }
     }
-    private void releaseMS(){
+    private void releaseMSRef(){
         try {
             if(masterScheduler != null){
                 container.releaseComponent(masterScheduler.name());
@@ -52,7 +52,7 @@ public class RunQueuedScheduling implements Runnable {
         try {
             masterScheduler.startQueuedScheduling(sb_ids, arrayname);
         } catch(Exception e) {
-            releaseMS();
+            releaseMSRef();
             e.printStackTrace();
             logger.severe("Error in RunQueuedScheduling: "+e.toString());
         }
@@ -60,7 +60,7 @@ public class RunQueuedScheduling implements Runnable {
     
     public void stop() {
         try {
-            releaseMS();
+            releaseMSRef();
         } catch (Exception e){
             e.printStackTrace();
             logger.severe("Error in RunQueuedScheduling: "+e.toString());

@@ -610,7 +610,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         String sbId =(String) sbRowInfo[row][4];
         //send sb to scheduler comp to be executed
         try {
-            System.out.println("SB "+sbId+" being sent to schedler");
+            System.out.println("SB "+sbId+" being sent to scheduler");
             scheduler.executeSB(sbId);
             updateSBStatusInTable(sbId, "RUNNING");
         }catch(Exception e){} 
@@ -712,8 +712,19 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         return type;
     }
 
+    private void releaseComponents() {
+        try{
+            logger.info("About to release "+scheduler.name()+" and "+masterScheduler.name());
+            masterScheduler.stopInteractiveScheduler(schedulername);
+            container.releaseComponent(schedulername);
+            container.releaseComponent(masterScheduler.name());
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
     public void exit() {
         logger.info("EXIT IN IS");
+        releaseComponents();
         try {
             scheduler.endSession();
         } catch(Exception e){
@@ -721,9 +732,6 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         try{
             //disconnectFromArchive();
-            logger.info("About to release "+scheduler.name());
-            container.releaseComponent(schedulername);
-            container.releaseComponent(masterScheduler.name());
             consumer.disconnect();
             if(openot_thread !=null){
                 openot_thread=null;

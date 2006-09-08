@@ -64,7 +64,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         queueRowInfo = new Object[0][sbColumnInfo.length];
         createStartupView();        
         getViewport().add(mainPanel);
-        getMasterSchedulerRef();
+        getMSRef();
         //createRightClickMenu();
         schedulername = "QS_"+arrayname;
         type = "queued";
@@ -80,7 +80,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     }
 
         
-    private void getMasterSchedulerRef() {
+    private void getMSRef() {
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
