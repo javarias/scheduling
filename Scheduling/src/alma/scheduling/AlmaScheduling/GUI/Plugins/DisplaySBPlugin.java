@@ -50,7 +50,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   * Plugin GUI for Exec 
   *
-  * @version $Id: DisplaySBPlugin.java,v 1.3 2006/08/29 22:55:33 sslucero Exp $
+  * @version $Id: DisplaySBPlugin.java,v 1.4 2006/09/11 14:32:52 sslucero Exp $
   */
 public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
 
@@ -125,7 +125,7 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
             sblites[0].sbName = "foo";
             sblites[0].PI = "foo's PI";
             sblites[0].projectName = "foo's project";
-            sblites[0].schedBlockRef = "n/a";
+            sblites[0].schedBlockRef = ""+0;
         }
         sbRowInfo = new Object[sblites.length][sbColumnInfo.length];
         for(int i=0; i < sblites.length; i++){
@@ -151,18 +151,6 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
         tablePanel.add(pane);
         eastPanel.add(tablePanel);
     }
-    private void createSBTableModel() {
-        sbTableModel= new AbstractTableModel() {
-            public int getColumnCount() { return sbColumnInfo.length; }
-            public String getColumnName(int col) { return sbColumnInfo[col]; }
-            public int getRowCount() { return sbRowInfo.length; }
-            public Object getValueAt(int row, int col) 
-                { return sbRowInfo[row][col]; }
-            public void setValueAt(Object val, int row, int col) 
-                { sbRowInfo[row][col] = val; }
-        };
-    }
-
     private void displayDetails() {
         detailsPanel = new JPanel(new BorderLayout());
         detailsPanel.setBorder(new TitledBorder("SB Details"));
@@ -181,6 +169,10 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
         p.add(b);
         p.add(new JLabel());
         westPanel.add(p,BorderLayout.SOUTH);
+    }
+
+    private void displayQuerySection() {
+        //do this oneday
     }
 
     private void getMS() {
@@ -207,21 +199,30 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
         }
     }
     
+    private void createSBTableModel() {
+        sbTableModel= new AbstractTableModel() {
+            public int getColumnCount() { return sbColumnInfo.length; }
+            public String getColumnName(int col) { return sbColumnInfo[col]; }
+            public int getRowCount() { return sbRowInfo.length; }
+            public Object getValueAt(int row, int col) 
+                { return sbRowInfo[row][col]; }
+            public void setValueAt(Object val, int row, int col) 
+                { sbRowInfo[row][col] = val; }
+        };
+    }
+
     private void populateSbRowInfo() {
         sblites= null;
         if(ms == null) {
-            sblites = new SBLite[2];
-            sblites[0] = new SBLite();
-            sblites[0].sbName = "foo";
-            sblites[0].PI = "foo's PI";
-            sblites[0].projectName = "foo's project";
-            sblites[0].schedBlockRef ="n/a";
+            sblites = new SBLite[20];
+            for(int i=0; i < 20; i++) {
+                sblites[i] = new SBLite();
+                sblites[i].sbName = "foo"+i;
+                sblites[i].PI = "foo"+i+"'s PI";
+                sblites[i].projectName = "foo"+i+"'s project";
+                sblites[i].schedBlockRef = ""+i;
+            }
 
-            sblites[1] = new SBLite();
-            sblites[1].sbName = "foo2";
-            sblites[1].PI = "foo2's PI";
-            sblites[1].projectName = "foo2's project";
-            sblites[1].schedBlockRef ="n/a";
         } else {
             try {
                 sblites = ms.getSBLites();  
@@ -240,10 +241,10 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
 
     private void updateSBTable() {
         populateSbRowInfo();
-        System.out.println(sbRowInfo.length);
+        //System.out.println(sbRowInfo.length);
         sbTable.revalidate();
         validate();
-        System.out.println("should be updated now");
+        //System.out.println("should be updated now");
     }
 
     private void showSBInfo() {
@@ -254,13 +255,15 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
         } catch(Exception e) { /* don't care if it complains! */ }
         if(!checkOneSelected()) {
             //show nothing
-            System.out.println("more than one");
+            //System.out.println("more than one");
             return;
         }
         int row = sbTable.getSelectedRow();
+        //System.out.println("row "+row);
         SBLite sb=null;
         for(int i=0; i < sblites.length; i++){
             if(sblites[i].schedBlockRef.equals(sbRowInfo[row][3])){
+              //  System.out.println("i= "+i);
                 sb = sblites[i];
                 break;
             }
