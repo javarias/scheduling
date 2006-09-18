@@ -54,7 +54,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.47 2006/07/18 22:47:30 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.48 2006/09/18 13:41:18 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -521,7 +521,7 @@ public class ALMAControl implements Control {
       */
     public void releaseControlComp() {
         try {
-            containerServices.releaseComponent("CONTROL_MASTER");
+            containerServices.releaseComponent(control_system.name());
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error releasing control comp.");
             e.printStackTrace(System.out);
