@@ -50,7 +50,7 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version $Id: DateTime.java,v 1.9 2006/08/16 13:24:59 sslucero Exp $
+ * @version $Id: DateTime.java,v 1.10 2006/09/25 16:08:32 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {
@@ -260,6 +260,9 @@ public class DateTime {
 	private void init(int year, int month, double day) {
 		// For this algorithm see Meeus, chapter 7, p. 61.
 		int iday = (int)day;
+        if (day > 0.0 && day < 1.0) {
+            iday = 1;
+        }
 		if (month < 1 || month > 12) {
 			throw new IllegalArgumentException ("Illegal value of month: " 
 				+ year + "-" + month + "-" + day);
@@ -679,13 +682,18 @@ public class DateTime {
 		return new Time ((x - (int)x) * 24.0);
 	}
 
+
+
 	/**
 	 * Return the local sideral time for this DateTime
 	 * in hours and fractions of an hour.
 	 * @return The local sideral time in hours.
 	 */
 	public double getLocalSiderealTime() {
-		double x = getGreenwichMeanSiderealTime() - longitudeInHours;
+        /*
+		double x = getGreenwichMeanSiderealTime() + longitudeInHours;
+            */
+        double x = getGreenwichMeanSiderealTime() + longitudeInDegrees/15.0;
         if(x<0)
                 x+= 24.0;
         if(x> 24.0)
@@ -697,19 +705,42 @@ public class DateTime {
 	/**
 	 * Return the Greenwich mean sideral time for this DateTime
 	 * in hours and fractions of an hour.
-	 * @return The Greenwich mean sideral time in hours.
+	 * @return The Greenwich mean sideral time not in hours.
 	 */
 	public double getGreenwichMeanSiderealTime() {
-		double t0 = jd - 2451545.0;
+        //convert jd to jd in UT
+        /*
+        System.out.println("time zone = "+timeZone);
+        double jdut = jd + convertToUT; //- (timeZone/24.0);
+		double t0 = jdut - 2451545.0;
 		double t = t0 / 36525.0;
+        //double t = (jd - 2451545.0) / 36525.0;
 		double tt = t * t;
+		double ttt = t * t * t;
 		double x = (280.46061837 + 
 			       360.98564736629 * t0 + 
-			       tt * (0.000387933 - (t / 38710000.0))) / 15.0 ;
+			       tt * (0.000387933 - (ttt / 38710000.0)));// / 15.0 ;
+        //double y = (x * 24.0) / 360.0;
+        */
+        double MJD = getMJD();
+        double MJD_0 = Math.floor(MJD);
+        double UT = 86400.0 * (MJD - MJD_0);
+        double T_0 = (MJD_0 -51544.5)/36525.0;
+        double T = (MJD - 51544.5)/36525.0;
+        double x = 24110.54841+8640184.812866* T_0 + 1.0027379093 * UT +
+            (0.093104 - 0.0000062 * T)*T*T;
+		double y =Math.IEEEremainder(x,86400.0);
+        if(y <0) {
+            y+=86400.0;
+        }
+        double hours = y / 3600;
+        return hours;
+        /*
 		double y = Math.IEEEremainder(x,24.0);
 		if (y < 0)
 			y = 24.0 + y;	   
-		return y;
+        return y;
+        */
 	}
 	
 	//*/
@@ -722,7 +753,8 @@ public class DateTime {
 	//*/
 	static public DateTime lstToLocalTime(double lst, Date d) {
 		// (1) Find the Greenwich mean sideral time.
-		double gmst = lst + longitudeInHours;
+		double gmst = lst - longitudeInHours;
+
 		// (2) For this date, calculate the sideral time at 0h UT.
 		DateTime x = new DateTime(d.getYear(),d.getMonth(),(double)d.getDay());
 		double t0 = x.getJD() - 2451545.0;
@@ -738,24 +770,42 @@ public class DateTime {
 		// (3) Then calulate the Greenwich mean time for this Greenwich mean sideral time.
 		double ut = (gmst - theta) / 1.00273790935;
 		// (4) Finally, apply the time zone correction.
-        /*
-		ut -= convertToUT;
-		System.out.println(">>> gmst " + gmst);
-		System.out.println(">>> x " + x);
-		System.out.println(">>> T " + T);
-		System.out.println(">>> y " + y);
-		System.out.println(">>> theta " + theta);
-		System.out.println(">>> ut " + ut);
-        */
+        //System.out.println("Converting to UT with "+convertToUT);
+		//ut -= convertToUT;
 		x = new DateTime(d,ut);
 		return x;
 	}
     
 	static public void main(String[] args) {
-		DateTime.setClockCoordinates(-106.905917, 34.068693, -6);
+		//DateTime.setClockCoordinates(-106.905917, 34.068693, -6);
 		//DateTime.setClockCoordinates(107.6177275, 34.0787491666667,-7);
-		System.out.println("Timezone is MST.");
+		//DateTime.setClockCoordinates(-60.0, -23.02271113, -1);
+		//DateTime.setClockCoordinates(-67.7543628, -23.02271113, -6); //2 hours away from CHILE..
+		DateTime.setClockCoordinates(-67.7543628, -23.02271113, -4); //CHILE..
 
+        DateTime start = new DateTime("2006-09-21T15:56:00");
+        System.out.println("Original DT = "+start.toString());
+        System.out.println();
+        System.out.println("DT's JD = "+start.getJD());
+        System.out.println("DT's MJD = "+start.getMJD());
+        double lst = start.getLocalSiderealTime();
+        System.out.println();
+        System.out.println("Lst: "+lst+ ": should be about 15:27"); 
+        Date d = start.getDate();
+        System.out.println("Orig's Date: "+d.toString());
+        DateTime newDT = DateTime.lstToLocalTime(lst, d);
+        System.out.println("New DT = "+newDT.toString());
+        /*
+        DateTime end = new DateTime("2006-01-02T22:18:42");
+        System.out.println("Start: "+start.toString());
+        System.out.println("End: "+end.toString());
+        double diff = DateTime.difference(end, start);
+        System.out.println("Difference between two (in JD) = "+diff);
+        System.out.println("In hours = "+ diff*24.0);
+        System.out.println("In minutes = "+ diff*24.0*60.0);
+        System.out.println("In seconds = "+ diff*24.0*60.0*60.0);
+        */
+        /*
 		long currentSystemTime = System.currentTimeMillis();
 		DateTime current  = new DateTime(currentSystemTime);// / 86400000.0 + 2440587.5);
 		System.out.println("The current time, as a DateTime is " + current.toString());
@@ -768,6 +818,7 @@ public class DateTime {
 		Date day = new Date (2006,8,14);
 		DateTime x = DateTime.lstToLocalTime(lst,day);
 		System.out.println("Lst to local = " + x);
+        */
 	}
     
 	/**

@@ -37,7 +37,7 @@ package alma.scheduling.Define;
  * <li> its current project, unit set, and scheduling unit.
  * </ul>
  * 
- * @version $Id: Subarray.java,v 1.6 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: Subarray.java,v 1.7 2006/09/25 16:08:32 sslucero Exp $
  * @author Allen Farris
  */
 public class Subarray {
@@ -54,7 +54,8 @@ public class Subarray {
 	private String currentSB;
     private double maxBaseline;
     private double minBaseline;
-	
+	private String mode;
+    
 	public Subarray (String name, Antenna[] antenna) {
 		this.arrayName = name;
 		this.antenna = antenna;
@@ -142,27 +143,22 @@ public class Subarray {
         return maxBaseline;
     }
 
+    public String getSchedulingMode() {
+        return mode;
+    }
+
 
     public void calcMaxBaseline() {
-        //System.out.println("*****************");
-        //System.out.println("*****************");
-        //System.out.println("Calculating max baseline with "+antenna.length+" antennas");
-        //System.out.println("*****************");
-        //System.out.println("*****************");
         int ants = antenna.length;
         int totalBaselines = (ants*(ants-1));
         int baselineCtr=0;
-        //System.out.println(totalBaselines);
         double[] alldistances = new double[totalBaselines];
         //for every antenna calculate distance to every other antenna
         double tmp;
         for(int i=0; i < antenna.length; i++){
             for(int j=0; j<antenna.length ; j++){
                 if(i != j) { //don't compare same antenna!
-                    //System.out.println("i="+i);
-                    //System.out.println("j="+j);
                     tmp =calcDistance(antenna[i], antenna[j]); 
-                    //System.out.println("distance="+tmp);
                     if (tmp > 0.0 ){
                         alldistances[baselineCtr++] = tmp;
                     } //else antnna is in same spot! so no baseline!
@@ -170,19 +166,18 @@ public class Subarray {
             }
         }
         double max=0;
+        double min=0;
         for(int i=0; i < alldistances.length; i++) {
             if(alldistances[i] > max) max = alldistances[i];
         }
+        for(int i=0; i < alldistances.length; i++) {
+            if(alldistances[i] < min) min = alldistances[i];
+        }
         maxBaseline = max;
-        //System.out.println("MB = "+ max);
+        minBaseline = min;
     }
     
     public double calcDistance(Antenna a, Antenna b){
-        //System.out.println("A: "+a.getXLocation()+":"+a.getYLocation()+":"+a.getZLocation());
-        //System.out.println("B: "+b.getXLocation()+":"+b.getYLocation()+":"+b.getZLocation());
-        //System.out.println("1: "+ (a.getXLocation() - b.getXLocation()));//, 2) );
-        //System.out.println("2: "+ (a.getYLocation() - b.getYLocation()));//, 2) );
-        //System.out.println("3: "+ (a.getZLocation() - b.getZLocation()));//, 2) );
         double distance = 
             Math.sqrt( 
                 Math.pow( (a.getXLocation() - b.getXLocation()), 2) +
@@ -218,6 +213,25 @@ public class Subarray {
 		standbyFrequencyBand = band;
 		standbyFrequency = d;
 	}
+    
+    public void setSchedulingMode(String m){
+        mode = m;
+    }
 
 
+    public double getRangeMin(){
+        return minBaseline;
+    }
+    
+    public double getRangeMax(){
+        return maxBaseline;
+    }
+    
+    public double getRMSMinor(){
+        return 0.0;
+    }
+    
+    public double getRMSMajor(){
+        return 0.0;
+    }
 }

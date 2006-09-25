@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.16 2006/08/15 22:37:12 sslucero Exp $
+ * @version $Id: SB.java,v 1.17 2006/09/25 16:08:32 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -85,6 +85,7 @@ public class SB implements ProgramMember {
 	private Priority userPriority;
 	private Expression scienceGoal;
 	private WeatherCondition weatherConstraint;
+    private String weatherConstraintName;
 	private SBSetup requiredInitialSetup;
 	private int maximumTimeInSeconds;
 	private int maximumNumberOfRepeats;
@@ -119,6 +120,7 @@ public class SB implements ProgramMember {
 		userPriority = null;
 		scienceGoal = null;
 		weatherConstraint = null;
+        weatherConstraintName ="";
 		requiredInitialSetup = null;
 		maximumTimeInSeconds = 0;		
 		maximumNumberOfRepeats = 0;
@@ -653,6 +655,12 @@ public class SB implements ProgramMember {
 		this.weatherConstraint = weatherConstraint;
 	}
 
+    public void setWeatherConstraintName(String n){
+        weatherConstraintName = n;
+    }
+    public String getWeatherConstraintName(){
+        return weatherConstraintName;
+    }
 	/**
 	 * @return Returns the schedBlockId.
 	 */
@@ -770,6 +778,20 @@ public class SB implements ProgramMember {
 		Source[] sourcelist = new Source [sources.size()];
 		return (Source[])sources.toArray(sourcelist);
     }
+
+    public double getElevation(DateTime lst, SiteCharacteristics site) {
+		double sinL = site.getSinLatitude();						// sin(latitude)
+		double cosL = site.getCosLatitude();						// cos(latitude)
+		double sinMinEl = site.getSinMinEl();						// sin of the minimum elevation
+        double sinDec = Math.sin(getTarget().getCenter().getDec());
+        double cosDec = Math.cos(getTarget().getCenter().getDec());
+        double hourToRad = Math.PI / 12.0;
+		double x = sinL * sinDec + cosL * cosDec * Math.cos(lst.getTimeOfDay()* hourToRad - getTarget().getCenter().getRa());
+        //System.out.println("%%%%%%%%%%%%%%%%%%%%%%");
+        //System.out.println("ELEVATION = "+x);
+        //System.out.println("%%%%%%%%%%%%%%%%%%%%%%");
+		return Math.asin(x);
+	}
 
 }
 

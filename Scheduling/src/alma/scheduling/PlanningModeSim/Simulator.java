@@ -180,6 +180,7 @@ public class Simulator implements Runnable {
         //System.out.println(clock.getDateTime());
 		// This clock is now an LST clock.
 		// Now we need to set the beginning and ending times to LST times.
+        clock.setTime(beginCivil);
 		DateTime endCivil = input.getEndCivilTime();
 		lstHrs = endCivil.getLocalSiderealTime();
 		DateTime lstEnd = DateTime.add(endCivil,(lstHrs / 24.0));

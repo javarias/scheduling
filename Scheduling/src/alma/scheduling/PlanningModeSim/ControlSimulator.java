@@ -29,6 +29,8 @@ package alma.scheduling.PlanningModeSim;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
+import alma.scheduling.Define.Date;
+import alma.scheduling.Define.Time;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.LiteSB;
@@ -57,6 +59,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 	private ProjectManagerSimulator project;
 	private TelescopeSimulator telescope;
 	private ArchiveSimulator archive;
+    private SimulationInput input;
     private WeatherModel weather;
 	
 	private int setUpTimeInSec;
@@ -82,7 +85,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 		project = (ProjectManagerSimulator)containerServices.getComponent(Container.PROJECT_MANAGER);
 		telescope = (TelescopeSimulator)containerServices.getComponent(Container.TELESCOPE);
         weather = (WeatherModel)containerServices.getComponent(Container.WEATHER_MODEL);
-		SimulationInput input = (SimulationInput)containerServices.getComponent(Container.SIMULATION_INPUT);
+		input = (SimulationInput)containerServices.getComponent(Container.SIMULATION_INPUT);
 		archive = (ArchiveSimulator)containerServices.getComponent(Container.ARCHIVE);
 		setUpTimeInSec = input.getSetUpTimeInSec();
 		changeProjectTimeInSec = input.getChangeProjectTimeInSec();			
@@ -260,8 +263,8 @@ public class ControlSimulator extends BasicComponent implements Control {
         ExecutionStatistics e = new ExecutionStatistics();
         e.setExecId(eb.getId());
         e.setArrayName(arrayname);
-        e.setStartTime(eb.getStatus().getStartTime().toString());
-        e.setEndTime(eb.getStatus().getEndTime().toString());
+        e.setStartTime(eb.getStatus().getStartTime());
+        e.setEndTime(eb.getStatus().getEndTime());
         if(sblite != null){
             e.setScore(sblite.getScore());
             e.setSuccess(sblite.getSuccess());
@@ -275,9 +278,14 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setSBName(sb.getSBName());
         e.setPriority(sb.getScientificPriority().toString());
         e.setFrequency(sub.getCurrentFrequency());
+        e.setFrequencyBandName(sb.getFrequencyBand().getName());
         e.setRA(sb.getTarget().getMax().getRa());
+        //System.out.println("RA : "+e.getRA());
         e.setDEC(sb.getTarget().getMax().getDec());
-        e.setWeatherConstraint(sb.getWeatherConstraint().toString());
+        //System.out.println("DEC : "+e.getDEC());
+        e.setWeatherConstraintName(sb.getWeatherConstraintName());
+        //System.out.println("DATETIME OF LST: "+clock.getDateTime());
+        e.setElevation(sb.getElevation(clock.getDateTime(), input.getSite()));
         e.setLSTRise(sb.getTarget().getLstRise());
         e.setLSTMax(sb.getTarget().getLstMax());
         e.setLSTSet(sb.getTarget().getLstSet());
@@ -285,6 +293,13 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setOpacity(weather.getCurrentOpacity(clock.getDateTime(), freq, el));
         e.setRMS(weather.getCurrentRMS(clock.getDateTime(), freq, el, baseline));
         e.setWind(weather.getCurrentWindSpeed(clock.getDateTime()));
+        Date d1 = input.getBeginTime().getDate();
+        Date d2 = input.getEndTime().getDate();
+        Time t= new Time(0,0,0.0);
+        DateTime dt1 = new DateTime(d1,t);
+        DateTime dt2 = new DateTime(d2,t);
+        e.setLSTatVeryStartMidnight(dt1.getLocalSiderealTime());
+        e.setLSTatVeryEndMidnight(dt2.getLocalSiderealTime());
         return e;
     }
 	/* (non-Javadoc)

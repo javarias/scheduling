@@ -505,7 +505,6 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
                 queueRowInfo[i][2] = status; //updating status if uids match
                 queueTable.validate();
                 queueTable.repaint();
-                //queueScrollPane.repaint();
                 queueListPanel.validate();
                 //manageTableColumnSize();
                 //queueTable.revalidate();

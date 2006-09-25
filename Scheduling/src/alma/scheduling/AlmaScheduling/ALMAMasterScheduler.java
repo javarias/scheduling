@@ -54,6 +54,7 @@ import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.PolicyFactor;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.Subarray;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.MasterScheduler;
@@ -67,7 +68,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.64 2006/09/08 16:30:59 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.65 2006/09/25 16:08:32 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -146,24 +147,14 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.logger = containerServices.getLogger();
 
         this.clock = new ALMAClock();
-        //ALMASchedulingUtility.setMasterSchedulerThread(Thread.currentThread());
-        //this.clock = ALMASchedulingUtility.getClock(containerServices);
         this.archive = new ALMAArchive(containerServices, clock);
-        //this.archive = ALMASchedulingUtility.getArchive(containerServices);
         this.sbQueue = new SBQueue();
-        //this.sbQueue = ALMASchedulingUtility.getSBQueue(containerServices);
         this.publisher = new ALMAPublishEvent(containerServices);
-        //this.publisher = ALMASchedulingUtility.getPublisher(containerServices);
         this.messageQueue = new MessageQueue();
-        //this.messageQueue = ALMASchedulingUtility.getMessageQueue(containerServices);
         this.operator = new ALMAOperator(containerServices, messageQueue);
-        //this.operator = ALMASchedulingUtility.getOperator(containerServices);
         this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher, clock);
-        //this.manager = ALMASchedulingUtility.getProjectManager(containerServices);
-        this.control = new ALMAControl(containerServices, manager);
-        //this.control = ALMASchedulingUtility.getControl(containerServices);
-        //this.telescope = ALMASchedulingUtility.getTelescope(containerServices);
         this.telescope = new ALMATelescope();
+        this.control = new ALMAControl(containerServices, manager);
         
         logger.info("SCHEDULING: MasterScheduler initialized");
     }
@@ -744,22 +735,33 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public String createArray(String[] antennaIdList, ArrayModeEnum schedulingMode)
         throws InvalidOperationEx {
-        
+            
+        Subarray a =null;
+        String mode="n/a";
         String name="";
         try {             
             if(schedulingMode == ArrayModeEnum.MANUAL) {
                 logger.info("SCHEDULING: Creating an array for manual mode");
                 name = control.createManualArray(antennaIdList);
+                //a = new Subarray(name, antennaIdList);
+                //a.setSchedulingMode("manual");
             } else if(schedulingMode == ArrayModeEnum.DYNAMIC){
                 logger.info("SCHEDULING: Creating an array for dynamic mode");
                 name = control.createArray(antennaIdList, "dynamic");
+                //a = new Subarray(name, antennaIdList);
+                //a.setSchedulingMode("dynamic");
             } else if(schedulingMode == ArrayModeEnum.QUEUED){
                 logger.info("SCHEDULING: Creating an array for queued mode");
                 name = control.createArray(antennaIdList, "queued");
+                //a = new Subarray(name, antennaIdList);
+                //a.setSchedulingMode("queued");
             } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
                 logger.info("SCHEDULING: Creating an array for interactive mode");
                 name = control.createArray(antennaIdList, "interactive");
+                //a = new Subarray(name, antennaIdList);
+                //a.setSchedulingMode("interactive");
             }
+            //telescope.addSubarray(a);
         } catch(SchedulingException e) {
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();

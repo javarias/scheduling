@@ -943,6 +943,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		
 			u = new SB(targetName); //in simulation the id and the name are the same.
             u.setSBName(targetName);
+            u.setWeatherConstraintName(weatherCondition);
 			t = new Target (new Equatorial(ra,dec),sizeTargetBox,sizeTargetBox);
 			u.setTarget(t);
 			u.setCenterFrequency(frequency);
@@ -1004,8 +1005,9 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
     }
 
 	/**
-	 * @return
-	 */
+      * ASSUMED TO BE IN LST
+	  * @return
+	  */
 	public DateTime getBeginTime() {
 		return beginTime;
 	}
@@ -1032,8 +1034,9 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	}
 
 	/**
-	 * @return
-	 */
+      * ASSUMED TO BE IN LST
+	  * @return
+	  */
 	public DateTime getEndTime() {
 		return endTime;
 	}
@@ -1161,15 +1164,17 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	}
 
 	/**
-	 * @param time
-	 */
+      * ASSUMED TO BE IN LST
+	  * @param time
+	  */
 	void setBeginTime(DateTime time) {
 		beginTime = new DateTime(time);
 	}
 
 	/**
-	 * @param time
-	 */
+      * ASSUMED TO BE IN LST
+	  * @param time
+	  */
 	void setEndTime(DateTime time) {
 		endTime = new DateTime(time);
 	}

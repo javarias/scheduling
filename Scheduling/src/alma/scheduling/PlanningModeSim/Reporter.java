@@ -97,7 +97,7 @@ public class Reporter extends BasicComponent {
 		logger.info(instanceName + ".initialized");
 	}
 
-	private DateTime currrentDay = null; // This is the current day in the simulation.
+	private DateTime currentDay = null; // This is the current day in the simulation.
 	
 	public void execStart(String arrayname, String sbId, DateTime time) {
 	}
@@ -109,17 +109,17 @@ public class Reporter extends BasicComponent {
 		DateTime endTime = ex.getStatus().getEndTime();
 		BestSB best = ex.getBest();
 
-		if (currrentDay == null) {
-			currrentDay = new DateTime(startTime.getDate(),0.0);
-			out.println(currrentDay + " LST");
+		if (currentDay == null) {
+			currentDay = new DateTime(startTime.getDate(),0.0);
+		    out.println("Current DAY: "+currentDay + " LST");				
 			out.println();
 			out.println("SB-id  Exec# Array    Start       End        Score  Success  Rank");
 		} else {
-			DateTime y = DateTime.add(currrentDay,86400);
+			DateTime y = DateTime.add(currentDay,86400);
 			if (startTime.gt(y)) {
 				out.println();
-				currrentDay = new DateTime(startTime.getDate(),0.0);
-				out.println(currrentDay + " LST");				
+				currentDay = new DateTime(startTime.getDate(),0.0);
+				out.println("Current DAY: "+currentDay + " LST");				
 				out.println();
 				out.println("SB-id  Exec# Array    Start       End        Score  Success  Rank");
 			}
@@ -288,14 +288,22 @@ public class Reporter extends BasicComponent {
 				err.printStackTrace(o);
 				System.exit(0);
 			}
+            //o.println(unit[i].getId() +" has "+ ex.length+" execution(s)");
 			for (int j = 0; j < ex.length; ++j) {
+            //    o.println(ex[j].getParent());
 				td = ex[j].getStatus().getStartTime().getTimeOfDay();
 				tdEnd = ex[j].getStatus().getEndTime().getTimeOfDay();
 				while (td <= tdEnd) {
+                    String tmp =new String(s);
+                    //o.println("@@"+tmp+"@@"+tmp.length());
 					iex = (int)(td * scaleFactor + 0.5);
 					if (iex > (scale - 1))
 						iex = 0;
-					if (s[iex] == ' ') o.println("Something's wrong here!" + ex[j].getParent());
+					if (s[iex] == ' '){
+                        o.println("Something's wrong here!" + ex[j].getParent());
+                        //o.println(iex+" : "+j+" : "+td+" : "+tdEnd);
+                        break;
+                    }
 					else if (s[iex] == '-') s[iex] = '+';
 					else if (s[iex] == 'X') s[iex] = '*';
 					else if (s[iex] == '+') s[iex] = '+';
@@ -433,10 +441,12 @@ public class Reporter extends BasicComponent {
 		double avSuccess = 0.0;
 		double avRank = 0.0;
 		int totalNumber = 0;
+		int totalPossibleNumber = 0;
 		int totalSBs = 0;
 		
 		ExecBlock[] ex = null;
 		Project[] prj = null;
+        SB[] allSBs=null;
 		try {
 			ex = archive.getAllExec();
             System.out.println("SCHED: in reporter, all execs = "+ex.length);
@@ -454,6 +464,10 @@ public class Reporter extends BasicComponent {
 		for (int i = 0; i < prj.length; ++i) {
 			possibleScienceTime += prj[i].getTotalRequiredTimeInSeconds();
 			totalSBs += prj[i].getTotalSBs();
+            allSBs = prj[i].getAllSBs();
+            for(int x=0;x<allSBs.length; x++){
+		        totalPossibleNumber += allSBs[x].getMaximumNumberOfRepeats();
+            }
 			totalScienceTime += prj[i].getTotalUsedTimeInSeconds();
 			totalWeightedScienceTime += prj[i].getTotalUsedTimeInSeconds() * 
 						prj[i].getProgram().getScientificPriority().getPriorityAsInt();
@@ -475,10 +489,12 @@ public class Reporter extends BasicComponent {
 		avScore /= totalNumber;
 		avSuccess = avSuccess / totalNumber * 100.0;
 		avRank /= totalNumber;
+        totalPossibleNumber += totalSBs; //add # of sbs coz # of repeats is in addition to first exec.
 		
 		dform.setMaximumFractionDigits(2);
 		
 		o.println("Number of executions             " + totalNumber); 		
+		o.println("Number of possible executions    " + totalPossibleNumber); 		
 				
 		o.println();
 		o.println("Efficiency (%)                   " + dform.format(efficiency * 100.0));
@@ -495,6 +511,24 @@ public class Reporter extends BasicComponent {
 		o.println("Average score                    " + dform.format(avScore));
 		o.println("Average success factor (%)       " + dform.format(avSuccess));
 		o.println("Average rank                     " + dform.format(avRank));
+        o.println();
+        o.println("    Score = success * rank");
+        o.println();
+		o.println("    Success = [ (Position Elevation Weight * Position Elevation) + ");
+        o.println("                (Position Max Weight * Max Position) +");
+        o.println("                (Weather Weight * Weahter Calculation) ] / ");
+        o.println("                (Postion Elevation Weight + Position Max Weight + Weather Weight)");
+        o.println("    Rank = 0.0 if Success = 0.0");
+        o.println("         otherwise...");
+        o.println("    Rank = Priority Weight * Priority");
+        o.println("             if(sb in same project and same band as previous)");
+        o.println("                 rank += same project same band weight");
+        o.println("             if(sb in same project and diff band as previous)");
+        o.println("                 rank += same project diff band weight");
+        o.println("             if(sb in diff project and same band as previous)");
+        o.println("                 rank += diff project same band weight");
+        o.println("             if(sb in diff project and diff band as previous)");
+        o.println("                 rank += diff project diff band weight");
 
 		
 		
@@ -562,8 +596,10 @@ public class Reporter extends BasicComponent {
             stats = archive.getAllExecutionStatistics();
             if (stats.length > 0) {
                 o.println(stats[0].getColumnsInfoString());
+                //o.println(stats[0].getCurrentWeatherColumnInfoString());
                 for(int i=0; i < stats.length; i++){
                     o.println(stats[i].toString());
+                    //o.println(stats[i].getCurrentWeatherInfo());
                 }
             }
         } catch(Exception e) {
