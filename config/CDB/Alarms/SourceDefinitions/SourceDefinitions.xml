@@ -12,7 +12,7 @@
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                     xsi:schemaLocation="urn:schemas-cosylab-com:Alarm:1.0 ../../../../config/CDB/schemas/laser-definition.xsd">
 	<sources-to-create>
-		<source-definition name="Scheduling">
+		<source-definition name="ALARM_SYSTEM_SOURCES">
 			<connection-timeout>15</connection-timeout>
 			<description>The alarm source for scheduling</description>
 			<responsible-id>1</responsible-id>

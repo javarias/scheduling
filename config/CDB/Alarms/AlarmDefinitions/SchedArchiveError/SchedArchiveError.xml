@@ -25,7 +25,7 @@
 		<responsible-id>123</responsible-id>
 		<!--piquetGSM>12345</piquetGSM-->
 		<!--help-url></help-url-->
-		<source-name>Scheduling</source-name>
+		<source-name>ALARM_SYSTEM_SOURCES</source-name>
 		<!--location>
 			<building></building>
 			<floor></floor>
