@@ -73,4 +73,8 @@
             Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
             Container="java"/>
 
+      <_ Name="*"
+            Code="alma.scheduling.AlmaScheduling.Interactive_PI_to_SchedulingHelper"
+            Type="IDL:alma/scheduling/Interactive_PI_to_Scheduling:1.0"
+            Container="schedulingContainer"/>             
 </Components>
