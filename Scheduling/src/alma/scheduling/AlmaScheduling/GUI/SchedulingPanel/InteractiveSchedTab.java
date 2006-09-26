@@ -87,6 +87,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         //allSessionUIDs = new Vector<String>();
         setToNull();
         getComponentRefs();
+        masterScheduler.setArrayInUse(arrayname);
         logger.info("Interactive Sched Tab created");
         createSearchView();
         try{

@@ -69,6 +69,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         getMSRef();
         //createRightClickMenu();
         schedulername = "QS_"+arrayname;
+        masterScheduler.setArrayInUse(arrayname);
         type = "queued";
         try {
             consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);

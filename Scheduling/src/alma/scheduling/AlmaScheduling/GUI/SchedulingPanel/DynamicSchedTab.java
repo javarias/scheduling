@@ -49,6 +49,7 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
         getComponentRefs();
         mainPanel = new JPanel(new GridLayout (3,1));
         sbRowInfo= new Object[0][sbColumnInfo.length];
+        masterScheduler.setArrayInUse(arrayname);
         createDynamicSchedulingView();
         getViewport().add(mainPanel);
     }

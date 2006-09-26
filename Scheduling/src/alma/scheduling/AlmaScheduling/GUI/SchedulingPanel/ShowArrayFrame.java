@@ -281,7 +281,23 @@ public class ShowArrayFrame extends JDialog {
                 JOptionPane.WARNING_MESSAGE);
             return;
         }
-        selectedArray = (String)arrayRowInfo[rows[0]][0];
+        //check that the array isn't already in use
+        String possible =(String)arrayRowInfo[rows[0]][0];
+        try {
+            if(masterScheduler.isArrayInUse(possible)){
+                JOptionPane.showMessageDialog(this,
+                        "Array is already being used",
+                        "Array In Use",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }catch(Exception e) {
+                logger.severe("SCHEDULING_PANEL: Problem checking array's usage state");
+                e.printStackTrace();
+                return ;
+        }
+        selectedArray = possible;
+        masterScheduler.setArrayInUse(selectedArray);
         exit();
     }
 

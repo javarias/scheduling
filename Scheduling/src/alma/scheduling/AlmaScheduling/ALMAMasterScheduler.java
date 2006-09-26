@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.67 2006/09/26 17:36:59 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.68 2006/09/26 22:06:17 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -125,6 +125,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     private int i_sched_count=0;
     //dyanmic scheduler count
     private int d_sched_count=0;
+    //keep track of arrays
+    private Vector arraysInUse;
     
     /** 
      * Constructor
@@ -162,6 +164,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher, clock);
         this.telescope = new ALMATelescope();
         this.control = new ALMAControl(containerServices, manager);
+        this.arraysInUse = new Vector();
         
         logger.info("SCHEDULING: MasterScheduler initialized");
     }
@@ -505,6 +508,9 @@ public class ALMAMasterScheduler extends MasterScheduler
             //a scheduler and go from there!
             //DynamicScheduler scheduler = new DynamicScheduler(config);
             logger.info("SCHEDULING: Master Scheduler creating queued scheduler");
+            if(!isArrayInUse(arrayname)){
+                setArrayInUse(arrayname);
+            }
             QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
             //get UID for scheduler
             String id = archive.getIdForScheduler();
@@ -604,7 +610,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                         false, new SBQueue(), false, true, 0, arrayname, s_policy);
 
             logger.info("SCHEDULING: Starting interactive scheduling on array "+arrayname);
-
+            if(!isArrayInUse(arrayname)){
+                setArrayInUse(arrayname);
+            }
             InteractiveScheduler scheduler = new InteractiveScheduler(config);
             //Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
             //scheduler_thread.start();
@@ -795,6 +803,27 @@ public class ALMAMasterScheduler extends MasterScheduler
         return name;
     }
 
+    /**
+      * Checks to see if another scheduler is using a given array
+      * @param name Array Name
+      * @return boolean True if array is already used
+      */
+    public boolean isArrayInUse(String name) throws InvalidOperationEx{
+        boolean tmp = false;
+        for(int i=0; i< arraysInUse.size(); i++){
+            if(arraysInUse.elementAt(i).equals(name)){
+                tmp = true;
+                break;
+            }
+        }
+        return tmp;
+    }
+
+    public void setArrayInUse(String name) {
+        logger.info("SCHEDULING: array "+name+" is now in use");
+        arraysInUse.add(name);
+    }
+
 
     /**
       * @param short
@@ -804,6 +833,12 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             logger.info("SCHEDULING: Destroying array "+name);
             control.destroyArray(name);
+            for(int i=0; i < arraysInUse.size(); i++){
+                if(arraysInUse.elementAt(i).equals(name)){
+                    arraysInUse.removeElementAt(i);
+                    break;
+                }
+            }
         } catch(SchedulingException e) {
             InvalidOperation e1 = new InvalidOperation("destroyArray", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -900,6 +935,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                         false, sbQueue, true, true, 5, arrayname, s_policy);
 
             logger.info("SCHEDULING: Master Scheduler creating dynamic scheduler for regular SBs");
+            if(!isArrayInUse(arrayname)){
+                setArrayInUse(arrayname);
+            }
             DynamicScheduler scheduler = new DynamicScheduler(config);
             //get UID for scheduler
             String id = archive.getIdForScheduler();
