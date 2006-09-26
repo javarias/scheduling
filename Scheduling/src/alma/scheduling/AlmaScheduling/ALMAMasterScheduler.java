@@ -28,6 +28,8 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.Vector;
 import java.util.LinkedHashMap;
+import java.util.Properties;
+import java.sql.Timestamp;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.acs.nc.*;
@@ -37,6 +39,11 @@ import alma.acs.component.ComponentLifecycleException;
 import alma.acs.component.ComponentQueryDescriptor;
 import alma.ACS.ComponentStates;
 import si.ijs.maci.ComponentSpec;
+
+
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSFaultState;
 
 import alma.scheduling.*;
 import alma.SchedulingExceptions.InvalidOperationEx;
@@ -68,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.65 2006/09/25 16:08:32 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.66 2006/09/26 13:59:43 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -205,6 +212,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
         pipeline_nc.begin();
         
+        sendAlarm("Scheduling","SchedArchiveError",1,"Sending an alarm to test its working!");
+        logger.info("Execute complete in scheduling master scheduler and an alarm should have been sent.");
     }
 
     /**
@@ -261,6 +270,24 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public String name() {
         return instanceName;
+    }
+
+    //////////////////////////////////
+    public void sendAlarm(String ff, String fm, int fc, String fs) {
+        try {
+            logger.info("Sending ALARM "+fs);
+            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource(this.name());
+            ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
+            Properties prop = new Properties();
+            state.setUserProperties(prop);
+            state.setDescriptor(fs);
+            state.setUserTimestamp(new Timestamp(clock.getDateTime().getMillisec()));
+            alarmSource.push(state);
+        } catch(Exception e) {
+            logger.severe("Problem sending alarm: "+e.toString());
+            e.printStackTrace();
+        }
+        
     }
     
     /////////////////////////////////////////////////////////////////////
@@ -763,6 +790,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             //telescope.addSubarray(a);
         } catch(SchedulingException e) {
+            sendAlarm("Scheduling","SchedArchiveError",1,e.toString());
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
         }
