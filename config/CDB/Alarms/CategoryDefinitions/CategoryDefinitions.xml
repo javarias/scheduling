@@ -18,8 +18,5 @@
 				The category for all alarm states that relate to 'current' properties.
 			</description>
 		</category-definition>
-<!--		<category-definition path="SchedulingAlarms">
-			<description>The category for Scheduling</description>
-		</category-definition> -->
 	</categories-to-create>
 </category-definitions>
