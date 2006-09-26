@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.66 2006/09/26 13:59:43 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.67 2006/09/26 17:36:59 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -212,7 +212,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
         pipeline_nc.begin();
         
-        sendAlarm("Scheduling","SchedArchiveError",1,"Sending an alarm to test its working!");
         logger.info("Execute complete in scheduling master scheduler and an alarm should have been sent.");
     }
 
@@ -275,7 +274,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     //////////////////////////////////
     public void sendAlarm(String ff, String fm, int fc, String fs) {
         try {
-            logger.info("Sending ALARM "+fs);
+            logger.info("Sending ALARM");
             ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource(this.name());
             ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
             Properties prop = new Properties();
@@ -790,7 +789,6 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             //telescope.addSubarray(a);
         } catch(SchedulingException e) {
-            sendAlarm("Scheduling","SchedArchiveError",1,e.toString());
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
         }
