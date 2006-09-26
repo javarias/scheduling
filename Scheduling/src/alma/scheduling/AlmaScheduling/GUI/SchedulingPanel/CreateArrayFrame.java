@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
-//import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerServices;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 import alma.Control.ControlMaster;
@@ -19,6 +19,7 @@ public class CreateArrayFrame extends JDialog {
     private ControlMaster control;
     private Logger logger;
     private PluginContainerServices container;
+    //private ContainerServices container;
     private TableModel antennaTableModelA;
     private TableModel antennaTableModelB;
     private JTable antennaTableA;
@@ -32,6 +33,7 @@ public class CreateArrayFrame extends JDialog {
     private int columnIndex = 0;
 
     
+    //public CreateArrayFrame(ContainerServices cs) {
     public CreateArrayFrame(PluginContainerServices cs) {
         super();
         this.container = cs;
@@ -41,7 +43,7 @@ public class CreateArrayFrame extends JDialog {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset, screenSize.width- inset*2,
                 screenSize.height - inset *2);
-        setSize(350,200);
+        setSize(400,300);
         setResizable(false);
         setTitle("Array Creator");
         setModal(true);
@@ -85,7 +87,7 @@ public class CreateArrayFrame extends JDialog {
         //antennaTableA.setDragEnabled(true);
         //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        antennaTableA.setPreferredScrollableViewportSize(new Dimension(100,75));
+        antennaTableA.setPreferredScrollableViewportSize(new Dimension(128,100));
         JScrollPane pane = new JScrollPane(antennaTableA);
         pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         p.add(pane);
@@ -125,7 +127,7 @@ public class CreateArrayFrame extends JDialog {
             public void setValueAt(Object val, int row, int col) { antennaRowInfoB[row][col]= val; }
         };
         antennaTableB = new JTable(antennaTableModelB);
-        antennaTableB.setPreferredScrollableViewportSize(new Dimension(100,75));
+        antennaTableB.setPreferredScrollableViewportSize(new Dimension(128,100));
         //antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         JScrollPane pane = new JScrollPane(antennaTableB);

@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.35 2006/08/29 17:39:05 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.36 2006/09/26 19:13:13 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -360,6 +360,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             eb.setSessionId(e.sessionId.partId);
             currentEB.add(eb);
             createObservedSession(eb);
+            //manager.createProjectWebpage(projectUid);
             //send out a start session event.
             //startSession(eb);
         } catch(Exception ex) {

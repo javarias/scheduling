@@ -28,7 +28,6 @@ public class ExecFrameForPanel extends JPanel implements SubsystemPlugin {
         setLayout(new BorderLayout());
         createMainSchedPanel(cs);
         add(mainSchedPanel,BorderLayout.CENTER);
-        setVisible(true);
     }
 
     public void setServices(PluginContainerServices ctrl) {
@@ -39,6 +38,7 @@ public class ExecFrameForPanel extends JPanel implements SubsystemPlugin {
     public void start() throws Exception {
         createMainSchedPanel(cs);
         add(mainSchedPanel, BorderLayout.CENTER);
+        setVisible(true);
     }
     public void stop() throws Exception{
         exit();

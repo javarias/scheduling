@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import alma.scheduling.*;
 
 //acs stuff
-//import alma.acs.container.*;
+import alma.acs.container.*;
 import alma.xmlentity.XmlEntityStruct;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
@@ -20,6 +20,7 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     private String schedulername;
     private String arrayname;
     private String type;
+    //private ContainerServices container;
     private PluginContainerServices container;
     private MasterSchedulerIF masterScheduler;
     private JPanel mainPanel;
@@ -33,6 +34,7 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     private boolean schedulerCreateArray;
 
 //////////////////////////////////////
+    //public DynamicSchedTab(ContainerServices cs, String s, String an){
     public DynamicSchedTab(PluginContainerServices cs, String s, String an){
         container = cs;
         logger = cs.getLogger();

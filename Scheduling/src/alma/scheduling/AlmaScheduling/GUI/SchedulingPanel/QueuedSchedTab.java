@@ -9,7 +9,7 @@ import javax.swing.table.*;
 import java.util.Vector;
 import java.util.logging.Logger;
 //acs stuff
-//import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
 import alma.acs.util.UTCUtility;
 //scheduling stuff
@@ -26,6 +26,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] sbColumnInfo = {"SB Name", "PI","Exec Status", "UID"};
+    //private ContainerServices container;
     private PluginContainerServices container;
     private Logger logger;
     //private JPopupMenu rightClickMenu;
@@ -55,6 +56,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private JPanel statusDisplayPanel;
     private JTextArea statusDisplayTA;
 
+    //public QueuedSchedTab(ContainerServices cs, String an){
     public QueuedSchedTab(PluginContainerServices cs, String an){
         container = cs;
         arrayname = an;
@@ -409,7 +411,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         mainPanel.add(queueListPanel);
         //execution log window.
         statusDisplayPanel = new JPanel(new GridLayout(1,1));
-        statusDisplayTA = new JTextArea();
+        statusDisplayTA = new JTextArea(40,40);
         statusDisplayTA.setLineWrap(true);
         statusDisplayTA.setEditable(false); //read only log!
         JScrollPane sp = new JScrollPane(statusDisplayTA);
@@ -506,8 +508,6 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
                 queueTable.validate();
                 queueTable.repaint();
                 queueListPanel.validate();
-                //manageTableColumnSize();
-                //queueTable.revalidate();
                 validate();
                 logger.info("Table should be updated now!");
                 return;

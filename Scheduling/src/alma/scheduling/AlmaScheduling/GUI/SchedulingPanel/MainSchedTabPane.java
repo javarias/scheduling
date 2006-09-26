@@ -15,7 +15,7 @@ import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SBLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-//import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerServices;
 //import javax.swing.plaf.basic.BasicTabbedPaneUI;
 //import com.sun.java.swing.plaf.windows.WindowsIconFactory;
 
@@ -30,11 +30,13 @@ public class MainSchedTabPane extends JTabbedPane {
     private JPopupMenu rightClickMenu;
     private Object[][] schedRowInfo;
     public PluginContainerServices container;
+    //public ContainerServices container;
     private MasterSchedulerIF masterScheduler;
     private int overTabIndex;
     private JDesktopPane desktop;
     private Vector<Window> openWindows;
 
+    //public MainSchedTabPane(ContainerServices cs){
     public MainSchedTabPane(PluginContainerServices cs){
         super(JTabbedPane.TOP);
         container = cs;
@@ -46,7 +48,7 @@ public class MainSchedTabPane extends JTabbedPane {
         setup();
     }
 
-    private void setup() {
+    public void setup() {
         logger.info("SCHEDULING_PANEL: in setup for SP.");
         getMSRef();
         openWindows = new Vector<Window>();
@@ -76,14 +78,14 @@ public class MainSchedTabPane extends JTabbedPane {
             e.printStackTrace();
             masterScheduler = null;
         }
-        //createRightClickMenu();
+        createRightClickMenu();
     }
     private void releaseMSRef(){
         if(masterScheduler != null){
             container.releaseComponent(masterScheduler.name());
             masterScheduler = null;
         }
-        //createRightClickMenu();
+        createRightClickMenu();
     }
 
     private JScrollPane createMainView(){

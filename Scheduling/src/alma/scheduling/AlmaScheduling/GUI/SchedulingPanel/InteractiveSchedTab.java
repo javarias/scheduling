@@ -8,7 +8,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 //acs stuff & other alma stuff
-//import alma.acs.container.ContainerServices;
+import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.entity.xmlbinding.obsproject.*;
@@ -38,7 +38,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] projColumnInfo = {"Project Name", "PI", "Version"};
-    private final String[] sbColumnInfo = { "SB Name","Status", "Priority", "Freq."};
+    private final String[] sbColumnInfo = { "SB Name","Exec Status", "Priority", "Freq."};
     private ArchiveConnection archiveConnection;
     private Operational archive;
     private EntityDeserializer entityDeserializer;
@@ -48,7 +48,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private String currentProjectId;
     private ProjectLite currentProjectLite;
     private SBLite[] currentProjectSBs;
-    private PluginContainerServices container;
+    private ContainerServices container;
+    //private PluginContainerServices container;
     private Interactive_PI_to_Scheduling scheduler;
     private MasterSchedulerIF masterScheduler;
     private Logger logger;
@@ -74,7 +75,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private OpenOT ot;
     private Thread openot_thread=null;
     
-    public InteractiveSchedTab(PluginContainerServices cs, String s, String an){
+    public InteractiveSchedTab(ContainerServices cs, String s, String an){
+    //public InteractiveSchedTab(PluginContainerServices cs, String s, String an){
         mainPanel = new JPanel(new BorderLayout());//new GridLayout(4,1));
         getViewport().add(mainPanel);
         container = cs;
@@ -612,8 +614,13 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         try {
             System.out.println("SB "+sbId+" being sent to scheduler");
             scheduler.executeSB(sbId);
-            updateSBStatusInTable(sbId, "RUNNING");
-        }catch(Exception e){} 
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(this,
+                    "Could not schedule SB, please check repeat count of SB or Control System state",
+                    "SB did not execute", JOptionPane.WARNING_MESSAGE);
+            return;
+        } 
+        updateSBStatusInTable(sbId, "RUNNING");
     }
     private boolean isSBTableSelectStatusGood() {
         int[] rows = sbTable.getSelectedRows();
@@ -658,7 +665,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             System.out.println((String)sbRowInfo[i][0]);
             sbRowInfo[i][0] = currentProjectSBs[i].sbName;
             System.out.println(currentProjectSBs[i].sbName);
-            sbRowInfo[i][1] = "STATUS";
+           // sbRowInfo[i][1] = "STATUS";
             sbRowInfo[i][2] = currentProjectSBs[i].priority;
             sbRowInfo[i][3] = String.valueOf(currentProjectSBs[i].freq);
             sbRowInfo[i][4] = currentProjectSBs[i].schedBlockRef;

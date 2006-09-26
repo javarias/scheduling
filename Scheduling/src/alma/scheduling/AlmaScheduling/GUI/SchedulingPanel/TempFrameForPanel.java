@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.component.client.ComponentClient;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class TempFrameForPanel extends JFrame{
     private ContainerServices cs;
@@ -53,6 +54,7 @@ public class TempFrameForPanel extends JFrame{
 
     private void createMainSchedPanel(ContainerServices cs) {
         //mainSchedPanel = new MainSchedTabPane(cs);
+        
     }
 
     public static void main(String[] args) {

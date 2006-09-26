@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.68 2006/08/16 13:24:42 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.69 2006/09/26 19:13:13 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1224,5 +1224,10 @@ public class ALMAProjectManager extends ProjectManager {
             projectliteArray[i] = projectlite;
         }
         return projectliteArray;
+    }
+
+    public void createProjectWebpage(String uid) {
+        //start a new webpage for project with uid
+        //email PI with webpage address
     }
 }
