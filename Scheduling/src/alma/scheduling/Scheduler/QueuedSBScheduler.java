@@ -175,16 +175,27 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 		//}
         String[] scores = new String[sbsNotDone.length];
         double[] d = new double[sbsNotDone.length];
+        logger.info("QS: creating bestSB with sbsnotdone size ="+sbsNotDone.length);
+        for(int i=0; i < sbsNotDone.length; i++){
+            logger.info("QS: sb in list ="+sbsNotDone[i]);
+        }
 		BestSB best = new BestSB (sbsNotDone, scores, d, d, d, clock.getDateTime());
         //TODO might be problem here not matching the sbsNotDone list
-        SB sb = sbs[best.getSelection()];
+        SB sb = getSBWithIdFromList(sbs, sbsNotDone[best.getSelection()]);
+        if (sb == null) {
+            return true;
+        }
+        logger.info("QS: best selection sb = "+sb.getId());
         //TODO need to check that if there are more than one sbs in queue then selection 
         //     count needs to be increased.
         if(sb.getStatus().getStatus().equals("complete")){
             logger.info("SCHEDULING: SB "+sb.getId()+" is completed.");
             return true;
         }
+        logger.info("QS: set current SB to "+sb.getId());
 		config.startExecSB(sb.getId());
+        logger.info("QS: current SB should now be "+sb.getId());
+        logger.info("QS: confirmed ="+config.getCurrentSBId());
 		if (!sb.getStatus().isStarted()) {
 			config.decrementSbsNotStarted();
 		}
@@ -203,8 +214,20 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         return false;
 	}
 
+    private SB getSBWithIdFromList(SB[] sbs, String id) {
+        SB sb=null;
+        for(int i=0; i < sbs.length; i++){
+            if(sbs[i].getId().equals(id)){
+                sb = sbs[i];
+            }
+        }
+        return sb;
+    }
     private void takeIdFromSBsNotDone(String id) {
-        String[] newIdList=null;
+        logger.info("QS: Take sb ("+id+") out of list o run");
+        logger.info("inital list len = "+sbsNotDone.length);
+        String[] newIdList= new String[1];
+
         for(int i=0; i < sbsNotDone.length;i++){
             if(sbsNotDone[i].equals(id)){
                 newIdList = new String[sbsNotDone.length -1];
@@ -220,6 +243,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             sbsNotDone = new String[newIdList.length];
             sbsNotDone = newIdList;
         }
+        logger.info("new list len = "+sbsNotDone.length);
     }
 
 	/**
