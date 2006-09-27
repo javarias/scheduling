@@ -70,7 +70,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.64 2006/09/26 19:13:13 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.65 2006/09/27 14:05:36 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -163,7 +163,7 @@ public class ALMAArchive implements Archive {
             lastSpecialSBQuery = clock.getDateTime();
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException(e);
         }
         return sbs;
@@ -206,7 +206,7 @@ public class ALMAArchive implements Archive {
                 " Projects from ObsProject found archived.");
         return projects;
         } catch (Exception e) {
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException (e);
         }
     }
@@ -228,7 +228,7 @@ public class ALMAArchive implements Archive {
             updateProjectStatus(ps);
         } catch(Exception e) {
             e.printStackTrace(System.out);
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException(e);
         }
         return ps;
@@ -248,7 +248,7 @@ public class ALMAArchive implements Archive {
             ps = createDummyProjectStatus(p);
         } catch(Exception e) {
             e.printStackTrace(System.out);
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException(e);
         }
         return ps;
@@ -279,7 +279,7 @@ public class ALMAArchive implements Archive {
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException(e);
         }
         return ps;
@@ -306,7 +306,7 @@ public class ALMAArchive implements Archive {
                         newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString()+".000");
                         logger.info("There are "+newArchUpdates.length+" new project updates!");
                     } catch(Exception e){
-                        sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+                        sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
                         e.printStackTrace(System.out);
                     }
                     ObsProject p=null;
@@ -318,7 +318,7 @@ public class ALMAArchive implements Archive {
                     } 
                 }catch(Exception e){
                     logger.severe("SCHEDULING: Error "+e.toString());
-                    sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+                    sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
                     e.printStackTrace(System.out);
                 }
             } else {
@@ -340,7 +340,7 @@ public class ALMAArchive implements Archive {
                             entityDeserializer.deserializeEntity(xml, ObsProject.class);
                         tmpObsProject.add(obsProj);
                     }catch(Exception e) {
-                        sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+                        sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
                         logger.severe("SCHEDULING: "+e.toString());
                         e.printStackTrace(System.out);
                         throw new SchedulingException (e);
@@ -355,7 +355,7 @@ public class ALMAArchive implements Archive {
             logger.info("SCHEDULING: Scheduling found "+projects.length+" projects archived.");
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException(e);
         }
         return projects;
@@ -438,7 +438,7 @@ public class ALMAArchive implements Archive {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
             proj = (ObsProject) entityDeserializer.deserializeEntity(xml, ObsProject.class);
         }catch(Exception e){
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             throw new SchedulingException (e);
         }
         return proj;
@@ -895,19 +895,19 @@ public class ALMAArchive implements Archive {
             
         } catch(ContainerException e) {
             logger.severe("SCHEDULING: ContainerException: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         } catch (ArchiveException e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         } catch(UserDoesNotExistException e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         } catch (PermissionException e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         }
         entitySerializer = EntitySerializer.getEntitySerializer(
             containerServices.getLogger());
@@ -930,7 +930,7 @@ public class ALMAArchive implements Archive {
         } catch(Exception e){
             logger.severe("SCHEDULING: Error with archive components: "+e.toString());
             e.printStackTrace(System.out);
-            sendAlarm("Scheduling","SchedArchiveError",1,ACSFaultState.ACTIVE);
+            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         }
         
     }
