@@ -6,10 +6,10 @@
 <!--
 		<reduction-link type="MULTIPLICITY">
 			<parent>
-				<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveError" fault-code="1"/>
+				<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveConnAlarm" fault-code="1"/>
 			</parent>
 			<child>
-				<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveError" fault-code="1"/>
+				<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveConnAlarm" fault-code="1"/>
 			</child>
 		</reduction-link>
 		<reduction-link type="NODE">
@@ -25,7 +25,7 @@
 
 		<thresholds>
 		<threshold value="2">
-			<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveError" fault-code="1"/>
+			<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveConnAlarm" fault-code="1"/>
 		</threshold>
 	</thresholds>
 </reduction-definitions>
