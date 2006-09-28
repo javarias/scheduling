@@ -29,15 +29,15 @@ public class MainSchedTabPane extends JTabbedPane {
     private JTable schedulerTable;
     private JPopupMenu rightClickMenu;
     private Object[][] schedRowInfo;
-    public PluginContainerServices container;
-    //public ContainerServices container;
+    //public PluginContainerServices container;
+    public ContainerServices container;
     private MasterSchedulerIF masterScheduler;
     private int overTabIndex;
     private JDesktopPane desktop;
     private Vector<Window> openWindows;
 
-    //public MainSchedTabPane(ContainerServices cs){
-    public MainSchedTabPane(PluginContainerServices cs){
+    public MainSchedTabPane(ContainerServices cs){
+    //public MainSchedTabPane(PluginContainerServices cs){
         super(JTabbedPane.TOP);
         container = cs;
         try {
@@ -313,21 +313,30 @@ public class MainSchedTabPane extends JTabbedPane {
                 */
                 //ask if they are going to create their own array
                 String arrayname = null;
-                if(pickTheirOwnArray()) {
+                int result = pickTheirOwnArray();
+                if(result == 0 ) {
                 //bring up array selector!
-                    arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
+                //    arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                     //here means when arrayname == "" user has canceled manual \
                     //array creation.. cannot continue from this point so exits
-                    if(arrayname.equals("")){
-                        showErrorMessage(
-                            "Cannot create Dynamic Scheduler without an array!");
-                        return;
-                    }
-                }else {
+                //    if(arrayname.equals("")){
+                //        showErrorMessage(
+                 //           "Cannot create Dynamic Scheduler without an array!");
+                //        return;
+               //     }
+                  //  addTab("DS", createDynamicSchedulingView(arrayname));
+                //TODO replace these 2 lines with the above stuff when we let them pick the array
+                    arrayname = "";
+                    addTab("DS", createDynamicSchedulingView(arrayname));
+                    return;
+                }else if(result ==1){
                     //here with arrayname == to "" means scheduler will create array
                     arrayname = "";
+                    addTab("DS", createDynamicSchedulingView(arrayname));
+                } else if(result== -1){
+                    logger.info("SCHEDULING_PANEL: Chosen to cancel DS");
+                    return;
                 }
-                addTab("DS", createDynamicSchedulingView(arrayname));
                 //System.out.println("added DS, tab count ="+getTabCount());
             }
         });
@@ -345,7 +354,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 "Task not completed.", JOptionPane.ERROR_MESSAGE);
     }
 
-    private boolean pickTheirOwnArray() {
+    private int pickTheirOwnArray() {
         int answer = JOptionPane.showConfirmDialog(this, 
                 "Right now you don't get to pick your array for DS","Array Needed?",
                 //"Do you need to create your own array?", "Array Needed?",
@@ -357,7 +366,7 @@ public class MainSchedTabPane extends JTabbedPane {
             return false;
         }
         */
-        return false;
+        return answer;
     }
 
     private void createRightClickMenu(){
@@ -463,7 +472,7 @@ public class MainSchedTabPane extends JTabbedPane {
 		frame.setLocation(parentWindow.getLocation());
 		frame.pack();
 		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
+			public void windowClosed(WindowEvent event) {
 				frame.dispose();
 				insertTab(title, icon, c, toolTip, Math.min(tabIndex,
 						getTabCount()));

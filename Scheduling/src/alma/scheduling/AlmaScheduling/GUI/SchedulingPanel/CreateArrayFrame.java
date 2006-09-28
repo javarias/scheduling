@@ -18,8 +18,8 @@ public class CreateArrayFrame extends JDialog {
     private MasterSchedulerIF masterScheduler;
     private ControlMaster control;
     private Logger logger;
-    private PluginContainerServices container;
-    //private ContainerServices container;
+    //private PluginContainerServices container;
+    private ContainerServices container;
     private TableModel antennaTableModelA;
     private TableModel antennaTableModelB;
     private JTable antennaTableA;
@@ -33,8 +33,8 @@ public class CreateArrayFrame extends JDialog {
     private int columnIndex = 0;
 
     
-    //public CreateArrayFrame(ContainerServices cs) {
-    public CreateArrayFrame(PluginContainerServices cs) {
+    public CreateArrayFrame(ContainerServices cs) {
+    //public CreateArrayFrame(PluginContainerServices cs) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();
@@ -66,7 +66,7 @@ public class CreateArrayFrame extends JDialog {
 
     private JPanel createAntennaListA(){
         JPanel p = new JPanel();
-        final String[] antennaColumnInfoA= {"Antenna"};
+        final String[] antennaColumnInfoA= {"Antenna Name"};
         //antennaRowInfoA = new Object[20][1];
         antennaRowInfoA = new Object[availableAntennas.length][1];
         //for(int i=0; i < 20; i++){
@@ -117,7 +117,7 @@ public class CreateArrayFrame extends JDialog {
 
     private JPanel createAntennaListB(){
         JPanel p = new JPanel();
-        final String[] antennaColumnInfoB= {"Antenna"};
+        final String[] antennaColumnInfoB= {"Antenna Name"};
         antennaRowInfoB = new Object[0][1];
         antennaTableModelB = new AbstractTableModel(){
             public int getColumnCount() { return antennaColumnInfoB.length; }

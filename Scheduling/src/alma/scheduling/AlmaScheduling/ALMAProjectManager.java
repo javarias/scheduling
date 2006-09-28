@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.69 2006/09/26 19:13:13 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.70 2006/09/28 16:43:01 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -836,20 +836,29 @@ public class ALMAProjectManager extends ProjectManager {
 
     /**
       * Queries the archive on the given query and schema. Assumes you're looking for
-      * projects. Should change this eventually...
-      * Then it checks that the project exists in the queue and then returns all the 
-      * project ids.
+      * projects or SBs and only does one or the other.
+      * Then it checks that the project/sb exists in the queue and then returns all the 
+      * ids.
       *
       */
     public String[] archiveQuery(String query, String schema) throws SchedulingException  {
-        //only return the ones which the project manager knows.
+        //only return the ones which the project manager knows so check for updates.
+        pollArchive();
         String[] tmp = archive.query(query, schema);
-        logger.finest("@@@@@@@@ Archive returned "+tmp.length);
         Vector v_uids = new Vector();
-        for(int i=0;i< tmp.length; i++) {
-            logger.finest(tmp[i]);
-            if(pQueue.isExists(tmp[i])){
-                v_uids.add(tmp[i]);
+        if(schema.equals("ObsProject")) {
+            for(int i=0;i< tmp.length; i++) {
+                logger.finest(tmp[i]);
+                if(pQueue.isExists(tmp[i])){
+                    v_uids.add(tmp[i]);
+                }
+            }
+        } else if (schema.equals("SchedBlock")){
+            for(int i=0;i< tmp.length; i++) {
+                logger.finest(tmp[i]);
+                if(sbQueue.isExists(tmp[i])){
+                    v_uids.add(tmp[i]);
+                }
             }
         }
         String[] p_uids = new String[v_uids.size()];
@@ -857,6 +866,30 @@ public class ALMAProjectManager extends ProjectManager {
             p_uids[i] =(String) v_uids.elementAt(i);
         }
         return p_uids;
+    }
+
+    public String[] getProjectSBUnion(String[] projectIds, String[] sbIds){
+        String[] results = new String[0];
+        Vector v_res = new Vector();
+        Vector sbs = new Vector();
+        for(int i=0; i < sbIds.length; i++){
+            sbs.add(sbIds[i]);
+        }
+        for(int i=0; i < projectIds.length; i++){
+            SB[] projectSBs = ((Project)pQueue.get(projectIds[i])).getAllSBs();
+            for (int j=0; j < projectSBs.length; j++){
+                if(sbs.contains(projectSBs[j].getId())){
+                    //yup its a match! return this project now.
+                    v_res.add(projectIds[i]);
+                    break;
+                }
+            }
+        }
+        results = new String[v_res.size()];
+        for(int i=0; i < v_res.size(); i++){
+            results[i] = (String)v_res.elementAt(i);
+        }
+        return results;
     }
     public Object archiveRetrieve(String uid) throws SchedulingException {
         return archive.retrieve(uid);

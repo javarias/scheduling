@@ -61,6 +61,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private JPanel buttonPanel;
     private JTextField projectQueryTF;
     private JTextField piQueryTF;
+    private JComboBox  sbTypes;
     private Object[][] projRowInfo;
     private JTable projTable;
     private TableModel projTableModel;
@@ -74,6 +75,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private Vector<String> allSessionUIDs;
     private OpenOT ot;
     private Thread openot_thread=null;
+    private boolean sessionStarted;
     
     public InteractiveSchedTab(ContainerServices cs, String s, String an){
     //public InteractiveSchedTab(PluginContainerServices cs, String s, String an){
@@ -101,6 +103,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             e.printStackTrace();
         }
         entityDeserializer = EntityDeserializer.getEntityDeserializer(container.getLogger());
+        sessionStarted = false;
     }
     
     private void setToNull(){
@@ -136,7 +139,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         } catch(Exception e){/* don't care if it complains*/}
         topPanel = new JPanel(); 
         topPanel.setBorder(new TitledBorder("Search"));
-        tableDisplayPanel = new JPanel();
+        tableDisplayPanel = new JPanel(new BorderLayout());
         tableDisplayPanel.setBorder(new TitledBorder("Projects"));
         selectionDetailPanel = new JPanel(new GridLayout(1,1));
         selectionDetailPanel.setBorder(new TitledBorder("Project Details"));
@@ -157,16 +160,22 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
     private JPanel initialTopPanel() {
         JPanel search = new JPanel(new GridLayout(2,1));
-        JPanel p1 = new JPanel(new GridLayout(2,2));
+        JPanel p1 = new JPanel(new GridLayout(3,2));
         projectQueryTF = new JTextField();
         piQueryTF = new JTextField();
         p1.add(new JLabel("PI Name: ")); 
         p1.add(piQueryTF);
         p1.add(new JLabel("Project Name: ")); 
         p1.add(projectQueryTF);
+        p1.add(new JLabel("SB Type"));
+        String[] foo= {"All","SingleFieldInterferometry","OpticalPointing","TowerHolography"};
+        sbTypes = new JComboBox(foo);
+        sbTypes.setSelectedIndex(0);
+        p1.add(sbTypes);
         ////
         //JPanel p2 = new JPanel(new FlowLayout());
-        JPanel p2 = new JPanel(new GridLayout(2,2));
+        JPanel p2main = new JPanel(new BorderLayout());
+        JPanel p2 = new JPanel(new GridLayout(1,3));
         JButton b = new JButton("Search");
         b.setToolTipText("Search for project given the entered search criteria");
         b.addActionListener(new ActionListener() {
@@ -174,9 +183,13 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                 try {
                     String projectStr =projectQueryTF.getText(); 
                     String piStr =piQueryTF.getText();
+                    String type = (String)sbTypes.getSelectedItem();
+                    if(type.equals("All")){
+                        type = "*";
+                    }
                     if(projectStr.equals("")){ projectStr = "*"; } 
                     if(piStr.equals("")){ piStr ="*"; }
-                    String[] res = masterScheduler.queryForProject(projectStr,piStr);
+                    String[] res = masterScheduler.queryForProject(projectStr,piStr,type);
                     displayProjectSearchResults(res);
                 }catch(Exception ex){
                     ex.printStackTrace();
@@ -192,6 +205,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             }
         });
         p2.add(b);
+        /*
         b = new JButton("Select");
         b.setToolTipText(
           "Selects the highlighted item in the table as the project to login to.");
@@ -201,18 +215,21 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             }
         });
         p2.add(b);
+        */
         b = new JButton("Exit");
         b.setToolTipText("Not yet implemented. Just close the tab for now.");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                exit();
+            //TODO figure out how to close tab using this button
+             //   exit();
             //  and close tab somehow.
             }
         });
         p2.add(b);
+        p2main.add(p2, BorderLayout.SOUTH);
         ////
         search.add(p1,BorderLayout.CENTER);
-        search.add(p2,BorderLayout.SOUTH);
+        search.add(p2main,BorderLayout.SOUTH);
         return search;
     }
 
@@ -251,7 +268,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         info.add(new JLabel("Time Created: "+currentProjectLite.creationTime));
         info.add(new JLabel("Project's Status: "+currentProjectLite.status));
         topPanel.add(info);
-        tableDisplayPanel = new JPanel();
+        tableDisplayPanel = new JPanel(new BorderLayout());
         tableDisplayPanel.setBorder(new TitledBorder("Project's SBs"));
         displayProjectSBs();
         selectionDetailPanel = new JPanel(new GridLayout(1,1));
@@ -271,6 +288,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private void loginToInteractiveScheduler() {
         try {
             scheduler.startSession(currentProjectLite.piName, currentProjectId);
+            sessionStarted = true;
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -319,7 +337,18 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         try {
             tableDisplayPanel.removeAll();
         } catch(Exception e) {/*don't care if it complains*/}
-        tableDisplayPanel.add(p);
+        tableDisplayPanel.add(p, BorderLayout.CENTER);
+        JButton b = new JButton("Select");
+        b.setToolTipText(
+          "Selects the highlighted item in the table as the project to login to.");
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                loginToInteractiveScheduling();
+            }
+        });
+        JPanel p2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        p2.add(b);
+        tableDisplayPanel.add(p2, BorderLayout.SOUTH);
         validate();
     }
     private void manageProjTableColumnSize() {
@@ -696,13 +725,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
 
     private void logoutOfProject(){
         setToNull();
-        /*
-        try {
-            scheduler.endSession();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        */
+        sessionStarted = false;
     }
 
 //////////////////////////////////////
@@ -723,7 +746,9 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private void releaseComponents() {
         try{
             logger.info("About to release "+scheduler.name()+" and "+masterScheduler.name());
-            masterScheduler.stopInteractiveScheduler(schedulername);
+            if(sessionStarted) {
+                masterScheduler.stopInteractiveScheduler(schedulername);
+            }
             container.releaseComponent(schedulername);
             container.releaseComponent(masterScheduler.name());
         } catch(Exception e){
@@ -732,10 +757,16 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
     public void exit() {
         logger.info("EXIT IN IS");
-        releaseComponents();
+        if(sessionStarted) {
+            try {
+                scheduler.endSession();
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+        }
         try {
-            scheduler.endSession();
-        } catch(Exception e){
+            masterScheduler.destroyArray(arrayname);
+        }catch(Exception e){
             e.printStackTrace();
         }
         try{
@@ -748,6 +779,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         } catch(Exception e){
             e.printStackTrace();
         }
+        releaseComponents();
         logger.info("Exiting Interactive Scheduler on array "+arrayname);
     }
 

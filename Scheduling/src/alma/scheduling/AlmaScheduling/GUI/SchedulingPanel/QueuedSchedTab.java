@@ -26,8 +26,8 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private final String[] sbColumnInfo = {"SB Name", "PI","Exec Status", "UID"};
-    //private ContainerServices container;
-    private PluginContainerServices container;
+    private ContainerServices container;
+    //private PluginContainerServices container;
     private Logger logger;
     //private JPopupMenu rightClickMenu;
     private MasterSchedulerIF masterScheduler = null;
@@ -56,8 +56,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
     private JPanel statusDisplayPanel;
     private JTextArea statusDisplayTA;
 
-    //public QueuedSchedTab(ContainerServices cs, String an){
-    public QueuedSchedTab(PluginContainerServices cs, String an){
+    public QueuedSchedTab(ContainerServices cs, String an){
+    //public QueuedSchedTab(PluginContainerServices cs, String an){
         container = cs;
         arrayname = an;
         logger = cs.getLogger();
@@ -549,11 +549,13 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         logger.info("EXIT IN QS");
         try{
             container.releaseComponent(masterScheduler.name());
-            try {
-                thread.interrupt();
-                run.stop();
-            }catch(Exception e){
-                e.printStackTrace();
+            if(thread != null) {
+                try {
+                    thread.interrupt();
+                    run.stop();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             }
             run = null;
             thread = null;

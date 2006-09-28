@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.68 2006/09/26 22:06:17 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.69 2006/09/28 16:43:01 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1001,7 +1001,10 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
     
 
-    public String[] queryForProject(String projname, String piname) 
+    /**
+      * Returns the uids of the projects that match the given search criteria
+      */
+    public String[] queryForProject(String projname, String piname, String type) 
         throws InvalidOperationEx {
 
         String[] results = new String[0];    
@@ -1014,10 +1017,26 @@ public class ALMAMasterScheduler extends MasterScheduler
             e.printStackTrace();
             results[0] = new String(e.toString());
         }
-        
-        return results;
-        
+        if(type.equals("*")){
+            //dont need to search for specific sb types.
+            //return what we have
+            return results;
+        }
+        //Type is something different so now we get all the sbs with that type.
+        schema = new String("SchedBlock");
+        query = new String("/sbl:SchedBlock[sbl:modeName=\""+type+"\"]");
+        String[] sbResults = new String[0];
+        try {
+            sbResults = manager.archiveQuery(query, schema);
+        } catch(Exception e) {
+            e.printStackTrace();
+            sbResults[0] = new String(e.toString());
+        }
+        //now get all the projects which these sbs belong to.
+        String[] totalResults = manager.getProjectSBUnion(results, sbResults); 
+        return totalResults;
     }
+
     // Dynamic_Scheduler_to_MasterScheduler
     public String getArrayName(String schedulerId){
         Scheduler scheduler = getScheduler(schedulerId);

@@ -20,8 +20,8 @@ public class ShowArrayFrame extends JDialog {
     private MasterSchedulerIF masterScheduler;
     private ControlMaster control;
     private Logger logger;
-    //private ContainerServices container;
-    private PluginContainerServices container;
+    private ContainerServices container;
+    //private PluginContainerServices container;
     private TableModel arrayTableModel;
     private JTable arrayTable;
     private Object[][] arrayRowInfo;
@@ -35,8 +35,8 @@ public class ShowArrayFrame extends JDialog {
     private int columnIndex = 0;
     private boolean canSelect;
     
-    public ShowArrayFrame(PluginContainerServices cs, boolean b) {
-    //public ShowArrayFrame(ContainerServices cs, boolean b) {
+    //public ShowArrayFrame(PluginContainerServices cs, boolean b) {
+    public ShowArrayFrame(ContainerServices cs, boolean b) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();
@@ -82,7 +82,9 @@ public class ShowArrayFrame extends JDialog {
             public void focusGained(FocusEvent e){
                 addArrayDetails();
             }
-            public void focusLost(FocusEvent e){}
+            public void focusLost(FocusEvent e){
+                //addArrayDetails();
+            }
         });
         arrayTable.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
@@ -122,6 +124,9 @@ public class ShowArrayFrame extends JDialog {
         column.setPreferredWidth(w+5);
     }
 
+    public void updateArrayDetails() {
+        getArrays();
+    }
     private void addArrayDetails(){
         getArrays();
         int row = arrayTable.getSelectedRow();
@@ -232,15 +237,15 @@ public class ShowArrayFrame extends JDialog {
 
     private JPanel actionButtons(){
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton createArrayB = new JButton("Select");
+        JButton selectArrayB = new JButton("Select");
         //TODO this need return the name of the array selected here.
-        createArrayB.addActionListener(new ActionListener() {
+        selectArrayB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 selectArray();
             }
         });
         if(!canSelect){
-            createArrayB.setEnabled(false);
+            selectArrayB.setEnabled(false);
         }
         JButton cancelB = new JButton("Cancel");
         cancelB.addActionListener(new ActionListener() {
@@ -248,18 +253,23 @@ public class ShowArrayFrame extends JDialog {
                 exit();
             }
         });
-        JButton antFrameB = new JButton("Create");
-        antFrameB.addActionListener(new ActionListener(){
+        JButton createArrayB = new JButton("Create");
+        createArrayB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 CreateArrayFrame f = new CreateArrayFrame(container);
                 f.setVisible(true);
+                f.addWindowListener(new WindowAdapter() {
+                    public void windowClosed(WindowEvent e){
+                        updateArrayDetails();
+                    }
+                });
             }
         });
-        antFrameB.addFocusListener(new FocusListener() {
+        createArrayB.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e){
-                addArrayDetails();
+                updateArrayDetails();
             }
-            public void focusLost(FocusEvent e){}
+            public void focusLost(FocusEvent e){ }
         });
         JButton destroyArrayB = new JButton("Destroy");
         destroyArrayB.addActionListener(new ActionListener() {
@@ -267,9 +277,9 @@ public class ShowArrayFrame extends JDialog {
                 destroyArray();
             }
         });
-        p.add(createArrayB);
+        p.add(selectArrayB);
         p.add(cancelB);
-        p.add(antFrameB);
+        p.add(createArrayB);
         p.add(destroyArrayB);
         return p;
     }
@@ -361,8 +371,8 @@ public class ShowArrayFrame extends JDialog {
     }
 
     
-    //public static String showArraySelectFrame(ContainerServices cs, boolean x) {
-    public static String showArraySelectFrame(PluginContainerServices cs, boolean x) {
+    public static String showArraySelectFrame(ContainerServices cs, boolean x) {
+    //public static String showArraySelectFrame(PluginContainerServices cs, boolean x) {
         try {
             ShowArrayFrame f = new ShowArrayFrame(cs, x);
             f.setVisible(true);
