@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.69 2006/09/28 16:43:01 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.70 2006/09/28 21:16:22 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -415,24 +415,26 @@ public class ALMAMasterScheduler extends MasterScheduler
             // array created for special sbs must have  those antennas included.
             String[] specialSbAntennas;
             String[] regularSbAntennas;
+            /*
             if((manager.getSpecialSBs().size() > 0) && (sbQueue.size() > 0)) {
                 //split array and start a scheduler for special sbs
-                specialSbAntennas = new String[allAntennas.length/2];
+                //specialSbAntennas = new String[allAntennas.length/2];
                 regularSbAntennas = new String[allAntennas.length/2];
                 int x=0;
                 for(int i=0; i < (allAntennas.length/2); i++){
                     specialSbAntennas[i] = allAntennas[x++];
                     regularSbAntennas[i] = allAntennas[x++];
                 }
-                scheduleSpecialSBs(specialSbAntennas);
+                //scheduleSpecialSBs(specialSbAntennas);
                 scheduleRegularSBs(regularSbAntennas);
             } else if(manager.getSpecialSBs().size() > 0) {
                 specialSbAntennas = allAntennas;
                 scheduleSpecialSBs(specialSbAntennas);
             } else if(sbQueue.size() > 0) {
+            */
                 regularSbAntennas = allAntennas;
                 scheduleRegularSBs(regularSbAntennas);
-            }
+           // }
         } catch(Exception e) {
             InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -929,10 +931,12 @@ public class ALMAMasterScheduler extends MasterScheduler
             Policy s_policy = createPolicy();
             // regular sb scheduling
             String arrayname = createArray(regularSbAntennas, ArrayModeEnum.DYNAMIC);
-        
+            //TODO: Handle this better..
+            SBQueue dynamicSBs=manager.getDynamicSBQueue();
+
             SchedulerConfiguration config = 
                 createSchedulerConfiguration (
-                        false, sbQueue, true, true, 5, arrayname, s_policy);
+                        false, dynamicSBs, true, true, 5, arrayname, s_policy);
 
             logger.info("SCHEDULING: Master Scheduler creating dynamic scheduler for regular SBs");
             if(!isArrayInUse(arrayname)){
@@ -1009,8 +1013,20 @@ public class ALMAMasterScheduler extends MasterScheduler
 
         String[] results = new String[0];    
         String schema = new String("ObsProject");
-        String query = new String("/prj:ObsProject[prj:pI[\""+piname+
-                "\"] and prj:projectName [\""+projname+"\"]]");
+        String foo1, foo2;
+        if(projname.equals("*")){
+            foo1=new String("prj:projectName=*");
+        } else {
+            foo1 =new String("prj:projectName=\""+projname+"\"");
+        }
+
+        if(piname.equals("*")){
+            foo2=new String("prj:pI=*");
+        } else {
+            foo2 =new String( "prj:pI=\""+piname+"\"");
+        }
+        String query = new String("/prj:ObsProject["+foo1+" and "+foo2+"]");
+        logger.info("Scheduling Query = "+ query);                
         try {
             results = manager.archiveQuery(query, schema);
         } catch(Exception e) {

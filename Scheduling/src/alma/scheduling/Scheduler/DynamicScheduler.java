@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.13 2006/05/01 18:59:17 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.14 2006/09/28 21:16:22 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -254,7 +254,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
         // Submit the list to the operator to get the id of the best SB from 
         //the list
         //String bestSBId = config.getOperator().selectSB(best, m);
-        System.out.println("SCHEUDLING: best selection will be.. "+ best.getBestSelection());
+        //logger.info("SCHEUDLING: best selection will be.. "+ best.getBestSelection());
         //if(best.getBestSelection() == null) {
         if(best.getNumberReturned() == 0) {
     		// Nothing can be scheduled at this time.

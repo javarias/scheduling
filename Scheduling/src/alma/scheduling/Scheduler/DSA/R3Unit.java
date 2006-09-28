@@ -37,7 +37,7 @@ import java.text.NumberFormat;
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.10 2006/08/23 21:34:21 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.11 2006/09/28 21:16:22 sslucero Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {
@@ -207,8 +207,11 @@ class R3Unit extends SchedulingUnit {
 		this.oneSBRemaining = false;
         sinDec=1.0;
         cosDec=1.0;
-		sinDec = Math.sin(sb.getTarget().getCenter().getDec());
-		cosDec = Math.cos(sb.getTarget().getCenter().getDec());
+        try {
+    		sinDec = Math.sin(sb.getTarget().getCenter().getDec());
+	    	cosDec = Math.cos(sb.getTarget().getCenter().getDec());
+        } catch(Exception e){
+        }
 		computeTimes(sb,site); //added back in..
 		// Set thenumber format.
 		dform = NumberFormat.getInstance();

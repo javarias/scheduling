@@ -164,8 +164,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         projectQueryTF = new JTextField();
         piQueryTF = new JTextField();
         p1.add(new JLabel("PI Name: ")); 
+        piQueryTF.setToolTipText("DO NOT mix words with *");
         p1.add(piQueryTF);
         p1.add(new JLabel("Project Name: ")); 
+        projectQueryTF.setToolTipText("DO NOT mix words with *");
         p1.add(projectQueryTF);
         p1.add(new JLabel("SB Type"));
         String[] foo= {"All","SingleFieldInterferometry","OpticalPointing","TowerHolography"};
@@ -189,7 +191,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                     }
                     if(projectStr.equals("")){ projectStr = "*"; } 
                     if(piStr.equals("")){ piStr ="*"; }
-                    System.out.println("QUERY Params: "+projectStr+":"+piStr+":"type);
+                    //System.out.println("QUERY Params: "+projectStr+":"+piStr+":"+type);
                     String[] res = masterScheduler.queryForProject(projectStr,piStr,type);
                     displayProjectSearchResults(res);
                 }catch(Exception ex){

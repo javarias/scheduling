@@ -12,7 +12,7 @@
  * version 2.1 of the License, or (at your option) any later version.
  * 
  * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * but WITHOUT ANY WARRANTY, without even the implied waraanty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  * 
@@ -91,7 +91,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.41 2006/08/15 20:52:35 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.42 2006/09/28 21:16:22 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -717,6 +717,25 @@ public class ProjectUtil {
 
                 sb.addSource(source);
             }
+    		if (eq.length == 1) {
+		    	Target target = new Target (eq[0],3600.0,3600.0);
+	    		sb.setTarget(target);
+    		} else {
+		    	Target target = new Target (eq);
+	    		sb.setTarget(target);
+    		}
+
+            SpectralSpecT[] setup = sched.getSchedBlockChoice().getSpectralSpec();
+		    alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup[0].getFrequencySetup();
+	    	if (freqSetup == null) {
+    			sb.setCenterFrequency(0.0);
+			    sb.setFrequencyBand(null);
+		    } else {
+	    		sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
+    			String band = freqSetup.getReceiverBand().toString();
+			    FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
+		    	sb.setFrequencyBand(freq);
+	    	}
         }catch(Exception e){
             e.printStackTrace();    
         }
@@ -978,7 +997,7 @@ public class ProjectUtil {
                     //check if its set to ready
                     if(!memberSB.getStatus().isReady()){
                         memberSB.setReady(now);
-                    }
+                   }
 				    program.addMember(memberSB);
                 }
 			}
@@ -1144,7 +1163,6 @@ public class ProjectUtil {
 		ObsTargetT[] targetList = sched.getObsTarget();
         if(targetList.length > 0) {
             SpectralSpecT setup = targetList[0].getTargetTChoice().getSpectralSpec();
-
 		    alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
 	    	if (freqSetup == null) {
     			sb.setCenterFrequency(0.0);

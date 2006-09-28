@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.70 2006/09/28 16:43:01 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.71 2006/09/28 21:16:22 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -157,6 +157,22 @@ public class ALMAProjectManager extends ProjectManager {
 
     public Vector getSpecialSBs() {
         return specialSBs;
+    }
+
+    /**
+      * Return sbs that qualify for DS... not indefinitely repeating ones
+      */
+    public SBQueue getDynamicSBQueue(){
+        SBQueue dynamicSBs = new SBQueue();
+        for(int i=0; i < sbQueue.size();i++){
+            if(!sbQueue.get(i).getIndefiniteRepeat()){
+                logger.info("doesn't repeat indefinitely, qualifies for DS");
+                dynamicSBs.add(sbQueue.get(i));
+            } else{
+                logger.info("doesn't qualify for DS");
+            }
+        }
+        return dynamicSBs;
     }
 
     public void checkForProjectUpdates() {
