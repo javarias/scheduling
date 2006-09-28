@@ -18,13 +18,13 @@ import java.util.logging.Logger;
 //exec plugin stuff
 import alma.exec.extension.subsystemplugin.*;
 
-public class ExecFrameForPanel extends JPanel implements SubsystemPlugin {
+public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin {
 //    private ContainerServices cs;
     private PluginContainerServices cs;
     private MainSchedTabPane mainSchedPanel;
     private Logger logger;
     
-    public ExecFrameForPanel(){
+    public SchedulingPanelMainFrame(){
         setLayout(new BorderLayout());
         createMainSchedPanel(cs);
         add(mainSchedPanel,BorderLayout.CENTER);

@@ -189,6 +189,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                     }
                     if(projectStr.equals("")){ projectStr = "*"; } 
                     if(piStr.equals("")){ piStr ="*"; }
+                    System.out.println("QUERY Params: "+projectStr+":"+piStr+":"type);
                     String[] res = masterScheduler.queryForProject(projectStr,piStr,type);
                     displayProjectSearchResults(res);
                 }catch(Exception ex){
