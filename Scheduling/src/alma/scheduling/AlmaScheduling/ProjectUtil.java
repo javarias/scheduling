@@ -91,7 +91,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.43 2006/09/28 21:38:28 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.44 2006/09/28 21:44:05 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -555,7 +555,6 @@ public class ProjectUtil {
 			for (int i = 0; i < setMember.length; ++i) {
 				memberSB = initialize(setMember[i],sched,schedUsed,project,program,now);
 				program.addMember(memberSB);
-                }
 			}
 		}
 		

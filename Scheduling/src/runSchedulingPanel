@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-echo ""
-echo "NOTE:"
-echo "This script no longer works."
-echo ""
-echo "Put the following in your ExecConfig.xml file:"
-echo ""
-echo "<property name=\"SubsystemPlugin1\" "
-echo " value=\"Scheduling Panel ,alma.scheduling.AlmaScheduling.GUI.SchedulingPanel.ExecFrameForPanel\"/> "
-echo ""
-echo "and run the scheduling panel as an exec plugin."
-echo ""
-#acsStartJava -endorsed alma.scheduling.AlmaScheduling.GUI.SchedulingPanel.TempFrameForPanel
+#echo ""
+#echo "NOTE:"
+#echo "This script no longer works."
+#echo ""
+#echo "Put the following in your ExecConfig.xml file:"
+#echo ""
+#echo "<property name=\"SubsystemPlugin1\" "
+#echo " value=\"Scheduling Panel ,alma.scheduling.AlmaScheduling.GUI.SchedulingPanel.ExecFrameForPanel\"/> "
+#echo ""
+#echo "and run the scheduling panel as an exec plugin."
+#echo ""
+acsStartJava -endorsed alma.scheduling.AlmaScheduling.GUI.SchedulingPanel.TempFrameForPanel
