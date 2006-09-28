@@ -29,15 +29,15 @@ public class MainSchedTabPane extends JTabbedPane {
     private JTable schedulerTable;
     private JPopupMenu rightClickMenu;
     private Object[][] schedRowInfo;
-    //public PluginContainerServices container;
-    public ContainerServices container;
+    public PluginContainerServices container;
+    //public ContainerServices container;
     private MasterSchedulerIF masterScheduler;
     private int overTabIndex;
     private JDesktopPane desktop;
     private Vector<Window> openWindows;
 
-    public MainSchedTabPane(ContainerServices cs){
-    //public MainSchedTabPane(PluginContainerServices cs){
+    //public MainSchedTabPane(ContainerServices cs){
+    public MainSchedTabPane(PluginContainerServices cs){
         super(JTabbedPane.TOP);
         container = cs;
         try {

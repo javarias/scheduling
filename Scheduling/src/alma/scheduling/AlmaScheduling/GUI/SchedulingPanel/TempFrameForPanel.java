@@ -53,7 +53,7 @@ public class TempFrameForPanel extends JFrame{
     }
 
     private void createMainSchedPanel(ContainerServices cs) {
-        mainSchedPanel = new MainSchedTabPane(cs);
+       // mainSchedPanel = new MainSchedTabPane(cs);
         
     }
 

@@ -18,8 +18,8 @@ public class CreateArrayFrame extends JDialog {
     private MasterSchedulerIF masterScheduler;
     private ControlMaster control;
     private Logger logger;
-    //private PluginContainerServices container;
-    private ContainerServices container;
+    private PluginContainerServices container;
+    //private ContainerServices container;
     private TableModel antennaTableModelA;
     private TableModel antennaTableModelB;
     private JTable antennaTableA;
@@ -33,8 +33,8 @@ public class CreateArrayFrame extends JDialog {
     private int columnIndex = 0;
 
     
-    public CreateArrayFrame(ContainerServices cs) {
-    //public CreateArrayFrame(PluginContainerServices cs) {
+    //public CreateArrayFrame(ContainerServices cs) {
+    public CreateArrayFrame(PluginContainerServices cs) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();

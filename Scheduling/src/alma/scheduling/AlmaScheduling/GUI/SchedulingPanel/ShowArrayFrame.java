@@ -20,8 +20,8 @@ public class ShowArrayFrame extends JDialog {
     private MasterSchedulerIF masterScheduler;
     private ControlMaster control;
     private Logger logger;
-    private ContainerServices container;
-    //private PluginContainerServices container;
+    //private ContainerServices container;
+    private PluginContainerServices container;
     private TableModel arrayTableModel;
     private JTable arrayTable;
     private Object[][] arrayRowInfo;
@@ -35,8 +35,8 @@ public class ShowArrayFrame extends JDialog {
     private int columnIndex = 0;
     private boolean canSelect;
     
-    //public ShowArrayFrame(PluginContainerServices cs, boolean b) {
-    public ShowArrayFrame(ContainerServices cs, boolean b) {
+    public ShowArrayFrame(PluginContainerServices cs, boolean b) {
+    //public ShowArrayFrame(ContainerServices cs, boolean b) {
         super();
         this.container = cs;
         this.logger = cs.getLogger();
@@ -371,8 +371,8 @@ public class ShowArrayFrame extends JDialog {
     }
 
     
-    public static String showArraySelectFrame(ContainerServices cs, boolean x) {
-    //public static String showArraySelectFrame(PluginContainerServices cs, boolean x) {
+    //public static String showArraySelectFrame(ContainerServices cs, boolean x) {
+    public static String showArraySelectFrame(PluginContainerServices cs, boolean x) {
         try {
             ShowArrayFrame f = new ShowArrayFrame(cs, x);
             f.setVisible(true);

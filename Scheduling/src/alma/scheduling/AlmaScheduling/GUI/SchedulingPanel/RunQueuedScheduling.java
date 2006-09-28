@@ -7,15 +7,15 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.MasterSchedulerIF;
 
 public class RunQueuedScheduling implements Runnable {
-    private ContainerServices container;
-    //private PluginContainerServices container;
+    //private ContainerServices container;
+    private PluginContainerServices container;
     private MasterSchedulerIF masterScheduler = null;
     private String[] sb_ids;
     private String arrayname;
     private Logger logger;
     
-    //public RunQueuedScheduling(PluginContainerServices cs, String[] ids, String array){
-    public RunQueuedScheduling(ContainerServices cs, String[] ids, String array){
+    public RunQueuedScheduling(PluginContainerServices cs, String[] ids, String array){
+    //public RunQueuedScheduling(ContainerServices cs, String[] ids, String array){
         sb_ids = ids;
         arrayname = array;
         container = cs;

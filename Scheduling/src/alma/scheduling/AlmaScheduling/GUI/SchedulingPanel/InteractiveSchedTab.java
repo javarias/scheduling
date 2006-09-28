@@ -48,8 +48,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private String currentProjectId;
     private ProjectLite currentProjectLite;
     private SBLite[] currentProjectSBs;
-    private ContainerServices container;
-    //private PluginContainerServices container;
+    //private ContainerServices container;
+    private PluginContainerServices container;
     private Interactive_PI_to_Scheduling scheduler;
     private MasterSchedulerIF masterScheduler;
     private Logger logger;
@@ -77,8 +77,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     private Thread openot_thread=null;
     private boolean sessionStarted;
     
-    public InteractiveSchedTab(ContainerServices cs, String s, String an){
-    //public InteractiveSchedTab(PluginContainerServices cs, String s, String an){
+    //public InteractiveSchedTab(ContainerServices cs, String s, String an){
+    public InteractiveSchedTab(PluginContainerServices cs, String s, String an){
         mainPanel = new JPanel(new BorderLayout());//new GridLayout(4,1));
         getViewport().add(mainPanel);
         container = cs;
