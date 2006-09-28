@@ -91,7 +91,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.42 2006/09/28 21:16:22 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.43 2006/09/28 21:38:28 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -555,6 +555,7 @@ public class ProjectUtil {
 			for (int i = 0; i < setMember.length; ++i) {
 				memberSB = initialize(setMember[i],sched,schedUsed,project,program,now);
 				program.addMember(memberSB);
+                }
 			}
 		}
 		
@@ -725,17 +726,20 @@ public class ProjectUtil {
 	    		sb.setTarget(target);
     		}
 
-            SpectralSpecT[] setup = sched.getSchedBlockChoice().getSpectralSpec();
-		    alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup[0].getFrequencySetup();
-	    	if (freqSetup == null) {
+            //SpectralSpecT[] setup = sched.getSchedBlockChoice().getSpectralSpec();
+		    //alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup[0].getFrequencySetup();
+	    	//if (freqSetup == null) {
+            
+            //TODO fix this temporary hack!!
     			sb.setCenterFrequency(0.0);
-			    sb.setFrequencyBand(null);
-		    } else {
-	    		sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
-    			String band = freqSetup.getReceiverBand().toString();
-			    FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
-		    	sb.setFrequencyBand(freq);
-	    	}
+			    sb.setFrequencyBand(new FrequencyBand("TempBand",100, 200));
+		    
+                //} else {
+	    	//	sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
+    		//	String band = freqSetup.getReceiverBand().toString();
+			  //  FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
+		    //	sb.setFrequencyBand(freq);
+	    //	}
         }catch(Exception e){
             e.printStackTrace();    
         }
