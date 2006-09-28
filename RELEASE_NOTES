@@ -6,7 +6,16 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.18 2006/08/29 17:15:01 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.19 2006/09/28 19:11:10 sslucero Exp $"
+
+********************************************************************
+Release 4.0
+- Based on ACS 5.0.5
+- There is one alarm in the scheduling subsystem now called SchedArchiveConnAlarm.
+It gets raised when an error is thrown while talking to the archive.
+- The scheduling panel has had a few bug fixes. It will hopefully be in the OMC's upper left corner. If not run it as a plugin as mentioned below.
+- Dynamic scheduling will ignore scheduling blocks that have an indefinite repeat count..
+
 
 ********************************************************************
 Changes since the holography release
