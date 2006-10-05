@@ -26,19 +26,23 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
     
     public SchedulingPanelMainFrame(){
         setLayout(new BorderLayout());
-        createMainSchedPanel(cs);
+        createMainSchedPanel();//cs);
         add(mainSchedPanel,BorderLayout.CENTER);
+        setVisible(true);
     }
 
     public void setServices(PluginContainerServices ctrl) {
         cs = ctrl;
         logger = ctrl.getLogger();
+        mainSchedPanel.secondSetup(cs);
     }
 
     public void start() throws Exception {
-        createMainSchedPanel(cs);
+        /*
+        createMainSchedPanel();//cs);
         add(mainSchedPanel, BorderLayout.CENTER);
         setVisible(true);
+        */
     }
     public void stop() throws Exception{
         exit();
@@ -53,8 +57,8 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
     }
 
 
-    private void createMainSchedPanel(PluginContainerServices cs) {
-        mainSchedPanel = new MainSchedTabPane(cs);
+    private void createMainSchedPanel() {//PluginContainerServices cs) {
+        mainSchedPanel = new MainSchedTabPane();//cs);
     }
 
 }

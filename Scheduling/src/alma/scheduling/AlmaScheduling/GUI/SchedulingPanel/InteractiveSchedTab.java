@@ -164,10 +164,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         projectQueryTF = new JTextField();
         piQueryTF = new JTextField();
         p1.add(new JLabel("PI Name: ")); 
-        piQueryTF.setToolTipText("DO NOT mix words with *");
+        //piQueryTF.setToolTipText("DO NOT mix words with *");
         p1.add(piQueryTF);
         p1.add(new JLabel("Project Name: ")); 
-        projectQueryTF.setToolTipText("DO NOT mix words with *");
+        //projectQueryTF.setToolTipText("DO NOT mix words with *");
         p1.add(projectQueryTF);
         p1.add(new JLabel("SB Type"));
         String[] foo= {"All","SingleFieldInterferometry","OpticalPointing","TowerHolography"};

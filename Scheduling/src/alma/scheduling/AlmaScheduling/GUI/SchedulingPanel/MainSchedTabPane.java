@@ -37,20 +37,12 @@ public class MainSchedTabPane extends JTabbedPane {
     private Vector<Window> openWindows;
 
     //public MainSchedTabPane(ContainerServices cs){
-    public MainSchedTabPane(PluginContainerServices cs){
+    public MainSchedTabPane() {//PluginContainerServices cs){
         super(JTabbedPane.TOP);
-        container = cs;
-        try {
-            logger = cs.getLogger();
-        } catch(Exception e) {
-            logger = Logger.getLogger("OfflineMode");
-        }
         setup();
     }
 
     public void setup() {
-        logger.info("SCHEDULING_PANEL: in setup for SP.");
-        getMSRef();
         openWindows = new Vector<Window>();
         schedulerInfo = new Vector<SchedulerTab>();
         addTab("Main",createMainView());
@@ -64,9 +56,19 @@ public class MainSchedTabPane extends JTabbedPane {
             }
         });
     }
+    public void secondSetup(PluginContainerServices cs){
+        container = cs;
+        try {
+            logger = cs.getLogger();
+        } catch(Exception e) {
+            logger = Logger.getLogger("OfflineMode");
+        }
+        logger.info("SCHEDULING_PANEL: in second setup for SP.");
+        createRightClickMenu();
+        //getMSRef();
+    }
 
     private void getMSRef(){
-        logger.info("SCHEDULING_PANEL: about to try and get MS reference");
         try {
             masterScheduler =
                 alma.scheduling.MasterSchedulerIFHelper.narrow(
@@ -74,8 +76,8 @@ public class MainSchedTabPane extends JTabbedPane {
                         "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             logger.info("SCHEDULING_PANEL: Got MS");
         } catch (Exception e) {
-            logger.info("SCHEDULING_PANEL: failed to get MS reference, "+e.toString());
-            e.printStackTrace();
+            //logger.info("SCHEDULING_PANEL: failed to get MS reference, "+e.toString());
+            //e.printStackTrace();
             masterScheduler = null;
         }
         createRightClickMenu();
@@ -238,12 +240,12 @@ public class MainSchedTabPane extends JTabbedPane {
         b.setToolTipText("Create an array");
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
-                /*
+                
                 if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
-                */
+                
                 showCreateArrayPopup();
             }
         });
@@ -253,12 +255,12 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 //check to see if MS is connected.
-               /*
+               
                 if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
-                */
+                
                 //prompt to select an array
                 String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                 if(arrayname.equals("") || arrayname == null) {
@@ -275,12 +277,12 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 //check to see if MS is connected.
-            /*
+            
                 if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
-                */
+               
                 //prompt to select an array
                 String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
                 if(arrayname.equals("") || arrayname == null) {
@@ -306,11 +308,11 @@ public class MainSchedTabPane extends JTabbedPane {
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 //check to see if MS is connected.
-                /*if(masterScheduler == null){
+                if(masterScheduler == null){
                     showConnectToMSMessage();
                     return;
                 }
-                */
+                
                 //ask if they are going to create their own array
                 String arrayname = null;
                 int result = pickTheirOwnArray();
@@ -372,7 +374,10 @@ public class MainSchedTabPane extends JTabbedPane {
     private void createRightClickMenu(){
         rightClickMenu = new JPopupMenu("Master Scheduler Functions");
         JMenuItem menuItem;
-        //if(masterScheduler!=null){
+        if(masterScheduler!=null){
+            logger.info("creating menu with non-null ms ref");
+        /*
+           TODO add back in when it works inside the OMC
             menuItem = new JMenuItem("Detach");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -380,6 +385,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
+            */
             menuItem = new JMenuItem("Get Array Info");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -396,16 +402,17 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
+            */
         } else {
             menuItem = new JMenuItem("Connect To MasterScheduler");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
-                    getMasterSchedulerRef();
+                    getMSRef();
                 }
             });
             rightClickMenu.add(menuItem);
         }
-            */
+            
         addMouseListener(new PopupListener());
     }
     

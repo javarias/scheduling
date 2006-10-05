@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.70 2006/09/28 21:16:22 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.71 2006/10/05 13:42:54 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1014,13 +1014,13 @@ public class ALMAMasterScheduler extends MasterScheduler
         String[] results = new String[0];    
         String schema = new String("ObsProject");
         String foo1, foo2;
-        if(projname.equals("*")){
+        if(projname.equals("*") || projname.contains("*")){
             foo1=new String("prj:projectName=*");
         } else {
             foo1 =new String("prj:projectName=\""+projname+"\"");
         }
 
-        if(piname.equals("*")){
+        if(piname.equals("*") || piname.contains("*")){
             foo2=new String("prj:pI=*");
         } else {
             foo2 =new String( "prj:pI=\""+piname+"\"");
@@ -1032,6 +1032,14 @@ public class ALMAMasterScheduler extends MasterScheduler
         } catch(Exception e) {
             e.printStackTrace();
             results[0] = new String(e.toString());
+        }
+        if( !piname.equals("*") && piname.contains("*")){
+            //check to see if results match other part of piname
+            results = manager.getWildCardResults(results, piname, "pI");
+        }
+        if( !projname.equals("*") && projname.contains("*")){
+            //check to see if results match other part of projname
+            results = manager.getWildCardResults(results, projname, "projectName");
         }
         if(type.equals("*")){
             //dont need to search for specific sb types.

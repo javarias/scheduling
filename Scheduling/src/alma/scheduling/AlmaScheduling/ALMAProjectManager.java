@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.71 2006/09/28 21:16:22 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.72 2006/10/05 13:42:54 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -884,6 +884,52 @@ public class ALMAProjectManager extends ProjectManager {
         return p_uids;
     }
 
+    /**
+      * Given the results done with a *, narrow them down because the searchStr
+      * contains more than just *
+      * @param projIds Results of the query done with a *
+      * @param searchStr String containing *
+      * @param attr Attribute used in query
+      * @return String[] Narrowed down results
+      */
+    public String[] getWildCardResults(String[] projIds, String searchStr, String attr){
+        Vector res = new Vector();
+        Project p;
+        String tmp;
+        int x;
+        for(int i=0;i < projIds.length; i++){
+            p= pQueue.get(projIds[i]);
+            x = searchStr.indexOf("*");
+            tmp = searchStr.substring(0,x);
+            System.out.println("SUBSTRING: "+tmp);
+            if(attr.equals("pI")){
+                System.out.println("PI: "+p.getPI());
+                if(p.getPI().contains(tmp)){
+                    System.out.println("it contains it");
+                    res.add(projIds[i]);
+                }
+            } else if(attr.equals("projectName")){
+                System.out.println("Project name: "+p.getProjectName());
+                if(p.getProjectName().contains(tmp)){
+                    System.out.println("it contains it");
+                    res.add(projIds[i]);
+                }
+            }
+        }
+        String[] results = new String[res.size()];
+        for(int i=0; i< res.size();i++){
+            results[i] = (String)res.elementAt(i);
+        }
+        return results;
+    }
+
+    /**
+      * Given the list of project IDs and SB IDs, return the project IDs of the
+      * projects which contain the SBs represented by the given SB IDs
+      * @param projectIds 
+      * @param sbIds
+      * @return String[] The project Ids of the projects which contain the sbs.
+      */
     public String[] getProjectSBUnion(String[] projectIds, String[] sbIds){
         String[] results = new String[0];
         Vector v_res = new Vector();
