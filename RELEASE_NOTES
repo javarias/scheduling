@@ -6,7 +6,16 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.19 2006/09/28 19:11:10 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.20 2006/10/05 16:06:48 sslucero Exp $"
+
+********************************************************************
+Added to R4's branch:
+- A few bugs were found when it was added to the upper left corner of the OMC. Those are now fixed
+- When starting the OMC put:
+    -DUseSchedulingPlugin=true
+  in the JAVA_OPTIONS environment variable to see the SP in the OMC.
+- Added better searching mechanicism in interactive scheduling. Seaching on PI and Project name can be done with words and * together. i.e: Sohaila* or Sohaila Lucero or *
+- Once ALMA is operational in the OMC, right click on the scheduling panel and connect to the scheduling subsystem. 
 
 ********************************************************************
 Release 4.0
