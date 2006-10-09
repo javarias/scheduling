@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.17 2006/09/25 16:08:32 sslucero Exp $
+ * @version $Id: SB.java,v 1.18 2006/10/09 15:27:44 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -75,6 +75,8 @@ public class SB implements ProgramMember {
 	// Note: The total required time is:
 	//			maximumTimeInSeconds * (maximumNumberOfRepeats + 1)
 	
+	private int maximumNumberOfRepeats;
+	private int maximumTimeInSeconds;
     private boolean indefiniteRepeat;
 	// The members of this set are ExecBlocks.
 	private ArrayList exec;
@@ -87,8 +89,6 @@ public class SB implements ProgramMember {
 	private WeatherCondition weatherConstraint;
     private String weatherConstraintName;
 	private SBSetup requiredInitialSetup;
-	private int maximumTimeInSeconds;
-	private int maximumNumberOfRepeats;
 	private String imagingScript;
 	private String observingScript;
 	private boolean standardScript;
@@ -372,14 +372,11 @@ public class SB implements ProgramMember {
                     if(getIndefiniteRepeat() ){
 				 		parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
 				 		status.setReady();
-                    } else if (getNumberExec() >= maximumNumberOfRepeats) {
+                    } else if (getNumberExec() == maximumNumberOfRepeats + 1) {
 						// ... then mark it complete and set its end time.
-                        //System.out.println("Status = "+ status.getStatus());
-                        //System.out.println("started = "+ status.getStartTime().toString());
 						status.setEnded(time,Status.COMPLETE);
 						// ... and inform the parent.
 						parent.execEnd(this,time,maximumTimeInSeconds,Status.COMPLETE);
-                        //System.out.println("sb repeat count met.");
 				 	} else {
 						// The only possible state change in this case is to "ready".
                         //System.out.println("sb repeat count not met.");
