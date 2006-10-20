@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * coordinates of its center.  The area itself may be circular, rectangular,
  * or it may be defined by a list of coordinate positions.
  * 
- * @version $Id: Target.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Target.java,v 1.4 2006/10/20 15:38:45 sslucero Exp $
  * @author Allen Farris
  */
 public class Target {
@@ -211,10 +211,11 @@ public class Target {
 
 	static private final double hourToRad =  Math.PI / 12.0;
 	public boolean isVisible(DateTime lst) {
-		if (visible == -1)
+		if (visible == -1)//never visible
 			return false;
-		if (visible == 1)
+		if (visible == 1)//always visible
 			return true;
+            
 		double lstTime = lst.getTimeOfDay() * hourToRad;
 		if (lstRise < lstTime && (lstTime < lstSet))
 			return true;

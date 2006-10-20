@@ -262,7 +262,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
                 
                 //prompt to select an array
-                String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
+                String arrayname = ShowArrayFrame.showArraySelectFrame(container,true, "queued");
                 if(arrayname.equals("") || arrayname == null) {
                     return;
                 }
@@ -284,7 +284,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
                
                 //prompt to select an array
-                String arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
+                String arrayname = ShowArrayFrame.showArraySelectFrame(container,true, "interactive");
                 if(arrayname.equals("") || arrayname == null) {
                     return;
                 }
@@ -318,7 +318,7 @@ public class MainSchedTabPane extends JTabbedPane {
                 int result = pickTheirOwnArray();
                 if(result == 0 ) {
                 //bring up array selector!
-                //    arrayname = ShowArrayFrame.showArraySelectFrame(container,true);
+                //    arrayname = ShowArrayFrame.showArraySelectFrame(container,true, "dynamic");
                     //here means when arrayname == "" user has canceled manual \
                     //array creation.. cannot continue from this point so exits
                 //    if(arrayname.equals("")){

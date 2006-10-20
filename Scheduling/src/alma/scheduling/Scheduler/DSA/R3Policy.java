@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.14 2006/08/23 21:34:21 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.15 2006/10/20 15:38:45 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -281,7 +281,6 @@ class R3Policy extends PolicyType {
                         NothingCanBeScheduled.Other, "Nothing is ready."));
             return best;
 
-//            return null;
         }
         score();
         R3Unit[] list = topList();
@@ -540,20 +539,12 @@ class R3Policy extends PolicyType {
 			u.setPositionEl(pEl);
 			u.setPositionMax(pMax);
 			u.setWeather(w);
-            /*
-            System.out.println("pEl="+pEl);
-            System.out.println("pMax="+pMax);
-            System.out.println("w="+w);
-            */
-                    
 			if (pEl == 0.0 || pMax == 0.0 || w == 0.0) {
 				u.setSuccess(0.0);
-                //System.out.println("Bad success calculation");
 			} else {
                 double tmp = 
                     (positionElW * pEl + positionMaxW * pMax + weatherW * w) / 
                         (positionElW + positionMaxW + weatherW);
-                //System.out.println("Calculated success = "+tmp);
 				u.setSuccess(tmp);
 			}
 		}
@@ -596,8 +587,11 @@ class R3Policy extends PolicyType {
 	
 	private double positionEl(R3Unit u) {
 		if (u.isVisible(clock.getDateTime())) {
-			return Math.sin(u.getElevation(clock.getDateTime(),telescope.getSite()));
+			double tmp =Math.sin(u.getElevation(clock.getDateTime(),telescope.getSite()));
+            //System.out.println(u.getSB().getSBName()+": Its visible, positionEl = "+tmp);
+            return tmp;
         }
+        //System.out.println(u.getSB().getSBName()+":In posEl, not vis");
 		return 0.0;
 	}
 
@@ -630,7 +624,25 @@ class R3Policy extends PolicyType {
 		if (1.0 <= delta && delta < 1.5) {
             return 0.8;
         }
-		return 0.0;
+		if (1.5 <= delta && delta> 2.0) { 
+            return 0.7;
+        }
+		if (2.0 <= delta && delta> 2.5) { 
+            return 0.6;
+        }
+		if (2.5 <= delta && delta> 3.0) { 
+            return 0.5;
+        }
+		if (3.0 <= delta && delta> 3.5) { 
+            return 0.4;
+        }
+		if (3.5 <= delta && delta> 4.0) { 
+            return 0.3;
+        }
+		if (4.0 <= delta && delta> 4.5) { 
+            return 0.2;
+        }
+		return 0.1;
 		
 	}
 	
@@ -641,13 +653,10 @@ class R3Policy extends PolicyType {
 		try {
 			WeatherCondition w = sb.getWeatherConstraint();
             baseline = telescope.getArray(arrayName).getMaxBaseline();
-            //System.out.println("Using Baseline: "+baseline);
-            //System.out.println(w.toString());
 			if (w != null){
 				x =  w.evaluate(new Double(sb.getCenterFrequency()), 
                                 new Double(el), 
                                 new Double(baseline));
-            //System.out.println("Weather weight = "+x);
             }
 		} catch (Exception err) {
 			err.printStackTrace(System.out);

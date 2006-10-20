@@ -68,7 +68,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.11 2006/07/17 20:53:49 sslucero Exp $
+ * @version $Id: Expression.java,v 1.12 2006/10/20 15:38:45 sslucero Exp $
  * @author Allen Farris
  */
 public class Expression {
@@ -132,10 +132,9 @@ public class Expression {
 		for (int i = 0; i < functionName.length; ++i) {
 			try {
 				classObj = obj[i].getClass();
-                //System.out.println(classObj.getName());
                 if (!classObj.getName().equals("alma.scheduling.PlanningModeSim.RmsModel")){
     				method[i] = classObj.getMethod("compute", Double.class, Double.class);
-                } else {
+                } else { //so if we're doing RMS we have 3 doubles to pass in
     				method[i] = classObj.getMethod("compute", Double.class, Double.class, Double.class);
                 }
 				//method[i] = classObj.getMethod("compute",null);
@@ -153,9 +152,11 @@ public class Expression {
 	 */
 	public static float execute(int n, Object... args) {
 		try {
-            //System.out.println("In execute: class name = "+obj[n].getClass().getName());
-            //System.out.println(n);
-            //System.out.println(method[n].toString());
+            /*
+            System.out.println("1.In execute: class name = "+obj[n].getClass().getName());
+            System.out.println("2."+method[n].toString());
+            System.out.println("3.arg len ="+args.length);
+            */
             Double d =  (Double)(method[n].invoke(obj[n], args));
             //Double d =  (Double)(method[n].invoke(obj[n],null));
             //System.out.println("Value in expression = "+d.doubleValue());

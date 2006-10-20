@@ -374,7 +374,8 @@ public class Reporter extends BasicComponent {
 		o.println(id + 
             "                                    LST ");
     }
-	
+
+    private int totalPossibleExecutions=0;
 	private void projectSummary(PrintStream o, DateTime endTime) {
 		o.println();
 		o.println("Project Summary");
@@ -404,7 +405,17 @@ public class Reporter extends BasicComponent {
 			}
 			for (int i = 0; i < prj.length; ++i) {
 				o.println("Project " + prj[i].getObsProjectId() + " priority: " + prj[i].getScientificPriority());
+                SB[] tmpsbs = prj[i].getAllSBs();
+                o.println("\tNumber of SBs in project "+tmpsbs.length);
 				o.println("\tNumber of scheduling blocks completed  " + prj[i].getNumberSBsCompleted());
+                int totalReps=0;
+                int numExec=0;
+                for(int j=0; j< tmpsbs.length; j++){
+                    totalReps += tmpsbs[j].getMaximumNumberOfRepeats();
+                    numExec += tmpsbs[j].getNumberExec();
+                }
+                totalPossibleExecutions += totalReps + tmpsbs.length;
+				o.println("\tNumber of possible repeats: " + totalReps+"; Total number of executions: "+numExec);
 				o.println("\tNumber of scheduling blocks incomplete " + 
 						(prj[i].getTotalSBs() - prj[i].getNumberSBsCompleted()));
 				t = prj[i].getStatus().getStartTime();
@@ -495,6 +506,7 @@ public class Reporter extends BasicComponent {
 		
 		o.println("Number of executions             " + totalNumber); 		
 		o.println("Number of possible executions    " + totalPossibleNumber); 		
+		o.println("Number of possible executions #2 " + totalPossibleExecutions); 		
 				
 		o.println();
 		o.println("Efficiency (%)                   " + dform.format(efficiency * 100.0));
@@ -512,6 +524,7 @@ public class Reporter extends BasicComponent {
 		o.println("Average success factor (%)       " + dform.format(avSuccess));
 		o.println("Average rank                     " + dform.format(avRank));
         o.println();
+        /*
         o.println("    Score = success * rank");
         o.println();
 		o.println("    Success = [ (Position Elevation Weight * Position Elevation) + ");
@@ -530,7 +543,7 @@ public class Reporter extends BasicComponent {
         o.println("             if(sb in diff project and diff band as previous)");
         o.println("                 rank += diff project diff band weight");
 
-		
+		*/
 		
 		
 		/*

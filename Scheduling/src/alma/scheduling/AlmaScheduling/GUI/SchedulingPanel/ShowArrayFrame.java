@@ -34,6 +34,9 @@ public class ShowArrayFrame extends JDialog {
     private JTextArea selectedArrayView;
     private int columnIndex = 0;
     private boolean canSelect;
+    //this is used if the ShowArrayFrame pops up for the user to select
+    // an array for a given scheduler, array has to match scheduler type
+    private static String schedulerType=null;; 
     
     public ShowArrayFrame(PluginContainerServices cs, boolean b) {
     //public ShowArrayFrame(ContainerServices cs, boolean b) {
@@ -292,6 +295,7 @@ public class ShowArrayFrame extends JDialog {
             return;
         }
         //check that the array isn't already in use
+        //rows[0] should be the only one available
         String possible =(String)arrayRowInfo[rows[0]][0];
         try {
             if(masterScheduler.isArrayInUse(possible)){
@@ -367,18 +371,30 @@ public class ShowArrayFrame extends JDialog {
 
     public void exit() {
         releaseComponentRefs();
+        schedulerType = null;
         dispose();
+    }
+    public void setSchedulerType(String t) {
+        schedulerType=t;
     }
 
     
     //public static String showArraySelectFrame(ContainerServices cs, boolean x) {
-    public static String showArraySelectFrame(PluginContainerServices cs, boolean x) {
+    public static String showArraySelectFrame(PluginContainerServices cs, boolean x, String type) {
+        if(!type.equals("queued") || !type.equals("interactive") || !type.equals("dynamic")){
+            return "";
+        } //else{
+           // schedulerType = type;
+        //}
+            
         try {
             ShowArrayFrame f = new ShowArrayFrame(cs, x);
+            f.setSchedulerType(type);
             f.setVisible(true);
         }catch(Exception e) {
             e.printStackTrace();
         }
+        schedulerType = null;
         return selectedArray;
     }
 }

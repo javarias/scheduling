@@ -83,7 +83,7 @@ import java.util.StringTokenizer;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version $Id: WeatherCondition.java,v 1.6 2006/08/23 20:48:37 sslucero Exp $
+ * @version $Id: WeatherCondition.java,v 1.7 2006/10/20 15:38:45 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherCondition {
@@ -133,7 +133,6 @@ public class WeatherCondition {
         boolean doesCurrNameHaveValue = false;
 		for (int i = 0; i < condition.length; ++i) {
             currName = (new StringTokenizer(condition[i].toString(),",")).nextToken();
-            condition[i] = scaleCondition(condition[i], args);
             if(prevName == null) {
                 if(evaluateCondition(condition[i], currName, args)){
                     doesCurrNameHaveValue = true;

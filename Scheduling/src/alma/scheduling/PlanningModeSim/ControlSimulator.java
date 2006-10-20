@@ -220,6 +220,10 @@ public class ControlSimulator extends BasicComponent implements Control {
 			ExecBlock ex = new ExecBlock (containerServices.getEntityId(),name);
 			// Set the start time in the exec block.
 			ex.setStartTime(beg);
+            System.out.println("EXECUTION Starting at "+beg.toString());
+            System.out.println("EXECUTION Starting at LST "+beg.getLocalSiderealTime());
+            System.out.println("EXECUTION ra min (h)= "+sb.getTarget().getMin().getRaInHours());
+            System.out.println("EXECUTION ra max(h) = "+sb.getTarget().getMax().getRaInHours());
 			// Set the best unit.
 			ex.setBest(best);
 			// Store it in the archive.

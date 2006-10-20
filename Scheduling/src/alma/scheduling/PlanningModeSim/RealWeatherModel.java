@@ -93,6 +93,8 @@ public class RealWeatherModel {
                 result = dataMap.get(tmp1);
             }
         }
+        //System.out.println("In Compute: "+now.toString()+"; args.len="+args.length);
+        //System.out.println("4.In RWM compute, result ="+result);
         return result;
     }
     

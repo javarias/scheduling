@@ -412,6 +412,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("exceptional", tmp2);
+        System.out.println("Exceptional");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
         //for excellent do
         tmp1 = getString(Tag.excellentWC);
         st = new StringTokenizer(tmp1,";");
@@ -421,6 +425,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("excellent", tmp2);
+        System.out.println("Excellent");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
         //for good do
         tmp1 = getString(Tag.goodWC);
         st = new StringTokenizer(tmp1,";");
@@ -430,6 +438,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("good", tmp2);
+        System.out.println("good");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
         
         //for average do
         tmp1 = getString(Tag.averageWC);
@@ -440,6 +452,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("average", tmp2);
+        System.out.println("average");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
 
         //for below average do
         tmp1 = getString(Tag.belowaverageWC);
@@ -450,6 +466,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("belowaverage", tmp2);
+        System.out.println("below average");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
 
         //for poor do
         tmp1 = getString(Tag.poorWC);
@@ -460,6 +480,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("poor", tmp2);
+        System.out.println("Poor ");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
 
         //for dismal do
         tmp1 = getString(Tag.dismalWC);
@@ -470,6 +494,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("dismal", tmp2);
+        System.out.println("Dismal");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
 
         //for any do
         tmp1 = getString(Tag.anyWC);
@@ -480,6 +508,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("any", tmp2);
+        System.out.println("Any");
+        for(int foo=0;foo <tmp2.length; foo++){
+            System.out.println(tmp2[foo]);
+        }
 
     }
 
@@ -573,6 +605,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		Policy[] x = new Policy [1];
 		x[0] = new Policy ();
 		//x[0].setName("R1Policy");
+        /*
 		x[0].setName("R3.0Policy");
 		x[0].setVersion("V1.0");
 		x[0].setDescription("R3 Release -- 1 Oct, 2005");
@@ -630,6 +663,24 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		// All position factors cannot be 0.
 		if (factor[0].getWeight() == 0.0 && factor[1].getWeight() == 0.0)
 			error("All position factors cannot be 0");
+            */
+        
+		x[0].setName("R4.0Policy");
+		x[0].setVersion("V1.0");
+		x[0].setDescription("R4 Release -- 1 Oct, 2006");
+		x[0].setScoreCalculation("RankingCalculation * SuccessCalculation");
+		x[0].setSuccessCalculation("weatherWeight * weather");
+		x[0].setRankingCalculation("priorityWeight * priority ");
+		PolicyFactor[] factor = new PolicyFactor [2];
+		for (int i = 0; i < factor.length; ++i)
+			factor[i] = new PolicyFactor ();
+		factor[0].setName("weather");
+		factor[0].setDefinition("weather expression evaluation, max = 1.0 min = 0.0");
+		factor[0].setWeight(getDouble(Tag.weightWeather));
+		factor[1].setName("priority");
+		factor[1].setDefinition("the scientific priority, value: 10/9/8/7/6/5/4/3/2/1");
+		factor[1].setWeight(getDouble(Tag.weightPriority));
+		x[0].setFactor(factor);
 		policy = x;
 	}
 
@@ -945,6 +996,11 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             u.setSBName(targetName);
             u.setWeatherConstraintName(weatherCondition);
 			t = new Target (new Equatorial(ra,dec),sizeTargetBox,sizeTargetBox);
+            System.out.println("SB ("+targetName+"): RA="+ra+"; Dec="+dec);
+            System.out.println("SB ("+targetName+"): RA min(rad)="+t.getMin().getRa()+"; Dec min(rad)="+t.getMin().getDec());
+            System.out.println("SB ("+targetName+"): RA min (h)="+t.getMin().getRaInHours()+"; Dec min (deg)="+t.getMin().getDecInDegrees());
+            System.out.println("SB ("+targetName+"): RA max (rad)="+t.getMax().getRa()+"; Dec max (rad)="+t.getMax().getDec());
+            System.out.println("SB ("+targetName+"): RA max (h)="+t.getMax().getRaInHours()+"; Dec max (deg)="+t.getMax().getDecInDegrees());
 			u.setTarget(t);
 			u.setCenterFrequency(frequency);
 			u.setMaximumTimeInSeconds(totalTime);
