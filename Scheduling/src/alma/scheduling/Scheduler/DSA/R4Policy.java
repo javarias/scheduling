@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R4Policy.java,v 1.1 2006/10/20 16:19:34 sslucero Exp $
+ * @version $Id: R4Policy.java,v 1.2 2006/10/20 16:24:53 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R4Policy extends PolicyType {
@@ -599,6 +599,7 @@ class R4Policy extends PolicyType {
 
 	private double weather(SB sb, double el) {
 		double x = 1.0;
+        double baseline=0.0;
 		try {
 			WeatherCondition w = sb.getWeatherConstraint();
             //System.out.println("SB ("+sb.getSBName()+") weather condition "+w.toString());
