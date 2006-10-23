@@ -35,11 +35,24 @@ public class MainSchedTabPane extends JTabbedPane {
     private int overTabIndex;
     private JDesktopPane desktop;
     private Vector<Window> openWindows;
+    private JLabel allSched;
+    private int allSchedInt;
+    private JLabel dynamicSched;
+    private int dynamicSchedInt;
+    private JLabel interactiveSched;
+    private int interactiveSchedInt;
+    private JLabel queuedSched;
+    private int queuedSchedInt;
+
 
     //public MainSchedTabPane(ContainerServices cs){
     public MainSchedTabPane() {//PluginContainerServices cs){
         super(JTabbedPane.TOP);
         setup();
+        allSchedInt =0;
+        dynamicSchedInt =0;
+        interactiveSchedInt =0;
+        queuedSchedInt =0;
     }
 
     public void setup() {
@@ -106,16 +119,20 @@ public class MainSchedTabPane extends JTabbedPane {
         p.setBorder(new TitledBorder("Scheduler Info"));
         //1
         p.add(new JLabel("Active Schedulers"));
-        p.add(new JLabel("0"));
+        allSched= new JLabel(""+allSchedInt);
+        p.add(allSched);
         //2
         p.add(new JLabel("Dynamic Schedulers "));
-        p.add(new JLabel("0"));
+        dynamicSched = new JLabel(""+dynamicSchedInt);
+        p.add(dynamicSched);
         //3
         p.add(new JLabel("Queued Schedulers "));
-        p.add(new JLabel("0"));
+        queuedSched = new JLabel(""+queuedSchedInt);
+        p.add(queuedSched);
         //4
         p.add(new JLabel("Interactive Schedulers "));
-        p.add(new JLabel("0"));
+        interactiveSched = new JLabel(""+interactiveSchedInt);
+        p.add(interactiveSched);        
         return p;
     }
 
@@ -268,6 +285,10 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
                 logger.info("Selected array = "+arrayname);
                 addTab("QS - "+arrayname,createQueuedSchedulingView(arrayname)); 
+                queuedSchedInt++;
+                queuedSched.setText(""+queuedSchedInt);
+                repaint();
+                validate();
                 //System.out.println("added QS, tab count ="+getTabCount());
             }
         });
@@ -300,6 +321,12 @@ public class MainSchedTabPane extends JTabbedPane {
                 } catch(Exception e){
                     e.printStackTrace();
                 }
+                interactiveSchedInt++;
+                interactiveSched.setText(""+interactiveSchedInt);
+                allSchedInt++;
+                allSched.setText(""+allSchedInt);
+                repaint();
+                validate();
             }
         });
         p2.add(b);
@@ -339,6 +366,12 @@ public class MainSchedTabPane extends JTabbedPane {
                     logger.info("SCHEDULING_PANEL: Chosen to cancel DS");
                     return;
                 }
+                dynamicSchedInt++;
+                dynamicSched.setText(""+dynamicSchedInt);
+                allSchedInt++;
+                allSched.setText(""+allSchedInt);
+                repaint();
+                validate();
                 //System.out.println("added DS, tab count ="+getTabCount());
             }
         });
@@ -394,7 +427,6 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
-            /*
             menuItem = new JMenuItem("Disconnect Master Scheduler");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
@@ -535,6 +567,25 @@ public class MainSchedTabPane extends JTabbedPane {
         tab.exit();
         removeRowFromSchedulerTable(tab);
         remove(i);
+        String className=tab.getClass().getName();
+        System.out.println(className);
+        if(className.contains("InteractiveSchedTab")){
+            System.out.println("Closed interactive tab");
+            interactiveSchedInt--;
+            interactiveSched.setText(""+interactiveSchedInt);
+        }else if (className.contains("DynamicSchedTab")) {
+            System.out.println("Closed dynamic tab");
+            dynamicSchedInt--;
+            dynamicSched.setText(""+dynamicSchedInt);
+        }else if (className.contains("QueuedSchedTab")) {
+            System.out.println("Closed queued tab");
+            queuedSchedInt--;
+            queuedSched.setText(""+queuedSchedInt);
+        }
+        allSchedInt--;
+        allSched.setText(""+allSchedInt);
+        repaint();
+        validate();
     }
 
     public void exit() {

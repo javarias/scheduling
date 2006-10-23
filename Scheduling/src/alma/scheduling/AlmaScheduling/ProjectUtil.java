@@ -36,6 +36,7 @@ import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
 import alma.entity.xmlbinding.valuetypes.LongitudeT;
 import alma.entity.xmlbinding.valuetypes.LatitudeT;
 import alma.entity.xmlbinding.valuetypes.VelocityT;
+import alma.entity.xmlbinding.valuetypes.FrequencyT;
 import alma.entity.xmlbinding.valuetypes.DoubleWithUnitT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.entity.xmlbinding.schedblock.FrequencySetupT;
@@ -91,7 +92,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.44 2006/09/28 21:44:05 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.45 2006/10/23 14:07:51 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -730,8 +731,12 @@ public class ProjectUtil {
 	    	//if (freqSetup == null) {
             
             //TODO fix this temporary hack!!
-    			sb.setCenterFrequency(0.0);
-			    sb.setFrequencyBand(new FrequencyBand("TempBand",100, 200));
+            SchedulingConstraintsT constraints = sched.getSchedulingConstraints();
+            FrequencyT freq = constraints.getRepresentativeFrequency();
+  			sb.setCenterFrequency(freq.getContent());
+            FrequencyBand band = getFrequencyBand(freq);
+    	    sb.setFrequencyBand(band); //new FrequencyBand("Band "+band,100, 200));
+            //TargetT t = constraints.getRepresentativeTargeT();
 		    
                 //} else {
 	    	//	sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
@@ -744,6 +749,39 @@ public class ProjectUtil {
         }
 		return sb;
 	}
+    /**
+      * I don't think this can be hard coded.. but it is for now..
+      * TODO double check!
+      *
+      */
+    private static FrequencyBand getFrequencyBand(FrequencyT f) {
+        double content = f.getContent();
+        if( content >= 31.3 && content <=45.0) {
+            return new FrequencyBand(""+1, 31.3, 45.0);
+        } else if (content >=67.0 && content <=90.0){
+            return new FrequencyBand(""+2, 67.0,90.0);
+        } else if (content >=84.0 && content <= 116.0){
+            return new FrequencyBand(""+3, 84.0, 116.0);
+        } else if (content >=125.0 && content < 163.0){
+            return new FrequencyBand(""+4, 125.0, 163.0);
+        } else if (content >=163.0 && content <211.0){
+            return new FrequencyBand(""+5, 160.0,211.0);
+        } else if (content >=211.0 && content < 275.0){
+            return new FrequencyBand(""+6, 211.0, 275.0);
+        } else if (content >=275.0 && content <=373.0){
+            return new FrequencyBand(""+7, 275.0, 373.0);
+        } else if (content >=385.0 && content <= 500.0){
+            return new FrequencyBand(""+8, 385.0, 500.0);
+        } else if (content >=602.0 && content <= 720.0){
+            return new FrequencyBand(""+9, 602.0, 720.0);
+        } else if (content >=787.0 && content <=950.0 ){
+            return new FrequencyBand(""+10, 787.0, 950.0);
+        } else {//should never happen!!!
+            return new FrequencyBand("ERROR",0.0, 0.0);
+        }
+        
+    }
+    
     private static FieldSourceT getFieldSourceFromList(FieldSourceT[] fs, String id){
         for(int i=0; i < fs.length; i++){
             if(fs[i].getEntityPartId().equals(id)){
