@@ -287,6 +287,8 @@ public class MainSchedTabPane extends JTabbedPane {
                 addTab("QS - "+arrayname,createQueuedSchedulingView(arrayname)); 
                 queuedSchedInt++;
                 queuedSched.setText(""+queuedSchedInt);
+                allSchedInt++;
+                allSched.setText(""+allSchedInt);
                 repaint();
                 validate();
                 //System.out.println("added QS, tab count ="+getTabCount());
