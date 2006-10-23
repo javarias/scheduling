@@ -434,7 +434,6 @@ public class MainSchedTabPane extends JTabbedPane {
                 }
             });
             rightClickMenu.add(menuItem);
-            */
         } else {
             menuItem = new JMenuItem("Connect To MasterScheduler");
             menuItem.addActionListener(new ActionListener() {
