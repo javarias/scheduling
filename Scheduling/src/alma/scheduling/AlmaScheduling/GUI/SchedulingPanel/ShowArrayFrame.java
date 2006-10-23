@@ -381,7 +381,7 @@ public class ShowArrayFrame extends JDialog {
     
     //public static String showArraySelectFrame(ContainerServices cs, boolean x) {
     public static String showArraySelectFrame(PluginContainerServices cs, boolean x, String type) {
-        if(!type.equals("queued") || !type.equals("interactive") || !type.equals("dynamic")){
+        if(!type.equals("queued") && !type.equals("interactive") && !type.equals("dynamic")){
             return "";
         } //else{
            // schedulerType = type;
