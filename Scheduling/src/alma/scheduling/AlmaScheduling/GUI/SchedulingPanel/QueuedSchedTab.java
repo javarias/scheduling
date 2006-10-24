@@ -228,6 +228,9 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         sbTable.setToolTipText("Hold the ctrl key down to select multiple SBs");
         sbTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         ((DefaultTableCellRenderer)sbTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        if( sbRowInfo.length == 1){
+            sbTable.getSelectionModel().setSelectionInterval(0,0);
+        }        
         //manageTableColumnSize();//sbTable, sbRowInfo.length);
     }
 
@@ -245,6 +248,9 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         //queueTable.setToolTipText("Hold the ctrl key down to select multiple SBs");
         queueTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         ((DefaultTableCellRenderer)queueTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        //if( queueRowInfo.length == 1){
+        //    queueTable.getSelectionModel().setSelectionInterval(0,0);
+        //}
     }
 
 
@@ -551,6 +557,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             masterScheduler.destroyArray(arrayname);
         }catch(Exception e){
             e.printStackTrace();
+            logger.warning("QUEUED_SP: Problem destroying array, could already have been destroyed");
+
         }
         try{
             container.releaseComponent(masterScheduler.name());

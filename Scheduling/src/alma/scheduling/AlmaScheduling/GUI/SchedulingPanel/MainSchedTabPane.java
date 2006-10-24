@@ -63,6 +63,7 @@ public class MainSchedTabPane extends JTabbedPane {
         addTab("Main",createMainView());
         //System.out.println("added main, tab count ="+getTabCount());
         super.setUI(new SchedTabUI());
+        //addTab("test",createMainView());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
                 logger.info("in close operation");
@@ -568,23 +569,23 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
     private void closeTab(int i) {
-        logger.info("in close tab");
+        //logger.info("in close tab");
         SchedulerTab tab = (SchedulerTab)getComponentAt(i);
         tab.exit();
         removeRowFromSchedulerTable(tab);
         remove(i);
         String className=tab.getClass().getName();
-        System.out.println(className);
+        //System.out.println(className);
         if(className.contains("InteractiveSchedTab")){
-            System.out.println("Closed interactive tab");
+            //System.out.println("Closed interactive tab");
             interactiveSchedInt--;
             interactiveSched.setText(""+interactiveSchedInt);
         }else if (className.contains("DynamicSchedTab")) {
-            System.out.println("Closed dynamic tab");
+            //System.out.println("Closed dynamic tab");
             dynamicSchedInt--;
             dynamicSched.setText(""+dynamicSchedInt);
         }else if (className.contains("QueuedSchedTab")) {
-            System.out.println("Closed queued tab");
+            //System.out.println("Closed queued tab");
             queuedSchedInt--;
             queuedSched.setText(""+queuedSchedInt);
         }

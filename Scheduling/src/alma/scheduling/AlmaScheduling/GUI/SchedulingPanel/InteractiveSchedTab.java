@@ -350,6 +350,11 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                 loginToInteractiveScheduling();
             }
         });
+        projTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        if( projRowInfo.length == 1){
+            projTable.getSelectionModel().setSelectionInterval(0,0);
+            showProjectInfo();
+        }        
         JPanel p2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         p2.add(b);
         tableDisplayPanel.add(p2, BorderLayout.SOUTH);
@@ -427,12 +432,17 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             public void mousePressed(MouseEvent e){ }
             public void mouseReleased(MouseEvent e){}
         });
-        JScrollPane sbListPane = new JScrollPane(sbTable);
-        JPanel p = new JPanel();
-        p.add(sbListPane);
+        sbTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         try {
             tableDisplayPanel.removeAll();
         } catch(Exception e) {/*don't care if it complains*/}
+        if( sbRowInfo.length == 1){
+            sbTable.getSelectionModel().setSelectionInterval(0,0);
+            showSBInfo();
+        }
+        JScrollPane sbListPane = new JScrollPane(sbTable);
+        JPanel p = new JPanel();
+        p.add(sbListPane);
         tableDisplayPanel.add(p);
         validate();
     }
@@ -580,6 +590,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         JScrollPane pane = new JScrollPane(info);
         selectionDetailPanel.add(pane);
+        selectionDetailPanel.repaint();
         validate();
     }
     
@@ -776,7 +787,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         try {
             masterScheduler.destroyArray(arrayname);
         }catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
+            logger.warning("INTERACTIVE_SP: Problem destroying array, could already have been destroyed");
         }
         try{
             disconnectFromArchive();
@@ -786,7 +798,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                 ot=null;
             }
         } catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         releaseComponents();
         logger.info("Exiting Interactive Scheduler on array "+arrayname);

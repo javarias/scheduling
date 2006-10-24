@@ -14,6 +14,7 @@ import alma.scheduling.ArrayInfo;
 import alma.scheduling.SchedulingInfo;
 import alma.scheduling.MasterSchedulerIF;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.Control.ArrayMonitor;
 
 public class ShowArrayFrame extends JDialog {
 
@@ -37,7 +38,7 @@ public class ShowArrayFrame extends JDialog {
     //this is used if the ShowArrayFrame pops up for the user to select
     // an array for a given scheduler, array has to match scheduler type
     private static String schedulerType=null;; 
-    
+    private ArrayMonitor arrayMonitor;
     public ShowArrayFrame(PluginContainerServices cs, boolean b) {
     //public ShowArrayFrame(ContainerServices cs, boolean b) {
         super();
@@ -100,6 +101,10 @@ public class ShowArrayFrame extends JDialog {
         });
         //manageTableColumnSize();
         //((DefaultTableCellRenderer)arrayTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        if(arrayRowInfo.length == 1){
+             arrayTable.getSelectionModel().setSelectionInterval(0,0);
+             addArrayDetails();
+        }
         JScrollPane pane = new JScrollPane(arrayTable);
         centerDisplayPanel.add(pane, BorderLayout.NORTH);
         return centerDisplayPanel;
@@ -204,6 +209,12 @@ public class ShowArrayFrame extends JDialog {
                     s = s+ "Current SB: "+a_info.SBName+"\n";
                     s = s+ "Completion Time: "+a_info.completionTime+"\n";
                     s = s+ "Comment: "+a_info.comment+"\n";
+                    s = s+ "Antennas:\n";
+                    String[] ants = getAntennaNames(a_info.arrayName);
+                    for(int x=0; x < ants.length; x++){
+                        s = s +" - "+ants[x]+"\n";
+                    }
+                    
                 }
             }
         } catch (Exception e){
@@ -212,6 +223,19 @@ public class ShowArrayFrame extends JDialog {
             s = s+ "Best action is to destroy the array and re-create it. \n";
         }
         return s;
+    }
+
+    private String[] getAntennaNames(String arrayName) {
+        String[] ants= new String[0];
+        try {
+            ArrayMonitor mon = alma.Control.ArrayMonitorHelper.narrow(
+                    container.getComponent(arrayName));
+            ants = mon.getAntennas();
+            container.releaseComponent(mon.name());
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return ants;
     }
 
     private String getArrayModeString(ArrayModeEnum e){

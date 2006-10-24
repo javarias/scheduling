@@ -9,8 +9,8 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import com.sun.java.swing.plaf.windows.WindowsIconFactory;
 
 public class SchedTabUI extends BasicTabbedPaneUI {
-    protected static final int BUTTONSIZE = 15;
-    protected static final int WIDTHDELTA = 5;
+    protected static final int BUTTONSIZE = 12;
+    protected static final int WIDTHDELTA = 3;
     private BufferedImage img;
     private BufferedImage img1;
     private JButton closeB;
@@ -21,8 +21,7 @@ public class SchedTabUI extends BasicTabbedPaneUI {
     public SchedTabUI(){
         super();
         img = new BufferedImage(BUTTONSIZE, BUTTONSIZE, BufferedImage.TYPE_4BYTE_ABGR);
-        //img1 = new BufferedImage(BUTTONSIZE, BUTTONSIZE, BufferedImage.TYPE_4BYTE_ABGR);
-        closeB = new JButton(WindowsIconFactory.createFrameCloseIcon());
+        closeB = new JButton();//"X");//WindowsIconFactory.createFrameCloseIcon());
         closeB.setSize(BUTTONSIZE-1, BUTTONSIZE-1);
         closeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -74,9 +73,8 @@ public class SchedTabUI extends BasicTabbedPaneUI {
         Font font = tabPane.getFont();
         FontMetrics metrics = g.getFontMetrics(font);
         Icon icon = getIconForTab(tabIndex);
-        layoutLabel(tabPlacement, metrics, tabIndex, title, icon, tabRect,
-
-            iconRect, textRect, isSelected);
+        layoutLabel(tabPlacement, metrics, tabIndex, title, icon, 
+            tabRect,iconRect, textRect, isSelected);
 
         paintText(g, tabPlacement, font, metrics, tabIndex, title, textRect,
             isSelected);
@@ -88,8 +86,14 @@ public class SchedTabUI extends BasicTabbedPaneUI {
         int dx = tabRect.x + tabRect.width - BUTTONSIZE - WIDTHDELTA;
         int dy = (tabRect.y + tabRect.height) / 2 - 6;
         if(!title.equals("Main")) {
+            //closeB.setFont(new Font("Ariel",Font.PLAIN, 2));
+            //closeB.setText("X");
+            closeB.setBackground(Color.red);
+            //paint the button on to the img
             closeB.paint(img.getGraphics());    
+            //paint the img onto the graphics of the tab
             g.drawImage(img, dx-1, dy-1, null);
+
         }
     }
 
