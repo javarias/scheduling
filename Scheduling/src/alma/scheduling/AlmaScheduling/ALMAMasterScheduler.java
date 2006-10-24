@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.72 2006/10/23 14:07:51 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.73 2006/10/24 14:48:43 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1155,7 +1155,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             ((InteractiveScheduler)scheduler).delete(sbId);
         } catch(Exception e) {
-            InvalidOperation e1 = new InvalidOperation("startInteractiveSession",
+            e.printStackTrace();
+            InvalidOperation e1 = new InvalidOperation("deleteInteractiveSB",
                    e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
@@ -1173,9 +1174,12 @@ public class ALMAMasterScheduler extends MasterScheduler
             for(int i=0; i < sbs.length; i++){
                 sbs[i].setType(SB.INTERACTIVE);
             }
+
+            ((InteractiveScheduler)scheduler).getConfiguration().getQueue().clear();
             ((InteractiveScheduler)scheduler).getConfiguration().getQueue().add(sbs);
             ((InteractiveScheduler)scheduler).login(pi, projectId, sbs[0]);
         } catch(Exception e) {
+            e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("startInteractiveSession",
                    e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -1191,6 +1195,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             ((InteractiveScheduler)scheduler).logout();
         }catch(Exception e){
+            e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("endInteractiveSession",
                    e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);

@@ -547,6 +547,11 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
 
     public void exit() {
         logger.info("EXIT IN QS");
+        try {
+            masterScheduler.destroyArray(arrayname);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         try{
             container.releaseComponent(masterScheduler.name());
             if(thread != null) {

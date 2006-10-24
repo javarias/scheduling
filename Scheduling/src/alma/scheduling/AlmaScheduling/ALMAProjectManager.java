@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.73 2006/10/23 14:07:51 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.74 2006/10/24 14:48:44 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -254,7 +254,7 @@ public class ALMAProjectManager extends ProjectManager {
             logger.info("SCHEDULING: This sb ("+completed.getId()+") has an indefinite repeat count");
             try {
 	            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
-                logger.info("completed sb now has status = "+completed.getStatus().getStatus());
+                logger.info("SCHEDULING: indefinite-repeat sb keeps status = "+completed.getStatus().getStatus());
             }catch (Exception e){ 
 		        logger.severe(e.toString());
     	    }
@@ -262,19 +262,19 @@ public class ALMAProjectManager extends ProjectManager {
         }
         
         if( (completed.getNumberExec() +1) > completed.getMaximumNumberOfRepeats()  ){
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
             logger.info("###########set to complete####");
             logger.info("Setting end time for "+eb.getId());
-            logger.info(" # exec = "+completed.getNumberExec());
-            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.info("Total# executions done = "+completed.getNumberExec());
+            logger.info("Total allowed executions = "+completed.getMaximumNumberOfRepeats());
             logger.info("#################################");
-            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
         } else { //set it to ready
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
             logger.info("##########set to ready###########");
             logger.info("Setting end time for "+eb.getId());
-            logger.info(" # exec = "+completed.getNumberExec());
-            logger.info(" # repeats = "+completed.getMaximumNumberOfRepeats());
+            logger.info("Total # executions done = "+completed.getNumberExec());
+            logger.info("Total allowed executions = "+completed.getMaximumNumberOfRepeats());
             logger.info("#################################");
-            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
     }

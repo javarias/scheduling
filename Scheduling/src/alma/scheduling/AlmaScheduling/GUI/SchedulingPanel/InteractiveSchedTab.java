@@ -124,6 +124,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                         "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             scheduler = alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
                     container.getComponent(schedulername));
+            connectToArchive();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -727,8 +728,13 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
     private void logoutOfProject(){
-        setToNull();
+        //setToNull();
         sessionStarted = false;
+        try {
+            scheduler.endSession();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
 //////////////////////////////////////
@@ -773,7 +779,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             e.printStackTrace();
         }
         try{
-            //disconnectFromArchive();
+            disconnectFromArchive();
             consumer.disconnect();
             if(openot_thread !=null){
                 openot_thread=null;
@@ -787,7 +793,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
     }
 
 ///////////////////////////////////////     
-    /*
+    
     private void connectToArchive() throws SchedulingException {
         try{
             archiveConnection = alma.xmlstore.ArchiveConnectionHelper.narrow(
@@ -812,7 +818,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         
     }
-    */
+    
 ///////////////////////////////////////     
 
     public void receive(XmlStoreNotificationEvent event) {

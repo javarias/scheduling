@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.12 2006/08/16 13:25:15 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.13 2006/10/24 14:48:44 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -247,15 +247,14 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (config.isSBExecuting()) {
 			error("Connot logout.  There is a scheduling block executing.");
 		}
-		queue = null;
-		sessionStarted = false;
-		PI = null;
-		projectId = null;
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " ended.";
 		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 		config.normalEnd(clock.getDateTime());
+		sessionStarted = false;
+		PI = null;
+		projectId = null;
 	}
 
 	// Getting, adding, updating, and deleting SBs.
@@ -349,6 +348,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");
 		}
+        logger.info("INTERACTIVE_SCHEDULER: About to get "+sbId+" from queue");
 		SB sb = queue.get(sbId);
 		if (sb == null) {
 			error("Cannot execute SB " + sbId + ". It does not exist.");
@@ -368,8 +368,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
             sb.setStartTime(clock.getDateTime());
         }
         sb.setRunning();
-        logger.info("############### SB's status = "+sb.getStatus().toString());
-        logger.info("############### SB's starttime = "+sb.getStatus().getStartTime());
+//logger.info("############### SB's status = "+sb.getStatus().toString());
+  //      logger.info("############### SB's starttime = "+sb.getStatus().getStartTime());
+        logger.info("INTERACTIVE_SCHEDULER: Sending sb("+best.getBestSelection()+", status:"+sb.getStatus().toString()+") to control at time="+sb.getStatus().getStartTime());
 		control.execSB(config.getArrayName(),best);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 

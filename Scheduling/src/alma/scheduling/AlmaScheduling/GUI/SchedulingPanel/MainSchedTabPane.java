@@ -43,12 +43,14 @@ public class MainSchedTabPane extends JTabbedPane {
     private int interactiveSchedInt;
     private JLabel queuedSched;
     private int queuedSchedInt;
+    private int msCounter;
 
 
     //public MainSchedTabPane(ContainerServices cs){
     public MainSchedTabPane() {//PluginContainerServices cs){
         super(JTabbedPane.TOP);
         setup();
+        msCounter = 0;
         allSchedInt =0;
         dynamicSchedInt =0;
         interactiveSchedInt =0;
@@ -78,7 +80,6 @@ public class MainSchedTabPane extends JTabbedPane {
         }
         logger.info("SCHEDULING_PANEL: in second setup for SP.");
         createRightClickMenu();
-        //getMSRef();
     }
 
     private void getMSRef(){
@@ -88,6 +89,7 @@ public class MainSchedTabPane extends JTabbedPane {
                     container.getDefaultComponent(
                         "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             logger.info("SCHEDULING_PANEL: Got MS");
+            msCounter++;
         } catch (Exception e) {
             //logger.info("SCHEDULING_PANEL: failed to get MS reference, "+e.toString());
             //e.printStackTrace();
@@ -98,7 +100,10 @@ public class MainSchedTabPane extends JTabbedPane {
     private void releaseMSRef(){
         if(masterScheduler != null){
             container.releaseComponent(masterScheduler.name());
-            masterScheduler = null;
+            msCounter--;
+            if(msCounter == 0) {
+                masterScheduler = null;
+            }
         }
         createRightClickMenu();
     }

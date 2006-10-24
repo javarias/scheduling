@@ -96,6 +96,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         try {
             masterScheduler.startInteractiveSession(piId, projectId, schedulerId);
         }catch(Exception e){
+            e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("startSession",e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
