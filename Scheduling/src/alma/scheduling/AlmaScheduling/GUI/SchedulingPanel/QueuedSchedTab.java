@@ -98,7 +98,8 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
         mainPanel.add(createQueryView());
         mainPanel.add(createDisplayAllSB());
-        mainPanel.add(createDetailDisplayView());
+        infoPanel = createDetailDisplayView();
+        mainPanel.add(infoPanel);
         mainPanel.add(createQueueListView());
         manageTableColumnSize();
    //     return mainPanel;
@@ -223,6 +224,16 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
             public void setValueAt(Object val, int row, int col) { sbRowInfo[row][col]= val; }
         };
         sbTable = new JTable(sbTableModel);
+        sbTable.addMouseListener(new MouseListener(){
+            public void mouseClicked(MouseEvent e) {
+                showSBInfo();
+            }
+            public void mouseEntered(MouseEvent e){ }
+            public void mouseExited(MouseEvent e){ }
+            public void mousePressed(MouseEvent e){ }
+            public void mouseReleased(MouseEvent e){}
+        });
+
         sbTable.doLayout();
         sbTable.setPreferredScrollableViewportSize(new Dimension(200,75));
         sbTable.setToolTipText("Hold the ctrl key down to select multiple SBs");
@@ -230,6 +241,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         ((DefaultTableCellRenderer)sbTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         if( sbRowInfo.length == 1){
             sbTable.getSelectionModel().setSelectionInterval(0,0);
+            showSBInfo();
         }        
         //manageTableColumnSize();//sbTable, sbRowInfo.length);
     }
@@ -253,7 +265,90 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         //}
     }
 
+    private void showSBInfo(){
+        try {
+            infoPanel.removeAll();
+        } catch(Exception e) { /*dont' care if it complains */ }
+        
+        if(!checkSomethingSelected()){
+            return;
+        }
+        if(!checkOneSelected()){
+            return;
+        }
+         
+        int row = sbTable.getSelectedRow();
+        String id =(String)sbRowInfo[row][3];
+        JTextArea info = new JTextArea();
+        info.setEditable(false);
+        SBLite sb = getSBLiteForId(id);
+        try{
+            info.append("SB Name: "+sb.sbName+"\n");
+            info.append("Priority: "+sb.priority+"\n");
+            info.append("RA: "+sb.ra+"\n");
+            info.append("DEC: "+sb.dec+"\n");
+            info.append("Frequency: "+sb.freq+"\n");
+            info.append("Score: "+sb.score+"\n");
+            info.append("Success: "+sb.success+"\n");
+            info.append("Rank: "+sb.rank+"\n");
+        } catch(Exception e){
+            info.append("Problem getting SB's info.\n");
+            info.append(e.toString()+"\n");
+        }
+        JScrollPane pane = new JScrollPane(info);
+        infoPanel.add(pane);
+        infoPanel.repaint();
+        validate();
+    }
 
+    private SBLite getSBLiteForId(String id) {
+        for(int i=0; i< sblites.length; i++){
+            if(sblites[i].schedBlockRef.equals(id) ){
+                return sblites[i];
+            }
+        }
+        return null;
+    }
+
+    private boolean hasSearchBeenDone(){
+        if(sbTable == null) {
+            return false;
+        }
+        return true;
+    }
+    private boolean checkSomethingSelected() {
+        if(!hasSearchBeenDone()){
+            JOptionPane.showMessageDialog(this,
+                "Do a search first!",
+                "Nothing Searched", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        int[] rows = sbTable.getSelectedRows();
+        if(rows.length ==0 ) {
+            JOptionPane.showMessageDialog(this,
+                "Select one!",
+                "Nothing Selected", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+    private boolean checkOneSelected(){
+        if(!hasSearchBeenDone()){
+            JOptionPane.showMessageDialog(this,
+                "Do a search first!",
+                "Nothing Searched", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        int[] rows = sbTable.getSelectedRows();
+        if(rows.length > 1) {
+            JOptionPane.showMessageDialog(this,
+                "Select only one.",
+                "Too Many Selected", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+    
 
     private void manageTableColumnSize(){//JTable t, int rows) {
         TableColumn column;
@@ -556,7 +651,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         try {
             masterScheduler.destroyArray(arrayname);
         }catch(Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             logger.warning("QUEUED_SP: Problem destroying array, could already have been destroyed");
 
         }

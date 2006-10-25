@@ -61,6 +61,7 @@ public class ShowArrayFrame extends JDialog {
         selectedArray="";
         addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e){
+                getArrays();
                 addArrayDetails();
             }
             public void focusLost(FocusEvent e){}
@@ -84,6 +85,7 @@ public class ShowArrayFrame extends JDialog {
         //arrayTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         arrayTable.addFocusListener(new FocusListener(){
             public void focusGained(FocusEvent e){
+                getArrays();
                 addArrayDetails();
             }
             public void focusLost(FocusEvent e){
@@ -92,6 +94,7 @@ public class ShowArrayFrame extends JDialog {
         });
         arrayTable.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
+                getArrays();
                 addArrayDetails();
             }
             public void mouseEntered(MouseEvent e){ }
@@ -101,10 +104,6 @@ public class ShowArrayFrame extends JDialog {
         });
         //manageTableColumnSize();
         //((DefaultTableCellRenderer)arrayTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-        if(arrayRowInfo.length == 1){
-             arrayTable.getSelectionModel().setSelectionInterval(0,0);
-             addArrayDetails();
-        }
         JScrollPane pane = new JScrollPane(arrayTable);
         centerDisplayPanel.add(pane, BorderLayout.NORTH);
         return centerDisplayPanel;
@@ -136,7 +135,8 @@ public class ShowArrayFrame extends JDialog {
         getArrays();
     }
     private void addArrayDetails(){
-        getArrays();
+        //System.out.println("Adding array details");
+        //getArrays();
         int row = arrayTable.getSelectedRow();
         arrayDisplayPanel = new JPanel();
         if(row<0){
@@ -188,6 +188,10 @@ public class ShowArrayFrame extends JDialog {
             //manageTableColumnSize();
             arrayTable.repaint();
             arrayTable.revalidate();
+            if(arrayRowInfo.length == 1){
+                 arrayTable.getSelectionModel().setSelectionInterval(0,0);
+                 addArrayDetails();
+            }
             validate();
         } catch(Exception e){
             e.printStackTrace();
