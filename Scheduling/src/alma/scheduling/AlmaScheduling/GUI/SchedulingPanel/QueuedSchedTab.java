@@ -492,7 +492,7 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         try {
             mainPanel.removeAll();
         } catch(Exception e){}
-        mainPanel.setLayout(new GridLayout(2, 1));
+        mainPanel.setLayout(new GridLayout(4, 1));
         mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
         queueListPanel = new JPanel(new BorderLayout());
         queueListPanel.setBorder(new TitledBorder("Scheduler's SBs"));

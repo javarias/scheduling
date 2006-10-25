@@ -226,17 +226,17 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
     private void takeIdFromSBsNotDone(String id) {
         logger.info("QS: Take sb ("+id+") out of list o run");
         logger.info("inital list len = "+sbsNotDone.length);
-        String[] newIdList= new String[1];
-
-        for(int i=0; i < sbsNotDone.length;i++){
-            if(sbsNotDone[i].equals(id)){
-                newIdList = new String[sbsNotDone.length -1];
-                int ctr = 0;
-                for(int j=0; j< sbsNotDone.length; j++){
-                    if(j != i){
-                        newIdList[ctr++] = sbsNotDone[j]; 
-                    }
-                }
+        String[] newIdList= new String[sbsNotDone.length -1];
+        boolean flag=false;
+        int ctr=0;
+        for(int i=0; i < sbsNotDone.length; i++){
+            if(!sbsNotDone[i].equals(id)) {
+                newIdList[ctr++] = sbsNotDone[i]; 
+            } else if(sbsNotDone[i].equals(id) && !flag) { //flag used incase sb is submitted more than once
+                flag = true; //means we're removing the first occurance of this sb
+            } else if(sbsNotDone[i].equals(id) && flag){
+                //means we're not removing a second/third/etc occurance of this sb.
+                newIdList[ctr++] = sbsNotDone[i]; 
             }
         }
         if(newIdList != null) {
@@ -274,6 +274,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
                 if(executeSBs()) {
                     break;
                 }
+                Thread.sleep(30);
             }
             config.getProjectManager().publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
             config.getControl().destroyArray(config.getArrayName());

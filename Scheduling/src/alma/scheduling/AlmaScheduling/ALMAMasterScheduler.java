@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.73 2006/10/24 14:48:43 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.74 2006/10/25 22:33:57 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -380,6 +380,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     telescope, manager, policy, logger);
                     //ALMASchedulingUtility.getMasterSchedulerThread(), dynamic, 
         } else {
+            logger.info("SCHEDULING: creating scheduler configuration with "+((SBQueue)sbs).size()+" sbs");
      
             return new SchedulerConfiguration(
                     Thread.currentThread(), dynamic, //synchronous, (SBQueue)sbs, 

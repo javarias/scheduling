@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.74 2006/10/24 14:48:44 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.75 2006/10/25 22:33:57 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -192,9 +192,11 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public SBQueue mapQueuedSBsToProjects(String[] sbs) {
         SBQueue queuedSBs= new SBQueue();
+        logger.info("number of sbs to be queued = "+sbs.length);
         for (int i=0; i < sbs.length; i++){
             queuedSBs.add(sbQueue.get(sbs[i]));
         }
+        logger.info("number of sbs in queue = "+queuedSBs.size());
         return queuedSBs;
     }
     

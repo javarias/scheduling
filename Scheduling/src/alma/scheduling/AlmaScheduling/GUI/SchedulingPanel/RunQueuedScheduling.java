@@ -31,7 +31,7 @@ public class RunQueuedScheduling implements Runnable {
             }
         } catch(Exception e){
             e.printStackTrace();
-            logger.severe("Error in RunQueuedScheduling: "+e.toString());
+            logger.severe("RUN_QUEUED_SCHEDULING: Error in RunQueuedScheduling: "+e.toString());
         }
     }
     private void releaseMSRef(){
@@ -42,21 +42,21 @@ public class RunQueuedScheduling implements Runnable {
             }
         } catch(Exception e){
             e.printStackTrace();
-            logger.severe("Error in RunQueuedScheduling: "+e.toString());
+            logger.severe("RUN_QUEUED_SCHEDULING: Error in RunQueuedScheduling: "+e.toString());
         }
     }
 
     public void run() {
         if(masterScheduler == null) {
-            System.out.println("NO Connection to MasterScheduler. Cannot schedule");
+            logger.warning("RUN_QUEUED_SCHEDULING: NO Connection to MasterScheduler. Cannot schedule");
             return;
         }
         try {
             masterScheduler.startQueuedScheduling(sb_ids, arrayname);
         } catch(Exception e) {
             releaseMSRef();
-            e.printStackTrace();
-            logger.severe("Error in RunQueuedScheduling: "+e.toString());
+            //e.printStackTrace();
+            logger.severe("RUN_QUEUED_SCHEDULING: Error in RunQueuedScheduling: "+e.toString());
         }
     }
     
@@ -65,7 +65,7 @@ public class RunQueuedScheduling implements Runnable {
             releaseMSRef();
         } catch (Exception e){
             e.printStackTrace();
-            logger.severe("Error in RunQueuedScheduling: "+e.toString());
+            logger.severe("RUN_QUEUED_SCHEDULING: Error in RunQueuedScheduling: "+e.toString());
         }
     }
 }

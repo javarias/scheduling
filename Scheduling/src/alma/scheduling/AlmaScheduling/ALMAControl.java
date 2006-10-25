@@ -54,7 +54,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.48 2006/09/18 13:41:18 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.49 2006/10/25 22:33:57 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -135,6 +135,7 @@ public class ALMAControl implements Control {
             sbRef.partId = "";
             sbRef.entityTypeName = "SchedBlock";
             sbRef.instanceVersion = "1.0";
+            //logger.info("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
             ctrl.observe(sbRef, sessionRef, 0L); 
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
@@ -152,6 +153,7 @@ public class ALMAControl implements Control {
         try {
             String[] all = getAllAutomaticArrays();
             for(int i=0; i < all.length; i++){
+
                 //getAutomaticArray(all[i]).stop();
             }
         } catch(Exception e) {
