@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     almatype="APDM::SchedBlock" xsi:type="SchedBlock">
     <ns1:status xmlns:ns1="Alma/ObsPrep/ObsProject">READY</ns1:status>
-    <ns2:name xmlns:ns2="Alma/ObsPrep/ObsProject">trcOP.scat.6.polar.stars.bright</ns2:name>
+    <ns2:name xmlns:ns2="Alma/ObsPrep/ObsProject">sb1</ns2:name>
     <ns3:ObsUnitControl xmlns:ns3="Alma/ObsPrep/ObsProject"
         almatype="APDM::ObsUnitControl" arrayRequested="ALMAMain">
         <ns3:maximumTime unit="sec">3600.0</ns3:maximumTime>
@@ -25,6 +25,8 @@
         entityTypeName="SchedBlock" schemaVersion="1"
         documentVersion="1" timestamp="2006-08-14T16:56:46.221"/>
     <standardMode>true</standardMode>
+    <modeType>Observing</modeType>
+    <modeName>SingleFieldInterferometry</modeName>
     <OpticalCameraSpec almatype="APDM::OpticalCameraSpec"
         entityPartId="1152548792442/341322 2961012348" filter="night">
         <name>trcOP.scat.6.polar.stars.bright</name>
@@ -222,18 +224,7 @@ array = getArray()
 purpose = Control.POINTINGMODEL
 array.beginScan([purpose])
 
-angle01 = asdmIDLTypes.IDLAngle(1.0)
-temp01 = asdmIDLTypes.IDLTemperature(180.0)
-
-
-def getACSTime():
-   return int(time.time() * 10e7 + acstime.ACE_BEGIN)
-
 array.beginSubscan(None, None, None)
-
-startTime = getACSTime()
-# endTime = startTime + 1 min.
-endTime = startTime + int(6e9)
 
 time.sleep(10)
 

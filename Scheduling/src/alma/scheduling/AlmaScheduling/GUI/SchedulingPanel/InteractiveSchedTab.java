@@ -795,6 +795,10 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         }
         try{
             disconnectFromArchive();
+            logger.info("About to release "+scheduler.name());
+            masterScheduler.stopInteractiveScheduler(scheduler.name());
+            container.releaseComponent(schedulername);
+            container.releaseComponent(masterScheduler.name());
             consumer.disconnect();
             if(openot_thread !=null){
                 openot_thread=null;

@@ -30,5 +30,5 @@ archiveWebServicesStart &> archiveWebServicesStart.log
 archiveStart &> sched_archiveStart.log &
 
 #archiveCleanTest &> archiveClean.log
-archiveLoadSchema $ACSROOT/idl $INTROOT/idl $MODROOT/idl &> archiveLoadSchema.log &
+#archiveLoadSchema $ACSROOT/idl $INTROOT/idl $MODROOT/idl &> archiveLoadSchema.log &
 sleep 30
