@@ -492,13 +492,13 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         try {
             mainPanel.removeAll();
         } catch(Exception e){}
-        mainPanel.setLayout(new GridLayout(4, 1));
+        mainPanel.setLayout(new GridLayout(2, 1));
         mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
         queueListPanel = new JPanel(new BorderLayout());
         queueListPanel.setBorder(new TitledBorder("Scheduler's SBs"));
         createQueueTableModel();
         queueScrollPane = new JScrollPane(queueTable);
-        System.out.println(queueRowInfo.length);
+        //System.out.println(queueRowInfo.length);
         JPanel p = new JPanel();
         p.add(queueScrollPane);
         queueListPanel.add(p, BorderLayout.CENTER);
@@ -513,13 +513,14 @@ public class QueuedSchedTab extends JScrollPane implements SchedulerTab {
         mainPanel.add(queueListPanel);
         //execution log window.
         statusDisplayPanel = new JPanel(new GridLayout(1,1));
-        statusDisplayTA = new JTextArea(40,40);
+        statusDisplayTA = new JTextArea(15,15);
         statusDisplayTA.setLineWrap(true);
         statusDisplayTA.setEditable(false); //read only log!
         JScrollPane sp = new JScrollPane(statusDisplayTA);
         statusDisplayPanel.add(sp);
         mainPanel.add(statusDisplayPanel);
         mainPanel.validate();
+
     }
 
     private void startQueuedScheduler() {

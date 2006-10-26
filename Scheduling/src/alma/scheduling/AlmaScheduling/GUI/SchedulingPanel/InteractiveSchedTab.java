@@ -599,7 +599,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
             buttonPanel.removeAll();
         } catch(Exception e) {/*dont' care if it complains */}
         JPanel p = new JPanel(new GridLayout(2,1));
-        JPanel p1 = new JPanel(new GridLayout(2,2));
+        JPanel p1 = new JPanel(new GridLayout(1,2));
         JButton b = new JButton("Execute");
         b.setToolTipText("Sends the highlighted SB to be executed.");
         b.addActionListener(new ActionListener(){
@@ -616,6 +616,8 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                 }
         });
         p1.add(b);
+        /* Took out for now.
+           TODO something...?
         b = new JButton("Modify");
         b.setToolTipText("Opens the ALMA-OT");
         b.addActionListener(new ActionListener(){
@@ -632,6 +634,7 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
                 }
         });
         p1.add(b);
+        */
         JPanel p2 = new JPanel();
         b = new JButton("Search Again");
         b.setToolTipText("Logs out of this project and returns to search screen.");
