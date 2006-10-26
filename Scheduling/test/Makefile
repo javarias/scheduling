@@ -1,7 +1,7 @@
 #*******************************************************************************
 # NRAO
 #
-# "@(#) $Id: Makefile,v 1.9 2006/10/20 15:38:45 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.10 2006/10/26 19:40:08 sslucero Exp $"
 #
 # Makefile of ........
 #
@@ -22,7 +22,8 @@
 SCRIPTS         = 
 SCRIPTS_L       = prologue allTests runSim testPublisher testStartSched epilogue \
                   testStoreSpecialSB startUpALMA stopALMA testSchedControl\
-                  testQueuedScheduling testEndToEnd testProjectStatus testALMAArchive
+                  testQueuedScheduling testEndToEnd testProjectStatus 
+#testALMAArchive
 
 # Python scripts (local)
 PY_SCRIPTS_L = checkALMAoperational 

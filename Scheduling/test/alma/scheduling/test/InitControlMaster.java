@@ -363,7 +363,8 @@ public class InitControlMaster extends ComponentClientTestCase {
 //            devConfigs[0].UniqueIdentifier = "Generic";
 
             // Pass the DeviceConfig structure to the Master.
-            m_master.fillAntennaTables((short) 1, devConfigs, false);
+            //set to true to not access RT stuuff
+            m_master.fillAntennaTables((short) 1, devConfigs, true);
 
             // Initialize the Master component.
             m_master.startupPass1();

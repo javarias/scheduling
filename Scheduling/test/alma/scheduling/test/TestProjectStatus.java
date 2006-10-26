@@ -109,6 +109,11 @@ public class TestProjectStatus extends ComponentClientTestCase {
         //get orig project
         Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
         assertNotNull(project1);
+        SB[] foos = project1.getAllSBs();
+        /*
+        for(int i=0;i< foos.length; i++) {
+            System.out.println("RA: "+foos[i].getTarget().getCenter().getRa());
+        }*/
 
         //get orig PS
         ps = ProjectUtil.map(project1, datetime);
