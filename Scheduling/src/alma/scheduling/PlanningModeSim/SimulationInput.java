@@ -412,10 +412,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("exceptional", tmp2);
-        System.out.println("Exceptional");
+        /*System.out.println("Exceptional");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
-        }
+        }*/
         //for excellent do
         tmp1 = getString(Tag.excellentWC);
         st = new StringTokenizer(tmp1,";");
@@ -425,10 +425,11 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("excellent", tmp2);
+        /*
         System.out.println("Excellent");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
-        }
+        }*/
         //for good do
         tmp1 = getString(Tag.goodWC);
         st = new StringTokenizer(tmp1,";");
@@ -438,11 +439,12 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("good", tmp2);
+        /*
         System.out.println("good");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
         }
-        
+        */
         //for average do
         tmp1 = getString(Tag.averageWC);
         st = new StringTokenizer(tmp1,";");
@@ -452,11 +454,11 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("average", tmp2);
-        System.out.println("average");
+        /*System.out.println("average");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
         }
-
+*/
         //for below average do
         tmp1 = getString(Tag.belowaverageWC);
         st = new StringTokenizer(tmp1,";");
@@ -466,11 +468,12 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("belowaverage", tmp2);
+        /*
         System.out.println("below average");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
         }
-
+*/
         //for poor do
         tmp1 = getString(Tag.poorWC);
         st = new StringTokenizer(tmp1,";");
@@ -480,11 +483,12 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("poor", tmp2);
+        /*
         System.out.println("Poor ");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
         }
-
+*/
         //for dismal do
         tmp1 = getString(Tag.dismalWC);
         st = new StringTokenizer(tmp1,";");
@@ -494,11 +498,12 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("dismal", tmp2);
+        /*
         System.out.println("Dismal");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
         }
-
+*/
         //for any do
         tmp1 = getString(Tag.anyWC);
         st = new StringTokenizer(tmp1,";");
@@ -507,12 +512,12 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
         while(st.hasMoreTokens()){
             tmp2[i++] = st.nextToken();
         }
-        weatherConstraintsMap.put("any", tmp2);
+        weatherConstraintsMap.put("any", tmp2);/*
         System.out.println("Any");
         for(int foo=0;foo <tmp2.length; foo++){
             System.out.println(tmp2[foo]);
         }
-
+*/
     }
 
 	public void cleanUp() {
@@ -996,11 +1001,13 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             u.setSBName(targetName);
             u.setWeatherConstraintName(weatherCondition);
 			t = new Target (new Equatorial(ra,dec),sizeTargetBox,sizeTargetBox);
+            /*
             System.out.println("SB ("+targetName+"): RA="+ra+"; Dec="+dec);
             System.out.println("SB ("+targetName+"): RA min(rad)="+t.getMin().getRa()+"; Dec min(rad)="+t.getMin().getDec());
             System.out.println("SB ("+targetName+"): RA min (h)="+t.getMin().getRaInHours()+"; Dec min (deg)="+t.getMin().getDecInDegrees());
             System.out.println("SB ("+targetName+"): RA max (rad)="+t.getMax().getRa()+"; Dec max (rad)="+t.getMax().getDec());
             System.out.println("SB ("+targetName+"): RA max (h)="+t.getMax().getRaInHours()+"; Dec max (deg)="+t.getMax().getDecInDegrees());
+            */
 			u.setTarget(t);
 			u.setCenterFrequency(frequency);
 			u.setMaximumTimeInSeconds(totalTime);

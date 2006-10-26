@@ -6,7 +6,7 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.20 2006/10/05 16:06:48 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.21 2006/10/26 19:41:08 sslucero Exp $"
 
 ********************************************************************
 Added to R4's branch:
@@ -16,6 +16,7 @@ Added to R4's branch:
   in the JAVA_OPTIONS environment variable to see the SP in the OMC.
 - Added better searching mechanicism in interactive scheduling. Seaching on PI and Project name can be done with words and * together. i.e: Sohaila* or Sohaila Lucero or *
 - Once ALMA is operational in the OMC, right click on the scheduling panel and connect to the scheduling subsystem. 
+>>>>>>> 1.19.2.2
 
 ********************************************************************
 Release 4.0
