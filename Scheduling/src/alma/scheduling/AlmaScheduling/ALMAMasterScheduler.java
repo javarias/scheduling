@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.75 2006/10/26 20:50:07 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.76 2006/10/26 22:24:54 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -303,9 +303,9 @@ public class ALMAMasterScheduler extends MasterScheduler
         Policy policy = new Policy();
         policy.setId("Temp ID");
         policy.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
-        policy.setDescription("R3.0Policy testing!");
-        policy.setName("R3.0Policy");
-        PolicyFactor[] factors = new PolicyFactor[10];
+        policy.setDescription("R4.0Policy testing!");
+        policy.setName("R4.0Policy");
+        PolicyFactor[] factors = new PolicyFactor[4];
         /////////////////////
         factors[0] = new PolicyFactor();
         factors[0].setName("positionElevation");
@@ -327,6 +327,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         factors[3].setWeight(10.0);
         factors[3].setDefinition("the scientific priority, value: 10/9/8/7/6/5/4/3/2/1");
         /////////////////////
+        /*
         factors[4] = new PolicyFactor();
         factors[4].setName("sameProjectSameBand");
         factors[4].setWeight(10.0);
@@ -357,6 +358,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         factors[9].setName("oneSBRemaining");
         factors[9].setWeight(20.0);
         factors[9].setDefinition("only one SB remains in the project, value: 1/0");
+        */
         /////////////////////
         policy.setFactor(factors);
         

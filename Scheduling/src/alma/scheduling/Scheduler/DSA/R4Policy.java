@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R4Policy.java,v 1.2 2006/10/20 16:24:53 sslucero Exp $
+ * @version $Id: R4Policy.java,v 1.3 2006/10/26 22:24:54 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R4Policy extends PolicyType {
@@ -254,7 +254,7 @@ class R4Policy extends PolicyType {
                 */
 			else {
 				log.severe("Improper scheduling factor name " + name);
-				System.exit(0);			
+				//System.exit(0);			
 			}
 		}
 	}

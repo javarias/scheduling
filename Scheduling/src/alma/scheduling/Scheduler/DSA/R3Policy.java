@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.15 2006/10/20 15:38:45 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.16 2006/10/26 22:24:54 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -249,7 +249,7 @@ class R3Policy extends PolicyType {
 				oneSBW = factor[i].getWeight();
 			else {
 				log.severe("Improper scheduling factor name " + name);
-				System.exit(0);			
+				//System.exit(0);			
 			}
 		}
 	}
