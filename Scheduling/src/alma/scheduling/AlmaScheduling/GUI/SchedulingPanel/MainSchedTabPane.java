@@ -365,7 +365,6 @@ public class MainSchedTabPane extends JTabbedPane {
                 //TODO replace these 2 lines with the above stuff when we let them pick the array
                     arrayname = "";
                     addTab("DS", createDynamicSchedulingView(arrayname));
-                    return;
                 }else if(result ==1){
                     //here with arrayname == to "" means scheduler will create array
                     arrayname = "";
