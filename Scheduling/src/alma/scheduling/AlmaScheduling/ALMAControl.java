@@ -42,6 +42,7 @@ import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 
+import alma.Control.ResourceId;
 import alma.Control.ControlMaster;
 import alma.Control.ArrayMonitor;
 import alma.Control.AutomaticArrayCommand;
@@ -54,7 +55,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.51 2006/10/31 17:53:46 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.52 2006/10/31 17:59:07 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -348,7 +349,7 @@ public class ALMAControl implements Control {
       */
     public ArrayInfo[] getAllArraysInfo() {
         try {
-            String[] automaticArrays = control_system.getAutomaticArrayComponents();
+            ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
             for(int i=0;i < automaticArrays.length; i++){
                 logger.info("SCHEDULING: auto-array name = "+automaticArrays[i]);
             }
@@ -358,10 +359,10 @@ public class ALMAControl implements Control {
             int x=0; //counter for adding to 'allInfo'
             for(int i=0; i < automaticArrays.length; i++){
                 allInfo[x] = new ArrayInfo();
-                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i]).getArrayComponentName();
+                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i].ComponentName).getArrayComponentName();
                 //TODO need a way to see if its dynamic/interactive
                 allInfo[x].mode =  getArrayMode(allInfo[x].arrayName);//ArrayModeEnum.DYNAMIC;
-                if(getAutomaticArray(automaticArrays[i]).isBusy()){
+                if(getAutomaticArray(automaticArrays[i].ComponentName).isBusy()){
                     allInfo[x].state= ArrayStateEnum.BUSY; 
                 } else {
                     allInfo[x].state= ArrayStateEnum.IDLE; 
