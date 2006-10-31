@@ -55,7 +55,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.52 2006/10/31 17:59:07 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.53 2006/10/31 18:16:07 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -307,16 +307,16 @@ public class ALMAControl implements Control {
      */
     public String[] getActiveArray() throws SchedulingException {
         try {
-            String[] automaticArrays = control_system.getAutomaticArrays();
-            String[] manualArrays = control_system.getManualArrays();
+            ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
+            ResourceId[] manualArrays = control_system.getManualArrayComponents();
             int all = automaticArrays.length + manualArrays.length;
             String[] allArrays = new String[all];
             int x=0;
             for(int i=0; i < automaticArrays.length; i++){
-                allArrays[x++] = automaticArrays[i];
+                allArrays[x++] = automaticArrays[i].ComponentName;
             }
             for(int i=0; i < manualArrays.length; i++){
-                allArrays[x++] = manualArrays[i];
+                allArrays[x++] = manualArrays[i].ComponentName;
             }
             if(allArrays.length != all) {
                 throw new SchedulingException(
@@ -330,14 +330,24 @@ public class ALMAControl implements Control {
 
     public String[] getAllAutomaticArrays() throws SchedulingException{
         try {
-            return control_system.getAutomaticArrays();
+            ResourceId[] auto_arrays = control_system.getAutomaticArrayComponents();
+            String[] tmp = new String[auto_arrays.length];
+            for(int i=0;i< auto_arrays.length; i++){
+                tmp[i] = auto_arrays[i].ComponentName;
+            }
+            return tmp;
         } catch(InaccessibleException e) {
             throw new SchedulingException (e);
         }
     }
     public String[] getAllManualArrays() throws SchedulingException{
         try {
-            return control_system.getManualArrays();
+            ResourceId[] man_arrays = control_system.getManualArrayComponents();
+            String[] tmp = new String[man_arrays.length];
+            for(int i=0;i< man_arrays.length; i++){
+                tmp[i] = man_arrays[i].ComponentName;
+            }
+            return tmp;
         } catch(InaccessibleException e) {
             throw new SchedulingException (e);
         }
@@ -353,7 +363,7 @@ public class ALMAControl implements Control {
             for(int i=0;i < automaticArrays.length; i++){
                 logger.info("SCHEDULING: auto-array name = "+automaticArrays[i]);
             }
-            String[] manualArrays = control_system.getManualArrays();
+            ResourceId[] manualArrays = control_system.getManualArrayComponents();
             int all = automaticArrays.length + manualArrays.length;
             ArrayInfo[] allInfo = new ArrayInfo[all];
             int x=0; //counter for adding to 'allInfo'
@@ -399,9 +409,13 @@ public class ALMAControl implements Control {
      */
     public String[] getIdleAntennas() throws SchedulingException {
         try{
-            String[] antennas = control_system.getAvailableAntennas();
+            ResourceId[] antennas = control_system.getAvailableAntennaComponents();
             logger.info("SCHEDULING: Got "+ antennas.length +" idle antennas");
-            return antennas;
+            String[] tmp=new String[antennas.length];
+            for(int i=0; i < antennas.length; i++){
+                tmp[i] = antennas[i].ComponentName;
+            }
+            return tmp;
         } catch(InaccessibleException e1) {
             throw new SchedulingException
                 ("SCHEDULING: Couldn't get available antennas. "+e1.toString()); 
