@@ -7,6 +7,7 @@ import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
+import alma.Control.ResourceId;
 import alma.Control.ControlMaster;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArrayStateEnum;
@@ -172,8 +173,17 @@ public class ShowArrayFrame extends JDialog {
 
     private void getArrays() {
         try {
-            autoArrays = control.getAutomaticArrays();
-            manArrays = control.getManualArrays();
+            ResourceId[] autoArrayComps = control.getAutomaticArrayComponents();
+            ResourceId[] manArrayComps= control.getManualArrayComponents();
+
+            autoArrays = new String[autoArrayComps.length];
+            for(int i=0; i < autoArrayComps.length; i++){
+                autoArrays[i] = autoArrayComps[i].ComponentName;
+            }
+            manArrays = new String[manArrayComps.length];
+            for(int i=0; i < manArrayComps.length; i++){
+                manArrays[i] = manArrayComps[i].ComponentName;
+            }
             arrayRowInfo = new Object[autoArrays.length + manArrays.length][2];
             int allArrays = 0;
             for (int i=0; i < autoArrays.length; i++){
