@@ -54,7 +54,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.50 2006/10/31 17:13:27 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.51 2006/10/31 17:53:46 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -348,7 +348,10 @@ public class ALMAControl implements Control {
       */
     public ArrayInfo[] getAllArraysInfo() {
         try {
-            String[] automaticArrays = control_system.getAutomaticArrays();
+            String[] automaticArrays = control_system.getAutomaticArrayComponents();
+            for(int i=0;i < automaticArrays.length; i++){
+                logger.info("SCHEDULING: auto-array name = "+automaticArrays[i]);
+            }
             String[] manualArrays = control_system.getManualArrays();
             int all = automaticArrays.length + manualArrays.length;
             ArrayInfo[] allInfo = new ArrayInfo[all];
