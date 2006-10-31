@@ -54,7 +54,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.49 2006/10/25 22:33:57 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.50 2006/10/31 17:13:27 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -228,9 +228,9 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
-            logger.info("SCHEDULING: Scheduling created array = "+ ctrl.getName());
-            logger.info("SCHEDULING: "+ctrl.getName()+" has "+antenna.length+" antennas");
-            return ctrl.getName();
+            logger.info("SCHEDULING: Scheduling created array = "+ ctrl.getArrayComponentName());
+            logger.info("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
+            return ctrl.getArrayComponentName();
         } catch(InvalidRequest e1) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e1.toString());
@@ -284,7 +284,7 @@ public class ALMAControl implements Control {
         try {
     	    logger.info("SCHEDULING about to destroy array "+name);
             for(int i=0; i < auto_controllers.size(); i++){
-	            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getName().equals(name)) {
+	            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
 	          	    auto_controllers.removeElementAt(i);
                 }
 	        }
@@ -355,7 +355,7 @@ public class ALMAControl implements Control {
             int x=0; //counter for adding to 'allInfo'
             for(int i=0; i < automaticArrays.length; i++){
                 allInfo[x] = new ArrayInfo();
-                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i]).getName();
+                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i]).getArrayComponentName();
                 //TODO need a way to see if its dynamic/interactive
                 allInfo[x].mode =  getArrayMode(allInfo[x].arrayName);//ArrayModeEnum.DYNAMIC;
                 if(getAutomaticArray(automaticArrays[i]).isBusy()){
@@ -418,8 +418,8 @@ public class ALMAControl implements Control {
     private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
         logger.info("SCHEDULING: looking for array with id = "+ name);
         for(int i=0; i < auto_controllers.size(); i++){
-            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getName().equals(name)) {
-                logger.info("SCHEDULING: found array with id = "+ ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getName());
+            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+                logger.info("SCHEDULING: found array with id = "+ ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
                 
                 return (AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp();
             }
@@ -430,7 +430,7 @@ public class ALMAControl implements Control {
     private ArrayModeEnum getArrayMode(String arrayname){
         String mode;
         for(int i=0 ; i< auto_controllers.size(); i++){
-            if(((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getName().equals(arrayname)){
+            if(((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(arrayname)){
                 mode = auto_controllers.elementAt(i).getMode();
                 if(mode.equals("dynamic")){
                     return ArrayModeEnum.DYNAMIC;
@@ -459,7 +459,7 @@ public class ALMAControl implements Control {
             return;
         }
         for(int i=0; i < auto_controllers.size() ;i++){
-            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getName().equals(name)) {
+            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
                 auto_controllers.removeElementAt(i);
                 return;
             }
