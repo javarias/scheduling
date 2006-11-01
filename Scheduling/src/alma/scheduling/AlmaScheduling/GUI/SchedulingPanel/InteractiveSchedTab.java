@@ -609,12 +609,14 @@ public class InteractiveSchedTab extends JScrollPane implements SchedulerTab {
         });
         p1.add(b);
         b = new JButton("Stop");
+        b.setToolTipText("NOT IMPLEMENTED  YET");
+        /*
         b.setToolTipText("Tells the Control system to stop executing this SB.");
         b.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     stopSB();
                 }
-        });
+        });*/
         p1.add(b);
         /* Took out for now.
            TODO something...?
