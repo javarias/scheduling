@@ -364,11 +364,11 @@ public class InitControlMaster extends ComponentClientTestCase {
 
             // Pass the DeviceConfig structure to the Master.
             //set to true to not access RT stuuff
-            m_master.fillAntennaTables((short) 1, devConfigs, true);
+            //m_master.fillAntennaTables((short) 1, devConfigs, true);
 
             // Initialize the Master component.
-            m_master.startupPass1();
-            m_master.startupPass2();
+            //m_master.startupPass1();
+            //m_master.startupPass2();
             
         }
 
