@@ -55,7 +55,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.53 2006/10/31 18:16:07 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.54 2006/11/02 21:00:12 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -221,7 +221,15 @@ public class ALMAControl implements Control {
                 logger.severe("SCHEDULING: auto_controllers == null..");
                 throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
-            String arrayName = control_system.createAutomaticArray(antenna);
+            for(int i=0;i < antenna.length; i++){
+                logger.info("SCHEDULING: antenna name = "+antenna[i]);
+            }
+            String arrayName="";
+            try {
+            arrayName = control_system.createAutomaticArray(antenna);
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
             AutomaticArrayCommand ctrl = alma.Control.AutomaticArrayCommandHelper.narrow(
                     containerServices.getComponent(arrayName));
             if(ctrl == null) {
@@ -232,6 +240,7 @@ public class ALMAControl implements Control {
             logger.info("SCHEDULING: Scheduling created array = "+ ctrl.getArrayComponentName());
             logger.info("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
             return ctrl.getArrayComponentName();
+            /*
         } catch(InvalidRequest e1) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e1.toString());
@@ -241,7 +250,9 @@ public class ALMAControl implements Control {
         } catch (alma.acs.container.ContainerException e3) {
             throw new SchedulingException
                 ("SCHEDULING: Error getting AutomaticArrayCommand component." +e3.toString());
+            */
         } catch (Exception e4) {
+            e4.printStackTrace();
             throw new SchedulingException
                 ("SCHEDULING: Error" +e4.toString());
 
@@ -361,7 +372,7 @@ public class ALMAControl implements Control {
         try {
             ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
             for(int i=0;i < automaticArrays.length; i++){
-                logger.info("SCHEDULING: auto-array name = "+automaticArrays[i]);
+                logger.info("SCHEDULING: auto-array name = "+automaticArrays[i].ComponentName);
             }
             ResourceId[] manualArrays = control_system.getManualArrayComponents();
             int all = automaticArrays.length + manualArrays.length;
@@ -409,6 +420,7 @@ public class ALMAControl implements Control {
      */
     public String[] getIdleAntennas() throws SchedulingException {
         try{
+            /*
             ResourceId[] antennas = control_system.getAvailableAntennaComponents();
             logger.info("SCHEDULING: Got "+ antennas.length +" idle antennas");
             String[] tmp=new String[antennas.length];
@@ -416,6 +428,8 @@ public class ALMAControl implements Control {
                 tmp[i] = antennas[i].ComponentName;
             }
             return tmp;
+            */
+            return control_system.getAvailableAntennas();
         } catch(InaccessibleException e1) {
             throw new SchedulingException
                 ("SCHEDULING: Couldn't get available antennas. "+e1.toString()); 
