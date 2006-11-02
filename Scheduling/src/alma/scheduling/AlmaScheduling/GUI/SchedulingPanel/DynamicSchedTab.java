@@ -10,7 +10,7 @@ import alma.scheduling.*;
 
 //acs stuff
 import alma.acs.container.*;
-import alma.xmlentity.XmlEntityStruct;
+//import alma.xmlentity.XmlEntityStruct;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
@@ -32,6 +32,8 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
     private JTable sbTable;
     private Object[][] sbRowInfo;
     private boolean schedulerCreateArray;
+    private RunDynamicScheduling run;
+    private Thread thread;
 
 //////////////////////////////////////
     //public DynamicSchedTab(ContainerServices cs, String s, String an){
@@ -136,12 +138,17 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
 //////////////////////////////////////
 
     private void startScheduling() throws Exception {
+        /*
         XmlEntityStruct policy = new XmlEntityStruct();
         if(schedulerCreateArray){
+            logger.info("SCHEDULING_PANEL: Start Scheduling called.");
             masterScheduler.startScheduling(policy);
         } else {
             masterScheduler.startScheduling1(policy, arrayname);
-        }
+        }*/
+        run = new RunDynamicScheduling(container);
+        thread = new Thread(run);
+        thread.start();
     }
 //////////////////////////////////////
 
@@ -164,6 +171,12 @@ public class DynamicSchedTab extends JScrollPane implements SchedulerTab {
             //logger.info("About to release "+scheduler.name());
 //            container.releaseComponent(scheduler.name());
             container.releaseComponent(masterScheduler.name());
+            try{
+                thread.interrupt();
+                run.stop();
+            }catch(Exception ex) {
+                ex.printStackTrace();
+            }
 //            consumer.disconnect();
         } catch(Exception e){
             e.printStackTrace();
