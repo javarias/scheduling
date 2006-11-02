@@ -139,7 +139,7 @@ public class ALMAOperator implements Operator {
                 e.printStackTrace(System.out);
             }
             */
-            //ask operator now to select!
+            //try to ask operator now to select!
             try{
                 execSchedOperator = alma.exec.Scheduling_to_TelescopeOperatorHelper.narrow(
                         containerServices.getComponent("EXEC_SCHEDULINGOPERATOR"));
@@ -150,14 +150,26 @@ public class ALMAOperator implements Operator {
                     sbLites[i] = convertToSBLite(liteSB[i]);
                 }
                 
-                //execSchedOperator.selectSB(message.getMessageId(), arrayName, best.getSBLites(), 5);
                 execSchedOperator.selectSB(message.getMessageId(), arrayName, sbLites, 5);
                         
                 containerServices.releaseComponent("EXEC_SCHEDULINGOPERATOR");
-            } catch(ContainerException e) {
+            } catch(ContainerException ce) {
                 logger.info("SCHEDULING: Operator component not available, "+
                         "scheduling will pick.");
                 //return "TIMEOUT:Operator component not available";
+            }
+        
+            try {
+                (alma.scheduling.MasterSchedulerIFHelper.narrow( 
+                    containerServices.getDefaultComponent(
+                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"))).response(
+                            message.getMessageId(), bestSBId);
+            } catch(Exception e) {
+                logger.severe("SCHEDULING: error getting MasterScheduler Component!");
+                logger.severe(e.toString());
+                e.printStackTrace(System.out);
+                //TODO: lets throw an alarm here because operator didn't pick and scheduling
+                // couldn't pick...
             }
         }
         try {
@@ -169,6 +181,7 @@ public class ALMAOperator implements Operator {
         logger.finest("SCHEDULING: best sb id = "+message.getReply());
         return message.getReply();
     }
+
     private SBLite convertToSBLite(LiteSB l){
         SBLite sb= new SBLite();
         sb.schedBlockRef = l.getSBRef();
