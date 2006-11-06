@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ObsProject xmlns="Alma/ObsPrep/ObsProject"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    almatype="APDM::ObsProject" xsi:type="ObsProject">
+    <ObsProjectEntity entityId="entityId_-1016080366"
+        entityIdEncrypted="-- id encryption not yet implemented --"
+        entityTypeName="ObsProject" schemaVersion="1"
+        documentVersion="1" datamodelVersion="1.54"/>
+    <ObsProposalRef entityId="entityId_-592281255" entityTypeName="ObsProposal"/>
+    <projectName>Simulated Tower Holography</projectName>
+    <pI>Holography FBT</pI>
+    <version>1.0</version>
+    <ObsProgram almatype="APDM::ObsProgram">
+        <ObsPlan almatype="APDM::ObsUnitSet" entityPartId="1159528670460/30131099 2135754210">
+            <status></status>
+            <name></name>
+            <ObsUnitControl almatype="APDM::ObsUnitControl" arrayRequested="ALMAMain">
+                <maximumTime unit="sec"/>
+                <estimatedExecutionTime unit="sec"/>
+                <CalibrationRequirements almatype="APDM::CalibrationRequirements">
+                    <pointingAccuracy unit="arcsec"/>
+                </CalibrationRequirements>
+            </ObsUnitControl>
+            <UnitDependencies almatype="APDM::UnitDependencies">
+                <executionCount>1</executionCount>
+                <delay unit="sec"/>
+                <expression></expression>
+            </UnitDependencies>
+            <ObsProjectRef valid="true" xsi:type="java:alma.obsprep.bo.obsproject.data.ObsProjectRefData">
+                <entity-id xmlns="">entityId_-1016080366</entity-id>
+                <entity-type-name xmlns="">ObsProject</entity-type-name>
+            </ObsProjectRef>
+            <scienceProcessingScript></scienceProcessingScript>
+            <DataProcessingParameters
+                almatype="APDM::DataProcessingParameters" projectType="Continuum">
+                <angularResolution unit="arcsec"/>
+                <velocityResolution referenceSystem="topo">
+                    <ns1:centerVelocity xmlns:ns1="Alma/ValueTypes" unit="km/s"/>
+                </velocityResolution>
+                <tBSensitivityGoal unit="K"/>
+                <rMSGoal unit="Jy"/>
+            </DataProcessingParameters>
+            <FlowControl almatype="APDM::FlowControl">
+                <controlScript></controlScript>
+            </FlowControl>
+            <SchedBlockRef valid="true" xsi:type="java:alma.obsprep.bo.schedblock.data.SchedBlockRefData">
+                <entity-id xmlns="">entityId_1555124871</entity-id>
+                <entity-type-name xmlns="">SchedBlock</entity-type-name>
+            </SchedBlockRef>
+        </ObsPlan>
+    </ObsProgram>
+</ObsProject>

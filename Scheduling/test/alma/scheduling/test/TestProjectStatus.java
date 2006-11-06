@@ -85,16 +85,18 @@ public class TestProjectStatus extends ComponentClientTestCase {
 
     public void testProjectStatus() throws Exception {
         //create a project status obj
-        ProjectStatus ps = createProjectStatus("xmldocs/ProjectStatus1.xml");
+        ProjectStatus ps = createProjectStatus("newxmldocs/OP/oneTargets/EmptyProjectStatus.xml");
         assertNotNull(ps);
         //create a project obj
-        ObsProject obsproject = createObsProject("xmldocs/ObsProject.xml");
+        ObsProject obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
         //ObsProject obsproject = createObsProject("xmldocs/ObsProject1.xml");
         assertNotNull(obsproject);
         //create 2 SB objects
         SchedBlock[] sbs = new SchedBlock[1];
         //SchedBlock sb = createSchedBlock("xmldocs/SchedBlock1.xml");
-        SchedBlock sb = createSchedBlock("xmldocs/SchedBlock0.xml");
+        SchedBlock sb = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        System.out.println(sb.getModeName());
+            
         assertNotNull(sb);
         sbs[0] = sb;
         //sb = createSchedBlock("xmldocs/SchedBlock2.xml");
@@ -121,58 +123,57 @@ public class TestProjectStatus extends ComponentClientTestCase {
         
         String psXmlString = createProjectStatusXml(ps);
 
-        //update project
-        /*
-        Project project2 = ProjectUtil.updateProject(
-                obsproject, project1, sbs, datetime);
-        
-        //get a PS for the updated project
-        ProjectStatus ps2 = ProjectUtil.map(project2, datetime);
-        String psXmlString2 = createProjectStatusXml(ps2);
-        //since our updated project was the same as our original project
-        //the 2 project status' should be the same
-        assertEquals(psXmlString, psXmlString2);
-        //get another sb and add it to the project
-        //so update project object
-        logger.info("So far so good");
-        ObsProject obsproject2 = createObsProject("xmldocs/ObsProject2.xml");
-        assertNotNull(obsproject);
-        SchedBlock[] newSBs = new SchedBlock[3];
-        newSBs[0] = sbs[0];
-        newSBs[1] = sbs[1];
-        sb = createSchedBlock("xmldocs/SchedBlock3.xml");
-        assertNotNull(sb);
-        newSBs[2] = sb;
-        
-        //update obsproject to a new project
-        
-        Project project3 = ProjectUtil.updateProject(obsproject2, project1, newSBs, datetime);
-        assertNotNull(project3);
-        logger.info("updated project with projec that has another SB");
-                
-        //Map the project status for this new project
-        ProjectStatus ps3 = ProjectUtil.map(project3, datetime);
-        logger.info("mapped project of obsproject 2 to PS");
-        String psXmlString3 = createProjectStatusXml(ps3);
-        //should not be the same as project status for first obsproject/project
-        //because we've added another SB
-        assertFalse(psXmlString2.equals(psXmlString3));
-        //update project1 with obsproject2
-        //Project updatedProject = ProjectUtil.updateProject(obsproject2,
-        //        project1, newSBs, datetime);
-        //logger.info("updated project 1 with obsproject 2");
-        //get ps for updated project
-        ProjectStatus ps4 = ProjectUtil.map(project3,datetime);
-        logger.info("mapped project of obsproject 2 to another PS");
-        String psXmlString4 = createProjectStatusXml(ps4);
-        //ps of obsproject2 mapped should be equal to ps of obsproject2 
-        //well except for the entityPartIds will be different.. so need 
-        //something else to make sure... its doing right thing..
-        //updated to project1
-        //System.out.println(psXmlString3);
-        //System.out.println(psXmlString4);
-        assertEquals(psXmlString3, psXmlString4);
-    */
+    }
+
+    public void testObsProjectMapping() throws Exception{
+        DateTime datetime = DateTime.currentSystemTime();
+        ProjectStatus ps = createProjectStatus("newxmldocs/OP/oneTargets/EmptyProjectStatus.xml");
+        assertNotNull(ps);
+        SchedBlock[] sbs = new SchedBlock[1];
+        ObsProject obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
+        SchedBlock sb = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        sbs[0] = sb;
+        Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
+    }
+
+    public void testObsProjectUpdating() throws Exception {
+        DateTime datetime = DateTime.currentSystemTime();
+        ProjectStatus ps = createProjectStatus("newxmldocs/OP/oneTargets/EmptyProjectStatus.xml");
+        assertNotNull(ps);
+        SchedBlock[] sbs = new SchedBlock[1];
+        ObsProject obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
+        SchedBlock sb1 = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        sbs[0] = sb1;
+        Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
+        //print first project
+        System.out.println("Printing Project after map with one SB.");
+        project1.printTree(System.out, "\t");
+        //add a sb and update
+        obsproject = createObsProject("newxmldocs/OP/twoTargets/ObsProject.xml");
+        sb1 = createSchedBlock("newxmldocs/OP/twoTargets/SchedBlock0.xml");
+        SchedBlock sb2 = createSchedBlock("newxmldocs/OP/twoTargets/SchedBlock1.xml");
+        sbs = new SchedBlock[2];
+        sbs[0] = sb1;
+        sbs[1] = sb2;
+        datetime = DateTime.currentSystemTime();
+        project1 = ProjectUtil.updateProject(obsproject, project1, sbs, datetime);
+        System.out.println("Printing Project after update with two SBs.");
+        project1.printTree(System.out, "\t");
+        //modify second SB's name and update.
+        SchedBlock sb3 = createSchedBlock("newxmldocs/OP/twoTargets/SchedBlock2.xml");
+        sbs[1] = sb3;
+        datetime = DateTime.currentSystemTime();
+        project1 = ProjectUtil.updateProject(obsproject, project1, sbs, datetime);
+        System.out.println("Printing Project after update with second SB updated.");
+        project1.printTree(System.out, "\t");
+        //remove a sb and update project
+        obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
+        sb1 = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        sbs = new SchedBlock[1];
+        sbs[0] = sb1;
+        project1 = ProjectUtil.updateProject(obsproject, project1, sbs, datetime);
+        System.out.println("Printing Project after update with second SB deleted.");
+        project1.printTree(System.out, "\t");
     }
     
 }

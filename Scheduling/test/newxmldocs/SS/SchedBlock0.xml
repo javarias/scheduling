@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SchedBlock xmlns="Alma/ObsPrep/SchedBlock"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    almatype="APDM::SchedBlock" xsi:type="SchedBlock">
+    <ns1:status xmlns:ns1="Alma/ObsPrep/ObsProject">READY</ns1:status>
+    <ns2:name xmlns:ns2="Alma/ObsPrep/ObsProject">trcOP.scat.6.polar.stars.bright</ns2:name>
+    <ns3:ObsUnitControl xmlns:ns3="Alma/ObsPrep/ObsProject"
+        almatype="APDM::ObsUnitControl" arrayRequested="ALMAMain">
+        <ns3:maximumTime unit="sec">3600.0</ns3:maximumTime>
+        <ns3:estimatedExecutionTime unit="sec"/>
+        <ns3:CalibrationRequirements almatype="APDM::CalibrationRequirements">
+            <ns3:pointingAccuracy unit="arcsec">0.1</ns3:pointingAccuracy>
+        </ns3:CalibrationRequirements>
+    </ns3:ObsUnitControl>
+    <ns4:UnitDependencies xmlns:ns4="Alma/ObsPrep/ObsProject" almatype="APDM::UnitDependencies">
+        <ns4:executionCount>1</ns4:executionCount>
+        <ns4:delay unit="sec"/>
+        <ns4:expression></ns4:expression>
+    </ns4:UnitDependencies>
+    <ns5:ObsProjectRef xmlns:ns5="Alma/ObsPrep/ObsProject" valid="true" xsi:type="java:alma.obsprep.bo.obsproject.data.ObsProjectRefData">
+        <entity-id xmlns="">entityId_424249799</entity-id>
+        <entity-type-name xmlns="">ObsProject</entity-type-name>
+    </ns5:ObsProjectRef>
+    <SchedBlockEntity entityId="entityId_1574985033"
+        entityIdEncrypted="-- id encryption not yet implemented --"
+        entityTypeName="SchedBlock" schemaVersion="1"
+        documentVersion="1" timestamp="2006-07-24T17:15:33.402" datamodelVersion="1.54"/>
+    <standardMode>true</standardMode>
+    <modeType>Observatory</modeType>
+    <modeName>Optical Pointing</modeName>
+    <pIName>Unknown</pIName>
+    <OpticalCameraSpec almatype="APDM::OpticalCameraSpec"
+        entityPartId="1152548792442/341322 2961012348" filter="night">
+        <name>trcOP.scat.6.polar.stars.bright</name>
+        <minIntegrationTime unit="sec">2.0</minIntegrationTime>
+    </OpticalCameraSpec>
+    <FieldSource almatype="APDM::FieldSource" entityPartId="1152548792468/10688173 3188856610">
+        <sourceCoordinates system="J2000">
+            <ns6:longitude xmlns:ns6="Alma/ValueTypes" unit="deg">24.700416666</ns6:longitude>
+            <ns7:latitude xmlns:ns7="Alma/ValueTypes" unit="deg">73.05777777</ns7:latitude>
+        </sourceCoordinates>
+        <sourceName>40_Cas_456</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns8:centerVelocity xmlns:ns8="Alma/ValueTypes" unit="km/s">0.0</ns8:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris>Ephemeris</sourceEphemeris>
+        <pMRA unit="mas/yr">0.0</pMRA>
+        <pMDec unit="mas/yr">0.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="mas">0.0</parallax>
+        <name>Optical40_Cas_456</name>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns9:longitude xmlns:ns9="Alma/ValueTypes" unit="deg">24.700416666</ns9:longitude>
+                <ns10:latitude xmlns:ns10="Alma/ValueTypes" unit="deg">73.05777777</ns10:latitude>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+        <SourceProperty almatype="APDM::SourceProperty">
+            <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+            <sourceFluxI unit="Jy">2.8054336379517163E-7</sourceFluxI>
+        </SourceProperty>
+    </FieldSource>
+    <FieldSource almatype="APDM::FieldSource" entityPartId="1152548792581/10185078 3188856610">
+        <sourceCoordinates system="J2000">
+            <ns11:longitude xmlns:ns11="Alma/ValueTypes" unit="deg">80.785416666</ns11:longitude>
+            <ns12:latitude xmlns:ns12="Alma/ValueTypes" unit="deg">79.23444444</ns12:latitude>
+        </sourceCoordinates>
+        <sourceName>Ori_1686</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns13:centerVelocity xmlns:ns13="Alma/ValueTypes" unit="km/s">0.0</ns13:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris>Ephemeris</sourceEphemeris>
+        <pMRA unit="mas/yr">0.0</pMRA>
+        <pMDec unit="mas/yr">0.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="mas">0.0</parallax>
+        <name>OpticalOri_1686</name>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns14:longitude xmlns:ns14="Alma/ValueTypes" unit="deg">248.13320833333333</ns14:longitude>
+                <ns15:latitude xmlns:ns15="Alma/ValueTypes" unit="deg">82.53788888888889</ns15:latitude>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+        <SourceProperty almatype="APDM::SourceProperty">
+            <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+            <sourceFluxI unit="Jy">3.467368504525324E-7</sourceFluxI>
+        </SourceProperty>
+    </FieldSource>
+    <FieldSource almatype="APDM::FieldSource" entityPartId="1152548792590/31582617 3188856610">
+        <sourceCoordinates system="J2000">
+            <ns16:longitude xmlns:ns16="Alma/ValueTypes" unit="deg">165.98541666</ns16:longitude>
+            <ns17:latitude xmlns:ns17="Alma/ValueTypes" unit="deg">61.73222222</ns17:latitude>
+        </sourceCoordinates>
+        <sourceName>alp_UMa_4301</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns18:centerVelocity xmlns:ns18="Alma/ValueTypes" unit="km/s">0.0</ns18:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris>Ephemeris</sourceEphemeris>
+        <pMRA unit="mas/yr">0.0</pMRA>
+        <pMDec unit="mas/yr">0.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="mas">0.0</parallax>
+        <name>Opticalalp_UMa_4301</name>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns19:longitude xmlns:ns19="Alma/ValueTypes" unit="deg">248.13320833333333</ns19:longitude>
+                <ns20:latitude xmlns:ns20="Alma/ValueTypes" unit="deg">82.53788888888889</ns20:latitude>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+        <SourceProperty almatype="APDM::SourceProperty">
+            <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+            <sourceFluxI unit="Jy">6.9183097091893625E-6</sourceFluxI>
+        </SourceProperty>
+    </FieldSource>
+    <FieldSource almatype="APDM::FieldSource" entityPartId="1152548792599/20211730 3188856610">
+        <sourceCoordinates system="J2000">
+            <ns21:longitude xmlns:ns21="Alma/ValueTypes" unit="deg">222.67458333</ns21:longitude>
+            <ns22:latitude xmlns:ns22="Alma/ValueTypes" unit="deg">74.14111111</ns22:latitude>
+        </sourceCoordinates>
+        <sourceName>beta_UMi_5563</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns23:centerVelocity xmlns:ns23="Alma/ValueTypes" unit="km/s">0.0</ns23:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris>Ephemeris</sourceEphemeris>
+        <pMRA unit="mas/yr">0.0</pMRA>
+        <pMDec unit="mas/yr">0.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="mas">0.0</parallax>
+        <name>Opticalbeta_UMi_5563</name>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns24:longitude xmlns:ns24="Alma/ValueTypes" unit="deg">248.13320833333333</ns24:longitude>
+                <ns25:latitude xmlns:ns25="Alma/ValueTypes" unit="deg">82.53788888888889</ns25:latitude>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+        <SourceProperty almatype="APDM::SourceProperty">
+            <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+            <sourceFluxI unit="Jy">5.345643593969714E-6</sourceFluxI>
+        </SourceProperty>
+    </FieldSource>
+    <FieldSource almatype="APDM::FieldSource" entityPartId="1152548792606/2220309 3188856610">
+        <sourceCoordinates system="J2000">
+            <ns26:longitude xmlns:ns26="Alma/ValueTypes" unit="deg">288.13875</ns26:longitude>
+            <ns27:latitude xmlns:ns27="Alma/ValueTypes" unit="deg">67.66777777</ns27:latitude>
+        </sourceCoordinates>
+        <sourceName>del_Dra_7310</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns28:centerVelocity xmlns:ns28="Alma/ValueTypes" unit="km/s">0.0</ns28:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris>Ephemeris</sourceEphemeris>
+        <pMRA unit="mas/yr">0.0</pMRA>
+        <pMDec unit="mas/yr">0.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="mas">0.0</parallax>
+        <name>Opticaldel_Dra_7310</name>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns29:longitude xmlns:ns29="Alma/ValueTypes" unit="deg">248.13320833333333</ns29:longitude>
+                <ns30:latitude xmlns:ns30="Alma/ValueTypes" unit="deg">82.53788888888889</ns30:latitude>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+        <SourceProperty almatype="APDM::SourceProperty">
+            <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+            <sourceFluxI unit="Jy">2.147830474130533E-6</sourceFluxI>
+        </SourceProperty>
+    </FieldSource>
+    <FieldSource almatype="APDM::FieldSource" entityPartId="1152548792614/7797531 3188856610">
+        <sourceCoordinates system="J2000">
+            <ns31:longitude xmlns:ns31="Alma/ValueTypes" unit="deg">89.95375</ns31:longitude>
+            <ns32:latitude xmlns:ns32="Alma/ValueTypes" unit="deg">54.28444444</ns32:latitude>
+        </sourceCoordinates>
+        <sourceName>del_Aur_2077</sourceName>
+        <sourceVelocity referenceSystem="topo">
+            <ns33:centerVelocity xmlns:ns33="Alma/ValueTypes" unit="km/s">0.0</ns33:centerVelocity>
+        </sourceVelocity>
+        <sourceEphemeris>Ephemeris</sourceEphemeris>
+        <pMRA unit="mas/yr">0.0</pMRA>
+        <pMDec unit="mas/yr">0.0</pMDec>
+        <nonSiderealMotion>false</nonSiderealMotion>
+        <parallax unit="mas">0.0</parallax>
+        <name>Opticaldel_Aur_2077</name>
+        <Reference almatype="APDM::Reference">
+            <referenceCoordinates system="J2000">
+                <ns34:longitude xmlns:ns34="Alma/ValueTypes" unit="deg">248.13320833333333</ns34:longitude>
+                <ns35:latitude xmlns:ns35="Alma/ValueTypes" unit="deg">82.53788888888889</ns35:latitude>
+            </referenceCoordinates>
+            <intTimeReference unit="sec"/>
+            <intTimeSource unit="sec"/>
+        </Reference>
+        <SourceProperty almatype="APDM::SourceProperty">
+            <sourceFrequency unit="GHz">550000.0</sourceFrequency>
+            <sourceFluxI unit="Jy">1.1803206356517298E-6</sourceFluxI>
+        </SourceProperty>
+    </FieldSource>
+    <OpticalPointingParameters
+        almatype="APDM::OpticalPointingParameters" entityPartId="1152548792418/22178007 1822728600">
+        <antennaPositionTolerance unit="arcsec">0.1</antennaPositionTolerance>
+        <elevationLimit unit="degrees">15.0</elevationLimit>
+        <maxMagnitude>
+            <ns36:value xmlns:ns36="Alma/ValueTypes">0.0</ns36:value>
+        </maxMagnitude>
+        <minMagnitude>
+            <ns37:value xmlns:ns37="Alma/ValueTypes">13.0</ns37:value>
+        </minMagnitude>
+    </OpticalPointingParameters>
+    <ObsProcedure almatype="APDM::ObsProcedure">
+        <obsProcScript>OpticalPointing.py</obsProcScript>
+    </ObsProcedure>
+    <Preconditions almatype="APDM::Preconditions">
+        <ns38:baselineCalValid xmlns:ns38="Alma/ObsPrep/ObsProject">false</ns38:baselineCalValid>
+        <ns39:minAllowedHA xmlns:ns39="Alma/ObsPrep/ObsProject" unit="degrees"/>
+        <ns40:maxAllowedHA xmlns:ns40="Alma/ObsPrep/ObsProject" unit="degrees"/>
+        <ns41:WeatherConstraints xmlns:ns41="Alma/ObsPrep/ObsProject" almatype="APDM::WeatherConstraints">
+            <ns41:maxPWVC unit="mm"/>
+            <ns41:seeing unit="arcsec"/>
+            <ns41:phaseStability unit="degrees"/>
+            <ns41:maxWindVelocity unit="km/s"/>
+        </ns41:WeatherConstraints>
+    </Preconditions>
+    <SchedBlockControl almatype="APDM::SchedBlockControl">
+        <repeatCount>1</repeatCount>
+        <sBMaximumTime unit="sec">3600.0</sBMaximumTime>
+    </SchedBlockControl>
+    <SchedulingConstraints almatype="APDM::SchedulingConstraints">
+        <representativeFrequency unit="GHz"/>
+        <minAcceptableAngResolution unit="arcsec"/>
+        <maxAcceptableAngResolution unit="arcsec"/>
+    </SchedulingConstraints>
+    <Target almatype="APDM::Target">
+        <abstractInstrumentSpecId>1152548792442/341322 2961012348</abstractInstrumentSpecId>
+        <fieldSourceId>1152548792468/10688173 3188856610</fieldSourceId>
+        <observingParametersIdList>1152548792418/22178007 1822728600</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement"/>
+    </Target>
+    <Target almatype="APDM::Target">
+        <abstractInstrumentSpecId>1152548792442/341322 2961012348</abstractInstrumentSpecId>
+        <fieldSourceId>1152548792581/10185078 3188856610</fieldSourceId>
+        <observingParametersIdList>1152548792418/22178007 1822728600</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement"/>
+    </Target>
+    <Target almatype="APDM::Target">
+        <abstractInstrumentSpecId>1152548792442/341322 2961012348</abstractInstrumentSpecId>
+        <fieldSourceId>1152548792590/31582617 3188856610</fieldSourceId>
+        <observingParametersIdList>1152548792418/22178007 1822728600</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement"/>
+    </Target>
+    <Target almatype="APDM::Target">
+        <abstractInstrumentSpecId>1152548792442/341322 2961012348</abstractInstrumentSpecId>
+        <fieldSourceId>1152548792599/20211730 3188856610</fieldSourceId>
+        <observingParametersIdList>1152548792418/22178007 1822728600</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement"/>
+    </Target>
+    <Target almatype="APDM::Target">
+        <abstractInstrumentSpecId>1152548792442/341322 2961012348</abstractInstrumentSpecId>
+        <fieldSourceId>1152548792606/2220309 3188856610</fieldSourceId>
+        <observingParametersIdList>1152548792418/22178007 1822728600</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement"/>
+    </Target>
+    <Target almatype="APDM::Target">
+        <abstractInstrumentSpecId>1152548792442/341322 2961012348</abstractInstrumentSpecId>
+        <fieldSourceId>1152548792614/7797531 3188856610</fieldSourceId>
+        <observingParametersIdList>1152548792418/22178007 1822728600</observingParametersIdList>
+        <TotalPowerMeasurement almatype="APDM::TotalPowerMeasurement"/>
+    </Target>
+    <TemporalConstraints almatype="APDM::TemporalConstraints">
+        <startTime></startTime>
+        <endTime></endTime>
+        <allowedMargin unit="sec"/>
+    </TemporalConstraints>
+</SchedBlock>
