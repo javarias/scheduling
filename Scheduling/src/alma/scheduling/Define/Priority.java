@@ -43,7 +43,7 @@ package alma.scheduling.Define;
  * 		<li> BACKGROUND	(1)
  * </ul>
  * 
- * @version $Id: Priority.java,v 1.7 2006/05/01 15:44:57 sslucero Exp $
+ * @version $Id: Priority.java,v 1.8 2006/11/06 15:40:18 sslucero Exp $
  * @author Allen Farris
  */
 public class Priority {
@@ -62,7 +62,7 @@ public class Priority {
 	private int priority;
 	private boolean isConstant;
 	
-	private Priority(int priority) {
+    public Priority(int priority) {
 		this.priority = priority;
 		this.isConstant = true;
 	}
