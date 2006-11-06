@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.36 2006/09/26 19:13:13 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.37 2006/11/06 15:36:56 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -335,14 +335,12 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         //the processes below are still being thought out and may not be the
         //best way to do what needs to be done.
         try {
-            logger.info("SCHEDULING: Event reason = started");
             logger.info("SCHEDULING: Received sb start event from control.");
-            logger.info("SCHEDULING: ebid = "+  e.execId.entityId); 
-            logger.info("SCHEDULING: sbid =" + e.sbId.entityId );
+            logger.info("SCHEDULING: ExecBlock (ASDM) = "+  e.execId.entityId+" for SB ="+e.sbId.entityId );
             logger.info("SCHEDULING: session id ="+ e.sessionId.entityId);
-            logger.info("SCHEDULING: arrayname = "+ e.arrayName);
+            //logger.info("SCHEDULING: arrayname = "+ e.arrayName);
             DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
-            logger.info("SCHEDULING: start time = "+ startEb.toString());
+            //logger.info("SCHEDULING: start time = "+ startEb.toString());
             logger.info("SCHEDULING: SB ("+e.sbId.entityId+") started at "+startEb.toString()+" on "+e.arrayName);
             //create an execblock internal to scheduling. 
             ExecBlock eb = createExecBlock(e);
