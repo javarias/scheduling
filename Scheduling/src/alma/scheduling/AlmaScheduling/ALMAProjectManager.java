@@ -64,7 +64,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.75 2006/10/25 22:33:57 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.76 2006/11/06 15:36:29 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -279,6 +279,7 @@ public class ALMAProjectManager extends ProjectManager {
             logger.info("#################################");
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
+        updateProjectStatus(eb);
     }
 
     /**
@@ -296,13 +297,10 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public synchronized void updateProjectStatus(ExecBlock eb) {
         //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
-        logger.finest ("in PM, ps update");
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
-        logger.finest("SCHEDULING: SB id = " +sb.getId());
         String proj_id = sb.getProject().getId();
-        logger.finest("SCHEDULING: project id = " +proj_id);
-        
+        logger.info ("SCHEDULING: updating project status for "+proj_id);
         ProjectStatus[] allPS = psQueue.getAll();
         ProjectStatus ps = null;
         for(int i=0; i < allPS.length; i++){
@@ -400,7 +398,6 @@ public class ALMAProjectManager extends ProjectManager {
     public synchronized void createObservedSession(ExecBlock eb) {
 
         String sbid = eb.getParent().getId();
-        logger.finest("EB's parent id = "+sbid);
         Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
         session.setSessionId(eb.getSessionId());
@@ -419,6 +416,7 @@ public class ALMAProjectManager extends ProjectManager {
         }
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
+            logger.info("SCHEDULING: updating project status with session "+session.getSessionId());
             ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
