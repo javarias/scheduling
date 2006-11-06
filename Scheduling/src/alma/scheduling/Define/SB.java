@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.18 2006/10/09 15:27:44 sslucero Exp $
+ * @version $Id: SB.java,v 1.19 2006/11/06 15:41:22 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -207,7 +207,7 @@ public class SB implements ProgramMember {
 	 * @param out the PrintStream to which the summary is written. 
 	 */
 	public void printTree(PrintStream out, String indent) {
-		out.println(indent + "Unit " + schedBlockId);
+		out.println(indent + "SB: "+sbName+": " + schedBlockId);
 		out.println(indent + "\tparent " + (parent == null ? "null" : parent.getId()));
 		out.println(indent + "\ttotalRequiredTimeInSeconds " + totalRequiredTimeInSeconds); 
 		out.println(indent + "\ttotalUsedTimeInSeconds " + totalUsedTimeInSeconds);
