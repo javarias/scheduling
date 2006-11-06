@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.14 2006/09/28 21:16:22 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.15 2006/11/06 15:42:39 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -285,6 +285,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                         + config.getAction() + ")"); 
     	    }
     	} else {
+            logger.info("SCHEDULING: best sb presented to operator = "+best.getBestSelection());
             //check if any sbs are currently running.
             SB[] sbs = config.getQueue().getRunning();
             if( sbs.length > 0 ){
@@ -298,9 +299,15 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                 Message m = new Message();
                 m.setArrayName(config.getArrayName());
                 String sbid = config.getOperator().selectSB(best, m, config.getArrayName());
+                logger.info("SCHEDULING: Operator picked sb = "+sbid);
         		// We've got somthing to schedule.
                 //SB selectedSB = config.getQueue().get(best.getBestSelection());
                 SB selectedSB = config.getQueue().get(sbid);
+                logger.info("SCHEDULING: get sb = "+sbid+" from queue");
+                if(selectedSB == null) {
+                    logger.severe("SCHEDULING: problem getting sb = "+sbid+" from queue");
+                    return true;
+                }
                 if(selectedSB.getStatus().isReady() ){ //&& selectedSB.getStartTime() == null) 
                     logger.info("SCHEDULING: About to schedule sb = "+selectedSB.getId());
                     //Check if its already running.
