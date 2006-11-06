@@ -42,22 +42,7 @@ import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.entity.xmlbinding.schedblock.FrequencySetupT;
 import alma.entities.commonentity.*;
 
-import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.Define.Project;
-import alma.scheduling.Define.Program;
-import alma.scheduling.Define.ProgramMember;
-import alma.scheduling.Define.ObservedSession;
-import alma.scheduling.Define.SciPipelineRequest;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.ExecBlock;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.Status;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.Priority;
-import alma.scheduling.Define.FrequencyBand;
-import alma.scheduling.Define.Equatorial;
-import alma.scheduling.Define.Target;
-import alma.scheduling.Define.Source;
+import alma.scheduling.Define.*;
 
 import java.util.ArrayList;
 
@@ -92,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.45 2006/10/23 14:07:51 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.46 2006/11/06 15:37:26 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -131,9 +116,9 @@ public class ProjectUtil {
 	 */
 	static public void validate(Project project) throws SchedulingException {
 		
-		checkEntityId(project.getObsProjectId());
-		checkEntityId(project.getProjectStatusId());
-		checkEntityId(project.getProposalId());
+		//checkEntityId(project.getObsProjectId());
+		//checkEntityId(project.getProjectStatusId());
+		//checkEntityId(project.getProposalId());
 		checkString("projectName",project.getProjectName());
 		checkString("PI",project.getPI());
 		checkTime(project.getTimeOfCreation());
@@ -193,7 +178,6 @@ public class ProjectUtil {
 	 * Check an EntityId: format "uid://X0000000000000079/X00000000"
 	 * @param s The string to be checked.
 	 * @throws SchedulingException If the string has an invalid format.
-	 */
 	static public void checkEntityId(String s) throws SchedulingException {
 		if (s == null || s.length() == 0)
 			return;
@@ -211,6 +195,8 @@ public class ProjectUtil {
 				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
 		}
 	}
+
+	 */
 
 	//////////////////////////////////////////////////////////////
 	// The following private methods are used to support the 	//
@@ -506,8 +492,17 @@ public class ProjectUtil {
 		program.setTimeOfUpdate(now);
 		program.setParent(parent);
 		// We get SciPipelineRequest and Sessions from the ProjectStatus. 
-		program.setScientificPriority(Priority.MEDIUM); // Where is this in ObsPrep?
-		program.setUserPriority(Priority.MEDIUM);
+        //TAC priority == scientific priority???
+        int tac = set.getObsUnitControl().getTacPriority();
+        if(tac > 10 || tac < 1) {
+            tac = 1;
+        }
+        program.setScientificPriority(new Priority(tac)); 
+        int pri = set.getObsUnitControl().getUserPriority();
+        if(pri > 10 || pri < 1) {
+            pri = 1;
+        }
+        program.setUserPriority(new Priority(pri));
 		program.setDataReductionProcedureName(set.getScienceProcessingScript());
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
        // System.out.println("About to set data processing paramters");
@@ -532,10 +527,13 @@ public class ProjectUtil {
         }
 		program.setFlowControl(null);
 		program.setNotify(null);
+        //TODO 
 		program.setScienceGoal(null);
+        //TODO 
 		program.setWeatherConstraint(null);
 		program.setCenterFrequency(0.0);
 		program.setFrequencyBand(null);
+
 		program.setRequiredInitialSetup(null);
 	
         //System.out.println( set.getObsUnitSetTChoice().getSchedBlockRefCount());
@@ -616,11 +614,26 @@ public class ProjectUtil {
 		
             sb.setSBName(sched.getName());
 	    	// There are some problems here that we need to fix after R2.
-		    sb.setScientificPriority(Priority.MEDIUM); // Can't find this in ObsPrep << Problem.
-    		sb.setUserPriority(Priority.MEDIUM);
+            //TAC priority == scientific priority???
+            int tac = sched.getObsUnitControl().getTacPriority();
+            if(tac > 10 || tac < 1) {
+                tac = 1;
+            }
+		    sb.setScientificPriority(new Priority(tac)); 
+            int pri = sched.getObsUnitControl().getUserPriority();
+            if(pri > 10 || pri < 1) {
+                pri = 1;
+            }
+    		sb.setUserPriority(new Priority(pri));
+    		//sb.setUserPriority(Priority.MEDIUM);
+            //TODO: where in ot?
 	    	sb.setScienceGoal(null);
+            //TODO: need to redefine weather constraint stuff i think..
 		    sb.setWeatherConstraint(null);
-    		sb.setRequiredInitialSetup(null);
+            SBSetup initialSetup = new SBSetup();
+            //TODO: where in ot?
+    		sb.setRequiredInitialSetup(initialSetup);
+            //TODO: where in ot?
 	    	sb.setImagingScript(null);
 		    
 		// Set the observing script.
@@ -639,7 +652,7 @@ public class ProjectUtil {
 	    	SchedBlockControlT ctrl = sched.getSchedBlockControl();
     		if (ctrl == null) {
 		    	sb.setMaximumTimeInSeconds(1800);
-	    		sb.setMaximumNumberOfRepeats(0);
+	    		sb.setMaximumNumberOfRepeats(1);
     		} else {
 		    	TimeT tt = ctrl.getSBMaximumTime();
 	    		if (tt == null) {
@@ -648,16 +661,15 @@ public class ProjectUtil {
 		    		double maxTime = tt.getContent();
 	    			sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
     			}
-			    int repeatcount = ctrl.getRepeatCount();
-		    	if (repeatcount < 1){
-	    			throw new SchedulingException("Invalid repeat count (" + repeatcount + ").");
+			    int execcount = ctrl.getRepeatCount();
+		    	if (execcount < 1){
+	    			throw new SchedulingException("Invalid execution count (" + execcount + ").");
                 }
             //set to -1 because the first run is the original one. Not considered a 'repeat'
 			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
-    			sb.setMaximumNumberOfRepeats(repeatcount); 
+    			sb.setMaximumNumberOfRepeats(execcount); 
                 sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
-
     		}
             
             FieldSourceT[] fieldSources = sched.getFieldSource();
@@ -667,56 +679,55 @@ public class ProjectUtil {
             SkyCoordinatesT coord;
             String fs_id;
             Equatorial[] eq = new Equatorial[targets.length];
-            //OpticalPointingParametersT op_params = sched.getOpticalPointingParameters();
             String[] op_params_list;
             for(int i=0; i < targets.length; i++){
                 fs_id = targets[i].getFieldSourceId();
                 fs = getFieldSourceFromList(fieldSources, fs_id);
-                if(fs == null){
-	    	        throw new SchedulingException(
-                            "There is no FieldSourceT object in the scheduling block");
-                }
-                coord = fs.getSourceCoordinates();
-    	        if (coord == null){
-        	       	throw new SchedulingException(
-                            "There is no SkyCoordinatesT object in the scheduling block");
-                }
-                LongitudeT lng = coord.getLongitude();
-                double ra = lng.getContent();
-                LatitudeT lat = coord.getLatitude();
-                double dec = lat.getContent();
-    	        String coordType = coord.getSystem().toString(); // must be J2000
-                if (!coordType.equals("J2000")){
-                    throw new SchedulingException(coordType + " is not supported.  Must be J2000");
-                }  
-                eq[i] = new Equatorial((ra /24.0),dec);
-                source = new Source();
-                //TODO add source stuff..
-                try {
-                    source.setSourceName(fs.getSourceName());
-                } catch(Exception e) {
-                    source.setSourceName("Source was not named.");
-                }
-                try {
-                    source.setSolarSystemObj(fs.getSolarSystemObject().toString());
-                } catch(Exception e) {
-                    source.setSolarSystemObj("Not a solar system object.");
-                }
-                SourcePropertyT[] sourceProperties = fs.getSourceProperty();
-                try {
-                    source.setNumberSourceProperties(fs.getSourcePropertyCount());
-                    //only really care about the first one!
-                    source.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
-                } catch(Exception e){}
-                try {
-                    //TODO FIX Eventaully to get REAL values from SchedBlockChoice2
-                    source.setMinMagnitude(1);
-                    //source.setMinMagnitude(op_params.getMinMagnitude().getValue());
-                    source.setMaxMagnitude(-1);
-                    //source.setMaxMagnitude(op_params.getMaxMagnitude().getValue());
-                } catch(Exception e){}
+//////////////////
+// Can't do the following with out a field source..
+                if(fs != null){
+                    coord = fs.getSourceCoordinates();
+        	        if (coord == null){
+            	       	throw new SchedulingException(
+                                "There is no SkyCoordinatesT object in the scheduling block");
+                    }
+                    LongitudeT lng = coord.getLongitude();
+                    double ra = lng.getContent();
+                    LatitudeT lat = coord.getLatitude();
+                    double dec = lat.getContent();
+        	        String coordType = coord.getSystem().toString(); // must be J2000
+                    if (!coordType.equals("J2000")){
+                        throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                    }  
+                    eq[i] = new Equatorial((ra /24.0),dec);
+                    source = new Source();
+                    //TODO add source stuff..
+                    try {
+                        source.setSourceName(fs.getSourceName());
+                    } catch(Exception e) {
+                        source.setSourceName("Source was not named.");
+                    }
+                    try {
+                        source.setSolarSystemObj(fs.getSolarSystemObject().toString());
+                    } catch(Exception e) {
+                        source.setSolarSystemObj("Not a solar system object.");
+                    }
+                    SourcePropertyT[] sourceProperties = fs.getSourceProperty();
+                    try {
+                        source.setNumberSourceProperties(fs.getSourcePropertyCount());
+                        //only really care about the first one!
+                        source.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
+                    } catch(Exception e){}
+                    try {
+                        //TODO FIX Eventaully to get REAL values from SchedBlockChoice2
+                        source.setMinMagnitude(1);
+                        //source.setMinMagnitude(op_params.getMinMagnitude().getValue());
+                        source.setMaxMagnitude(-1);
+                        //source.setMaxMagnitude(op_params.getMaxMagnitude().getValue());
+                    } catch(Exception e){}
 
-                sb.addSource(source);
+                    sb.addSource(source);
+                }
             }
     		if (eq.length == 1) {
 		    	Target target = new Target (eq[0],3600.0,3600.0);
@@ -725,25 +736,15 @@ public class ProjectUtil {
 		    	Target target = new Target (eq);
 	    		sb.setTarget(target);
     		}
-
-            //SpectralSpecT[] setup = sched.getSchedBlockChoice().getSpectralSpec();
-		    //alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup[0].getFrequencySetup();
-	    	//if (freqSetup == null) {
-            
+///////////////
             //TODO fix this temporary hack!!
             SchedulingConstraintsT constraints = sched.getSchedulingConstraints();
             FrequencyT freq = constraints.getRepresentativeFrequency();
   			sb.setCenterFrequency(freq.getContent());
             FrequencyBand band = getFrequencyBand(freq);
-    	    sb.setFrequencyBand(band); //new FrequencyBand("Band "+band,100, 200));
+    	    sb.setFrequencyBand(band); 
             //TargetT t = constraints.getRepresentativeTargeT();
 		    
-                //} else {
-	    	//	sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
-    		//	String band = freqSetup.getReceiverBand().toString();
-			  //  FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
-		    //	sb.setFrequencyBand(freq);
-	    //	}
         }catch(Exception e){
             e.printStackTrace();    
         }
@@ -912,12 +913,10 @@ public class ProjectUtil {
 	}
     
     
-    /*
     static public Project updateProject(ObsProject obs, Project project, SchedBlock[] sched, DateTime now) 
         throws SchedulingException {
         
             project.setTimeOfUpdate(now);
-            //project.setBreakpoint(null); Sohaila: Took out coz in Define/Project this throws an error!
 		
             // To check if all SchedBlocks are used, we will create an array
             // of booleans and check them off as we use them.
@@ -973,8 +972,17 @@ public class ProjectUtil {
 		    program.setParent(parent);
 		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
 		// We get SciPipelineRequest and Sessions from the ProjectStatus. 
-            program.setScientificPriority(Priority.MEDIUM); // Where is this in ObsPrep?
-            program.setUserPriority(Priority.MEDIUM);
+            int tac = set.getObsUnitControl().getTacPriority();
+            if(tac > 10 || tac < 1) {
+                tac = 1;
+            }
+            program.setScientificPriority(new Priority(tac)); 
+            int pri = set.getObsUnitControl().getUserPriority();
+            if(pri > 10 || pri < 1) {
+                pri = 1;
+            }
+            program.setUserPriority(new Priority(pri));
+
             program.setFlowControl(null);
             program.setNotify(null);
             program.setScienceGoal(null);
@@ -1142,122 +1150,84 @@ public class ProjectUtil {
 			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
 			sb.setMaximumNumberOfRepeats(repeatcount); 
+            sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
+  		}
+            
+        FieldSourceT[] fieldSources = sched.getFieldSource();
+        FieldSourceT fs;
+        TargetT[] targets = sched.getTarget();
+        Source source;
+        SkyCoordinatesT coord;
+        String fs_id;
+        Equatorial[] eq = new Equatorial[targets.length];
+        String[] op_params_list;
+        for(int i=0; i < targets.length; i++){
+            fs_id = targets[i].getFieldSourceId();
+            fs = getFieldSourceFromList(fieldSources, fs_id);
+//////////////
+// Can't do the following with out a field source..
+            if(fs != null){
+                coord = fs.getSourceCoordinates();
+    	        if (coord == null){
+        	       	throw new SchedulingException(
+                            "There is no SkyCoordinatesT object in the scheduling block");
+                }
+                LongitudeT lng = coord.getLongitude();
+                double ra = lng.getContent();
+                LatitudeT lat = coord.getLatitude();
+                double dec = lat.getContent();
+    	        String coordType = coord.getSystem().toString(); // must be J2000
+                if (!coordType.equals("J2000")){
+                    throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                }  
+                eq[i] = new Equatorial((ra /24.0),dec);
+                source = new Source();
+                //TODO add source stuff..
+                try {
+                    source.setSourceName(fs.getSourceName());
+                } catch(Exception e) {
+                    source.setSourceName("Source was not named.");
+                }
+                try {
+                    source.setSolarSystemObj(fs.getSolarSystemObject().toString());
+                } catch(Exception e) {
+                    source.setSolarSystemObj("Not a solar system object.");
+                }
+                SourcePropertyT[] sourceProperties = fs.getSourceProperty();
+                try {
+                    source.setNumberSourceProperties(fs.getSourcePropertyCount());
+                    //only really care about the first one!
+                    source.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
+                } catch(Exception e){}
+                try {
+                    //TODO FIX Eventaully to get REAL values from SchedBlockChoice2
+                    source.setMinMagnitude(1);
+                    //source.setMinMagnitude(op_params.getMinMagnitude().getValue());
+                    source.setMaxMagnitude(-1);
+                    //source.setMaxMagnitude(op_params.getMaxMagnitude().getValue());
+                } catch(Exception e){}
 
+                sb.addSource(source);
+            }
+        }
+		if (eq.length == 1) {
+            Target target = new Target (eq[0],3600.0,3600.0);
+            sb.setTarget(target);
+		} else {
+            Target target = new Target (eq);
+            sb.setTarget(target);
 		}
-		
-        //////////////////////////////////////////////////////////
-        //
-        // Optical Camera Target stuff
-        // IMPORTANT NOTE: see important notes for ObsTarget stuff below
-        //
-        //////////////////////////////////////////////////////////
-        OpticalCameraTargetT[] opticalTargetList = sched.getOpticalCameraTarget();
-        if(opticalTargetList.length > 0) {
-            System.out.println("SCHEDULING: there are "+ opticalTargetList.length+" optical camera targets");
-            SpectralSpecT setup = opticalTargetList[0].getTargetTChoice().getSpectralSpec();
-
-            ArrayList eqList = new ArrayList ();
-		    for (int i = 0; i < opticalTargetList.length; ++i) {
-	    		FieldSourceT fieldSource = opticalTargetList[i].getFieldSource();
-    			if (fieldSource == null)
-			    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
-		    				sb.getSchedBlockId());
-	    		SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
-    			if (coord == null)
-			    	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
-		    				sb.getSchedBlockId());
-	    		LongitudeT lng = coord.getLongitude(); 	// in degrees
-    			double ra = lng.getContent();
-			    LatitudeT lat = coord.getLatitude();	// in degrees
-		    	double dec = lat.getContent();
-	    		String coordType = coord.getSystem().toString(); // must be J2000
-    			if (!coordType.equals("J2000"))
-			    	throw new SchedulingException(coordType + " is not supported.  Must be J2000");
-		    	Equatorial eq = new Equatorial((ra /24.0),dec);
-	    		eqList.add(eq);
-    		}
-		    Equatorial[] eqArray = new Equatorial [eqList.size()];
-	    	eqArray = (Equatorial[])eqList.toArray(eqArray);
-    		if (eqArray.length == 1) {
-		    	Target target = new Target (eqArray[0],3600.0,3600.0);
-	    		sb.setTarget(target);
-    		} else {
-		    	Target target = new Target (eqArray);
-	    		sb.setTarget(target);
-    		}
-
-        } else {
-            System.out.println("SCHEDULING: No optical camera targets");
-        }
-        
-        //////////////////////////////////////////////////////////
-        //
-        // ObsTarget stuff
-        //
-        //////////////////////////////////////////////////////////
-        
-		// Set the frequency and frequency band.
-		// IMPORTANT NOTE!
-		// We are using the rest frequency and receiver band from the first member of
-		// the frequency setup that is in the Obstarget list.  This probably isn't the
-		// right way to do it.
-		ObsTargetT[] targetList = sched.getObsTarget();
-        if(targetList.length > 0) {
-            SpectralSpecT setup = targetList[0].getTargetTChoice().getSpectralSpec();
-		    alma.entity.xmlbinding.schedblock.FrequencySetupT freqSetup = setup.getFrequencySetup();
-	    	if (freqSetup == null) {
-    			sb.setCenterFrequency(0.0);
-			    sb.setFrequencyBand(null);
-		    } else {
-	    		sb.setCenterFrequency(freqSetup.getRestFrequency().getContent());
-    			String band = freqSetup.getReceiverBand().toString();
-			    FrequencyBand freq = new FrequencyBand(band,50.0,150.0); // These reanges are merely place-holders.
-		    	sb.setFrequencyBand(freq);
-	    	}
-		
-		// Set the target
-		// IMPORTANT NOTE!
-		// Targets are a problem.
-		// We are going to take the list of ObsTargets and construct an IRREGULAR shape,
-		// which is really a rectangular area that includes all targets.  If there is only
-		// one target, we will add a one-degree rectangle around it.
-    		ArrayList eqList = new ArrayList ();
-		    for (int i = 0; i < targetList.length; ++i) {
-	    		FieldSourceT fieldSource = targetList[i].getFieldSource();
-    			if (fieldSource == null)
-			    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block with id " + 
-		    				sb.getSchedBlockId());
-	    		SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
-    			if (coord == null)
-			    	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block with id " + 
-		    				sb.getSchedBlockId());
-	    		LongitudeT lng = coord.getLongitude(); 	// in degrees
-    			double ra = lng.getContent();
-			    LatitudeT lat = coord.getLatitude();	// in degrees
-		    	double dec = lat.getContent();
-	    		String coordType = coord.getSystem().toString(); // must be J2000
-    			if (!coordType.equals("J2000"))
-			    	throw new SchedulingException(coordType + " is not supported.  Must be J2000");
-		    	Equatorial eq = new Equatorial((ra /24.0),dec);
-	    		eqList.add(eq);
-    		}
-		    Equatorial[] eqArray = new Equatorial [eqList.size()];
-	    	eqArray = (Equatorial[])eqList.toArray(eqArray);
-    		if (eqArray.length == 1) {
-		    	Target target = new Target (eqArray[0],3600.0,3600.0);
-	    		sb.setTarget(target);
-    		} else {
-		    	Target target = new Target (eqArray);
-	    		sb.setTarget(target);
-    		}
-        } else {
-            System.out.println("SCHEDULING: No obs targets");
-        }
-				
-		// Return the newly create SB.
-		return sb;
+///////////////
+        //TODO fix this temporary hack!!
+        SchedulingConstraintsT constraints = sched.getSchedulingConstraints();
+        FrequencyT freq = constraints.getRepresentativeFrequency();
+    	sb.setCenterFrequency(freq.getContent());
+        FrequencyBand band = getFrequencyBand(freq);
+         sb.setFrequencyBand(band); 
+        //TargetT t = constraints.getRepresentativeTargeT();
+  
+	    return sb;
 	}
-   */ 
 	//////////////////////////////////////////////////////////////////////
 	// End of private methods are used to support the		 			//
 	// "map(ObsProject p, SchedBlock[] b, ProjectStatus s)" method.		//
