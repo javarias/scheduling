@@ -30,7 +30,6 @@ import java.util.Vector;
 import java.util.ArrayList;
 
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
 
 import alma.scheduling.StartSessionEvent;
@@ -64,7 +63,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.76 2006/11/06 15:36:29 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.77 2006/11/08 15:50:08 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services

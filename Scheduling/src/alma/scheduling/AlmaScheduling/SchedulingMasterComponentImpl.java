@@ -33,7 +33,7 @@ import alma.acs.genfw.runtime.sm.*;
 import alma.ACS.ComponentStates;
 import alma.ACS.MasterComponentPackage.*;
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.ComponentLifecycleException;
 
 import alma.scheduling.MasterSchedulerIF;
@@ -44,7 +44,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.25 2006/09/08 16:38:20 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.26 2006/11/08 15:50:08 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -78,7 +78,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         try {
             masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
-        } catch (ContainerException e) {
+        } catch (AcsJContainerServicesEx e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass1.");
             //set the ms to null just to be safe..
             masterScheduler = null;
@@ -104,7 +104,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                     m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
-        } catch (ContainerException e) {
+        } catch (AcsJContainerServicesEx e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass2.");
             //set the ms to null just to be safe..
             masterScheduler = null;
@@ -134,7 +134,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                     m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
-        } catch (ContainerException e) {
+        } catch (AcsJContainerServicesEx e) {
             m_logger.severe("SCHEDULING MC: error reinitializing Scheduling Subsystem...");
             //set the ms to null just to be safe..
             masterScheduler = null;
@@ -158,8 +158,8 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             if(masterScheduler != null) {
                 //m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
                 m_containerServices.releaseComponent(masterScheduler.name());
-                ReallyShutdownScheduling woo = new ReallyShutdownScheduling(m_logger);
-                woo.forceMasterSchedulerShutdown();
+                //ReallyShutdownScheduling woo = new ReallyShutdownScheduling(m_logger);
+                //woo.forceMasterSchedulerShutdown();
                 masterScheduler = null;
             }
         } catch(Exception e) {
@@ -206,7 +206,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       * I know I shouldnt do this but I really want the master scheduler to go away
       * when my master component releases it. So this stays until ACS gives me a
       * better solution!
-      */
+      *
     class ReallyShutdownScheduling extends ComponentClient {
 
         public ReallyShutdownScheduling(Logger l) throws Exception {
@@ -226,4 +226,5 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             m_logger.info("SCHEDULING MC: MaciSuper forced release of MASTERSCHEDULER");
         }
     }
+    */
 }

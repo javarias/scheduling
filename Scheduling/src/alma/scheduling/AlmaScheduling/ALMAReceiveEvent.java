@@ -33,7 +33,6 @@ import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.projectstatus.*;
 
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
 import alma.acs.util.UTCUtility;
 //import alma.acs.util.UTCUtility;
 
@@ -58,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.37 2006/11/06 15:36:56 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.38 2006/11/08 15:50:08 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services

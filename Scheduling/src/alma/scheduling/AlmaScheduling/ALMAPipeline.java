@@ -31,9 +31,9 @@ import java.util.logging.Logger;
 import alma.xmlentity.XmlEntityStruct;
 import alma.entity.xmlbinding.projectstatus.*;
 //import alma.entity.xmlbinding.pipelineprocessingrequest.*;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
 import alma.acs.entityutil.*;
 
 import alma.scheduling.Define.SciPipeline;
@@ -49,7 +49,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.15 2006/05/01 18:10:42 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.16 2006/11/08 15:50:08 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -86,17 +86,19 @@ public class ALMAPipeline implements SciPipeline {
                 containerServices.getDefaultComponent("IDL:alma/pipelinescience/SciPipeManager:1.0"));
             
             sci_pipelineAvailable = true;
-        } catch(ContainerException e) {
+        } catch(AcsJContainerServicesEx e) {
             logger.severe("SCHEDULING: Science Pipeline Component is not available.");
             sci_pipelineAvailable = false;
+            sci_pipelineComp = null;
         }
         logger.info("About to connect to QuickLook Pipeline Component");
         try {
             quicklookComp = alma.pipelineql.QlDisplayManagerHelper.narrow(
                 containerServices.getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0"));
-        } catch(ContainerException e){
+        } catch(AcsJContainerServicesEx e){
             logger.severe("SCHEDULING: QuickLook Pipeline Component is not available.");
             ql_startOk = false;
+            quickLookComp = null;
         }
     }
 

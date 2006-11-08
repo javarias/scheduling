@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import java.util.Vector;
 
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 
 import alma.asdmIDLTypes.IDLEntityRef;
 
@@ -55,7 +55,7 @@ import alma.Control.AntennaMode;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.54 2006/11/02 21:00:12 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.55 2006/11/08 15:50:08 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -88,7 +88,8 @@ public class ALMAControl implements Control {
               //  containerServices.getComponent("CONTROL_MASTER_COMP"));
             logger.info("SCHEDULING: Got ControlMasterComponent");
             
-        } catch (alma.acs.container.ContainerException ce) {
+        } catch (AcsJContainerServicesEx ce) {
+            control_system=null;
             logger.severe("SCHEDULING: error getting ControlMaster Component.");
             logger.severe("SCHEDULING: "+ce.toString());
         }
@@ -230,10 +231,13 @@ public class ALMAControl implements Control {
             }catch(Exception e) {
                 e.printStackTrace();
             }
-            AutomaticArrayCommand ctrl = alma.Control.AutomaticArrayCommandHelper.narrow(
+            AutomaticArrayCommand ctrl;
+            try {
+                ctrl = alma.Control.AutomaticArrayCommandHelper.narrow(
                     containerServices.getComponent(arrayName));
-            if(ctrl == null) {
-                logger.severe("SCHEDULING: ctrl is null");
+            } catch(Exception e) {
+                ctrl = null;
+                logger.severe("SCHEDULING: automatic array command is null");
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
@@ -247,7 +251,7 @@ public class ALMAControl implements Control {
         } catch(InaccessibleException e2) {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e2.toString());
-        } catch (alma.acs.container.ContainerException e3) {
+        } catch (AcsJContainerServicesEx e3) {
             throw new SchedulingException
                 ("SCHEDULING: Error getting AutomaticArrayCommand component." +e3.toString());
             */

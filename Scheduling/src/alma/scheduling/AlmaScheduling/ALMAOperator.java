@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 
 import alma.scheduling.SBLite;
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
 
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.LiteSB;
 import alma.scheduling.Define.BestSB;
@@ -86,7 +86,7 @@ public class ALMAOperator implements Operator {
                     SubSystem.SCHEDULING_SUBSYSTEM, ReqType.NORMAL_REQUEST, true, 5);
             containerServices.releaseComponent("EXEC_OPERATOR");
             return reply;
-        } catch(ContainerException e) {
+        } catch(AcsJContainerServicesEx e) {
             logger.info("SCHEDULING: Operator component not available, scheduling will pick.");
             return "TIMEOUT:Operator component not available";
         }*/
@@ -153,7 +153,7 @@ public class ALMAOperator implements Operator {
                 execSchedOperator.selectSB(message.getMessageId(), arrayName, sbLites, 5);
                         
                 containerServices.releaseComponent("EXEC_SCHEDULINGOPERATOR");
-            } catch(ContainerException ce) {
+            } catch(AcsJContainerServicesEx ce) {
                 logger.info("SCHEDULING: Operator component not available, "+
                         "scheduling will pick.");
                 //return "TIMEOUT:Operator component not available";

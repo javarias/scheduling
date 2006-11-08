@@ -74,6 +74,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
                         "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
         } catch(Exception e){
             e.printStackTrace();
+            masterScheduler=null;
         }
     }
 

@@ -38,7 +38,7 @@ import alma.xmlentity.XmlEntityStruct;
 import java.sql.Timestamp;
 
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityException;
@@ -70,7 +70,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.65 2006/09/27 14:05:36 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.66 2006/11/08 15:50:07 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -382,7 +382,7 @@ public class ALMAArchive implements Archive {
 
         try {
             containerServices.assignUniqueEntityId(newPS.getProjectStatusEntity());
-        } catch(ContainerException ce) {
+        } catch(AcsJContainerServicesEx ce) {
             throw new SchedulingException(
                     "SCHEDULING: error assinging UID to new ProjectStatus entity");
         }
@@ -893,21 +893,36 @@ public class ALMAArchive implements Archive {
                     containerServices.getDefaultComponent(
                         "IDL:alma/xmlstore/Identifier:1.0"));
             
-        } catch(ContainerException e) {
-            logger.severe("SCHEDULING: ContainerException: "+e.toString());
+        } catch(AcsJContainerServicesEx e) {
+            logger.severe("SCHEDULING: AcsJContainerServicesEx: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            archConnectionComp =null;
+            archOperationComp =null;
+            archIdentifierComp = null;
         } catch (ArchiveException e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            archConnectionComp =null;
+            archOperationComp =null;
+            archIdentifierComp = null;
         } catch(UserDoesNotExistException e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            archConnectionComp =null;
+            archOperationComp =null;
+            archIdentifierComp = null;
         } catch (PermissionException e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            archConnectionComp =null;
+            archOperationComp =null;
+            archIdentifierComp = null;
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            archConnectionComp =null;
+            archOperationComp =null;
+            archIdentifierComp = null;
         }
         entitySerializer = EntitySerializer.getEntitySerializer(
             containerServices.getLogger());
