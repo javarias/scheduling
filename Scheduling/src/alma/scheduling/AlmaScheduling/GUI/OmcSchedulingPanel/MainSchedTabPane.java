@@ -25,6 +25,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private int overTabIndex;
     private JPanel mainPanel;
     private JPanel topPanel;
+    private SearchArchiveOnlyTab archiveTab;
     private CreateArrayPanel middlePanel;
     private JPanel showAntennaPanel;
     private JPanel middleButtonPanel;
@@ -41,11 +42,15 @@ public class MainSchedTabPane extends JTabbedPane {
         setup();
         createRightClickMenu();   
         super.addMouseListener(new PopupListener());
+        Dimension d = getPreferredSize();
+        setMaximumSize(d);
     }
         
     public void setup() {
         openWindows = new Vector<Window>();
-        addTab("Main",createMainView());
+        createSearchArchiveOnlyTab();
+        addTab("Main",createMainTab());
+        addTab("Search", archiveTab);
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
@@ -59,8 +64,9 @@ public class MainSchedTabPane extends JTabbedPane {
         container = cs;
         controller = new MainSchedTabPaneController(cs);
         logger = cs.getLogger();
+        archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);
-        logger.info("Second setup of SP");
+        logger.info("SCHEDULING_PANEL: Second setup, connected to manager");
     }
 
     private void createRightClickMenu(){
@@ -89,7 +95,11 @@ public class MainSchedTabPane extends JTabbedPane {
             rightClickMenu.add(menuItem);
         }
     }
-    public JPanel createMainView(){ 
+
+    public void createSearchArchiveOnlyTab() {
+        archiveTab = new SearchArchiveOnlyTab();
+    }
+    public JPanel createMainTab(){ 
         mainPanel = new JPanel(new BorderLayout());
         try {
         createTopPanel();

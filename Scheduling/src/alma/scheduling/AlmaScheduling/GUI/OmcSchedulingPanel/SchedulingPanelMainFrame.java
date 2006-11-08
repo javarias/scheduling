@@ -25,9 +25,15 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
     private Logger logger;
     
     public SchedulingPanelMainFrame(){
-        setLayout(new BorderLayout());
+        //setLayout(new BorderLayout());
         createMainSchedPanel();//cs);
-        add(mainSchedPanel,BorderLayout.CENTER);
+        JPanel grr = new JPanel();
+        Dimension d = getPreferredSize();
+        //d.setWidth(d.width + 2);
+        //d.setHeight(d.height + 2);
+        grr.setSize(d.width + 5, d.height + 5);
+        grr.add(mainSchedPanel);
+        add(grr);
         setVisible(true);
     }
 

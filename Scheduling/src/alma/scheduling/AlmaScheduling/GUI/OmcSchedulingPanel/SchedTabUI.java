@@ -30,7 +30,6 @@ public class SchedTabUI extends BasicTabbedPaneUI {
         });
     }
 
-        	
     //make room for the button on the tab.
     protected int calculateTabWidth(int tabPlacement, int tabIndex,
             FontMetrics metrics) {
@@ -85,7 +84,7 @@ public class SchedTabUI extends BasicTabbedPaneUI {
 
         int dx = tabRect.x + tabRect.width - BUTTONSIZE - WIDTHDELTA;
         int dy = (tabRect.y + tabRect.height) / 2 - 6;
-        if(!title.equals("Main")) {
+        if(!title.equals("Main") && !title.equals("Search")) {
             //closeB.setFont(new Font("Ariel",Font.PLAIN, 2));
             //closeB.setText("X");
             closeB.setBackground(Color.red);
