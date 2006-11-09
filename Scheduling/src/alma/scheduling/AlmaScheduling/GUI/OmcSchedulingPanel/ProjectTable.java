@@ -8,12 +8,15 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
+import alma.scheduling.ProjectLite;
+
 public class ProjectTable extends JTable {
     private final String[] projColumnInfo = {"Project Name", "PI Name" };//, "Version"};
     private Object[][] projRowInfo;
     private TableModel projTableModel;
     private JTextArea projectInfo;
     private Dimension size;
+    private JPanel parent;
     
     public ProjectTable(Dimension tableSize) {
         super(); 
@@ -26,6 +29,21 @@ public class ProjectTable extends JTable {
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+
+        addMouseListener(new MouseListener(){
+            public void mouseClicked(MouseEvent e) {
+                showProjectInfo();
+                showProjectSBs();
+            }
+            public void mouseEntered(MouseEvent e){ }
+            public void mouseExited(MouseEvent e){ }
+            public void mousePressed(MouseEvent e){ }
+            public void mouseReleased(MouseEvent e){}
+        });
+    }
+
+    public void setOwner(JPanel p){
+        parent = p;
     }
     
     private void createTableModel() {
@@ -38,15 +56,18 @@ public class ProjectTable extends JTable {
         };
     }
 
-    public void setRowInfo(Object[][] info){
-        projRowInfo = info;
+    public void setRowInfo(ProjectLite[] projects) {
+       int size = projects.length;
+       projRowInfo = new Object[size][projColumnInfo.length];
+       for(int i=0; i < size; i++) {
+           projRowInfo[i][0]= projects[i].projectName;
+           projRowInfo[i][1]= projects[i].piName;
+       }
+       repaint();
+       revalidate();
+       validate();
     }
     
-    /*
-    public void addRow(String[] info){
-    }
-    */
-
     public Object[][] getRowInfo() {
         return projRowInfo;
     }
@@ -55,5 +76,12 @@ public class ProjectTable extends JTable {
         JScrollPane p = new JScrollPane(projectInfo);
         p.setPreferredSize(size);
         return p;
+    }
+
+    private void showProjectInfo(){
+
+    }
+
+    private void showProjectSBs() {
     }
 }

@@ -8,16 +8,19 @@ import javax.swing.border.*;
 import javax.swing.table.*;
 import java.util.logging.Logger;
 
+import alma.scheduling.SBLite;
+import alma.scheduling.ProjectLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class SearchArchiveOnlyTab extends JPanel {
     private PluginContainerServices container;
     private Logger logger;
-    private ArchiveSearchFieldsPanel topPanel;
+    private ArchiveSearchFieldsPanel archiveSearchPanel;
     private JPanel middlePanel;
     private JPanel bottomPanel;
     private SBTable sbs;
     private ProjectTable projects;
+    private boolean connectedToALMA;
 
     public SearchArchiveOnlyTab(){
         setBorder(new TitledBorder("Search Archive"));
@@ -26,16 +29,20 @@ public class SearchArchiveOnlyTab extends JPanel {
         createMiddlePanel();
         createBottomPanel();
         Dimension d = getPreferredSize();
-        add(topPanel,BorderLayout.NORTH);
+        add(archiveSearchPanel,BorderLayout.NORTH);
         add(middlePanel,BorderLayout.CENTER);
         add(bottomPanel,BorderLayout.SOUTH);
-        
+        connectedToALMA=false;
     }
 
     public void connectedSetup(PluginContainerServices cs){
         container = cs;
         logger = cs.getLogger();
-        topPanel.setCS(cs);
+        archiveSearchPanel.setCS(cs);
+    }
+    public void connectToALMA(boolean x) {
+        connectedToALMA=x;
+        archiveSearchPanel.connected(connectedToALMA);
     }
 
     /**
@@ -43,7 +50,9 @@ public class SearchArchiveOnlyTab extends JPanel {
       * search by project or by sb.
       */
     public void createTopPanel() {
-        topPanel = new ArchiveSearchFieldsPanel();
+        archiveSearchPanel = new ArchiveSearchFieldsPanel();
+        archiveSearchPanel.setOwner(this);
+        archiveSearchPanel.connected(connectedToALMA);
     }
 
     /**
@@ -54,12 +63,14 @@ public class SearchArchiveOnlyTab extends JPanel {
         JPanel projectPanel = new JPanel();
         projectPanel.setBorder(new TitledBorder("Projects Found"));
         projects = new ProjectTable(new Dimension(175,100));
+        projects.setOwner(this);
         JScrollPane pane1 = new JScrollPane(projects);
         projectPanel.add(pane1);
         middlePanel.add(projectPanel, BorderLayout.WEST);
 
         JPanel sbPanel = new JPanel();
         sbs = new SBTable(false, new Dimension(175,100));
+        sbs.setOwner(this);
         sbPanel.setBorder(new TitledBorder("SBs Found"));
         JScrollPane pane2 = new JScrollPane(sbs);
                                    
@@ -80,4 +91,11 @@ public class SearchArchiveOnlyTab extends JPanel {
         
     }
 
+    public void updateSBView(SBLite[] sblites){
+        sbs.setRowInfo(sblites);
+    }
+
+    public void updateProjectView(ProjectLite[] projectLites) {
+        projects.setRowInfo(projectLites);
+    }
 }

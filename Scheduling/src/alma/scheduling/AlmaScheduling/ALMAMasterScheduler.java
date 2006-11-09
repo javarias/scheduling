@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.76 2006/10/26 22:24:54 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.77 2006/11/09 23:20:12 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -403,13 +403,16 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void startScheduling(XmlEntityStruct schedulingPolicy) 
         throws InvalidOperationEx {
 
+            logger.info("SCHEDULING: Starting dynamic scheduling");
         try {
             manager.checkForProjectUpdates();
+            logger.info("SCHEDULING: got project updates");
         
             String[] allAntennas = null;
             try {
                 //gets the available antennas from control
                 allAntennas = control.getIdleAntennas();
+                logger.info("SCHEDULING: got antennas");
             }catch(Exception e){
                 e.printStackTrace(System.out);
             }
@@ -715,6 +718,13 @@ public class ALMAMasterScheduler extends MasterScheduler
     public ProjectLite[] getProjectLites(String[] ids) {
         return manager.getProjectLites(ids);
     }
+    public SBLite[] getSBLitesForProject(String projectId) {
+        return manager.getSBLitesForProject(projectId);
+    }
+    public ProjectLite getProjectLiteForSB(String sbId){
+        return manager.getProjectLiteForSB(sbId);
+    }
+
 ///// END of Executive_to_Scheduling interface implementation
     
 ///// START of TelescopeOperator_to_Scheduling interface implementation
@@ -933,9 +943,11 @@ public class ALMAMasterScheduler extends MasterScheduler
             //TODO Eventually populate s_policy with info from the schedulingPolicy
             Policy s_policy = createPolicy();
             // regular sb scheduling
+            logger.info("SCHEDULING: create array with "+regularSbAntennas.length+" antennas");
             String arrayname = createArray(regularSbAntennas, ArrayModeEnum.DYNAMIC);
             //TODO: Handle this better..
             SBQueue dynamicSBs=manager.getDynamicSBQueue();
+            logger.info("SCHEDULING: got "+dynamicSBs.size()+" sbs for dynamic scheduling");
 
             SchedulerConfiguration config = 
                 createSchedulerConfiguration (
@@ -970,6 +982,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             destroyArray(arrayname);
         } catch(Exception e) {
+            e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("scheduleRegularSBs", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
@@ -1016,18 +1029,24 @@ public class ALMAMasterScheduler extends MasterScheduler
 
         String[] results = new String[0];    
         String schema = new String("ObsProject");
-        String foo1, foo2;
-        if(projname.equals("*") || projname.contains("*")){
+        String foo1, foo2, foo3;
+        if(projname.equals("") || projname.equals("*") || projname.contains("*")){
             foo1=new String("prj:projectName=*");
         } else {
             foo1 =new String("prj:projectName=\""+projname+"\"");
         }
 
-        if(piname.equals("*") || piname.contains("*")){
+        if(piname.equals("") || piname.equals("*") || piname.contains("*")){
             foo2=new String("prj:pI=*");
         } else {
             foo2 =new String( "prj:pI=\""+piname+"\"");
         }
+        //TODO Figure out how to put this in a query
+        //if(!type.equals("All")){
+        //    foo3 = "";
+        //} else {
+        //    foo3 = "prj:DataProcessingParameters[@projectType=\""+type+"\"]";
+        //}
         String query = new String("/prj:ObsProject["+foo1+" and "+foo2+"]");
         logger.info("Scheduling Query = "+ query);                
         try {
@@ -1044,12 +1063,14 @@ public class ALMAMasterScheduler extends MasterScheduler
             //check to see if results match other part of projname
             results = manager.getWildCardResults(results, projname, "projectName");
         }
-        if(type.equals("*")){
+        //if(type.equals("*")){
             //dont need to search for specific sb types.
             //return what we have
-            return results;
-        }
+          //  return results;
+        //}
+        return results;
         //Type is something different so now we get all the sbs with that type.
+        /*
         schema = new String("SchedBlock");
         query = new String("/sbl:SchedBlock[sbl:modeName=\""+type+"\"]");
         String[] sbResults = new String[0];
@@ -1062,6 +1083,30 @@ public class ALMAMasterScheduler extends MasterScheduler
         //now get all the projects which these sbs belong to.
         String[] totalResults = manager.getProjectSBUnion(results, sbResults); 
         return totalResults;
+        */
+    }
+    public String[] getSBProjectUnion(String[] sbIds, String[] projectIds){
+        return manager.getSBProjectUnion(sbIds, projectIds); 
+    }
+    
+    public String[] getProjectSBUnion(String[] projectIds, String[] sbIds){
+        return manager.getProjectSBUnion(projectIds,sbIds);
+    }
+
+    /**
+      * Returns the uids of the entitiies that match the given search criteria
+      */
+    public String[] queryArchive(String query, String schema) 
+        throws InvalidOperationEx {
+
+        String[] results = new String[0];    
+        try {
+            results = manager.archiveQuery(query, schema);
+        } catch(Exception e) {
+            e.printStackTrace();
+            results[0] = new String(e.toString());
+        }
+        return results;
     }
 
     // Dynamic_Scheduler_to_MasterScheduler

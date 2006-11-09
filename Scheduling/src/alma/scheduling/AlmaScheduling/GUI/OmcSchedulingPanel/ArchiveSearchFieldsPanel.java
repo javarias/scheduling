@@ -7,6 +7,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.SBLite;
+import alma.scheduling.ProjectLite;
 
 public class ArchiveSearchFieldsPanel extends JPanel {
     private JButton searchB;
@@ -16,21 +18,29 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     private JTextField piNameTF;
     private JTextField projNameTF;
     private JComboBox projTypeChoices;
-    private JComboBox sbTypeChoices;
-    private JComboBox sbModeChoices;
+    private JComboBox sbModeNameChoices;
+    private JComboBox sbModeTypeChoices;
     private JTextField expertQueryTF;
-
+    private boolean connectedToALMA;
+    private JPanel parent;
     private ArchiveSearchController controller;
     
     public ArchiveSearchFieldsPanel(){
         setLayout(new BorderLayout());
-        createCheckBoxes();
         createTextFields();
+        createCheckBoxes();//need to do this 2nd coz other fields will be null when used
         controller = null;
+        connectedToALMA= false;
     }
 
     public void setCS(PluginContainerServices cs) {
         controller = new ArchiveSearchController(cs);
+    }
+    public void connected(boolean x){
+        connectedToALMA=x;
+    }
+    public void setOwner(JPanel p){
+        parent = p;
     }
 
     private void createCheckBoxes(){ 
@@ -42,9 +52,12 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 projectCB.setSelected(true);
                 if(sbCB.isSelected()){
                     sbCB.setSelected(false);
-                    sbTypeChoices.setEnabled(false);
-                    sbModeChoices.setEnabled(false);
+                    sbModeNameChoices.setEnabled(false);
+                    sbModeTypeChoices.setEnabled(false);
                 } 
+                //projTypeChoices.setEnabled(true);
+                projNameTF.setEnabled(true);
+                piNameTF.setEnabled(true);
             }
         });
         p1.add(l); 
@@ -52,14 +65,19 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         JPanel p2 = new JPanel();
         l = new JLabel("SBs:");
         sbCB = new JCheckBox("",false);
+        sbModeNameChoices.setEnabled(false);
+        sbModeTypeChoices.setEnabled(false);
         sbCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 sbCB.setSelected(true);
                 if(projectCB.isSelected()){
                     projectCB.setSelected(false);
-                    projTypeChoices.setEnabled(false);
+                    //projTypeChoices.setEnabled(false);
+                    piNameTF.setEnabled(false);
                     projNameTF.setEnabled(false);
                 } 
+                sbModeNameChoices.setEnabled(true);
+                sbModeTypeChoices.setEnabled(true);
             }
         });
         p2.add(l);
@@ -84,7 +102,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         c.gridwidth =1;
         gridbag.setConstraints(l,c);
         p.add(l);
-        piNameTF = new JTextField(2);
+        piNameTF = new JTextField("*",2);
         c.gridwidth =1;
         gridbag.setConstraints(piNameTF,c);
         p.add(piNameTF);
@@ -99,17 +117,17 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         gridbag.setConstraints(l,c);
         p.add(l);
         String[] foo= {"All","SingleFieldInterferometry","OpticalPointing","TowerHolography"};
-        sbTypeChoices = new JComboBox(foo);
-        sbTypeChoices.setSelectedIndex(0);
+        sbModeNameChoices = new JComboBox(foo);
+        sbModeNameChoices.setSelectedIndex(0);
         c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(sbTypeChoices,c);
-        p.add(sbTypeChoices);
+        gridbag.setConstraints(sbModeNameChoices,c);
+        p.add(sbModeNameChoices);
         ////
         l = new JLabel("Project Name");
         c.gridwidth =1;
         gridbag.setConstraints(l,c);
         p.add(l);
-        projNameTF = new JTextField(3);
+        projNameTF = new JTextField("*",3);
         c.gridwidth =1;
         gridbag.setConstraints(projNameTF,c);
         p.add(projNameTF);
@@ -124,12 +142,12 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         gridbag.setConstraints(l,c);
         p.add(l);
         //TODO check if OT has this as something i can import
-        String[] modeChoices = {"All","Observer","Observatory","Expert"}; 
-        sbModeChoices = new JComboBox(modeChoices);
-        sbModeChoices.setSelectedIndex(0);
+        String[] modeTypeChoices = {"All","Observer","Observatory","Expert"}; 
+        sbModeTypeChoices = new JComboBox(modeTypeChoices);
+        sbModeTypeChoices.setSelectedIndex(0);
         c.gridwidth =GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(sbModeChoices,c);
-        p.add(sbModeChoices);
+        gridbag.setConstraints(sbModeTypeChoices,c);
+        p.add(sbModeTypeChoices);
         ////
         l = new JLabel("Project Type");
         c.gridwidth =1;
@@ -138,6 +156,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         String[] projectTypes = {"All","Continuum","Polarization","Other"};
         projTypeChoices = new JComboBox(projectTypes);
         projTypeChoices.setSelectedIndex(0);
+        projTypeChoices.setEnabled(false); //TODO take this out when query works
         c.gridwidth =1;
         gridbag.setConstraints(projTypeChoices,c);
         p.add(projTypeChoices);
@@ -164,13 +183,29 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         searchB = new JButton("Search");
         searchB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
+                if(!connectedToALMA){
+                    return;
+                }
                 if(controller == null) {
                     return;     
                 }
+                String pi = piNameTF.getText();
+                String pName = projNameTF.getText();
+                String type = (String)projTypeChoices.getSelectedItem();
+                //if we know its for all SBs ignore it
+                String sbquery = makeSBQuery();
+                //controller.doQuery(sbquery, pName, pi, type);
+                /*
+                if(sbquery.equals("/*")) {
+                    SBLite[] sbresults = controller.doSBQuery(sbquery);
+                }
+                ProjectLite[] projects = controller.doProjectQuery(pName, pi, type);
+                combineResults(sbresults, projects);
+                */
                 if(projectCB.isSelected() ){
-                    makeProjectQuery();
+                //    displayProjectResults(projects);
                 } else if(sbCB.isSelected()){
-                    makeSBQuery();
+                //    displaySBResults(sbresults);
                 } else {
                 //shouldnt have happened
                     System.out.println("both of the CBs aren't selected!");
@@ -185,8 +220,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 piNameTF.setText("");
                 projNameTF.setText("");
                 projTypeChoices.setSelectedItem(0);
-                sbTypeChoices.setSelectedItem(0);
-                sbModeChoices.setSelectedItem(0);
+                sbModeNameChoices.setSelectedItem(0);
+                sbModeTypeChoices.setSelectedItem(0);
                 //when there is expert do clear there
                 //expertQueryTF.setText("");
             }
@@ -200,18 +235,58 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         add(p, BorderLayout.CENTER);
     }
 
+    //////////////////////////////////////
+    /// SB Stuff Below
+    //////////////////////////////////////
         
     public String makeSBQuery(){
         //access to pi name, sb type, sb mode
-        String query="";
+        String sbModeType =(String) sbModeTypeChoices.getSelectedItem();
+        String sbModeName = (String)sbModeNameChoices.getSelectedItem(); //correspondstypename of mode
+        System.out.println(sbModeType +" = type");
+        System.out.println(sbModeName +" = name");
+        String query;
+        if(sbModeName.equals("All") && sbModeType.equals("All") )  {
+            query="/*";
+        } else if(sbModeType.equals("All") ) {
+            //mode == all so serching by type only
+            query="/sbl:SchedBlock[sbl:modeName=\""+sbModeName+"\"]";
+        } else if(sbModeName.equals("All")) {
+            //type == all so serching by mode only
+            query="/sbl:SchedBlock[sbl:modeType=\""+sbModeType+"\"]";
+        } else {
+            //searching with both!
+            query = "/sbl:SchedBlock[sbl:modeType=\""+
+                        sbModeType+"\" and sbl:modeName=\""+sbModeName+"\"]";
+        }
+        System.out.println("sb query = "+query);
         return query;
     }
 
-    public String makeProjectQuery() {
-        //access to pi name, project name, proj type
-        String query="";
-        return query;
+    public void displaySBResults(SBLite[] results){
+        String name =parent.getClass().getName();
+        //System.out.println("Parent class = "+name);
+        if(name.contains("SearchArchiveOnlyTab")){
+            ((SearchArchiveOnlyTab)parent).updateSBView(results);
+        }
     }
-
     
+    //////////////////////////////////////
+    /// Project Stuff Below
+    //////////////////////////////////////
+    
+    public void displayProjectResults(ProjectLite[] results){
+        String name =parent.getClass().getName();
+        //System.out.println("Parent class = "+name);
+        if(name.contains("SearchArchiveOnlyTab")){
+            ((SearchArchiveOnlyTab)parent).updateProjectView(results);
+        }
+    }
+
+    //////////////////////////////////////
+    // Combined search results
+    //////////////////////////////////////
+    private void combineResults(SBLite[] sbs, ProjectLite[] projects) {
+        
+    }
 }

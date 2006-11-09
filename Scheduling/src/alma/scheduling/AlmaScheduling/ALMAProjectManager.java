@@ -63,7 +63,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.77 2006/11/08 15:50:08 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.78 2006/11/09 23:20:12 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -936,9 +936,13 @@ public class ALMAProjectManager extends ProjectManager {
         for(int i=0; i < sbIds.length; i++){
             sbs.add(sbIds[i]);
         }
+        //for each project
         for(int i=0; i < projectIds.length; i++){
+            //get all its sbs
             SB[] projectSBs = ((Project)pQueue.get(projectIds[i])).getAllSBs();
+            //for each sb in that project
             for (int j=0; j < projectSBs.length; j++){
+                //if it matches one of the ones in the search we return it!
                 if(sbs.contains(projectSBs[j].getId())){
                     //yup its a match! return this project now.
                     v_res.add(projectIds[i]);
@@ -952,6 +956,31 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return results;
     }
+
+    public String[] getSBProjectUnion(String[] sbIds, String[] projectIds){
+        String[] results = new String[0];
+        Vector res = new Vector();
+        //for each sb
+        for(int i=0;i < sbIds.length; i++){
+            SB sb = sbQueue.get(sbIds[i]);
+            //get its project
+            Project p = sb.getProject();
+            //check if its project is in the list of projectIds
+            for(int j=0; j < projectIds.length;j++){
+                if(p.getId().equals(projectIds[j])) {
+                    //add that sb as one to return!
+                    res.add(sbIds[i]);
+                }
+            }
+        }
+        results = new String[res.size()];
+        for(int i=0; i < res.size(); i++){
+            results[i] = (String)res.elementAt(i);
+        }
+
+        return results;
+    }
+    
     public Object archiveRetrieve(String uid) throws SchedulingException {
         return archive.retrieve(uid);
     }
@@ -970,6 +999,28 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return sbsFromPM;
     }
+
+    public SBLite[] getSBLitesForProject(String projectId) {
+        SB[] sbs=null;
+        SBLite[] sblites=null;
+        try {
+            sbs = getSBsForProject(projectId);
+            sblites = new SBLite[sbs.length];
+            for(int i=0; i <sbs.length; i++){
+                sblites[i] =createSBLite(sbs[i].getSchedBlockId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sblites;
+    }
+
+    public ProjectLite getProjectLiteForSB(String sbId) {
+        SB sb =(SB)sbQueue.get(sbId);
+        ProjectLite p=createProjectLite(sb.getProject().getId());
+        return p;
+    }
+    
     
     ///////////////////////////////////////////////////////////////
         // PollArchiveStuff
@@ -1292,32 +1343,32 @@ public class ALMAProjectManager extends ProjectManager {
         getUpdates();
         logger.info("SCHEDULING: Called getProjectLites(ids)");
         ProjectLite[] projectliteArray=new ProjectLite[ids.length];
-        ProjectLite projectlite;
-        Project p;
-        SB[] sbs;
-        String[] sbids;
         for(int i=0; i < ids.length; i++){
-            p = pQueue.get(ids[i]);
-            projectlite = new ProjectLite();
-            projectlite.uid = p.getId();
-            projectlite.projectName = p.getProjectName();
-            projectlite.piName = p.getPI();
-            projectlite.version = p.getProjectVersion();
-            projectlite.status = p.getStatus().getStatus();
-            projectlite.creationTime = p.getTimeOfCreation().toString();
-            projectlite.totalSBs = String.valueOf(p.getTotalSBs());
-            projectlite.completeSBs = String.valueOf(p.getNumberSBsCompleted());
-            projectlite.failedSBs = String.valueOf(p.getNumberSBsFailed());
-            sbs = p.getAllSBs();
-            sbids = new String[sbs.length];
-            for(int j=0; j < sbs.length;j++){
-                sbids[j] = sbs[j].getId();
-            }
-            projectlite.allSBIds = sbids;
+            projectliteArray[i] = createProjectLite(ids[i]);
 
-            projectliteArray[i] = projectlite;
         }
         return projectliteArray;
+    }
+
+    private ProjectLite createProjectLite(String id) {
+        Project p = pQueue.get(id);;
+        ProjectLite projectlite= new ProjectLite();
+        projectlite.uid = p.getId();
+        projectlite.projectName = p.getProjectName();
+        projectlite.piName = p.getPI();
+        projectlite.version = p.getProjectVersion();
+        projectlite.status = p.getStatus().getStatus();
+        projectlite.creationTime = p.getTimeOfCreation().toString();
+        projectlite.totalSBs = String.valueOf(p.getTotalSBs());
+        projectlite.completeSBs = String.valueOf(p.getNumberSBsCompleted());
+        projectlite.failedSBs = String.valueOf(p.getNumberSBsFailed());
+        SB[] sbs = p.getAllSBs();
+        String[] sbids= new String[sbs.length];
+        for(int j=0; j < sbs.length;j++){
+            sbids[j] = sbs[j].getId();
+        }
+        projectlite.allSBIds = sbids;
+        return projectlite;
     }
 
     public void createProjectWebpage(String uid) {

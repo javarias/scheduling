@@ -19,7 +19,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private PluginContainerServices container;
     private MainSchedTabPaneController controller;
     private JPopupMenu rightClickMenu;
-    private boolean connectedToSystem = false;
+    private boolean connectedToALMA = false;
     private boolean createArrayEnabled = false;
     private Logger logger;
     private int overTabIndex;
@@ -72,12 +72,13 @@ public class MainSchedTabPane extends JTabbedPane {
     private void createRightClickMenu(){
         rightClickMenu = new JPopupMenu("Master Scheduler Functions");
         JMenuItem menuItem;
-        if(connectedToSystem) {
+        if(connectedToALMA) {
             //don't need anything...
             menuItem = new JMenuItem("disconnect");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
-                    connectedToSystem = false;
+                    connectedToALMA = false;
+                    archiveTab.connectToALMA(false);
                     createRightClickMenu();
                 }
             });
@@ -87,7 +88,8 @@ public class MainSchedTabPane extends JTabbedPane {
             menuItem = new JMenuItem("Connect");
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent event){
-                    connectedToSystem = true;
+                    connectedToALMA = true;
+                    archiveTab.connectToALMA(true);
                     createRightClickMenu();
                 }
             });
@@ -122,7 +124,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
         interactiveB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(connectedToSystem){
+                    if(connectedToALMA){
                         createArrayEnabled = true;
                         middlePanel.setEnabled(true);
                         middlePanel.prepareCreateArray("interactive");
@@ -137,7 +139,7 @@ public class MainSchedTabPane extends JTabbedPane {
         });               
         queuedB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(connectedToSystem){
+                    if(connectedToALMA){
                         createArrayEnabled = true;
                         middlePanel.setEnabled(true);
                        // middlePanel.setArrayMode("queued");
@@ -151,7 +153,7 @@ public class MainSchedTabPane extends JTabbedPane {
         });               
         dynamicB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(connectedToSystem){
+                    if(connectedToALMA){
                         createArrayEnabled = true;
                         middlePanel.setEnabled(true);
                         middlePanel.prepareCreateArray("dynamic");
