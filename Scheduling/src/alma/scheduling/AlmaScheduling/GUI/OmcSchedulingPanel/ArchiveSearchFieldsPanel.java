@@ -52,12 +52,12 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 projectCB.setSelected(true);
                 if(sbCB.isSelected()){
                     sbCB.setSelected(false);
-                    sbModeNameChoices.setEnabled(false);
-                    sbModeTypeChoices.setEnabled(false);
+                    //sbModeNameChoices.setEnabled(false);
+                    //sbModeTypeChoices.setEnabled(false);
                 } 
                 //projTypeChoices.setEnabled(true);
-                projNameTF.setEnabled(true);
-                piNameTF.setEnabled(true);
+                //projNameTF.setEnabled(true);
+                //piNameTF.setEnabled(true);
             }
         });
         p1.add(l); 
@@ -73,11 +73,11 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 if(projectCB.isSelected()){
                     projectCB.setSelected(false);
                     //projTypeChoices.setEnabled(false);
-                    piNameTF.setEnabled(false);
-                    projNameTF.setEnabled(false);
+                   // piNameTF.setEnabled(false);
+                  //  projNameTF.setEnabled(false);
                 } 
-                sbModeNameChoices.setEnabled(true);
-                sbModeTypeChoices.setEnabled(true);
+                //sbModeNameChoices.setEnabled(true);
+                //sbModeTypeChoices.setEnabled(true);
             }
         });
         p2.add(l);
@@ -194,7 +194,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 String type = (String)projTypeChoices.getSelectedItem();
                 //if we know its for all SBs ignore it
                 String sbquery = makeSBQuery();
-                //controller.doQuery(sbquery, pName, pi, type);
+                controller.doQuery(sbquery, pName, pi, type);
                 /*
                 if(sbquery.equals("/*")) {
                     SBLite[] sbresults = controller.doSBQuery(sbquery);
