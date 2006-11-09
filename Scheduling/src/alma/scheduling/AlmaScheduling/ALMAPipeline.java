@@ -49,7 +49,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.16 2006/11/08 15:50:08 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.17 2006/11/09 14:22:54 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -98,7 +98,7 @@ public class ALMAPipeline implements SciPipeline {
         } catch(AcsJContainerServicesEx e){
             logger.severe("SCHEDULING: QuickLook Pipeline Component is not available.");
             ql_startOk = false;
-            quickLookComp = null;
+            quicklookComp = null;
         }
     }
 
