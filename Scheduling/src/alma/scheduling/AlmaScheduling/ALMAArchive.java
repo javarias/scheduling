@@ -70,7 +70,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.66 2006/11/08 15:50:07 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.67 2006/11/15 16:16:42 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -155,6 +155,7 @@ public class ALMAArchive implements Archive {
                     throw new SchedulingException (e);
                 }
             }
+            cursor.close();
             sbs = new SpecialSB[tmpSpecialSBs.size()];
             for(int i=0; i < tmpSpecialSBs.size();i++) {
                 sbs[i] = (SpecialSB)tmpSpecialSBs.elementAt(i);
@@ -277,6 +278,7 @@ public class ALMAArchive implements Archive {
                 }
                 one = false;
             }
+            cursor.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
@@ -346,6 +348,7 @@ public class ALMAArchive implements Archive {
                         throw new SchedulingException (e);
                     }
                 }
+                cursor.close();
             }
             projects = new ObsProject[tmpObsProject.size()];
             for(int i=0; i < tmpObsProject.size();i++) {
@@ -668,6 +671,7 @@ public class ALMAArchive implements Archive {
             if(cursor.hasNext()){
                 throw new SchedulingException("SCHEDULING: getting proj with sb ref, should only be one proj!");
             }
+            cursor.close();
             return proj;
 
         } catch(ArchiveInternalError e) {
@@ -765,6 +769,7 @@ public class ALMAArchive implements Archive {
             for (int x=0; x < size; x++) {
                 sbs[x] = (SB)tmp_sbs.elementAt(x);
             }
+            cursor.close();
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException (e);
@@ -1139,7 +1144,7 @@ public class ALMAArchive implements Archive {
                 result = res.xml;
                 logger.info("SCHEDULING: PPR string: "+result);
             }
-
+            cursor.close();
             //query the archive for the pipelineprocessing requestthe pipelineprocessing request..
         } catch(Exception e) {
             logger.severe("SCHEDULING: Error getting the PPR String.");
@@ -1173,6 +1178,7 @@ public class ALMAArchive implements Archive {
             for(int i=0; i < res_tmp.size(); i++){
                 res[i] = (String)res_tmp.elementAt(i);
             }
+            cursor.close();
             return res;
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
