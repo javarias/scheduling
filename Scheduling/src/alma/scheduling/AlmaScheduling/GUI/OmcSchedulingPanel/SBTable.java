@@ -8,16 +8,20 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import alma.scheduling.SBLite;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class SBTable extends JTable {
     private final String[] sbColumnInfo = {"SB Name"};
     private final String[] sbColumnInfoWithStatus = {"SB Name","Exec Status"};
     private Object[][] sbRowInfo;
+    private int infoSize;
+    private int uidLoc;
     private TableModel sbTableModel;
     private JTextArea sbInfo;
     private boolean withExec; 
     private Dimension size;
     private JPanel parent;
+    private SBTableController controller;
 
     public SBTable(boolean b, Dimension tableSize) {
         super();
@@ -25,10 +29,13 @@ public class SBTable extends JTable {
         sbInfo = new JTextArea();
         withExec = b;
         if(withExec) {
-            sbRowInfo = new Object[0][sbColumnInfoWithStatus.length];
+            infoSize = sbColumnInfoWithStatus.length +1;
+            sbRowInfo = new Object[0][infoSize];
         } else {
-            sbRowInfo = new Object[0][sbColumnInfo.length];
+            infoSize = sbColumnInfo.length+1;
+            sbRowInfo = new Object[0][infoSize];
         }
+        uidLoc = infoSize-1;
         createTableModel();
         setModel(sbTableModel);
         setPreferredScrollableViewportSize(size);
@@ -47,12 +54,15 @@ public class SBTable extends JTable {
         });
     }
     
+    public void setCS(PluginContainerServices cs) {
+        controller = new SBTableController(cs);
+    }
     public void setOwner(JPanel p){
         parent = p;
     }
     private void createTableModel() {
         sbTableModel = new AbstractTableModel() {
-            public int getColumnCount() { 
+            public int getColumnCount() {
                 if(withExec) {
                     return sbColumnInfoWithStatus.length;
                 } else {
@@ -75,20 +85,20 @@ public class SBTable extends JTable {
     public void setRowInfo(SBLite[] sblites){
         int size = sblites.length;
         if(withExec) {
-            sbRowInfo = new Object[size][sbColumnInfoWithStatus.length];
+            sbRowInfo = new Object[size][infoSize];
         } else {
-            sbRowInfo = new Object[size][sbColumnInfo.length];
+            sbRowInfo = new Object[size][infoSize];
         }
         for(int i=0; i<size; i++){
             sbRowInfo[i][0] = sblites[i].sbName;
+            sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
         }
         repaint();
         revalidate();
         validate();
     }
     
-    public Object[][] getRowInfo() {
-        return sbRowInfo;
+    private void manageColumnSizes() {
     }
 
     public JScrollPane getSBInfoView(){
@@ -98,8 +108,40 @@ public class SBTable extends JTable {
     }
 
     private void showSBInfo(){
+        int[] rows = getSelectedRows();
+        if(rows.length > 1) {
+            //not good!
+        }
+        //get row number,
+        int row = getSelectedRow();
+        //corresponds to rowInfo index,
+        //last one == uid
+        String uid = (String)sbRowInfo[row][uidLoc];
+        SBLite sb = controller.getSBLite(uid);
+        sbInfo.append("");
+        sbInfo.append("SB Name: "+sb.sbName+"\n");
+        sbInfo.append("Priority: "+sb.priority+"\n");
+        sbInfo.append("RA: "+sb.ra+"\n");
+        sbInfo.append("DEC: "+sb.dec+"\n");
+        sbInfo.append("Frequency: "+sb.freq+"\n");
+        sbInfo.append("Score: "+sb.score+"\n");
+        sbInfo.append("Success: "+sb.success+"\n");
+        sbInfo.append("Rank: "+sb.rank+"\n");
+        sbInfo.repaint();
+        sbInfo.validate();
     }
 
     private void showSBProject(){
+    }
+
+    public void clear() {
+        if(withExec) {
+            sbRowInfo = new Object[0][infoSize];
+        } else {
+            sbRowInfo = new Object[0][infoSize];
+        }
+        repaint();
+        revalidate();
+        validate();
     }
 }

@@ -1,6 +1,7 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.*;
+import java.util.Vector;
 import java.util.EventListener;
 import java.awt.event.*;
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     private boolean connectedToALMA;
     private JPanel parent;
     private ArchiveSearchController controller;
+    private boolean searchingOnProject;
     
     public ArchiveSearchFieldsPanel(){
         setLayout(new BorderLayout());
@@ -47,17 +49,14 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         JPanel p1 = new JPanel();
         JLabel l = new JLabel("Projects:");
         projectCB = new JCheckBox("",true);
+        searchingOnProject = true;
         projectCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 projectCB.setSelected(true);
+                searchingOnProject = true;
                 if(sbCB.isSelected()){
                     sbCB.setSelected(false);
-                    //sbModeNameChoices.setEnabled(false);
-                    //sbModeTypeChoices.setEnabled(false);
                 } 
-                //projTypeChoices.setEnabled(true);
-                //projNameTF.setEnabled(true);
-                //piNameTF.setEnabled(true);
             }
         });
         p1.add(l); 
@@ -65,19 +64,15 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         JPanel p2 = new JPanel();
         l = new JLabel("SBs:");
         sbCB = new JCheckBox("",false);
-        sbModeNameChoices.setEnabled(false);
-        sbModeTypeChoices.setEnabled(false);
+        sbModeNameChoices.setEnabled(true);
+        sbModeTypeChoices.setEnabled(true);
         sbCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 sbCB.setSelected(true);
+                searchingOnProject = false;
                 if(projectCB.isSelected()){
                     projectCB.setSelected(false);
-                    //projTypeChoices.setEnabled(false);
-                   // piNameTF.setEnabled(false);
-                  //  projNameTF.setEnabled(false);
                 } 
-                //sbModeNameChoices.setEnabled(true);
-                //sbModeTypeChoices.setEnabled(true);
             }
         });
         p2.add(l);
@@ -156,7 +151,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         String[] projectTypes = {"All","Continuum","Polarization","Other"};
         projTypeChoices = new JComboBox(projectTypes);
         projTypeChoices.setSelectedIndex(0);
-        projTypeChoices.setEnabled(false); //TODO take this out when query works
+        projTypeChoices.setEnabled(true); 
         c.gridwidth =1;
         gridbag.setConstraints(projTypeChoices,c);
         p.add(projTypeChoices);
@@ -189,23 +184,22 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 if(controller == null) {
                     return;     
                 }
+                String name =parent.getClass().getName();
+                if(name.contains("SearchArchiveOnlyTab")){
+                    ((SearchArchiveOnlyTab)parent).clearTables();
+                }
                 String pi = piNameTF.getText();
                 String pName = projNameTF.getText();
                 String type = (String)projTypeChoices.getSelectedItem();
                 //if we know its for all SBs ignore it
                 String sbquery = makeSBQuery();
-                controller.doQuery(sbquery, pName, pi, type);
-                /*
-                if(sbquery.equals("/*")) {
-                    SBLite[] sbresults = controller.doSBQuery(sbquery);
-                }
-                ProjectLite[] projects = controller.doProjectQuery(pName, pi, type);
-                combineResults(sbresults, projects);
-                */
+                //returns a vector, first item will be matching projects
+                //second item will be matching sbs.
+                Vector res = controller.doQuery(sbquery, pName, pi, type);
                 if(projectCB.isSelected() ){
-                //    displayProjectResults(projects);
+                    displayProjectResults((ProjectLite[])res.elementAt(0));
                 } else if(sbCB.isSelected()){
-                //    displaySBResults(sbresults);
+                    displaySBResults((SBLite[])res.elementAt(1));
                 } else {
                 //shouldnt have happened
                     System.out.println("both of the CBs aren't selected!");
@@ -224,6 +218,10 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 sbModeTypeChoices.setSelectedItem(0);
                 //when there is expert do clear there
                 //expertQueryTF.setText("");
+                String name =parent.getClass().getName();
+                if(name.contains("SearchArchiveOnlyTab")){
+                    ((SearchArchiveOnlyTab)parent).clearTables();
+                }
             }
         });
         clearB.setToolTipText("Click here to clear text fields");
@@ -286,7 +284,4 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     //////////////////////////////////////
     // Combined search results
     //////////////////////////////////////
-    private void combineResults(SBLite[] sbs, ProjectLite[] projects) {
-        
-    }
 }

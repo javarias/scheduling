@@ -39,6 +39,8 @@ public class SearchArchiveOnlyTab extends JPanel {
         container = cs;
         logger = cs.getLogger();
         archiveSearchPanel.setCS(cs);
+        projects.setCS(cs);
+        sbs.setCS(cs);
     }
     public void connectToALMA(boolean x) {
         connectedToALMA=x;
@@ -97,5 +99,10 @@ public class SearchArchiveOnlyTab extends JPanel {
 
     public void updateProjectView(ProjectLite[] projectLites) {
         projects.setRowInfo(projectLites);
+    }
+
+    public void clearTables() {
+        sbs.clear();
+        projects.clear();
     }
 }
