@@ -41,6 +41,7 @@ import alma.Control.ExecBlockEndedEvent;
 //import alma.Control.ControlSystemStatusEvent;
 import alma.TelCalPublisher.*;
 import alma.pipelinescience.ScienceProcessingDoneEvent;
+import alma.offline.ASDMArchivedEvent;
 
 import alma.scheduling.StartSessionEvent;
 import alma.scheduling.EndSessionEvent;
@@ -57,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.38 2006/11/08 15:50:08 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.39 2006/11/15 16:04:58 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -110,6 +111,16 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         t.start();
     }
 
+
+////////////////////////
+// DataCapture
+////////////////////////
+
+    public void receive(ASDMArchivedEvent e ) {
+        ProcessASDMArchivedEvent p = new ProcessASDMArchivedEvent(e);
+        Thread t = new Thread(p);
+        t.start();
+    }
 
 ////////////////////////
 // SciPipeline
@@ -260,15 +271,15 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * event.
      * @param ControlEvent The event from control
      */
-    private void startPipeline(ControlEvent e) {
+    private void startPipeline(String sbid) {
         //check if we want to start the pipeline.
-        boolean startPipeline = manager.isPipelineNeeded(e.getSBId());
+        boolean startPipeline = manager.isPipelineNeeded(sbid);
         if(startPipeline) { //returned true and we want to start the pipeline
 
             String result = null;
             SciPipelineRequest ppr=null;
             try {
-                ppr = manager.createSciPipelineRequest(e.getSBId(), "Empty Comment");
+                ppr = manager.createSciPipelineRequest(sbid, "Empty Comment");
                 manager.startPipeline(ppr);
             } catch(Exception ex) {
                 logger.severe("SCHEDULING: error starting the science pipeline");
@@ -404,11 +415,22 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //send out an end session event
             endSession(eb);
             sbCompleted(eb);
-            startPipeline(ce);
+            //startPipeline(ce);
             deleteFinishedEB(eb);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace(System.out);
+        }
+    }
+
+    class ProcessASDMArchivedEvent implements Runnable {
+        private ASDMArchivedEvent event;
+
+        public ProcessASDMArchivedEvent(ASDMArchivedEvent e){
+            event =e;
+        }
+        public void run() {
+            startPipeline(event.workingDCId.schedBlock.entityId);
         }
     }
 }
