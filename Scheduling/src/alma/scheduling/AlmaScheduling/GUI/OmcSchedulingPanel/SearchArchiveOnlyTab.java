@@ -12,17 +12,19 @@ import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-public class SearchArchiveOnlyTab extends JPanel {
-    private PluginContainerServices container;
-    private Logger logger;
+public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
+    //private PluginContainerServices container;
+    //private Logger logger;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     private JPanel middlePanel;
     private JPanel bottomPanel;
     private SBTable sbs;
     private ProjectTable projects;
     private boolean connectedToALMA;
+    private boolean searchingOnProject;
 
     public SearchArchiveOnlyTab(){
+        super();
         setBorder(new TitledBorder("Search Archive"));
         setLayout(new BorderLayout());
         createTopPanel();
@@ -36,11 +38,21 @@ public class SearchArchiveOnlyTab extends JPanel {
     }
 
     public void connectedSetup(PluginContainerServices cs){
-        container = cs;
-        logger = cs.getLogger();
+     //   container = cs;
+     //   logger = cs.getLogger();
+        super.onlineSetup(cs);
         archiveSearchPanel.setCS(cs);
         projects.setCS(cs);
         sbs.setCS(cs);
+    }
+    
+    /**
+      *
+      */
+    public void setSearchMode(boolean b) {
+        searchingOnProject = b;
+        projects.setSearchMode(b);
+        sbs.setSearchMode(b);
     }
     public void connectToALMA(boolean x) {
         connectedToALMA=x;

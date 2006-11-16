@@ -5,39 +5,14 @@ import alma.Control.ControlMaster;
 import alma.scheduling.MasterSchedulerIF;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-public class MainSchedTabPaneController{
-    private PluginContainerServices container;
-    private Logger logger;
-    private MasterSchedulerIF masterScheduler=null;
+public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control=null;
 
     public MainSchedTabPaneController(PluginContainerServices cs){
-        container = cs;
-        logger = cs.getLogger();
+        super(cs);
     }
 
 ////////////////////////////////////    
-    private void getMSRef(){
-        try {
-            masterScheduler =
-                alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
-            logger.info("SCHEDULING_PANEL: Got MS in MainTab");
-        } catch (Exception e) {
-            //logger.info("SCHEDULING_PANEL: failed to get MS reference, "+e.toString());
-            //e.printStackTrace();
-            masterScheduler = null;
-        }
-    }
-    private void releaseMSRef(){
-        if(masterScheduler != null){
-            container.releaseComponent(masterScheduler.name());
-            logger.info("SCHEDULING_PANEL: Released MS in MainTab");
-            masterScheduler = null;
-        }
-    }
-
     private void getControlRef(){
         try {
             control = alma.Control.ControlMasterHelper.narrow(

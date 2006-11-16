@@ -1,9 +1,9 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.Vector;
-import java.awt.*;
-import java.util.EventListener;
-import java.awt.event.*;
+//import java.awt.*;
+//import java.util.EventListener;
+//import java.awt.event.*;
 //import javax.swing.*;
 //import javax.swing.border.*;
 import java.util.logging.Logger;

@@ -22,10 +22,11 @@ public class SchedulingPanelController {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
                         "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                logger.info("SCHEDULING_PANEL: Got MS");
             }
         } catch(Exception e){
             e.printStackTrace();
-            logger.severe("SP_ARCHIVE_CONTROLLER: Error getting MS: "+e.toString()); 
+            logger.severe("SCHEDULING_PANEL: Error getting MS: "+e.toString()); 
         }
     }
     
@@ -34,10 +35,11 @@ public class SchedulingPanelController {
         try {
             if(masterScheduler != null){
                 container.releaseComponent(masterScheduler.name());
+                logger.info("SCHEDULING_PANEL: Released MS.");
             }
         } catch(Exception e){
             e.printStackTrace();
-            logger.severe("SP_ARCHIVE_CONTROLLER: Error releasing MS: "+e.toString());
+            logger.severe("SCHEDULING_PANEL: Error releasing MS: "+e.toString());
         }
     }
 

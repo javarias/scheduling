@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
+import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
@@ -22,6 +23,7 @@ public class SBTable extends JTable {
     private Dimension size;
     private JPanel parent;
     private SBTableController controller;
+    private boolean sbSearchMode;
 
     public SBTable(boolean b, Dimension tableSize) {
         super();
@@ -44,8 +46,20 @@ public class SBTable extends JTable {
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
-                showSBInfo();
-                showSBProject();
+                int[] rows = getSelectedRows();
+                if(rows.length > 1) {
+                    //not good!
+                }
+                //get row number,
+                int row = getSelectedRow();
+                //corresponds to rowInfo index,
+                //last one == uid
+                String uid = (String)sbRowInfo[row][uidLoc];
+                SBLite sb = controller.getSBLite(uid);
+                showSBInfo(sb);
+                if(sbSearchMode){
+                    showSBProject(sb);
+                }
             }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
@@ -56,6 +70,9 @@ public class SBTable extends JTable {
     
     public void setCS(PluginContainerServices cs) {
         controller = new SBTableController(cs);
+    }
+    public void setSearchMode(boolean b){
+        sbSearchMode = b;
     }
     public void setOwner(JPanel p){
         parent = p;
@@ -107,18 +124,8 @@ public class SBTable extends JTable {
         return p;
     }
 
-    private void showSBInfo(){
-        int[] rows = getSelectedRows();
-        if(rows.length > 1) {
-            //not good!
-        }
-        //get row number,
-        int row = getSelectedRow();
-        //corresponds to rowInfo index,
-        //last one == uid
-        String uid = (String)sbRowInfo[row][uidLoc];
-        SBLite sb = controller.getSBLite(uid);
-        sbInfo.append("");
+    private void showSBInfo(SBLite sb){
+        sbInfo.setText("");
         sbInfo.append("SB Name: "+sb.sbName+"\n");
         sbInfo.append("Priority: "+sb.priority+"\n");
         sbInfo.append("RA: "+sb.ra+"\n");
@@ -131,7 +138,12 @@ public class SBTable extends JTable {
         sbInfo.validate();
     }
 
-    private void showSBProject(){
+    private void showSBProject(SBLite sb){
+        ProjectLite[] p = controller.getProjectLite(sb.projectRef);
+        String par = parent.getClass().getName();
+        if(par.contains("SearchArchiveOnlyTab")){
+            ((SearchArchiveOnlyTab)parent).updateProjectView(p);
+        }
     }
 
     public void clear() {
@@ -140,6 +152,7 @@ public class SBTable extends JTable {
         } else {
             sbRowInfo = new Object[0][infoSize];
         }
+        sbInfo.setText("");
         repaint();
         revalidate();
         validate();

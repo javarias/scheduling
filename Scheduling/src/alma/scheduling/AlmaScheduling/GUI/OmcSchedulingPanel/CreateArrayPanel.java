@@ -7,19 +7,10 @@ import java.awt.*;
 import java.util.Vector;
 import javax.swing.table.*;
 import java.util.logging.Logger;
-import alma.acs.container.ContainerServices;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-import alma.Control.ControlMaster;
-import alma.scheduling.ArrayModeEnum;
-import alma.scheduling.MasterSchedulerIF;
+public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
-public class CreateArrayPanel extends JPanel {
-
-    private MasterSchedulerIF masterScheduler;
-    private ControlMaster control;
-    private Logger logger;
-    private PluginContainerServices container;
     private TableModel antennaTableModelA;
     private TableModel antennaTableModelB;
     private JTable antennaTableA;
@@ -34,7 +25,9 @@ public class CreateArrayPanel extends JPanel {
     private JButton createArrayB;
     private JButton cancelB;
     private String arrayMode;
-    
+    private CreateArrayController controller;
+    private JTabbedPane parent;
+
     public CreateArrayPanel() {
         super();
         super.setBorder(new TitledBorder("Create Array"));
@@ -42,10 +35,13 @@ public class CreateArrayPanel extends JPanel {
         setSize(400,300);
         add(createAntennaColumns(), BorderLayout.CENTER);
     }
+    public void setOwner(JTabbedPane p){
+        parent = p;
+    }
 
     public void connectedSetup(PluginContainerServices cs) {
-        this.container = cs;
-        this.logger = cs.getLogger();
+        super.onlineSetup(cs);
+        controller = new CreateArrayController(cs);
     }
 
     public void setEnabled(boolean enabled){
@@ -326,32 +322,6 @@ public class CreateArrayPanel extends JPanel {
         validate();
     }
     
-    private void getComponentRefs(){
-        //will need
-        // - master scheduler
-        // - control master
-        try {
-            masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
-            logger.info("SCHEDULING_PANEL: Got MS in array creator");
-            control = alma.Control.ControlMasterHelper.narrow(
-                    container.getComponent("CONTROL/MASTER"));
-            logger.info("SCHEDULING_PANEL: Got control system in array creator");
-                        
-        } catch (Exception e){
-            e.printStackTrace();
-            logger.severe("SCHEDULING_PANEL: Could not get components to create array");
-        }
-    }
-    private void getAntennas() {
-        try{
-            availableAntennas = control.getAvailableAntennas();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
     private void updateAntennaTableA(){
         updateAntennaRowInfoA();
         antennaTableA.repaint();
@@ -360,9 +330,8 @@ public class CreateArrayPanel extends JPanel {
     }
 
     public void prepareCreateArray(String mode){
-        getComponentRefs();
         arrayMode = mode;
-        getAntennas();
+        availableAntennas = controller.getAntennas();
         updateAntennaTableA();
     }
        
@@ -383,24 +352,7 @@ public class CreateArrayPanel extends JPanel {
         }
         String arrayName;
         try {
-            if(arrayMode.toLowerCase().equals("dynamic")){
-                arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.DYNAMIC);
-            } else if(arrayMode.toLowerCase().equals("interactive")){
-                arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.INTERACTIVE);
-            } else if(arrayMode.toLowerCase().equals("queued")) {
-                arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.QUEUED);
-            } else if(arrayMode.toLowerCase().equals("manual")){
-                arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.MANUAL);
-            } else {
-                //this should never happen!
-                logger.severe("SCHEDULING_PANEL: No array created. InvalidMode");
-                JOptionPane.showMessageDialog(this,"Invalid array mode. No array created", "Invalid Mode", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
+            arrayName = controller.createArray(arrayMode, antennas);
             allArrays.add(arrayName);
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, e.toString()+
@@ -409,22 +361,15 @@ public class CreateArrayPanel extends JPanel {
                     "Error creating array", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        //tell parent component to open new scheduler tab.
+        OpenSchedulerTab newTab = new OpenSchedulerTab(arrayMode, arrayName);
+        Thread t = new Thread(newTab);
+        t.start();
         return true;
 
     }
 
-    private void releaseComponentRefs() {
-        try {
-            container.releaseComponent(control.name());
-            container.releaseComponent(masterScheduler.name());
-        } catch(Exception e) {
-            e.printStackTrace();
-            logger.severe("SCHEDULING_PANEL: Error releasing components from array creator");
-        }
-    }
-
     public void exit() {
-        releaseComponentRefs();
         clearAntennaTables();
     }
 
@@ -437,4 +382,15 @@ public class CreateArrayPanel extends JPanel {
         antennaTableB.revalidate();
     }
     
+    class OpenSchedulerTab implements Runnable {
+        private String mode;
+        private String array;
+        public OpenSchedulerTab(String m, String arrayName) {
+            mode =m;
+            array = arrayName;
+        }
+        public void run() {
+            ((MainSchedTabPane)parent).openSchedulerTab(mode, array);
+        }
+    }
 }

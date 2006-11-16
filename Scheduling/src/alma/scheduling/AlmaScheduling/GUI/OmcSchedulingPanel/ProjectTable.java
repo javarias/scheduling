@@ -22,6 +22,7 @@ public class ProjectTable extends JTable {
     private Dimension size;
     private JPanel parent;
     private ProjectTableController controller;
+    private boolean projectSearchMode;
     
     public ProjectTable(Dimension tableSize) {
         super(); 
@@ -53,7 +54,9 @@ public class ProjectTable extends JTable {
                 ProjectLite p = controller.getProjectLite(uid);
                 showProjectInfo(p);
                 //get project sbs
-                showProjectSBs(p);
+                if(projectSearchMode){
+                    showProjectSBs(p);
+                }
             }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
@@ -64,6 +67,9 @@ public class ProjectTable extends JTable {
 
     public void setCS(PluginContainerServices cs){
         controller = new ProjectTableController(cs);
+    }
+    public void setSearchMode(boolean b){
+        projectSearchMode = b;
     }
     public void setOwner(JPanel p){
         parent = p;
@@ -100,11 +106,12 @@ public class ProjectTable extends JTable {
     }
 
     private void showProjectInfo(ProjectLite p){
+        projectInfo.setText("");
         projectInfo.append("Project Name = "+p.projectName +"\n");
         projectInfo.append("PI Name = "+p.piName+"\n");
         projectInfo.append("Status = "+p.status +"\n");  
         projectInfo.append("Total number of SBs = "+p.totalSBs +"\n");  
-        projectInfo.append("Total number of SBs completed = "+p.completeSBs +"\n");  
+        projectInfo.append("Total number of SBs completed = "+p.completeSBs +"\n"); 
         projectInfo.append("Total number of SBs failed = "+p.failedSBs +"\n");  
         projectInfo.repaint();
         projectInfo.validate();
@@ -113,11 +120,15 @@ public class ProjectTable extends JTable {
     private void showProjectSBs(ProjectLite p) {
         String[] ids = p.allSBIds;
         SBLite[] sbs = controller.getSBLites(ids);
-        ((SearchArchiveOnlyTab)parent).updateSBView(sbs);
+        String par = parent.getClass().getName();
+        if(par.contains("SearchArchiveOnlyTab")){
+            ((SearchArchiveOnlyTab)parent).updateSBView(sbs);
+        }
     }
 
     public void clear(){
        projRowInfo = new Object[0][infoSize];
+       projectInfo.setText("");
        repaint();
        revalidate();
        validate();

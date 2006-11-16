@@ -188,22 +188,9 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 if(name.contains("SearchArchiveOnlyTab")){
                     ((SearchArchiveOnlyTab)parent).clearTables();
                 }
-                String pi = piNameTF.getText();
-                String pName = projNameTF.getText();
-                String type = (String)projTypeChoices.getSelectedItem();
-                //if we know its for all SBs ignore it
-                String sbquery = makeSBQuery();
-                //returns a vector, first item will be matching projects
-                //second item will be matching sbs.
-                Vector res = controller.doQuery(sbquery, pName, pi, type);
-                if(projectCB.isSelected() ){
-                    displayProjectResults((ProjectLite[])res.elementAt(0));
-                } else if(sbCB.isSelected()){
-                    displaySBResults((SBLite[])res.elementAt(1));
-                } else {
-                //shouldnt have happened
-                    System.out.println("both of the CBs aren't selected!");
-                }
+                SPSearchArchiveThread foo = new SPSearchArchiveThread();
+                Thread t = new Thread(foo);
+                t.start();
             }
         });
         searchB.setToolTipText("Click here to search archive.");
@@ -266,6 +253,10 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         //System.out.println("Parent class = "+name);
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateSBView(results);
+        } else if(name.contains("InteractiveSchedTab")){
+            ((InteractiveSchedTab)parent).updateSBView(results);
+        } else if(name.contains("QueuedSchedTab")){
+            ((InteractiveSchedTab)parent).updateSBView(results);
         }
     }
     
@@ -278,10 +269,36 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         //System.out.println("Parent class = "+name);
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateProjectView(results);
+        } else if(name.contains("InteractiveSchedTab")){
+            ((InteractiveSchedTab)parent).updateProjectView(results);
+        } else if(name.contains("QueuedSchedTab")){
+            ((InteractiveSchedTab)parent).updateProjectView(results);
         }
     }
 
     //////////////////////////////////////
-    // Combined search results
+    // Search Thread
     //////////////////////////////////////
+    class SPSearchArchiveThread implements Runnable {
+        public SPSearchArchiveThread (){
+        }
+        public void run(){
+            String pi = piNameTF.getText();
+            String pName = projNameTF.getText();
+            String type = (String)projTypeChoices.getSelectedItem();
+            //if we know its for all SBs ignore it
+            String sbquery = makeSBQuery();
+            //returns a vector, first item will be matching projects
+            //second item will be matching sbs.
+            Vector res = controller.doQuery(sbquery, pName, pi, type);
+            if(projectCB.isSelected() ){
+                displayProjectResults((ProjectLite[])res.elementAt(0));
+            } else if(sbCB.isSelected()){
+                displaySBResults((SBLite[])res.elementAt(1));
+            } else {
+            //shouldnt have happened
+                System.out.println("both of the CBs aren't selected!");
+            }
+        }
+    }
 }
