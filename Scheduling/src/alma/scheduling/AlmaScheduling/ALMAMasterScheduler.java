@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.77 2006/11/09 23:20:12 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.78 2006/11/17 15:29:04 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -188,6 +188,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 containerServices);
         control_nc.attach("alma.Control.ExecBlockStartedEvent", eventreceiver);
         control_nc.attach("alma.Control.ExecBlockEndedEvent", eventreceiver);
+        control_nc.attach("alma.offline.ASDMArchivedEvent", eventreceiver);
         control_nc.begin();
         // Connect to the TelCal NC
         telcal_nc = AbstractNotificationChannel.getReceiver(
