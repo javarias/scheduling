@@ -23,7 +23,7 @@ public class SBTable extends JTable {
     private Dimension size;
     private JPanel parent;
     private SBTableController controller;
-    private boolean sbSearchMode;
+    private boolean projectSearchMode;
 
     public SBTable(boolean b, Dimension tableSize) {
         super();
@@ -44,6 +44,7 @@ public class SBTable extends JTable {
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        projectSearchMode = true;
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
                 int[] rows = getSelectedRows();
@@ -57,7 +58,7 @@ public class SBTable extends JTable {
                 String uid = (String)sbRowInfo[row][uidLoc];
                 SBLite sb = controller.getSBLite(uid);
                 showSBInfo(sb);
-                if(sbSearchMode){
+                if(!projectSearchMode){
                     showSBProject(sb);
                 }
             }
@@ -72,7 +73,7 @@ public class SBTable extends JTable {
         controller = new SBTableController(cs);
     }
     public void setSearchMode(boolean b){
-        sbSearchMode = b;
+        projectSearchMode = b;
     }
     public void setOwner(JPanel p){
         parent = p;
@@ -120,7 +121,12 @@ public class SBTable extends JTable {
 
     public JScrollPane getSBInfoView(){
         JScrollPane p = new JScrollPane (sbInfo);
-        p.setPreferredSize(size);
+        if(withExec){
+            Dimension d = new Dimension(size.width, size.height + 25);
+            p.setPreferredSize(d);
+        }else{
+            p.setPreferredSize(size);
+        }
         return p;
     }
 

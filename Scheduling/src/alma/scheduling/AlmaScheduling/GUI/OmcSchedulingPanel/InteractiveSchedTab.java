@@ -18,18 +18,24 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     private String type;
     
     private ArchiveSearchFieldsPanel archiveSearchPanel;
+    private InteractiveSchedTabController controller;
     private JPanel middlePanel;
     private JPanel bottomPanel;
+    private JButton execB;
+    private JButton stopB;
     private SBTable sbs;
     private ProjectTable projects; 
+    private boolean sessionStarted;
     
     public InteractiveSchedTab(PluginContainerServices cs, String schedName, String aName){
         super();
         super.onlineSetup(cs);
         schedulerName = schedName;
+        controller = new InteractiveSchedTabController(cs, schedulerName);
         arrayName = aName;
         type = "interactive"; 
         createLayout();
+        sessionStarted = true; //don't use this right now...
     }
     /////////// SchedulerTab stuff /////
     public String getSchedulerName(){
@@ -86,9 +92,22 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         JScrollPane pane2 = new JScrollPane(sbs);
         sbPanel.add(pane2,BorderLayout.CENTER);
         //add execute button and stop button
+        execB = new JButton("Execute");
+        execB.setToolTipText("Will execute the selected SB.");
+        execB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            //disable searching while a SB is executing...
+            }
+        });
+        stopB = new JButton("Stop");
+        stopB.setToolTipText("Will stop the currently running SB on this array");
+        stopB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            }
+        });
         JPanel buttons = new JPanel(new GridLayout(1,2));
-        buttons.add(new JButton("Execute"));
-        buttons.add(new JButton("Stop"));
+        buttons.add(execB);
+        buttons.add(stopB);
         sbPanel.add(buttons, BorderLayout.SOUTH);
         middlePanel.add(sbPanel, BorderLayout.EAST);
         

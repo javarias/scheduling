@@ -33,16 +33,30 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         createCheckBoxes();//need to do this 2nd coz other fields will be null when used
         controller = null;
         connectedToALMA= false;
+        searchingOnProject=true;
     }
 
     public void setCS(PluginContainerServices cs) {
         controller = new ArchiveSearchController(cs);
+        ((SearchArchiveOnlyTab)parent).setSearchMode(searchingOnProject);
     }
     public void connected(boolean x){
         connectedToALMA=x;
     }
     public void setOwner(JPanel p){
         parent = p;
+    }
+
+    public void setPanelEnabled(boolean b){
+        projectCB.setEnabled(b);
+        sbCB.setEnabled(b);
+        sbModeNameChoices.setEnabled(b);
+        sbModeTypeChoices.setEnabled(b);
+        projTypeChoices.setEnabled(b);
+        projNameTF.setEnabled(b);
+        piNameTF.setEnabled(b);
+        searchB.setEnabled(b);
+        clearB.setEnabled(b);
     }
 
     private void createCheckBoxes(){ 
@@ -54,6 +68,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 projectCB.setSelected(true);
                 searchingOnProject = true;
+                ((SearchArchiveOnlyTab)parent).setSearchMode(searchingOnProject);
                 if(sbCB.isSelected()){
                     sbCB.setSelected(false);
                 } 
@@ -70,6 +85,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 sbCB.setSelected(true);
                 searchingOnProject = false;
+                ((SearchArchiveOnlyTab)parent).setSearchMode(searchingOnProject);
                 if(projectCB.isSelected()){
                     projectCB.setSelected(false);
                 } 
