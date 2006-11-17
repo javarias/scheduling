@@ -91,7 +91,6 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         sbPanel.setBorder(new TitledBorder("SBs Found"));
         JScrollPane pane2 = new JScrollPane(sbs);
         sbPanel.add(pane2,BorderLayout.CENTER);
-        //add execute button and stop button
         execB = new JButton("Execute");
         execB.setToolTipText("Will execute the selected SB.");
         execB.addActionListener(new ActionListener(){
