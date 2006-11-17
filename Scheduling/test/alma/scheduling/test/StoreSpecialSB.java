@@ -1,7 +1,6 @@
 package alma.scheduling.test;
 
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
 import alma.acs.component.client.ComponentClient;
 
 import alma.xmlstore.Operational;

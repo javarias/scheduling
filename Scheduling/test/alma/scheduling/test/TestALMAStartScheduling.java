@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 
 import alma.acs.nc.*;
 import alma.acs.container.ContainerServices;
-import alma.acs.container.ContainerException;
 import alma.acs.component.client.ComponentClient;
 
 import alma.scheduling.MasterSchedulerIF;

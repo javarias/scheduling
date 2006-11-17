@@ -37,7 +37,6 @@ import alma.ControlCommon.DeviceConfig;
 import alma.ControlCommon.Master;
 import alma.ControlCommon.MasterHelper;
 import alma.acs.component.client.ComponentClientTestCase;
-import alma.acs.container.ContainerException;
 import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.nc.AbstractNotificationChannel;

@@ -7,7 +7,6 @@ import junit.framework.Test;
 //acs & alma
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.component.client.ComponentClient;
-import alma.acs.container.ContainerException;
 import alma.acs.container.ContainerServices;
 import alma.ACS.MasterComponent;
 import alma.ACS.ROstringSeq;
