@@ -38,13 +38,20 @@ public class ArchiveSearchFieldsPanel extends JPanel {
 
     public void setCS(PluginContainerServices cs) {
         controller = new ArchiveSearchController(cs);
-        ((SearchArchiveOnlyTab)parent).setSearchMode(searchingOnProject);
+        setSearchMode(searchingOnProject);
     }
     public void connected(boolean x){
         connectedToALMA=x;
     }
     public void setOwner(JPanel p){
         parent = p;
+    }
+    private void setSearchMode(boolean m){
+        if(parent.getClass().getName().contains("SearchArchiveOnlyTab")){
+            ((SearchArchiveOnlyTab)parent).setSearchMode(m);
+        } else if(parent.getClass().getName().contains("InteractiveSchedTab")){
+            ((InteractiveSchedTab)parent).setSearchMode(m);
+        }
     }
 
     public void setPanelEnabled(boolean b){
@@ -68,7 +75,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 projectCB.setSelected(true);
                 searchingOnProject = true;
-                ((SearchArchiveOnlyTab)parent).setSearchMode(searchingOnProject);
+                setSearchMode(searchingOnProject);
                 if(sbCB.isSelected()){
                     sbCB.setSelected(false);
                 } 
@@ -85,7 +92,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 sbCB.setSelected(true);
                 searchingOnProject = false;
-                ((SearchArchiveOnlyTab)parent).setSearchMode(searchingOnProject);
+                setSearchMode(searchingOnProject);
                 if(projectCB.isSelected()){
                     projectCB.setSelected(false);
                 } 
@@ -200,10 +207,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 if(controller == null) {
                     return;     
                 }
-                String name =parent.getClass().getName();
-                if(name.contains("SearchArchiveOnlyTab")){
-                    ((SearchArchiveOnlyTab)parent).clearTables();
-                }
+                doClear();
                 SPSearchArchiveThread foo = new SPSearchArchiveThread();
                 Thread t = new Thread(foo);
                 t.start();
@@ -219,12 +223,9 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 projTypeChoices.setSelectedItem(0);
                 sbModeNameChoices.setSelectedItem(0);
                 sbModeTypeChoices.setSelectedItem(0);
+                doClear();
                 //when there is expert do clear there
                 //expertQueryTF.setText("");
-                String name =parent.getClass().getName();
-                if(name.contains("SearchArchiveOnlyTab")){
-                    ((SearchArchiveOnlyTab)parent).clearTables();
-                }
             }
         });
         clearB.setToolTipText("Click here to clear text fields");
@@ -234,6 +235,15 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         gridbag.setConstraints(bp,c);
         p.add(bp);
         add(p, BorderLayout.CENTER);
+    }
+
+    private void doClear(){
+        String name =parent.getClass().getName();
+        if(name.contains("SearchArchiveOnlyTab")){
+            ((SearchArchiveOnlyTab)parent).clearTables();
+        } else if(name.contains("InteractiveSchedTab")){
+            ((InteractiveSchedTab)parent).clearTables();
+        }
     }
 
     //////////////////////////////////////
@@ -266,7 +276,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
 
     public void displaySBResults(SBLite[] results){
         String name =parent.getClass().getName();
-        //System.out.println("Parent class = "+name);
+        System.out.println("update sb resustls: Parent class = "+name);
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateSBView(results);
         } else if(name.contains("InteractiveSchedTab")){
@@ -282,7 +292,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     
     public void displayProjectResults(ProjectLite[] results){
         String name =parent.getClass().getName();
-        //System.out.println("Parent class = "+name);
+        System.out.println("update project results: Parent class = "+name);
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateProjectView(results);
         } else if(name.contains("InteractiveSchedTab")){

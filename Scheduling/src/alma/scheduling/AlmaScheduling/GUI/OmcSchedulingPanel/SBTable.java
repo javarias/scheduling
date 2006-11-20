@@ -149,6 +149,10 @@ public class SBTable extends JTable {
         String par = parent.getClass().getName();
         if(par.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateProjectView(p);
+        } else if(par.contains("InteractiveSchedTab")){
+            ((InteractiveSchedTab)parent).updateProjectView(p);
+//        } else if(par.contains("QueuedSchedTab")){
+  //          ((QueuedSchedTab)parent).updateProjectView(p);
         }
     }
 

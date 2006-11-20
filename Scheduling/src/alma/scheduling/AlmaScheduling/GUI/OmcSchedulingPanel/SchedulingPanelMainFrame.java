@@ -10,22 +10,26 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.util.logging.Logger;
 //exec plugin stuff
 import alma.exec.extension.subsystemplugin.*;
 
 public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin {
     private PluginContainerServices cs;
+    private JPanel main;
+    private JScrollPane pane;
     private MainSchedTabPane mainSchedPanel;
     private Logger logger;
     
     public SchedulingPanelMainFrame(){
         createMainSchedPanel();
-        JPanel grr = new JPanel();
+        main = new JPanel();
         Dimension d = getPreferredSize();
-        grr.setSize(d.width + 5, d.height + 5);
-        grr.add(mainSchedPanel);
-        add(grr);
+        main.setSize(d.width + 5, d.height + 5);
+        pane = new JScrollPane(mainSchedPanel);
+        main.add(pane);
+        add(main);
         setVisible(true);
     }
 

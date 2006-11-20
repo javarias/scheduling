@@ -123,6 +123,10 @@ public class ProjectTable extends JTable {
         String par = parent.getClass().getName();
         if(par.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateSBView(sbs);
+        } else if(par.contains("InteractiveSchedTab")){
+            ((InteractiveSchedTab)parent).updateSBView(sbs);
+        //} else if(par.contains("QueuedSchedTab")){
+         //   ((QueuedSchedTab)parent).updateSBView(sbs);
         }
     }
 

@@ -26,16 +26,22 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     private SBTable sbs;
     private ProjectTable projects; 
     private boolean sessionStarted;
-    
+    private boolean searchingOnProject; 
+
     public InteractiveSchedTab(PluginContainerServices cs, String schedName, String aName){
         super();
         super.onlineSetup(cs);
+        searchingOnProject=true;
         schedulerName = schedName;
         controller = new InteractiveSchedTabController(cs, schedulerName);
         arrayName = aName;
         type = "interactive"; 
         createLayout();
         sessionStarted = true; //don't use this right now...
+        archiveSearchPanel.setCS(cs);
+        projects.setCS(cs);
+        sbs.setCS(cs);
+        setEnable(true);
     }
     /////////// SchedulerTab stuff /////
     public String getSchedulerName(){
@@ -96,12 +102,15 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         execB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
             //disable searching while a SB is executing...
+                setEnable(false);
+                //check if a sb has been selected.
             }
         });
         stopB = new JButton("Stop");
         stopB.setToolTipText("Will stop the currently running SB on this array");
         stopB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                setEnable(true);
             }
         });
         JPanel buttons = new JPanel(new GridLayout(1,2));
@@ -122,6 +131,29 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         p2.add(sbs.getSBInfoView());
         bottomPanel.add(p2, BorderLayout.EAST);
         
+    }
+
+    /**
+      * If true then search fields & execute button are enabled and stop disabled
+      */
+    public void setEnable(boolean b) {
+        if(b) {
+            archiveSearchPanel.setEnabled(b);
+            execB.setEnabled(b);
+            stopB.setEnabled(!b);
+        } else {
+            archiveSearchPanel.setEnabled(b);
+            execB.setEnabled(b);
+            stopB.setEnabled(!b);
+        }
+    }
+    /**
+      *
+      */
+    public void setSearchMode(boolean b) {
+        searchingOnProject = b;
+        projects.setSearchMode(b);
+        sbs.setSearchMode(b);
     }
     
     public void updateSBView(SBLite[] sblites){
