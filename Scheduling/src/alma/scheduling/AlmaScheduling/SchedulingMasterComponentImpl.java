@@ -47,7 +47,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.27 2006/11/21 23:38:06 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.28 2006/11/21 23:45:33 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -230,6 +230,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     private void publishSchedulingStateEvent(SchedulingState x) {        
         SchedulingStateEvent e = new SchedulingStateEvent();
         e.state = x;
+        try {
+            nc.publishEvent(e);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     ////////////////////////////////////////////////////////////////
