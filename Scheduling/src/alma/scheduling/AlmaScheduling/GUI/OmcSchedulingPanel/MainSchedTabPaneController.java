@@ -3,13 +3,33 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 import java.util.logging.Logger;
 import alma.Control.ControlMaster;
 import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.SchedulingState;
+import alma.scheduling.SchedulingStateEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.acs.nc.Consumer;
 
 public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control=null;
+    private Consumer consumer;
+    private boolean connected = false;
 
-    public MainSchedTabPaneController(PluginContainerServices cs){
-        super(cs);
+    public MainSchedTabPaneController(){
+        super();
+        connected = false;
+    }
+    public void setup(PluginContainerServices cs){
+        super.onlineSetup(cs);
+        try {
+            consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
+            consumer.addSubscription(SchedulingStateEvent.class, this);
+            consumer.consumerReady();
+        }catch(Exception e){
+            logger.severe("SCHEDULING_PANEL: problem getting NC to get state event");
+            logger.severe("SCHEDULING_PANEL: setting state to connected anyways: COULD CAUSE PROBLEMS");
+            //todo send alarm
+            connected = true;
+            e.printStackTrace();
+        }
     }
 
 ////////////////////////////////////    
@@ -41,5 +61,18 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
             e.printStackTrace();
         }
         return res;
+    }
+
+    public boolean areWeConnected(){
+        return connected;
+    }
+
+    public void receive(SchedulingStateEvent e){
+        logger.info("GOT SchedulingStateEvent: "+e.state);
+        if(e.state == SchedulingState.ONLINE_PASS2){
+            connected = true;
+        }else if(e.state == SchedulingState.OFFLINE){
+            connected = false;
+        }
     }
 }

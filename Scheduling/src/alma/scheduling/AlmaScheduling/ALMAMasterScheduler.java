@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.78 2006/11/17 15:29:04 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.79 2006/11/21 23:38:06 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -596,6 +596,9 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         
     }
+    /**
+      * returns name of scheduler
+      */
     public String startInteractiveScheduling1
         (String arrayname) throws InvalidOperationEx {
             
@@ -882,7 +885,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         String type = scheduler.getType();
         if(type.equals("interactive")){
             try {
-                ((InteractiveScheduler)scheduler).execute(sbId);
+                ((InteractiveScheduler)scheduler).execute(sbQueue.get(sbId));
+                //((InteractiveScheduler)scheduler).execute(sbId);
             } catch(Exception e) {
                 e.printStackTrace();
             }
@@ -1133,7 +1137,8 @@ public class ALMAMasterScheduler extends MasterScheduler
             throw e2.toInvalidOperationEx();
         }
         try {
-            ((InteractiveScheduler)scheduler).execute(sbId);
+            ((InteractiveScheduler)scheduler).execute(sbQueue.get(sbId));
+            //((InteractiveScheduler)scheduler).execute(sbId);
         } catch(Exception e) {
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("executeInteractiveSB",
@@ -1254,11 +1259,11 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     private void checkSchedulerType(String type) throws InvalidOperationEx {
         if(!type.equals("interactive")){
-            InvalidOperation e1 = new InvalidOperation("executeInteractiveSB",
+            InvalidOperation e1 = new InvalidOperation("CheckSchedulerType",
                    "Wrong scheduler type: "+type);
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }
     }
-    
+
 }    

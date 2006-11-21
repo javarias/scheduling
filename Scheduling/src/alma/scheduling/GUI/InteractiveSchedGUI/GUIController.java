@@ -184,7 +184,7 @@ public class GUIController implements Runnable {
             //selectedSB.setStartTime(new DateTime(System.currentTimeMillis()));
             selectedSB.setStartTime(config.getClock().getDateTime());
             //config.getControl().execSB(config.getArrayName(), sb_id);
-            scheduler.execute(sb_id);
+            scheduler.execute(selectedSB);
         } catch(SchedulingException e) {
             System.out.println("SCHEDULING: error in executing the sb. "+e.toString());
             e.printStackTrace(System.out);

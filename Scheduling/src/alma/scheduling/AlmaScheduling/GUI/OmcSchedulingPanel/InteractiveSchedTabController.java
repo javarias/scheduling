@@ -7,29 +7,66 @@ import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.Define.*;
 import alma.acs.nc.Consumer;
+//import alma.acs.component.ComponentQueryDescriptor;
 import alma.Control.ExecBlockEndedEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.xmlstore.XmlStoreNotificationEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class InteractiveSchedTabController extends SchedulingPanelController {
-    private boolean sessionStarted;
+  //  private boolean sessionStarted;
     private Interactive_PI_to_Scheduling scheduler;
     private String schedulername;
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
     private String currentSBId;
-
+    private String arrayName;
     
-    public InteractiveSchedTabController(PluginContainerServices cs, String name){
+    public InteractiveSchedTabController(PluginContainerServices cs, String a){
         super(cs);
-        schedulername = name;
+        arrayName = a;
+        startInteractiveScheduler();
+        //schedulername = name;
+        try{
+            consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
+            consumer.addSubscription(XmlStoreNotificationEvent.class, this);
+            consumer.consumerReady();
+            ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
+            ctrl_consumer.consumerReady();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public String getSchedulerName(){
+        return schedulername;
+    }
+
+    private void startInteractiveScheduler() {
+        try {
+            getMSRef();
+            schedulername = masterScheduler.startInteractiveScheduling1(arrayName);
+            releaseMSRef();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void getISRef() {
         try {
+            System.out.println("scheduler name = "+ schedulername);
+            /*
+            ComponentQueryDescriptor q = new ComponentQueryDescriptor(schedulername,
+                    "IDL:alma/scheduling/Interactive_PI_to_Scheduling:1.0");
+            scheduler = alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
+                    container.getDynamicComponent(q, false));
+                    */
+            
             scheduler = alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
                     container.getComponent(schedulername));
+                    
+         //   sessionStarted = true;
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -39,21 +76,46 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void releaseISRef(){
         try{
             logger.info("About to release "+scheduler.name());
-            if(sessionStarted) {
+            //if(sessionStarted) {
                 getMSRef();
                 masterScheduler.stopInteractiveScheduler(schedulername);
                 releaseMSRef();
-            }
+            //}
             container.releaseComponent(schedulername);
         } catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
-    public void setSessionStarted(boolean b){
-        sessionStarted = b;
+    public void setArrayInUse(String arrayName){
+        try {
+            getMSRef();
+            masterScheduler.setArrayInUse(arrayName);
+            releaseMSRef();
+        }catch(Exception e){
+        }
     }
+
+    public void startInteractiveSession(){
+        try {
+            scheduler.startSession("","");
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void releaseArray(String array) {
+        try {
+            getMSRef();
+            masterScheduler.destroyArray(array);
+            releaseMSRef();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+  //  public void setSessionStarted(boolean b){
+  //      sessionStarted = b;
+  //  }
     
     public void executeSB(String id) throws SchedulingException {
         try{

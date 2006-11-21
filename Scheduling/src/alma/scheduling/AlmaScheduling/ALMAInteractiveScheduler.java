@@ -158,7 +158,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
             logger.info("scheduler id: "+schedulerId);
             masterScheduler.executeInteractiveSB(sbId, schedulerId);
         } catch(Exception e){
-            logger.severe("SCHEDULING: executeSB in IS_COMP"+e.toString());
+            logger.severe("SCHEDULING: executeSB in IS_COMP: error = "+e.toString());
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("executeSB",e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);

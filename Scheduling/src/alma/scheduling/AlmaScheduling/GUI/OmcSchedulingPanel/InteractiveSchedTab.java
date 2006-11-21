@@ -13,7 +13,7 @@ import alma.scheduling.ProjectLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
-    private String schedulerName;
+    //private String schedulerName;
     private String arrayName;
     private String type;
     
@@ -25,19 +25,21 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     private JButton stopB;
     private SBTable sbs;
     private ProjectTable projects; 
-    private boolean sessionStarted;
+  //  private boolean sessionStarted;
     private boolean searchingOnProject; 
 
-    public InteractiveSchedTab(PluginContainerServices cs, String schedName, String aName){
+    public InteractiveSchedTab(PluginContainerServices cs, String aName){
         super();
         super.onlineSetup(cs);
         searchingOnProject=true;
-        schedulerName = schedName;
-        controller = new InteractiveSchedTabController(cs, schedulerName);
         arrayName = aName;
+        //schedulerName = schedName;
+        controller = new InteractiveSchedTabController(cs, arrayName);
+        controller.setArrayInUse(aName);
+        controller.getISRef();
         type = "interactive"; 
         createLayout();
-        sessionStarted = true; //don't use this right now...
+        //sessionStarted = true; //don't use this right now...
         archiveSearchPanel.setCS(cs);
         projects.setCS(cs);
         sbs.setCS(cs);
@@ -45,7 +47,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     /////////// SchedulerTab stuff /////
     public String getSchedulerName(){
-        return schedulerName;
+        return controller.getSchedulerName();
     }
     public String getArrayName(){
         return arrayName;
@@ -54,6 +56,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         return type;
     }
     public void exit(){
+        controller.releaseISRef();
+        controller.releaseArray(arrayName);
+        //controller.setSessionStarted(sessionStarted=false);
     }
     ////////////////////////////////////
     
@@ -102,15 +107,14 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         execB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
             //disable searching while a SB is executing...
-                setEnable(false);
-                //check if a sb has been selected.
+                executeSB();
             }
         });
         stopB = new JButton("Stop");
         stopB.setToolTipText("Will stop the currently running SB on this array");
         stopB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                setEnable(true);
+                stopSB();
             }
         });
         JPanel buttons = new JPanel(new GridLayout(1,2));
@@ -169,5 +173,33 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         projects.clear();
     }
 
+    private void executeSB(){
+        try {
+            String sbId =sbs.returnSelectedSBId();
+            if(!sbId.equals("")){
+                controller.executeSB(sbId);
+                setEnable(false);
+            }
+            //check if a sb has been selected.
+        }catch(Exception e){
+            e.printStackTrace();
+            showErrorPopup(e.toString(), "executeSB");
+        }
+    }
+    private void stopSB(){
+        try {
+            controller.stopSB();
+            setEnable(true);
+        } catch(Exception e) {
+            e.printStackTrace();
+            showErrorPopup(e.toString(), "stopSB");
+        }
+    }
 
+    public void showErrorPopup(String error,String method) {
+        JOptionPane.showMessageDialog(this, error, method, JOptionPane.ERROR_MESSAGE);
+    }
+    public void showWarningPopup(String warning, String method) {
+        JOptionPane.showMessageDialog(this, warning, method, JOptionPane.WARNING_MESSAGE);
+    }
 }

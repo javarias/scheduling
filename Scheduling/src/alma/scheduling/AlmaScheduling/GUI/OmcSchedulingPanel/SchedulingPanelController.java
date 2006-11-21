@@ -11,11 +11,20 @@ public class SchedulingPanelController {
     protected PluginContainerServices container;
     protected Logger logger;
 
+    public SchedulingPanelController(){
+        masterScheduler=null;
+        container=null;
+        logger=null;
+    }
+
     public SchedulingPanelController(PluginContainerServices cs) {
         container = cs;
         logger = cs.getLogger();
     }
-
+    public void onlineSetup(PluginContainerServices cs) {
+        container = cs;
+        logger = cs.getLogger();
+    }
     protected void getMSRef() {
         try {
             if(masterScheduler == null) {

@@ -18,8 +18,8 @@ import alma.acs.container.ContainerServices;
 public class MainSchedTabPane extends JTabbedPane {
     private PluginContainerServices container;
     //private MainSchedTabPaneController controller;
-    private JPopupMenu rightClickMenu;
-    private boolean connectedToALMA = false;
+    //private JPopupMenu rightClickMenu;
+    //private boolean connectedToALMA = false;
     private boolean createArrayEnabled = false;
     private Logger logger;
     private int overTabIndex;
@@ -33,6 +33,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private JButton interactiveB;
     private JButton queuedB;
     private JButton dynamicB;
+    private MainSchedTabPaneController controller;
 
     /**
       * Constructor
@@ -40,10 +41,11 @@ public class MainSchedTabPane extends JTabbedPane {
     public MainSchedTabPane(){
         super(JTabbedPane.TOP);
         setup();
-        createRightClickMenu();   
-        super.addMouseListener(new PopupListener());
+        //createRightClickMenu();   
+        //super.addMouseListener(new PopupListener());
         Dimension d = getPreferredSize();
         setMaximumSize(d);
+        controller = new MainSchedTabPaneController ();
     }
         
     public void setup() {
@@ -63,13 +65,14 @@ public class MainSchedTabPane extends JTabbedPane {
     
     public void secondSetup(PluginContainerServices cs){
         container = cs;
-        //controller = new MainSchedTabPaneController(cs);
+        controller.setup(cs);
         logger = cs.getLogger();
         archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);
         logger.info("SCHEDULING_PANEL: Second setup, connected to manager");
     }
 
+    /*
     private void createRightClickMenu(){
         rightClickMenu = new JPopupMenu("Master Scheduler Functions");
         JMenuItem menuItem;
@@ -98,6 +101,7 @@ public class MainSchedTabPane extends JTabbedPane {
             rightClickMenu.add(menuItem);
         }
     }
+    */
 
     public void createSearchArchiveOnlyTab() {
         archiveTab = new SearchArchiveOnlyTab();
@@ -124,7 +128,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
         interactiveB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(connectedToALMA){
+                    if(areWeConnected()){
                         createArrayEnabled = true;
                         middlePanel.setEnabled(true);
                         middlePanel.prepareCreateArray("interactive");
@@ -139,7 +143,7 @@ public class MainSchedTabPane extends JTabbedPane {
         });               
         queuedB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(connectedToALMA){
+                    if(areWeConnected()){
                         createArrayEnabled = true;
                         middlePanel.setEnabled(true);
                        // middlePanel.setArrayMode("queued");
@@ -153,7 +157,7 @@ public class MainSchedTabPane extends JTabbedPane {
         });               
         dynamicB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if(connectedToALMA){
+                    if(areWeConnected()){
                         createArrayEnabled = true;
                         middlePanel.setEnabled(true);
                         middlePanel.prepareCreateArray("dynamic");
@@ -185,10 +189,10 @@ public class MainSchedTabPane extends JTabbedPane {
         SchedulerTab tab;
         String name;
         if(mode.equals("interactive")){
-            name = "IS_"+array;
-            tab = new InteractiveSchedTab(container, name, array);
+            //name = "IS_"+array;
+            tab = new InteractiveSchedTab(container, array);
             allSchedulers.add(tab);
-            addTab(name, (JPanel)tab);
+            addTab(array +" (Interactive)", (JPanel)tab);
         } else if (mode.equals("queued")){
             name="QS_"+array;
             //tab = new QueuedSchedTab(container, name, array);
@@ -241,9 +245,13 @@ public class MainSchedTabPane extends JTabbedPane {
         return -1;
     }
 
+    private boolean areWeConnected(){
+        return controller.areWeConnected();
+    }
     public void exit(){
     }
 
+    /*
     class PopupListener extends MouseAdapter {
         public void mousePressed(MouseEvent e){
             maybeShowPopup(e);
@@ -258,5 +266,5 @@ public class MainSchedTabPane extends JTabbedPane {
             }
         }
     }
-    
+    */
 }

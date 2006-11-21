@@ -47,16 +47,7 @@ public class SBTable extends JTable {
         projectSearchMode = true;
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
-                int[] rows = getSelectedRows();
-                if(rows.length > 1) {
-                    //not good!
-                }
-                //get row number,
-                int row = getSelectedRow();
-                //corresponds to rowInfo index,
-                //last one == uid
-                String uid = (String)sbRowInfo[row][uidLoc];
-                SBLite sb = controller.getSBLite(uid);
+                SBLite sb = controller.getSBLite( getSelectedSBId() );
                 showSBInfo(sb);
                 if(!projectSearchMode){
                     showSBProject(sb);
@@ -67,6 +58,19 @@ public class SBTable extends JTable {
             public void mousePressed(MouseEvent e){ }
             public void mouseReleased(MouseEvent e){}
         });
+    }
+    private String getSelectedSBId() {
+        int[] rows = getSelectedRows();
+        if(rows.length > 1) {
+            //not good!
+            return "";
+        }
+        //get row number,
+        int row = getSelectedRow();
+        //corresponds to rowInfo index,
+        //last one == uid
+        String uid = (String)sbRowInfo[row][uidLoc];
+        return uid;
     }
     
     public void setCS(PluginContainerServices cs) {
@@ -166,5 +170,9 @@ public class SBTable extends JTable {
         repaint();
         revalidate();
         validate();
+    }
+
+    public String returnSelectedSBId() {
+        return getSelectedSBId();
     }
 }

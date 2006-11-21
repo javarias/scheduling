@@ -33,7 +33,7 @@ import alma.scheduling.NothingCanBeScheduledEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Event.Publishers.PublishEvent;
-
+import alma.scheduling.SchedulingStateEvent;
 import alma.acs.container.ContainerServices;
 import alma.acs.nc.AbstractNotificationChannel;
 
@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.10 2006/05/01 18:10:42 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.11 2006/11/21 23:38:06 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -162,6 +162,9 @@ public class ALMAPublishEvent extends PublishEvent {
         }
     }
 
+//    public void publishStateEvent(SchedulingStateEvent e){
+  //      sched_nc.publish(e);
+    //}
     
 
     /**

@@ -41,7 +41,7 @@ package alma.scheduling.Define;
  * <li>startSciPipeline -- start the science pipeline
  * </ul> 
  * 
- * @version $Id: InteractiveSession.java,v 1.3 2005/10/31 21:08:40 sslucero Exp $
+ * @version $Id: InteractiveSession.java,v 1.4 2006/11/21 23:38:06 sslucero Exp $
  * @author Allen Farris
  */
 public interface InteractiveSession {
@@ -58,7 +58,8 @@ public interface InteractiveSession {
 	
 	void delete(String sbId) throws SchedulingException;
 	
-	void execute(String sbId) throws SchedulingException;
+	//void execute(String sbId) throws SchedulingException;
+	void execute(SB sb) throws SchedulingException;
 	
 	void stop(String sbId) throws SchedulingException;
 	
