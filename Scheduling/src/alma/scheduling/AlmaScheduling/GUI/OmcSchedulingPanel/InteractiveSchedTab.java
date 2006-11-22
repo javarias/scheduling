@@ -34,7 +34,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         searchingOnProject=true;
         arrayName = aName;
         //schedulerName = schedName;
-        controller = new InteractiveSchedTabController(cs, arrayName);
+        controller = new InteractiveSchedTabController(cs, arrayName, this);
         controller.setArrayInUse(aName);
         controller.getISRef();
         type = "interactive"; 
@@ -194,6 +194,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
             e.printStackTrace();
             showErrorPopup(e.toString(), "stopSB");
         }
+    }
+    public void setSBStatus(String sb, String status){
+        sbs.setSBExecStatus(sb, status);
     }
 
     public void showErrorPopup(String error,String method) {

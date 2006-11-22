@@ -125,8 +125,8 @@ public class ProjectTable extends JTable {
             ((SearchArchiveOnlyTab)parent).updateSBView(sbs);
         } else if(par.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateSBView(sbs);
-        //} else if(par.contains("QueuedSchedTab")){
-         //   ((QueuedSchedTab)parent).updateSBView(sbs);
+        } else if(par.contains("QueuedSchedTab")){
+            ((QueuedSchedTab)parent).updateSBView(sbs);
         }
     }
 

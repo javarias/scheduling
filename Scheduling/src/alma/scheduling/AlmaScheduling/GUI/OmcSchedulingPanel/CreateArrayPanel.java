@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.Vector;
 import javax.swing.table.*;
+import javax.swing.border.*;
 import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
@@ -77,6 +78,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     private JPanel createAntennaListA(){
         JPanel p = new JPanel();
+        p.setBorder(new TitledBorder("Available Antennas"));
         final String[] antennaColumnInfoA= {"Antenna Name"};
         updateAntennaRowInfoA();
         antennaTableModelA = new AbstractTableModel(){
@@ -122,6 +124,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     private JPanel createAntennaListB(){
         JPanel p = new JPanel();
+        p.setBorder(new TitledBorder("Antennas for Array"));
         final String[] antennaColumnInfoB= {"Antenna Name"};
         antennaRowInfoB = new Object[0][1];
         antennaTableModelB = new AbstractTableModel(){

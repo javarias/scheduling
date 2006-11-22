@@ -114,12 +114,32 @@ public class SBTable extends JTable {
         for(int i=0; i<size; i++){
             sbRowInfo[i][0] = sblites[i].sbName;
             sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
+            if(withExec){
+                setSBExecStatus((String)sbRowInfo[i][uidLoc], "N/A");
+            }
         }
         repaint();
         revalidate();
         validate();
     }
     
+    public void setSBExecStatus(String sbid, String status){
+        if(withExec){
+            int i= getRowPosForSB(sbid);
+            if(i != -1) {
+                setValueAt(status, i, 1);
+            } //else sb not found in table.
+        } //else ignore
+    }
+   
+    public int getRowPosForSB(String sbId){
+        for(int i=0; i< sbRowInfo.length; i++){
+            if(sbId.equals((String)sbRowInfo[i][uidLoc])){
+                return i;
+            }
+        }
+        return -1;
+    }
     private void manageColumnSizes() {
     }
 
@@ -155,8 +175,8 @@ public class SBTable extends JTable {
             ((SearchArchiveOnlyTab)parent).updateProjectView(p);
         } else if(par.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateProjectView(p);
-//        } else if(par.contains("QueuedSchedTab")){
-  //          ((QueuedSchedTab)parent).updateProjectView(p);
+        } else if(par.contains("QueuedSchedTab")){
+            ((QueuedSchedTab)parent).updateProjectView(p);
         }
     }
 
@@ -175,4 +195,5 @@ public class SBTable extends JTable {
     public String returnSelectedSBId() {
         return getSelectedSBId();
     }
+
 }

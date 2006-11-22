@@ -7,26 +7,25 @@ import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.Define.*;
 import alma.acs.nc.Consumer;
-//import alma.acs.component.ComponentQueryDescriptor;
 import alma.Control.ExecBlockEndedEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.xmlstore.XmlStoreNotificationEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class InteractiveSchedTabController extends SchedulingPanelController {
-  //  private boolean sessionStarted;
     private Interactive_PI_to_Scheduling scheduler;
     private String schedulername;
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
     private String currentSBId;
     private String arrayName;
+    private InteractiveSchedTab parent;
     
-    public InteractiveSchedTabController(PluginContainerServices cs, String a){
+    public InteractiveSchedTabController(PluginContainerServices cs, String a, InteractiveSchedTab p){
         super(cs);
+        parent = p;
         arrayName = a;
         startInteractiveScheduler();
-        //schedulername = name;
         try{
             consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             consumer.addSubscription(XmlStoreNotificationEvent.class, this);
@@ -56,17 +55,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void getISRef() {
         try {
             System.out.println("scheduler name = "+ schedulername);
-            /*
-            ComponentQueryDescriptor q = new ComponentQueryDescriptor(schedulername,
-                    "IDL:alma/scheduling/Interactive_PI_to_Scheduling:1.0");
-            scheduler = alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
-                    container.getDynamicComponent(q, false));
-                    */
-            
             scheduler = alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
                     container.getComponent(schedulername));
-                    
-         //   sessionStarted = true;
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -76,11 +66,9 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void releaseISRef(){
         try{
             logger.info("About to release "+scheduler.name());
-            //if(sessionStarted) {
                 getMSRef();
                 masterScheduler.stopInteractiveScheduler(schedulername);
                 releaseMSRef();
-            //}
             container.releaseComponent(schedulername);
         } catch(Exception e){
             e.printStackTrace();
@@ -113,9 +101,6 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             e.printStackTrace();
         }
     }
-  //  public void setSessionStarted(boolean b){
-  //      sessionStarted = b;
-  //  }
     
     public void executeSB(String id) throws SchedulingException {
         try{
@@ -145,29 +130,25 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void receive(ExecBlockEndedEvent e){
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
-        /*
-        boolean belongs = ebForThisScheduler(sbid);
-        if(belongs){
-            String completion;
-            switch(e.status.value()) {
-                case 0:
-                    completion ="FAILED";
-                    break;
-                case 1:
-                    completion ="SUCCESS";
-                    break;
-                case 2:
-                    completion ="PARTIAL";
-                    break;
-                case 3:
-                    completion ="TIMEOUT";
-                    break;
-                default:
-                    completion ="ERROR";
-                    break;
-            }*/
-          //  updateSBStatusInTable(sbid, completion);
-        //}
+        String completion;
+        switch(e.status.value()) {
+            case 0:
+                completion ="FAILED";
+                break;
+            case 1:
+                completion ="SUCCESS";
+                break;
+            case 2:
+                completion ="PARTIAL";
+                break;
+            case 3:
+                completion ="TIMEOUT";
+                break;
+            default:
+                completion ="ERROR";
+                break;
+            }
+            parent.setSBStatus(sbid, completion);
     }
     public void received(ASDMArchivedEvent e){
         //ok to re-enable the search area now..

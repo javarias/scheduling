@@ -7,6 +7,7 @@ import alma.scheduling.MasterSchedulerIF;
 import java.util.logging.Logger;
 
 public class SBTableController extends SchedulingPanelController {
+
     public SBTableController(PluginContainerServices cs){
         super(cs);
     }

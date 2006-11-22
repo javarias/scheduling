@@ -12,10 +12,12 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control=null;
     private Consumer consumer;
     private boolean connected = false;
+    private MainSchedTabPane parent;
 
-    public MainSchedTabPaneController(){
+    public MainSchedTabPaneController(MainSchedTabPane p){
         super();
         connected = false;
+        parent = p;
     }
     public void setup(PluginContainerServices cs){
         super.onlineSetup(cs);
@@ -74,5 +76,6 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         }else if(e.state == SchedulingState.OFFLINE){
             connected = false;
         }
+        parent.setDefaults();
     }
 }

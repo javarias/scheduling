@@ -45,7 +45,7 @@ public class MainSchedTabPane extends JTabbedPane {
         //super.addMouseListener(new PopupListener());
         Dimension d = getPreferredSize();
         setMaximumSize(d);
-        controller = new MainSchedTabPaneController ();
+        controller = new MainSchedTabPaneController (this);
     }
         
     public void setup() {
@@ -72,36 +72,9 @@ public class MainSchedTabPane extends JTabbedPane {
         logger.info("SCHEDULING_PANEL: Second setup, connected to manager");
     }
 
-    /*
-    private void createRightClickMenu(){
-        rightClickMenu = new JPopupMenu("Master Scheduler Functions");
-        JMenuItem menuItem;
-        if(connectedToALMA) {
-            //don't need anything...
-            menuItem = new JMenuItem("disconnect");
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event){
-                    connectedToALMA = false;
-                    archiveTab.connectToALMA(false);
-                    createRightClickMenu();
-                }
-            });
-
-            rightClickMenu.add(menuItem);
-        } else {
-            menuItem = new JMenuItem("Connect");
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event){
-                    connectedToALMA = true;
-                    archiveTab.connectToALMA(true);
-                    createRightClickMenu();
-                }
-            });
-
-            rightClickMenu.add(menuItem);
-        }
+    public void setDefaults(){
+        doInteractiveButton();
     }
-    */
 
     public void createSearchArchiveOnlyTab() {
         archiveTab = new SearchArchiveOnlyTab();
@@ -117,6 +90,26 @@ public class MainSchedTabPane extends JTabbedPane {
             e.printStackTrace();
         }
     }
+    private void doInteractiveButton() {
+        createArrayEnabled = true;
+        middlePanel.setEnabled(true);
+        middlePanel.prepareCreateArray("interactive");
+    }
+
+    private void doQueuedButton() {
+        createArrayEnabled = true;
+        middlePanel.setEnabled(true);
+       // middlePanel.setArrayMode("queued");
+        middlePanel.prepareCreateArray("queued");
+        //createArray with mode 'queued'
+    }
+
+    private void doDynamicButton(){ 
+        createArrayEnabled = true;
+        middlePanel.setEnabled(true);
+        middlePanel.prepareCreateArray("dynamic");
+        //createArray with mode 'dynamic'
+    }
     
     public void createTopPanel(){
         topPanel = new JPanel(new GridLayout(1,2));
@@ -129,10 +122,7 @@ public class MainSchedTabPane extends JTabbedPane {
         interactiveB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if(areWeConnected()){
-                        createArrayEnabled = true;
-                        middlePanel.setEnabled(true);
-                        middlePanel.prepareCreateArray("interactive");
-                        
+                        doInteractiveButton();
                         //createArray with mode 'interactive'
                         //if array created open interactive tab
                     } else {
@@ -144,11 +134,7 @@ public class MainSchedTabPane extends JTabbedPane {
         queuedB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if(areWeConnected()){
-                        createArrayEnabled = true;
-                        middlePanel.setEnabled(true);
-                       // middlePanel.setArrayMode("queued");
-                        middlePanel.prepareCreateArray("queued");
-                        //createArray with mode 'queued'
+                        doQueuedButton();
                     } else {
                         showConnectMessage();
                         return;
@@ -158,10 +144,7 @@ public class MainSchedTabPane extends JTabbedPane {
         dynamicB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if(areWeConnected()){
-                        createArrayEnabled = true;
-                        middlePanel.setEnabled(true);
-                        middlePanel.prepareCreateArray("dynamic");
-                        //createArray with mode 'dynamic'
+                        doDynamicButton();
                     } else {
                         showConnectMessage();
                         return;
@@ -187,27 +170,29 @@ public class MainSchedTabPane extends JTabbedPane {
 
     public void openSchedulerTab(String mode, String array) {
         SchedulerTab tab;
-        String name;
+        String title="";
         if(mode.equals("interactive")){
-            //name = "IS_"+array;
             tab = new InteractiveSchedTab(container, array);
             allSchedulers.add(tab);
-            addTab(array +" (Interactive)", (JPanel)tab);
+            title = array +"(Interactive)";
+            addTab(title, (JPanel)tab);
         } else if (mode.equals("queued")){
-            name="QS_"+array;
-            //tab = new QueuedSchedTab(container, name, array);
-            //allSchedulers.add(tab);
-            //addTab(name, tab);
+            title = array +"(Queued)";
+            tab = new QueuedSchedTab(container, array);
+            allSchedulers.add(tab);
+            addTab(title, (JPanel)tab);
         } else if (mode.equals("dynamic")){
-            name="DS_"+array;
-            //tab = new DynamicSchedTab(container, name, array);
+            title = array +"(Dynamic)";
+            //tab = new DynamicSchedTab(container, title, array);
             //allSchedulers.add(tab);
-            //addTab(name, tab);
+            //addTab(title, tab);
         }
+        int i = indexOfTab(title);
+        setSelectedIndex(i);
     }
 
     private void showConnectMessage(){
-        JOptionPane.showMessageDialog(this,"Not connected to the System",
+        JOptionPane.showMessageDialog(this,"System not operational yet.",
                 "Not Connected", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -232,6 +217,7 @@ public class MainSchedTabPane extends JTabbedPane {
         if(x!=-1){
             allSchedulers.removeElementAt(x);
         }
+        setSelectedIndex(0); //default to main tab when something is closed
     }
 
     private int getSchedulerPosition(SchedulerTab tab){

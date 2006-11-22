@@ -27,8 +27,11 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
         main = new JPanel();
         Dimension d = getPreferredSize();
         main.setSize(d.width + 5, d.height + 5);
+        /*
         pane = new JScrollPane(mainSchedPanel);
         main.add(pane);
+        */
+        main.add(mainSchedPanel);
         add(main);
         setVisible(true);
     }
