@@ -63,7 +63,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.78 2006/11/09 23:20:12 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.79 2006/11/22 22:14:47 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -98,7 +98,7 @@ public class ALMAProjectManager extends ProjectManager {
         this.clock = c;
         pQueue = new ProjectQueue();
         psQueue = new ProjectStatusQueue();
-        sbQueue = new SBQueue();
+        //sbQueue = new SBQueue();
         specialSBs = new Vector();
         try  {
             pollArchive();
@@ -481,6 +481,7 @@ public class ALMAProjectManager extends ProjectManager {
         sessionStart(sessionId, sbid);
         IDLEntityRef sessionRef = new IDLEntityRef();
         sessionRef.entityId = sb.getProject().getProjectStatusId();
+        logger.info("Project status for sb ("+sb.getId()+") is "+sessionRef.entityId);
         sessionRef.partId = sessionId;
         sessionRef.entityTypeName = "ProjectStatus";
         sessionRef.instanceVersion ="1.0";

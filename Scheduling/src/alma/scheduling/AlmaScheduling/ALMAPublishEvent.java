@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.11 2006/11/21 23:38:06 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.12 2006/11/22 22:14:47 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -138,25 +138,25 @@ public class ALMAPublishEvent extends PublishEvent {
       * @param Object
       */
     public void publish(Object event) {
-        logger.finest("SCHEDULING: event's class == "+
+        logger.info("SCHEDULING: event's class == "+
             event.getClass().getName());
         String eventClass = event.getClass().getName();
         try {
-        if(event instanceof StartSessionEvent) {
-            logger.finest("SCHEDULING: about to publish start session event");
-            sched_nc.publish((StartSessionEvent)event);
-            logger.finest("SCHEDULING: published start session event");
+            if(event instanceof StartSessionEvent) {
+                logger.info("SCHEDULING: about to publish start session event");
+                sched_nc.publish((StartSessionEvent)event);
+                logger.finest("SCHEDULING: published start session event");
             
-        } else if(event instanceof EndSessionEvent) {
-            logger.finest("SCHEDULING: about to publish end session event");
-            sched_nc.publish((EndSessionEvent)event);
-            logger.finest("SCHEDULING: published end session event");
-
-        } else if(event instanceof NothingCanBeScheduledEvent) {
-            logger.finest("SCHEDULING: about to publish nothing can be scheduled event");
-            sched_nc.publish((NothingCanBeScheduledEvent)event);
-            logger.finest("SCHEDULING: published nothing can be scheduled event");
-        }
+            } else if(event instanceof EndSessionEvent) {
+                logger.info("SCHEDULING: about to publish end session event");
+                sched_nc.publish((EndSessionEvent)event);
+                logger.finest("SCHEDULING: published end session event");
+    
+            } else if(event instanceof NothingCanBeScheduledEvent) {
+                logger.info("SCHEDULING: about to publish nothing can be scheduled event");
+                sched_nc.publish((NothingCanBeScheduledEvent)event);
+                logger.finest("SCHEDULING: published nothing can be scheduled event");
+            }
         }catch(Exception e) {
             e.printStackTrace(System.out);
         }

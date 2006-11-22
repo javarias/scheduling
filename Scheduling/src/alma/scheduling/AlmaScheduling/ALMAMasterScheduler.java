@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.79 2006/11/21 23:38:06 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.80 2006/11/22 22:14:47 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1137,6 +1137,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             throw e2.toInvalidOperationEx();
         }
         try {
+            logger.info("Looking for SB ("+sbId+") in queue... "+sbQueue.get(sbId)+" == is it there?");
             ((InteractiveScheduler)scheduler).execute(sbQueue.get(sbId));
             //((InteractiveScheduler)scheduler).execute(sbId);
         } catch(Exception e) {
