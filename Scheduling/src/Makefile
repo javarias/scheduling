@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.17 2006/09/28 21:44:05 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.18 2006/11/27 16:39:13 wlin Exp $"
 #
 # Makefile of Scheduling Module
 #
@@ -27,7 +27,7 @@ USER_JFLAGS= -deprecation #-Xlint
 
 JARFILES = DynamicSchedulingSubsystem  schedulingComp 
 schedulingComp_DIRS =  alma/scheduling/AlmaScheduling
-DynamicSchedulingSubsystem_DIRS = alma/scheduling/Scheduler alma/scheduling/Define alma/scheduling/Event alma/scheduling/GUI alma/scheduling/MasterScheduler alma/scheduling/ObsProjectManager alma/scheduling/PlanningModeSim
+DynamicSchedulingSubsystem_DIRS = alma/scheduling/Scheduler alma/scheduling/Define alma/scheduling/Event alma/scheduling/GUI alma/scheduling/MasterScheduler alma/scheduling/ObsProjectManager alma/scheduling/PlanningModeSim alma/scheduling/test
 DynamicSchedulingSubsystem_EXTRAS = alma/scheduling/Image/*.jpg
 #PMSimulator_EXTRAS = alma/scheduling/Image/*.jpg
 

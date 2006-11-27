@@ -55,10 +55,16 @@ import alma.scheduling.Define.ControlEvent;
 import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.SchedulingException;
 
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSFaultState;
+import java.sql.Timestamp;
+
+
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.39 2006/11/15 16:04:58 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.40 2006/11/27 16:39:13 wlin Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -69,7 +75,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     private ALMAPublishEvent publisher;
     //a list of the ExecBlock that are currently started but not finished.
     private Vector currentEB; 
+    
+    private ALMAClock clock;
 
+    
     /**
       *
       */
@@ -82,8 +91,22 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.manager = m;
         this.publisher = pub;
         this.currentEB = new Vector();
+        this.clock = new ALMAClock();
+    }
+    
+    public void sendAlarm(String ff, String fm, int fc, String fs) {
+        try {
+            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource("ALMASBAbort");
+            ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
+            state.setDescriptor(fs);
+            state.setUserTimestamp(new Timestamp(clock.getDateTime().getMillisec()));
+            alarmSource.push(state);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }    
     }
 
+    
 ///////////////////////////////////////////////////////////////////////////
 //  Receive functions for each event type
 ///////////////////////////////////////////////////////////////////////////
@@ -107,6 +130,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
 
     public void receive(ExecBlockEndedEvent e) {
         ProcessExecBlockEndedEvent p = new ProcessExecBlockEndedEvent(e);
+        if(e.status.toString()!="SUCCESS")
+        	sendAlarm("Scheduling","SchedSBAbortedConnAlarm",1,ACSFaultState.ACTIVE);
+        	
         Thread t = new Thread(p);
         t.start();
     }

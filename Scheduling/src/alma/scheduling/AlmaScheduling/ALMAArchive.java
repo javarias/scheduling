@@ -28,6 +28,7 @@
 package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
+import java.util.Properties;
 import java.util.Vector;
 
 import alma.scheduling.Define.*;
@@ -70,7 +71,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.67 2006/11/15 16:16:42 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.68 2006/11/27 16:39:13 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -102,7 +103,9 @@ public class ALMAArchive implements Archive {
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.clock = c;
+        sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
         getArchiveComponents();
+        sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
     }
 
     public void sendAlarm(String ff, String fm, int fc, String fs) {
@@ -111,9 +114,14 @@ public class ALMAArchive implements Archive {
             ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
             state.setDescriptor(fs);
             state.setUserTimestamp(new Timestamp(clock.getDateTime().getMillisec()));
+            Properties prop = new Properties();
+            prop.setProperty(ACSFaultState.ASI_PREFIX_PROPERTY, "prefix");
+			prop.setProperty(ACSFaultState.ASI_SUFFIX_PROPERTY, "suffix");
+			prop.setProperty("ALMAMasterScheduling_PROPERTY", "ConnArchiveException");
+			state.setUserProperties(prop);
             alarmSource.push(state);
         } catch(Exception e) {
-            e.printStackTrace();
+        	e.printStackTrace();
         }
         
     }
@@ -897,7 +905,6 @@ public class ALMAArchive implements Archive {
             this.archIdentifierComp = alma.xmlstore.IdentifierHelper.narrow(
                     containerServices.getDefaultComponent(
                         "IDL:alma/xmlstore/Identifier:1.0"));
-            
         } catch(AcsJContainerServicesEx e) {
             logger.severe("SCHEDULING: AcsJContainerServicesEx: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);

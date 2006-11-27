@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.80 2006/11/22 22:14:47 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.81 2006/11/27 16:39:13 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -278,19 +278,21 @@ public class ALMAMasterScheduler extends MasterScheduler
     //////////////////////////////////
     public void sendAlarm(String ff, String fm, int fc, String fs) {
         try {
-            logger.info("Sending ALARM");
+            //logger.info("Sending ALARM");
             ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource(this.name());
             ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
             Properties prop = new Properties();
-            state.setUserProperties(prop);
             state.setDescriptor(fs);
             state.setUserTimestamp(new Timestamp(clock.getDateTime().getMillisec()));
-            alarmSource.push(state);
+            prop.setProperty(ACSFaultState.ASI_PREFIX_PROPERTY, "prefix");
+			prop.setProperty(ACSFaultState.ASI_SUFFIX_PROPERTY, "suffix");
+			prop.setProperty("ALMAMasterScheduling_PROPERTY", "InvalidOperationException");
+			state.setUserProperties(prop);
+			alarmSource.push(state);
         } catch(Exception e) {
             logger.severe("Problem sending alarm: "+e.toString());
             e.printStackTrace();
         }
-        
     }
     
     /////////////////////////////////////////////////////////////////////
@@ -443,6 +445,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 scheduleRegularSBs(regularSbAntennas);
            // }
         } catch(Exception e) {
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
@@ -480,6 +483,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             //then create a config 
             startQueuedScheduling(sbList, arrayname);
         } catch (Exception e){
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             e.printStackTrace(System.out);
             InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -546,6 +550,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             //destroyArray(arrayname);
         } catch (Exception e){
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             e.printStackTrace(System.out);
             InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -590,6 +595,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             scheduler_thread.start();
             is_controllers.add(interactiveGUI);
         } catch (Exception e) {
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             InvalidOperation e1 = new InvalidOperation ("startInteractiveScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
@@ -645,6 +651,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             /////
             return name;
         } catch(Exception e){
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             InvalidOperation e1 = new InvalidOperation(
                     "startInteractiveScheduling1", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -1139,7 +1146,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             logger.info("Looking for SB ("+sbId+") in queue... "+sbQueue.get(sbId)+" == is it there?");
             ((InteractiveScheduler)scheduler).execute(sbQueue.get(sbId));
-            //((InteractiveScheduler)scheduler).execute(sbId);
         } catch(Exception e) {
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("executeInteractiveSB",
@@ -1266,5 +1272,4 @@ public class ALMAMasterScheduler extends MasterScheduler
             throw e2.toInvalidOperationEx();
         }
     }
-
-}    
+}        
