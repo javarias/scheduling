@@ -73,9 +73,11 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         logger.info("GOT SchedulingStateEvent: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
             connected = true;
+            parent.setDefaults();
         }else if(e.state == SchedulingState.OFFLINE){
             connected = false;
+        } else {
+            return;
         }
-        parent.setDefaults();
     }
 }

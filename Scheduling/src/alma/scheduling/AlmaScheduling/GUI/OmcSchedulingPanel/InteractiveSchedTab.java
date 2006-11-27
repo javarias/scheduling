@@ -87,14 +87,14 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
       * Middle panel contains he search text boxes and the buttons.
       */
     public void createMiddlePanel() {
-        middlePanel = new JPanel( new BorderLayout());
+        middlePanel = new JPanel(new GridLayout(1,2));// new BorderLayout());
         JPanel projectPanel = new JPanel();
         projectPanel.setBorder(new TitledBorder("Projects Found"));
         projects = new ProjectTable(new Dimension(175,100));
         projects.setOwner(this);
         JScrollPane pane1 = new JScrollPane(projects);
         projectPanel.add(pane1);
-        middlePanel.add(projectPanel, BorderLayout.WEST);
+        middlePanel.add(projectPanel);//, BorderLayout.WEST);
 
         JPanel sbPanel = new JPanel(new BorderLayout());
         sbs = new SBTable(true, new Dimension(175,75));
@@ -121,19 +121,19 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         buttons.add(execB);
         buttons.add(stopB);
         sbPanel.add(buttons, BorderLayout.SOUTH);
-        middlePanel.add(sbPanel, BorderLayout.EAST);
+        middlePanel.add(sbPanel);//, BorderLayout.EAST);
         
     }
     private void createBottomPanel(){
-        bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
         JPanel p1=new JPanel();
         p1.setBorder(new TitledBorder("Project Details"));
         p1.add(projects.getProjectInfoView());
-        bottomPanel.add(p1, BorderLayout.WEST);
+        bottomPanel.add(p1);//, BorderLayout.WEST);
         JPanel p2 = new JPanel();
-        p2.setBorder(new TitledBorder("Project Details"));
+        p2.setBorder(new TitledBorder("SB Details"));
         p2.add(sbs.getSBInfoView());
-        bottomPanel.add(p2, BorderLayout.EAST);
+        bottomPanel.add(p2);//, BorderLayout.EAST);
         
     }
 
