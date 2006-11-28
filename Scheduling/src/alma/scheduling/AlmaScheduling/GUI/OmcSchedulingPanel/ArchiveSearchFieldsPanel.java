@@ -210,9 +210,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                     return;     
                 }
                 doClear();
-                SPSearchArchiveThread foo = new SPSearchArchiveThread();
-                Thread t = new Thread(foo);
-                t.start();
+                doSearch();
             }
         });
         searchB.setToolTipText("Click here to search archive.");
@@ -302,6 +300,12 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         } else if(name.contains("QueuedSchedTab")){
             ((QueuedSchedTab)parent).updateProjectView(results);
         }
+    }
+
+    public void doSearch() {
+        SPSearchArchiveThread foo = new SPSearchArchiveThread();
+        Thread t = new Thread(foo);
+        t.start();
     }
 
     //////////////////////////////////////

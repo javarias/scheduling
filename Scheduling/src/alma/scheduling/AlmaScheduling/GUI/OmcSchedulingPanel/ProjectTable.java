@@ -66,6 +66,15 @@ public class ProjectTable extends JTable {
         });
     }
 
+    public void showFirstProject() {
+        //if at least one project found
+        if(projRowInfo.length > 1) {
+            //select it
+            addRowSelectionInterval(0,0);
+            //and show its sbs
+        }
+        //else do nothing
+    }
     public void setCS(PluginContainerServices cs){
         controller = new ProjectTableController(cs);
     }

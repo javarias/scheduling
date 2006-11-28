@@ -44,6 +44,15 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         projects.setCS(cs);
         sbs.setCS(cs);
         setEnable(true);
+        doInitialDefaults();
+    }
+    private void doInitialDefaults() {
+        archiveSearchPanel.doSearch();
+        projects.showFirstProject();
+        //if at least one project found
+        //select it
+        //select first sb in project
+      
     }
     /////////// SchedulerTab stuff /////
     public String getSchedulerName(){
