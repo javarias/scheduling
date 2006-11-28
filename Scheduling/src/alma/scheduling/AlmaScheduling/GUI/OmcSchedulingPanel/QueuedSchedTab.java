@@ -47,6 +47,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 
 ///////////////////////////////
     public void exit(){
+        controller.stopQueuedScheduling();
     }
     public String getSchedulerType(){
         return type;
@@ -148,14 +149,17 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         bottomPanel.add(p1);//, BorderLayout.WEST);
         //a text area which displays process
         executionInfo = new JTextArea();
+        executionInfo.setEditable(false);
         //Dimension d = new Dimension(75, 75);
         JScrollPane pane = new JScrollPane(executionInfo);
         //pane.setPreferredSize(d);
         
         bottomPanel.add(pane);//, BorderLayout.EAST);
     }
+    
     public void setEnable(boolean b){
     }
+
     public void setSearchMode(boolean b) {
         searchingOnProject =b;
         projects.setSearchMode(b);
@@ -165,16 +169,26 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     public void updateProjectView(ProjectLite[] p){
         projects.setRowInfo(p);
     }
+    
     public void updateSBView(SBLite[] sb){
         sbs.setRowInfo(sb);
     }
     
+    public void updateExecutionInfo(String info){
+        executionInfo.append(info);
+    }
     private void executeSBs(){
         //get all ids from the queueSB table and send them to control
         controller.runQueuedScheduling(queueSBs.getAllSBIds());
     }
+    
+    public void setSBStatus(String sbid, String status){
+        queueSBs.setSBExecStatus(sbid, status);
+    }
+    
     private void stopSB(){
     }
+    
     private void addSBsToQueue(){
         //get selected SBs from sbTable
         String[] selectedSBs = sbs.getSelectedSBs();

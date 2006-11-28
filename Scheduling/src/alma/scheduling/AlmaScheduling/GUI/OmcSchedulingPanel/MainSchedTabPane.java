@@ -34,6 +34,8 @@ public class MainSchedTabPane extends JTabbedPane {
     private JButton queuedB;
     private JButton dynamicB;
     private MainSchedTabPaneController controller;
+    private Color origButtonColor;
+    private Color selectedButtonColor;
 
     /**
       * Constructor
@@ -46,6 +48,7 @@ public class MainSchedTabPane extends JTabbedPane {
         Dimension d = getPreferredSize();
         setMaximumSize(d);
         controller = new MainSchedTabPaneController (this);
+        selectedButtonColor = Color.green;
     }
         
     public void setup() {
@@ -93,12 +96,16 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
     private void doInteractiveButton() {
+        origButtonColor = interactiveB.getBackground();
+        interactiveB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
         middlePanel.prepareCreateArray("interactive");
     }
 
     private void doQueuedButton() {
+        origButtonColor = queuedB.getBackground();
+        queuedB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
        // middlePanel.setArrayMode("queued");
@@ -107,10 +114,18 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void doDynamicButton(){ 
+        origButtonColor = dynamicB.getBackground();
+        dynamicB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
         middlePanel.prepareCreateArray("dynamic");
         //createArray with mode 'dynamic'
+    }
+
+    public void resetMainView(){
+        interactiveB.setBackground(origButtonColor);
+        queuedB.setBackground(origButtonColor);
+        dynamicB.setBackground(origButtonColor);
     }
     
     public void createTopPanel(){

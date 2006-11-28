@@ -33,6 +33,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             consumer.consumerReady();
             ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
             ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
+            ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
             ctrl_consumer.consumerReady();
         }catch(Exception e){
             e.printStackTrace();
@@ -165,17 +166,19 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             default:
                 completion ="ERROR";
                 break;
-            }
-            parent.setSBStatus(sbid, completion);
+        }
+        parent.setSBStatus(sbid, completion);
     }
-    public void received(ASDMArchivedEvent e){
+    public void receive(ASDMArchivedEvent e){
         logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
         if(currentExecBlockId.equals(asdmId)){
             //ok to re-enable the search area now..
             parent.setEnable(true);
-            parent.setSBStatus(currentSBId, completion);
+            if(completion.equals("complete")){
+                parent.setSBStatus(currentSBId, "ARCHIVED");
+            }
             //set status to ARCHIVED
         }
     }

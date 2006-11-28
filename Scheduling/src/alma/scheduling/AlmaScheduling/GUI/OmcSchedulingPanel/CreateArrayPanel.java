@@ -209,6 +209,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                 if(createArray()) {
                     exit();
                     setEnabled(false);
+                    ((MainSchedTabPane)parent).resetMainView();
                 }
             }
         });
@@ -217,6 +218,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             public void actionPerformed(ActionEvent e){
                 exit();
                 setEnabled(false);
+                ((MainSchedTabPane)parent).resetMainView();
             }
         });
         p.add(createArrayB);
@@ -417,6 +419,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         }
         public void run() {
             ((MainSchedTabPane)parent).openSchedulerTab(mode, array);
+            //unselect the button now
+            //((MainSchedTabPane)parent).resetMainView();
         }
     }
 }
+
