@@ -29,14 +29,20 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton addB;
     private JButton removeB;
     private JButton executeB;
+    private JButton stopB;
     
-    public QueuedSchedTab(PluginContainerServices cs, String aName){
+    public QueuedSchedTab(PluginContainerServices cs, String title, String aName){
         super();
         super.onlineSetup(cs);
         type = "queued";
         arrayName = aName;
+        schedulerName = title;
         controller = new QueuedSchedTabController(cs, this, aName);
         createLayout();
+        archiveSearchPanel.setCS(cs);
+        projects.setCS(cs);
+        sbs.setCS(cs);
+        queueSBs.setCS(cs);
     }
 
 ///////////////////////////////
@@ -90,6 +96,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         addB.setToolTipText("Will add SB to queue.");
         addB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                addSBsToQueue();
             }
         });
         JPanel buttons = new JPanel(new GridLayout(1,2));
@@ -115,6 +122,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         removeB.setToolTipText("Will remove SB from queue.");
         removeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                removeSBsFromQueue();
             }
         });
         buttonPanel.add(removeB);
@@ -122,9 +130,19 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         executeB.setToolTipText("Will execute the queue.");
         executeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                executeSBs();
             }
         });
         buttonPanel.add(executeB);
+        stopB = new JButton ("Stop SB");
+        stopB.setToolTipText("Will stop the current SB and move to the next SB.");
+        stopB.setEnabled(false);
+        stopB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                stopSB();
+            }
+        });
+        //buttonPanel.add(stopB);
         p1.add(buttonPanel, BorderLayout.SOUTH);
         
         bottomPanel.add(p1);//, BorderLayout.WEST);
@@ -136,10 +154,36 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         
         bottomPanel.add(pane);//, BorderLayout.EAST);
     }
+    public void setEnable(boolean b){
+    }
+    public void setSearchMode(boolean b) {
+        searchingOnProject =b;
+        projects.setSearchMode(b);
+        sbs.setSearchMode(b);
+    }
 
     public void updateProjectView(ProjectLite[] p){
+        projects.setRowInfo(p);
     }
     public void updateSBView(SBLite[] sb){
+        sbs.setRowInfo(sb);
     }
     
+    private void executeSBs(){
+        //get all ids from the queueSB table and send them to control
+        controller.runQueuedScheduling(queueSBs.getAllSBIds());
+    }
+    private void stopSB(){
+    }
+    private void addSBsToQueue(){
+        //get selected SBs from sbTable
+        String[] selectedSBs = sbs.getSelectedSBs();
+        SBLite[] sbs = controller.getSBLites(selectedSBs);
+        //pass these to queuedSBTable
+        queueSBs.setRowInfo(sbs);
+    }
+    private void removeSBsFromQueue(){
+        //remove selected sb from QueuedSbTable
+        //and update view/scheduler/etc
+    }
 }

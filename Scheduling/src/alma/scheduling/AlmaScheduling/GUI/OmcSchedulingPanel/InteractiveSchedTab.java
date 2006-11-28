@@ -56,9 +56,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         return type;
     }
     public void exit(){
-        controller.releaseISRef();
-        controller.releaseArray(arrayName);
-        //controller.setSessionStarted(sessionStarted=false);
+    //    controller.releaseISRef();
+     //   controller.releaseArray(arrayName);
+        controller.stopInteractiveScheduling();
     }
     ////////////////////////////////////
     
@@ -199,10 +199,10 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         sbs.setSBExecStatus(sb, status);
     }
 
-    public void showErrorPopup(String error,String method) {
+ /*   public void showErrorPopup(String error,String method) {
         JOptionPane.showMessageDialog(this, error, method, JOptionPane.ERROR_MESSAGE);
     }
     public void showWarningPopup(String warning, String method) {
         JOptionPane.showMessageDialog(this, warning, method, JOptionPane.WARNING_MESSAGE);
-    }
+    }*/
 }

@@ -41,7 +41,8 @@ public class SBTable extends JTable {
         createTableModel();
         setModel(sbTableModel);
         setPreferredScrollableViewportSize(size);
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         projectSearchMode = true;
@@ -130,6 +131,9 @@ public class SBTable extends JTable {
                 setValueAt(status, i, 1);
             } //else sb not found in table.
         } //else ignore
+        repaint();
+        revalidate();
+        validate();
     }
    
     public int getRowPosForSB(String sbId){
@@ -196,4 +200,24 @@ public class SBTable extends JTable {
         return getSelectedSBId();
     }
 
+    public String[] getSelectedSBs(){
+        
+        int[] rows = getSelectedRows();
+        String[] selected = new String[rows.length];
+        for(int i=0;i < rows.length; i++){
+            //last one == uid
+            selected[i] = (String)sbRowInfo[rows[i]][uidLoc];
+        }
+        return selected;
+    }
+
+    public String[] getAllSBIds() {
+        String[] allIds = new String[sbRowInfo.length];
+        for(int i=0; i < sbRowInfo.length; i++){
+            allIds[i] =(String) sbRowInfo[i][uidLoc];
+        }
+        return allIds;
+    }
+
+    
 }

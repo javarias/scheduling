@@ -16,6 +16,8 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 public class QueuedSchedTabController extends SchedulingPanelController {
     private QueuedSchedTab parent;
     private String arrayName;
+    private Thread thread;
+    private RunQueuedScheduling run;
     
     public QueuedSchedTabController(PluginContainerServices cs, QueuedSchedTab p, String a){
         super(cs);
@@ -23,5 +25,24 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         arrayName = a;
     }
 
+    public SBLite[] getSBLites(String[] ids){
+        getMSRef();
+        SBLite[] sbs = masterScheduler.getSBLite(ids);
+        releaseMSRef();
+        return sbs;
+    }
+
+    public void runQueuedScheduling(String[] sb_ids){
+        try {
+            run = new RunQueuedScheduling(
+                    container, sb_ids, arrayName);
+            thread = new Thread(run);
+            thread.start();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+            
 
 }

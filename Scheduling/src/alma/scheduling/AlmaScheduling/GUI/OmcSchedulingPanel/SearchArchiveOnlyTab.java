@@ -99,7 +99,7 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         p1.add(projects.getProjectInfoView());
         bottomPanel.add(p1, BorderLayout.WEST);
         JPanel p2 = new JPanel();
-        p2.setBorder(new TitledBorder("Project Details"));
+        p2.setBorder(new TitledBorder("SB Details"));
         p2.add(sbs.getSBInfoView());
         bottomPanel.add(p2, BorderLayout.EAST);
         

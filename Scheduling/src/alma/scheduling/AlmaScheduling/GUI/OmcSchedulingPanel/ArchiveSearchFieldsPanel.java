@@ -51,6 +51,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             ((SearchArchiveOnlyTab)parent).setSearchMode(m);
         } else if(parent.getClass().getName().contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).setSearchMode(m);
+        } else if(parent.getClass().getName().contains("QueuedSchedTab")){
+            ((QueuedSchedTab)parent).setSearchMode(m);
         }
     }
 
@@ -282,7 +284,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         } else if(name.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateSBView(results);
         } else if(name.contains("QueuedSchedTab")){
-            ((InteractiveSchedTab)parent).updateSBView(results);
+            ((QueuedSchedTab)parent).updateSBView(results);
         }
     }
     
@@ -298,7 +300,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         } else if(name.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateProjectView(results);
         } else if(name.contains("QueuedSchedTab")){
-            ((InteractiveSchedTab)parent).updateProjectView(results);
+            ((QueuedSchedTab)parent).updateProjectView(results);
         }
     }
 

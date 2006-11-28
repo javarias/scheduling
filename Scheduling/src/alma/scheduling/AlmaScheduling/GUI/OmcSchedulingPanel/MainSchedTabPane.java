@@ -74,6 +74,8 @@ public class MainSchedTabPane extends JTabbedPane {
 
     public void setDefaults(){
         doInteractiveButton();
+        //select antenna 1 already..
+        middlePanel.selectDefaultAntenna();
     }
 
     public void createSearchArchiveOnlyTab() {
@@ -178,7 +180,7 @@ public class MainSchedTabPane extends JTabbedPane {
             addTab(title, (JPanel)tab);
         } else if (mode.equals("queued")){
             title = array +"(Queued)";
-            tab = new QueuedSchedTab(container, array);
+            tab = new QueuedSchedTab(container, title, array);
             allSchedulers.add(tab);
             addTab(title, (JPanel)tab);
         } else if (mode.equals("dynamic")){

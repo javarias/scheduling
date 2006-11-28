@@ -18,6 +18,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
     private String currentSBId;
+    private String currentExecBlockId;
     private String arrayName;
     private InteractiveSchedTab parent;
     
@@ -46,8 +47,20 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         try {
             getMSRef();
             schedulername = masterScheduler.startInteractiveScheduling1(arrayName);
+            logger.info("SCHEDULINGPANEL: Interactive scheduling ("+schedulername+") started on array "+arrayName+".");
             releaseMSRef();
         } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stopInteractiveScheduling() {
+        try {
+            getMSRef();
+            masterScheduler.stopInteractiveScheduler(schedulername);
+            masterScheduler.destroyArray(arrayName);
+            releaseMSRef();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -92,19 +105,20 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
 
+    /*
     public void releaseArray(String array) {
         try {
             getMSRef();
-            masterScheduler.destroyArray(array);
             releaseMSRef();
         } catch(Exception e){
             e.printStackTrace();
         }
     }
-    
+    */
     public void executeSB(String id) throws SchedulingException {
         try{
             logger.info("IS: Sending sb ("+id+") to be executed");
+            currentSBId = id;
             scheduler.executeSB(id);
         }catch( Exception e){
             throw new SchedulingException (e);
@@ -121,7 +135,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(XmlStoreNotificationEvent event) {
-        logger.info("IS: got xml update event");
+        //logger.info("IS: got xml update event");
         CheckArchiveEvent processor = new CheckArchiveEvent(event);
         Thread t = new Thread(processor);
         t.start();
@@ -130,6 +144,10 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void receive(ExecBlockEndedEvent e){
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
+        logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
+        if(currentSBId.equals(sbid) ){
+            currentExecBlockId = exec_id;
+        }
         String completion;
         switch(e.status.value()) {
             case 0:
@@ -151,10 +169,19 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             parent.setSBStatus(sbid, completion);
     }
     public void received(ASDMArchivedEvent e){
-        //ok to re-enable the search area now..
+        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
+        String asdmId = e.asdmId.entityId;
+        String completion = e.status;
+        if(currentExecBlockId.equals(asdmId)){
+            //ok to re-enable the search area now..
+            parent.setEnable(true);
+            parent.setSBStatus(currentSBId, completion);
+            //set status to ARCHIVED
+        }
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {
+    //    logger.info("SCHEDULING_PANEL: not doing anything with xml store notification event for now");
     }
 
     class CheckArchiveEvent implements Runnable {

@@ -92,7 +92,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         antennaTableA = new JTable(antennaTableModelA);
         //antennaTableA.setDragEnabled(true);
         //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         antennaTableA.setPreferredScrollableViewportSize(new Dimension(128,100));
         JScrollPane pane = new JScrollPane(antennaTableA);
         pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -137,7 +138,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         antennaTableB = new JTable(antennaTableModelB);
         antennaTableB.setPreferredScrollableViewportSize(new Dimension(128,100));
         //antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         JScrollPane pane = new JScrollPane(antennaTableB);
         p.add(pane);
         return p;
@@ -172,7 +174,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         addToArray = new JButton ("->");
         addToArray.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                moveAntennasToArrayColumn();
+                int[] r = getSelectedAntennasForArray();
+                moveAntennasToArrayColumn(r);
                 manageColumnSizesInA();
                 manageColumnSizesInB();
             }
@@ -230,14 +233,20 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         return false;
     }
 
-    private void moveAntennasToArrayColumn() {
+    /**
+      * Returns an int array with the row numbers that are selected.
+      */
+    private int[] getSelectedAntennasForArray() {
         int[] rows = antennaTableA.getSelectedRows();
-        //System.out.println("number of selected rows in A = "+rows.length);
         if(rows.length == 0 || rows == null){
             JOptionPane.showMessageDialog(this, "You need to select an antenna",
                     "Nothing Selected", JOptionPane.WARNING_MESSAGE);
-            return;
+            return null;
         }
+        return rows;
+    }
+
+    private void moveAntennasToArrayColumn(int[] rows) {
         int newLengthA = antennaRowInfoA.length - rows.length;
         int newLengthB = antennaRowInfoB.length + rows.length;
         Object[][] tmpObjectsA =new Object[newLengthA][1];
@@ -334,6 +343,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     public void prepareCreateArray(String mode){
         arrayMode = mode;
+        resetAntennaTables();
         availableAntennas = controller.getAntennas();
         updateAntennaTableA();
     }
@@ -372,6 +382,19 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     }
 
+    public void selectDefaultAntenna(){
+        //if an antenna is available in antennaTableA
+        if(antennaRowInfoA.length > 1) {
+            int[] i = new int[1];
+            i[0] = 0;
+            moveAntennasToArrayColumn(i);
+        }
+        //else do nothing
+    }
+
+    public void resetAntennaTables() {
+        clearAntennaTables();
+    }
     public void exit() {
         clearAntennaTables();
     }
