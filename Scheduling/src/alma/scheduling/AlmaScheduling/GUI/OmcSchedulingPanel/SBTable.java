@@ -40,25 +40,21 @@ public class SBTable extends JTable {
         uidLoc = infoSize-1;
         createTableModel();
         setModel(sbTableModel);
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setPreferredScrollableViewportSize(size);
-        //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         projectSearchMode = true;
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
-                SBLite sb = controller.getSBLite( getSelectedSBId() );
-                showSBInfo(sb);
-                if(!projectSearchMode){
-                    showSBProject(sb);
-                }
+                showSelectedSBDetails(getSelectedSBId() );
             }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
             public void mousePressed(MouseEvent e){ }
             public void mouseReleased(MouseEvent e){}
         });
+        manageColumnSizes();
     }
     private String getSelectedSBId() {
         int[] rows = getSelectedRows();
@@ -72,6 +68,22 @@ public class SBTable extends JTable {
         //last one == uid
         String uid = (String)sbRowInfo[row][uidLoc];
         return uid;
+    }
+
+    private void showSelectedSBDetails(String id){
+        SBLite sb = controller.getSBLite( id);
+        showSBInfo(sb);
+        if(!projectSearchMode){
+            showSBProject(sb);
+        }
+    }
+
+    public void selectFirstSB() {
+        if(sbRowInfo.length > 0){
+            ListSelectionModel selectionModel = getSelectionModel();
+            selectionModel.setSelectionInterval(0,0);
+            showSelectedSBDetails(getSelectedSBId());
+        }
     }
     
     public void setCS(PluginContainerServices cs) {
@@ -119,6 +131,7 @@ public class SBTable extends JTable {
                 setSBExecStatus((String)sbRowInfo[i][uidLoc], "N/A");
             }
         }
+        manageColumnSizes();
         repaint();
         revalidate();
         validate();
@@ -131,6 +144,7 @@ public class SBTable extends JTable {
                 setValueAt(status, i, 1);
             } //else sb not found in table.
         } //else ignore
+        manageColumnSizes();
         repaint();
         revalidate();
         validate();
@@ -144,7 +158,31 @@ public class SBTable extends JTable {
         }
         return -1;
     }
+
     private void manageColumnSizes() {
+        Dimension actualSize = getSize();
+        TableColumnModel columns = getColumnModel();
+        if((sbRowInfo == null) || (sbRowInfo.length ==0)){
+            setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            return;
+        }
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        for(int x=0; x < columns.getColumnCount(); x++){
+            TableColumn column = getColumnModel().getColumn(x);
+            int w = column.getWidth();
+            int n = getRowCount();
+            for(int i = 0; i < n; i ++) {
+                TableCellRenderer r = getCellRenderer(i, x);
+                Component c = r.getTableCellRendererComponent(
+                        this, getValueAt(i, x),
+                        false,
+                        false,
+                        i,
+                        x);
+                w = Math.max(w, c.getPreferredSize().width);
+            }
+            column.setPreferredWidth(w+5);  
+        }
     }
 
     public JScrollPane getSBInfoView(){
@@ -191,6 +229,7 @@ public class SBTable extends JTable {
             sbRowInfo = new Object[0][infoSize];
         }
         sbInfo.setText("");
+        manageColumnSizes();
         repaint();
         revalidate();
         validate();

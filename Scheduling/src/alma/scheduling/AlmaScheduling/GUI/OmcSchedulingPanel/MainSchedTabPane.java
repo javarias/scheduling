@@ -19,7 +19,6 @@ public class MainSchedTabPane extends JTabbedPane {
     private PluginContainerServices container;
     //private MainSchedTabPaneController controller;
     //private JPopupMenu rightClickMenu;
-    //private boolean connectedToALMA = false;
     private boolean createArrayEnabled = false;
     private Logger logger;
     private int overTabIndex;
@@ -80,6 +79,9 @@ public class MainSchedTabPane extends JTabbedPane {
         //select antenna 1 already..
         middlePanel.selectDefaultAntenna();
     }
+    public void connectedToALMA(boolean b){
+        archiveTab.connectToALMA(b);
+    }
 
     public void createSearchArchiveOnlyTab() {
         archiveTab = new SearchArchiveOnlyTab();
@@ -95,7 +97,9 @@ public class MainSchedTabPane extends JTabbedPane {
             e.printStackTrace();
         }
     }
+
     private void doInteractiveButton() {
+        resetMainViewButtons();
         origButtonColor = interactiveB.getBackground();
         interactiveB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
@@ -104,6 +108,7 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void doQueuedButton() {
+        resetMainViewButtons();
         origButtonColor = queuedB.getBackground();
         queuedB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
@@ -114,15 +119,18 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void doDynamicButton(){ 
+        resetMainViewButtons();
+        /*
         origButtonColor = dynamicB.getBackground();
         dynamicB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
         middlePanel.prepareCreateArray("dynamic");
         //createArray with mode 'dynamic'
+    */
     }
 
-    public void resetMainView(){
+    public void resetMainViewButtons(){
         interactiveB.setBackground(origButtonColor);
         queuedB.setBackground(origButtonColor);
         dynamicB.setBackground(origButtonColor);

@@ -36,6 +36,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         super.onlineSetup(cs);
         type = "queued";
         arrayName = aName;
+        searchingOnProject = true;
         schedulerName = title;
         controller = new QueuedSchedTabController(cs, this, aName);
         createLayout();
@@ -43,6 +44,13 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         projects.setCS(cs);
         sbs.setCS(cs);
         queueSBs.setCS(cs);
+        doInitialSearch();
+    }
+    private void doInitialSearch(){
+        archiveSearchPanel.doSearch();
+    }
+    public void selectFirstResult(){
+        projects.showFirstProject();
     }
 
 ///////////////////////////////
@@ -166,6 +174,12 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         sbs.setSearchMode(b);
     }
 
+    public void clearTables() {
+        sbs.clear();
+        //queueSBs.clear();
+        projects.clear();
+    }
+    
     public void updateProjectView(ProjectLite[] p){
         projects.setRowInfo(p);
     }

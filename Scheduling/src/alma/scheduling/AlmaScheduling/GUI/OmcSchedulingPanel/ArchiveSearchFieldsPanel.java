@@ -243,6 +243,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             ((SearchArchiveOnlyTab)parent).clearTables();
         } else if(name.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).clearTables();
+        } else if(name.contains("QueuedSchedTab")){
+            ((QueuedSchedTab)parent).clearTables();
         }
     }
 
@@ -254,8 +256,6 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         //access to pi name, sb type, sb mode
         String sbModeType =(String) sbModeTypeChoices.getSelectedItem();
         String sbModeName = (String)sbModeNameChoices.getSelectedItem(); //correspondstypename of mode
-        System.out.println(sbModeType +" = type");
-        System.out.println(sbModeName +" = name");
         String query;
         if(sbModeName.equals("All") && sbModeType.equals("All") )  {
             query="/*";
@@ -270,13 +270,11 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             query = "/sbl:SchedBlock[sbl:modeType=\""+
                         sbModeType+"\" and sbl:modeName=\""+sbModeName+"\"]";
         }
-        System.out.println("sb query = "+query);
         return query;
     }
 
     public void displaySBResults(SBLite[] results){
         String name =parent.getClass().getName();
-        System.out.println("update sb resustls: Parent class = "+name);
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateSBView(results);
         } else if(name.contains("InteractiveSchedTab")){
@@ -292,7 +290,6 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     
     public void displayProjectResults(ProjectLite[] results){
         String name =parent.getClass().getName();
-        System.out.println("update project results: Parent class = "+name);
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).updateProjectView(results);
         } else if(name.contains("InteractiveSchedTab")){
@@ -330,6 +327,11 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             } else {
             //shouldnt have happened
                 System.out.println("both of the CBs aren't selected!");
+            }
+            if(parent.getClass().getName().contains("Interactive")){
+                ((InteractiveSchedTab)parent).selectFirstResult();
+            } else if(parent.getClass().getName().contains("Queued")){
+                ((QueuedSchedTab)parent).selectFirstResult();
             }
         }
     }

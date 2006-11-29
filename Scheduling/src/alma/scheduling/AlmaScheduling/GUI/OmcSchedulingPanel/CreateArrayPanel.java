@@ -35,6 +35,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         allArrays = new Vector<String>();
         setSize(400,300);
         add(createAntennaColumns(), BorderLayout.CENTER);
+        //antennaRowInfoA = new Object[10][1];
+        //for(int i=0; i < 10; i++){
+          //  antennaRowInfoA[i][0] = "ALMAControlAntennaName"+i;
+        //}
+    //    manageColumnSizesInA();
+      //  manageColumnSizesInB();
     }
     public void setOwner(JTabbedPane p){
         parent = p;
@@ -92,8 +98,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         antennaTableA = new JTable(antennaTableModelA);
         //antennaTableA.setDragEnabled(true);
         //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         antennaTableA.setPreferredScrollableViewportSize(new Dimension(128,100));
         JScrollPane pane = new JScrollPane(antennaTableA);
         pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -101,7 +107,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         return p;
     }
     private void manageColumnSizesInA(){
+        ((DefaultTableCellRenderer)antennaTableA.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         TableColumn column = antennaTableA.getColumnModel().getColumn(columnIndex);
+        if((antennaRowInfoA == null) || (antennaRowInfoA.length ==0)){
+            column.setPreferredWidth(128);   
+            return;
+        }
         int w = column.getWidth();
         int n = antennaTableA.getRowCount();
         for (int i = 0; i < n; i ++) {
@@ -115,12 +126,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                     columnIndex);
             w = Math.max(w, c.getPreferredSize().width);
         }
-        if(w< 95){
-            w = 95;
-        }
-        column.setPreferredWidth(128);   
-        //column.setPreferredWidth(w+5);   
-        ((DefaultTableCellRenderer)antennaTableA.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        column.setPreferredWidth(w+5);   
     }
 
     private JPanel createAntennaListB(){
@@ -137,8 +143,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         };
         antennaTableB = new JTable(antennaTableModelB);
         antennaTableB.setPreferredScrollableViewportSize(new Dimension(128,100));
-        //antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        //antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         JScrollPane pane = new JScrollPane(antennaTableB);
         p.add(pane);
@@ -146,7 +150,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
 
     private void manageColumnSizesInB(){
+        ((DefaultTableCellRenderer)antennaTableB.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         TableColumn column = antennaTableB.getColumnModel().getColumn(columnIndex);
+        if((antennaRowInfoB == null) || (antennaRowInfoB.length ==0)){
+            column.setPreferredWidth(128);   
+            return;
+        }
         int w = column.getWidth();
         int n = antennaTableB.getRowCount();
         for (int i = 0; i < n; i ++) {
@@ -160,12 +169,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                     columnIndex);
             w = Math.max(w, c.getPreferredSize().width);
         }
-        if(w< 95){
-            w = 95;
-        }
-        //column.setPreferredWidth(w+5);    
-        column.setPreferredWidth(128);   
-        ((DefaultTableCellRenderer)antennaTableB.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        column.setPreferredWidth(w+5);    
     }
 
     private JPanel transferButtons() {
@@ -209,7 +213,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                 if(createArray()) {
                     exit();
                     setEnabled(false);
-                    ((MainSchedTabPane)parent).resetMainView();
+                    ((MainSchedTabPane)parent).resetMainViewButtons();
                 }
             }
         });
@@ -218,7 +222,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             public void actionPerformed(ActionEvent e){
                 exit();
                 setEnabled(false);
-                ((MainSchedTabPane)parent).resetMainView();
+                ((MainSchedTabPane)parent).resetMainViewButtons();
             }
         });
         p.add(createArrayB);
@@ -409,6 +413,39 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         antennaTableB.repaint();
         antennaTableB.revalidate();
     }
+    /*
+    private void manageColumnSizes() {
+        //get all columns
+        try {
+        TableColumnModel columns = getColumnModel();
+        int size = columns.getColumnCount();
+        TableColumn col;
+        int w, max_w=0;
+        int rows = getRowCount();
+        //for each column 
+        for(int i=0; i< size; i++){
+            //get max size of cells in the column
+            col = columns.getColumn(i);
+            for(int j=0; j < rows; j++){
+                TableCellRenderer r = getCellRenderer(j, i);
+                Component c = r.getTableCellRendererComponent(
+                        this, getValueAt(j,i), false, false, j, i);
+                w = c.getPreferredSize().width;
+                //make that column the max size
+                if(w > max_w){
+                    max_w = w;
+                }
+            }
+            //for(int j=0; j < rows; j++){
+            //}
+            //make that column the max size
+            col.setPreferredWidth(max_w);
+        }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }    
+    */
     
     class OpenSchedulerTab implements Runnable {
         private String mode;
@@ -420,7 +457,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         public void run() {
             ((MainSchedTabPane)parent).openSchedulerTab(mode, array);
             //unselect the button now
-            //((MainSchedTabPane)parent).resetMainView();
         }
     }
 }

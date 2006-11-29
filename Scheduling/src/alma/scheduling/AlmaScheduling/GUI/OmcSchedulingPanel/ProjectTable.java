@@ -33,12 +33,13 @@ public class ProjectTable extends JTable {
         uidLoc = infoSize-1; 
         createTableModel();
         setModel(projTableModel);
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setPreferredScrollableViewportSize(size);
-        //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
 
+
+        manageColumnSizes();
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
                 //make sure only one selected
@@ -68,9 +69,18 @@ public class ProjectTable extends JTable {
 
     public void showFirstProject() {
         //if at least one project found
-        if(projRowInfo.length > 1) {
+        if(projRowInfo.length > 0) {
             //select it
-            addRowSelectionInterval(0,0);
+            ListSelectionModel selectionModel = getSelectionModel();
+            selectionModel.setSelectionInterval(0, 0);
+            String uid = (String)projRowInfo[0][uidLoc];
+            //get the particular info and display it
+            ProjectLite p = controller.getProjectLite(uid);
+            showProjectInfo(p);
+            //get project sbs
+            if(projectSearchMode){
+                showProjectSBs(p);
+            }
             //and show its sbs
         }
         //else do nothing
@@ -96,17 +106,18 @@ public class ProjectTable extends JTable {
     }
 
     public void setRowInfo(ProjectLite[] projects) {
-       int size = projects.length;
+        int size = projects.length;
       // projectLites = projects;
-       projRowInfo = new Object[size][infoSize];
-       for(int i=0; i < size; i++) {
-           projRowInfo[i][0]= projects[i].projectName;
-           projRowInfo[i][1]= projects[i].piName;
-           projRowInfo[i][2]= projects[i].uid;
-       }
-       repaint();
-       revalidate();
-       validate();
+        projRowInfo = new Object[size][infoSize];
+        for(int i=0; i < size; i++) {
+            projRowInfo[i][0]= projects[i].projectName;
+            projRowInfo[i][1]= projects[i].piName;
+            projRowInfo[i][2]= projects[i].uid;
+        }
+        manageColumnSizes();
+        repaint();
+        revalidate();
+        validate();
     }
     
     public JScrollPane getProjectInfoView(){
@@ -136,15 +147,45 @@ public class ProjectTable extends JTable {
         } else if(par.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateSBView(sbs);
         } else if(par.contains("QueuedSchedTab")){
+        System.out.println("in PT update sb view");
             ((QueuedSchedTab)parent).updateSBView(sbs);
         }
     }
 
     public void clear(){
-       projRowInfo = new Object[0][infoSize];
-       projectInfo.setText("");
-       repaint();
-       revalidate();
-       validate();
+        projRowInfo = new Object[0][infoSize];
+        projectInfo.setText("");
+        manageColumnSizes();
+        repaint();
+        revalidate();
+        validate();
     }
+
+    private void manageColumnSizes() {
+        Dimension actualSize = getSize();
+        TableColumnModel columns = getColumnModel();
+        //TableColumn column = getColumnModel().getColumn(x);
+        if((projRowInfo == null) || (projRowInfo.length ==0)){
+            setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            return;
+        }
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        for(int x=0; x < columns.getColumnCount(); x++){
+            TableColumn column = getColumnModel().getColumn(x);
+            int w = column.getWidth();
+            int n = getRowCount();
+            for(int i = 0; i < n; i ++) {
+                TableCellRenderer r = getCellRenderer(i, x);
+                Component c = r.getTableCellRendererComponent(
+                        this, getValueAt(i, x),
+                        false,
+                        false,
+                        i,
+                        x);
+                w = Math.max(w, c.getPreferredSize().width);
+            }
+            column.setPreferredWidth(w+5);  
+        }
+    }
+
 }

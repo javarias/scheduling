@@ -33,25 +33,22 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         super.onlineSetup(cs);
         searchingOnProject=true;
         arrayName = aName;
-        //schedulerName = schedName;
         controller = new InteractiveSchedTabController(cs, arrayName, this);
         controller.setArrayInUse(aName);
         controller.getISRef();
         type = "interactive"; 
         createLayout();
-        //sessionStarted = true; //don't use this right now...
         archiveSearchPanel.setCS(cs);
         projects.setCS(cs);
         sbs.setCS(cs);
         setEnable(true);
-        doInitialDefaults();
+        doInitialSearch();
     }
-    private void doInitialDefaults() {
+    private void doInitialSearch() {
         archiveSearchPanel.doSearch();
+    }
+    public void selectFirstResult(){
         projects.showFirstProject();
-        //if at least one project found
-        //select it
-        //select first sb in project
       
     }
     /////////// SchedulerTab stuff /////
@@ -150,15 +147,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
       * If true then search fields & execute button are enabled and stop disabled
       */
     public void setEnable(boolean b) {
-        if(b) {
-            archiveSearchPanel.setEnabled(b);
-            execB.setEnabled(b);
-            stopB.setEnabled(!b);
-        } else {
-            archiveSearchPanel.setEnabled(b);
-            execB.setEnabled(b);
-            stopB.setEnabled(!b);
-        }
+        archiveSearchPanel.setPanelEnabled(b);
+        execB.setEnabled(b);
+        stopB.setEnabled(!b);
     }
     /**
       *
@@ -171,6 +162,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     
     public void updateSBView(SBLite[] sblites){
         sbs.setRowInfo(sblites);
+        sbs.selectFirstSB();
     }
 
     public void updateProjectView(ProjectLite[] projectLites) {
@@ -188,6 +180,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
             if(!sbId.equals("")){
                 controller.executeSB(sbId);
                 setEnable(false);
+                setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
             }
             //check if a sb has been selected.
         }catch(Exception e){

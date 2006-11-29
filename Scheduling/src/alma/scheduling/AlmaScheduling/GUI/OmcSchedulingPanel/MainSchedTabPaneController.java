@@ -74,8 +74,10 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         if(e.state == SchedulingState.ONLINE_PASS2){
             connected = true;
             parent.setDefaults();
+            parent.connectedToALMA(connected);
         }else if(e.state == SchedulingState.OFFLINE){
             connected = false;
+            parent.connectedToALMA(connected);
         } else {
             return;
         }
