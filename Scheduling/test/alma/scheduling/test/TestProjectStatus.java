@@ -84,16 +84,16 @@ public class TestProjectStatus extends ComponentClientTestCase {
 
     public void testProjectStatus() throws Exception {
         //create a project status obj
-        ProjectStatus ps = createProjectStatus("newxmldocs/OP/oneTargets/EmptyProjectStatus.xml");
+        ProjectStatus ps = createProjectStatus("newxmldocs/HG/EmptyProjectStatus.xml");
         assertNotNull(ps);
         //create a project obj
-        ObsProject obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
+        ObsProject obsproject = createObsProject("newxmldocs/HG/ObsProject.xml");
         //ObsProject obsproject = createObsProject("xmldocs/ObsProject1.xml");
         assertNotNull(obsproject);
         //create 2 SB objects
         SchedBlock[] sbs = new SchedBlock[1];
         //SchedBlock sb = createSchedBlock("xmldocs/SchedBlock1.xml");
-        SchedBlock sb = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        SchedBlock sb = createSchedBlock("newxmldocs/HG/SchedBlock0.xml");
         System.out.println(sb.getModeName());
             
         assertNotNull(sb);
@@ -126,31 +126,32 @@ public class TestProjectStatus extends ComponentClientTestCase {
 
     public void testObsProjectMapping() throws Exception{
         DateTime datetime = DateTime.currentSystemTime();
-        ProjectStatus ps = createProjectStatus("newxmldocs/OP/oneTargets/EmptyProjectStatus.xml");
+        ProjectStatus ps = createProjectStatus("newxmldocs/HG/EmptyProjectStatus.xml");
         assertNotNull(ps);
         SchedBlock[] sbs = new SchedBlock[1];
-        ObsProject obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
-        SchedBlock sb = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        ObsProject obsproject = createObsProject("newxmldocs/HG/ObsProject.xml");
+        SchedBlock sb = createSchedBlock("newxmldocs/HG/SchedBlock0.xml");
         sbs[0] = sb;
         Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
     }
 
+    /*
     public void testObsProjectUpdating() throws Exception {
         DateTime datetime = DateTime.currentSystemTime();
-        ProjectStatus ps = createProjectStatus("newxmldocs/OP/oneTargets/EmptyProjectStatus.xml");
+        ProjectStatus ps = createProjectStatus("newxmldocs/HG/EmptyProjectStatus.xml");
         assertNotNull(ps);
         SchedBlock[] sbs = new SchedBlock[1];
-        ObsProject obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
-        SchedBlock sb1 = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        ObsProject obsproject = createObsProject("newxmldocs/HG/ObsProject.xml");
+        SchedBlock sb1 = createSchedBlock("newxmldocs/HG/SchedBlock0.xml");
         sbs[0] = sb1;
         Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
         //print first project
         System.out.println("Printing Project after map with one SB.");
         project1.printTree(System.out, "\t");
         //add a sb and update
-        obsproject = createObsProject("newxmldocs/OP/twoTargets/ObsProject.xml");
-        sb1 = createSchedBlock("newxmldocs/OP/twoTargets/SchedBlock0.xml");
-        SchedBlock sb2 = createSchedBlock("newxmldocs/OP/twoTargets/SchedBlock1.xml");
+        obsproject = createObsProject("newxmldocs/HG/twoTargets/ObsProject.xml");
+        sb1 = createSchedBlock("newxmldocs/HG/twoTargets/SchedBlock0.xml");
+        SchedBlock sb2 = createSchedBlock("newxmldocs/HG/twoTargets/SchedBlock1.xml");
         sbs = new SchedBlock[2];
         sbs[0] = sb1;
         sbs[1] = sb2;
@@ -159,15 +160,15 @@ public class TestProjectStatus extends ComponentClientTestCase {
         System.out.println("Printing Project after update with two SBs.");
         project1.printTree(System.out, "\t");
         //modify second SB's name and update.
-        SchedBlock sb3 = createSchedBlock("newxmldocs/OP/twoTargets/SchedBlock2.xml");
+        SchedBlock sb3 = createSchedBlock("newxmldocs/HG/twoTargets/SchedBlock2.xml");
         sbs[1] = sb3;
         datetime = DateTime.currentSystemTime();
         project1 = ProjectUtil.updateProject(obsproject, project1, sbs, datetime);
         System.out.println("Printing Project after update with second SB updated.");
         project1.printTree(System.out, "\t");
         //remove a sb and update project
-        obsproject = createObsProject("newxmldocs/OP/oneTargets/ObsProject.xml");
-        sb1 = createSchedBlock("newxmldocs/OP/oneTargets/SchedBlock0.xml");
+        obsproject = createObsProject("newxmldocs/HG/ObsProject.xml");
+        sb1 = createSchedBlock("newxmldocs/HG/SchedBlock0.xml");
         sbs = new SchedBlock[1];
         sbs[0] = sb1;
         project1 = ProjectUtil.updateProject(obsproject, project1, sbs, datetime);
@@ -175,4 +176,5 @@ public class TestProjectStatus extends ComponentClientTestCase {
         project1.printTree(System.out, "\t");
     }
     
+    */
 }

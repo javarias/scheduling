@@ -3,8 +3,7 @@ PROLOGUE prologue
 2 simTest runSim 
 3 pubTest testPublisher
 #4 queuedSchedTest testQueuedScheduling
-4 specialSBTest testStoreSpecialSB
-5 psTest testProjectStatus
-#6 queuedSchedTest testQueuedScheduling
-6 alarmTest testACSAlarm
+#4 specialSBTest testStoreSpecialSB
+4 psTest testProjectStatus
+#5 alarmTest testACSAlarm
 EPILOGUE epilogue

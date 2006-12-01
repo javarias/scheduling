@@ -1,6 +1,2 @@
-1 - /----/bin/allTests: line 5: export: `1': not a valid identifier
-1 - /----/bin/acsstartupAcsPorts: line 13: * ---.-------------+ ---.------------- : syntax error: operand expected (error token is "* ---.-------------+ ---.------------- ")
-1 - /----/bin/acsstartupAcsPorts: line 19: * ---.-------------+ ---.------------- + 1 : syntax error: operand expected (error token is "* ---.-------------+ ---.------------- + 1 ")
-1 - /----/bin/acsstartupAcsPorts: line 37: * ---.-------------+ ---.------------- + 4 : syntax error: operand expected (error token is "* ---.-------------+ ---.------------- + 4 ")
-1 - ERROR - For some reason this script could not create /alma/ACS-5.0/acsdata/tmp/ACS_INSTANCE.!
-1 - ERROR -     Check /alma/ACS-5.0/acsdata/tmp for free base ports!
+1 - TEST_RUNNER_REPORT success/total: 21/21
+1 - JUnit test run succeeded

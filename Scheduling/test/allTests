@@ -2,7 +2,6 @@
 
 #set ACS instance for tests that require ACS
 export ACS_INSTANCE=`cat sched_acs_instance.log`
-export ACS_INSTANCE= 1
 
 #run all the tests!
 acsStartJava -endorsed alma.scheduling.test.AllTests

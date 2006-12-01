@@ -3,7 +3,6 @@
 #Get the ACS instance 
 export ACS_INSTANCE=`cat sched_acs_instance.log`
 
-archiveStop
-archiveWebServicesStop &> archiveWebServicesStop.log
 #Stop all acs processes
 acsStop
+#tomcat stop 
