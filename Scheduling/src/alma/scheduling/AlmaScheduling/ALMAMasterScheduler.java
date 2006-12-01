@@ -1,3 +1,5 @@
+/**
+  */
 /*
  * ALMA - Atacama Large Millimiter Array
  * (c) European Southern Observatory, 2002
@@ -75,7 +77,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.81 2006/11/27 16:39:13 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.82 2006/12/01 21:38:05 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
