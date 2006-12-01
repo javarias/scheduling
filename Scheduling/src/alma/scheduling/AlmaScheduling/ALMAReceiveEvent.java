@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.40 2006/11/27 16:39:13 wlin Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.41 2006/12/01 00:23:25 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -383,7 +383,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //ArrayTime at = new ArrayTime(e.startTime);
             //DateTime startEb = at.arrayTimeToDateTime();
             logger.info("********************************");
-            logger.info("SCHEDULING: Setting start time for: "+e.execId.entityId);
+            logger.info("SCHEDULING: Recording start time for: "+e.execId.entityId);
             //logger.info("SCHEDULING: start time is : "+e.startTime);
             logger.info("SCHEDULING: start time is : "+startEb.toString());
             logger.info("********************************");
