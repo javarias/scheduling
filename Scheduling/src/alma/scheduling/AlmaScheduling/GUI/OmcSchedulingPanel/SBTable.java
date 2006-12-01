@@ -54,6 +54,16 @@ public class SBTable extends JTable {
             public void mousePressed(MouseEvent e){ }
             public void mouseReleased(MouseEvent e){}
         });
+        addKeyListener(new KeyListener() {
+            public void keyPressed(KeyEvent e){
+                showSelectedSBDetails(getSelectedSBId() );
+            }
+            public void keyReleased(KeyEvent e) {
+                showSelectedSBDetails(getSelectedSBId() );
+            }
+            public void keyTyped(KeyEvent e){
+            }                
+        });
         manageColumnSizes();
     }
     private String getSelectedSBId() {
@@ -117,13 +127,14 @@ public class SBTable extends JTable {
         };
     }
 
-    public void setRowInfo(SBLite[] sblites){
-        int size = sblites.length;
-        if(withExec) {
-            sbRowInfo = new Object[size][infoSize];
-        } else {
-            sbRowInfo = new Object[size][infoSize];
+    public void setRowInfo(SBLite[] sblites, boolean queuedList){
+        if(queuedList){
+            //do a special thing
+            updateRowsForQueue(sblites);
+            return;
         }
+        int size = sblites.length;
+        sbRowInfo = new Object[size][infoSize];
         for(int i=0; i<size; i++){
             sbRowInfo[i][0] = sblites[i].sbName;
             sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
@@ -135,6 +146,108 @@ public class SBTable extends JTable {
         repaint();
         revalidate();
         validate();
+    }
+    
+    private void updateRowsForQueue(SBLite[] sbs){
+        //get existing row info
+        int newSize = sbRowInfo.length+sbs.length;
+        Object[][] newRowInfo = new Object[newSize][infoSize];
+        //add new ones to newRowInfo
+        int tmpCtr=0;
+        for(int i=0; i < sbs.length; i++){
+            newRowInfo[i][0] = sbs[i].sbName;
+            newRowInfo[i][uidLoc] = sbs[i].schedBlockRef;
+            if(withExec){
+                newRowInfo[i][1] = "N/A";
+            }
+           // System.out.println("Should have added: "+
+           //         newRowInfo[tmpCtr][0] +":"+newRowInfo[tmpCtr][1]+":"+newRowInfo[tmpCtr][uidLoc]);
+            tmpCtr = i+1;
+        }
+       // System.out.println("Tmp ctr is "+tmpCtr);
+        if(sbRowInfo.length > 0){
+            for(int i=0; i < sbRowInfo.length; i++){
+            //    System.out.println("Frigging SB: "+sbRowInfo[i][0]);
+            //    System.out.println("Adding row "+tmpCtr+" which was originally row "+i);
+                newRowInfo[tmpCtr][0] = (String)sbRowInfo[i][0];
+                newRowInfo[tmpCtr][uidLoc] = (String)sbRowInfo[i][uidLoc];
+                if(withExec){
+                    newRowInfo[tmpCtr][1]= sbRowInfo[i][1];
+                   // System.out.println("Should have readded: "+
+                    //        sbRowInfo[i][0] +":"+sbRowInfo[i][1]+":"+sbRowInfo[i][uidLoc]);
+                }
+                tmpCtr++;
+            }
+        }
+       // for(int i=0; i < newRowInfo.length; i++){
+       //     System.out.println(newRowInfo[i][0] +" : "+ newRowInfo[i][uidLoc]);
+       // }
+        sbRowInfo = newRowInfo;
+        manageColumnSizes();
+        repaint();
+        revalidate();
+        validate();
+    }
+
+    public void removeRowsFromQueue(){
+        if(sbRowInfo.length == 0){
+            return;
+        }
+        int[] rows = getSelectedRows();
+        if(rows.length ==0){
+            //do nothing
+            return;
+        }
+        //get existing row info
+        //remove the rows that have correspond to the given row numbers
+        int newSize = sbRowInfo.length - rows.length;
+        Object[][] newRowInfo = new Object[newSize][infoSize];
+        int ctr=0;
+        for(int i=0; i < sbRowInfo.length; i++){
+            if(!isRowToBeRemoved(rows, i)){
+                System.out.println("Keeping row "+i+", its new row # is "+ctr);
+                //not set to be removed so add it to new array
+                newRowInfo[ctr][0] = sbRowInfo[i][0];
+                newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
+                if(withExec){
+                    newRowInfo[ctr][1] = sbRowInfo[i][1];
+                }
+                ctr++;
+            }
+        }
+        for(int i=0; i < newRowInfo.length; i++){
+            System.out.println(newRowInfo[i][0] +" : "+ newRowInfo[i][uidLoc]);
+        }
+        sbRowInfo = newRowInfo;
+        manageColumnSizes();
+        repaint();
+        revalidate();
+        validate();
+    }
+    
+    /**
+      * Used in queued scheduling
+      */
+    public void setSBExecStatusForRow(int row, String id, String status){
+        if(withExec){
+            if( ((String)sbRowInfo[row][uidLoc]).equals(id)){ //good
+                sbRowInfo[row][1] = status;
+            }
+            manageColumnSizes();
+            repaint();
+            revalidate();
+            validate();
+        }
+    }
+    
+    private boolean isRowToBeRemoved(int[] rows, int r){
+        for (int i=0; i< rows.length; i++){
+            if(rows[i] == r) {
+                return true;
+            }
+        }
+        //not found in rows
+        return false;
     }
     
     public void setSBExecStatus(String sbid, String status){
@@ -181,7 +294,7 @@ public class SBTable extends JTable {
                         x);
                 w = Math.max(w, c.getPreferredSize().width);
             }
-            column.setPreferredWidth(w+5);  
+            column.setPreferredWidth(w);  
         }
     }
 

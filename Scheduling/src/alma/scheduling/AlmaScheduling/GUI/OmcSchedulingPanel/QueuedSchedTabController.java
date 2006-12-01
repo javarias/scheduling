@@ -52,7 +52,10 @@ public class QueuedSchedTabController extends SchedulingPanelController {
 
     public void runQueuedScheduling(String[] sb_ids){
         try {
-            sbs_to_run = sb_ids;
+            sbs_to_run = new String[sb_ids.length];
+            for(int i=0; i < sb_ids.length; i++){
+                sbs_to_run[i] = sb_ids[i];
+            }
             run = new RunQueuedScheduling(
                     container, sb_ids, arrayName);
             thread = new Thread(run);
@@ -66,8 +69,12 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     public void stopQueuedScheduling(){
         try {
             getMSRef();
+            try {
+                run.stop();
+            } catch(Exception e){ }
             masterScheduler.destroyArray(arrayName);
             releaseMSRef();
+            ctrl_consumer.disconnect();
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -142,14 +149,15 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 completion ="ERROR";
                 break;
             }
-            parent.updateExecutionInfo("Execution ended for SB: "+sb.sbName+"\n");
+            parent.updateExecutionInfo("Execution ended for SB: "+sb.sbName+".\n");
+            parent.updateExecutionInfo("Waiting for it to be Archived.\n");
             parent.setSBStatus(sbid, completion);
     }
     
     public void receive(ASDMArchivedEvent e){
         //logger.info("asdm archived event");
         String sbid = e.workingDCId.schedBlock.entityId;
-        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+")");
+        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
         //System.out.println("got archived event: completion = "+completion);
@@ -160,7 +168,8 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             }
             //set status to ARCHIVED
             SBLite sb = getSBLite(sbid);
-            parent.updateExecutionInfo("ASDM archive status for "+sb.sbName+" is "+completion+"\n");
+            parent.updateExecutionInfo("ASDM archive status for "+sb.sbName+" is "+completion+".\n");
+            parent.updateExecutionRow();
         }
     }
 

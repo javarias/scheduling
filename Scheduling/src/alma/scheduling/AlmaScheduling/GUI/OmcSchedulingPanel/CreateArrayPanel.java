@@ -126,7 +126,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                     columnIndex);
             w = Math.max(w, c.getPreferredSize().width);
         }
-        column.setPreferredWidth(w+5);   
+        column.setPreferredWidth(w);   
     }
 
     private JPanel createAntennaListB(){
@@ -169,7 +169,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                     columnIndex);
             w = Math.max(w, c.getPreferredSize().width);
         }
-        column.setPreferredWidth(w+5);    
+        column.setPreferredWidth(w);    
     }
 
     private JPanel transferButtons() {

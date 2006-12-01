@@ -106,7 +106,7 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
     }
 
     public void updateSBView(SBLite[] sblites){
-        sbs.setRowInfo(sblites);
+        sbs.setRowInfo(sblites, false);
     }
 
     public void updateProjectView(ProjectLite[] projectLites) {

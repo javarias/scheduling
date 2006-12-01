@@ -61,6 +61,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             masterScheduler.stopInteractiveScheduler(schedulername);
             masterScheduler.destroyArray(arrayName);
             releaseMSRef();
+            ctrl_consumer.disconnect();
+            consumer.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }

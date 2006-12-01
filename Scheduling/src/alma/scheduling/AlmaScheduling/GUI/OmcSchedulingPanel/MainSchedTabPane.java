@@ -120,6 +120,8 @@ public class MainSchedTabPane extends JTabbedPane {
 
     private void doDynamicButton(){ 
         resetMainViewButtons();
+        JOptionPane.showMessageDialog(this,"Dynamic scheduling not available yet.",
+                "Not Available", JOptionPane.INFORMATION_MESSAGE);
         /*
         origButtonColor = dynamicB.getBackground();
         dynamicB.setBackground(selectedButtonColor);

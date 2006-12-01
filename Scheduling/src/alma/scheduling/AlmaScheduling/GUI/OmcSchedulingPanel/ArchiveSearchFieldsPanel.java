@@ -204,9 +204,11 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         searchB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 if(!connectedToALMA){
+                    showConnectMessage();
                     return;
                 }
                 if(controller == null) {
+                    showConnectMessage();
                     return;     
                 }
                 doClear();
@@ -248,6 +250,10 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         }
     }
 
+    private void showConnectMessage(){
+        JOptionPane.showMessageDialog(this,"System not operational yet.",
+                "Not Connected", JOptionPane.ERROR_MESSAGE);
+    }
     //////////////////////////////////////
     /// SB Stuff Below
     //////////////////////////////////////

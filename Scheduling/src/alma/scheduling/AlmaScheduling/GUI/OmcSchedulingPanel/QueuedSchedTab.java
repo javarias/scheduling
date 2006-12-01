@@ -30,7 +30,16 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton removeB;
     private JButton executeB;
     private JButton stopB;
+    private int currentExecutionRow;
     
+    /*
+    public QueuedSchedTab(String title, String aName){
+        type = "queued";
+        arrayName = aName;
+        searchingOnProject = true;
+        schedulerName = title;
+        createLayout();
+    }*/
     public QueuedSchedTab(PluginContainerServices cs, String title, String aName){
         super();
         super.onlineSetup(cs);
@@ -87,20 +96,31 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 
     private void createMiddlePanel(){
         middlePanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
-        JPanel projectPanel = new JPanel();
+        JPanel projectPanel = new JPanel();//new BorderLayout());
         projectPanel.setBorder(new TitledBorder("Projects Found"));
         projects = new ProjectTable(new Dimension(175,100));
         projects.setOwner(this);
         JScrollPane pane1 = new JScrollPane(projects);
-        projectPanel.add(pane1);
+        projectPanel.add(pane1);//, BorderLayout.CENTER);
         middlePanel.add(projectPanel);//, BorderLayout.WEST);
 
-        JPanel sbPanel = new JPanel(new BorderLayout());
+        
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0; c.weighty = 1.0;
+        
+        JPanel sbPanel = new JPanel(gridbag);//new BorderLayout());
         sbs = new SBTable(false, new Dimension(175,75));
         sbs.setOwner(this);
         sbPanel.setBorder(new TitledBorder("SBs Found"));
         JScrollPane pane2 = new JScrollPane(sbs);
-        sbPanel.add(pane2,BorderLayout.CENTER);
+        
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(pane2,c);
+        sbPanel.add(pane2);//,BorderLayout.CENTER);
+        
         addB = new JButton("Add to Queue");
         addB.setToolTipText("Will add SB to queue.");
         addB.addActionListener(new ActionListener(){
@@ -108,9 +128,10 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 addSBsToQueue();
             }
         });
-        JPanel buttons = new JPanel(new GridLayout(1,2));
-        buttons.add(addB);
-        sbPanel.add(buttons, BorderLayout.SOUTH);
+        JPanel buttons = new JPanel(new BorderLayout());
+        //JPanel buttons = new JPanel(new GridLayout(1,1));
+        buttons.add(addB, BorderLayout.CENTER);
+        sbPanel.add(buttons);//, BorderLayout.SOUTH);
         middlePanel.add(sbPanel);//, BorderLayout.EAST);
 
     }
@@ -120,11 +141,23 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //bottomPanel = new JPanel(new BorderLayout());
         //have the following:
         //a sbtable for queue sbs, 
-        JPanel p1 = new JPanel(new BorderLayout());
+        
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0; c.weighty = 1.0;
+        
+        JPanel p1 = new JPanel(gridbag);//new BorderLayout());
+        p1.setBorder(new TitledBorder("SB Queue"));
         queueSBs = new SBTable(true, new Dimension(175,75));
         queueSBs.setOwner(this);
         JScrollPane queueSbPane = new JScrollPane(queueSBs);
-        p1.add(queueSbPane, BorderLayout.CENTER);
+        
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(queueSbPane,c);
+        
+        p1.add(queueSbPane);//, BorderLayout.CENTER);
         //a button to remove selected ones
         JPanel buttonPanel = new JPanel();//new GridLayout(1,2));
         removeB = new JButton("Remove");
@@ -152,7 +185,9 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
             }
         });
         //buttonPanel.add(stopB);
-        p1.add(buttonPanel, BorderLayout.SOUTH);
+        c.gridwidth = 1;
+        gridbag.setConstraints(buttonPanel,c);
+        p1.add(buttonPanel);//, BorderLayout.SOUTH);
         
         bottomPanel.add(p1);//, BorderLayout.WEST);
         //a text area which displays process
@@ -160,9 +195,12 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         executionInfo.setEditable(false);
         //Dimension d = new Dimension(75, 75);
         JScrollPane pane = new JScrollPane(executionInfo);
+        //pane.setSize(new Dimension(175,50));
         //pane.setPreferredSize(d);
-        
-        bottomPanel.add(pane);//, BorderLayout.EAST);
+        JPanel taPanel = new JPanel(new GridLayout(1,1));
+        taPanel.setBorder(new TitledBorder("Execution Info"));
+        taPanel.add(pane);
+        bottomPanel.add(taPanel);//, BorderLayout.EAST);
     }
     
     public void setEnable(boolean b){
@@ -185,7 +223,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
     public void updateSBView(SBLite[] sb){
-        sbs.setRowInfo(sb);
+        sbs.setRowInfo(sb, false);
     }
     
     public void updateExecutionInfo(String info){
@@ -193,11 +231,15 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     private void executeSBs(){
         //get all ids from the queueSB table and send them to control
+        currentExecutionRow =0;
         controller.runQueuedScheduling(queueSBs.getAllSBIds());
+    }
+    public void updateExecutionRow(){
+        currentExecutionRow++;
     }
     
     public void setSBStatus(String sbid, String status){
-        queueSBs.setSBExecStatus(sbid, status);
+        queueSBs.setSBExecStatusForRow(currentExecutionRow, sbid, status);
     }
     
     private void stopSB(){
@@ -208,10 +250,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         String[] selectedSBs = sbs.getSelectedSBs();
         SBLite[] sbs = controller.getSBLites(selectedSBs);
         //pass these to queuedSBTable
-        queueSBs.setRowInfo(sbs);
+        queueSBs.setRowInfo(sbs, true);
     }
     private void removeSBsFromQueue(){
         //remove selected sb from QueuedSbTable
+        queueSBs.removeRowsFromQueue();
         //and update view/scheduler/etc
     }
 }

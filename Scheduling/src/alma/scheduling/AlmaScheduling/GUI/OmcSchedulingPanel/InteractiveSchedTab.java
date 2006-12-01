@@ -161,7 +161,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     
     public void updateSBView(SBLite[] sblites){
-        sbs.setRowInfo(sblites);
+        sbs.setRowInfo(sblites, false);
         sbs.selectFirstSB();
     }
 

@@ -39,32 +39,47 @@ public class ProjectTable extends JTable {
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
 
 
-        manageColumnSizes();
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
-                //make sure only one selected
-                int[] rows = getSelectedRows();
-                if(rows.length > 1) {
-                    //not good!
-                }
-                //get row number, 
-                int row = getSelectedRow();
-                //corresponds to rowInfo index, 
-                //last one == uid
-                String uid = (String)projRowInfo[row][uidLoc];
-                //get the particular info and display it
-                ProjectLite p = controller.getProjectLite(uid);
-                showProjectInfo(p);
-                //get project sbs
-                if(projectSearchMode){
-                    showProjectSBs(p);
-                }
+                displaySelectedRow();
             }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
             public void mousePressed(MouseEvent e){ }
             public void mouseReleased(MouseEvent e){}
         });
+        addKeyListener(new KeyListener() {
+            public void keyPressed(KeyEvent e){
+                displaySelectedRow();
+            }
+            public void keyReleased(KeyEvent e) {
+                displaySelectedRow();
+            }
+            public void keyTyped(KeyEvent e){
+            }
+        });
+        manageColumnSizes();
+    }
+
+    private void displaySelectedRow() {
+        //make sure only one selected
+        int[] rows = getSelectedRows();
+        if(rows.length > 1) {
+            //not good! we only want to show one
+            return;
+        }
+        //get row number, 
+        int row = getSelectedRow();
+        //corresponds to rowInfo index, 
+        //last one == uid
+        String uid = (String)projRowInfo[row][uidLoc];
+        //get the particular info and display it
+        ProjectLite p = controller.getProjectLite(uid);
+        showProjectInfo(p);
+        //get project sbs
+        if(projectSearchMode){
+            showProjectSBs(p);
+        }
     }
 
     public void showFirstProject() {
@@ -147,7 +162,6 @@ public class ProjectTable extends JTable {
         } else if(par.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateSBView(sbs);
         } else if(par.contains("QueuedSchedTab")){
-        System.out.println("in PT update sb view");
             ((QueuedSchedTab)parent).updateSBView(sbs);
         }
     }
@@ -184,7 +198,7 @@ public class ProjectTable extends JTable {
                         x);
                 w = Math.max(w, c.getPreferredSize().width);
             }
-            column.setPreferredWidth(w+5);  
+            column.setPreferredWidth(w);  
         }
     }
 
