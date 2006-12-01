@@ -32,14 +32,14 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton stopB;
     private int currentExecutionRow;
     
-    /*
+    
     public QueuedSchedTab(String title, String aName){
         type = "queued";
         arrayName = aName;
         searchingOnProject = true;
         schedulerName = title;
         createLayout();
-    }*/
+    }
     public QueuedSchedTab(PluginContainerServices cs, String title, String aName){
         super();
         super.onlineSetup(cs);
@@ -95,15 +95,6 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 
     private void createMiddlePanel(){
-        middlePanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
-        JPanel projectPanel = new JPanel();//new BorderLayout());
-        projectPanel.setBorder(new TitledBorder("Projects Found"));
-        projects = new ProjectTable(new Dimension(170,100));
-        projects.setOwner(this);
-        JScrollPane pane1 = new JScrollPane(projects);
-        projectPanel.add(pane1);//, BorderLayout.CENTER);
-        middlePanel.add(projectPanel);//, BorderLayout.WEST);
-
         
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
@@ -111,8 +102,22 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0; c.weighty = 1.0;
         
+        middlePanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
+        JPanel projectPanel = new JPanel(gridbag);//new BorderLayout());
+        projectPanel.setBorder(new TitledBorder("Projects Found"));
+        projects = new ProjectTable(new Dimension(150,100));
+        projects.setOwner(this);
+        JScrollPane pane1 = new JScrollPane(projects);
+        
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(pane1,c);
+        
+        projectPanel.add(pane1);//, BorderLayout.CENTER);
+        middlePanel.add(projectPanel);//, BorderLayout.WEST);
+
+        
         JPanel sbPanel = new JPanel(gridbag);//new BorderLayout());
-        sbs = new SBTable(false, new Dimension(170,75));
+        sbs = new SBTable(false, new Dimension(150,75));
         sbs.setOwner(this);
         sbPanel.setBorder(new TitledBorder("SBs Found"));
         JScrollPane pane2 = new JScrollPane(sbs);
@@ -150,7 +155,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         
         JPanel p1 = new JPanel(gridbag);//new BorderLayout());
         p1.setBorder(new TitledBorder("SB Queue"));
-        queueSBs = new SBTable(true, new Dimension(170,75));
+        queueSBs = new SBTable(true, new Dimension(150,75));
         queueSBs.setOwner(this);
         JScrollPane queueSbPane = new JScrollPane(queueSBs);
         
@@ -159,7 +164,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         
         p1.add(queueSbPane);//, BorderLayout.CENTER);
         //a button to remove selected ones
-        JPanel buttonPanel = new JPanel();//new GridLayout(1,2));
+        JPanel buttonPanel = new JPanel(gridbag);//new GridLayout(1,2));
         removeB = new JButton("Remove");
         removeB.setToolTipText("Will remove SB from queue.");
         removeB.addActionListener(new ActionListener(){
@@ -167,16 +172,22 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 removeSBsFromQueue();
             }
         });
+        c.gridwidth = 1;
+        gridbag.setConstraints(removeB,c);
+
         buttonPanel.add(removeB);
-        executeB = new JButton("Execute Queue");
+        executeB = new JButton("Run");
         executeB.setToolTipText("Will execute the queue.");
         executeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 executeSBs();
             }
         });
+        c.gridwidth = 1;
+        //c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(executeB,c);
         buttonPanel.add(executeB);
-        stopB = new JButton ("Stop SB");
+        stopB = new JButton ("Stop");
         stopB.setToolTipText("Will stop the current SB and move to the next SB.");
         stopB.setEnabled(false);
         stopB.addActionListener(new ActionListener(){
@@ -184,7 +195,10 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 stopSB();
             }
         });
-        //buttonPanel.add(stopB);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(stopB,c);
+        buttonPanel.add(stopB);
+
         c.gridwidth = 1;
         gridbag.setConstraints(buttonPanel,c);
         p1.add(buttonPanel);//, BorderLayout.SOUTH);
@@ -193,11 +207,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //a text area which displays process
         executionInfo = new JTextArea();
         executionInfo.setEditable(false);
-        //executionInfo.setMaximumSize(new Dimension(170,50));
+        executionInfo.setMaximumSize(new Dimension(50,50));
         //Dimension d = new Dimension(75, 75);
         JScrollPane pane = new JScrollPane(executionInfo);
         //pane.setMaximumSize(new Dimension(170,50));
-        pane.setPreferredSize(new Dimension(170,50));
+        pane.setPreferredSize(new Dimension(150,50));
         JPanel taPanel = new JPanel(new GridLayout(1,1));
         taPanel.setBorder(new TitledBorder("Execution Info"));
         taPanel.add(pane);

@@ -60,6 +60,7 @@ public class MainSchedTabPane extends JTabbedPane {
         createSearchArchiveOnlyTab();
         addTab("Main",mainPanel);
         addTab("Search", archiveTab);
+        //addTab("Queued", new QueuedSchedTab("foo","foo"));
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
