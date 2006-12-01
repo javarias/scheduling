@@ -122,6 +122,9 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         try{
             logger.info("IS: Sending sb ("+id+") to be executed");
             currentSBId = id;
+            getMSRef();
+            ProjectLite project = masterScheduler.getProjectLiteForSB(id);
+            scheduler.startSession(project.piName, project.uid);
             scheduler.executeSB(id);
         }catch( Exception e){
             throw new SchedulingException (e);
@@ -132,6 +135,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         try{
             logger.info("IS: Requesting sb to stop");
             scheduler.stopSB();
+            scheduler.endSession();
         }catch( Exception e){
             throw new SchedulingException (e);
         }
@@ -152,23 +156,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             currentExecBlockId = exec_id;
         }
         String completion;
-        switch(e.status.value()) {
-            case 0:
-                completion ="FAILED";
-                break;
-            case 1:
-                completion ="SUCCESS";
-                break;
-            case 2:
-                completion ="PARTIAL";
-                break;
-            case 3:
-                completion ="TIMEOUT";
-                break;
-            default:
-                completion ="ERROR";
-                break;
-        }
+        System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
+        completion = e.status.toString();//completions[e.status.value()];
         parent.setSBStatus(sbid, completion);
     }
     public void receive(ASDMArchivedEvent e){
@@ -182,6 +171,10 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
                 parent.setSBStatus(currentSBId, "ARCHIVED");
             }
             //set status to ARCHIVED
+        }
+        try {
+            scheduler.endSession();
+        } catch(Exception ex){
         }
     }
 

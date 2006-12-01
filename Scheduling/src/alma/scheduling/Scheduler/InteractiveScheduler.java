@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.14 2006/11/21 23:38:06 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.15 2006/12/01 17:40:33 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -343,11 +343,13 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 */
 	//public void execute(String sbId) throws SchedulingException {
 	public void execute(SB sb) throws SchedulingException {
-	//	if (!sessionStarted) {
-	//		error("Invalid operation. There is no session underway.");
-	//	}
+		if (!sessionStarted) {
+			error("Invalid operation. There is no session underway.");
+		}
         String sbId = sb.getId();
+        //*****************
         config.getQueue().add(sb); //hack!
+        //*****************
 		if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");
 		}

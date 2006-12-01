@@ -32,7 +32,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     private String instanceName;
     private ContainerServices container;
     private String arrayname;
-    private SBQueue queue;
+    //private SBQueue queue;
     private Logger logger;
     private MasterSchedulerIF masterScheduler;
     private String schedulerId;

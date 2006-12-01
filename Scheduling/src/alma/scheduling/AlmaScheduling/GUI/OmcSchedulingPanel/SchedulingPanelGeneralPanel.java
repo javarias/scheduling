@@ -1,6 +1,7 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import javax.swing.*;
+import java.awt.Dimension;
 import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
@@ -14,6 +15,11 @@ public class SchedulingPanelGeneralPanel extends JPanel{
     public void onlineSetup(PluginContainerServices cs){
         container = cs;
         logger = cs.getLogger();
+    }
+
+    public void setMaxSize(Dimension d){ 
+//        System.out.println("MAX Size should be: "+d.toString());
+        setMaximumSize(d);
     }
 
     public void showErrorPopup(String error,String method) {

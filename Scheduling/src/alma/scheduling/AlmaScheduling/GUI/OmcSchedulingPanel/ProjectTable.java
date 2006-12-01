@@ -137,6 +137,7 @@ public class ProjectTable extends JTable {
     
     public JScrollPane getProjectInfoView(){
         JScrollPane p = new JScrollPane(projectInfo);
+        //p.setMaximumSize(size);
         p.setPreferredSize(size);
         return p;
     }

@@ -98,7 +98,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         middlePanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
         JPanel projectPanel = new JPanel();//new BorderLayout());
         projectPanel.setBorder(new TitledBorder("Projects Found"));
-        projects = new ProjectTable(new Dimension(175,100));
+        projects = new ProjectTable(new Dimension(170,100));
         projects.setOwner(this);
         JScrollPane pane1 = new JScrollPane(projects);
         projectPanel.add(pane1);//, BorderLayout.CENTER);
@@ -112,7 +112,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         c.weightx = 1.0; c.weighty = 1.0;
         
         JPanel sbPanel = new JPanel(gridbag);//new BorderLayout());
-        sbs = new SBTable(false, new Dimension(175,75));
+        sbs = new SBTable(false, new Dimension(170,75));
         sbs.setOwner(this);
         sbPanel.setBorder(new TitledBorder("SBs Found"));
         JScrollPane pane2 = new JScrollPane(sbs);
@@ -150,7 +150,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         
         JPanel p1 = new JPanel(gridbag);//new BorderLayout());
         p1.setBorder(new TitledBorder("SB Queue"));
-        queueSBs = new SBTable(true, new Dimension(175,75));
+        queueSBs = new SBTable(true, new Dimension(170,75));
         queueSBs.setOwner(this);
         JScrollPane queueSbPane = new JScrollPane(queueSBs);
         
@@ -193,10 +193,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //a text area which displays process
         executionInfo = new JTextArea();
         executionInfo.setEditable(false);
+        //executionInfo.setMaximumSize(new Dimension(170,50));
         //Dimension d = new Dimension(75, 75);
         JScrollPane pane = new JScrollPane(executionInfo);
-        //pane.setSize(new Dimension(175,50));
-        //pane.setPreferredSize(d);
+        //pane.setMaximumSize(new Dimension(170,50));
+        pane.setPreferredSize(new Dimension(170,50));
         JPanel taPanel = new JPanel(new GridLayout(1,1));
         taPanel.setBorder(new TitledBorder("Execution Info"));
         taPanel.add(pane);

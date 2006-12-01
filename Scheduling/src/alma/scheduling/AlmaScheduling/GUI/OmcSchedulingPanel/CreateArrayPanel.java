@@ -367,7 +367,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         String[] antennas= new String[antennaRowInfoB.length];
         for(int i=0; i < antennaRowInfoB.length; i++){
             antennas[i] = (String)antennaRowInfoB[i][0];
-            System.out.println(antennas[i]);
+            //System.out.println(antennas[i]);
         }
         String arrayName;
         try {

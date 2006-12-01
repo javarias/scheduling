@@ -35,6 +35,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private MainSchedTabPaneController controller;
     private Color origButtonColor;
     private Color selectedButtonColor;
+    private Dimension maxSize;
 
     /**
       * Constructor
@@ -53,6 +54,9 @@ public class MainSchedTabPane extends JTabbedPane {
     public void setup() {
         allSchedulers = new Vector<SchedulerTab>();
         createMainTab();
+        maxSize = getSize();
+        //System.out.println("Main tab size = "+maxSize.toString());
+        setMaximumSize(maxSize);
         createSearchArchiveOnlyTab();
         addTab("Main",mainPanel);
         addTab("Search", archiveTab);
@@ -85,6 +89,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
     public void createSearchArchiveOnlyTab() {
         archiveTab = new SearchArchiveOnlyTab();
+        archiveTab.setMaxSize(maxSize);
     }
     public void createMainTab(){ 
         mainPanel = new JPanel(new BorderLayout());
@@ -202,10 +207,12 @@ public class MainSchedTabPane extends JTabbedPane {
             tab = new InteractiveSchedTab(container, array);
             allSchedulers.add(tab);
             title = array +"(Interactive)";
+            ((InteractiveSchedTab)tab).setMaxSize(maxSize);
             addTab(title, (JPanel)tab);
         } else if (mode.equals("queued")){
             title = array +"(Queued)";
             tab = new QueuedSchedTab(container, title, array);
+            ((QueuedSchedTab)tab).setMaxSize(maxSize);
             allSchedulers.add(tab);
             addTab(title, (JPanel)tab);
         } else if (mode.equals("dynamic")){

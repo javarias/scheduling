@@ -205,7 +205,7 @@ public class SBTable extends JTable {
         int ctr=0;
         for(int i=0; i < sbRowInfo.length; i++){
             if(!isRowToBeRemoved(rows, i)){
-                System.out.println("Keeping row "+i+", its new row # is "+ctr);
+                //System.out.println("Keeping row "+i+", its new row # is "+ctr);
                 //not set to be removed so add it to new array
                 newRowInfo[ctr][0] = sbRowInfo[i][0];
                 newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
@@ -215,9 +215,9 @@ public class SBTable extends JTable {
                 ctr++;
             }
         }
-        for(int i=0; i < newRowInfo.length; i++){
-            System.out.println(newRowInfo[i][0] +" : "+ newRowInfo[i][uidLoc]);
-        }
+        //for(int i=0; i < newRowInfo.length; i++){
+          //  System.out.println(newRowInfo[i][0] +" : "+ newRowInfo[i][uidLoc]);
+        //}
         sbRowInfo = newRowInfo;
         manageColumnSizes();
         repaint();
@@ -303,7 +303,9 @@ public class SBTable extends JTable {
         if(withExec){
             Dimension d = new Dimension(size.width, size.height + 25);
             p.setPreferredSize(d);
+            //p.setMaximumSize(d);
         }else{
+            //p.setMaximumSize(size);
             p.setPreferredSize(size);
         }
         return p;
