@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.46 2006/11/06 15:37:26 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.47 2006/12/04 18:23:24 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -727,8 +727,12 @@ public class ProjectUtil {
                     } catch(Exception e){}
 
                     sb.addSource(source);
+                } else {
+                    //System.out.println("FS is null..");
+                    eq[i] = new Equatorial(0.0,0.0);
                 }
             }
+            
     		if (eq.length == 1) {
 		    	Target target = new Target (eq[0],3600.0,3600.0);
 	    		sb.setTarget(target);

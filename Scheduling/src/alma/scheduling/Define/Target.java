@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * coordinates of its center.  The area itself may be circular, rectangular,
  * or it may be defined by a list of coordinate positions.
  * 
- * @version $Id: Target.java,v 1.4 2006/10/20 15:38:45 sslucero Exp $
+ * @version $Id: Target.java,v 1.5 2006/12/04 18:23:24 sslucero Exp $
  * @author Allen Farris
  */
 public class Target {
@@ -95,36 +95,52 @@ public class Target {
 	}
 
 	private double getRaMax(Equatorial[] list) {
-		double max = list[0].getRa();
-		for (int i = 1; i < list.length; ++i) {
-			if (list[i].getRa() > max)
-				max = list[i].getRa();
-		}
-		return max;
+        try {
+    		double max = list[0].getRa();
+	    	for (int i = 1; i < list.length; ++i) {
+		    	if (list[i].getRa() > max)
+			    	max = list[i].getRa();
+    		}
+		    return max;
+        }catch(Exception e){
+            return 0.0;
+        }
 	}
 	private double getRaMin(Equatorial[] list) {
-		double min = list[0].getRa();
-		for (int i = 1; i < list.length; ++i) {
-			if (list[i].getRa() < min)
-				min = list[i].getRa();
-		}
-		return min;
+        try {
+	    	double min = list[0].getRa();
+    		for (int i = 1; i < list.length; ++i) {
+		    	if (list[i].getRa() < min)
+	    			min = list[i].getRa();
+    		}
+		    return min;
+        } catch(Exception e){
+            return 0.0;
+        }
 	}
 	private double getDecMax(Equatorial[] list) {
-		double max = list[0].getDec();
-		for (int i = 1; i < list.length; ++i) {
-			if (list[i].getDec() > max)
-				max = list[i].getDec();
-		}
-		return max;
+        try {
+    		double max = list[0].getDec();
+	    	for (int i = 1; i < list.length; ++i) {
+		    	if (list[i].getDec() > max)
+			    	max = list[i].getDec();
+     		}
+	    	return max;
+        } catch(Exception e){
+            return 0.0;
+        }
 	}
 	private double getDecMin(Equatorial[] list) {
-		double min = list[0].getDec();
-		for (int i = 1; i < list.length; ++i) {
-			if (list[i].getDec() < min)
-				min = list[i].getDec();
-		}
-		return min;
+        try {
+    		double min = list[0].getDec();
+	    	for (int i = 1; i < list.length; ++i) {
+		    	if (list[i].getDec() < min)
+			    	min = list[i].getDec();
+		    }
+    		return min;
+        } catch(Exception e){
+            return 0.0;
+        }
 	}
 
 	public Equatorial getMax() {
