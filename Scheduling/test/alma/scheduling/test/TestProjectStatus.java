@@ -94,7 +94,7 @@ public class TestProjectStatus extends ComponentClientTestCase {
         SchedBlock[] sbs = new SchedBlock[1];
         //SchedBlock sb = createSchedBlock("xmldocs/SchedBlock1.xml");
         SchedBlock sb = createSchedBlock("newxmldocs/HG/SchedBlock0.xml");
-        System.out.println(sb.getModeName());
+        //System.out.println(sb.getModeName());
             
         assertNotNull(sb);
         sbs[0] = sb;

@@ -1,5 +1,13 @@
+\[jacorb\.poa\] INFO : Using server ID
+\[jacorb\.poa\] INFO : oid:
+\[jacorb\.poa\] INFO : POA
+\[jacorb\.orb\] ERROR : no adapter activator exists for ComponentPOA
+[0-9A-F][0-9A-F] [0-9A-F][0-9A-F] [0-9A-F][0-9A-F] [0-9A-F][0-9A-F] [0-9A-F][0-9A-F] [0-9A-F][0-9A-F]
 object is activated
-[jacorb.poa]
+object is deactivated
+servant is etherealized
+\[jacorb\.poa\.controlle\] INFO : rid:
+\[jacorb\.poa\.controlle\] WARN : rid:
 --endorsed --
 SimulationInput.filename Using file
 SimulationInput.projectFilename Using file
