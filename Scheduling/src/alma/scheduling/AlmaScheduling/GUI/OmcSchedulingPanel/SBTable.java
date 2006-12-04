@@ -12,11 +12,12 @@ import alma.scheduling.SBLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class SBTable extends JTable {
-    private final String[] sbColumnInfo = {"SB Name"};
-    private final String[] sbColumnInfoWithStatus = {"SB Name","Exec Status"};
+    private final String[] sbColumnInfo = {"SB Name","Project"};
+    private final String[] sbColumnInfoWithStatus = {"SB Name","Project","Exec Status"};
     private Object[][] sbRowInfo;
     private int infoSize;
     private int uidLoc;
+    private int execLoc;
     private TableModel sbTableModel;
     private JTextArea sbInfo;
     private boolean withExec; 
@@ -38,6 +39,7 @@ public class SBTable extends JTable {
             sbRowInfo = new Object[0][infoSize];
         }
         uidLoc = infoSize-1;
+        execLoc = 2;
         createTableModel();
         setModel(sbTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -137,6 +139,7 @@ public class SBTable extends JTable {
         sbRowInfo = new Object[size][infoSize];
         for(int i=0; i<size; i++){
             sbRowInfo[i][0] = sblites[i].sbName;
+            sbRowInfo[i][1] = sblites[i].projectName;
             sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
             if(withExec){
                 setSBExecStatus((String)sbRowInfo[i][uidLoc], "N/A");
@@ -156,32 +159,24 @@ public class SBTable extends JTable {
         int tmpCtr=0;
         for(int i=0; i < sbs.length; i++){
             newRowInfo[i][0] = sbs[i].sbName;
+            newRowInfo[i][1] = sbs[i].projectName;
             newRowInfo[i][uidLoc] = sbs[i].schedBlockRef;
             if(withExec){
-                newRowInfo[i][1] = "N/A";
+                newRowInfo[i][execLoc] = "N/A";
             }
-           // System.out.println("Should have added: "+
-           //         newRowInfo[tmpCtr][0] +":"+newRowInfo[tmpCtr][1]+":"+newRowInfo[tmpCtr][uidLoc]);
             tmpCtr = i+1;
         }
-       // System.out.println("Tmp ctr is "+tmpCtr);
         if(sbRowInfo.length > 0){
             for(int i=0; i < sbRowInfo.length; i++){
-            //    System.out.println("Frigging SB: "+sbRowInfo[i][0]);
-            //    System.out.println("Adding row "+tmpCtr+" which was originally row "+i);
                 newRowInfo[tmpCtr][0] = (String)sbRowInfo[i][0];
+                newRowInfo[tmpCtr][1] = (String)sbRowInfo[i][1];
                 newRowInfo[tmpCtr][uidLoc] = (String)sbRowInfo[i][uidLoc];
                 if(withExec){
-                    newRowInfo[tmpCtr][1]= sbRowInfo[i][1];
-                   // System.out.println("Should have readded: "+
-                    //        sbRowInfo[i][0] +":"+sbRowInfo[i][1]+":"+sbRowInfo[i][uidLoc]);
+                    newRowInfo[tmpCtr][execLoc]= sbRowInfo[i][execLoc]; //retain exec status
                 }
                 tmpCtr++;
             }
         }
-       // for(int i=0; i < newRowInfo.length; i++){
-       //     System.out.println(newRowInfo[i][0] +" : "+ newRowInfo[i][uidLoc]);
-       // }
         sbRowInfo = newRowInfo;
         manageColumnSizes();
         repaint();
@@ -205,19 +200,15 @@ public class SBTable extends JTable {
         int ctr=0;
         for(int i=0; i < sbRowInfo.length; i++){
             if(!isRowToBeRemoved(rows, i)){
-                //System.out.println("Keeping row "+i+", its new row # is "+ctr);
-                //not set to be removed so add it to new array
                 newRowInfo[ctr][0] = sbRowInfo[i][0];
+                newRowInfo[ctr][0] = sbRowInfo[i][1];
                 newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
                 if(withExec){
-                    newRowInfo[ctr][1] = sbRowInfo[i][1];
+                    newRowInfo[ctr][execLoc] = sbRowInfo[i][execLoc];
                 }
                 ctr++;
             }
         }
-        //for(int i=0; i < newRowInfo.length; i++){
-          //  System.out.println(newRowInfo[i][0] +" : "+ newRowInfo[i][uidLoc]);
-        //}
         sbRowInfo = newRowInfo;
         manageColumnSizes();
         repaint();
@@ -231,7 +222,7 @@ public class SBTable extends JTable {
     public void setSBExecStatusForRow(int row, String id, String status){
         if(withExec){
             if( ((String)sbRowInfo[row][uidLoc]).equals(id)){ //good
-                sbRowInfo[row][1] = status;
+                sbRowInfo[row][execLoc] = status;
             }
             manageColumnSizes();
             repaint();

@@ -93,7 +93,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
       * Middle panel contains he search text boxes and the buttons.
       */
     public void createMiddlePanel() {
-        middlePanel = new JPanel(new GridLayout(1,2));// new BorderLayout());
+        middlePanel = new JPanel(new GridLayout(1,2));
         JPanel projectPanel = new JPanel();
         projectPanel.setBorder(new TitledBorder("Projects Found"));
         projects = new ProjectTable(new Dimension(175,100));

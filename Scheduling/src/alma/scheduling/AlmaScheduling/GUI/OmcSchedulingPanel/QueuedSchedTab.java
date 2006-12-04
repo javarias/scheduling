@@ -102,29 +102,30 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0; c.weighty = 1.0;
         
-        middlePanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
-        JPanel projectPanel = new JPanel(gridbag);//new BorderLayout());
+        middlePanel = new JPanel(new GridLayout(1,2));
+        JPanel projectPanel = new JPanel();//gridbag);
         projectPanel.setBorder(new TitledBorder("Projects Found"));
-        projects = new ProjectTable(new Dimension(150,100));
+        projects = new ProjectTable(new Dimension(175,80));
         projects.setOwner(this);
         JScrollPane pane1 = new JScrollPane(projects);
         
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(pane1,c);
+        //c.gridwidth = GridBagConstraints.REMAINDER;
+        //gridbag.setConstraints(pane1,c);
         
         projectPanel.add(pane1);//, BorderLayout.CENTER);
         middlePanel.add(projectPanel);//, BorderLayout.WEST);
 
         
-        JPanel sbPanel = new JPanel(gridbag);//new BorderLayout());
+        JPanel sbPanel = new JPanel(new BorderLayout());//gridbag);
         sbs = new SBTable(false, new Dimension(150,75));
         sbs.setOwner(this);
         sbPanel.setBorder(new TitledBorder("SBs Found"));
         JScrollPane pane2 = new JScrollPane(sbs);
         
-        c.gridwidth = GridBagConstraints.REMAINDER;
+        //c.weightx = 3.0; c.weighty = 1.0;
+        //c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(pane2,c);
-        sbPanel.add(pane2);//,BorderLayout.CENTER);
+        sbPanel.add(pane2,BorderLayout.CENTER);
         
         addB = new JButton("Add to Queue");
         addB.setToolTipText("Will add SB to queue.");
@@ -135,8 +136,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         });
         JPanel buttons = new JPanel(new BorderLayout());
         //JPanel buttons = new JPanel(new GridLayout(1,1));
+       // c.weightx = 1.0; c.weighty = 1.0;
         buttons.add(addB, BorderLayout.CENTER);
-        sbPanel.add(buttons);//, BorderLayout.SOUTH);
+        //c.gridwidth = GridBagConstraints.REMAINDER;
+        //gridbag.setConstraints(buttons,c);
+        sbPanel.add(buttons, BorderLayout.SOUTH);
         middlePanel.add(sbPanel);//, BorderLayout.EAST);
 
     }
