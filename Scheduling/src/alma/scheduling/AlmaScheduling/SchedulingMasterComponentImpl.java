@@ -47,7 +47,7 @@ import alma.acs.commandcenter.meta.*;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.28 2006/11/21 23:45:33 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.29 2006/12/04 22:54:41 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -80,10 +80,13 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     public void initSubsysPass1() throws AcsStateActionException {
         getNC();
         m_logger.info("SCHEDULING MC: initSubsysPass1() method called");
-        try {
-            masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+        //try {
+            //masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+              //  m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+            //TODO check state of master scheduler: is it happy?
+            //     if no go to error state
             publishSchedulingStateEvent(SchedulingState.ONLINE_PASS1);
+            /*
         } catch (AcsJContainerServicesEx e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass1.");
             //set the ms to null just to be safe..
@@ -98,7 +101,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             }
             publishSchedulingStateEvent(SchedulingState.ERROR);
             throw new AcsStateActionException(e);
-        }
+        }*/
     }
 
     /**
@@ -109,8 +112,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                    m_containerServices.getDefaultComponent(
+                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
+            //TODO check state of master scheduler: is it happy?
+            //     if no go to error state
             publishSchedulingStateEvent(SchedulingState.ONLINE_PASS2);
         } catch (AcsJContainerServicesEx e) {
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass2.");

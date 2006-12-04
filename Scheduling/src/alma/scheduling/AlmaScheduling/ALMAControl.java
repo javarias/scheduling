@@ -61,7 +61,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.56 2006/11/27 16:39:13 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.57 2006/12/04 22:54:40 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -80,7 +80,7 @@ public class ALMAControl implements Control {
     private ALMAProjectManager manager;
     private ALMAClock clock;
 
-    public ALMAControl(ContainerServices cs, ALMAProjectManager m) {
+    public ALMAControl(ContainerServices cs, ALMAProjectManager m) throws SchedulingException{
         this.containerServices = cs;
         this.manager = m;
         this.logger = cs.getLogger();
@@ -90,20 +90,32 @@ public class ALMAControl implements Control {
         this.clock = new ALMAClock();
         
         try {
-            org.omg.CORBA.Object obj = containerServices.getComponent("CONTROL/MASTER");
+            org.omg.CORBA.Object obj = containerServices.getComponent(
+                    "CONTROL/MASTER");
             control_system = alma.Control.ControlMasterHelper.narrow(obj);
-               // containerServices.getComponent("CONTROL_MASTER_COMP"));
-            //control_system = (ControlMaster)alma.Control.ControlMasterHelper.narrow(
-              //  containerServices.getComponent("CONTROL_MASTER_COMP"));
             logger.info("SCHEDULING: Got ControlMasterComponent");
-            
+            if(control_system.getMasterState() != 
+                alma.Control.SystemState.OPERATIONAL){
+                    throw new SchedulingException("SCHEDULING: control not operational yet");
+            }
         } catch (AcsJContainerServicesEx ce) {
             control_system=null;
             logger.severe("SCHEDULING: error getting ControlMaster Component.");
             logger.severe("SCHEDULING: "+ce.toString());
             sendAlarm("Scheduling","SchedControlConnAlarm",3,ACSFaultState.ACTIVE);
+            throw new SchedulingException(ce.toString());
         }
     }
+
+    /*
+    public boolean isControlOperational() {
+        if(control_system.getMasterState() != 
+                alma.Control.SystemState.OPERATIONAL){
+            return false;
+        }
+        return true;
+    }*/
+    
     /**
      *
      * @throws SchedulingException

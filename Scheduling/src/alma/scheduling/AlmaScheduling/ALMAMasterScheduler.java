@@ -75,7 +75,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.83 2006/12/01 21:41:22 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.84 2006/12/04 22:54:41 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -146,27 +146,32 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void initialize(ContainerServices cs) 
         throws ComponentLifecycleException {
     
-        //Start the MasterScheduler Thread! 
-        this.msThread.start();
-        this.is_controllers = new Vector(); 
-        this.interactiveComps = new Vector();
-        allSchedulers = new LinkedHashMap<String, Scheduler>();
-        this.containerServices = cs;
-        this.instanceName = containerServices.getName();
-        this.logger = containerServices.getLogger();
+        try {
+            //Start the MasterScheduler Thread! 
+            this.msThread.start();
+            this.is_controllers = new Vector(); 
+            this.interactiveComps = new Vector();
+            allSchedulers = new LinkedHashMap<String, Scheduler>();
+            this.containerServices = cs;
+            this.instanceName = containerServices.getName();
+            this.logger = containerServices.getLogger();
 
-        this.clock = new ALMAClock();
-        this.archive = new ALMAArchive(containerServices, clock);
-        this.sbQueue = new SBQueue();
-        this.publisher = new ALMAPublishEvent(containerServices);
-        this.messageQueue = new MessageQueue();
-        this.operator = new ALMAOperator(containerServices, messageQueue);
-        this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher, clock);
-        this.telescope = new ALMATelescope();
-        this.control = new ALMAControl(containerServices, manager);
-        this.arraysInUse = new Vector();
+            this.clock = new ALMAClock();
+            this.archive = new ALMAArchive(containerServices, clock);
+            this.sbQueue = new SBQueue();
+            this.publisher = new ALMAPublishEvent(containerServices);
+            this.messageQueue = new MessageQueue();
+            this.operator = new ALMAOperator(containerServices, messageQueue);
+            this.manager = new ALMAProjectManager(containerServices, operator, archive, sbQueue, publisher, clock);
+            this.telescope = new ALMATelescope();
+            this.control = new ALMAControl(containerServices, manager);
+            this.arraysInUse = new Vector();
         
-        logger.info("SCHEDULING: MasterScheduler initialized");
+            logger.info("SCHEDULING: MasterScheduler initialized");
+        } catch(Exception e){
+            logger.severe("SCHEDULING: Error initializing MASTER SCHEDULER (initialize)");
+            throw new ComponentLifecycleException(e.toString());
+        }
     }
 
     /**
@@ -174,49 +179,54 @@ public class ALMAMasterScheduler extends MasterScheduler
      * @throws ComponentLifecycleException
      */
     public void execute() throws ComponentLifecycleException {
-        //Start the project manager's thread!
-        Thread pmThread = containerServices.getThreadFactory().newThread(manager);
-        manager.setProjectManagerTaskControl(new ProjectManagerTaskControl(msThread, pmThread));
-        pmThread.start();
+        try {
+            //Start the project manager's thread!
+            Thread pmThread = containerServices.getThreadFactory().newThread(manager);
+            manager.setProjectManagerTaskControl(new ProjectManagerTaskControl(msThread, pmThread));
+            pmThread.start();
 
-        // Connect to the Control NC
-        eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
+            // Connect to the Control NC
+            eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
                                              (ALMAPublishEvent)publisher);
-        control_nc = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, 
-            alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
+            control_nc = AbstractNotificationChannel.getReceiver(
+                AbstractNotificationChannel.CORBA, 
+                alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
+                    containerServices);
+            control_nc.attach("alma.Control.ExecBlockStartedEvent", eventreceiver);
+            control_nc.attach("alma.Control.ExecBlockEndedEvent", eventreceiver);
+            control_nc.attach("alma.offline.ASDMArchivedEvent", eventreceiver);
+            control_nc.begin();
+            // Connect to the TelCal NC
+            telcal_nc = AbstractNotificationChannel.getReceiver(
+                AbstractNotificationChannel.CORBA, 
+                alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
                 containerServices);
-        control_nc.attach("alma.Control.ExecBlockStartedEvent", eventreceiver);
-        control_nc.attach("alma.Control.ExecBlockEndedEvent", eventreceiver);
-        control_nc.attach("alma.offline.ASDMArchivedEvent", eventreceiver);
-        control_nc.begin();
-        // Connect to the TelCal NC
-        telcal_nc = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, 
-            alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
-            containerServices);
-        telcal_nc.attach("alma.TelCalPublisher.AmpliCalReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.AmpCurveReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.AntennaPositionsReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.AtmosphereReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.DelayReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.FocusReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.PhaseCalReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.PhaseCurveReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.PointingReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.PointingModelReducedEvent", eventreceiver);
-        telcal_nc.attach("alma.TelCalPublisher.SkydipReducedEvent", eventreceiver);
-        telcal_nc.begin();
+            telcal_nc.attach("alma.TelCalPublisher.AmpliCalReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.AmpCurveReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.AntennaPositionsReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.AtmosphereReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.DelayReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.FocusReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.PhaseCalReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.PhaseCurveReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.PointingReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.PointingModelReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.TelCalPublisher.SkydipReducedEvent", eventreceiver);
+            telcal_nc.begin();
         
-        // Connect to the Pipeline NC
-        pipeline_nc = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, 
-            alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
-                containerServices);
-        pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
-        pipeline_nc.begin();
+            // Connect to the Pipeline NC
+            pipeline_nc = AbstractNotificationChannel.getReceiver(
+                AbstractNotificationChannel.CORBA, 
+                alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
+                    containerServices);
+            pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
+            pipeline_nc.begin();
         
-        logger.info("Execute complete in scheduling master scheduler and an alarm should have been sent.");
+            logger.info("Execute complete in scheduling master scheduler and an alarm should have been sent.");
+        } catch(Exception e){
+            logger.severe("SCHEDULING: Error initializing MASTER SCHEDULER (execute)");
+            throw new ComponentLifecycleException(e.toString());
+        }
     }
 
     /**

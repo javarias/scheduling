@@ -31,7 +31,6 @@ import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.AlmaScheduling.ALMASchedulingUtility;
 import alma.scheduling.GUI.InteractiveSchedGUI.OpenOT;
 //
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
