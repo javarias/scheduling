@@ -203,7 +203,7 @@ public class SBTable extends JTable {
         for(int i=0; i < sbRowInfo.length; i++){
             if(!isRowToBeRemoved(rows, i)){
                 newRowInfo[ctr][0] = sbRowInfo[i][0];
-                newRowInfo[ctr][0] = sbRowInfo[i][1];
+                newRowInfo[ctr][1] = sbRowInfo[i][1];
                 newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
                 if(withExec){
                     newRowInfo[ctr][execLoc] = sbRowInfo[i][execLoc];
