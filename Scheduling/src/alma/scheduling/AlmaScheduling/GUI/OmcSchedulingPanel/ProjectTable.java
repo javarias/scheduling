@@ -28,12 +28,14 @@ public class ProjectTable extends JTable {
         super(); 
         size = tableSize;
         projectInfo = new JTextArea();
+
         projRowInfo = new Object[0][infoSize];
         infoSize = projColumnInfo.length +1;
         uidLoc = infoSize-1; 
         createTableModel();
         setModel(projTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setMaximumSize(size);
         setPreferredScrollableViewportSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
@@ -130,14 +132,17 @@ public class ProjectTable extends JTable {
             projRowInfo[i][2]= projects[i].uid;
         }
         manageColumnSizes();
+        System.out.println("Project Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
     }
     
     public JScrollPane getProjectInfoView(){
-        JScrollPane p = new JScrollPane(projectInfo);
-        //p.setMaximumSize(size);
+        JScrollPane p = new JScrollPane(projectInfo,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        p.setBorder(new TitledBorder("Project Info"));
         p.setPreferredSize(size);
         return p;
     }
@@ -150,6 +155,7 @@ public class ProjectTable extends JTable {
         projectInfo.append("Total number of SBs = "+p.totalSBs +"\n");  
         projectInfo.append("Total number of SBs completed = "+p.completeSBs +"\n"); 
         projectInfo.append("Total number of SBs failed = "+p.failedSBs +"\n");  
+        System.out.println("Project Info size "+projectInfo.getSize().toString());
         projectInfo.repaint();
         projectInfo.validate();
     }

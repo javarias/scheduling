@@ -19,8 +19,9 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private String type;
     private QueuedSchedTabController controller;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
-    private JPanel middlePanel;
-    private JPanel bottomPanel;
+    //private JPanel middlePanel;
+    //private JPanel bottomPanel;
+    private JPanel centerPanel;
     private boolean searchingOnProject;
     private SBTable sbs;
     private SBTable queueSBs;
@@ -81,12 +82,17 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         setLayout(new BorderLayout());
         //setLayout(new GridLayout(3,1));
         createTopPanel();
-        createMiddlePanel();
-        createBottomPanel();
+        //createMiddlePanel();
+        //createBottomPanel();
         Dimension d = getPreferredSize();
         add(archiveSearchPanel,BorderLayout.NORTH);
-        add(middlePanel,BorderLayout.CENTER);
-        add(bottomPanel,BorderLayout.SOUTH);
+        add(createCenterPanel(),BorderLayout.CENTER);
+        //JPanel tablePanel = new JPanel(new GridLayout(2,1));
+        //tablePanel.add(middlePanel);
+        //tablePanel.add(bottomPanel);
+        //add(tablePanel, BorderLayout.CENTER);
+        //add(middlePanel,BorderLayout.CENTER);
+        //add(bottomPanel,BorderLayout.SOUTH);
     }
     private void createTopPanel() {
         archiveSearchPanel = new ArchiveSearchFieldsPanel();
@@ -94,39 +100,27 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         archiveSearchPanel.connected(true);
     }
 
-    private void createMiddlePanel(){
-        
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.WEST;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0; c.weighty = 1.0;
-        
-        middlePanel = new JPanel(new GridLayout(1,2));
-        JPanel projectPanel = new JPanel();//gridbag);
-        projectPanel.setBorder(new TitledBorder("Projects Found"));
-        projects = new ProjectTable(new Dimension(175,80));
+    public JPanel createCenterPanel() {
+        centerPanel = new JPanel(new GridLayout(2,2));
+        //first row: left hand cell == Project Table
+        projects = new ProjectTable(new Dimension(150,75));
         projects.setOwner(this);
-        JScrollPane pane1 = new JScrollPane(projects);
-        
-        //c.gridwidth = GridBagConstraints.REMAINDER;
-        //gridbag.setConstraints(pane1,c);
-        
-        projectPanel.add(pane1);//, BorderLayout.CENTER);
-        middlePanel.add(projectPanel);//, BorderLayout.WEST);
+        JScrollPane projectPane = new JScrollPane(projects,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        projectPane.setBorder(new TitledBorder("Projects Found"));
 
-        
-        JPanel sbPanel = new JPanel(new BorderLayout());//gridbag);
-        sbs = new SBTable(false, new Dimension(150,75));
+        centerPanel.add(projectPane);
+
+        //first row: right hand cell == sbTable + button
+        JPanel sbPanel = new JPanel(new BorderLayout());
+        sbs = new SBTable(false, new Dimension(150,60));
         sbs.setOwner(this);
-        sbPanel.setBorder(new TitledBorder("SBs Found"));
-        JScrollPane pane2 = new JScrollPane(sbs);
-        
-        //c.weightx = 3.0; c.weighty = 1.0;
-        //c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(pane2,c);
-        sbPanel.add(pane2,BorderLayout.CENTER);
-        
+        JScrollPane sbPane = new JScrollPane(sbs,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        sbPane.setBorder(new TitledBorder("SBs Found"));
+        sbPanel.add(sbPane,BorderLayout.CENTER);
         addB = new JButton("Add to Queue");
         addB.setToolTipText("Will add SB to queue.");
         addB.addActionListener(new ActionListener(){
@@ -134,41 +128,22 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 addSBsToQueue();
             }
         });
-        JPanel buttons = new JPanel(new BorderLayout());
-        //JPanel buttons = new JPanel(new GridLayout(1,1));
-       // c.weightx = 1.0; c.weighty = 1.0;
-        buttons.add(addB, BorderLayout.CENTER);
-        //c.gridwidth = GridBagConstraints.REMAINDER;
-        //gridbag.setConstraints(buttons,c);
-        sbPanel.add(buttons, BorderLayout.SOUTH);
-        middlePanel.add(sbPanel);//, BorderLayout.EAST);
+        JPanel button1 = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+        button1.add(addB);
+        sbPanel.add(button1, BorderLayout.SOUTH);
 
-    }
-
-    private void createBottomPanel(){
-        bottomPanel = new JPanel(new GridLayout(1,2));
-        //bottomPanel = new JPanel(new BorderLayout());
-        //have the following:
-        //a sbtable for queue sbs, 
-        
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints c = new GridBagConstraints();
-        c.anchor = GridBagConstraints.WEST;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1.0; c.weighty = 1.0;
-        
-        JPanel p1 = new JPanel(gridbag);//new BorderLayout());
-        p1.setBorder(new TitledBorder("SB Queue"));
-        queueSBs = new SBTable(true, new Dimension(150,75));
+        centerPanel.add(sbPanel);
+        //second row: left hand cell == sbTable + buttons (PROBLEMATIC ONE!)
+        JPanel queuePanel = new JPanel(new BorderLayout());
+        queueSBs = new SBTable(true, new Dimension(150,60));
         queueSBs.setOwner(this);
-        JScrollPane queueSbPane = new JScrollPane(queueSBs);
+        JScrollPane queueSbPane = new JScrollPane(queueSBs,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        //queueSbPane.setMaximumSize( new Dimension(130,60));
+        queueSbPane.setBorder(new TitledBorder("SB Queue"));
         
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(queueSbPane,c);
-        
-        p1.add(queueSbPane);//, BorderLayout.CENTER);
-        //a button to remove selected ones
-        JPanel buttonPanel = new JPanel(gridbag);//new GridLayout(1,2));
+
         removeB = new JButton("Remove");
         removeB.setToolTipText("Will remove SB from queue.");
         removeB.addActionListener(new ActionListener(){
@@ -176,10 +151,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 removeSBsFromQueue();
             }
         });
-        c.gridwidth = 1;
-        gridbag.setConstraints(removeB,c);
 
-        buttonPanel.add(removeB);
         executeB = new JButton("Run");
         executeB.setToolTipText("Will execute the queue.");
         executeB.addActionListener(new ActionListener(){
@@ -187,10 +159,6 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 executeSBs();
             }
         });
-        c.gridwidth = 1;
-        //c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(executeB,c);
-        buttonPanel.add(executeB);
         stopB = new JButton ("Stop");
         stopB.setToolTipText("Will stop the current SB and move to the next SB.");
         stopB.setEnabled(false);
@@ -199,29 +167,30 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 stopSB();
             }
         });
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(stopB,c);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
+        buttonPanel.add(removeB);
+        buttonPanel.add(executeB);
         buttonPanel.add(stopB);
 
-        c.gridwidth = 1;
-        gridbag.setConstraints(buttonPanel,c);
-        p1.add(buttonPanel);//, BorderLayout.SOUTH);
+        queuePanel.add(queueSbPane, BorderLayout.CENTER);
+        queuePanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        centerPanel.add(queuePanel);
         
-        bottomPanel.add(p1);//, BorderLayout.WEST);
-        //a text area which displays process
+        //second row: right hand cell == execution info text area
         executionInfo = new JTextArea();
         executionInfo.setEditable(false);
-        executionInfo.setMaximumSize(new Dimension(50,50));
-        //Dimension d = new Dimension(75, 75);
-        JScrollPane pane = new JScrollPane(executionInfo);
-        //pane.setMaximumSize(new Dimension(170,50));
-        pane.setPreferredSize(new Dimension(150,50));
-        JPanel taPanel = new JPanel(new GridLayout(1,1));
-        taPanel.setBorder(new TitledBorder("Execution Info"));
-        taPanel.add(pane);
-        bottomPanel.add(taPanel);//, BorderLayout.EAST);
+        JScrollPane taPane = new JScrollPane(executionInfo,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        taPane.setBorder(new TitledBorder("Execution Info"));
+
+        centerPanel.add(taPane);
+
+        return centerPanel;
     }
     
+
     public void setEnable(boolean b){
     }
 

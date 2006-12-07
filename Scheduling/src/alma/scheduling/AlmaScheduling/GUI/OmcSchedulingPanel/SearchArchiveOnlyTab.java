@@ -17,7 +17,7 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
     //private Logger logger;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     private JPanel middlePanel;
-    private JPanel bottomPanel;
+    //private JPanel bottomPanel;
     private SBTable sbs;
     private ProjectTable projects;
     private boolean connectedToALMA;
@@ -29,11 +29,10 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         setLayout(new BorderLayout());
         createTopPanel();
         createMiddlePanel();
-        createBottomPanel();
         Dimension d = getPreferredSize();
         add(archiveSearchPanel,BorderLayout.NORTH);
         add(middlePanel,BorderLayout.CENTER);
-        add(bottomPanel,BorderLayout.SOUTH);
+       // add(bottomPanel,BorderLayout.SOUTH);
         connectedToALMA=false;
     }
 
@@ -73,35 +72,31 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
       * Middle panel contains he search text boxes and the buttons.
       */
     public void createMiddlePanel() {
-        middlePanel = new JPanel( new BorderLayout());
-        JPanel projectPanel = new JPanel();
-        projectPanel.setBorder(new TitledBorder("Projects Found"));
-        projects = new ProjectTable(new Dimension(175,100));
+        middlePanel = new JPanel(new GridLayout(2,2));
+        //first row: left hand cell = project table
+        projects = new ProjectTable(new Dimension(150,100));
         projects.setOwner(this);
-        JScrollPane pane1 = new JScrollPane(projects);
-        projectPanel.add(pane1);
-        middlePanel.add(projectPanel, BorderLayout.WEST);
+        JScrollPane projectPane = new JScrollPane(projects,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, 
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        projectPane.setBorder(new TitledBorder("Projects Found"));
 
-        JPanel sbPanel = new JPanel();
-        sbs = new SBTable(false, new Dimension(175,100));
+        middlePanel.add(projectPane);
+
+        //first row: right hand cell = sb table
+        sbs = new SBTable(false, new Dimension(150,100));
         sbs.setOwner(this);
-        sbPanel.setBorder(new TitledBorder("SBs Found"));
-        JScrollPane pane2 = new JScrollPane(sbs);
+        JScrollPane sbPane = new JScrollPane(sbs,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        sbPane.setBorder(new TitledBorder("SBs Found"));
                                    
-        sbPanel.add(pane2);
-        middlePanel.add(sbPanel, BorderLayout.EAST);
+        middlePanel.add(sbPane);
         
-    }
-    private void createBottomPanel(){
-        bottomPanel = new JPanel(new BorderLayout());
-        JPanel p1=new JPanel();
-        p1.setBorder(new TitledBorder("Project Details"));
-        p1.add(projects.getProjectInfoView());
-        bottomPanel.add(p1, BorderLayout.WEST);
-        JPanel p2 = new JPanel();
-        p2.setBorder(new TitledBorder("SB Details"));
-        p2.add(sbs.getSBInfoView());
-        bottomPanel.add(p2, BorderLayout.EAST);
+        //second row: left hand cell = project info
+        middlePanel.add(projects.getProjectInfoView());
+        //second row: right hand cell = sb info
+        middlePanel.add(sbs.getSBInfoView());
         
     }
 

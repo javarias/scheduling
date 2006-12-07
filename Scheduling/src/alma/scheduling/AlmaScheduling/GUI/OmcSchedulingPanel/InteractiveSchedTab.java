@@ -73,11 +73,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         setLayout(new BorderLayout());
         createTopPanel();
         createMiddlePanel();
-        createBottomPanel();
         Dimension d = getPreferredSize();
         add(archiveSearchPanel,BorderLayout.NORTH);
         add(middlePanel,BorderLayout.CENTER);
-        add(bottomPanel,BorderLayout.SOUTH);
     }
     /**
       * Top panel contains check boxes for determining if we
@@ -93,21 +91,26 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
       * Middle panel contains he search text boxes and the buttons.
       */
     public void createMiddlePanel() {
-        middlePanel = new JPanel(new GridLayout(1,2));
-        JPanel projectPanel = new JPanel();
-        projectPanel.setBorder(new TitledBorder("Projects Found"));
-        projects = new ProjectTable(new Dimension(175,100));
-        projects.setOwner(this);
-        JScrollPane pane1 = new JScrollPane(projects);
-        projectPanel.add(pane1);
-        middlePanel.add(projectPanel);//, BorderLayout.WEST);
+        middlePanel = new JPanel(new GridLayout(2,2));
 
+        //first row: lefthand cell = project table
+        projects = new ProjectTable(new Dimension(150,75));
+        projects.setOwner(this);
+        JScrollPane projectPane = new JScrollPane(projects,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        projectPane.setBorder(new TitledBorder("Projects Found"));
+        middlePanel.add(projectPane);
+
+        //first row: right hand side cell: sb table & buttons
         JPanel sbPanel = new JPanel(new BorderLayout());
-        sbs = new SBTable(true, new Dimension(175,75));
+        sbs = new SBTable(true, new Dimension(150,60));
         sbs.setOwner(this);
-        sbPanel.setBorder(new TitledBorder("SBs Found"));
-        JScrollPane pane2 = new JScrollPane(sbs);
-        sbPanel.add(pane2,BorderLayout.CENTER);
+        JScrollPane sbPane = new JScrollPane(sbs,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        sbPane.setBorder(new TitledBorder("SBs Found"));
+        sbPanel.add(sbPane,BorderLayout.CENTER);
         execB = new JButton("Execute");
         execB.setToolTipText("Will execute the selected SB.");
         execB.addActionListener(new ActionListener(){
@@ -123,24 +126,17 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                 stopSB();
             }
         });
-        JPanel buttons = new JPanel(new GridLayout(1,2));
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
         buttons.add(execB);
         buttons.add(stopB);
         sbPanel.add(buttons, BorderLayout.SOUTH);
-        middlePanel.add(sbPanel);//, BorderLayout.EAST);
+        middlePanel.add(sbPanel);
         
-    }
-    private void createBottomPanel(){
-        bottomPanel = new JPanel(new GridLayout(1,2));//new BorderLayout());
-        JPanel p1=new JPanel();
-        p1.setBorder(new TitledBorder("Project Details"));
-        p1.add(projects.getProjectInfoView());
-        bottomPanel.add(p1);//, BorderLayout.WEST);
-        JPanel p2 = new JPanel();
-        p2.setBorder(new TitledBorder("SB Details"));
-        p2.add(sbs.getSBInfoView());
-        bottomPanel.add(p2);//, BorderLayout.EAST);
-        
+       //second row: left hand cell = project info textarea
+        middlePanel.add(projects.getProjectInfoView());
+
+       //second row: right hand cell = sb info textarea
+        middlePanel.add(sbs.getSBInfoView());
     }
 
     /**

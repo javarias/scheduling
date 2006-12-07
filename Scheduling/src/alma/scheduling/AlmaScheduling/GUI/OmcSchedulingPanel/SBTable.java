@@ -44,6 +44,7 @@ public class SBTable extends JTable {
         setModel(sbTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setPreferredScrollableViewportSize(size);
+        //setMaximumSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
         projectSearchMode = true;
@@ -146,6 +147,7 @@ public class SBTable extends JTable {
             }
         }
         manageColumnSizes();
+        System.out.println("SB Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
@@ -290,7 +292,10 @@ public class SBTable extends JTable {
     }
 
     public JScrollPane getSBInfoView(){
-        JScrollPane p = new JScrollPane (sbInfo);
+        JScrollPane p = new JScrollPane (sbInfo,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        p.setBorder(new TitledBorder("SB Details"));
         if(withExec){
             Dimension d = new Dimension(size.width, size.height + 25);
             p.setPreferredSize(d);
@@ -314,6 +319,7 @@ public class SBTable extends JTable {
         sbInfo.append("Rank: "+sb.rank+"\n");
         sbInfo.repaint();
         sbInfo.validate();
+        System.out.println("SB Info size "+sbInfo.getSize().toString());
     }
 
     private void showSBProject(SBLite sb){
