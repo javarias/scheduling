@@ -26,6 +26,10 @@ public class SBTable extends JTable {
     private SBTableController controller;
     private boolean projectSearchMode;
 
+    /**
+      * @param b True if you want a column for execution status
+      * @param tableSize The dimensions for the table
+      */
     public SBTable(boolean b, Dimension tableSize) {
         super();
         size = tableSize;
@@ -34,6 +38,7 @@ public class SBTable extends JTable {
         if(withExec) {
             infoSize = sbColumnInfoWithStatus.length +1;
             sbRowInfo = new Object[0][infoSize];
+                
         } else {
             infoSize = sbColumnInfo.length+1;
             sbRowInfo = new Object[0][infoSize];
@@ -147,7 +152,7 @@ public class SBTable extends JTable {
             }
         }
         manageColumnSizes();
-        System.out.println("SB Table size "+getSize().toString());
+        //System.out.println("SB Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
@@ -165,6 +170,7 @@ public class SBTable extends JTable {
             newRowInfo[i][uidLoc] = sbs[i].schedBlockRef;
             if(withExec){
                 newRowInfo[i][execLoc] = "N/A";
+                //System.out.println("Exec location = "+execLoc);
             }
             tmpCtr = i+1;
         }
@@ -225,6 +231,7 @@ public class SBTable extends JTable {
         if(withExec){
             if( ((String)sbRowInfo[row][uidLoc]).equals(id)){ //good
                 sbRowInfo[row][execLoc] = status;
+                System.out.println("Exec location = "+execLoc);
             }
             manageColumnSizes();
             repaint();
@@ -247,7 +254,7 @@ public class SBTable extends JTable {
         if(withExec){
             int i= getRowPosForSB(sbid);
             if(i != -1) {
-                setValueAt(status, i, 1);
+                setValueAt(status, i, execLoc);
             } //else sb not found in table.
         } //else ignore
         manageColumnSizes();
