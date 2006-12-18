@@ -52,6 +52,9 @@ public class SchedulingPanelController {
         }
     }
 
+    public PluginContainerServices getCS() {
+        return container;
+    }
 
 }
 
