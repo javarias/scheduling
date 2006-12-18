@@ -307,7 +307,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
 
     public void doSearch() {
         SPSearchArchiveThread foo = new SPSearchArchiveThread();
-        Thread t = new Thread(foo);
+        //Thread t = new Thread(foo);
+        Thread t = controller.getCS().getThreadFactory().newThread(foo);
         t.start();
     }
 
