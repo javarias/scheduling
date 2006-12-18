@@ -171,36 +171,49 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
 
     private void executeSB(){
-        try {
-            String sbId =sbs.returnSelectedSBId();
-            if(!sbId.equals("")){
-                controller.executeSB(sbId);
-                setEnable(false);
-                setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
-            }
-            //check if a sb has been selected.
-        }catch(Exception e){
-            e.printStackTrace();
-            showErrorPopup(e.toString(), "executeSB");
-        }
+        ExecuteSBThread exec = new ExecuteSBThread();
+        Thread t = controller.getCS().getThreadFactory().newThread(exec);
+        t.start();
     }
     private void stopSB(){
-        try {
-            controller.stopSB();
-            setEnable(true);
-        } catch(Exception e) {
-            e.printStackTrace();
-            showErrorPopup(e.toString(), "stopSB");
-        }
+        StopSBThread stop = new StopSBThread();
+        Thread t = controller.getCS().getThreadFactory().newThread(stop);
+        t.start();
     }
     public void setSBStatus(String sb, String status){
         sbs.setSBExecStatus(sb, status);
     }
 
- /*   public void showErrorPopup(String error,String method) {
-        JOptionPane.showMessageDialog(this, error, method, JOptionPane.ERROR_MESSAGE);
+    class ExecuteSBThread implements Runnable {
+        public ExecuteSBThread() {
+        }
+        public void run() {
+            try {
+                String sbId =sbs.returnSelectedSBId();
+                if(!sbId.equals("")){
+                    controller.executeSB(sbId);
+                    setEnable(false);
+                    setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
+                }
+                //check if a sb has been selected.
+            }catch(Exception e){
+                e.printStackTrace();
+                showErrorPopup(e.toString(), "executeSB");
+            }
+        }
     }
-    public void showWarningPopup(String warning, String method) {
-        JOptionPane.showMessageDialog(this, warning, method, JOptionPane.WARNING_MESSAGE);
-    }*/
+
+    class StopSBThread implements Runnable{
+        public StopSBThread() {
+        }
+        public void run() {
+            try {
+                controller.stopSB();
+                setEnable(true);
+            } catch(Exception e) {
+                e.printStackTrace();
+                showErrorPopup(e.toString(), "stopSB");
+            }
+        }
+    }
 }
