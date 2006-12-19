@@ -35,13 +35,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         allArrays = new Vector<String>();
         setSize(400,300);
         add(createAntennaColumns(), BorderLayout.CENTER);
-        //antennaRowInfoA = new Object[10][1];
-        //for(int i=0; i < 10; i++){
-          //  antennaRowInfoA[i][0] = "ALMAControlAntennaName"+i;
-        //}
-    //    manageColumnSizesInA();
-      //  manageColumnSizesInB();
     }
+
     public void setOwner(JTabbedPane p){
         parent = p;
     }
@@ -210,11 +205,14 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         createArrayB = new JButton("Create");
         createArrayB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                if(createArray()) {
-                    exit();
-                    setEnabled(false);
-                    ((MainSchedTabPane)parent).resetMainViewButtons();
-                }
+                //if(createArray()) {
+                //    exit();
+                //    setEnabled(false);
+                 //   ((MainSchedTabPane)parent).resetMainViewButtons();
+                //}
+                CreateArrayThread at = new CreateArrayThread();
+                Thread t = controller.getCS().getThreadFactory().newThread(at);
+                t.start();
             }
         });
         cancelB = new JButton("Cancel");
@@ -350,8 +348,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     public void prepareCreateArray(String mode){
         arrayMode = mode;
         resetAntennaTables();
-        availableAntennas = controller.getAntennas();
-        updateAntennaTableA();
+        GetAntennaThread ant = new GetAntennaThread();
+        Thread t = controller.getCS().getThreadFactory().newThread(ant);
+        t.start();
     }
        
 
@@ -381,11 +380,19 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             return false;
         }
         //tell parent component to open new scheduler tab.
-        OpenSchedulerTab newTab = new OpenSchedulerTab(arrayMode, arrayName);
-        Thread t = new Thread(newTab);
-        t.start();
+        openNewSchedulerTab(arrayMode, arrayName);
         return true;
 
+    }
+
+    /**
+      * @param am ArrayMode
+      * @param an Array Name
+      */
+    public void openNewSchedulerTab(String am, String an) {
+        OpenSchedulerTab newTab = new OpenSchedulerTab(am, an);
+        Thread t = new Thread(newTab);
+        t.start();
     }
 
     public void selectDefaultAntenna(){
@@ -413,39 +420,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         antennaTableB.repaint();
         antennaTableB.revalidate();
     }
-    /*
-    private void manageColumnSizes() {
-        //get all columns
-        try {
-        TableColumnModel columns = getColumnModel();
-        int size = columns.getColumnCount();
-        TableColumn col;
-        int w, max_w=0;
-        int rows = getRowCount();
-        //for each column 
-        for(int i=0; i< size; i++){
-            //get max size of cells in the column
-            col = columns.getColumn(i);
-            for(int j=0; j < rows; j++){
-                TableCellRenderer r = getCellRenderer(j, i);
-                Component c = r.getTableCellRendererComponent(
-                        this, getValueAt(j,i), false, false, j, i);
-                w = c.getPreferredSize().width;
-                //make that column the max size
-                if(w > max_w){
-                    max_w = w;
-                }
-            }
-            //for(int j=0; j < rows; j++){
-            //}
-            //make that column the max size
-            col.setPreferredWidth(max_w);
-        }
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }    
-    */
     
     class OpenSchedulerTab implements Runnable {
         private String mode;
@@ -457,6 +431,26 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         public void run() {
             ((MainSchedTabPane)parent).openSchedulerTab(mode, array);
             //unselect the button now
+        }
+    }
+    class GetAntennaThread implements Runnable {
+        public GetAntennaThread(){
+        }
+        public void run(){ 
+            availableAntennas = controller.getAntennas();
+            updateAntennaTableA();
+        }
+    }
+
+    class CreateArrayThread implements Runnable{
+        public CreateArrayThread(){
+        }
+        public void run(){
+            if(createArray()) {
+                exit();
+                setEnabled(false);
+                ((MainSchedTabPane)parent).resetMainViewButtons();
+            }
         }
     }
 }
