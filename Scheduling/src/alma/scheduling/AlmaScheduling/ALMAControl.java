@@ -61,7 +61,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.57 2006/12/04 22:54:40 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.58 2006/12/20 21:48:43 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -179,7 +179,13 @@ public class ALMAControl implements Control {
             sbRef.entityTypeName = "SchedBlock";
             sbRef.instanceVersion = "1.0";
             //logger.info("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
-            ctrl.observe(sbRef, sessionRef, 0L); 
+            if(ctrl !=null){
+                ctrl.observe(sbRef, sessionRef, 0L); 
+            } else {
+                logger.severe("***************************************");
+                logger.severe("SCHEDULING: array controller == null in execSB!!");
+                logger.severe("***************************************");
+            }
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not observe!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
@@ -214,8 +220,14 @@ public class ALMAControl implements Control {
         AutomaticArrayCommand ctrl = getAutomaticArray(name);
         try{
             logger.info("SCHEDULING: Stopping scheduling on array "+name);
-            ctrl.stop(); 
-            removeAutomaticArray(false, name);
+            //if(ctrl != null) {
+                ctrl.stop(); 
+                //removeAutomaticArray(false, name);
+            //} else {
+             //   logger.severe("***************************************");
+              //  logger.severe("SCHEDULING: array controller == null in execSB!!");
+               // logger.severe("***************************************");
+           // }
         } catch(InvalidRequest e1) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());

@@ -184,6 +184,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         sbs.setSBExecStatus(sb, status);
     }
 
+
     class ExecuteSBThread implements Runnable {
         public ExecuteSBThread() {
         }
@@ -209,7 +210,8 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         public void run() {
             try {
                 controller.stopSB();
-                setEnable(true);
+                //so they can't press stop twice!
+                stopB.setEnabled(false);
             } catch(Exception e) {
                 e.printStackTrace();
                 showErrorPopup(e.toString(), "stopSB");

@@ -135,7 +135,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         try{
             logger.info("IS: Requesting sb to stop");
             scheduler.stopSB();
-            scheduler.endSession();
+            //scheduler.endSession();
         }catch( Exception e){
             throw new SchedulingException (e);
         }
@@ -160,6 +160,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         completion = e.status.toString();//completions[e.status.value()];
         parent.setSBStatus(sbid, completion);
     }
+
+
     public void receive(ASDMArchivedEvent e){
         logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
         String asdmId = e.asdmId.entityId;

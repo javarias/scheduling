@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.15 2006/12/01 17:40:33 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.16 2006/12/20 21:48:43 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -419,12 +419,12 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
         logger.info("SCHEDULING: Before stop, sb status = "+sb.getStatus().toString());
 		control.stopSB(config.getArrayName(),sbId);
         logger.info("SCHEDULING: after stop, sb status = "+sb.getStatus().toString());
-        sb.execEnd(null, clock.getDateTime(), Status.READY);
         //setting the sb status will be handled in the project manager eventually
         //but for now we set it here and disgard the exec block
         //TODO delete next 2 lines when control sends execblockendedevent in stop.
         
-        config.endExecSB(sbId);
+        //sb.execEnd(null, clock.getDateTime(), Status.READY);
+        //config.endExecSB(sbId);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been stopped.";
