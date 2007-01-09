@@ -1,0 +1,43 @@
+1 - FINER: Logging configuration has been initialized, but not from CDB settings.
+1 - GetComponentClient: container services initialize
+1 - Get alarm interface
+1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: Getting archive components
+1 - Alarm system interface can not get connect
+1 - java.lang.NullPointerException
+1 - ----------T--:--:--.--- INFO [FrankTestClient] component 'FrankTestClient' requested AdvancedContainerServices
+1 - start send alarm
+1 - log4j:WARN No appenders could be found for logger (cern.laser.source.alarmsysteminterface.impl.AlarmSystemInterfaceProxy).
+1 - log4j:WARN Please initialize the log4j system properly.
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - alarm had send
+1 - end send alarm
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedArchiveConnAlarm,1> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedInvalidOperationAlarm,1> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,1> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,3> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedSBAbortedAlarm,1> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
