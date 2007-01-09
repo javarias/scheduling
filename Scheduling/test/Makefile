@@ -1,7 +1,7 @@
 #*******************************************************************************
 # NRAO
 #
-# "@(#) $Id: Makefile,v 1.11 2006/11/27 16:39:13 wlin Exp $"
+# "@(#) $Id: Makefile,v 1.12 2007/01/09 19:10:17 wlin Exp $"
 #
 # Makefile of ........
 #
@@ -22,7 +22,7 @@
 SCRIPTS         = 
 SCRIPTS_L       = prologue allTests runSim testPublisher testStartSched epilogue \
                   testStoreSpecialSB startUpALMA stopALMA testSchedControl\
-                  testQueuedScheduling testEndToEnd testProjectStatus testACSAlarm
+                  testQueuedScheduling testEndToEnd testProjectStatus testAcsAlarm
 #testALMAArchive
 
 # Python scripts (local)
