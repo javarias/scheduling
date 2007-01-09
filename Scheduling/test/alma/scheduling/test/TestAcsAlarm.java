@@ -13,20 +13,37 @@ import alma.scheduling.AlmaScheduling.ALMAControl;
 import alma.scheduling.Define.*;
 import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.component.client.ComponentClient;
-//import alma.acs.container.ContainerException;
+import alma.acs.component.client.AdvancedComponentClient;
 import alma.acs.container.ContainerServices;
 import alma.alarmsystem.AlarmService;
 import alma.alarmsystem.source.ACSFaultState;
+
+import java.sql.Timestamp;
 import java.util.logging.Logger;
+import alma.acs.logging.ClientLogManager;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSFaultState;
+import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
 
-public class TestAcsAlarm extends ComponentClientTestCase {
+import java.util.Properties;
+import java.util.Vector;
+import alma.acs.nc.Consumer;
+import cern.laser.source.alarmsysteminterface.impl.FaultStateImpl;
+import cern.laser.source.alarmsysteminterface.impl.XMLMessageHelper;
+import cern.laser.source.alarmsysteminterface.impl.ASIMessageHelper;
+import cern.laser.source.alarmsysteminterface.impl.message.ASIMessage;
+import java.util.Collection;
+import alma.acs.logging.ClientLogManager;
+import java.util.Iterator;
+
+public class TestAcsAlarm {
     private ALMAArchive archive;
-    private ComponentClient m_componentClient = null;
-    private ContainerServices m_containerservices = null;
+    private AdvancedComponentClient m_componentClient = null;
     private AlarmService AlarmManager = null;
     private Logger m_logger = null;
     private SBQueue sbQueue;
@@ -36,44 +53,113 @@ public class TestAcsAlarm extends ComponentClientTestCase {
     private ALMAProjectManager manager;
     private ALMATelescope telescope;
     private ALMAControl control;
+    private ContainerServices m_containerservices;
+    private ALMAClock clock;
+    String  managerLoc;
+    private Consumer m_consumer = null;
+    private String m_channelName = "CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES";
+
  
     public TestAcsAlarm() throws Exception {
-    	super("Test ACS Alarm system");
+    	//super("Test ACS Alarm system");
+	setUp();
+	testsendAlarm();
+	testQuerySpecialSBs();
+	testGetAllProject();
+	testGetProjectStatus();
+	try {
+		Thread.sleep(10000);
+	} catch (Exception e) {}
+	System.exit(-1);
+
     }
     protected void setUp() throws Exception {
-		super.setUp();
+		//super.setUp();
+		
 		try {
 			GetComponentClient();
 			initialize();
 			sbQueue = new SBQueue();
-			archive = new ALMAArchive(getContainerServices(),new ALMAClock());
+			clock= new ALMAClock();
+			archive = new ALMAArchive(m_componentClient.getContainerServices(),clock);
 			publisher = new ALMAPublishEvent(m_containerservices);
 			messageQueue = new MessageQueue();
 			operator = new ALMAOperator(m_containerservices, messageQueue);
 			manager = new ALMAProjectManager(m_containerservices, operator, archive, sbQueue, publisher,new ALMAClock());
 			telescope = new ALMATelescope();
-                        control = new ALMAControl(m_containerservices, manager);
+                        //control = new ALMAControl(m_containerservices, manager);
 		} catch (Exception e) {
 			System.out.println("Alarm system interface can not get connect");
 			System.out.println(e.toString());
 		}
-		//archive = new ALMAArchive(getContainerServices(),new ALMAClock());
+
+		//set up the notification channel ....
+		//assertFalse("Using ACS implementation instead of CERN",ACSAlarmSystemInterfaceFactory.usingACSAlarmSystem());
+                m_consumer = new Consumer(m_channelName,m_componentClient.getContainerServices());
+		//assertNotNull("Error instantiating the Consumer",m_consumer);
+		m_consumer.addSubscription(com.cosylab.acs.jms.ACSJMSMessageEntity.class,this);
+		m_consumer.consumerReady();
 	}
 
 	protected void tearDown() throws Exception {
-		super.tearDown();
+		//super.tearDown();
 	}
+	
+	public void sendAlarm(String ff, String fm, int fc, String fs) {
+        try {
+		m_logger = ClientLogManager.getAcsLogManager().getLoggerForApplication("Test",true);
+		managerLoc = System.getProperty("ACS.manager");
+		if(managerLoc==null) {
+			System.out.println("JAVA property 'ACS manager' must set to the corbaloc");
+			System.exit(-1);
+		}
+
+
+            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource();
+            ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
+            state.setDescriptor(fs);
+            state.setUserTimestamp(new Timestamp(System.currentTimeMillis())); 	
+            Properties prop = new Properties();
+            prop.setProperty(ACSFaultState.ASI_PREFIX_PROPERTY, "prefix");
+			prop.setProperty(ACSFaultState.ASI_SUFFIX_PROPERTY, "suffix");
+			prop.setProperty("ALMAMasterScheduling_PROPERTY", "ConnArchiveException");
+			state.setUserProperties(prop);
+            alarmSource.push(state);
+            System.out.println("alarm had send");
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }        
+    }
 
 	//@ALMAArchive(expected=ArchiveInternalError.class)
-	/*
-	public void testQuerySpecialSBs() {
-		fail("Not yet implemented");
+	
+	public void testQuerySpecialSBs() throws SchedulingException{
+		try {
+			System.out.println("start test queryspecialSBs");
+			archive.querySpecialSBs();
+			//throw new SchedulingException();
+		}
+		catch(SchedulingException e) {
+			e.printStackTrace();
+    		//assertTrue(true);
+		}
 	}
-
-	public void testGetAllProject() {
-		fail("Not yet implemented");
+	
+	
+	
+	public void testGetAllProject() throws SchedulingException {
+		try {
+			//m_containerservices.releaseComponent(archive.toString());
+			archive.getAllProject();
+		}
+		catch(SchedulingException e) {
+			e.printStackTrace();
+    		//assertTrue(true);
+		}
 	}
-	*/
+	
+	
+	
 	
 	public void testGetProjectStatus() throws SchedulingException {
 		try {
@@ -83,49 +169,72 @@ public class TestAcsAlarm extends ComponentClientTestCase {
 		}
 		catch(SchedulingException e) {
             		e.printStackTrace();
-			assertTrue(true);
+            		//assertTrue(true);
 		}
 	}
 
-	/*
-	public void testGetProjectStatusForObsProject() {
-		fail("Not yet implemented");
+	
+	
+	
+	
+	public void testsendAlarm() {
+		System.out.println("start send alarm");
+		sendAlarm("Scheduling","SchedArrayConnAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedControlConnAlarm",3,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedArrayConnAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedSBAbortedAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedInvalidOperationAlarm",1,ACSFaultState.ACTIVE);
+		System.out.println("end send alarm");
+	//	assertTrue(true);
 	}
+    
+	public void receive(com.cosylab.acs.jms.ACSJMSMessageEntity msg) {
+		ASIMessage asiMsg;
+		Collection faultStates;
 
-	public void testQueryProjectStatus() {
-		fail("Not yet implemented");
-	}
+		System.out.println("Receive the alarm event!");
+		try {
+			asiMsg = XMLMessageHelper.unmarshal(msg.text);
+			faultStates = ASIMessageHelper.unmarshal(asiMsg);
+		} catch (Exception e) {
+			System.out.println("Exception caught while unmarshalling the msg "+e.getMessage());
+			e.printStackTrace();
+			return;
+		}
+		
+		Iterator iter = faultStates.iterator();
+		while (iter.hasNext()) {
+			FaultStateImpl fs = (FaultStateImpl)iter.next();
+			StringBuilder str = new StringBuilder("Alarm message received from source: <");
+			str.append(fs.getFamily());
+			str.append(",");
+			str.append(fs.getMember());
+			str.append(",");
+			str.append(fs.getCode());
+			str.append(">");
+			str.append(" Status: ");
+			str.append(fs.getDescriptor());
+			System.out.println(str.toString());
+		}
 
-	public void testCheckArchiveStillActive() {
-		fail("Not yet implemented");
 	}
-	
-	public void testgetAllProject() {
-		fail("Not yet implemented");
-	}
-	
-	public void testgetAllObsProjects() {
-		
-	}
-	
-	public void testgetArchiveComponents() {
-		
-	}
-	*/
 
 	public void initialize() throws AcsJContainerServicesEx {
 		System.out.println("GetComponentClient: container services initialize");
 		try {
 			//Get container services.
 			System.out.println("Get alarm interface");
+			m_componentClient = new AdvancedComponentClient(m_logger,managerLoc,"SchedulingAlarmTestClient");
+			if(m_componentClient==null)
+				System.exit(-1);
+			System.out.println("ComponentClient="+m_componentClient);
 			m_containerservices = m_componentClient.getContainerServices();
-			//consumer = new Consumer(channelName,m_containerservices);
-			//Connent to component
-			//m_cqd = new ComponentQueryDescriptor("QlsessionLook_","IDL:alma/alarmsystem/AlarmService:1.0");
+			ACSJMSTopicConnectionImpl.containerServices=m_containerservices;
 			AlarmManager=alma.alarmsystem.AlarmServiceHelper.narrow(
 		        m_containerservices.getDefaultComponent("IDL:alma/alarmsystem/AlarmService:1.0"));
-			//qldsplayManager = 
-			//alma.pipelineql.QlDisplayManagerHelper.narrow(m_containerservices.getDynamicComponent(m_cqd, false));
 			String m_compName = AlarmManager.name();
 			System.out.println("m_compName:"+m_compName);
 		} catch(Exception e) {
@@ -139,22 +248,26 @@ public class TestAcsAlarm extends ComponentClientTestCase {
 	public  void GetComponentClient() {
 		//super();
 		String name ="SchedAlarmManager";
-		m_logger = Logger.getLogger(name);
-		String managerLoc = System.getProperty("ACS.manager");
-		try {
-			m_componentClient = new ComponentClient(m_logger, managerLoc, name);
-			System.out.println("SchedAlarmManager:Construactor called");
-		} catch (Exception e ) {
-			System.out.println("SchedAlarmManager:Construactor error"+e.toString());
-			m_componentClient = null;
-		}	
-	     //return m_componentClient;
-		// TODO Auto-generated constructor stub
+		//m_logger = Logger.getLogger(name);
+		m_logger =ClientLogManager.getAcsLogManager().getLoggerForApplication("SchedulingAlarmTestClient",true);
+		managerLoc = System.getProperty("ACS.manager");
+		if(managerLoc==null) {
+			System.out.println("JAVA property 'ACS manager' must set to the corbaloc");
+			System.exit(-1);
+		}
 	}
 
-	
+
 	public static void main(String[] args) {
-	System.out.println("Alarm system testing start.....");
-        alma.acs.testsupport.tat.TATJUnitRunner.run(TestAcsAlarm.class);
-    }
+	
+		try {
+		TestAcsAlarm test = new TestAcsAlarm();
+		} 
+		catch (Exception e ) {
+			System.out.println(e.toString());
+		}
+			}
+
+
+	
 }
