@@ -44,6 +44,7 @@ import si.ijs.maci.ComponentSpec;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSFaultState;
+import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
 
 import alma.scheduling.*;
 import alma.SchedulingExceptions.InvalidOperationEx;
@@ -75,7 +76,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.84 2006/12/04 22:54:41 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.85 2007/01/09 17:01:41 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -133,6 +134,7 @@ public class ALMAMasterScheduler extends MasterScheduler
      */
     public ALMAMasterScheduler() {
         super();
+        ACSJMSTopicConnectionImpl.containerServices=containerServices;
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -456,6 +458,11 @@ public class ALMAMasterScheduler extends MasterScheduler
            // }
         } catch(Exception e) {
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
@@ -494,6 +501,11 @@ public class ALMAMasterScheduler extends MasterScheduler
             startQueuedScheduling(sbList, arrayname);
         } catch (Exception e){
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             e.printStackTrace(System.out);
             InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -561,6 +573,11 @@ public class ALMAMasterScheduler extends MasterScheduler
             //destroyArray(arrayname);
         } catch (Exception e){
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             e.printStackTrace(System.out);
             InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -606,6 +623,11 @@ public class ALMAMasterScheduler extends MasterScheduler
             is_controllers.add(interactiveGUI);
         } catch (Exception e) {
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             InvalidOperation e1 = new InvalidOperation ("startInteractiveScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
@@ -662,6 +684,11 @@ public class ALMAMasterScheduler extends MasterScheduler
             return name;
         } catch(Exception e){
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             InvalidOperation e1 = new InvalidOperation(
                     "startInteractiveScheduling1", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);

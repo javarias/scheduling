@@ -57,11 +57,12 @@ import alma.Control.AntennaMode;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSFaultState;
+import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
 import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.58 2006/12/20 21:48:43 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.59 2007/01/09 17:01:09 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -82,6 +83,7 @@ public class ALMAControl implements Control {
 
     public ALMAControl(ContainerServices cs, ALMAProjectManager m) throws SchedulingException{
         this.containerServices = cs;
+        ACSJMSTopicConnectionImpl.containerServices=containerServices;
         this.manager = m;
         this.logger = cs.getLogger();
             this.auto_controllers = new Vector<ArrayModeInfo>();
@@ -103,6 +105,11 @@ public class ALMAControl implements Control {
             logger.severe("SCHEDULING: error getting ControlMaster Component.");
             logger.severe("SCHEDULING: "+ce.toString());
             sendAlarm("Scheduling","SchedControlConnAlarm",3,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(ce.toString());
         }
     }
@@ -194,6 +201,11 @@ public class ALMAControl implements Control {
             logger.severe("SCHEDULING: could not observe!");
             logger.severe("SCHEDULING: Problem was: "+e2.toString());
             sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e2);
         }
     }
@@ -233,12 +245,22 @@ public class ALMAControl implements Control {
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
             e1.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e3) {
+            	e3.printStackTrace(System.out);
+            }
             throw new SchedulingException(e1);
         } catch(InaccessibleException e2) {
             logger.severe("SCHEDULING: could not stop SB "+id+"!");
             logger.severe("SCHEDULING: Problem was: "+e2.toString());
             e2.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e4) {
+            	e4.printStackTrace(System.out);
+            }
             throw new SchedulingException(e2);
         }
     }
@@ -343,11 +365,21 @@ public class ALMAControl implements Control {
             return arrayName;
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e3) {
+            	e3.printStackTrace(System.out);
+            }
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e1.toString());
         } catch(InaccessibleException e2) {
         	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e4) {
+            	e4.printStackTrace(System.out);
+            }
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e2.toString());
         }
@@ -371,10 +403,20 @@ public class ALMAControl implements Control {
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e4) {
+            	e4.printStackTrace(System.out);
+            }
             throw new SchedulingException(e1); 
         } catch(InaccessibleException e2){
         	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e5) {
+            	e5.printStackTrace(System.out);
+            }
             throw new SchedulingException(e2);
         } catch(Exception e3){
             throw new SchedulingException(e3);
@@ -406,6 +448,11 @@ public class ALMAControl implements Control {
         } catch(InaccessibleException e) {
         	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException (e);
         }
     }
@@ -420,6 +467,11 @@ public class ALMAControl implements Control {
             return tmp;
         } catch(InaccessibleException e) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException (e);
         }
     }
@@ -434,6 +486,11 @@ public class ALMAControl implements Control {
         } catch(InaccessibleException e) {
         	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException (e);
         }
     }
@@ -508,6 +565,11 @@ public class ALMAControl implements Control {
             return control_system.getAvailableAntennas();
         } catch(InaccessibleException e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e2) {
+            	e2.printStackTrace(System.out);
+            }
             throw new SchedulingException
                 ("SCHEDULING: Couldn't get available antennas. "+e1.toString()); 
         }
@@ -601,6 +663,11 @@ public class ALMAControl implements Control {
             }
         }catch(InaccessibleException e) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e);
         }
     }
@@ -610,10 +677,20 @@ public class ALMAControl implements Control {
             control_system.setAntennaMode(antennaId, AntennaMode.OFFLINE, true);
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e3) {
+            	e3.printStackTrace(System.out);
+            }
             e1.printStackTrace(System.out);
             throw new SchedulingException(e1);
         } catch(InaccessibleException e2){
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e4) {
+            	e4.printStackTrace(System.out);
+            }
             e2.printStackTrace(System.out);
             throw new SchedulingException(e2);
         }
@@ -623,10 +700,20 @@ public class ALMAControl implements Control {
             control_system.setAntennaMode(antennaId, AntennaMode.ONLINE, true);
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e3) {
+            	e3.printStackTrace(System.out);
+            }
             e1.printStackTrace(System.out);
             throw new SchedulingException(e1);
         } catch(InaccessibleException e2){
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e4) {
+            	e4.printStackTrace(System.out);
+            }
             e2.printStackTrace(System.out);
             throw new SchedulingException(e2);
         }
@@ -641,6 +728,11 @@ public class ALMAControl implements Control {
         }catch(Exception e) {
             logger.severe("SCHEDULING: Error releasing control comp.");
             sendAlarm("Scheduling","SchedControlConnAlarm",3,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             e.printStackTrace(System.out);
         }
     }
