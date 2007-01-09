@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#acsStartJava -endorsed junit.textui.TestRunner alma.scheduling.test.TestAcsAlarm
+acsStartJava -endorsed alma.scheduling.test.TestAcsAlarm
