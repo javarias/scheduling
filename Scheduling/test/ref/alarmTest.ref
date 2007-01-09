@@ -1,10 +1,27 @@
 1 - FINER: Logging configuration has been initialized, but not from CDB settings.
 1 - GetComponentClient: container services initialize
 1 - Get alarm interface
+1 - m_compName:AlarmService
 1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: Getting archive components
-1 - Alarm system interface can not get connect
-1 - java.lang.NullPointerException
 1 - ----------T--:--:--.--- INFO [FrankTestClient] component 'FrankTestClient' requested AdvancedContainerServices
+1 - SCHEDULING: Message queue created
+1 - SCHEDULING: PM created!
+1 - ----------T--:--:--.--- INFO [FrankTestClient] About to connect to Science Pipeline Component
+1 - ----------T--:--:--.--- SEVERE [FrankTestClient] SCHEDULING: Science Pipeline Component is not available.
+1 - ----------T--:--:--.--- INFO [FrankTestClient] About to connect to QuickLook Pipeline Component
+1 - ----------T--:--:--.--- SEVERE [FrankTestClient] SCHEDULING: QuickLook Pipeline Component is not available.
+1 - ----------T--:--:--.--- INFO [FrankTestClient] project Queue size at start of pollarchive = 0
+1 - ----------T--:--:--.--- INFO [FrankTestClient] ps queue size at start of pollarchive = 0
+1 - ----------T--:--:--.--- INFO [FrankTestClient] sb queue size at start of pollarchive = 0
+1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: polling archive for (eventually new/updated) projects
+1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: Checking archive connection.
+1 - ----------T--:--:--.--- INFO [FrankTestClient] obsproject length = 4
+1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: Scheduling found 4 projects archived.
+1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: Scheduling converted 4 Projects from ObsProject found archived.
+1 - ----------T--:--:--.--- INFO [FrankTestClient] Size of pQueue = 4
+1 - ----------T--:--:--.--- INFO [FrankTestClient] Size of psQueue = 4
+1 - ----------T--:--:--.--- INFO [FrankTestClient] Size of sbQueue = 4
+1 - ----------T--:--:--.--- INFO [FrankTestClient] SCHEDULING: Scheduling found 0 special SBs archived
 1 - start send alarm
 1 - log4j:WARN No appenders could be found for logger (cern.laser.source.alarmsysteminterface.impl.AlarmSystemInterfaceProxy).
 1 - log4j:WARN Please initialize the log4j system properly.
@@ -28,7 +45,7 @@
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedArchiveConnAlarm,1> Status: ACTIVE
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedInvalidOperationAlarm,1> Status: ACTIVE
 1 - Receive the alarm event!
@@ -36,8 +53,8 @@
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,1> Status: ACTIVE
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,3> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedSBAbortedAlarm,1> Status: ACTIVE
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,3> Status: ACTIVE
