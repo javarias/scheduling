@@ -47,6 +47,7 @@ import alma.acs.entityutil.EntityException;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSFaultState;
+import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
 
 import alma.xmlstore.Operational;
 import alma.xmlstore.Identifier;
@@ -71,7 +72,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.69 2006/11/28 15:11:56 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.70 2007/01/09 17:00:22 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -103,9 +104,8 @@ public class ALMAArchive implements Archive {
         this.containerServices = cs;
         this.logger = cs.getLogger();
         this.clock = c;
-        sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+        ACSJMSTopicConnectionImpl.containerServices=containerServices;
         getArchiveComponents();
-        sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
     }
 
     public void sendAlarm(String ff, String fm, int fc, String fs) {
@@ -173,6 +173,11 @@ public class ALMAArchive implements Archive {
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e);
         }
         return sbs;
@@ -216,6 +221,11 @@ public class ALMAArchive implements Archive {
         return projects;
         } catch (Exception e) {
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException (e);
         }
     }
@@ -238,6 +248,13 @@ public class ALMAArchive implements Archive {
         } catch(Exception e) {
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            //send to alarm system take some time, throw any Exception immediately will result in 
+            //send Alarm to alarm system failure. so we do a delay for one second to wait alarm is send.
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e);
         }
         return ps;
@@ -258,6 +275,11 @@ public class ALMAArchive implements Archive {
         } catch(Exception e) {
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e);
         }
         return ps;
@@ -290,6 +312,11 @@ public class ALMAArchive implements Archive {
         } catch (Exception e) {
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e);
         }
         return ps;
@@ -351,6 +378,11 @@ public class ALMAArchive implements Archive {
                         tmpObsProject.add(obsProj);
                     }catch(Exception e) {
                         sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+                        try {
+                        	Thread.sleep(1000);
+                        } catch (InterruptedException e1) {
+                        	e1.printStackTrace(System.out);
+                        }
                         logger.severe("SCHEDULING: "+e.toString());
                         e.printStackTrace(System.out);
                         throw new SchedulingException (e);
@@ -367,6 +399,11 @@ public class ALMAArchive implements Archive {
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException(e);
         }
         return projects;
@@ -450,6 +487,11 @@ public class ALMAArchive implements Archive {
             proj = (ObsProject) entityDeserializer.deserializeEntity(xml, ObsProject.class);
         }catch(Exception e){
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
+            try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
             throw new SchedulingException (e);
         }
         return proj;
