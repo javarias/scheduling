@@ -13,6 +13,7 @@ export ACS_INSTANCE=`grep -m 1 "For this ACS session, please do an" sched_acsSta
 #Save the instance var to a file for easy access
 echo $ACS_INSTANCE > sched_acs_instance.log
 
+acsStartContainer -java java >& test.log &
 tomcat start 
 #if [ $? ]; then echo "Executing Conditional branch"; else echo "hmm"; fi
 #echo "foo"
