@@ -5,5 +5,5 @@ PROLOGUE prologue
 #4 queuedSchedTest testQueuedScheduling
 #4 specialSBTest testStoreSpecialSB
 4 psTest testProjectStatus
-#5 alarmTest testACSAlarm
+5 alarmTest testAcsAlarm
 EPILOGUE epilogue
