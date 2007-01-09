@@ -1,4 +1,34 @@
-1 - ..
+1 - .E.E.E
+1 - There were 3 errors:
+1 - 1) testProjectStatus(alma.scheduling.test.TestProjectStatus)java.io.FileNotFoundException: newxmldocs/OP/oneTargets/EmptyProjectStatus.xml (Interrupted system call or resource temporarily anavailable)
+1 - 	at java.io.FileInputStream.open(Native Method)
+1 - 	at java.io.FileInputStream.<init>(FileInputStream.java:---.-------------
+1 - 	at java.io.FileReader.<init>(FileReader.java:55)
+1 - 	at alma.scheduling.test.TestProjectStatus.createProjectStatus(TestProjectStatus.java:46)
+1 - 	at alma.scheduling.test.TestProjectStatus.testProjectStatus(TestProjectStatus.java:87)
+1 - 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+1 - 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+1 - 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+1 - 	at alma.acs.component.client.ComponentClientTestCase.runTest(ComponentClientTestCase.java:94)
+1 - 	at java.io.FileInputStream.open(Native Method)
+1 - 	at java.io.FileInputStream.<init>(FileInputStream.java:---.-------------
+1 - 	at java.io.FileReader.<init>(FileReader.java:55)
+1 - 	at alma.scheduling.test.TestProjectStatus.createProjectStatus(TestProjectStatus.java:46)
+1 - 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+1 - 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+1 - 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+1 - 	at alma.acs.component.client.ComponentClientTestCase.runTest(ComponentClientTestCase.java:94)
+1 - 3) testObsProjectUpdating(alma.scheduling.test.TestProjectStatus)java.io.FileNotFoundException: newxmldocs/OP/oneTargets/EmptyProjectStatus.xml (Interrupted system call or resource temporarily anavailable)
+1 - 	at java.io.FileInputStream.open(Native Method)
+1 - 	at java.io.FileInputStream.<init>(FileInputStream.java:---.-------------
+1 - 	at java.io.FileReader.<init>(FileReader.java:55)
+1 - 	at alma.scheduling.test.TestProjectStatus.createProjectStatus(TestProjectStatus.java:46)
+1 - 	at alma.scheduling.test.TestProjectStatus.testObsProjectUpdating(TestProjectStatus.java:---.-------------
+1 - 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+1 - 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+1 - 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+1 - 	at alma.acs.component.client.ComponentClientTestCase.runTest(ComponentClientTestCase.java:94)
 1 - 
-1 - OK (2 tests)
+1 - FAILURES!!!
+1 - Tests run: 3,  Failures: 0,  Errors: 3
 1 - 
