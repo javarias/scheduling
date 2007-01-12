@@ -42,19 +42,19 @@ import alma.acs.logging.ClientLogManager;
 import java.util.Iterator;
 
 public class TestAcsAlarm {
-    private ALMAArchive archive;
+    //private ALMAArchive archive;
     private AdvancedComponentClient m_componentClient = null;
     private AlarmService AlarmManager = null;
     private Logger m_logger = null;
-    private SBQueue sbQueue;
-    private ALMAPublishEvent publisher=null;
+    //private SBQueue sbQueue;
+    //private ALMAPublishEvent publisher=null;
     private MessageQueue messageQueue;
-    private ALMAOperator operator;
-    private ALMAProjectManager manager;
-    private ALMATelescope telescope;
-    private ALMAControl control;
+    //private ALMAOperator operator;
+    //private ALMAProjectManager manager;
+    //private ALMATelescope telescope;
+    //private ALMAControl control;
     private ContainerServices m_containerservices;
-    private ALMAClock clock;
+    //private ALMAClock clock;
     String  managerLoc;
     private Consumer m_consumer = null;
     private String m_channelName = "CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES";
@@ -62,11 +62,9 @@ public class TestAcsAlarm {
  
     public TestAcsAlarm() throws Exception {
     	//super("Test ACS Alarm system");
+	System.out.println("Alarm test start initialize");
 	setUp();
 	testsendAlarm();
-	testQuerySpecialSBs();
-	testGetAllProject();
-	testGetProjectStatus();
 	try {
 		Thread.sleep(10000);
 	} catch (Exception e) {}
@@ -79,16 +77,8 @@ public class TestAcsAlarm {
 		try {
 			GetComponentClient();
 			initialize();
-			sbQueue = new SBQueue();
-			clock= new ALMAClock();
-			archive = new ALMAArchive(m_componentClient.getContainerServices(),clock);
-			publisher = new ALMAPublishEvent(m_containerservices);
-			messageQueue = new MessageQueue();
-			operator = new ALMAOperator(m_containerservices, messageQueue);
-			manager = new ALMAProjectManager(m_containerservices, operator, archive, sbQueue, publisher,new ALMAClock());
-			telescope = new ALMATelescope();
-                        //control = new ALMAControl(m_containerservices, manager);
-		} catch (Exception e) {
+		    }
+                    catch (Exception e) {
 			System.out.println("Alarm system interface can not get connect");
 			System.out.println(e.toString());
 		}
@@ -131,49 +121,7 @@ public class TestAcsAlarm {
         }        
     }
 
-	//@ALMAArchive(expected=ArchiveInternalError.class)
-	
-	public void testQuerySpecialSBs() throws SchedulingException{
-		try {
-			System.out.println("start test queryspecialSBs");
-			archive.querySpecialSBs();
-			//throw new SchedulingException();
-		}
-		catch(SchedulingException e) {
-			e.printStackTrace();
-    		//assertTrue(true);
-		}
-	}
-	
-	
-	
-	public void testGetAllProject() throws SchedulingException {
-		try {
-			//m_containerservices.releaseComponent(archive.toString());
-			archive.getAllProject();
-		}
-		catch(SchedulingException e) {
-			e.printStackTrace();
-    		//assertTrue(true);
-		}
-	}
-	
-	
-	
-	
-	public void testGetProjectStatus() throws SchedulingException {
-		try {
-				Project pj = new Project("obsProjectId","proposalId","projectName","projectVersion","PI");
-				archive.getProjectStatus(pj);
-				throw new SchedulingException();
-		}
-		catch(SchedulingException e) {
-            		e.printStackTrace();
-            		//assertTrue(true);
-		}
-	}
-
-	
+		
 	
 	
 	
@@ -259,7 +207,7 @@ public class TestAcsAlarm {
 
 
 	public static void main(String[] args) {
-	
+			
 		try {
 		TestAcsAlarm test = new TestAcsAlarm();
 		} 
