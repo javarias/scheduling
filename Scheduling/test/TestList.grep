@@ -1,3 +1,4 @@
+ComponentClient=alma.acs.component.client.AdvancedComponentClient
 \[jacorb\.poa\] INFO : Using server ID
 \[jacorb\.poa\] INFO : oid:
 \[jacorb\.poa\] INFO : POA
