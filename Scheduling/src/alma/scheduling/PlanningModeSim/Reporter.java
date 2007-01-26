@@ -411,7 +411,7 @@ public class Reporter extends BasicComponent {
                 int totalReps=0;
                 int numExec=0;
                 for(int j=0; j< tmpsbs.length; j++){
-                    totalReps += tmpsbs[j].getMaximumNumberOfRepeats();
+                    totalReps += tmpsbs[j].getMaximumNumberOfExecutions();
                     numExec += tmpsbs[j].getNumberExec();
                 }
                 totalPossibleExecutions += totalReps + tmpsbs.length;
@@ -477,7 +477,7 @@ public class Reporter extends BasicComponent {
 			totalSBs += prj[i].getTotalSBs();
             allSBs = prj[i].getAllSBs();
             for(int x=0;x<allSBs.length; x++){
-		        totalPossibleNumber += allSBs[x].getMaximumNumberOfRepeats();
+		        totalPossibleNumber += allSBs[x].getMaximumNumberOfExecutions();
             }
 			totalScienceTime += prj[i].getTotalUsedTimeInSeconds();
 			totalWeightedScienceTime += prj[i].getTotalUsedTimeInSeconds() * 
@@ -567,7 +567,7 @@ public class Reporter extends BasicComponent {
 			u = archive.getAllSB();
 			for (int i = 0; i < u.length; ++i) {
 				ex = u[i].getSExec();
-				possibleScienceTime += u[i].getMaximumTimeInSeconds() * (u[i].getMaximumNumberOfRepeats() + 1) / 3600.0;
+				possibleScienceTime += u[i].getMaximumTimeInSeconds() * (u[i].getMaximumNumberOfExecutions()) / 3600.0;
 				for (int j = 0; j < ex.length; ++j) {
 					x = DateTime.difference(ex[j].getEndTime(), ex[j].getStartTime());
 					totalScienceTime += x * 24.0;

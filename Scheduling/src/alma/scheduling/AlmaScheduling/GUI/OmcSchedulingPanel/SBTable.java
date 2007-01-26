@@ -13,10 +13,14 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class SBTable extends JTable {
     private final String[] sbColumnInfo = {"SB Name","Project"};
-    private final String[] sbColumnInfoWithStatus = {"SB Name","Project","Exec Status"};
+    //private final String[] sbColumnInfoWithStatus = {"SB Name","Project","Exec Status"};
+    //S stands for status and possible status' are N, R, {C, Ab, F}, AR
+    private final String[] sbColumnInfoWithStatus = {"S", "SB Name","Project"};
     private Object[][] sbRowInfo;
     private int infoSize;
     private int uidLoc;
+    private int sbLoc;
+    private int pnLoc;
     private int execLoc;
     private TableModel sbTableModel;
     private JTextArea sbInfo;
@@ -36,18 +40,22 @@ public class SBTable extends JTable {
         sbInfo = new JTextArea();
         withExec = b;
         if(withExec) {
+            execLoc = 0;
+            sbLoc = 1;
+            pnLoc =2;
             infoSize = sbColumnInfoWithStatus.length +1;
             sbRowInfo = new Object[0][infoSize];
                 
         } else {
+            sbLoc = 0;
+            pnLoc =1;
             infoSize = sbColumnInfo.length+1;
             sbRowInfo = new Object[0][infoSize];
         }
         uidLoc = infoSize-1;
-        execLoc = 2;
         createTableModel();
         setModel(sbTableModel);
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setPreferredScrollableViewportSize(size);
         //setMaximumSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -131,7 +139,10 @@ public class SBTable extends JTable {
             }
             public int getRowCount() { return sbRowInfo.length; }
             public Object getValueAt(int row, int col) { return sbRowInfo[row][col]; }
-            public void setValueAt(Object val, int row, int col) { sbRowInfo[row][col] = val; }
+            public void setValueAt(Object val, int row, int col) {
+                sbRowInfo[row][col] = val;
+                fireTableCellUpdated(row, col);
+            }
         };
     }
 
@@ -144,8 +155,8 @@ public class SBTable extends JTable {
         int size = sblites.length;
         sbRowInfo = new Object[size][infoSize];
         for(int i=0; i<size; i++){
-            sbRowInfo[i][0] = sblites[i].sbName;
-            sbRowInfo[i][1] = sblites[i].projectName;
+            sbRowInfo[i][sbLoc] = sblites[i].sbName;
+            sbRowInfo[i][pnLoc] = sblites[i].projectName;
             sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
             if(withExec){
                 setSBExecStatus((String)sbRowInfo[i][uidLoc], "N/A");
@@ -165,8 +176,8 @@ public class SBTable extends JTable {
         //add new ones to newRowInfo
         int tmpCtr=0;
         for(int i=0; i < sbs.length; i++){
-            newRowInfo[i][0] = sbs[i].sbName;
-            newRowInfo[i][1] = sbs[i].projectName;
+            newRowInfo[i][sbLoc] = sbs[i].sbName;
+            newRowInfo[i][pnLoc] = sbs[i].projectName;
             newRowInfo[i][uidLoc] = sbs[i].schedBlockRef;
             if(withExec){
                 newRowInfo[i][execLoc] = "N/A";
@@ -176,8 +187,8 @@ public class SBTable extends JTable {
         }
         if(sbRowInfo.length > 0){
             for(int i=0; i < sbRowInfo.length; i++){
-                newRowInfo[tmpCtr][0] = (String)sbRowInfo[i][0];
-                newRowInfo[tmpCtr][1] = (String)sbRowInfo[i][1];
+                newRowInfo[tmpCtr][sbLoc] = (String)sbRowInfo[i][sbLoc];
+                newRowInfo[tmpCtr][pnLoc] = (String)sbRowInfo[i][pnLoc];
                 newRowInfo[tmpCtr][uidLoc] = (String)sbRowInfo[i][uidLoc];
                 if(withExec){
                     newRowInfo[tmpCtr][execLoc]= sbRowInfo[i][execLoc]; //retain exec status
@@ -208,8 +219,15 @@ public class SBTable extends JTable {
         int ctr=0;
         for(int i=0; i < sbRowInfo.length; i++){
             if(!isRowToBeRemoved(rows, i)){
+                /*
+<<<<<<< SBTable.java
                 newRowInfo[ctr][0] = sbRowInfo[i][0];
                 newRowInfo[ctr][1] = sbRowInfo[i][1];
+=======
+*/
+                newRowInfo[ctr][sbLoc] = sbRowInfo[i][sbLoc];
+                newRowInfo[ctr][pnLoc] = sbRowInfo[i][pnLoc];
+//>>>>>>> 1.13.2.3
                 newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
                 if(withExec){
                     newRowInfo[ctr][execLoc] = sbRowInfo[i][execLoc];
@@ -229,9 +247,18 @@ public class SBTable extends JTable {
       */
     public void setSBExecStatusForRow(int row, String id, String status){
         if(withExec){
+            String displayStatus = getDisplayStatus(status);            
             if( ((String)sbRowInfo[row][uidLoc]).equals(id)){ //good
+                /*
+<<<<<<< SBTable.java
                 sbRowInfo[row][execLoc] = status;
                 System.out.println("Exec location = "+execLoc);
+=======
+*/
+                //sbRowInfo[row][execLoc] = status;
+                sbRowInfo[row][execLoc] = displayStatus;
+                //System.out.println("Exec location = "+execLoc);
+//>>>>>>> 1.13.2.3
             }
             manageColumnSizes();
             repaint();
@@ -249,12 +276,40 @@ public class SBTable extends JTable {
         //not found in rows
         return false;
     }
-    
+   
+    private String getDisplayStatus(String status){
+        String displayStatus="";
+        //System.out.println("Execution Status = "+status);
+        if(status.equals("ARCHIVED")){
+            displayStatus = "AR";
+        } else if(status.equals("COMPLETE")){
+            displayStatus= "C";
+        } else if(status.equals("FAILED")){
+            displayStatus= "F";
+        } else if(status.equals("RUNNING")){
+            displayStatus= "R";
+        } else if(status.equals("ABORTED")){
+            displayStatus= "AB";
+        } else if(status.equals("SUCCESS")){
+            displayStatus= "S";
+        } else {
+            displayStatus = status;
+        }
+        return displayStatus;
+    }
     public void setSBExecStatus(String sbid, String status){
         if(withExec){
             int i= getRowPosForSB(sbid);
             if(i != -1) {
+                /*
+<<<<<<< SBTable.java
                 setValueAt(status, i, execLoc);
+=======
+*/
+                setValueAt(getDisplayStatus(status), i, execLoc);
+                //setValueAt(status, i, execLoc);
+                
+//>>>>>>> 1.13.2.3
             } //else sb not found in table.
         } //else ignore
         manageColumnSizes();
@@ -279,6 +334,7 @@ public class SBTable extends JTable {
             setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             return;
         }
+        
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         for(int x=0; x < columns.getColumnCount(); x++){
             TableColumn column = getColumnModel().getColumn(x);
@@ -292,9 +348,14 @@ public class SBTable extends JTable {
                         false,
                         i,
                         x);
+
                 w = Math.max(w, c.getPreferredSize().width);
+                ((DefaultTableCellRenderer)r).
+                     setHorizontalAlignment(SwingConstants.LEFT);
+                //System.out.println("column "+x+", cell "+i+", value = "+getValueAt(i,x));
             }
             column.setPreferredWidth(w);  
+            //System.out.println("Column size set to "+w);
         }
     }
 
@@ -326,7 +387,7 @@ public class SBTable extends JTable {
         sbInfo.append("Rank: "+sb.rank+"\n");
         sbInfo.repaint();
         sbInfo.validate();
-        System.out.println("SB Info size "+sbInfo.getSize().toString());
+        //System.out.println("SB Info size "+sbInfo.getSize().toString());
     }
 
     private void showSBProject(SBLite sb){

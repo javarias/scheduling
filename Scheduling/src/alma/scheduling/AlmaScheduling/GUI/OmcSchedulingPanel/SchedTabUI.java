@@ -161,6 +161,12 @@ public class SchedTabUI extends BasicTabbedPaneUI {
         public void mouseClicked(MouseEvent e){
             super.mouseClicked(e);
             updateOverTab(e.getX(), e.getY());
+            /*
+            if(e.getClickCount() == 1) {
+                JOptionPane.showMessageDialog(null, "OneClick");
+            } else if(e.getClickCount() ==2 ){
+                JOptionPane.showMessageDialog(null, "TwoClicks");
+            }*/
         }
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);

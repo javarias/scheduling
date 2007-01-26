@@ -938,7 +938,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		double frequency = 0.0;
 		int totalTime = 0;
 		String weatherCondition = null;
-		int repeatCount = 0;
+		int repeatCount = 1;
 		double b = -1.0;
 		double e = -1.0;
 
@@ -986,7 +986,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			} else if (s.length == 8) {
 				error("Invalid number of target parameters: " + value[i]);
 			} else
-				repeatCount = 0;
+				repeatCount = 1;
 			
 			// Validate the weather word.
 			w = validateWeatherCondition(weatherCondition); 
@@ -1023,7 +1023,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			u.setWeatherConstraint(w);
 			
 			// Set the repeat count.
-			u.setMaximumNumberOfRepeats(repeatCount);
+			u.setMaximumNumberOfExecutions(repeatCount);
 			
 			// Set the frequency band.
 			int j = 0;

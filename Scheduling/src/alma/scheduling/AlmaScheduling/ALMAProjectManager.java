@@ -63,7 +63,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.79 2006/11/22 22:14:47 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.80 2007/01/26 22:17:20 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -262,19 +262,19 @@ public class ALMAProjectManager extends ProjectManager {
             return;
         }
         
-        if( (completed.getNumberExec() +1) > completed.getMaximumNumberOfRepeats()  ){
+        if( (completed.getNumberExec()) > completed.getMaximumNumberOfExecutions()  ){
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
             logger.info("###########set to complete####");
             logger.info("Setting end time for "+eb.getId());
             logger.info("Total# executions done = "+completed.getNumberExec());
-            logger.info("Total allowed executions = "+completed.getMaximumNumberOfRepeats());
+            logger.info("Total allowed executions = "+completed.getMaximumNumberOfExecutions());
             logger.info("#################################");
         } else { //set it to ready
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
             logger.info("##########set to ready###########");
             logger.info("Setting end time for "+eb.getId());
             logger.info("Total # executions done = "+completed.getNumberExec());
-            logger.info("Total allowed executions = "+completed.getMaximumNumberOfRepeats());
+            logger.info("Total allowed executions = "+completed.getMaximumNumberOfExecutions());
             logger.info("#################################");
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());

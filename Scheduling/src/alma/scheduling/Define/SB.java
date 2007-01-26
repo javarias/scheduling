@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.19 2006/11/06 15:41:22 sslucero Exp $
+ * @version $Id: SB.java,v 1.20 2007/01/26 22:17:21 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -73,9 +73,9 @@ public class SB implements ProgramMember {
 	// The total amount of time used by this SB so far.
 	private int totalUsedTimeInSeconds;
 	// Note: The total required time is:
-	//			maximumTimeInSeconds * (maximumNumberOfRepeats + 1)
+	//			maximumTimeInSeconds * (maximumNumberOfExecutions + 1)
 	
-	private int maximumNumberOfRepeats;
+	private int maximumNumberOfExecutions;
 	private int maximumTimeInSeconds;
     private boolean indefiniteRepeat;
 	// The members of this set are ExecBlocks.
@@ -123,7 +123,7 @@ public class SB implements ProgramMember {
         weatherConstraintName ="";
 		requiredInitialSetup = null;
 		maximumTimeInSeconds = 0;		
-		maximumNumberOfRepeats = 0;
+		maximumNumberOfExecutions = 1;
         indefiniteRepeat = false;
 		imagingScript = null;
 		observingScript = null;
@@ -217,7 +217,7 @@ public class SB implements ProgramMember {
 		out.println(indent + "\tweatherConstraint " + (weatherConstraint == null ? "null" : weatherConstraint.toString()));
 		out.println(indent + "\trequiredInitialSetup " + (requiredInitialSetup == null ? "null" : requiredInitialSetup.toString()));
 		out.println(indent + "\tmaximumTimeInSeconds " + maximumTimeInSeconds);
-		out.println(indent + "\tmaximumNumberOfRepeats " + maximumNumberOfRepeats);
+		out.println(indent + "\tmaximumNumberOfExecutions " + maximumNumberOfExecutions);
 		out.println(indent + "\timagingScript " + imagingScript);
 		out.println(indent + "\tobservingScript " + observingScript);
 		out.println(indent + "\tstandardScript " + standardScript);
@@ -307,7 +307,7 @@ public class SB implements ProgramMember {
 	public void setReady(DateTime time) {
 		status.setReady(time);
 		// Set the total time required.
-		totalRequiredTimeInSeconds = maximumTimeInSeconds * (maximumNumberOfRepeats + 1);
+		totalRequiredTimeInSeconds = maximumTimeInSeconds * (maximumNumberOfExecutions);
 	}
 	
 	/**
@@ -368,11 +368,11 @@ public class SB implements ProgramMember {
 					// Increment the amount of time used in this Unit ...
 					totalUsedTimeInSeconds += maximumTimeInSeconds;
 					// If the maximum number of repeats has been reached ...
-                    //System.out.println("In SB: "+getNumberExec() +" : "+maximumNumberOfRepeats);
+                    //System.out.println("In SB: "+getNumberExec() +" : "+maximumNumberOfExecutions);
                     if(getIndefiniteRepeat() ){
 				 		parent.execEnd(this,time,maximumTimeInSeconds,Status.READY);
 				 		status.setReady();
-                    } else if (getNumberExec() == maximumNumberOfRepeats + 1) {
+                    } else if (getNumberExec() == maximumNumberOfExecutions) {
 						// ... then mark it complete and set its end time.
 						status.setEnded(time,Status.COMPLETE);
 						// ... and inform the parent.
@@ -492,17 +492,17 @@ public class SB implements ProgramMember {
 	}
 
 	/**
-	 * @return Returns the maximumNumberOfRepeats.
+	 * @return Returns the maximumNumberOfepeats.
 	 */
-	public int getMaximumNumberOfRepeats() {
-		return maximumNumberOfRepeats;
+	public int getMaximumNumberOfExecutions() {
+		return maximumNumberOfExecutions;
 	}
 
 	/**
-	 * @param maximumNumberOfRepeats The maximumNumberOfRepeats to set.
+	 * @param maximumNumberOfExecutions The maximumNumberOfExecutions to set.
 	 */
-	public void setMaximumNumberOfRepeats(int maximumNumberOfRepeats) {
-		this.maximumNumberOfRepeats = maximumNumberOfRepeats;
+	public void setMaximumNumberOfExecutions(int maximumNumberOfExecutions) {
+		this.maximumNumberOfExecutions = maximumNumberOfExecutions;
 	}
 
 	/**

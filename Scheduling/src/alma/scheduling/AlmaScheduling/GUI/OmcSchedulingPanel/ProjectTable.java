@@ -204,6 +204,8 @@ public class ProjectTable extends JTable {
                         i,
                         x);
                 w = Math.max(w, c.getPreferredSize().width);
+                ((DefaultTableCellRenderer)r).
+                     setHorizontalAlignment(SwingConstants.LEFT);
             }
             column.setPreferredWidth(w);  
         }

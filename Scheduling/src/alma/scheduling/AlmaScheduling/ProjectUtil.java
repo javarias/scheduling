@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.47 2006/12/04 18:23:24 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.48 2007/01/26 22:17:20 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -652,7 +652,7 @@ public class ProjectUtil {
 	    	SchedBlockControlT ctrl = sched.getSchedBlockControl();
     		if (ctrl == null) {
 		    	sb.setMaximumTimeInSeconds(1800);
-	    		sb.setMaximumNumberOfRepeats(1);
+	    		sb.setMaximumNumberOfExecutions(1);
     		} else {
 		    	TimeT tt = ctrl.getSBMaximumTime();
 	    		if (tt == null) {
@@ -668,7 +668,7 @@ public class ProjectUtil {
             //set to -1 because the first run is the original one. Not considered a 'repeat'
 			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
-    			sb.setMaximumNumberOfRepeats(execcount); 
+    			sb.setMaximumNumberOfExecutions(execcount); 
                 sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
     		}
             
@@ -1138,7 +1138,7 @@ public class ProjectUtil {
 		SchedBlockControlT ctrl = sched.getSchedBlockControl();
 		if (ctrl == null) {
 			sb.setMaximumTimeInSeconds(1800);
-			sb.setMaximumNumberOfRepeats(0);
+			sb.setMaximumNumberOfExecutions(0);
 		} else {
 			TimeT tt = ctrl.getSBMaximumTime();
 			if (tt == null) {
@@ -1147,13 +1147,13 @@ public class ProjectUtil {
 				double maxTime = tt.getContent();
 				sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
 			}
-			int repeatcount = ctrl.getRepeatCount();
-			if (repeatcount < 1)
-				throw new SchedulingException("Invalid repeat count (" + repeatcount + ").");
+			int execCount = ctrl.getRepeatCount();
+			if (execCount < 1)
+				throw new SchedulingException("Invalid execution count (" + execCount + ").");
             //set to -1 because the first run is the original one. Not considered a 'repeat'
 			//sb.setMaximumNumberOfRepeats(repeatcount - 1); 
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
-			sb.setMaximumNumberOfRepeats(repeatcount); 
+			sb.setMaximumNumberOfExecutions(execCount); 
             sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
   		}
             

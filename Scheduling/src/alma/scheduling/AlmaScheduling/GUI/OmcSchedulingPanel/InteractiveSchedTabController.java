@@ -7,6 +7,7 @@ import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.Define.*;
 import alma.acs.nc.Consumer;
+import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.xmlstore.XmlStoreNotificationEvent;
@@ -32,6 +33,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             consumer.consumerReady();
             ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
             ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
             ctrl_consumer.consumerReady();
@@ -148,12 +150,23 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         t.start();
     }
 
+    public void receive(ExecBlockStartedEvent e) {
+        String exec_id = e.execId.entityId;
+        String sbid = e.sbId.entityId;
+        if(currentSBId.equals(sbid) ){
+            currentExecBlockId = exec_id;
+        }
+        parent.setSBStatus(sbid, "RUNNING");
+        parent.setEnabled(false);
+    }
+
     public void receive(ExecBlockEndedEvent e){
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
-        if(currentSBId.equals(sbid) ){
-            currentExecBlockId = exec_id;
+        if(!currentSBId.equals(sbid) && !currentExecBlockId.equals(exec_id) ){
+            System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
+           // currentExecBlockId = exec_id;
         }
         String completion;
         System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());

@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.59 2007/01/09 17:01:09 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.60 2007/01/26 22:17:20 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -674,7 +674,7 @@ public class ALMAControl implements Control {
 
     public void setAntennaOfflineNow(String antennaId) throws SchedulingException {
         try {
-            control_system.setAntennaMode(antennaId, AntennaMode.OFFLINE, true);
+            control_system.setAntennaMode(antennaId, AntennaMode.ANTENNA_OFFLINE, true);
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
         	try {
@@ -697,7 +697,7 @@ public class ALMAControl implements Control {
     }
     public void setAntennaOnlineNow(String antennaId) throws SchedulingException {
         try {
-            control_system.setAntennaMode(antennaId, AntennaMode.ONLINE, true);
+            control_system.setAntennaMode(antennaId, AntennaMode.ANTENNA_ONLINE, true);
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
         	try {

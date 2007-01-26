@@ -102,7 +102,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         return p;
     }
     private void manageColumnSizesInA(){
-        ((DefaultTableCellRenderer)antennaTableA.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        ((DefaultTableCellRenderer)antennaTableA.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         TableColumn column = antennaTableA.getColumnModel().getColumn(columnIndex);
         if((antennaRowInfoA == null) || (antennaRowInfoA.length ==0)){
             column.setPreferredWidth(128);   
@@ -145,7 +145,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
 
     private void manageColumnSizesInB(){
-        ((DefaultTableCellRenderer)antennaTableB.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        ((DefaultTableCellRenderer)antennaTableB.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         TableColumn column = antennaTableB.getColumnModel().getColumn(columnIndex);
         if((antennaRowInfoB == null) || (antennaRowInfoB.length ==0)){
             column.setPreferredWidth(128);   
