@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.48 2007/01/26 22:17:20 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.49 2007/01/29 17:44:05 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -661,7 +661,7 @@ public class ProjectUtil {
 		    		double maxTime = tt.getContent();
 	    			sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
     			}
-			    int execcount = ctrl.getRepeatCount();
+			    int execcount = ctrl.getExecutionCount();
 		    	if (execcount < 1){
 	    			throw new SchedulingException("Invalid execution count (" + execcount + ").");
                 }
@@ -1147,7 +1147,7 @@ public class ProjectUtil {
 				double maxTime = tt.getContent();
 				sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
 			}
-			int execCount = ctrl.getRepeatCount();
+			int execCount = ctrl.getExecutionCount();
 			if (execCount < 1)
 				throw new SchedulingException("Invalid execution count (" + execCount + ").");
             //set to -1 because the first run is the original one. Not considered a 'repeat'
