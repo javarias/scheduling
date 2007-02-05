@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.15 2006/11/06 15:42:39 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.16 2007/02/05 23:56:43 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -298,7 +298,9 @@ public class DynamicScheduler extends Scheduler implements Runnable {
             try {
                 Message m = new Message();
                 m.setArrayName(config.getArrayName());
-                String sbid = config.getOperator().selectSB(best, m, config.getArrayName());
+                //TODO need a thread that waits for the operator's response..
+                String sbid = config.getOperator().selectSB(
+                        best, m, config.getArrayName(), getId());
                 logger.info("SCHEDULING: Operator picked sb = "+sbid);
         		// We've got somthing to schedule.
                 //SB selectedSB = config.getQueue().get(best.getBestSelection());

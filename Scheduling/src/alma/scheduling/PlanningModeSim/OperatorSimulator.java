@@ -81,7 +81,7 @@ public class OperatorSimulator
 	/* (non-Javadoc)
 	 * @see alma.scheduling.define.OperatorProxy#selectSB(java.lang.String[])
 	 */
-	public String selectSB(BestSB best, Message m, String arrayName) {
+	public String selectSB(BestSB best, Message m, String arrayName, String schedulerId) {
 		if (best == null || best.getNumberReturned() == 0) {
 			logger.severe("OperatorSimulator: entityId cannot be null or have zero length.");
 			return "";

@@ -58,12 +58,14 @@ import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.specialsb.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
+import alma.entity.xmlbinding.valuetypes.*;
+import alma.entity.xmlbinding.valuetypes.types.*;
 import alma.asdmIDLTypes.IDLEntityRef;
 
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.80 2007/01/26 22:17:20 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.81 2007/02/05 23:56:43 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -263,22 +265,24 @@ public class ALMAProjectManager extends ProjectManager {
         }
         
         if( (completed.getNumberExec()) > completed.getMaximumNumberOfExecutions()  ){
-            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
             logger.info("###########set to complete####");
+            logger.info("Number of executions before next added = "+completed.getNumberExec());
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
             logger.info("Setting end time for "+eb.getId());
             logger.info("Total# executions done = "+completed.getNumberExec());
             logger.info("Total allowed executions = "+completed.getMaximumNumberOfExecutions());
             logger.info("#################################");
         } else { //set it to ready
-            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
             logger.info("##########set to ready###########");
+            logger.info("Number of executions before next added = "+completed.getNumberExec());
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
             logger.info("Setting end time for "+eb.getId());
             logger.info("Total # executions done = "+completed.getNumberExec());
             logger.info("Total allowed executions = "+completed.getMaximumNumberOfExecutions());
             logger.info("#################################");
         }
         logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
-        updateProjectStatus(eb);
+        updateProjectStatus(eb, completed.getStatus());
     }
 
     /**
@@ -294,7 +298,7 @@ public class ALMAProjectManager extends ProjectManager {
       * 
       * 
       */
-    public synchronized void updateProjectStatus(ExecBlock eb) {
+    public synchronized void updateProjectStatus(ExecBlock eb, Status sbStatus) {
         //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
@@ -321,9 +325,31 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusTChoice choice = ps.getObsProgramStatus().getObsUnitSetStatusTChoice(); 
         //ObsUnitSet
         ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
+        SBStatusT[] sbs=new SBStatusT[0];
         for(int i=0; i < sets.length; i++) {
-            SBStatusT[] sbs = parseObsUnitSetStatus(sets[i]);
+            sbs = parseObsUnitSetStatus(sets[i]);
         }
+        
+        SBStatusT status = updateSBStatus(sb, sbs);
+        logger.info("SCHEDULING: SB's status is "+sb.getStatus().getStatus());
+        StatusT stat = status.getStatus();
+        if(sbStatus.getStatus().equals("notdefined")){
+            stat.setState(StatusTStateType.NOTDEFINED);
+        } else if (sbStatus.getStatus().equals("waiting")){
+            stat.setState(StatusTStateType.WAITING);
+        } else if (sbStatus.getStatus().equals("ready")){
+            stat.setState(StatusTStateType.READY);
+        } else if (sbStatus.getStatus().equals("running")){
+            stat.setState(StatusTStateType.RUNNING);
+        } else if (sbStatus.getStatus().equals("aborted")){
+            stat.setState(StatusTStateType.ABORTED);
+        } else if (sbStatus.getStatus().equals("complete")){
+            stat.setState(StatusTStateType.COMPLETE);
+            stat.setEndTime(sb.getStatus().getEndTime().toString());
+        }
+        status.setStatus(stat);
+        logger.info("SCHEDULING: SBStatus's status is "+status.getStatus().toString());
+        logger.info("SCHEDULING: got "+sbs.length+" sb status' in this PS");
         try {
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
@@ -334,6 +360,16 @@ public class ALMAProjectManager extends ProjectManager {
         //return ids;
     }
 
+    private SBStatusT updateSBStatus(SB sb, SBStatusT[] allSBs) {
+        SBStatusT match=null;
+        for(int i=0; i < allSBs.length; i++){
+            if(allSBs[i].getSchedBlockRef().getEntityId().equals(sb.getId())){
+                match = allSBs[i];
+                break;
+            }
+        }
+        return match;
+    }
 
  
      //TODO: Rename this method.

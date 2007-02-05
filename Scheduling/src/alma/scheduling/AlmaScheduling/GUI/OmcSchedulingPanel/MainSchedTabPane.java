@@ -61,6 +61,7 @@ public class MainSchedTabPane extends JTabbedPane {
         addTab("Main",mainPanel);
         addTab("Search", archiveTab);
         //addTab("Queued", new QueuedSchedTab("foo","foo"));
+      //  addTab("Dynamic", new DynamicSchedTab("foo","foo"));
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
@@ -77,6 +78,7 @@ public class MainSchedTabPane extends JTabbedPane {
         archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);
         logger.info("SCHEDULING_PANEL: Second setup, connected to manager");
+        logger.finest("SCHEDULING_PANEL: Finest log");
     }
 
     public void setDefaults(){
@@ -126,16 +128,16 @@ public class MainSchedTabPane extends JTabbedPane {
 
     private void doDynamicButton(){ 
         resetMainViewButtons();
-        JOptionPane.showMessageDialog(this,"Dynamic scheduling not available yet.",
-                "Not Available", JOptionPane.INFORMATION_MESSAGE);
-        /*
+    //    JOptionPane.showMessageDialog(this,"Dynamic scheduling not available yet.",
+      //          "Not Available", JOptionPane.INFORMATION_MESSAGE);
+        
         origButtonColor = dynamicB.getBackground();
         dynamicB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
         middlePanel.prepareCreateArray("dynamic");
         //createArray with mode 'dynamic'
-    */
+    
     }
 
     public void resetMainViewButtons(){
@@ -207,20 +209,20 @@ public class MainSchedTabPane extends JTabbedPane {
         if(mode.equals("interactive")){
             tab = new InteractiveSchedTab(container, array);
             allSchedulers.add(tab);
-            title = array +"(Interactive)";
+            title = array +" (Interactive)";
             ((InteractiveSchedTab)tab).setMaxSize(maxSize);
             addTab(title, (JPanel)tab);
         } else if (mode.equals("queued")){
-            title = array +"(Queued)";
+            title = array +" (Queued)";
             tab = new QueuedSchedTab(container, title, array);
             ((QueuedSchedTab)tab).setMaxSize(maxSize);
             allSchedulers.add(tab);
             addTab(title, (JPanel)tab);
         } else if (mode.equals("dynamic")){
-            title = array +"(Dynamic)";
-            //tab = new DynamicSchedTab(container, title, array);
-            //allSchedulers.add(tab);
-            //addTab(title, tab);
+            title = array +" (Dynamic)";
+            tab = new DynamicSchedTab(container, array);
+            allSchedulers.add(tab);
+            addTab(title, (JPanel)tab);
         }
         int i = indexOfTab(title);
         setSelectedIndex(i);
@@ -256,7 +258,11 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private int getSchedulerPosition(SchedulerTab tab){
+        logger.info("SchedTab Info: "+tab.getArrayName() +"; "+tab.getSchedulerName() +";"+tab.getSchedulerType());
         for(int i=0; i< allSchedulers.size(); i++){
+            logger.info("SchedTab "+i+" Info: "+allSchedulers.elementAt(i).getArrayName() +"; "+
+               allSchedulers.elementAt(i).getSchedulerName() +"; "+ allSchedulers.elementAt(i).getSchedulerType());
+
             if(allSchedulers.elementAt(i).getArrayName().equals(tab.getArrayName()) &&
                allSchedulers.elementAt(i).getSchedulerName().equals(tab.getSchedulerName()) &&
                allSchedulers.elementAt(i).getSchedulerType().equals(tab.getSchedulerType())){

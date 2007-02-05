@@ -62,8 +62,6 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         return type;
     }
     public void exit(){
-    //    controller.releaseISRef();
-     //   controller.releaseArray(arrayName);
         controller.stopInteractiveScheduling();
     }
     ////////////////////////////////////

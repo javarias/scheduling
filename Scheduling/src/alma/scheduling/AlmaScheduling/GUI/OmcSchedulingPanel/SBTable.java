@@ -97,7 +97,8 @@ public class SBTable extends JTable {
     }
 
     private void showSelectedSBDetails(String id){
-        SBLite sb = controller.getSBLite( id);
+        System.out.println("SB ID = "+id);
+        SBLite sb = controller.getSBLite(id);
         showSBInfo(sb);
         if(!projectSearchMode){
             showSBProject(sb);
@@ -163,7 +164,6 @@ public class SBTable extends JTable {
             }
         }
         manageColumnSizes();
-        //System.out.println("SB Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();

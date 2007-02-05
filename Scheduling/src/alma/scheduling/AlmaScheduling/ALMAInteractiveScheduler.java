@@ -116,7 +116,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         return arrayname;
     }
     
-    public void addSB(String sbId) throws 
+    /*public void addSB(String sbId) throws 
         InvalidOperationEx, InvalidObjectEx, SBExistsEx {
         try {
             masterScheduler.addInteractiveSB(sbId, schedulerId);
@@ -148,7 +148,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
             throw e2.toInvalidOperationEx();
         }
 
-    }
+    }*/
 
     public void executeSB(String sbId) 
         throws InvalidOperationEx, NoSuchSBEx {

@@ -1,8 +1,7 @@
 /*
  *    ALMA - Atacama Large Millimiter Array
  *    (c) European Southern Observatory, 2002
- *    (c) Associated Universities Inc., 2002
- *    Copyright by AUI (in the framework of the ALMA collaboration),
+ *    Copyright by ESO (in the framework of the ALMA collaboration),
  *    All rights reserved
  *
  *    This library is free software; you can redistribute it and/or
@@ -25,16 +24,26 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 
-import alma.scheduling.MasterSchedulerIFPOATie;
-import alma.scheduling.MasterSchedulerIFOperations;
-import alma.scheduling.AlmaScheduling.ALMAMasterScheduler;
-
+import org.omg.PortableServer.Servant;
+import alma.ACS.ACSComponentOperations;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;
+import alma.scheduling.MasterSchedulerIFOperations;
+import alma.scheduling.MasterSchedulerIFPOATie;
+import alma.scheduling.AlmaScheduling.ALMAMasterScheduler;
 
 /**
+ * Component helper class. 
+ * Generated for convenience, but can be modified by the component developer. 
+ * Must therefore be treated like any other Java class (CVS, ...). 
+ * <p>
+ * To create an entry for your component in the Configuration Database, 
+ * copy the line below into a new entry in the file $ACS_CDB/MACI/Components/Components.xml 
+ * and modify the instance name of the component and the container: 
+ * <p>
+ * Name="MASTERSCHEDULERIF_1" Code="alma.scheduling.MasterSchedulerIFImpl.MasterSchedulerIFHelper" Type="IDL:alma/scheduling/MasterSchedulerIF:1.0" Container="frodoContainer"
+ * <p>
  * @author alma-component-helper-generator-tool
- * @version $Id: MasterSchedulerIFHelper.java,v 1.5 2006/05/01 18:10:42 sslucero Exp $
  */
 public class MasterSchedulerIFHelper extends ComponentHelper
 {
@@ -58,21 +67,17 @@ public class MasterSchedulerIFHelper extends ComponentHelper
 	/**
 	* @see alma.acs.container.ComponentHelper#_getPOATieClass()
 	*/
-	protected Class _getPOATieClass()
+	protected Class<? extends Servant> _getPOATieClass()
 	{
 		return MasterSchedulerIFPOATie.class;
-		//return MasterSchedulerPOATie.class;
 	}
 
 	/**
 	* @see alma.acs.container.ComponentHelper#getOperationsInterface()
 	*/
-	protected Class _getOperationsInterface()
+	protected Class<? extends ACSComponentOperations> _getOperationsInterface()
 	{
 		return MasterSchedulerIFOperations.class;
 	}
 
-    protected String[] _getComponentMethodsExcludedFromInvocationLogging() {
-        return new String[] {"OFFSHOOT::alma.ACS.ROstringSeq#get_sync"};
-    }
 }

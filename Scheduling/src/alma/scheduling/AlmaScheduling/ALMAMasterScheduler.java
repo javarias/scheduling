@@ -76,7 +76,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.85 2007/01/09 17:01:41 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.86 2007/02/05 23:56:43 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -120,6 +120,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Vector is_controllers;
     private LinkedHashMap<String, Scheduler> allSchedulers;
     private Vector interactiveComps;
+    private Vector dynamicComps;
     //queued scheduler count
     private int q_sched_count=0;
     //interactive scheduler count
@@ -153,6 +154,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.msThread.start();
             this.is_controllers = new Vector(); 
             this.interactiveComps = new Vector();
+            this.dynamicComps = new Vector();
             allSchedulers = new LinkedHashMap<String, Scheduler>();
             this.containerServices = cs;
             this.instanceName = containerServices.getName();
@@ -224,7 +226,6 @@ public class ALMAMasterScheduler extends MasterScheduler
             pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
             pipeline_nc.begin();
         
-            logger.info("Execute complete in scheduling master scheduler and an alarm should have been sent.");
         } catch(Exception e){
             logger.severe("SCHEDULING: Error initializing MASTER SCHEDULER (execute)");
             throw new ComponentLifecycleException(e.toString());
@@ -418,10 +419,10 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void startScheduling(XmlEntityStruct schedulingPolicy) 
         throws InvalidOperationEx {
 
-            logger.info("SCHEDULING: Starting dynamic scheduling");
+        logger.fine("SCHEDULING: Starting dynamic scheduling");
         try {
             manager.checkForProjectUpdates();
-            logger.info("SCHEDULING: got project updates");
+            logger.fine("SCHEDULING: got project updates");
         
             String[] allAntennas = null;
             try {
@@ -434,25 +435,9 @@ public class ALMAMasterScheduler extends MasterScheduler
             //if there are fixed and regular sbs split antennas.
             //TODO when special sbs are changed to have antenna names included, the
             // array created for special sbs must have  those antennas included.
-            String[] specialSbAntennas;
+     //       String[] specialSbAntennas;
             String[] regularSbAntennas;
-            /*
-            if((manager.getSpecialSBs().size() > 0) && (sbQueue.size() > 0)) {
-                //split array and start a scheduler for special sbs
-                //specialSbAntennas = new String[allAntennas.length/2];
-                regularSbAntennas = new String[allAntennas.length/2];
-                int x=0;
-                for(int i=0; i < (allAntennas.length/2); i++){
-                    specialSbAntennas[i] = allAntennas[x++];
-                    regularSbAntennas[i] = allAntennas[x++];
-                }
-                //scheduleSpecialSBs(specialSbAntennas);
-                scheduleRegularSBs(regularSbAntennas);
-            } else if(manager.getSpecialSBs().size() > 0) {
-                specialSbAntennas = allAntennas;
-                scheduleSpecialSBs(specialSbAntennas);
-            } else if(sbQueue.size() > 0) {
-            */
+
                 regularSbAntennas = allAntennas;
                 scheduleRegularSBs(regularSbAntennas);
            // }
@@ -468,14 +453,95 @@ public class ALMAMasterScheduler extends MasterScheduler
             throw e2.toInvalidOperationEx();
         }
     }
-    public void startScheduling1(XmlEntityStruct schedulingPolicy, String arrayname) 
-        throws InvalidOperationEx {
+    public void startScheduling1(XmlEntityStruct schedulingPolicy, String arrayname) {
+            
+        logger.fine("SCHEDULING: Starting dynamic scheduling");
+        try {
+            manager.checkForProjectUpdates();
+            logger.fine("SCHEDULING: got project updates");
+            Policy s_policy = createPolicy();
+            //TODO: Handle this better..
+            SBQueue dynamicSBs=manager.getDynamicSBQueue();
+            logger.fine("SCHEDULING: got "+dynamicSBs.size()+" sbs for dynamic scheduling");
+            SchedulerConfiguration config = 
+                createSchedulerConfiguration (
+                        false, dynamicSBs, true, true, 5, arrayname, s_policy);
+            logger.fine("SCHEDULING: Master Scheduler creating dynamic scheduler for regular SBs");
+            if(!isArrayInUse(arrayname)){
+                setArrayInUse(arrayname);
+            }
+            DynamicScheduler scheduler = new DynamicScheduler(config);
+            //get UID for scheduler
+            String id = archive.getIdForScheduler();
+            scheduler.setId(id);
+            //add to Map
+            allSchedulers.put(id, scheduler);
+            Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
+            schedulerThread.start();
+            //get component and set its ID
+            Dynamic_Operator_to_Scheduling comp = 
+                alma.scheduling.Dynamic_Operator_to_SchedulingHelper.narrow(
+                        containerServices.getComponent("DS_"+arrayname));
+            comp.setSchedulerId(id);
+            while(!stopCommand) {
+                try {
+                    schedulerThread.join();
+                    break;
+                } catch(InterruptedException ex) {
+                    if(config.isNothingToSchedule()){
+                        config.respondStop();
+                        logger.finest("SCHEDULING: interrupted regular sched thread in MS");
+                        manager.publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
+                    }
+                }
+            }
+            if(!config.isOperational()) {
+                logger.fine("SCHEDULING: Dynamic Scheduler has ended at " + config.getActualEndTime());
+                //release DSComp
+                logger.fine("SCHEDULING: DS Component ("+comp.name()+") about to be released");
+                logger.info("SCHEDULING_MS: releasing "+comp.name());
+                //containerServices.releaseComponent(comp.name());
+            }
+//            destroyArray(arrayname);
+        } catch(Exception e) {
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	try {
+            	Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+            	e1.printStackTrace(System.out);
+            }
+        //    InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
+        //    AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+        //    throw e2.toInvalidOperationEx();
+        }
     }
 
-    private void dynamicScheduling(XmlEntityStruct schedulingPolicy, 
-            String arrayname) throws InvalidOperationEx{
+    public String createDynamicSchedulingComponent(String arrayname) 
+        throws InvalidOperationEx {
+   
+        try {
+            ComponentQueryDescriptor x = new ComponentQueryDescriptor(
+                 "DS_"+arrayname, 
+                 "IDL:alma/scheduling/Dynamic_Operator_to_Scheduling:1.0");
+            Dynamic_Operator_to_Scheduling dsComp = 
+                alma.scheduling.Dynamic_Operator_to_SchedulingHelper.narrow(
+                    containerServices.getDynamicComponent(x, false));
+            dynamicComps.add(dsComp);
+            return dsComp.name();
+        } catch (Exception e) {
+            logger.severe("SCHEDULING: Error starting DS Comp; "+e.toString());
+            e.printStackTrace();
+        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+            InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            throw e2.toInvalidOperationEx();
+        }
+   }
+
+    //private void dynamicScheduling(XmlEntityStruct schedulingPolicy, 
+    //        String arrayname) throws InvalidOperationEx{
         //TODO eventually use this inside the startScheduling methods
-    }
+    //}
 
     /**
      * Starts scheduling using a specific list of scheduling block Ids.
@@ -789,9 +855,9 @@ public class ALMAMasterScheduler extends MasterScheduler
             if(logger == null) {
                 System.out.println("SCHEDULING: logger is null!");
             }
-            logger.fine("SCHEDULING: in MS. MessageID = "+messageId);
-            logger.fine("SCHEDULING: in MS. Reply (sb id) = "+reply);
-            logger.fine("SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
+            logger.fine("SCHEDULING: in MS. MessageID = "+messageId+" with Reply(SB)"+reply);
+            //logger.fine("SCHEDULING: in MS. Reply (sb id) = "+reply);
+            //logger.fine("SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
        
             if(messageQueue.size() < 1) {
                 logger.warning("SCHEDULING: in MS. MessageQueue was empty. " +
@@ -1158,6 +1224,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         return results;
     }
 
+    ////////////////////////////////////////////////////////////////
     // Dynamic_Scheduler_to_MasterScheduler
     public String getArrayName(String schedulerId){
         Scheduler scheduler = getScheduler(schedulerId);
@@ -1166,6 +1233,18 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     public SBLite[] getDynamicSBs(String schedulerId){
         return null;
+    }
+    // Queued_Scheduler_to_MasterScheduler
+    public void addSBToQueue(String sbid, String schedulerId) 
+        throws InvalidOperationEx, NoSuchSBEx {
+    }
+    
+    public void removeSBFromQueue(String sbid, String schedulerId) 
+        throws InvalidOperationEx, NoSuchSBEx {
+    }
+    
+    public void stopQueuedSB(String sbid, String schedulerId) 
+        throws InvalidOperationEx, NoSuchSBEx {
     }
 
     // Interactive_Scheduler_to_MasterScheduler
@@ -1207,60 +1286,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
     }
 
-    public void addInteractiveSB(String projectId, String schedulerId)
-        throws InvalidOperationEx, InvalidObjectEx, SBExistsEx {
-         
-        //Scheduler scheduler = getScheduler(schedulerId);
-        //checkSchedulerType(scheduler.getType());
-            /*
-        try {
-            //((InteractiveScheduler)scheduler.add();
-            OpenOT ot = new OpenOT(projectId,containerServices);
-            Thread t = containerServices.getThreadFactory().newThread(ot);
-            t.start();
-        } catch(Exception e) {
-            InvalidOperation e1 = new InvalidOperation("stopInteractiveSB",
-                   e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            throw e2.toInvalidOperationEx();
-        }*/
-    }
-    
-    public void updateInteractiveSB(String projectId,String schedulerId)
-        throws InvalidOperationEx, InvalidObjectEx, NoSuchSBEx {
-            
-        //Scheduler scheduler = getScheduler(schedulerId);
-        //checkSchedulerType(scheduler.getType());
-            /*
-        try {
-            OpenOT ot = new OpenOT(projectId,containerServices);
-            Thread t = containerServices.getThreadFactory().newThread(ot);
-            t.start();
-            //((InteractiveScheduler)scheduler).update();
-        } catch(Exception e) {
-            InvalidOperation e1 = new InvalidOperation("startInteractiveSession",
-                   e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            throw e2.toInvalidOperationEx();
-        }*/
-    }
-
-    public void deleteInteractiveSB(String sbId, String schedulerId)
-        throws InvalidOperationEx, NoSuchSBEx{
-
-        Scheduler scheduler = getScheduler(schedulerId);
-        checkSchedulerType(scheduler.getType());
-        try {
-            ((InteractiveScheduler)scheduler).delete(sbId);
-        } catch(Exception e) {
-            e.printStackTrace();
-            InvalidOperation e1 = new InvalidOperation("deleteInteractiveSB",
-                   e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            throw e2.toInvalidOperationEx();
-        }
-    }
-    
     public void startInteractiveSession(String pi, String projectId, 
             String schedulerId) throws InvalidOperationEx{
 
@@ -1283,8 +1308,8 @@ public class ALMAMasterScheduler extends MasterScheduler
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }
-
     }
+
     public void endInteractiveSession(String schedulerId) 
         throws InvalidOperationEx{
 
@@ -1300,6 +1325,8 @@ public class ALMAMasterScheduler extends MasterScheduler
             throw e2.toInvalidOperationEx();
         }
     }
+
+    ////////////////////////////////////////////////////////////////
 
     private void checkSchedulerType(String type) throws InvalidOperationEx {
         if(!type.equals("interactive")){
