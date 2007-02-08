@@ -1,3 +1,27 @@
+/*
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ *File SearchArchiveOnlyTab.java
+ */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.*;
@@ -34,6 +58,7 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         add(middlePanel,BorderLayout.CENTER);
        // add(bottomPanel,BorderLayout.SOUTH);
         connectedToALMA=false;
+        System.out.println("MainPanel size: "+getPreferredSize().width);
     }
 
     public void connectedSetup(PluginContainerServices cs){
@@ -74,22 +99,25 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
     public void createMiddlePanel() {
         middlePanel = new JPanel(new GridLayout(2,2));
         //first row: left hand cell = project table
-        projects = new ProjectTable(new Dimension(150,100));
+        Dimension size = new Dimension(200,150);
+        projects = new ProjectTable(size);
         projects.setOwner(this);
         JScrollPane projectPane = new JScrollPane(projects,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, 
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         projectPane.setBorder(new TitledBorder("Projects Found"));
+        projectPane.setPreferredSize(size);
 
         middlePanel.add(projectPane);
 
         //first row: right hand cell = sb table
-        sbs = new SBTable(false, new Dimension(150,100));
+        sbs = new SBTable(false, size);
         sbs.setOwner(this);
         JScrollPane sbPane = new JScrollPane(sbs,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         sbPane.setBorder(new TitledBorder("SBs Found"));
+        sbPane.setPreferredSize(size);
                                    
         middlePanel.add(sbPane);
         
@@ -97,6 +125,7 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         middlePanel.add(projects.getProjectInfoView());
         //second row: right hand cell = sb info
         middlePanel.add(sbs.getSBInfoView());
+        System.out.println("MiddlePanel size: "+middlePanel.getPreferredSize().width);
         
     }
 

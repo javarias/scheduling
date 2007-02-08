@@ -1,3 +1,28 @@
+/*
+   String [] asdmIds = controller.getASDMsForSB(sb);
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File SBTable.java
+ */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.*;
@@ -10,6 +35,14 @@ import javax.swing.table.*;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+// Imports for copy/paste
+import java.io.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 public class SBTable extends JTable {
     private final String[] sbColumnInfo = {"SB Name","Project"};
@@ -29,6 +62,8 @@ public class SBTable extends JTable {
     private JPanel parent;
     private SBTableController controller;
     private boolean projectSearchMode;
+    private JPopupMenu rtClickMenu = null;
+    private CopySBUID curUIDinCB = null;
 
     /**
       * @param b True if you want a column for execution status
@@ -38,6 +73,7 @@ public class SBTable extends JTable {
         super();
         size = tableSize;
         sbInfo = new JTextArea();
+        sbInfo.setEditable(false);
         withExec = b;
         if(withExec) {
             execLoc = 0;
@@ -56,19 +92,33 @@ public class SBTable extends JTable {
         createTableModel();
         setModel(sbTableModel);
         //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setPreferredSize(size);
         setPreferredScrollableViewportSize(size);
+        //System.out.println("Size: "+size.width);
         //setMaximumSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
+        ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
+            setHorizontalAlignment(SwingConstants.LEFT);
         projectSearchMode = true;
+        rtClickMenu = new JPopupMenu();
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
                 showSelectedSBDetails(getSelectedSBId() );
             }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
-            public void mousePressed(MouseEvent e){ }
-            public void mouseReleased(MouseEvent e){}
+            public void mousePressed(MouseEvent e){ 
+                showPopup(e);
+            }
+            public void mouseReleased(MouseEvent e){
+                showPopup(e);
+            }
+            private void showPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                   rtClickMenu.show(e.getComponent(),
+                       e.getX(), e.getY());
+                } 
+            }
         });
         addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e){
@@ -82,6 +132,8 @@ public class SBTable extends JTable {
         });
         manageColumnSizes();
     }
+
+    
     private String getSelectedSBId() {
         int[] rows = getSelectedRows();
         if(rows.length > 1) {
@@ -97,12 +149,32 @@ public class SBTable extends JTable {
     }
 
     private void showSelectedSBDetails(String id){
-        System.out.println("SB ID = "+id);
+        //System.out.println("SB ID = "+id);
         SBLite sb = controller.getSBLite(id);
         showSBInfo(sb);
         if(!projectSearchMode){
             showSBProject(sb);
         }
+        updateRightClickMenu(id);
+    }
+
+    private void updateRightClickMenu(String uid){
+        rtClickMenu.removeAll();
+        JMenuItem menuItem = new JMenuItem("Copy "+uid+" to System clipboard");
+        final String curUID = uid;
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                curUIDinCB = new CopySBUID();
+                curUIDinCB.setClipboardContents("SchedBlock: "+curUID);
+            }
+        });
+        rtClickMenu.add(menuItem);
+    }
+
+    //Check to see if the highlighted sb has any ExecBlock's archived.
+    //if yes Add them to the RT click menu
+    private void getASDMsForSB(String sb) {
+        //String [] asdmIds = controller.getASDMsForSB(sb);
     }
 
     public void selectFirstSB() {
@@ -219,15 +291,8 @@ public class SBTable extends JTable {
         int ctr=0;
         for(int i=0; i < sbRowInfo.length; i++){
             if(!isRowToBeRemoved(rows, i)){
-                /*
-<<<<<<< SBTable.java
-                newRowInfo[ctr][0] = sbRowInfo[i][0];
-                newRowInfo[ctr][1] = sbRowInfo[i][1];
-=======
-*/
                 newRowInfo[ctr][sbLoc] = sbRowInfo[i][sbLoc];
                 newRowInfo[ctr][pnLoc] = sbRowInfo[i][pnLoc];
-//>>>>>>> 1.13.2.3
                 newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
                 if(withExec){
                     newRowInfo[ctr][execLoc] = sbRowInfo[i][execLoc];
@@ -249,16 +314,7 @@ public class SBTable extends JTable {
         if(withExec){
             String displayStatus = getDisplayStatus(status);            
             if( ((String)sbRowInfo[row][uidLoc]).equals(id)){ //good
-                /*
-<<<<<<< SBTable.java
-                sbRowInfo[row][execLoc] = status;
-                System.out.println("Exec location = "+execLoc);
-=======
-*/
-                //sbRowInfo[row][execLoc] = status;
                 sbRowInfo[row][execLoc] = displayStatus;
-                //System.out.println("Exec location = "+execLoc);
-//>>>>>>> 1.13.2.3
             }
             manageColumnSizes();
             repaint();
@@ -301,15 +357,7 @@ public class SBTable extends JTable {
         if(withExec){
             int i= getRowPosForSB(sbid);
             if(i != -1) {
-                /*
-<<<<<<< SBTable.java
-                setValueAt(status, i, execLoc);
-=======
-*/
                 setValueAt(getDisplayStatus(status), i, execLoc);
-                //setValueAt(status, i, execLoc);
-                
-//>>>>>>> 1.13.2.3
             } //else sb not found in table.
         } //else ignore
         manageColumnSizes();
@@ -328,35 +376,69 @@ public class SBTable extends JTable {
     }
 
     private void manageColumnSizes() {
-        Dimension actualSize = getSize();
-        TableColumnModel columns = getColumnModel();
-        if((sbRowInfo == null) || (sbRowInfo.length ==0)){
-            setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        if(sbRowInfo.length ==0 ){
+            setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
+                setHorizontalAlignment(SwingConstants.CENTER);
             return;
         }
-        
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        for(int x=0; x < columns.getColumnCount(); x++){
-            TableColumn column = getColumnModel().getColumn(x);
-            int w = column.getWidth();
-            int n = getRowCount();
-            for(int i = 0; i < n; i ++) {
-                TableCellRenderer r = getCellRenderer(i, x);
-                Component c = r.getTableCellRendererComponent(
-                        this, getValueAt(i, x),
+        TableColumnModel columns = getColumnModel();
+        TableColumn column = null;
+        TableCellRenderer r= null;
+        Component c = null;
+        Component header = null;
+        int rows = getRowCount();
+        int width, headerWidth;
+        int allColumnWidth=0;
+        for(int i=0;i< columns.getColumnCount(); i++){
+            column = getColumnModel().getColumn(i);
+            width =0;
+            header = getTableHeader().getDefaultRenderer().
+                getTableCellRendererComponent (null,
+                        column.getHeaderValue(), false,
+                        false, 0,0 );
+            ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
+                setHorizontalAlignment(SwingConstants.CENTER);
+            headerWidth = header.getPreferredSize().width;
+            for(int j=0; j < rows; j++){
+                r = getCellRenderer(j,i);
+                c = r.getTableCellRendererComponent(
+                        this, getValueAt(j, i),
                         false,
                         false,
-                        i,
-                        x);
+                        j,
+                        i);
 
-                w = Math.max(w, c.getPreferredSize().width);
+                width = Math.max(width, c.getPreferredSize().width);
                 ((DefaultTableCellRenderer)r).
                      setHorizontalAlignment(SwingConstants.LEFT);
-                //System.out.println("column "+x+", cell "+i+", value = "+getValueAt(i,x));
             }
-            column.setPreferredWidth(w);  
-            //System.out.println("Column size set to "+w);
+            column.setPreferredWidth(Math.max(headerWidth,width)+5);
+            allColumnWidth += Math.max(headerWidth,width)+5;
         }
+        //now make sure we fill the whole column if there's extra
+        //System.out.println("sb all col wid: "+ allColumnWidth);
+        //System.out.println("sb total preferred size: "+ 
+          //      getPreferredScrollableViewportSize().width);
+        if(allColumnWidth < getPreferredScrollableViewportSize().width) {
+       // System.out.println("******************************************");
+            int difference = getPreferredScrollableViewportSize().width - allColumnWidth;
+           // System.out.println("sb difference: "+ difference);
+            int currentSize;
+            int totalColumns = columns.getColumnCount();
+            for(int i=0;i< totalColumns; i++) {
+                column = getColumnModel().getColumn(i);
+                currentSize = column.getPreferredWidth();
+              //  System.out.println("sb Current size: "+currentSize);
+                column.setPreferredWidth(currentSize +
+                        (difference/totalColumns));
+            //    System.out.println("New SB Col width: "+column.getWidth()+" total columns = "+totalColumns+"; current col # = "+i);
+          //      System.out.println("New SB Col width: "+column.getPreferredWidth()+" total columns = "+totalColumns+"; current col # = "+i);
+            }
+        }
+        validate();
+        //System.out.println("******************************************");
     }
 
     public JScrollPane getSBInfoView(){
@@ -438,5 +520,53 @@ public class SBTable extends JTable {
         return allIds;
     }
 
+    public void clearSelectedItems(){
+        getSelectionModel().clearSelection();
+    }
     
+    //copy/paste class
+    class CopySBUID implements ClipboardOwner {
+        public CopySBUID(){
+            super();
+        }
+        public void lostOwnership(Clipboard c, Transferable t){}
+        
+        public void setClipboardContents(String s) {
+            StringSelection sel = new StringSelection(s);
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(sel, this);
+        }
+        public String getClipboardContents(){
+            String result = "";
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable contents = cb.getContents(null);
+            boolean hasTransferableText = (contents != null) && 
+                contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+            if(hasTransferableText) {
+                try {
+                    result = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                }catch(UnsupportedFlavorException e1){
+                    e1.printStackTrace();
+                } catch (IOException e2){
+                    e2.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    class PopupListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e){
+            maybeShowPopup(e);
+        }
+        public void mouseReleased(MouseEvent e){
+            maybeShowPopup(e);
+        }
+        private void maybeShowPopup(MouseEvent e){
+            if (e.isPopupTrigger()) {
+                rtClickMenu.show(e.getComponent(),
+                       e.getX(), e.getY());
+            }
+        }
+    }
 }

@@ -1,3 +1,27 @@
+/*
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File ProjectTable.java
+ */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.*;
@@ -12,6 +36,15 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 
+// Imports for copy/paste
+import java.io.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+
 public class ProjectTable extends JTable {
     private final String[] projColumnInfo = {"Project Name", "PI Name" };//, "Version"};
     private Object[][] projRowInfo;
@@ -23,11 +56,14 @@ public class ProjectTable extends JTable {
     private JPanel parent;
     private ProjectTableController controller;
     private boolean projectSearchMode;
+    private JPopupMenu rtClickMenu = null;
+    private CopyProjUID curUIDinCB = null;
     
     public ProjectTable(Dimension tableSize) {
         super(); 
         size = tableSize;
         projectInfo = new JTextArea();
+        projectInfo.setEditable(false);
 
         projRowInfo = new Object[0][infoSize];
         infoSize = projColumnInfo.length +1;
@@ -35,20 +71,30 @@ public class ProjectTable extends JTable {
         createTableModel();
         setModel(projTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //setMaximumSize(size);
         setPreferredScrollableViewportSize(size);
+        //System.out.println("Size: "+size.width);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.LEFT);
-
-
+        ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
+            setHorizontalAlignment(SwingConstants.LEFT);
+        rtClickMenu = new JPopupMenu();
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) {
                 displaySelectedRow();
             }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
-            public void mousePressed(MouseEvent e){ }
-            public void mouseReleased(MouseEvent e){}
+            public void mousePressed(MouseEvent e){
+                showPopup(e);
+            }
+            public void mouseReleased(MouseEvent e){
+                showPopup(e);
+            }
+            private void showPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                   rtClickMenu.show(e.getComponent(),
+                       e.getX(), e.getY());
+                } 
+            }
         });
         addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e){
@@ -82,6 +128,21 @@ public class ProjectTable extends JTable {
         if(projectSearchMode){
             showProjectSBs(p);
         }
+        //set uid in right lcick menu
+        updateRightClickMenu(uid);
+    }
+
+    private void updateRightClickMenu(String uid){
+        rtClickMenu.removeAll();
+        JMenuItem menuItem = new JMenuItem("Copy "+uid+" to System clipboard");
+        final String curUID = uid;
+        menuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                curUIDinCB = new CopyProjUID();
+                curUIDinCB.setClipboardContents("ObsProject: "+curUID);
+            }
+        });
+        rtClickMenu.add(menuItem);
     }
 
     public void showFirstProject() {
@@ -132,7 +193,6 @@ public class ProjectTable extends JTable {
             projRowInfo[i][2]= projects[i].uid;
         }
         manageColumnSizes();
-        System.out.println("Project Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
@@ -155,7 +215,7 @@ public class ProjectTable extends JTable {
         projectInfo.append("Total number of SBs = "+p.totalSBs +"\n");  
         projectInfo.append("Total number of SBs completed = "+p.completeSBs +"\n"); 
         projectInfo.append("Total number of SBs failed = "+p.failedSBs +"\n");  
-        System.out.println("Project Info size "+projectInfo.getSize().toString());
+        //System.out.println("Project Info size "+projectInfo.getSize().toString());
         projectInfo.repaint();
         projectInfo.validate();
     }
@@ -183,31 +243,115 @@ public class ProjectTable extends JTable {
     }
 
     private void manageColumnSizes() {
-        Dimension actualSize = getSize();
-        TableColumnModel columns = getColumnModel();
-        //TableColumn column = getColumnModel().getColumn(x);
-        if((projRowInfo == null) || (projRowInfo.length ==0)){
-            setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        if(projRowInfo.length ==0 ){
+            setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
+                setHorizontalAlignment(SwingConstants.CENTER);
             return;
         }
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        for(int x=0; x < columns.getColumnCount(); x++){
-            TableColumn column = getColumnModel().getColumn(x);
-            int w = column.getWidth();
-            int n = getRowCount();
-            for(int i = 0; i < n; i ++) {
-                TableCellRenderer r = getCellRenderer(i, x);
-                Component c = r.getTableCellRendererComponent(
-                        this, getValueAt(i, x),
+        TableColumnModel columns = getColumnModel();
+        TableColumn column = null;
+        TableCellRenderer r= null;
+        Component c = null;
+        Component header = null;
+        int rows = getRowCount();
+        int width, headerWidth;
+        int allColumnWidth=0;
+        for(int i=0;i< columns.getColumnCount(); i++){
+            column = getColumnModel().getColumn(i);
+            width =0;
+            header = getTableHeader().getDefaultRenderer().
+                getTableCellRendererComponent (null,
+                        column.getHeaderValue(), false,
+                        false, 0,0 );
+            ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
+                setHorizontalAlignment(SwingConstants.CENTER);
+
+            headerWidth = header.getPreferredSize().width;
+            for(int j=0; j < rows; j++){
+                r = getCellRenderer(j,i);
+                c = r.getTableCellRendererComponent(
+                        this, getValueAt(j, i),
                         false,
                         false,
-                        i,
-                        x);
-                w = Math.max(w, c.getPreferredSize().width);
+                        j,
+                        i);
+
+                width = Math.max(width, c.getPreferredSize().width);
                 ((DefaultTableCellRenderer)r).
                      setHorizontalAlignment(SwingConstants.LEFT);
             }
-            column.setPreferredWidth(w);  
+            column.setPreferredWidth(Math.max(headerWidth,width)+5);
+            allColumnWidth += Math.max(headerWidth,width)+5;
+        }
+     //   System.out.println("all prj col wid: "+ allColumnWidth);
+     //   System.out.println("total prj preferred size: "+ 
+      //          getPreferredScrollableViewportSize().width);
+        if(allColumnWidth < getPreferredScrollableViewportSize().width) {
+            int difference = getPreferredScrollableViewportSize().width - allColumnWidth;
+           // System.out.println("prj difference: "+ difference);
+            int currentSize;
+            int totalColumns = columns.getColumnCount();
+            for(int i=0;i< totalColumns; i++) {
+                column = getColumnModel().getColumn(i);
+                currentSize = column.getPreferredWidth();
+               // System.out.println("prj Current size: "+currentSize);
+                column.setPreferredWidth(currentSize +
+                        (difference/totalColumns));
+               // System.out.println("New Prj Col width: "+column.getPreferredWidth()+" total columns = "+totalColumns+"; current col # = "+i);
+            }
+        }
+        validate();
+    }
+
+    public void clearSelectedItems(){
+        getSelectionModel().clearSelection();
+    }
+
+    //copy/paste class
+    class CopyProjUID implements ClipboardOwner {
+        public CopyProjUID(){
+            super();
+        }
+        public void lostOwnership(Clipboard c, Transferable t){}
+        
+        public void setClipboardContents(String s) {
+            StringSelection sel = new StringSelection(s);
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(sel, this);
+        }
+        public String getClipboardContents(){
+            String result = "";
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            Transferable contents = cb.getContents(null);
+            boolean hasTransferableText = (contents != null) && 
+                contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+            if(hasTransferableText) {
+                try {
+                    result = (String)contents.getTransferData(DataFlavor.stringFlavor);
+                }catch(UnsupportedFlavorException e1){
+                    e1.printStackTrace();
+                } catch (IOException e2){
+                    e2.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }   
+
+    class PopupListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e){
+            maybeShowPopup(e);
+        }
+        public void mouseReleased(MouseEvent e){
+            maybeShowPopup(e);
+        }
+        private void maybeShowPopup(MouseEvent e){
+            if (e.isPopupTrigger()) {
+                rtClickMenu.show(e.getComponent(),
+                       e.getX(), e.getY());
+            }
         }
     }
 

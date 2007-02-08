@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.16 2007/02/05 23:56:43 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.17 2007/02/08 23:45:04 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -328,8 +328,25 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     //    config.getProjectManager().createObservedSession(
                     //            selectedSB.getParent());
                     //config.getProjectManager().sendStartSessionEvent(session);
+                    //set selection of selectedSB to be the 'best' selection in best
+                    String[] ids = best.getSbId();
+                    int selection = -1;
                     selectedSB.setRunning();
-      		        config.getControl().execSB(config.getArrayName(), best);
+                    for(int i=0; i < ids.length;i++){
+                        if(selectedSB.getId().equals(ids[i])){
+                            logger.info("SCHEDULING: SB one if the 'best' ones");
+                            selection = i;
+                            best.setSelection(i);
+      		                config.getControl().execSB(config.getArrayName(), best);
+                            break;
+                        }
+                    }
+                    if(selection == -1) { //wasn't one of the ones selected to be best, 
+                        //obviously in the queue (coz we just got it out) so send it to control
+                        logger.info("SCHEDULING: SB not one of the best ones, but it was selected!");
+      		            config.getControl().execSB(config.getArrayName(), selectedSB.getId());
+                    }
+      		        //config.getControl().execSB(config.getArrayName(), best);
                 } else {
                     logger.info("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...

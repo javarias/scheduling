@@ -1,3 +1,27 @@
+/*
+ * ALMA - Atacama Large Millimiter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File DynamicSchedTabController.java
+ */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.logging.Logger;
@@ -149,6 +173,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
 
     public void respondToDS(String sbid) {
         try {
+            logger.info("DSComp is given sb = "+sbid);
             dsComp.selectSB(sbid);
         } catch(Exception e){
             logger.severe("SP Couldn't respond to DS: "+e.toString());
@@ -158,6 +183,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     
     public void receive(XmlStoreNotificationEvent e) {
     }
+
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {
     //    logger.info("SCHEDULING_PANEL: not doing anything with xml store notification event for now");
@@ -174,3 +200,42 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         }
     }
 }
+    /*
+    public void receive(ExecBlockStartedEvent e) {
+        String exec_id = e.execId.entityId;
+        String sbid = e.sbId.entityId;
+        if(currentSBId.equals(sbid) ){
+            currentExecBlockId = exec_id;
+        }
+        parent.setSBStatus(sbid, "RUNNING");
+        parent.setEnabled(false);
+    }
+
+    public void receive(ExecBlockEndedEvent e){
+        String exec_id = e.execId.entityId;
+        String sbid = e.sbId.entityId;
+        logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
+        if(!currentSBId.equals(sbid) && !currentExecBlockId.equals(exec_id) ){
+            System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
+           // currentExecBlockId = exec_id;
+        }
+        String completion;
+        System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
+        completion = e.status.toString();//completions[e.status.value()];
+        parent.setSBStatus(sbid, completion);
+    }
+
+
+    public void receive(ASDMArchivedEvent e){
+        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
+        String asdmId = e.asdmId.entityId;
+        String completion = e.status;
+        if(currentExecBlockId.equals(asdmId)){
+            //ok to re-enable the search area now..
+            parent.setEnable(true);
+            if(completion.equals("complete")){
+                parent.setSBStatus(currentSBId, "ARCHIVED");
+            }
+        }
+    }
+*/
