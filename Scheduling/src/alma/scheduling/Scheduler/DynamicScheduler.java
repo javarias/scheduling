@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.17 2007/02/08 23:45:04 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.18 2007/02/13 15:58:58 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -334,7 +334,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     selectedSB.setRunning();
                     for(int i=0; i < ids.length;i++){
                         if(selectedSB.getId().equals(ids[i])){
-                            logger.info("SCHEDULING: SB one if the 'best' ones");
+                            //logger.info("SCHEDULING: SB one if the 'best' ones");
                             selection = i;
                             best.setSelection(i);
       		                config.getControl().execSB(config.getArrayName(), best);
