@@ -302,6 +302,7 @@ public class SBTable extends JTable {
         }
         sbRowInfo = newRowInfo;
         manageColumnSizes();
+        clearSelection();
         repaint();
         revalidate();
         validate();

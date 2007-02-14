@@ -58,7 +58,6 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         add(middlePanel,BorderLayout.CENTER);
        // add(bottomPanel,BorderLayout.SOUTH);
         connectedToALMA=false;
-        System.out.println("MainPanel size: "+getPreferredSize().width);
     }
 
     public void connectedSetup(PluginContainerServices cs){
@@ -125,7 +124,6 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         middlePanel.add(projects.getProjectInfoView());
         //second row: right hand cell = sb info
         middlePanel.add(sbs.getSBInfoView());
-        System.out.println("MiddlePanel size: "+middlePanel.getPreferredSize().width);
         
     }
 

@@ -41,8 +41,6 @@ import alma.acs.container.ContainerServices;
 
 public class MainSchedTabPane extends JTabbedPane {
     private PluginContainerServices container;
-    //private MainSchedTabPaneController controller;
-    //private JPopupMenu rightClickMenu;
     private boolean createArrayEnabled = false;
     private Logger logger;
     private int overTabIndex;

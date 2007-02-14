@@ -56,6 +56,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton removeB;
     private JButton executeB;
     private JButton stopB;
+    private JButton stopQB;
     private int currentExecutionRow;
     
     
@@ -177,14 +178,14 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
             }
         });
 
-        executeB = new JButton("Run");
+        executeB = new JButton("Run Queue");
         executeB.setToolTipText("Will execute the queue.");
         executeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 executeSBs();
             }
         });
-        stopB = new JButton ("Stop");
+        stopB = new JButton ("Stop SB");
         stopB.setToolTipText("Will stop the current SB and move to the next SB.");
         stopB.setEnabled(false);
         stopB.addActionListener(new ActionListener(){
@@ -192,10 +193,24 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 stopSB();
             }
         });
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
-        buttonPanel.add(removeB);
-        buttonPanel.add(executeB);
-        buttonPanel.add(stopB);
+        stopQB = new JButton("Stop Queue");
+        stopB.setToolTipText("Will stop the entire queue");
+        stopB.setEnabled(false);
+        stopB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                stopQueue();
+            }
+        });
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));//new FlowLayout(FlowLayout.CENTER, 0,0));
+        JPanel foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+        foo.add(removeB);
+        foo.add(executeB);
+        buttonPanel.add(foo);
+        foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+        foo.add(stopQB);
+        foo.add(stopB);
+        buttonPanel.add(foo);
 
         queuePanel.add(queueSbPane, BorderLayout.CENTER);
         queuePanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -257,6 +272,9 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     
     private void stopSB(){
     }
+
+    private void stopQueue(){
+    }
     
     private void addSBsToQueue(){
         //get selected SBs from sbTable
@@ -267,6 +285,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     private void removeSBsFromQueue(){
         //remove selected sb from QueuedSbTable
+        validate();
         queueSBs.removeRowsFromQueue();
         //and update view/scheduler/etc
     }
