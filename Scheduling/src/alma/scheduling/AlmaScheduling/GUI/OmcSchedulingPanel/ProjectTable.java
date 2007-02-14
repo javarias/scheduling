@@ -46,7 +46,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 public class ProjectTable extends JTable {
-    private final String[] projColumnInfo = {"Project Name", "PI Name" };//, "Version"};
+    private final String[] projColumnInfo = {"Project Name", "PI Name" , "Version"};
     private Object[][] projRowInfo;
     private int infoSize;
     private int uidLoc; //used to find uid local in projRowInfo
@@ -65,9 +65,9 @@ public class ProjectTable extends JTable {
         projectInfo = new JTextArea();
         projectInfo.setEditable(false);
 
-        projRowInfo = new Object[0][infoSize];
         infoSize = projColumnInfo.length +1;
         uidLoc = infoSize-1; 
+        projRowInfo = new Object[0][infoSize];
         createTableModel();
         setModel(projTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -190,7 +190,8 @@ public class ProjectTable extends JTable {
         for(int i=0; i < size; i++) {
             projRowInfo[i][0]= projects[i].projectName;
             projRowInfo[i][1]= projects[i].piName;
-            projRowInfo[i][2]= projects[i].uid;
+            projRowInfo[i][2]= projects[i].version;
+            projRowInfo[i][uidLoc]= projects[i].uid;
         }
         manageColumnSizes();
         repaint();
