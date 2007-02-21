@@ -173,7 +173,13 @@ public class AntennaTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
-        // pad name
+        /*
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);*/
+        //y location
         c.gridwidth = 1;
         c.weightx= 1.0;
         sep = new JSeparator();
@@ -191,6 +197,12 @@ public class AntennaTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
+        //z location
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
         l = new JLabel("Antenna Z Location: ");
         gridbag.setConstraints(l, c);
         p.add(l);
@@ -201,6 +213,12 @@ public class AntennaTab extends JScrollPane {
         p.add(tf);
         sep = new JSeparator();
         c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        //pad name
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Pad Name: ");
