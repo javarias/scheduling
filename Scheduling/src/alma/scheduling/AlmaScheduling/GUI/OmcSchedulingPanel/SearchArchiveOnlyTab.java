@@ -106,7 +106,6 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         projectPane.setBorder(new TitledBorder("Projects Found"));
         projectPane.setPreferredSize(size);
-
         middlePanel.add(projectPane);
 
         //first row: right hand cell = sb table

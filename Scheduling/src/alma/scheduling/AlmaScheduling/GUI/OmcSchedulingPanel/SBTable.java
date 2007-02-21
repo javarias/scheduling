@@ -236,6 +236,7 @@ public class SBTable extends JTable {
             }
         }
         manageColumnSizes();
+        //System.out.println("SB Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
@@ -293,6 +294,8 @@ public class SBTable extends JTable {
             if(!isRowToBeRemoved(rows, i)){
                 newRowInfo[ctr][sbLoc] = sbRowInfo[i][sbLoc];
                 newRowInfo[ctr][pnLoc] = sbRowInfo[i][pnLoc];
+                //newRowInfo[ctr][0] = sbRowInfo[i][0];
+                //newRowInfo[ctr][1] = sbRowInfo[i][1];
                 newRowInfo[ctr][uidLoc] = sbRowInfo[i][uidLoc];
                 if(withExec){
                     newRowInfo[ctr][execLoc] = sbRowInfo[i][execLoc];

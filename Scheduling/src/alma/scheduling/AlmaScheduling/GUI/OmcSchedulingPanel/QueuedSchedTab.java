@@ -180,6 +180,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         });
 
         executeB = new JButton("Run Queue");
+        //executeB = new JButton("Run");
         executeB.setToolTipText("Will execute the queue.");
         executeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -187,6 +188,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
             }
         });
         stopB = new JButton ("Stop SB");
+        //stopB = new JButton ("Stop");
         stopB.setToolTipText("Will stop the current SB and move to the next SB.");
         stopB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -216,6 +218,15 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         queuePanel.add(buttonPanel, BorderLayout.SOUTH);
 
         centerPanel.add(queuePanel);
+    //    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
+     //   buttonPanel.add(removeB);
+      //  buttonPanel.add(executeB);
+       // buttonPanel.add(stopB);
+
+        //queuePanel.add(queueSbPane, BorderLayout.CENTER);
+        //queuePanel.add(buttonPanel, BorderLayout.SOUTH);
+
+       // centerPanel.add(queuePanel);
         
         //second row: right hand cell == execution info text area
         executionInfo = new JTextArea();

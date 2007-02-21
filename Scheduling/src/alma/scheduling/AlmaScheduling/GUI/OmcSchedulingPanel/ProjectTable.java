@@ -64,13 +64,13 @@ public class ProjectTable extends JTable {
         size = tableSize;
         projectInfo = new JTextArea();
         projectInfo.setEditable(false);
-
         infoSize = projColumnInfo.length +1;
-        uidLoc = infoSize-1; 
         projRowInfo = new Object[0][infoSize];
+        uidLoc = infoSize-1; 
         createTableModel();
         setModel(projTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setMaximumSize(size);
         setPreferredScrollableViewportSize(size);
         //System.out.println("Size: "+size.width);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -194,6 +194,7 @@ public class ProjectTable extends JTable {
             projRowInfo[i][uidLoc]= projects[i].uid;
         }
         manageColumnSizes();
+        System.out.println("Project Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();

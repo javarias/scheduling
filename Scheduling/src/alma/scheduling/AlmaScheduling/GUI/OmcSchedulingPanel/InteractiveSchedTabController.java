@@ -144,7 +144,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
     */
-    public void executeSB(String id) throws SchedulingException {
+    public synchronized void executeSB(String id) throws SchedulingException {
         try{
             logger.info("IS: Sending sb ("+id+") to be executed");
             currentSBId = id;
@@ -157,7 +157,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
 
-    public void stopSB()throws SchedulingException{
+    public synchronized void stopSB()throws SchedulingException{
         try{
             logger.info("IS: Requesting sb to stop");
             scheduler.stopSB();
