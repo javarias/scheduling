@@ -206,44 +206,6 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         sbs.setSBExecStatus(sb, status);
     }
 
-    /*
-<<<<<<< InteractiveSchedTab.java
-
-    class ExecuteSBThread implements Runnable {
-        public ExecuteSBThread() {
-        }
-        public void run() {
-            try {
-                String sbId =sbs.returnSelectedSBId();
-                if(!sbId.equals("")){
-                    controller.executeSB(sbId);
-                    setEnable(false);
-                    setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
-                }
-                //check if a sb has been selected.
-            }catch(Exception e){
-                e.printStackTrace();
-                showErrorPopup(e.toString(), "executeSB");
-            }
-        }
-    }
-
-    class StopSBThread implements Runnable{
-        public StopSBThread() {
-        }
-        public void run() {
-            try {
-                controller.stopSB();
-                //so they can't press stop twice!
-                stopB.setEnabled(false);
-            } catch(Exception e) {
-                e.printStackTrace();
-                showErrorPopup(e.toString(), "stopSB");
-            }
-        }
-=======
-    */
-
     class ExecuteSBThread implements Runnable {
         public ExecuteSBThread() {
         }

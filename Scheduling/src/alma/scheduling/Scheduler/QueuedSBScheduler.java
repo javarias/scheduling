@@ -246,25 +246,34 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         logger.info("new list len = "+sbsNotDone.length);
     }
 
+    public void removeSBsFromQueue(String[] ids) {
+    }
+
 	/**
 	 * Stop the currently executing SB.
 	 * @param sbId The ID of the SB to be stopped.
 	 * @throws SchedulingException
 	 */
 	public void stop(String sbId) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+        /**
+          * IGNORE sbId for now!
+          */
+		//if (!sessionStarted) {
+		//	error("Invalid operation. There is no session underway.");
+		//}
 		if (!config.isSBExecuting()) {
 			error("Invalid operation. There is no scheduling block currently executing.");
 		}
 		String tmp = config.getCurrentSBId();
-		if (!tmp.equals(sbId)) {
-			error("The SB specified in the stop method (" + sbId +
-					" does not match the currently executing SB (" + tmp + ")");
-		}
-		control.stopSB(config.getArrayName(),sbId);
-       // control.destroyArray(config.getArrayName());
+//		if (!tmp.equals(sbId)) {
+//			error("The SB specified in the stop method (" + sbId +
+//					" does not match the currently executing SB (" + tmp + ")");
+//		}
+		control.stopSB(config.getArrayName(),tmp);
+		//control.stopSB(config.getArrayName(),sbId);
+        // check that its set to not running in config
+        //logger.info("SB "+sbId+" stopped, another should start if there are more");
+        logger.info("SB "+tmp+" stopped, another should start if there are more");
 	}
 
     public void run() {

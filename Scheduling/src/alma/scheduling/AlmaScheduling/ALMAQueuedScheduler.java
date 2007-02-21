@@ -131,9 +131,20 @@ public class ALMAQueuedScheduler
     public void addSB(String sbid)throws NoSuchSBEx{
     }
 
-    public void removeSB(String sbid){
+    public void removeSBs(String[] sbIds){
+        try {
+            masterScheduler.removeSBsFromQueue(sbIds,schedulerId);
+        } catch(Exception e){}
     }
     public void stopSB(String sbid){
+        try {
+            masterScheduler.stopQueuedSB(sbid, schedulerId);
+        } catch(Exception e) {
+            e.printStackTrace();
+            //InvalidOperation e1 = new InvalidOperation("stopSB",e.toString());
+            //AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            //throw e2.toInvalidOperationEx();
+        }
     }
 
 }

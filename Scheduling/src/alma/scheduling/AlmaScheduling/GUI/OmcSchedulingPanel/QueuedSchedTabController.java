@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Interactive_PI_to_Scheduling;
+import alma.scheduling.Queued_Operator_to_Scheduling;
 import alma.scheduling.Define.*;
 import alma.acs.nc.Consumer;
 
@@ -47,6 +47,8 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     private String currentExecId;
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
+    private Queued_Operator_to_Scheduling scheduler;
+    private String schedulername;
 
     
     public QueuedSchedTabController(PluginContainerServices cs, QueuedSchedTab p, String a){
@@ -66,7 +68,26 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             e.printStackTrace();
         }    
     }
-
+    public void setSchedulerName(String name){
+        schedulername = name;
+    }
+    public void getQSRef(){
+        try {
+            scheduler = alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
+                    container.getComponent(schedulername));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    public void releaseQSRef(){
+        try {
+            container.releaseComponent(schedulername);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
     public SBLite[] getSBLites(String[] ids){
         getMSRef();
         SBLite[] sbs = masterScheduler.getSBLite(ids);
@@ -90,6 +111,18 @@ public class QueuedSchedTabController extends SchedulingPanelController {
 
     }
 
+    public void removeSBs(String[] ids){
+        getQSRef();
+        scheduler.removeSBs(ids);
+        releaseQSRef();
+    }
+    
+    public void stopSB() {
+        getQSRef();
+        scheduler.stopSB("");
+        releaseQSRef();
+    }
+
     public void stopQueuedScheduling(){
         try {
             getMSRef();
@@ -97,6 +130,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 run.stop();
             } catch(Exception e){ }
             masterScheduler.destroyArray(arrayName);
+            masterScheduler.stopQueuedScheduler(schedulername);
             releaseMSRef();
             ctrl_consumer.disconnect();
         } catch(Exception e) {
@@ -143,6 +177,8 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 parent.setSBStatus(sbid, "RUNNING");
             }
         }
+        //set stop buttons to enabled
+        parent.setStopButtonsEnabled(true);
     }
             
     public void receive(ExecBlockEndedEvent e){
@@ -176,6 +212,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             parent.updateExecutionInfo("Execution ended for SB: "+sb.sbName+".\n");
             parent.updateExecutionInfo("Waiting for it to be Archived.\n");
             parent.setSBStatus(sbid, completion);
+            //TODO: Set stop buttons to disabled if last SB in queue.
     }
     
     public void receive(ASDMArchivedEvent e){

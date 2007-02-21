@@ -75,6 +75,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         searchingOnProject = true;
         schedulerName = title;
         controller = new QueuedSchedTabController(cs, this, aName);
+        controller.setSchedulerName (schedulerName);
         createLayout();
         archiveSearchPanel.setCS(cs);
         projects.setCS(cs);
@@ -187,22 +188,21 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         });
         stopB = new JButton ("Stop SB");
         stopB.setToolTipText("Will stop the current SB and move to the next SB.");
-        stopB.setEnabled(false);
         stopB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 stopSB();
             }
         });
         stopQB = new JButton("Stop Queue");
-        stopB.setToolTipText("Will stop the entire queue");
-        stopB.setEnabled(false);
-        stopB.addActionListener(new ActionListener(){
+        stopQB.setToolTipText("Will stop the entire queue");
+        stopQB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 stopQueue();
             }
         });
+        setStopButtonsEnabled(false);
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));//new FlowLayout(FlowLayout.CENTER, 0,0));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));
         JPanel foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
         foo.add(removeB);
         foo.add(executeB);
@@ -231,7 +231,9 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
 
-    public void setEnable(boolean b){
+    public void setStopButtonsEnabled(boolean b){
+        stopB.setEnabled(b);
+        stopQB.setEnabled(b);
     }
 
     public void setSearchMode(boolean b) {
@@ -261,6 +263,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //get all ids from the queueSB table and send them to control
         currentExecutionRow =0;
         controller.runQueuedScheduling(queueSBs.getAllSBIds());
+        //setStopButtonsEnabled(true);
     }
     public void updateExecutionRow(){
         currentExecutionRow++;
@@ -271,9 +274,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
     private void stopSB(){
+        controller.stopSB();
     }
 
     private void stopQueue(){
+        //controller.stopWholeQueue();
     }
     
     private void addSBsToQueue(){
@@ -286,7 +291,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private void removeSBsFromQueue(){
         //remove selected sb from QueuedSbTable
         validate();
+        String[] ids = queueSBs.getSelectedSBs();
+        //any of them currently running?
+        controller.removeSBs(ids);
         queueSBs.removeRowsFromQueue();
         //and update view/scheduler/etc
+
     }
 }
