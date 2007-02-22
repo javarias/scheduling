@@ -38,7 +38,7 @@ import alma.scheduling.ProjectLite;
 
 public class ArchiveSearchFieldsPanel extends JPanel {
     private JButton searchB;
-    private JButton clearB;
+    //private JButton clearB;
     private JCheckBox projectCB;
     private JCheckBox sbCB;
     private JTextField piNameTF;
@@ -90,7 +90,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         projNameTF.setEnabled(b);
         piNameTF.setEnabled(b);
         searchB.setEnabled(b);
-        clearB.setEnabled(b);
+        //clearB.setEnabled(b);
     }
 
     private void createCheckBoxes(){ 
@@ -241,7 +241,9 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             }
         });
         searchB.setToolTipText("Click here to search archive.");
+        bp.add(new JLabel());
         bp.add(searchB);
+        /*
         clearB = new JButton("Clear");
         clearB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -257,7 +259,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         });
         clearB.setToolTipText("Click here to clear text fields");
         bp.add(clearB);
-        
+        */
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(bp,c);
         p.add(bp);
