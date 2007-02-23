@@ -196,10 +196,17 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
         completion = e.status.toString();//completions[e.status.value()];
         parent.setSBStatus(sbid, completion);
+        try {
+            scheduler.endSession();
+        } catch(Exception ex){
+            logger.severe("SP: error ending IS session");
+            ex.printStackTrace();
+        }
     }
 
 
     public void receive(ASDMArchivedEvent e){
+        /*
         logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
@@ -215,6 +222,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             scheduler.endSession();
         } catch(Exception ex){
         }
+        */
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {

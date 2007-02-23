@@ -204,6 +204,11 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     public void setSBStatus(String sb, String status){
         sbs.setSBExecStatus(sb, status);
+        if(status.equals("RUNNING")){
+            setEnable(false);
+        } else {
+            setEnable(true);
+        }
     }
 
     class ExecuteSBThread implements Runnable {

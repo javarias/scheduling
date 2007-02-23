@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.17 2007/01/26 22:17:21 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.18 2007/02/23 20:44:24 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -120,7 +120,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	private ProjectManager projectManager;
 	
 	// State variables
-	private boolean sessionStarted;
+	//private boolean sessionStarted;
 	
 	// Identifying the session
 	private String PI;
@@ -207,10 +207,10 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
         logger.info("id =" +interactiveSB.getProject().getId());
         logger.info("PI =" +PI);
         logger.info("PI of sb =" +interactiveSB.getProject().getPI());
-		if (sessionStarted) {
-			error("Cannot login.  A session is already underway.");
-            return;
-		}
+//		if (sessionStarted) {
+//			error("Cannot login.  A session is already underway.");
+   //         return;
+//		}
 		if (interactiveSB.getType() != SB.INTERACTIVE) {
 			error("The specified SB is not an interactive scheduling block.");
             return;
@@ -226,7 +226,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			error("The specified PI does not match the PI in the project.");
             return;
         }
-		sessionStarted = true;
+	//	sessionStarted = true;
 		this.PI = PI;
 		projectId = projId;//interactiveSB.getProject().getId();
 		String msg = "Interactive session for project " + projectId + 
@@ -241,18 +241,18 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * or if a schedling block is currently executing. 
 	 */
 	public void logout() throws SchedulingException {
-		if (!sessionStarted) {
-			error("Cannnot logout.  There is no session underway.");
-		}
-		if (config.isSBExecuting()) {
-			error("Connot logout.  There is a scheduling block executing.");
-		}
+	//	if (!sessionStarted) {
+	//		error("Cannnot logout.  There is no session underway.");
+	//	}
+//		if (config.isSBExecuting()) {
+//			error("Cannot logout.  There is a scheduling block executing.");
+//		}
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " ended.";
 		//operator.send(msg, config.getArrayName());
 		logger.info(msg);
 		config.normalEnd(clock.getDateTime());
-		sessionStarted = false;
+//		sessionStarted = false;
 		PI = null;
 		projectId = null;
 	}
@@ -264,9 +264,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * @throws SchedulingException if there is no interactive session underway. 
 	 */
 	public SB[] getAllSB() throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+//			error("Invalid operation. There is no session underway.");
+//		}
 		return queue.getAll();
 	}
 
@@ -277,9 +277,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * or if the SB already exists. 
 	 */
 	public void add(SB sb) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+//			error("Invalid operation. There is no session underway.");
+	//	}
 		SB tmp = queue.get(sb.getId());
 		if (tmp != null) {
 			error("Cannot add SB " + sb.getId() + ". It already exists.");
@@ -295,9 +295,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * or if the SB does not exist or has already been executed.  
 	 */
 	public void update(SB sb) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+	//		error("Invalid operation. There is no session underway.");
+	//	}
 		SB tmp = queue.get(sb.getId());
 		if (tmp == null) {
 			error("Cannot update SB " + sb.getId() + ". It does not exist.");
@@ -317,9 +317,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * or if the SB does not exist or has already been executed. 
 	 */
 	public void delete(String sbId) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+//			error("Invalid operation. There is no session underway.");
+//		}
 		SB tmp = queue.get(sbId);
 		if (tmp == null) {
 			error("Cannot delete SB " + sbId + ". It does not exist.");
@@ -343,9 +343,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 */
 	//public void execute(String sbId) throws SchedulingException {
 	public void execute(SB sb) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+//			error("Invalid operation. There is no session underway.");
+//		}
         String sbId = sb.getId();
         //*****************
         config.getQueue().add(sb); //hack!
@@ -403,9 +403,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * SB does not match the one that is currently executing. 
 	 */
 	public void stop(String sbId) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+//			error("Invalid operation. There is no session underway.");
+//		}
         System.out.println("Is sb executing? "+ config.isSBExecuting());
 		if (!config.isSBExecuting()) {
 			error("Invalid operation. There is no scheduling block currently executing.");
@@ -440,9 +440,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * @throws SchedulingException if any error is encountered in starting the science pipeline.
 	 */
 	public void startSciPipeline(SciPipelineRequest req) throws SchedulingException {
-		if (!sessionStarted) {
-			error("Invalid operation. There is no session underway.");
-		}
+//		if (!sessionStarted) {
+//			error("Invalid operation. There is no session underway.");
+//		}
 		throw new SchedulingException("The method to start the science pipeline is not implemented at this time.");
 	}
 
