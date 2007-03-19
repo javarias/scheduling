@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * that can be accessed and updated by multiple threads, viz., the 
  * MasterScheduler and Scheduler objects.
  * 
- * @version $Id: SBQueue.java,v 1.7 2006/02/21 14:59:31 sslucero Exp $
+ * @version $Id: SBQueue.java,v 1.8 2007/03/19 13:37:22 sslucero Exp $
  * @author Allen Farris
  */
 public class SBQueue {
@@ -88,6 +88,16 @@ public class SBQueue {
 			}
 		}
 	}
+
+    public synchronized void remove(String entityId, int i){
+		SB x = (SB)queue.get(i);
+	    if (x.getId().equals(entityId)) {
+			queue.remove(i);
+            System.out.println("REMOVED sb "+entityId+" at index "+i);
+		} else { 
+            System.out.println("CANNOT REMOVED sb "+entityId+" at index "+i+", no match");
+        }
+    }
 
 	/**
 	 * Clear all SBs from the queue.

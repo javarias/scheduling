@@ -65,8 +65,8 @@ public class ProjectTable extends JTable {
         projectInfo = new JTextArea();
         projectInfo.setEditable(false);
         infoSize = projColumnInfo.length +1;
-        projRowInfo = new Object[0][infoSize];
         uidLoc = infoSize-1; 
+        projRowInfo = new Object[0][infoSize];
         createTableModel();
         setModel(projTableModel);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -184,6 +184,7 @@ public class ProjectTable extends JTable {
     }
 
     public void setRowInfo(ProjectLite[] projects) {
+        clearSelection();
         int size = projects.length;
       // projectLites = projects;
         projRowInfo = new Object[size][infoSize];

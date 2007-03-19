@@ -82,6 +82,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         //tell MS to startScheduling
         try {
             getMSRef();
+            logger.info("Creating DS Component!!!");
             schedulername = masterScheduler.createDynamicSchedulingComponent(arrayName);
             getDynamicSchedComponent();
             setCallbackInfo();
@@ -124,17 +125,26 @@ public class DynamicSchedTabController extends SchedulingPanelController {
                               RequesterUtil.giveDescIn()); 
     }
 
-    public void stopDynamicScheduling() {
+    protected void stopDynamicScheduling() {
         try {
             releaseDynamicSchedComponent();
             getMSRef();
-            masterScheduler.destroyArray(arrayName);
+            masterScheduler.stopDynamicScheduler(schedulername);
+            consumer.disconnect();
             releaseMSRef();
             //container.releaseComponent(schedulername);
         } catch(Exception e) {
             logger.warning("SCHEDULING_PANEL: DS problem destroying array");
             logger.warning("SCHEDULING_PANEL: "+e.toString());
         }
+    }
+    /**
+      * Destroy the array and release the scheduler (remove its reference 
+      * in the Master Scheduler
+      */
+    protected void destroyArray(){
+        destroyArray(arrayName);
+        stopDynamicScheduling();
     }
 
     private void getDynamicSchedComponent() throws Exception {
@@ -200,42 +210,3 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         }
     }
 }
-    /*
-    public void receive(ExecBlockStartedEvent e) {
-        String exec_id = e.execId.entityId;
-        String sbid = e.sbId.entityId;
-        if(currentSBId.equals(sbid) ){
-            currentExecBlockId = exec_id;
-        }
-        parent.setSBStatus(sbid, "RUNNING");
-        parent.setEnabled(false);
-    }
-
-    public void receive(ExecBlockEndedEvent e){
-        String exec_id = e.execId.entityId;
-        String sbid = e.sbId.entityId;
-        logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
-        if(!currentSBId.equals(sbid) && !currentExecBlockId.equals(exec_id) ){
-            System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
-           // currentExecBlockId = exec_id;
-        }
-        String completion;
-        System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
-        completion = e.status.toString();//completions[e.status.value()];
-        parent.setSBStatus(sbid, completion);
-    }
-
-
-    public void receive(ASDMArchivedEvent e){
-        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
-        String asdmId = e.asdmId.entityId;
-        String completion = e.status;
-        if(currentExecBlockId.equals(asdmId)){
-            //ok to re-enable the search area now..
-            parent.setEnable(true);
-            if(completion.equals("complete")){
-                parent.setSBStatus(currentSBId, "ARCHIVED");
-            }
-        }
-    }
-*/

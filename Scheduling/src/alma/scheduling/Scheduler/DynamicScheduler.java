@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.18 2007/02/13 15:58:58 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.19 2007/03/19 13:37:22 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -54,6 +54,11 @@ public class DynamicScheduler extends Scheduler implements Runnable {
 	private int runNum=0;
     public DynamicScheduler(SchedulerConfiguration config) {
         super(config);
+        try {
+            super.setType("dynamic");
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
     
     /**

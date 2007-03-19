@@ -20,15 +20,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File SchedulerTab.java
+ * File ArrayTable.java
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-public interface SchedulerTab {
-    public String getTitle();
-    public String getSchedulerName();
-    public String getArrayName();
-    public String getSchedulerType();
-    public void exit();
+public class ArrayTableController extends SchedulingPanelController {
+    private PluginContainerServices container;
+
+    public ArrayTableController (PluginContainerServices cs){
+        container = cs;
+    }
+
+    protected void destroyArray(String name) {
+        try {
+            getMSRef();
+            masterScheduler.destroyArray(name);
+            releaseMSRef();
+        } catch(Exception e){
+            e.printStackTrace();
+            logger.severe("SCHEDULING_PANEL: Array "+name+" was not destroyed");
+        }
+    }
+
+    
 }

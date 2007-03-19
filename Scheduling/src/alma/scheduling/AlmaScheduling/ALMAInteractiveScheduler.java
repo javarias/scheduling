@@ -57,15 +57,18 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     implements Interactive_PI_to_SchedulingOperations, ComponentLifecycle  {
 
     private String instanceName;
+    private String schedulerId;
+    private String currentSB;
+    private String currentEB;
     private ContainerServices container;
     private String arrayname;
-    //private SBQueue queue;
     private Logger logger;
     private MasterSchedulerIF masterScheduler;
-    private String schedulerId;
     
     public ALMAInteractiveScheduler() {
-            
+        currentSB = "";
+        schedulerId = "";
+        arrayName = "";
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -138,11 +141,29 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     public void setSchedulerId(String id) {
         schedulerId = id;
     }
+    public String getSchedulerId() {
+        return schedulerId ;
+    }
 
     public String getArray() {
         return arrayname;
     }
+
+    public void setCurrentSB(String sbid){
+        currentSB = sbid;
+    }
+
+    public String getCurrentSB(){
+        return currentSB;
+    }
     
+    public void setCurrentEB(String ebid){
+        currentEB = ebid;
+    }
+
+    public String getCurrentEB(){
+        return currentEB;
+    }
     /*public void addSB(String sbId) throws 
         InvalidOperationEx, InvalidObjectEx, SBExistsEx {
         try {

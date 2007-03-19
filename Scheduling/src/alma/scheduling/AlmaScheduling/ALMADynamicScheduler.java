@@ -28,7 +28,6 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.scheduling.*;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Interactive_PI_to_SchedulingOperations;
 import alma.scheduling.ProjectLite;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingExceptions.InvalidObjectEx;
@@ -102,7 +101,7 @@ public class ALMADynamicScheduler
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{
-        logger.info("SCHEDULING: Interactive Scheduler execute() ");
+        logger.info("SCHEDULING: Dynamic Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
@@ -128,6 +127,9 @@ public class ALMADynamicScheduler
 
     public void setSchedulerId(String id){
         schedulerId = id;
+    }
+    public String getSchedulerId(){
+        return schedulerId;
     }
 
     public void setArray(String array){

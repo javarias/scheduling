@@ -27,11 +27,12 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.util.logging.Logger;
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.*;
 
-public class SchedulingPanelGeneralPanel extends JPanel{
+public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlugin {
     protected PluginContainerServices container;
     protected Logger logger;
+    protected String title;
 
     public SchedulingPanelGeneralPanel(){
         super();
@@ -39,6 +40,12 @@ public class SchedulingPanelGeneralPanel extends JPanel{
     public void onlineSetup(PluginContainerServices cs){
         container = cs;
         logger = cs.getLogger();
+    }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String t){
+        title = t;
     }
 
     public void setMaxSize(Dimension d){ 
@@ -53,4 +60,20 @@ public class SchedulingPanelGeneralPanel extends JPanel{
         JOptionPane.showMessageDialog(this, warning, method, JOptionPane.WARNING_MESSAGE);
     }
 
+    //plugin stuff
+
+    public void setServices(PluginContainerServices cs) {
+        container = cs;
+        logger = cs.getLogger();
+    }
+
+    public void start() throws Exception {
+    }
+
+    public void stop() throws Exception{
+      //  exit();
+    }
+    public boolean runRestricted(boolean b) throws Exception {
+        return b;
+    }
 }

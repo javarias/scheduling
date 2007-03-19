@@ -34,32 +34,32 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.common.gui.chessboard.*;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
-    private TableModel antennaTableModelA;
-    private TableModel antennaTableModelB;
-    private JTable antennaTableA;
-    private JTable antennaTableB;
-    private Object[][] antennaRowInfoA;
-    private Object[][] antennaRowInfoB;
+
     private String[] availableAntennas;
     private Vector<String> allArrays;
     private int columnIndex = 0;
-    private JButton addToArray;
-    private JButton removeFromArray;
     private JButton createArrayB;
     private JButton cancelB;
     private String arrayMode;
     private CreateArrayController controller;
     private JTabbedPane parent;
+    private ChessboardPanel twelveMeterChessboard;
+    private ChessboardPanel sevenMeterChessboard;
+    private ChessboardPanel tpChessboard;
+    private JPanel chessboardPanel;
 
     public CreateArrayPanel() {
         super();
         super.setBorder(new TitledBorder("Create Array"));
         allArrays = new Vector<String>();
         setSize(400,300);
-        add(createAntennaColumns(), BorderLayout.CENTER);
+        controller= new CreateArrayController();
+        createGenericAntennaChessboards();
+        add(chessboardPanel, BorderLayout.CENTER);
     }
 
     public void setOwner(JTabbedPane p){
@@ -68,159 +68,103 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     public void connectedSetup(PluginContainerServices cs) {
         super.onlineSetup(cs);
-        controller = new CreateArrayController(cs);
+        controller.secondSetup(cs);
+        createALMAAntennaChessboards();
+        add(chessboardPanel, BorderLayout.CENTER);
+        setEnabled(false);
+    }
+
+    protected void initializeChessboards() {
+        controller.updateChessboardWithALMANames();
     }
 
     public void setEnabled(boolean enabled){
-        antennaTableA.setEnabled(enabled);
-        antennaTableB.setEnabled(enabled);
         createArrayB.setEnabled(enabled);
         cancelB.setEnabled(enabled);
-        removeFromArray.setEnabled(enabled);
-        addToArray.setEnabled(enabled);
-        if(enabled){
-        }
+        disableChessboards(enabled);
         repaint();
         validate();
     }
     
-    private JPanel createAntennaColumns() {
-        JPanel p = new JPanel(new BorderLayout());
-        availableAntennas = new String[0];
-        p.add(createAntennaListA(), BorderLayout.WEST);
-        p.add(transferButtons(),BorderLayout.CENTER);
-        p.add(createAntennaListB(), BorderLayout.EAST);
-        p.add(createSouthPanel(),BorderLayout.SOUTH);
-        manageColumnSizesInA();
-        manageColumnSizesInB();
-        return p;
+    private void createGenericAntennaChessboards(){
+        chessboardPanel = new JPanel(new BorderLayout());
+        JPanel cbPanel = new JPanel(new GridLayout(3,1));
+        cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
+        ChessboardEntry[][] all = controller.getGenericAntennaMapping();
+        //all[0] is antennas for TwelveMeterChessboard
+        cbPanel.add(createTwelveMeterChessboard(all[0]));
+        //all[1] is antennas for SevenMeterChessboard
+        cbPanel.add(createSevenMeterChessboard(all[1]));
+        //all[2] is antennas for TP Chessboard
+        cbPanel.add(createTPChessboard(all[2]));
+        chessboardPanel.add(cbPanel, BorderLayout.CENTER);
+        chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
     }
 
-    private void updateAntennaRowInfoA() {
-        antennaRowInfoA = new Object[availableAntennas.length][1];
-        for(int i=0; i < availableAntennas.length; i++){
-            antennaRowInfoA[i][0] = availableAntennas[i];
-        }
-    }
-    private JPanel createAntennaListA(){
-        JPanel p = new JPanel();
-        p.setBorder(new TitledBorder("Available Antennas"));
-        final String[] antennaColumnInfoA= {"Antenna Name"};
-        updateAntennaRowInfoA();
-        antennaTableModelA = new AbstractTableModel(){
-            public int getColumnCount() { return antennaColumnInfoA.length; }
-            public String getColumnName(int column) { return antennaColumnInfoA[column]; }
-            public int getRowCount() { return antennaRowInfoA.length;     }
-            public Object getValueAt(int row, int col) { return antennaRowInfoA[row][col]; }
-            public void setValueAt(Object val, int row, int col) { antennaRowInfoA[row][col]= val; }
-        };
-
-        antennaTableA = new JTable(antennaTableModelA);
-        //antennaTableA.setDragEnabled(true);
-        //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //antennaTableA.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        antennaTableA.setPreferredScrollableViewportSize(new Dimension(128,100));
-        JScrollPane pane = new JScrollPane(antennaTableA);
-        pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        p.add(pane);
-        return p;
-    }
-    private void manageColumnSizesInA(){
-        ((DefaultTableCellRenderer)antennaTableA.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        TableColumn column = antennaTableA.getColumnModel().getColumn(columnIndex);
-        if((antennaRowInfoA == null) || (antennaRowInfoA.length ==0)){
-            column.setPreferredWidth(128);   
-            return;
-        }
-        int w = column.getWidth();
-        int n = antennaTableA.getRowCount();
-        for (int i = 0; i < n; i ++) {
-            TableCellRenderer r = antennaTableA.getCellRenderer(i, this.columnIndex);
-            Component c = r.getTableCellRendererComponent(
-                    antennaTableA,
-                    antennaTableA.getValueAt(i, columnIndex),
-                    false,
-                    false,
-                    i,
-                    columnIndex);
-            w = Math.max(w, c.getPreferredSize().width);
-        }
-        column.setPreferredWidth(w);   
+    private void createALMAAntennaChessboards(){
+        chessboardPanel.removeAll();
+        chessboardPanel = new JPanel(new BorderLayout());
+        JPanel cbPanel = new JPanel(new GridLayout(3,1));
+        cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
+        ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
+        //all[0] is antennas for TwelveMeterChessboard
+        cbPanel.add(createTwelveMeterChessboard(all[0]));
+        //all[1] is antennas for SevenMeterChessboard
+        cbPanel.add(createSevenMeterChessboard(all[1]));
+        //all[2] is antennas for TP Chessboard
+        cbPanel.add(createTPChessboard(all[2]));
+        chessboardPanel.add(cbPanel, BorderLayout.CENTER);
+        chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
     }
 
-    private JPanel createAntennaListB(){
-        JPanel p = new JPanel();
-        p.setBorder(new TitledBorder("Antennas for Array"));
-        final String[] antennaColumnInfoB= {"Antenna Name"};
-        antennaRowInfoB = new Object[0][1];
-        antennaTableModelB = new AbstractTableModel(){
-            public int getColumnCount() { return antennaColumnInfoB.length; }
-            public String getColumnName(int column) { return antennaColumnInfoB[column]; }
-            public int getRowCount() { return antennaRowInfoB.length;     }
-            public Object getValueAt(int row, int col) { return antennaRowInfoB[row][col]; }
-            public void setValueAt(Object val, int row, int col) { antennaRowInfoB[row][col]= val; }
-        };
-        antennaTableB = new JTable(antennaTableModelB);
-        antennaTableB.setPreferredScrollableViewportSize(new Dimension(128,100));
-        antennaTableB.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        JScrollPane pane = new JScrollPane(antennaTableB);
-        p.add(pane);
-        return p;
-    }
-
-    private void manageColumnSizesInB(){
-        ((DefaultTableCellRenderer)antennaTableB.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        TableColumn column = antennaTableB.getColumnModel().getColumn(columnIndex);
-        if((antennaRowInfoB == null) || (antennaRowInfoB.length ==0)){
-            column.setPreferredWidth(128);   
-            return;
-        }
-        int w = column.getWidth();
-        int n = antennaTableB.getRowCount();
-        for (int i = 0; i < n; i ++) {
-            TableCellRenderer r = antennaTableB.getCellRenderer(i, this.columnIndex);
-            Component c = r.getTableCellRendererComponent(
-                    antennaTableB,
-                    antennaTableB.getValueAt(i, columnIndex),
-                    false,
-                    false,
-                    i,
-                    columnIndex);
-            w = Math.max(w, c.getPreferredSize().width);
-        }
-        column.setPreferredWidth(w);    
-    }
-
-    private JPanel transferButtons() {
-        JPanel p =new JPanel(new GridLayout(4,1));
-        p.add(new JLabel());
-        addToArray = new JButton ("->");
-        addToArray.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                int[] r = getSelectedAntennasForArray();
-                moveAntennasToArrayColumn(r);
-                manageColumnSizesInA();
-                manageColumnSizesInB();
+    private JPanel createTwelveMeterChessboard(ChessboardEntry[] foo) {
+        ChessboardEntry[][] entries = new ChessboardEntry[5][10];
+        int ctr=0;
+        for(int i=0; i < 5;i++){
+            for(int j=0; j < 10; j++){
+                entries[i][j] = foo[ctr++];
             }
-        });
-        p.add(addToArray);
-        removeFromArray = new JButton ("<-");
-        removeFromArray.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                moveAntennasOutOfArrayColumn();
-                manageColumnSizesInA();
-                manageColumnSizesInB();
+        }
+        JPanel p = new JPanel();
+        p.setBorder(new TitledBorder("Twelve Meter Antennas"));
+        twelveMeterChessboard = new ChessboardPanel(entries, true, null, null);
+        twelveMeterChessboard.setDetailsDisplayEnabled(false);
+        p.add(twelveMeterChessboard);
+        return p;
+    }
+    
+    private JPanel createSevenMeterChessboard(ChessboardEntry[] foo) {
+        ChessboardEntry[][] entries = new ChessboardEntry[2][6];
+        int ctr=0;
+        for(int i=0; i < 2;i++){
+            for(int j=0; j < 6; j++){
+                entries[i][j] = foo[ctr++];
             }
-        });
-        p.add(removeFromArray);
-        p.add(new JLabel());
+        }
+        JPanel p = new JPanel();
+        p.setBorder(new TitledBorder("Seven Meter Antennas"));
+        sevenMeterChessboard = new ChessboardPanel(entries, true, null, null);
+        sevenMeterChessboard.setDetailsDisplayEnabled(false);
+        p.add(sevenMeterChessboard);
         return p;
     }
 
+    private JPanel createTPChessboard(ChessboardEntry[] foo) {
+        ChessboardEntry[][] entries = new ChessboardEntry[1][4];
+        int ctr=0;
+         for(int j=0; j < 4; j++){
+            entries[0][j] = foo[ctr++];
+        }
+        JPanel p = new JPanel();
+        p.setBorder(new TitledBorder("Total Power Antennas"));
+        tpChessboard = new ChessboardPanel(entries, true, null, null);
+        tpChessboard.setDetailsDisplayEnabled(false);
+        p.add(tpChessboard);
+        return p;
+    }
+    
     private JPanel createSouthPanel() {
         JPanel p = new JPanel();
-        //p.add(selectModeView(), BorderLayout.NORTH);
         p.add(actionButtons(), BorderLayout.SOUTH);
         return p;
     }
@@ -230,11 +174,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         createArrayB = new JButton("Create");
         createArrayB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                //if(createArray()) {
-                //    exit();
-                //    setEnabled(false);
-                 //   ((MainSchedTabPane)parent).resetMainViewButtons();
-                //}
                 CreateArrayThread at = new CreateArrayThread();
                 Thread t = controller.getCS().getThreadFactory().newThread(at);
                 t.start();
@@ -262,140 +201,68 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         return false;
     }
 
-    /**
-      * Returns an int array with the row numbers that are selected.
-      */
-    private int[] getSelectedAntennasForArray() {
-        int[] rows = antennaTableA.getSelectedRows();
-        if(rows.length == 0 || rows == null){
-            JOptionPane.showMessageDialog(this, "You need to select an antenna",
-                    "Nothing Selected", JOptionPane.WARNING_MESSAGE);
-            return null;
+    private void updateChessboard(String[] antNames) {
+    //show the available antennas as online
+        //for each available antenna
+        //call chessboard.processStatusChange(..) with new ChessboardStatusEvent
+        //will need cb entry's name
+        //String cbeName;
+        ChessboardStatusEvent event=null;
+        for (int i=0; i < antNames.length; i++){
+            event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE, "");
+            twelveMeterChessboard.processStatusChange(event);
         }
-        return rows;
     }
 
-    private void moveAntennasToArrayColumn(int[] rows) {
-        int newLengthA = antennaRowInfoA.length - rows.length;
-        int newLengthB = antennaRowInfoB.length + rows.length;
-        Object[][] tmpObjectsA =new Object[newLengthA][1];
-        Object[][] tmpObjectsB =new Object[newLengthB][1];
-        int tmpCtrA=0;
-        if(rows.length != antennaRowInfoA.length){
-            for(int i=0; i < antennaRowInfoA.length; i++){
-                if(!isIn(i, rows)){
-                    tmpObjectsA[tmpCtrA++][0] = antennaRowInfoA[i][0];
-                }
+    private void disableChessboards(boolean enabled) {
+        ChessboardStatusEvent event=null;
+        twelveMeterChessboard.clearSelection();
+        sevenMeterChessboard.clearSelection();
+        tpChessboard.clearSelection();
+        twelveMeterChessboard.setEnabled(enabled);
+        sevenMeterChessboard.setEnabled(enabled);
+        tpChessboard.setEnabled(enabled);
+        if( !enabled) {
+            ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
+            for(int i=0; i < all[0].length; i++){
+                event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE, "");
+                twelveMeterChessboard.processStatusChange(event);
             }
         }
-        if(antennaRowInfoB.length < 1){
-            for(int i=0; i < rows.length;i++){
-                tmpObjectsB[i][0] =  antennaRowInfoA[rows[i]][0];
-            }
-        } else {
-            int tmpCtrB = 0;
-            for(int i=0; i < antennaRowInfoB.length; i++){
-                tmpObjectsB[i][0]=antennaRowInfoB[i][0];
-                tmpCtrB=i;
-            }
-            for (int i=0; i < rows.length; i++){
-                tmpCtrB++;
-                //move rows from A into B
-                tmpObjectsB[tmpCtrB][0] = antennaRowInfoA[rows[i]][0];
-            }
-        }
-        
-        antennaRowInfoB = tmpObjectsB;
-        antennaRowInfoA = tmpObjectsA;
-        antennaTableA.repaint();
-        antennaTableA.clearSelection();
-        antennaTableA.revalidate();
-        antennaTableB.repaint();
-        antennaTableB.revalidate();
-        validate();
-    }
-
-    private void moveAntennasOutOfArrayColumn() {
-        int[] rows = antennaTableB.getSelectedRows();
-        //System.out.println("number of selected rows in b = "+rows.length);
-        if(rows.length == 0 || rows == null){
-            JOptionPane.showMessageDialog(this, "You need to select an antenna",
-                    "Nothing Selected", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        int newLengthB= antennaRowInfoB.length - rows.length;
-        int newLengthA= antennaRowInfoA.length + rows.length;
-        Object[][] tmpObjectsB = new Object[newLengthB][1];
-        Object[][] tmpObjectsA = new Object[newLengthA][1];
-        int tmpCtrB=0;
-        if(antennaRowInfoA.length < 1){
-            for(int i=0; i < rows.length;i++){
-                tmpObjectsA[i][0] =  antennaRowInfoB[rows[i]][0];
-            }
-        } else {
-            int tmpCtrA=0;
-            for(int i=0; i< antennaRowInfoA.length; i++){
-                //put all of existing A's in tmp object
-                tmpObjectsA[i][0]=antennaRowInfoA[i][0];
-                tmpCtrA =i;
-            }
-            for(int i=0; i < rows.length; i++){
-                //put rows from B, which are moving to A, into A
-                tmpCtrA++;
-                tmpObjectsA[tmpCtrA][0] = antennaRowInfoB[rows[i]][0];
-            }
-        }
-        if(rows.length != antennaRowInfoB.length){
-            for(int i=0; i < antennaRowInfoB.length; i++){
-                if(!isIn(i, rows)){
-                    tmpObjectsB[tmpCtrB++][0] = antennaRowInfoB[i][0];
-                }
-            }
-        }
-        //////
-        antennaRowInfoA = tmpObjectsA;
-        antennaRowInfoB = tmpObjectsB;
-        antennaTableA.repaint();
-        antennaTableA.revalidate();
-        antennaTableB.clearSelection();
-        antennaTableB.repaint();
-        antennaTableB.revalidate();
-        validate();
     }
     
-    private void updateAntennaTableA(){
-        updateAntennaRowInfoA();
-        antennaTableA.repaint();
-        antennaTableA.revalidate();
-        validate();
-    }
 
     public void prepareCreateArray(String mode){
         arrayMode = mode;
-        resetAntennaTables();
         GetAntennaThread ant = new GetAntennaThread();
+        if(controller == null){
+            System.out.println("crappy controller");
+        }
+        if(controller.getCS() == null){
+            System.out.println("crappy CS");
+        }
         Thread t = controller.getCS().getThreadFactory().newThread(ant);
         t.start();
     }
        
 
     private boolean createArray() {
-        //make sure there are antennas in the B column
-        if(antennaRowInfoB.length < 1) {
-            JOptionPane.showMessageDialog(this, 
-                    "You need to select at least one antenna",
-                    "Nothing Selected", JOptionPane.WARNING_MESSAGE);
-            return false;
-        }
-        //create list of antennas picked
-        String[] antennas= new String[antennaRowInfoB.length];
-        for(int i=0; i < antennaRowInfoB.length; i++){
-            antennas[i] = (String)antennaRowInfoB[i][0];
-            //System.out.println(antennas[i]);
+        //get selected antenns from chessboard
+        ChessboardEntry[] selected = twelveMeterChessboard.getSelectedEntries();
+        //check the ones selected have online status
+        //temporary: change so that can't select ones not online
+        for(int i=0; i <selected.length; i++){
+            if(selected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+                JOptionPane.showMessageDialog(this, 
+                        "Selected Antenna not available",
+                        "Antenna "+selected[i].getDisplayName()+" is not available "+
+                        "to be included in an array", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
         }
         String arrayName;
         try {
-            arrayName = controller.createArray(arrayMode, antennas);
+            arrayName = controller.createArray(arrayMode, selected);
             allArrays.add(arrayName);
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, e.toString()+
@@ -407,7 +274,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //tell parent component to open new scheduler tab.
         openNewSchedulerTab(arrayMode, arrayName);
         return true;
-
     }
 
     /**
@@ -420,32 +286,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         t.start();
     }
 
-    public void selectDefaultAntenna(){
-        //if an antenna is available in antennaTableA
-        if(antennaRowInfoA.length > 1) {
-            int[] i = new int[1];
-            i[0] = 0;
-            moveAntennasToArrayColumn(i);
-        }
-        //else do nothing
-    }
 
-    public void resetAntennaTables() {
-        clearAntennaTables();
-    }
     public void exit() {
-        clearAntennaTables();
+        //clearAntennaTables();
     }
-
-    private void clearAntennaTables(){
-        antennaRowInfoA= new String[0][1];
-        antennaTableA.repaint();
-        antennaTableA.revalidate();
-        antennaRowInfoB= new Object[0][1];
-        antennaTableB.repaint();
-        antennaTableB.revalidate();
-    }
-    
     class OpenSchedulerTab implements Runnable {
         private String mode;
         private String array;
@@ -462,8 +306,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         public GetAntennaThread(){
         }
         public void run(){ 
-            availableAntennas = controller.getAntennas();
-            updateAntennaTableA();
+            String[] onlineAntennasForChessboard = controller.getAntennasForActiveChessboards();
+            updateChessboard(onlineAntennasForChessboard);
         }
     }
 

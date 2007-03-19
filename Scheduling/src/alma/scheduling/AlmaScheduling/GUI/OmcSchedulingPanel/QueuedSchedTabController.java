@@ -24,6 +24,7 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
@@ -42,13 +43,13 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     private QueuedSchedTab parent;
     private String arrayName;
     private Thread thread;
-    private RunQueuedScheduling run;
     private String[] sbs_to_run;
-    private String currentExecId;
+    private String currentSB;
+    private String currentEB;
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
-    private Queued_Operator_to_Scheduling scheduler;
-    private String schedulername;
+    private String schedulerName;
+    private Queued_Operator_to_Scheduling qsComp;
 
     
     public QueuedSchedTabController(PluginContainerServices cs, QueuedSchedTab p, String a){
@@ -64,75 +65,110 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
             ctrl_consumer.consumerReady();
+            
+            getMSRef();
+            schedulerName = masterScheduler.createQueuedSchedulingComponent(arrayName);
+            releaseMSRef();
+            qsComp = alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
+                    container.getComponent(schedulerName));
+            qsComp.setArray(a);
         }catch(Exception e){
             e.printStackTrace();
         }    
     }
-    public void setSchedulerName(String name){
-        schedulername = name;
+
+    protected void setSchedulerName(String name){
+        schedulerName = name;
     }
-    public void getQSRef(){
-        try {
-            scheduler = alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
-                    container.getComponent(schedulername));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+    protected String getSchedulerName(){
+        return schedulerName;
     }
-    
-    public void releaseQSRef(){
-        try {
-            container.releaseComponent(schedulername);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-    
-    public SBLite[] getSBLites(String[] ids){
+
+    protected SBLite[] getSBLites(String[] ids){
         getMSRef();
         SBLite[] sbs = masterScheduler.getSBLite(ids);
         releaseMSRef();
         return sbs;
     }
 
-    public void runQueuedScheduling(String[] sb_ids){
+    protected void addSBs(String[] ids){
+        ArrayList<String> all = new ArrayList<String>();
+        if(sbs_to_run != null){
+            System.out.println("orig sbs in table: ");
+            for(int i=0; i < sbs_to_run.length; i++){
+                System.out.println("\t"+ sbs_to_run[i]);
+                all.add(sbs_to_run[i]);
+            }
+        } 
+        System.out.println("should be order as above: "+all.toString());
+        for(int i=0; i < ids.length; i++){
+            qsComp.addSB(ids[i]);
+            all.add(ids[i]);
+        }
+        System.out.println(all.toString());
+        sbs_to_run = new String[all.size()];
+        sbs_to_run = all.toArray(sbs_to_run);
+    }
+
+    protected void removeSBs(String[] ids, int[] ind){
+        // SOMEHOW:
+        // check the sbs's running status, IE: if its already running or finished 
+        // running then don't take it from component
+        ArrayList<String> modified = new ArrayList<String>();
+        //int index=0;
+        for(int index=0; index < sbs_to_run.length; index++){
+            for(int i=0; i < ind.length; i++){
+                if(index != ind[i]){
+                    //if the index isn't in the lest to delete
+                    //add it back
+                    System.out.println("keeping sb "+sbs_to_run[index]);
+                    modified.add(sbs_to_run[index]);
+                } else {
+                    System.out.println("not keeping "+sbs_to_run[index]);
+                }
+            }
+        }
+        sbs_to_run = new String[modified.size()];
+        sbs_to_run = modified.toArray(sbs_to_run);
+        System.out.println(modified.toString());
+        try {
+            qsComp.removeSBs(ids, ind);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void runQueuedScheduling(String[] sb_ids){
         try {
             sbs_to_run = new String[sb_ids.length];
             for(int i=0; i < sb_ids.length; i++){
                 sbs_to_run[i] = sb_ids[i];
             }
-            run = new RunQueuedScheduling(
-                    container, sb_ids, arrayName);
-            thread = new Thread(run);
-            thread.start();
+            qsComp.runQueue();
         } catch(Exception e){
             e.printStackTrace();
         }
+        
 
     }
-
-    public void removeSBs(String[] ids){
-        getQSRef();
-        scheduler.removeSBs(ids);
-        releaseQSRef();
-    }
-    
-    public void stopSB() {
-        getQSRef();
-        scheduler.stopSB("");
-        releaseQSRef();
+    protected void destroyArray() {
+        stopQueuedScheduling();
+        destroyArray(arrayName);
     }
 
-    public void stopQueuedScheduling(){
+
+    protected void stopQueuedScheduling(){
         try {
             getMSRef();
             try {
-                run.stop();
-            } catch(Exception e){ }
-            masterScheduler.destroyArray(arrayName);
-            masterScheduler.stopQueuedScheduler(schedulername);
+                masterScheduler.stopQueuedScheduler(arrayName);
+            } catch(Exception e) {}
             releaseMSRef();
             ctrl_consumer.disconnect();
+            container.releaseComponent(qsComp.name());
+            //cant set to null coz tab needs them for closing!
+            //arrayName = null;
+            //schedulerName = null;
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -160,11 +196,19 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             return null;
         }
     }
+    protected String getCurrentSB(){
+        return currentSB;
+    }
+    protected String getCurrentEB(){
+        return currentEB;
+    }
 
     public void receive(ExecBlockStartedEvent e){
         logger.info("EXEC started event");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
+        currentSB = sbid;
+        currentEB = exec_id;
         boolean belongs = doesSbBelong(sbid);
         //DateTime start_time = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
         if(belongs) {
@@ -177,8 +221,6 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 parent.setSBStatus(sbid, "RUNNING");
             }
         }
-        //set stop buttons to enabled
-        parent.setStopButtonsEnabled(true);
     }
             
     public void receive(ExecBlockEndedEvent e){

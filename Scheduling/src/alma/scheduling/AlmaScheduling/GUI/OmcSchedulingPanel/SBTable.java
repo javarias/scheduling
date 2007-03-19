@@ -220,6 +220,7 @@ public class SBTable extends JTable {
     }
 
     public void setRowInfo(SBLite[] sblites, boolean queuedList){
+        clearSelection();
         if(queuedList){
             //do a special thing
             updateRowsForQueue(sblites);
@@ -248,26 +249,26 @@ public class SBTable extends JTable {
         Object[][] newRowInfo = new Object[newSize][infoSize];
         //add new ones to newRowInfo
         int tmpCtr=0;
-        for(int i=0; i < sbs.length; i++){
-            newRowInfo[i][sbLoc] = sbs[i].sbName;
-            newRowInfo[i][pnLoc] = sbs[i].projectName;
-            newRowInfo[i][uidLoc] = sbs[i].schedBlockRef;
-            if(withExec){
-                newRowInfo[i][execLoc] = "N/A";
-                //System.out.println("Exec location = "+execLoc);
-            }
-            tmpCtr = i+1;
-        }
         if(sbRowInfo.length > 0){
             for(int i=0; i < sbRowInfo.length; i++){
-                newRowInfo[tmpCtr][sbLoc] = (String)sbRowInfo[i][sbLoc];
-                newRowInfo[tmpCtr][pnLoc] = (String)sbRowInfo[i][pnLoc];
-                newRowInfo[tmpCtr][uidLoc] = (String)sbRowInfo[i][uidLoc];
+                newRowInfo[i][sbLoc] = (String)sbRowInfo[i][sbLoc];
+                newRowInfo[i][pnLoc] = (String)sbRowInfo[i][pnLoc];
+                newRowInfo[i][uidLoc] = (String)sbRowInfo[i][uidLoc];
                 if(withExec){
-                    newRowInfo[tmpCtr][execLoc]= sbRowInfo[i][execLoc]; //retain exec status
+                    newRowInfo[i][execLoc]= sbRowInfo[i][execLoc]; //retain exec status
                 }
                 tmpCtr++;
             }
+        }
+        for(int i=0; i < sbs.length; i++){
+            newRowInfo[tmpCtr][sbLoc] = sbs[i].sbName;
+            newRowInfo[tmpCtr][pnLoc] = sbs[i].projectName;
+            newRowInfo[tmpCtr][uidLoc] = sbs[i].schedBlockRef;
+            if(withExec){
+                newRowInfo[tmpCtr][execLoc] = "N/A";
+                //System.out.println("Exec location = "+execLoc);
+            }
+            tmpCtr++;
         }
         sbRowInfo = newRowInfo;
         manageColumnSizes();
@@ -276,6 +277,16 @@ public class SBTable extends JTable {
         validate();
     }
 
+    /**
+      * The following two methods; getIndicesOfSBsToRemove and removeRowsFromQueue, 
+      * are used to remove sbs from the Queued Scheduling queue.
+      * The ids (using getSelectedSBs) and indexes are needed to update the  queued component's list.
+      */
+    
+    public int[] getIndicesOfSBsToRemove() {
+        return getSelectedRows();
+    }
+    
     public void removeRowsFromQueue(){
         if(sbRowInfo.length == 0){
             return;

@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.61 2007/02/21 19:37:19 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.62 2007/03/19 13:37:22 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -358,12 +358,16 @@ public class ALMAControl implements Control {
                 logger.severe("SCHEDULING: manualArrays == null..");
                 throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
+            for(int i=0; i <  antenna.length; i++){
+                logger.info("ANTENNA: "+antenna[i]);
+            }
             String arrayName = control_system.createManualArray(antenna);
             manualArrays.add(arrayName);
             //ManualArrayMonitor mon = alma.Control.
             logger.info("SCHEDULING: Array "+arrayName+" created with "+antenna.length+" antennas.");
             return arrayName;
         } catch(InvalidRequest e1) {
+            e1.printStackTrace();
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
@@ -475,6 +479,14 @@ public class ALMAControl implements Control {
             throw new SchedulingException (e);
         }
     }
+
+    public String[] getActiveAutomaticArrays()throws Exception {
+        return control_system.getAutomaticArrays();
+    }
+    public String[] getActiveManualArrays() throws Exception{
+        return control_system.getManualArrays();
+    }
+
     public String[] getAllManualArrays() throws SchedulingException{
         try {
             ResourceId[] man_arrays = control_system.getManualArrayComponents();

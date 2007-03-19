@@ -28,7 +28,6 @@ package alma.scheduling.AlmaScheduling;
 
 import alma.scheduling.*;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Interactive_PI_to_SchedulingOperations;
 import alma.scheduling.ProjectLite;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingExceptions.InvalidObjectEx;
@@ -51,20 +50,30 @@ import alma.acs.component.ComponentLifecycleException;
 import alma.xmlentity.XmlEntityStruct;
 
 import java.util.logging.Logger;
+import java.util.Vector;
 
 public class ALMAQueuedScheduler
     implements Queued_Operator_to_SchedulingOperations, ComponentLifecycle  {
 
     private String instanceName;
+    private String schedulerId;
+    private String currentSB;
+    private String currentEB;
+    private Vector<String> sbQueue;
     private ContainerServices container;
     private String arrayname;
-    //private SBQueue queue;
     private Logger logger;
     private MasterSchedulerIF masterScheduler;
-    private String schedulerId;
+    private boolean execStarted;
     
     public ALMAQueuedScheduler() {
-            
+        sbQueue = new Vector<String>();
+        arrayname = null;
+        schedulerId = null;
+        currentSB = null;
+        currentEB=null;
+        masterScheduler = null;
+        execStarted = false;
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -92,8 +101,9 @@ public class ALMAQueuedScheduler
         logger = cs.getLogger();
         this.instanceName = container.getName();
     }
+
     public void execute() throws ComponentLifecycleException{
-        logger.info("SCHEDULING: Interactive Scheduler execute() ");
+        logger.info("SCHEDULING: Queued Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
@@ -119,32 +129,125 @@ public class ALMAQueuedScheduler
     public void setSchedulerId(String id){
          schedulerId = id;
     }
+    public String getSchedulerId(){
+         return schedulerId ;
+    }
 
     public void setArray(String array){
         arrayname=array;
     }
 
-    public String getArray(){
+    public String getArray() throws InvalidOperationEx {
+        if(arrayname == null) {
+            AcsJInvalidOperationEx e = new AcsJInvalidOperationEx(
+                    new InvalidOperation("runQueue","No array defined!"));
+            throw e.toInvalidOperationEx();
+        }
         return arrayname;
     }
 
-    public void addSB(String sbid)throws NoSuchSBEx{
+    public void addSB(String sbid){
+        try {
+            sbQueue.add(sbid);
+            logger.info("QS_SCHEDULER: adding sb to queue");
+            if(execStarted){
+                masterScheduler.addSBToQueue(sbid, schedulerId);
+            }
+        } catch(Exception e){}
+    
     }
 
-    public void removeSBs(String[] sbIds){
-        try {
-            masterScheduler.removeSBsFromQueue(sbIds,schedulerId);
-        } catch(Exception e){}
+    public void runQueue() throws InvalidOperationEx {
+        if(sbQueue.size() < 1) {
+            AcsJInvalidOperationEx e = new AcsJInvalidOperationEx(
+                    new InvalidOperation("runQueue","No SBs to run!"));
+            throw e.toInvalidOperationEx();
+        }
+        if(arrayname == null) {
+            AcsJInvalidOperationEx e = new AcsJInvalidOperationEx(
+                    new InvalidOperation("runQueue","No array defined!"));
+            throw e.toInvalidOperationEx();
+        }
+        if(schedulerId == null){
+            AcsJInvalidOperationEx e = new AcsJInvalidOperationEx(
+                    new InvalidOperation("runQueue","No scheduler id defined!"));
+            throw e.toInvalidOperationEx();
+        }
+        if(masterScheduler == null){
+            AcsJInvalidOperationEx e = new AcsJInvalidOperationEx(
+                    new InvalidOperation("runQueue","No master scheduler connection!"));
+            throw e.toInvalidOperationEx();
+        }
+        String[] sbs = new String[sbQueue.size()];
+        for(int i=0; i < sbQueue.size(); i++){
+            sbs[i]=(String)sbQueue.elementAt(i);
+        }
+        RunQueuedScheduling run = new RunQueuedScheduling(sbs);
+        Thread t = container.getThreadFactory().newThread(run);
+        t.start();
+        execStarted = true;
     }
-    public void stopSB(String sbid){
-        try {
-            masterScheduler.stopQueuedSB(sbid, schedulerId);
-        } catch(Exception e) {
-            e.printStackTrace();
-            //InvalidOperation e1 = new InvalidOperation("stopSB",e.toString());
-            //AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            //throw e2.toInvalidOperationEx();
+    
+    public void removeSBs(String[] sbid, int[] i){
+        //hmm do i need the sbids?
+        for(int x=0; x < i.length; x++){
+            if(sbid[x].equals(sbQueue.elementAt(i[x])) ) {
+                logger.info("QS: removing "+sbQueue.elementAt(i[x]));
+                sbQueue.removeElementAt(i[x]);
+            } else {
+                logger.severe("no match when removing sb");
+            }
+        }
+        //tell MS to tell scheduler to take these out of its queue.
+        if(execStarted){
+            logger.info("QS: exec started, removing sbs from scheduler");
+            try {
+                masterScheduler.removeQueuedSBs(sbid, i, schedulerId);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
         }
     }
+    
+    public void stopSB(String sbid){
+        if(execStarted){
+        }
+    }
+
+    private void releaseMSRef() {
+        try {
+            if(masterScheduler != null){
+                container.releaseComponent(masterScheduler.name());
+                
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            logger.severe("RUN_QUEUED_SCHEDULING: Error in RunQueuedScheduling: "+e.toString());
+        }
+
+    }
+
+    class RunQueuedScheduling implements Runnable {
+        private String[] ids;
+    
+        public RunQueuedScheduling(String[] i){
+            this.ids=i;
+        }
+
+        public void run() {
+            if(masterScheduler == null) {
+                logger.warning("RUN_QUEUED_SCHEDULING: NO Connection to MasterScheduler. Cannot schedule");
+                return;
+            }
+            try {
+                masterScheduler.startQueuedScheduling(ids, arrayname);
+            } catch(Exception e) {
+                releaseMSRef();
+                //e.printStackTrace();
+                logger.severe("RUN_QUEUED_SCHEDULING: Error in RunQueuedScheduling: "+e.toString());
+            }
+        }
+
+    }  //end RunQueuedScheduling 
 
 }

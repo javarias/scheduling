@@ -42,8 +42,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     private String schedulername;
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
-    private String currentSBId;
-    private String currentExecBlockId;
+    //private String currentSBId;
+    //private String currentExecBlockId;
     private String arrayName;
     private InteractiveSchedTab parent;
     
@@ -80,12 +80,15 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             e.printStackTrace();
         }
     }
+    protected void destroyArray(){
+        stopInteractiveScheduling();
+        destroyArray(arrayName);
+    }
 
-    public void stopInteractiveScheduling() {
+    protected void stopInteractiveScheduling() {
         try {
             getMSRef();
             masterScheduler.stopInteractiveScheduler(schedulername);
-            masterScheduler.destroyArray(arrayName);
             releaseMSRef();
             ctrl_consumer.disconnect();
             consumer.disconnect();
@@ -134,24 +137,15 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
 
-    /*
-    public void releaseArray(String array) {
-        try {
-            getMSRef();
-            releaseMSRef();
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-    */
     public synchronized void executeSB(String id) throws SchedulingException {
         try{
             logger.info("IS: Sending sb ("+id+") to be executed");
-            currentSBId = id;
+            //currentSBId = id;
             getMSRef();
             ProjectLite project = masterScheduler.getProjectLiteForSB(id);
             scheduler.startSession(project.piName, project.uid);
             scheduler.executeSB(id);
+            scheduler.setCurrentSB(id);
         }catch( Exception e){
             throw new SchedulingException (e);
         }
@@ -177,18 +171,22 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void receive(ExecBlockStartedEvent e) {
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
-        if(currentSBId.equals(sbid) ){
-            currentExecBlockId = exec_id;
+        if(scheduler.getCurrentSB().equals(sbid) ){
+            scheduler.setCurrentEB(exec_id);
+            //currentExecBlockId = exec_id;
+            
         }
+        //startInteractiveSession();
         parent.setSBStatus(sbid, "RUNNING");
-        parent.setEnabled(false);
+       // parent.setEnabled(false);
     }
 
     public void receive(ExecBlockEndedEvent e){
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
-        if(!currentSBId.equals(sbid) && !currentExecBlockId.equals(exec_id) ){
+        if(!scheduler.getCurrentSB().equals(sbid) && 
+                !scheduler.getCurrentEB().equals(exec_id) ){
             System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
            // currentExecBlockId = exec_id;
         }
@@ -196,33 +194,21 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
         completion = e.status.toString();//completions[e.status.value()];
         parent.setSBStatus(sbid, completion);
+        if(scheduler.getCurrentEB().equals(exec_id)){
+            //ok to re-enable the search area now..
+           // parent.setEnable(true);
+        }
         try {
             scheduler.endSession();
+            logger.info("SP: Stopped IS session");
         } catch(Exception ex){
-            logger.severe("SP: error ending IS session");
+            logger.severe("SP: Error ending interactive session");
             ex.printStackTrace();
         }
     }
 
 
     public void receive(ASDMArchivedEvent e){
-        /*
-        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+e.workingDCId.schedBlock.entityId+")'s ASDM("+e.asdmId.entityId+")");
-        String asdmId = e.asdmId.entityId;
-        String completion = e.status;
-        if(currentExecBlockId.equals(asdmId)){
-            //ok to re-enable the search area now..
-            parent.setEnable(true);
-            if(completion.equals("complete")){
-                parent.setSBStatus(currentSBId, "ARCHIVED");
-            }
-            //set status to ARCHIVED
-        }
-        try {
-            scheduler.endSession();
-        } catch(Exception ex){
-        }
-        */
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {

@@ -30,6 +30,7 @@ import java.awt.event.*;
 import java.util.Vector;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.text.Document;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
@@ -39,19 +40,21 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
 
-    private String schedulerName;
+    //private String schedulerName;
     private String arrayName;
     private String type;
     private QueuedSchedTabController controller;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     //private JPanel middlePanel;
     //private JPanel bottomPanel;
+    private JPanel topPanel;
     private JPanel centerPanel;
     private boolean searchingOnProject;
     private SBTable sbs;
     private SBTable queueSBs;
     private ProjectTable projects;
     private JTextArea executionInfo;
+    private JButton destroyArrayB;
     private JButton addB;
     private JButton removeB;
     private JButton executeB;
@@ -60,22 +63,21 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private int currentExecutionRow;
     
     
-    public QueuedSchedTab(String title, String aName){
+    public QueuedSchedTab(String aName){
         type = "queued";
         arrayName = aName;
         searchingOnProject = true;
-        schedulerName = title;
         createLayout();
     }
-    public QueuedSchedTab(PluginContainerServices cs, String title, String aName){
+    public QueuedSchedTab(PluginContainerServices cs, String aName){
         super();
         super.onlineSetup(cs);
         type = "queued";
         arrayName = aName;
         searchingOnProject = true;
-        schedulerName = title;
         controller = new QueuedSchedTabController(cs, this, aName);
-        controller.setSchedulerName (schedulerName);
+        //controller.setSchedulerName(title);
+        setTitle(controller.getSchedulerName());
         createLayout();
         archiveSearchPanel.setCS(cs);
         projects.setCS(cs);
@@ -91,6 +93,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 
 ///////////////////////////////
+    public void stop() throws Exception {
+        super.stop();
+        exit();
+    }
+///////////////////////////////
     public void exit(){
         controller.stopQueuedScheduling();
     }
@@ -101,27 +108,36 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         return arrayName;
     }
     public String getSchedulerName() {
-        return schedulerName;
+        return controller.getSchedulerName();
     }
 ///////////////////////////////
     private void createLayout(){
         setBorder(new TitledBorder("Queued Scheduling"));
         setLayout(new BorderLayout());
-        //setLayout(new GridLayout(3,1));
         createTopPanel();
-        //createMiddlePanel();
-        //createBottomPanel();
         Dimension d = getPreferredSize();
-        add(archiveSearchPanel,BorderLayout.NORTH);
+        add(topPanel,BorderLayout.NORTH);
         add(createCenterPanel(),BorderLayout.CENTER);
-        //JPanel tablePanel = new JPanel(new GridLayout(2,1));
-        //tablePanel.add(middlePanel);
-        //tablePanel.add(bottomPanel);
-        //add(tablePanel, BorderLayout.CENTER);
-        //add(middlePanel,BorderLayout.CENTER);
-        //add(bottomPanel,BorderLayout.SOUTH);
     }
     private void createTopPanel() {
+        createArchivePanel();
+        destroyArrayB = new JButton("Destroy Array");
+        topPanel = new JPanel(new FlowLayout());
+        destroyArrayB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    //ask if they really want to do this!
+                    controller.destroyArray();
+                    setEnable(false);
+                }
+        });
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        p.add(destroyArrayB);
+        topPanel = new JPanel(new BorderLayout());
+        topPanel.add(p, BorderLayout.NORTH);
+        topPanel.add(archiveSearchPanel, BorderLayout.CENTER);
+    }
+
+    private void createArchivePanel() {
         archiveSearchPanel = new ArchiveSearchFieldsPanel();
         archiveSearchPanel.setOwner(this);
         archiveSearchPanel.connected(true);
@@ -202,7 +218,6 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 stopQueue();
             }
         });
-        setStopButtonsEnabled(false);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));
         JPanel foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
@@ -242,9 +257,13 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
 
-    public void setStopButtonsEnabled(boolean b){
+    public void setEnable(boolean b){
+        destroyArrayB.setEnabled(b);
         stopB.setEnabled(b);
-        stopQB.setEnabled(b);
+        executeB.setEnabled(b);
+        removeB.setEnabled(b);
+        addB.setEnabled(b);
+        queueSBs.setEnabled(b);
     }
 
     public void setSearchMode(boolean b) {
@@ -268,7 +287,15 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
     public void updateExecutionInfo(String info){
-        executionInfo.append(info);
+        try {
+            Document doc = executionInfo.getDocument();
+            doc.insertString (doc.getLength(), info, null);
+            int newCaretPosition = doc.getLength();
+            executionInfo.setCaretPosition (newCaretPosition);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        //executionInfo.append(info);
     }
     private void executeSBs(){
         //get all ids from the queueSB table and send them to control
@@ -285,7 +312,6 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
     private void stopSB(){
-        controller.stopSB();
     }
 
     private void stopQueue(){
@@ -296,17 +322,42 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //get selected SBs from sbTable
         String[] selectedSBs = sbs.getSelectedSBs();
         SBLite[] sbs = controller.getSBLites(selectedSBs);
+        for(int i=0; i < sbs.length; i++){
+            System.out.println("sb lites "+sbs[i].schedBlockRef);
+        }
         //pass these to queuedSBTable
         queueSBs.setRowInfo(sbs, true);
+        controller.addSBs(selectedSBs);
     }
     private void removeSBsFromQueue(){
+        // this might cause problems if one sb is finished and we're waiting for the next
+        //exec block started event to update the currentSB, gotta think of something better
+        if(isSelectedSBRunning()){
+            logger.info("Scheduler ("+controller.getSchedulerName() +"): cannot remove a running sb from the queue");
+            //force de-selection
+            queueSBs.clearSelectedItems();
+            return;
+        }
         //remove selected sb from QueuedSbTable
-        validate();
-        String[] ids = queueSBs.getSelectedSBs();
-        //any of them currently running?
-        controller.removeSBs(ids);
+        String[] selectedSBs = queueSBs.getSelectedSBs();
+        int[] indices = queueSBs.getIndicesOfSBsToRemove();
+        controller.removeSBs(selectedSBs, indices);
         queueSBs.removeRowsFromQueue();
         //and update view/scheduler/etc
 
+    }
+
+    /**
+      * returns true if one of the selected sbs is currently the running one.
+      * doesn't say which, just does a general check
+      */
+    private boolean isSelectedSBRunning(){
+        String[] ids = queueSBs.getSelectedSBs();
+        for(int i=0;i < ids.length;i++){
+            if(ids[i].equals(controller.getCurrentSB())){
+                return true;
+            }
+        }
+        return false;
     }
 }

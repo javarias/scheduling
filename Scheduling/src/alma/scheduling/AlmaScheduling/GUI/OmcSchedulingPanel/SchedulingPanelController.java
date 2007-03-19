@@ -42,6 +42,7 @@ public class SchedulingPanelController {
     }
 
     public SchedulingPanelController(PluginContainerServices cs) {
+        this();
         container = cs;
         logger = cs.getLogger();
     }
@@ -63,7 +64,6 @@ public class SchedulingPanelController {
         }
     }
     
-    
     protected void releaseMSRef(){
         try {
             if(masterScheduler != null){
@@ -78,6 +78,17 @@ public class SchedulingPanelController {
 
     public PluginContainerServices getCS() {
         return container;
+    }
+    
+    protected void destroyArray(String arrayname){
+        try {
+            getMSRef();
+            masterScheduler.destroyArray(arrayname);
+            releaseMSRef();
+        }catch(Exception e){
+            logger.severe("SCHEDULING_PANEL: Error destorying array "+arrayname);
+            e.printStackTrace();
+        }
     }
 
 }

@@ -43,8 +43,10 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     private InteractiveSchedTabController controller;
+    private JPanel topPanel;
     private JPanel middlePanel;
     private JPanel bottomPanel;
+    private JButton destroyArrayB;
     private JButton execB;
     private JButton stopB;
     private SBTable sbs;
@@ -52,22 +54,31 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
   //  private boolean sessionStarted;
     private boolean searchingOnProject; 
 
+    public InteractiveSchedTab(){
+        super();
+    }
+
     public InteractiveSchedTab(PluginContainerServices cs, String aName){
         super();
         super.onlineSetup(cs);
+        doSetup(aName);
+    }
+    protected void doSetup(String aName){
         searchingOnProject=true;
         arrayName = aName;
-        controller = new InteractiveSchedTabController(cs, arrayName, this);
+        controller = new InteractiveSchedTabController(container, arrayName, this);
         controller.setArrayInUse(aName);
         controller.getISRef();
         type = "interactive"; 
+        setTitle(arrayName+" (Interactive)");
         createLayout();
-        archiveSearchPanel.setCS(cs);
-        projects.setCS(cs);
-        sbs.setCS(cs);
+        archiveSearchPanel.setCS(container);
+        projects.setCS(container);
+        sbs.setCS(container);
         setEnable(true);
         doInitialSearch();
     }
+    
     private void doInitialSearch() {
         archiveSearchPanel.doSearch();
     }
@@ -89,6 +100,15 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         controller.stopInteractiveScheduling();
     }
     ////////////////////////////////////
+    public void start() throws Exception {
+        super.start();
+        validate();
+    }
+    public void stop() throws Exception {
+        super.stop();
+        exit();
+    }
+    ////////////////////////////////////
     
     private void createLayout(){
         setBorder(new TitledBorder("Interactive Scheduling"));
@@ -96,14 +116,34 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         createTopPanel();
         createMiddlePanel();
         Dimension d = getPreferredSize();
-        add(archiveSearchPanel,BorderLayout.NORTH);
+        add(topPanel,BorderLayout.NORTH);
+        //add(archiveSearchPanel,BorderLayout.NORTH);
         add(middlePanel,BorderLayout.CENTER);
+    }
+
+    private void createTopPanel() {
+        createArchivePanel();
+        destroyArrayB = new JButton("Destroy Array");
+        destroyArrayB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    //ask if they really want to do this!
+                    controller.destroyArray();
+                    destroyArrayB.setEnabled(false);
+                    stopB.setEnabled(false);
+                    execB.setEnabled(false);
+                }
+        });
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        p.add(destroyArrayB);
+        topPanel = new JPanel(new BorderLayout());
+        topPanel.add(p, BorderLayout.NORTH);
+        topPanel.add(archiveSearchPanel, BorderLayout.CENTER);
     }
     /**
       * Top panel contains check boxes for determining if we
       * search by project or by sb.
       */
-    public void createTopPanel() {
+    public void createArchivePanel() {
         archiveSearchPanel = new ArchiveSearchFieldsPanel();
         archiveSearchPanel.setOwner(this);
         archiveSearchPanel.connected(true);
@@ -168,6 +208,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         archiveSearchPanel.setPanelEnabled(b);
         execB.setEnabled(b);
         stopB.setEnabled(!b);
+        repaint();
     }
     /**
       *

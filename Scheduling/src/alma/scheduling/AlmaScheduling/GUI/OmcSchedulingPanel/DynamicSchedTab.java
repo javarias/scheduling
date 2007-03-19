@@ -42,6 +42,9 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     private String type;
     private DynamicSchedTabController controller;
     private SBTable sbs;
+    private JButton destroyArrayB;
+    private JButton modifyB;
+    private JButton acceptB;
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
@@ -62,6 +65,7 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         arrayName = aName;
         controller = new DynamicSchedTabController(cs, arrayName, this);
         type = "dynamic"; 
+        setTitle(arrayName+" (Dynamic)");
        // sbs.setCS(cs);
         controller.setSchedulerName(arrayName+"_"+type);
         createLayout();
@@ -71,6 +75,7 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         createTopPanel();
         createCenterPanel();
+        createBottomPanel();
         createAndStartDynamicScheduler();
     }
 
@@ -89,7 +94,7 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton acceptB = new JButton("Accept");
+        acceptB = new JButton("Accept");
         acceptB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     //getSBId that is selected
@@ -100,14 +105,30 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
                 }
         });
         acceptB.setToolTipText("Accept the selected SBs for the dynamic scheduler");
-        JButton modifyB = new JButton("Modify");
+        modifyB = new JButton("Modify");
         modifyB.setToolTipText("Modify the selected list.");
         buttons.add(acceptB);
         buttons.add(modifyB);
+        JPanel p1 = new JPanel(new BorderLayout());
+        p1.add(sbPane, BorderLayout.CENTER);
+        p1.add(buttons, BorderLayout.NORTH);
 
-        centerPanel.add(sbPane);
-        add(centerPanel);
-        add(buttons);
+        centerPanel.add(p1);
+        add(centerPanel, BorderLayout.CENTER);
+    }
+    
+    private void createBottomPanel() {
+        destroyArrayB = new JButton("Destroy Array");
+        destroyArrayB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    //ask if they really want to do this!
+                    controller.destroyArray();
+                    setEnable(false);
+                }
+        });
+        bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(destroyArrayB);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public String getSchedulerType(){
@@ -123,7 +144,10 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         controller.stopDynamicScheduling();
     }
 
-
+    public void stop() throws Exception {
+        super.stop();
+        exit();
+    }
     private void createAndStartDynamicScheduler() {
         try {
             controller.startDynamicScheduling();
@@ -148,5 +172,9 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     }
 
     public void setEnable(boolean b){
+        destroyArrayB.setEnabled(b);
+        acceptB.setEnabled(b);
+        modifyB.setEnabled(b);
+        sbs.setEnabled(b);
     }
 }

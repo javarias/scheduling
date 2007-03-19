@@ -243,23 +243,6 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         searchB.setToolTipText("Click here to search archive.");
         bp.add(new JLabel());
         bp.add(searchB);
-        /*
-        clearB = new JButton("Clear");
-        clearB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                piNameTF.setText("");
-                projNameTF.setText("");
-                projTypeChoices.setSelectedItem(0);
-                sbModeNameChoices.setSelectedItem(0);
-                sbModeTypeChoices.setSelectedItem(0);
-                doClear();
-                //when there is expert do clear there
-                //expertQueryTF.setText("");
-            }
-        });
-        clearB.setToolTipText("Click here to clear text fields");
-        bp.add(clearB);
-        */
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(bp,c);
         p.add(bp);

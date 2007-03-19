@@ -81,9 +81,7 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
         mainSchedPanel.exit();
     }
 
-
     private void createMainSchedPanel() {
-        mainSchedPanel = new MainSchedTabPane();
+        mainSchedPanel = new MainSchedTabPane(this);
     }
-
 }
