@@ -141,7 +141,7 @@ public class MasterScheduler extends BasicComponent {
                     new TaskControl(Thread.currentThread()));
 			SchedulerConfiguration config = new SchedulerConfiguration (
 					Thread.currentThread(),
-					true,true,queue,5,0,arrayName,clock,control,operator,
+					true,true,queue,15,0,arrayName,clock,control,operator,
                     telescope, projectManager,policy,logger);			
 			
 			// Create a scheduler.

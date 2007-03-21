@@ -130,11 +130,11 @@ public class SimulationPropertiesTab extends JScrollPane {
         ///////////////////
         gridPanel = new JPanel();
         gridPanel.setLayout(gridbag);
-        label = new JLabel("Setup Times");
+        label = new JLabel("Times to advance simulation clock when:");
         gridbag.setConstraints(label, c);
         gridPanel.add(label);
         c.gridwidth = 1;
-        label = new JLabel("Frequency Band");
+        label = new JLabel("Change observing setup");
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
         freqBandSetup = new JTextField("");
@@ -147,7 +147,7 @@ public class SimulationPropertiesTab extends JScrollPane {
         label = new JLabel("");
         gridbag.setConstraints(label, c);
         gridPanel.add(label);
-        label = new JLabel("New Project");
+        label = new JLabel("New Project is executed");
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
         projSetup = new JTextField("");
@@ -162,7 +162,7 @@ public class SimulationPropertiesTab extends JScrollPane {
         gridbag.setConstraints(label, c);
         gridPanel.add(label);
         c.gridwidth = 1;
-        label = new JLabel("Advance Clock by");
+        label = new JLabel("Nothing can be scheduled");
         gridbag.setConstraints(label, c);
         gridPanel.add(label);
         advanceClockBy = new JTextField("");

@@ -30,8 +30,10 @@ import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import java.lang.Integer;
 import java.util.Vector;
@@ -65,6 +67,9 @@ public class AntennaTab extends JScrollPane {
     private JTabbedPane antennaPane;
     private JPanel antennaPanel;
     private GUIAntennas ants;
+    private JLabel label, datumL, zoneL, configL;
+    private JTextField datumTF, zoneTF;
+    private JComboBox config;
 
     public AntennaTab() {
         super();
@@ -104,13 +109,47 @@ public class AntennaTab extends JScrollPane {
     }
 
     private JPanel createTopPanel() {
-        JPanel p = new JPanel();
-        JLabel label = new JLabel("Select the number of antennas");
-        p.add(new JSeparator());
+        JPanel p = new JPanel(new GridLayout(2,4));
+        label = new JLabel("Number of antennas:", JLabel.CENTER);
+        //p.add(new JSeparator());
         p.add(label);
         ants = new GUIAntennas();
         p.add(ants);
-        p.add(new JSeparator());
+        //p.add(new JSeparator());
+        datumL = new JLabel("Datum:", JLabel.CENTER);
+        datumTF = new JTextField("SAM 1956");
+        datumTF.addMouseListener(new MouseListener() {
+            public void mouseClicked(MouseEvent e) {
+                datumTF.setSelectionStart(0);
+                datumTF.setSelectionEnd(datumTF.getText().length());
+            }
+            public void mouseEntered(MouseEvent e){ }
+            public void mouseExited(MouseEvent e){ }
+            public void mousePressed(MouseEvent e){ }
+            public void mouseReleased(MouseEvent e){ }
+        });
+        p.add(datumL);
+        p.add(datumTF);
+
+        zoneL = new JLabel("Zone:", JLabel.CENTER);
+        zoneTF = new JTextField("UTM Zone 19 K");
+        zoneTF.addMouseListener(new MouseListener() {
+            public void mouseClicked(MouseEvent e) {
+                zoneTF.setSelectionStart(0);
+                zoneTF.setSelectionEnd(zoneTF.getText().length());
+            }
+            public void mouseEntered(MouseEvent e){ }
+            public void mouseExited(MouseEvent e){ }
+            public void mousePressed(MouseEvent e){ }
+            public void mouseReleased(MouseEvent e){ }
+        });
+        p.add(zoneL);
+        p.add(zoneTF);
+        configL = new JLabel("Config:", JLabel.CENTER);
+        config = new JComboBox();
+        config.addItem("Compact");
+        p.add(configL);
+        p.add(config);
         return p;
     }
     
@@ -155,7 +194,7 @@ public class AntennaTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
-        // location
+        // X location
         c.gridwidth = 1;
         c.weightx= 1.0;
         sep = new JSeparator();
@@ -173,12 +212,6 @@ public class AntennaTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
-        /*
-        c.gridwidth = 1;
-        c.weightx= 1.0;
-        sep = new JSeparator();
-        gridbag.setConstraints(sep, c);
-        p.add(sep);*/
         //y location
         c.gridwidth = 1;
         c.weightx= 1.0;
@@ -260,12 +293,20 @@ public class AntennaTab extends JScrollPane {
     //////////////////////////////////////////////////////
 
 
-    public Vector getAllConfigInfo() {
+    public Vector getAllAntennaDetails() {
         Vector allAntennas = new Vector();
         for(int i =0; i < totalAntennas; i++){
             allAntennas.add(getAntennaConfigInfo(i));
         }
         return allAntennas;
+    }
+
+    public Vector getOverAllDetails() {
+        Vector v = new Vector();
+        v.add(datumTF.getText());
+        v.add(zoneTF.getText());
+        v.add(config.getSelectedItem());
+        return v;
     }
 
     public Vector getAntennaConfigInfo(int n) {
@@ -310,7 +351,7 @@ public class AntennaTab extends JScrollPane {
         String s1="";
         StringTokenizer token;
         int antennaNum=1;
-        String[] s2= new String[4];
+        String[] s2= new String[6];
         //System.out.println(val.size());
         for(int i=0; i < val.size(); i++) {
             s1 = (String)val.elementAt(i);
@@ -318,7 +359,9 @@ public class AntennaTab extends JScrollPane {
             s2[0] = token.nextToken().trim();
             s2[1] = token.nextToken().trim();
             s2[2] = token.nextToken().trim();
-            s2[3] = token.nextToken();
+            s2[3] = token.nextToken().trim();
+            s2[4] = token.nextToken().trim();
+            s2[5] = token.nextToken();
             antennaPane.add("Antenna"+(antennaNum++), updateAntennaConfigTab(s2));
         }
         mainPanel.add(antennaPane, BorderLayout.CENTER);
@@ -356,17 +399,52 @@ public class AntennaTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
-        // location
+        // x location
         c.gridwidth = 1;
         c.weightx= 1.0;
         sep = new JSeparator();
         gridbag.setConstraints(sep, c);
         p.add(sep);
-        l = new JLabel("Antenna Location: ");
+        l = new JLabel("Antenna X Location: ");
         gridbag.setConstraints(l, c);
         p.add(l);
-        //System.out.println(s[1]);
         tf = new JTextField(s[1]);
+        c.gridwidth = 4;
+        c.weightx= 4.0;
+        gridbag.setConstraints(tf, c);
+        p.add(tf);
+        sep = new JSeparator();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        //y location
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        l = new JLabel("Antenna Y Location: ");
+        gridbag.setConstraints(l, c);
+        p.add(l);
+        tf = new JTextField(s[2]);
+        c.gridwidth = 4;
+        c.weightx= 4.0;
+        gridbag.setConstraints(tf, c);
+        p.add(tf);
+        sep = new JSeparator();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        //z location
+        c.gridwidth = 1;
+        c.weightx= 1.0;
+        sep = new JSeparator();
+        gridbag.setConstraints(sep, c);
+        p.add(sep);
+        l = new JLabel("Antenna Z Location: ");
+        gridbag.setConstraints(l, c);
+        p.add(l);
+        tf = new JTextField(s[3]);
         c.gridwidth = 4;
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
@@ -385,7 +463,7 @@ public class AntennaTab extends JScrollPane {
         gridbag.setConstraints(l, c);
         p.add(l);
         //System.out.println(s[2]);
-        tf = new JTextField(s[2]);
+        tf = new JTextField(s[4]);
         c.gridwidth = 4;
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
@@ -404,8 +482,13 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 2.0;
         gridbag.setConstraints(l, c);
         p.add(l);
-        //System.out.println(s[3]);
-        YesNoNutator nut = new YesNoNutator(s[3]);
+        YesNoNutator nut;
+        try {
+            nut = new YesNoNutator(s[5]);
+        } catch(Exception e) {
+            e.toString();
+            nut = new YesNoNutator();
+        }
         c.gridwidth = 4;
         c.weightx= 4.0;
         gridbag.setConstraints(nut, c);
@@ -442,8 +525,12 @@ public class AntennaTab extends JScrollPane {
             group.add(no);
         }
 
-        public YesNoNutator(String val) {
+        public YesNoNutator(String val) throws Exception {
             this();
+            if(!val.equals("no") && !val.equals("yes") 
+                    && !val.equals("true") && !val.equals("false") ){
+                throw new Exception ("Nutator format must be yes, no, true or false");
+            }
             setResult(val);
         }
 
@@ -452,8 +539,14 @@ public class AntennaTab extends JScrollPane {
         }
 
         private void setResult(String v) {
-            value = v;
-        }
+            if(v.equals("false")||v.equals("no")){
+                value = "no";
+                no.setSelected(true);
+            } else if(v.equals("true") || v.equals("yes")){
+                value="yes";
+                yes.setSelected(true);
+            } 
+        } 
 
         public void actionPerformed(ActionEvent e) {
             setResult(e.getActionCommand());

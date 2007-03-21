@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.21 2007/02/21 19:37:19 sslucero Exp $ "
+# "@(#) $Id: Makefile,v 1.22 2007/03/21 20:18:52 sslucero Exp $ "
 #
 # Makefile of Scheduling Module
 #
@@ -21,7 +21,8 @@ DEBUG = on
 #COMPONENT_HELPERS=on
 USER_JFLAGS= -deprecation #-Xlint
 
-#
+PY_SCRIPTS = ALMASched_lst_vs_day
+
 # Jarfiles and their directories
 #
 

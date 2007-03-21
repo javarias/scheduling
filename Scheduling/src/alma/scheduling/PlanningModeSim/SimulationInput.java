@@ -42,6 +42,7 @@ import alma.scheduling.Define.WeatherCondition;
 import alma.scheduling.Define.Target;
 import alma.scheduling.Define.Equatorial;
 import alma.scheduling.Define.Antenna;
+import alma.scheduling.Define.PreConditions;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -370,7 +371,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		// The time in seconds to advance the clock when nothing can be scheduled.
 		advanceClock = getInt(Tag.advanceClock);
 
-        getWeatherConstraints();
+        //getWeatherConstraints();
 		logger.info(instanceName + ".initialized");
 	}
 
@@ -412,10 +413,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("exceptional", tmp2);
-        /*System.out.println("Exceptional");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }*/
         //for excellent do
         tmp1 = getString(Tag.excellentWC);
         st = new StringTokenizer(tmp1,";");
@@ -425,11 +422,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("excellent", tmp2);
-        /*
-        System.out.println("Excellent");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }*/
         //for good do
         tmp1 = getString(Tag.goodWC);
         st = new StringTokenizer(tmp1,";");
@@ -439,12 +431,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("good", tmp2);
-        /*
-        System.out.println("good");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }
-        */
         //for average do
         tmp1 = getString(Tag.averageWC);
         st = new StringTokenizer(tmp1,";");
@@ -454,11 +440,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("average", tmp2);
-        /*System.out.println("average");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }
-*/
         //for below average do
         tmp1 = getString(Tag.belowaverageWC);
         st = new StringTokenizer(tmp1,";");
@@ -468,12 +449,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("belowaverage", tmp2);
-        /*
-        System.out.println("below average");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }
-*/
         //for poor do
         tmp1 = getString(Tag.poorWC);
         st = new StringTokenizer(tmp1,";");
@@ -483,12 +458,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("poor", tmp2);
-        /*
-        System.out.println("Poor ");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }
-*/
         //for dismal do
         tmp1 = getString(Tag.dismalWC);
         st = new StringTokenizer(tmp1,";");
@@ -498,12 +467,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
             tmp2[i++] = st.nextToken();
         }
         weatherConstraintsMap.put("dismal", tmp2);
-        /*
-        System.out.println("Dismal");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }
-*/
         //for any do
         tmp1 = getString(Tag.anyWC);
         st = new StringTokenizer(tmp1,";");
@@ -512,12 +475,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
         while(st.hasMoreTokens()){
             tmp2[i++] = st.nextToken();
         }
-        weatherConstraintsMap.put("any", tmp2);/*
-        System.out.println("Any");
-        for(int foo=0;foo <tmp2.length; foo++){
-            System.out.println(tmp2[foo]);
-        }
-*/
+        weatherConstraintsMap.put("any", tmp2);
     }
 
 	public void cleanUp() {
@@ -853,7 +811,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			validateFrequency(b,frequency);
 			
 			// Validate weather condition.
-			w = validateWeatherCondition(weatherCondition);
+			//w = validateWeatherCondition(weatherCondition);
 			
 			// Validate number of targets.
 			if (numberTargets < 0)
@@ -910,8 +868,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		//String[] cond = null;
 		// Set the weather condition.
         word = word.toLowerCase();
-        //System.out.println("*************");
-        //System.out.println(word);
         String[] cond = weatherConstraintsMap.get(word);
         return new WeatherCondition(cond);
     }
@@ -938,10 +894,9 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		double frequency = 0.0;
 		int totalTime = 0;
 		String weatherCondition = null;
-		int repeatCount = 1;
+		int repeatCount = 0;
 		double b = -1.0;
 		double e = -1.0;
-
 		double sizeTargetBox = 7200.0;
 		SB u = null;
 		Target t = null;
@@ -966,31 +921,57 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			} catch (NumberFormatException err) {
 				error("Invalid number format in " + value[i]);
 			}
+            PreConditions conds = new PreConditions();
+            try{
+                String[] tmp = s[5].split(" ");
+                if(tmp.length == 3) {
+                    //tmp[0] is a blank space..
+                    conds.setSeeing(0.0, Double.parseDouble(tmp[1].trim()), tmp[2].trim());
+                } //else keep default of 0.0
+               // tmp = s[6].split(" ");
+               // if(tmp.length == 2){
+                 //   conds.setPhase(Double.parseDouble(tmp[0].trim()), tmp[1].trim());
+                //} //else keep default of 0.0
+                //tmp = s[7].split(" ");
+               // if(tmp.length == 2){
+                 //   conds.setWindVel(Double.parseDouble(tmp[0].trim()), tmp[1].trim());
+                //} //else keep default of 0.0
+            }catch(Exception err){
+				error("Invalid Weather format in " + value[i]);
+            }
+              
+            /*
 			if (s[5].trim().length() == 0)
 				weatherCondition = weatherWord;
 			else
 				weatherCondition = s[5].trim();
-			if (s.length == 7) {
+                */
+            
+			if (s.length == 9) {
 				try {
-					repeatCount = Integer.parseInt(s[6].trim());
+					repeatCount = Integer.parseInt(s[8].trim());
 				} catch (NumberFormatException err) {
 					error("Invalid number format in " + s[6]);
 				}	
-			} else if (s.length == 9) {
+			} else if (s.length == 11) {
 				try {
-					b = Double.parseDouble(s[7].trim());
-					e = Double.parseDouble(s[8].trim());
+					b = Double.parseDouble(s[9].trim());
+					e = Double.parseDouble(s[10].trim());
 				} catch (NumberFormatException err) {
 					error("Invalid number format in " + value[i]);
 				}
-			} else if (s.length == 8) {
+			} else if (s.length == 12) {
 				error("Invalid number of target parameters: " + value[i]);
 			} else
-				repeatCount = 1;
+				repeatCount = 0;
 			
 			// Validate the weather word.
-			w = validateWeatherCondition(weatherCondition); 
-			
+            /*
+            try {
+    			w = validateWeatherCondition(weatherCondition); 
+            } catch(Exception ex){
+                w = new WeatherCondition(new String[0]);
+            }*/
 			// OK, we've got the data.
 			
 			// We will create one scheduling unit per target wirh the coordinates
@@ -998,16 +979,11 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			// We will place each sheduling unit in the program unit set.
 		
 			u = new SB(targetName); //in simulation the id and the name are the same.
+            u.setPreconditions(conds);
             u.setSBName(targetName);
             u.setWeatherConstraintName(weatherCondition);
 			t = new Target (new Equatorial(ra,dec),sizeTargetBox,sizeTargetBox);
-            /*
-            System.out.println("SB ("+targetName+"): RA="+ra+"; Dec="+dec);
-            System.out.println("SB ("+targetName+"): RA min(rad)="+t.getMin().getRa()+"; Dec min(rad)="+t.getMin().getDec());
-            System.out.println("SB ("+targetName+"): RA min (h)="+t.getMin().getRaInHours()+"; Dec min (deg)="+t.getMin().getDecInDegrees());
-            System.out.println("SB ("+targetName+"): RA max (rad)="+t.getMax().getRa()+"; Dec max (rad)="+t.getMax().getDec());
-            System.out.println("SB ("+targetName+"): RA max (h)="+t.getMax().getRaInHours()+"; Dec max (deg)="+t.getMax().getDecInDegrees());
-            */
+
 			u.setTarget(t);
 			u.setCenterFrequency(frequency);
 			u.setMaximumTimeInSeconds(totalTime);
@@ -1020,6 +996,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 				}
 			}
 			// Set the weather condition.
+           // w.setPreconditions(conds);
 			u.setWeatherConstraint(w);
 			
 			// Set the repeat count.

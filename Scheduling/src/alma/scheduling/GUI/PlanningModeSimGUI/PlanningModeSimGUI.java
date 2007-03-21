@@ -81,9 +81,13 @@ public class PlanningModeSimGUI extends JFrame {
 
     }
 
-    public String createFileChooser(String type) {
+    public String createFileChooser(String type, String name) {
         String result = null;
         int returnVal=0;
+        File f = chooser.getCurrentDirectory();
+        //System.out.println(System.getProperty("user.dir"));
+        chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        chooser.setDialogTitle(name);
         if(type.equals("save") ) {
             returnVal = chooser.showSaveDialog(this);
         } else if(type.equals("load") ) {
@@ -175,15 +179,20 @@ public class PlanningModeSimGUI extends JFrame {
         setVisible(true);
     }
     private void doSaveAction(){
-        String s = createFileChooser("save");
+        String s = createFileChooser("save", "Save Simulation Input file");
         if (s != null) {
-            controller.saveToFile(chooser.getSelectedFile().getName());
+            File f = chooser.getCurrentDirectory();
+            //String name = f.toString() + File.separator + chooser.getSelectedFile().getName();
+            //System.out.println(name);
+            controller.saveToFile(
+                    chooser.getCurrentDirectory().toString(), 
+                    chooser.getSelectedFile().getName());
         } else {
             System.out.println("Canceled Save");
         }
     }
     private void doLoadAction(){
-        String s = createFileChooser("load");
+        String s = createFileChooser("load", "Load input file");
         if(s != null) {
             controller.loadFile(chooser.getSelectedFile().getPath(),
                                 chooser.getSelectedFile().getName());
@@ -238,9 +247,10 @@ public class PlanningModeSimGUI extends JFrame {
     //}
 
     public String getProjectFile() {
-        String s = createFileChooser("load");
+        String s = createFileChooser("load","Load Project File");
         if(s == null) {
             System.out.println("Canceled project load");
+            return "";
         }
         return chooser.getSelectedFile().getPath();
     }

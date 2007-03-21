@@ -76,11 +76,13 @@ public class PlanningModeSimGUIController implements Runnable {
     //Stuff gotten from second tab!
     //private Vector antennaConfigs;
     private String[][] antennaConfigs;
+    private String[] arrayLocDetail;
     //Stuff gotten from third tab!
     private int totalfreqbands, totalAntennas;
     private Vector freqbands;
     //Stuff gotten from fourth tab!
     private int totalweatherfunc;
+    private String weatherModel;
     private Vector weatherfuncvalues;
     //Stuff gotten from fifth tab!
     private String posElevation_w, posMax_w, weather_w, spsb_w, spdb_w, dpdb_w,
@@ -129,7 +131,7 @@ public class PlanningModeSimGUIController implements Runnable {
         projTab = (ProjectsTab)comp5[5];
     }
 
-    protected void saveToFile(String filename) {
+    protected void saveToFile(String dir, String filename) {
         //data_filename = filename;
         if(!simulationDone) {//save project file 
             //Simulation Properties tab
@@ -155,12 +157,10 @@ public class PlanningModeSimGUIController implements Runnable {
             }else {
                 data_filename= filename;
             }
-            createInputFile(data_filename);
+            createInputFile(dir, data_filename);
         } else { //save simulation output
-            createOutputFile(filename);
+            createOutputFile(dir + File.separator + filename);
         }
-
-        //System.out.println("done save to file "+filename);
     }
 
     private void stuffFromSimulationPropertiesTab(){
@@ -180,13 +180,20 @@ public class PlanningModeSimGUIController implements Runnable {
 
     private void stuffFromAntennaConfigTab() {
         totalAntennas = antennaTab.getAntennaTotal();
-        antennaConfigs = new String[totalAntennas][4];
-        Vector allInfo = antennaTab.getAllConfigInfo();
+        Vector foo = antennaTab.getOverAllDetails();
+        arrayLocDetail = new String[foo.size()];
+        for(int i=0; i < foo.size(); i++){
+            arrayLocDetail[i] = (String)foo.elementAt(i);
+        }
+        antennaConfigs = new String[totalAntennas][6];
+        Vector allInfo = antennaTab.getAllAntennaDetails();
         for(int i=0; i < totalAntennas; i++){
             antennaConfigs[i][0] = (String)((Vector)allInfo.elementAt(i)).elementAt(0);
             antennaConfigs[i][1] = (String)((Vector)allInfo.elementAt(i)).elementAt(1);
             antennaConfigs[i][2] = (String)((Vector)allInfo.elementAt(i)).elementAt(2);
             antennaConfigs[i][3] = (String)((Vector)allInfo.elementAt(i)).elementAt(3);
+            antennaConfigs[i][4] = (String)((Vector)allInfo.elementAt(i)).elementAt(4);
+            antennaConfigs[i][5] = (String)((Vector)allInfo.elementAt(i)).elementAt(5);
         }
     }
 
@@ -197,8 +204,13 @@ public class PlanningModeSimGUIController implements Runnable {
 
     private void stuffFromWeatherTab() {
         totalweatherfunc = weatherTab.getTotalWeatherFuncs();
-        //for (int i=0; i < totalweatherfunc; i++) {
-        //### This might need some debugging when more weather funcs are added 
+        if(weatherTab.getIsRealMode() ){
+            weatherModel = "real"; //weather mode
+            weatherfuncvalues.add("opacity; "+weatherTab.getOpacityFile());
+            weatherfuncvalues.add("rms; "+weatherTab.getRMSFile());
+            weatherfuncvalues.add("wind; "+weatherTab.getWindFile());
+        } else {
+            weatherModel = "diurnal"; //weather mode
             weatherfuncvalues.add( weatherTab.getWeatherName() ); //name 
             weatherfuncvalues.add( weatherTab.getUnits() ); //units 
             weatherfuncvalues.add( weatherTab.getP0() ); //p0 
@@ -208,9 +220,7 @@ public class PlanningModeSimGUIController implements Runnable {
             weatherfuncvalues.add( weatherTab.getS1() ); //s1 
             weatherfuncvalues.add( weatherTab.getT0() ); //t0 
             weatherfuncvalues.add( weatherTab.getT1() ); //t1 
-            //i += 35;
-        //}
-        
+        }
     }
 
     private void stuffFromAlgorithmWeightsTab() {
@@ -232,9 +242,9 @@ public class PlanningModeSimGUIController implements Runnable {
     }
 
 
-    private void createInputFile(String fileName) {
+    private void createInputFile(String dir, String fileName) {
         try {
-            File f = new File(fileName+".txt");
+            File f = new File(dir + File.separator + fileName+".txt");
             PrintStream out = new PrintStream(new FileOutputStream(f));
             out.println("Simulation.beginTime = " + startTime);
             out.println("Simulation.endTime = " + endTime);
@@ -251,15 +261,20 @@ public class PlanningModeSimGUIController implements Runnable {
             out.println("Site.altitude = " + altitude); 
             out.println("Site.minimumElevationAngle = " +minAngle); 
             out.println("Site.numberAntennas = " + totalAntennas); 
+            out.println("Site.datum = " + arrayLocDetail[0]); 
+            out.println("Site.zone = " + arrayLocDetail[1]); 
+            out.println("Site.antennaConfiguration = " + arrayLocDetail[2]); 
             out.println(); out.println(); 
             //Antenna configuration
-            out.println("# Antenna.# = Name; Location; Pad name; Nutator? yes/no");
+            out.println("# Antenna.# = Name; X Loc; Y Loc; Z Loc; Pad name; Nutator? yes/no");
             for(int i=0; i < totalAntennas; i++){
                 out.println("Antenna."+i+" = "+
-                        antennaConfigs[i][0] +"; "+
-                        antennaConfigs[i][1] +"; "+
-                        antennaConfigs[i][2] +"; "+
-                        antennaConfigs[i][3] );
+                        antennaConfigs[i][0] +"; "+ //name
+                        antennaConfigs[i][1] +"; "+ //x loc
+                        antennaConfigs[i][2] +"; "+ //y loc
+                        antennaConfigs[i][3] +"; "+ //z loc
+                        antennaConfigs[i][4] +"; "+ //pad name
+                        antennaConfigs[i][5] ); //has nutator?
             }
             out.println(); out.println(); 
             out.println("FrequencyBand.numberOfBands = " + totalfreqbands);
@@ -272,30 +287,49 @@ public class PlanningModeSimGUIController implements Runnable {
                     (String)((Vector)freqbands.elementAt(i)).elementAt(4) +"; ");
             }
             out.println(); out.println();
+            out.println("# modelType should be real or diurnal.");
+            out.println("Weather.modelType = " + weatherModel);
+            out.println("# numberFuntions for real mode is the number of weather files being used");
             out.println("Weather.numberFunctions = " + totalweatherfunc);
-            for(int i=0; i < totalweatherfunc; i = i+9){
-                out.println("Weather."+ i + " = " +
-                    (String)weatherfuncvalues.elementAt(i+0) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+1) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+2) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+3) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+4) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+5) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+6) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+7) + "; "+
-                    (String)weatherfuncvalues.elementAt(i+8) );
+            if(weatherModel.equals("real")){
+                for(int i=0; i < totalweatherfunc; i++){
+                    out.println("Weather."+ i + " = " +(String)weatherfuncvalues.elementAt(i));
+                }
+            } else if(weatherModel.equals("diurnal")){
+                for(int i=0; i < totalweatherfunc; i = i+9){
+                    out.println("Weather."+ i + " = " +
+                        (String)weatherfuncvalues.elementAt(i+0) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+1) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+2) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+3) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+4) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+5) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+6) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+7) + "; "+
+                        (String)weatherfuncvalues.elementAt(i+8) );
+                }
             }
             out.println(); out.println();
-            out.println("Weight.positionElevation =  " + posElevation_w);
-            out.println("Weight.positionMaximum =  " + posMax_w);
-            out.println("Weight.weather =  " + weather_w);
-            out.println("Weight.priority = " + priority_w);
-            out.println("Weight.sameProjectSameBand = " + spsb_w);
-            out.println("Weight.sameProjectDifferentBand = " + spdb_w);
-            out.println("Weight.differentProjectSameBand = " + dpsb_w);
-            out.println("Weight.differentProjectDifferentBand = " + dpdb_w);
-            out.println("Weight.newProject = " + newproj_w);
-            out.println("Weight.oneSBRemaining = " + lastsb_w);
+            if(!posElevation_w.equals(""))
+                out.println("Weight.positionElevation =  " + posElevation_w);
+            if(!posMax_w.equals(""))
+                out.println("Weight.positionMaximum =  " + posMax_w);
+            if(!weather_w.equals(""))
+                out.println("Weight.weather =  " + weather_w);
+            if(!priority_w.equals(""))
+                out.println("Weight.priority = " + priority_w);
+            if(!spsb_w.equals(""))
+                out.println("Weight.sameProjectSameBand = " + spsb_w);
+            if(!spdb_w.equals(""))
+                out.println("Weight.sameProjectDifferentBand = " + spdb_w);
+            if(!dpsb_w.equals(""))
+                out.println("Weight.differentProjectSameBand = " + dpsb_w);
+            if(!dpdb_w.equals(""))
+                out.println("Weight.differentProjectDifferentBand = " + dpdb_w);
+            if(!newproj_w.equals(""))
+                out.println("Weight.newProject = " + newproj_w);
+            if(!lastsb_w.equals(""))
+                out.println("Weight.oneSBRemaining = " + lastsb_w);
             out.println(); out.println();
             /**
               * Indicate the source of the project data.
@@ -344,13 +378,15 @@ public class PlanningModeSimGUIController implements Runnable {
                         Vector target = (Vector)targets.elementAt(k);
                         String stuffToPrint =
                                 "target."+i+"."+j+"."+k+" = "+
-                                ((String)target.elementAt(0)) +"; "+ 
-                                ((String)target.elementAt(1)) +"; "+ 
-                                ((String)target.elementAt(2)) +"; "+ 
-                                ((String)target.elementAt(3)) +"; "+ 
-                                ((String)target.elementAt(4)) +"; "+
-                                ((String)target.elementAt(5)) ;
-                        String rc = ((String)target.elementAt(6)) ;
+                                ((String)target.elementAt(0)) +"; "+ //name
+                                ((String)target.elementAt(1)) +"; "+ //ra
+                                ((String)target.elementAt(2)) +"; "+ //dec
+                                ((String)target.elementAt(3)) +"; "+ //freq
+                                ((String)target.elementAt(7)) +"; "+ //time, NOTE: out of order
+                                ((String)target.elementAt(4)) +"; "+ //opacity
+                                ((String)target.elementAt(5)  +"; "+ //rms
+                                ((String)target.elementAt(6) )); //wind
+                        String rc = ((String)target.elementAt(8)) ;
                         if(!rc.equals("")){
                             stuffToPrint = stuffToPrint + "; "+ rc;
                         }
@@ -463,7 +499,6 @@ public class PlanningModeSimGUIController implements Runnable {
      * displayed in their appropriate fields.
      */
     public void loadFile(String filepathname, String filename) {
-        //System.out.println("Opening "+filepathname);
         data_filename = filename;
         Vector tab1 = new Vector();
         Vector tab2 = new Vector();
@@ -494,6 +529,7 @@ public class PlanningModeSimGUIController implements Runnable {
             int allAntennas = Integer.parseInt(
                     (String)fileproperties.getProperty(Tag.numberAntennas));
             for(int i=0; i < allAntennas; i++){
+                //System.out.println(fileproperties.getProperty(Tag.antenna+"."+i);
                 tab2.add(fileproperties.getProperty(Tag.antenna+"."+i));
             }
             antennaTab.loadValuesFromFile(tab2);
@@ -506,6 +542,7 @@ public class PlanningModeSimGUIController implements Runnable {
             }
             frequencyTab.loadValuesFromFile(tab3);
             ////////////////////////////////////////////////////////////
+            tab4.add(fileproperties.getProperty(Tag.weatherModelType));
             tab4.add(fileproperties.getProperty(Tag.numberWeatherFunctions));
             int totalWeatherFuncs = Integer.parseInt(
                 (String)fileproperties.getProperty(Tag.numberWeatherFunctions));
@@ -534,6 +571,9 @@ public class PlanningModeSimGUIController implements Runnable {
                 //System.out.println("Project file loaded with project.txt");
             } catch (Exception e1) {
                 String projFile = promptForProjectFile();
+                if(projFile.equals("")){
+                    return;
+                }
                 //System.out.println(projFile);
                 try {
                     file = new FileInputStream(projFile);

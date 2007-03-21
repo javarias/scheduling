@@ -9,16 +9,16 @@ public class ExecutionStatistics {
     private String priority;
     private double frequency;
     private String freqBandName;
-    private double ra;
-    private double dec;
-    private double elevation;
+    private double ra; //center ra in hours
+    private double dec; //center dec in degrees
+    private double elevation; // in degrees
     private double[] lstRange; //0 = rise, 1 = max, 2 = set
     private double opacity;
     private double rms;
     private double wind;
     private String weatherConstraintName;
-    private double scheduleStartMNLst;
-    private double scheduleEndMNLst;
+    private double scheduleStartMNLst; //lst at midnight of start day
+    private double scheduleEndMNLst; //lst at midnight of end day
     
     private String arrayname;
     private DateTime startTime;
@@ -207,7 +207,7 @@ public class ExecutionStatistics {
     public String toString() {
         return getSBName()+", "+
                getStartTime() +", "+
-               getStartTime().getLocalSiderealTime() +", "+
+               getStartTime().getTimeOfDay() +", "+
                getEndTime()+", "+
                getExecutionHourLength()+", "+
                getFrequency() +", "+

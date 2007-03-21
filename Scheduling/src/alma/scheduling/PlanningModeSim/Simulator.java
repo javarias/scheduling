@@ -29,8 +29,7 @@ package alma.scheduling.PlanningModeSim;
 import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.Expression;
+import alma.scheduling.Define.*;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -171,16 +170,19 @@ public class Simulator implements Runnable {
 		// Change the clock to an LST clock and set the beginning and ending times.
 		// Form the beginning time.
 		DateTime beginCivil = input.getBeginCivilTime();
+        System.out.println("CIVIL TIME: "+beginCivil.toString());
 		// Compute the corresponding LST in hours.
 		double lstHrs = beginCivil.getLocalSiderealTime();
+        System.out.println("LST hours: "+lstHrs);
 		// Form the DateTime for the LST.
 		DateTime lstBegin = DateTime.add(beginCivil,(lstHrs / 24.0));
+        System.out.println("LST begin TIME: "+lstBegin.toString());
 		clock.setTime(lstBegin);
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
         //System.out.println(clock.getDateTime());
 		// This clock is now an LST clock.
 		// Now we need to set the beginning and ending times to LST times.
-        clock.setTime(beginCivil);
+        //clock.setTime(beginCivil);
 		DateTime endCivil = input.getEndCivilTime();
 		lstHrs = endCivil.getLocalSiderealTime();
 		DateTime lstEnd = DateTime.add(endCivil,(lstHrs / 24.0));
@@ -188,8 +190,10 @@ public class Simulator implements Runnable {
 		input.setEndTime(lstEnd);
 
 		// Configure the Expression class.
-		Expression.setFunctionNames(weatherModel.getFunctionNames());
-		Expression.setMethods(weatherModel.getObjects());
+		//Expression.setFunctionNames(weatherModel.getFunctionNames());
+		//Expression.setMethods(weatherModel.getObjects());
+		PreConditions.setFunctionNames(weatherModel.getFunctionNames());
+		PreConditions.setMethods(weatherModel.getObjects());
 
 		// Execute the components.
 

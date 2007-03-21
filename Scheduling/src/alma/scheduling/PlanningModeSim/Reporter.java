@@ -524,27 +524,6 @@ public class Reporter extends BasicComponent {
 		o.println("Average success factor (%)       " + dform.format(avSuccess));
 		o.println("Average rank                     " + dform.format(avRank));
         o.println();
-        /*
-        o.println("    Score = success * rank");
-        o.println();
-		o.println("    Success = [ (Position Elevation Weight * Position Elevation) + ");
-        o.println("                (Position Max Weight * Max Position) +");
-        o.println("                (Weather Weight * Weahter Calculation) ] / ");
-        o.println("                (Postion Elevation Weight + Position Max Weight + Weather Weight)");
-        o.println("    Rank = 0.0 if Success = 0.0");
-        o.println("         otherwise...");
-        o.println("    Rank = Priority Weight * Priority");
-        o.println("             if(sb in same project and same band as previous)");
-        o.println("                 rank += same project same band weight");
-        o.println("             if(sb in same project and diff band as previous)");
-        o.println("                 rank += same project diff band weight");
-        o.println("             if(sb in diff project and same band as previous)");
-        o.println("                 rank += diff project same band weight");
-        o.println("             if(sb in diff project and diff band as previous)");
-        o.println("                 rank += diff project diff band weight");
-
-		*/
-		
 		
 		/*
 		out.println();
@@ -567,7 +546,7 @@ public class Reporter extends BasicComponent {
 			u = archive.getAllSB();
 			for (int i = 0; i < u.length; ++i) {
 				ex = u[i].getSExec();
-				possibleScienceTime += u[i].getMaximumTimeInSeconds() * (u[i].getMaximumNumberOfExecutions()) / 3600.0;
+				possibleScienceTime += u[i].getMaximumTimeInSeconds() * (u[i].getMaximumNumberOfExecutions() + 1) / 3600.0;
 				for (int j = 0; j < ex.length; ++j) {
 					x = DateTime.difference(ex[j].getEndTime(), ex[j].getStartTime());
 					totalScienceTime += x * 24.0;
