@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import ppgplot
 from ppgplot import *
 from numarray import array

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import ppgplot
 from ppgplot import *
 import sys

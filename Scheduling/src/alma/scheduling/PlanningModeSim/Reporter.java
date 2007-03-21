@@ -238,6 +238,7 @@ public class Reporter extends BasicComponent {
 		projectSummary(out,endTime);
 		statistics(out,endTime);
         detailedExecutionStatistics(execStatsOut);
+        runAnalysisScripts();
 	}
 	
 	private void showSummary(PrintStream o, DateTime endTime) {
@@ -525,60 +526,6 @@ public class Reporter extends BasicComponent {
 		o.println("Average rank                     " + dform.format(avRank));
         o.println();
 		
-		/*
-		out.println();
-		out.println("Scheduling Statistics");
-		out.println();
-
-		out.println("Number of executions             " + totalNumber); 		
-
-		SB[] u = null;
-		Exec[] ex = null;
-		
-		// All time units are hours.
-		double totalTime = DateTime.difference(scheduler.getEndTime(),scheduler.getBeginTime()) * 24.0;
-		double totalScienceTime = 0.0;
-		double totalWeightedScienceTime = 0.0;
-		double possibleScienceTime = 0.0;
-		double x = 0.0;
-		
-		try {
-			u = archive.getAllSB();
-			for (int i = 0; i < u.length; ++i) {
-				ex = u[i].getSExec();
-				possibleScienceTime += u[i].getMaximumTimeInSeconds() * (u[i].getMaximumNumberOfExecutions() + 1) / 3600.0;
-				for (int j = 0; j < ex.length; ++j) {
-					x = DateTime.difference(ex[j].getEndTime(), ex[j].getStartTime());
-					totalScienceTime += x * 24.0;
-					totalWeightedScienceTime += x * u[i].getScientificPriority().getPriorityAsInt() * 24.0;
-				}
-			}
-		} catch (SchedulingException err) {
-			err.printStackTrace(System.out);
-			System.exit(0);
-		}
-
-		double effiency = totalScienceTime / totalTime;
-		double weightedEffiency = totalWeightedScienceTime / (totalTime * Priority.HIGHEST.getPriorityAsInt());
-
-		out.println();
-		out.println("Efficiency (%)                   " + (float)(effiency * 100.0));
-		out.println("Weighted Efficiency  (%)         " + (float)(weightedEffiency * 100.0));
-		out.println("% of science time executed       " + (float)((totalScienceTime / possibleScienceTime) * 100.0));
-
-		out.println();
-		out.println("Total time (hours)               " + (float)totalTime);
-		out.println("Total science time (hours)       " + (float)totalScienceTime);
-		out.println("Possible science time (hours)    " + (float)possibleScienceTime);
-
-		out.println();
-		out.println("Average score                    " + (float)(totalScore / totalNumber));
-		out.println("Average rank                     " + (float)(totalRank / totalNumber));
-		out.println("Average success factor           " + (float)(totalSuccess / totalNumber));
-		out.println("Average positionElevation factor " + (float)(totalPositionEl / totalNumber));
-		out.println("Average positionMaximum factor   " + (float)(totalPositionMax / totalNumber));
-		out.println("Average weather factor           " + (float)(totalWeather / totalNumber));
-		*/
 	}
 
     
@@ -598,6 +545,9 @@ public class Reporter extends BasicComponent {
             e.printStackTrace();
         }
         
+    }
+
+    private void runAnalysisScripts(){
     }
 
     public String getOutputFilename(){
