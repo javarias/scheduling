@@ -44,7 +44,6 @@ import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 import javax.swing.JRadioButton;
@@ -177,9 +176,9 @@ public class AntennaTab extends JScrollPane {
         p.setLayout(gridbag);
         JLabel l;
         JTextField tf;
-        JSeparator sep; 
+        JLabel sep; 
         // name
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Name: ");
@@ -190,14 +189,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         // X location
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna X Location: ");
@@ -208,14 +207,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         //y location
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Y Location: ");
@@ -226,14 +225,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         //z location
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Z Location: ");
@@ -244,14 +243,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         //pad name
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Pad Name: ");
@@ -262,14 +261,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         // has nutator??
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Nutator present");
@@ -281,7 +280,7 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(nut, c);
         p.add(nut);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
@@ -381,9 +380,9 @@ public class AntennaTab extends JScrollPane {
         p.setLayout(gridbag);
         JLabel l;
         JTextField tf;
-        JSeparator sep; 
+        JLabel sep; 
         // name
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Name: ");
@@ -395,14 +394,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         // x location
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna X Location: ");
@@ -413,14 +412,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         //y location
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Y Location: ");
@@ -431,14 +430,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         //z location
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Z Location: ");
@@ -449,14 +448,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         // pad name
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Antenna Pad Name: ");
@@ -468,14 +467,14 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(tf, c);
         p.add(tf);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);
         // has nutator??
         c.gridwidth = 1;
         c.weightx= 1.0;
-        sep = new JSeparator();
+        sep = new JLabel();
         gridbag.setConstraints(sep, c);
         p.add(sep);
         l = new JLabel("Nutator present");
@@ -493,7 +492,7 @@ public class AntennaTab extends JScrollPane {
         c.weightx= 4.0;
         gridbag.setConstraints(nut, c);
         p.add(nut);
-        sep = new JSeparator();
+        sep = new JLabel();
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sep, c);
         p.add(sep);

@@ -73,7 +73,7 @@ public class PlanningModeSimGUIController implements Runnable {
     //Stuff gotten from first tab!
     private String startTime, endTime, logLevel, freqSetupTime, projSetupTime,
                     advanceClock, latitude, longitude, timezone, altitude,
-                    minAngle;
+                    minAngle, currentDirectory;
     //Stuff gotten from second tab!
     //private Vector antennaConfigs;
     private String[][] antennaConfigs;
@@ -134,6 +134,8 @@ public class PlanningModeSimGUIController implements Runnable {
 
     protected void saveToFile(String dir, String filename) {
         //data_filename = filename;
+        currentDirectory = dir;
+        System.out.println("Current saved dir = "+currentDirectory);
         if(!simulationDone) {//save project file 
             //Simulation Properties tab
             stuffFromSimulationPropertiesTab();
@@ -348,7 +350,7 @@ public class PlanningModeSimGUIController implements Runnable {
               * set to always be called project.txt
               * TODO make it so user can change name of file the projects are stored in.
               */
-            f = new File(fileName+"_project.txt");
+            f = new File(currentDirectory+ File.separator+fileName+"_project.txt");
             out = new PrintStream(new FileOutputStream(f));
             out.println("numberProjects = " + totalprojects);
             out.println();
@@ -470,20 +472,24 @@ public class PlanningModeSimGUIController implements Runnable {
             simOutputContents = new String(doc);
         } catch(Exception e) {}
         
-        ImageIcon schedule_graph = new ImageIcon(simulator.getScheduleGraphFilename());
-        System.out.println("loading "+simulator.getScheduleGraphFilename());
-        JPanel p = new JPanel();
-        p.add(new JLabel(schedule_graph));
-        pane.addTab("Schedule", new JScrollPane(p));
         
         JTextArea log = new JTextArea(simOutputContents);
-        log.setEditable(false);
-        pane.addTab("Simulation Output", new JScrollPane(log));
         //pane.addTab("Sources - Visibility and Execution", 
         //        new JScrollPane(new JTextArea()));
         
+        ImageIcon schedule_graph = new ImageIcon(simulator.getScheduleGraphFilename());
+        System.out.println("loading "+simulator.getScheduleGraphFilename());
         ImageIcon antennaLoc = new ImageIcon(simulator.getAntennaConfigFilename());
         System.out.println("loading "+simulator.getAntennaConfigFilename());
+        
+        JPanel p = new JPanel();
+        
+        p.add(new JLabel(schedule_graph));
+        pane.addTab("Schedule", new JScrollPane(p));
+        
+        log.setEditable(false);
+        pane.addTab("Simulation Output", new JScrollPane(log));
+        
         p = new JPanel();
         p.add(new JLabel(antennaLoc));
         pane.addTab("Antenna Configuration", new JScrollPane(p));
@@ -649,7 +655,7 @@ public class PlanningModeSimGUIController implements Runnable {
     class RunSimulation implements Runnable {
         public RunSimulation(){}
         public void run(){
-        File f = new File(data_filename+".txt");
+        File f = new File(currentDirectory+ File.separator + data_filename+".txt");
         if(!f.exists()){
             System.out.println(f.getName());
             System.out.println("A data file must be properly created " 
@@ -657,7 +663,7 @@ public class PlanningModeSimGUIController implements Runnable {
         } else {
             simulator = new Simulator();
             try {
-                simulator.initialize(".", data_filename+".txt", "output.txt", "log.txt");
+                simulator.initialize(currentDirectory, data_filename+".txt", "output.txt", "log.txt");
                 Thread t = new Thread(simulator);
                 t.start();
                 try {
