@@ -6,9 +6,14 @@ from math import floor
 from math import ceil
 from numarray import array
 
+#print sys.argv[0] #script name
+#print sys.argv[1] # stats filename
+#print sys.argv[2] #graph name
+#print sys.argv[3] #input filename
+#print len(sys.argv)
 if len(sys.argv) < 4:
     print "\nScript Usage: "
-    print "\tpython ALMASched_lst_vs_day.py <stats filename> <graph output filename> <inputfile>"
+    print "\tALMASched_lst_vs_day.py <stats filename> <graph output filename> <inputfile>"
     print ""
     sys.exit()
 
@@ -47,7 +52,8 @@ for line in file1.readlines():
 #Save to color post script file            
 #pgbeg(sys.argv[2]+".ps/cps",1,1) 
 #Save to gif file            
-pgbeg(sys.argv[2]+".gif",1,1)
+#pgbeg(sys.argv[2]+".gif",1,1)
+pgbeg(sys.argv[2]+".gif/GIF",1,1)
 pgpap(10.5,0.75)
 color =1
 pgsci(color)

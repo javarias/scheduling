@@ -50,6 +50,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.ImageIcon;
 
 import alma.scheduling.PlanningModeSim.Tag;
 import alma.scheduling.PlanningModeSim.Simulator;
@@ -427,27 +428,9 @@ public class PlanningModeSimGUIController implements Runnable {
      * If no file is found with that name the simulation does not run.
      */
     public void runSimulation() {
-        File f = new File(data_filename+".txt");
-        if(!f.exists()){
-            System.out.println(f.getName());
-            System.out.println("A data file must be properly created " 
-                + "before a simulation can be run.");
-        } else {
-            simulator = new Simulator();
-            try {
-                simulator.initialize(".", data_filename+".txt", "output.txt", "log.txt");
-                Thread t = new Thread(simulator);
-                t.start();
-                try {
-                    t.join();
-                    simulationDone = true;
-                    clearInputFields();
-                } catch(Exception ex) {}
-            } catch(Exception e) {
-                System.out.println("Error initializing simulator!");
-                e.printStackTrace(System.out);
-            }
-        }
+        RunSimulation r = new RunSimulation();
+        Thread t = new Thread(r);
+        t.start();
     }
 
     /**
@@ -486,10 +469,24 @@ public class PlanningModeSimGUIController implements Runnable {
             in.close();
             simOutputContents = new String(doc);
         } catch(Exception e) {}
-        pane.addTab("Simulation Output", 
-                new JScrollPane(new JTextArea(simOutputContents)));
+        
+        ImageIcon schedule_graph = new ImageIcon(simulator.getScheduleGraphFilename());
+        System.out.println("loading "+simulator.getScheduleGraphFilename());
+        JPanel p = new JPanel();
+        p.add(new JLabel(schedule_graph));
+        pane.addTab("Schedule", new JScrollPane(p));
+        
+        JTextArea log = new JTextArea(simOutputContents);
+        log.setEditable(false);
+        pane.addTab("Simulation Output", new JScrollPane(log));
         //pane.addTab("Sources - Visibility and Execution", 
         //        new JScrollPane(new JTextArea()));
+        
+        ImageIcon antennaLoc = new ImageIcon(simulator.getAntennaConfigFilename());
+        System.out.println("loading "+simulator.getAntennaConfigFilename());
+        p = new JPanel();
+        p.add(new JLabel(antennaLoc));
+        pane.addTab("Antenna Configuration", new JScrollPane(p));
     }
 
     
@@ -649,11 +646,44 @@ public class PlanningModeSimGUIController implements Runnable {
         return false;
     }
 
+    class RunSimulation implements Runnable {
+        public RunSimulation(){}
+        public void run(){
+        File f = new File(data_filename+".txt");
+        if(!f.exists()){
+            System.out.println(f.getName());
+            System.out.println("A data file must be properly created " 
+                + "before a simulation can be run.");
+        } else {
+            simulator = new Simulator();
+            try {
+                simulator.initialize(".", data_filename+".txt", "output.txt", "log.txt");
+                Thread t = new Thread(simulator);
+                t.start();
+                try {
+                    t.join();
+                    simulationDone = true;
+                    clearInputFields();
+                } catch(Exception ex) {}
+            } catch(Exception e) {
+                System.out.println("Error initializing simulator!");
+                e.printStackTrace(System.out);
+            }
+        }
+        }
+    }
     //////////////////////////////////////////////
 
     public static void main(String args[]) {
         PlanningModeSimGUIController controller = new PlanningModeSimGUIController();
         Thread t = new Thread(controller);
         t.start();
+        /*
+        java.util.Map foo =System.getenv();
+        java.util.Set set = foo.keySet();
+        for(java.util.Iterator<String> i = set.iterator(); i.hasNext();){
+            String x = i.next();
+            System.out.println(x +" "+ foo.get(x));
+        }*/
     }
 }

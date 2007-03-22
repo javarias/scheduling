@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.22 2007/03/21 20:18:52 sslucero Exp $ "
+# "@(#) $Id: Makefile,v 1.23 2007/03/22 21:08:59 sslucero Exp $ "
 #
 # Makefile of Scheduling Module
 #
@@ -21,7 +21,7 @@ DEBUG = on
 #COMPONENT_HELPERS=on
 USER_JFLAGS= -deprecation #-Xlint
 
-PY_SCRIPTS = ALMASched_lst_vs_day
+PY_SCRIPTS = ALMASched_lst_vs_day ALMASchedSim_antennaLocation
 
 # Jarfiles and their directories
 #

@@ -209,9 +209,9 @@ public class PlanningModeSimGUI extends JFrame {
         getContentPane().validate();
     }
     private void doRunSimulationAction(){
-        doSaveAction();
-        controller.runSimulation();
-        runSim.setEnabled(false);
+        RunSimulationThread sim = new RunSimulationThread();
+        Thread t = new Thread(sim);
+        t.run();
     }
 
     private JPanel createGUIHeader() {
@@ -300,4 +300,14 @@ public class PlanningModeSimGUI extends JFrame {
         }
 
     } //end of TxtFileFilter class
+
+    class RunSimulationThread implements Runnable {
+        public RunSimulationThread(){}
+        
+        public void run(){
+            doSaveAction();
+            controller.runSimulation();
+            runSim.setEnabled(false);
+        }
+    }
 }

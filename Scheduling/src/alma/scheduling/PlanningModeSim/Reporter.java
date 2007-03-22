@@ -41,9 +41,9 @@ import alma.scheduling.Define.Priority;
 
 import java.util.logging.Level;
 import java.util.HashMap;
-import java.io.PrintStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+//import java.io.FileOutputStream;
+//import java.io.IOException;
 import java.util.ArrayList;
 import java.text.NumberFormat;
 
@@ -548,10 +548,46 @@ public class Reporter extends BasicComponent {
     }
 
     private void runAnalysisScripts(){
+        String cmd1 = "ALMASched_lst_vs_day";
+        String cmd2 = "ALMASchedSim_antennaLocation";
+        String stats = input.getStatsFile().getAbsolutePath();
+        String inputfilename = input.getInputFile().getAbsolutePath();
+        String outputfilename = inputfilename.substring(0, (inputfilename.length() -4))+"_graph";
+        String scheduleCmdString = cmd1 +" "+ stats +" "+ outputfilename +" "+ inputfilename;
+        String antennaPlotCmdString = cmd2 +" "+ inputfilename;
+        //System.out.println(scheduleCmdString);
+        //System.out.println(inputfilename);
+        Process p;
+        try{
+            p = Runtime.getRuntime().exec(scheduleCmdString);
+            p = Runtime.getRuntime().exec(antennaPlotCmdString);
+        } catch(Exception e){
+            e.printStackTrace();
+            logger.warning("Error writing analysis files");
+        }
     }
 
     public String getOutputFilename(){
         return input.getOutFile().getName(); 
     }
 	
+    public String getScheduleGraphFilename(){
+        String inputfile = input.getInputFile().getAbsolutePath();
+    //    try {
+      //  System.out.println("1"+input.getInputFile().getCanonicalPath());
+        //System.out.println("2"+input.getInputFile().getParent());
+  //      System.out.println("3"+input.getInputFile().getPath());
+//        System.out.println("4"+input.getInputFile().getParentFile().getCanonicalPath());
+    //    } catch(Exception e){}
+        return inputfile.substring( 0, (inputfile.length() -4))+"_graph.gif";
+    }
+
+    public String getAntennaConfigFilename(){
+        String f="";
+        try{
+            f= input.getInputFile().getParentFile().getCanonicalPath()+
+                File.separator+"antenna_positions.gif";
+        }catch(Exception e){}
+        return f;
+    }
 }

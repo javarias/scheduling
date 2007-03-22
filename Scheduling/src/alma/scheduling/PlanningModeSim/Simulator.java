@@ -59,6 +59,9 @@ public class Simulator implements Runnable {
 	private Container container;
 
     private String outputResultsFilename;
+    private String scheduleGraphFilename ;
+    private String antennaConfigFilename ;
+    private String directory;
 
 	/**
 	 * Report a severe error to the log and throw an exception.
@@ -84,8 +87,10 @@ public class Simulator implements Runnable {
 	 * @param outputFilename The name of the file containing the input data to the simulation.
 	 * @param logFilename The name of the output log file.
 	 */
-	public void initialize(String directory, String inputFilename, String outputFilename, String logFilename) 
+	public void initialize(String dir, String inputFilename, String outputFilename, String logFilename) 
 		throws SimulationException {
+
+        this.directory = dir;
 		File inputFile = new File (directory,inputFilename);
 		File logFile = new File (directory,logFilename);
 		File outFile = new File (directory,outputFilename);
@@ -241,6 +246,8 @@ public class Simulator implements Runnable {
 			reporter.schedulingIsComplete(clock.getDateTime(),0,"");
 			
             outputResultsFilename = reporter.getOutputFilename();
+            scheduleGraphFilename = reporter.getScheduleGraphFilename();
+            antennaConfigFilename = reporter.getAntennaConfigFilename();
 		} catch (Exception err) {
 			err.printStackTrace(System.out);
 			System.out.println("The simulation run has aborted.");
@@ -249,6 +256,12 @@ public class Simulator implements Runnable {
 
     public String getReportFilename() {
         return outputResultsFilename;
+    }
+    public String getScheduleGraphFilename() {
+        return scheduleGraphFilename;
+    }
+    public String getAntennaConfigFilename() {
+        return antennaConfigFilename;
     }
 
 }

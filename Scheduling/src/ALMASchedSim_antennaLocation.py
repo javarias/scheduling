@@ -8,7 +8,7 @@ import sys
 
 if len(sys.argv) <2:
     print "\nScript Usage: "
-    print "\tpython ALMASchedSim_antennaLocation.py <input filename>"
+    print "\tALMASchedSim_antennaLocation.py <input filename>"
     print ""
     sys.exit()
 
@@ -83,7 +83,8 @@ for x in antennaY:
 
 
 #pgbeg("/xw", 1, 1) 
-pgbeg("antenna_positions.ps/cps", 1, 1) #to file
+#pgbeg("antenna_positions.ps/cps", 1, 1) #to file
+pgbeg("antenna_positions.gif/GIF", 1, 1) #to file
 pgpap(8.0,1.0)
 pgsvp(0.1, 0.9, 0.1, 0.9 )
 
