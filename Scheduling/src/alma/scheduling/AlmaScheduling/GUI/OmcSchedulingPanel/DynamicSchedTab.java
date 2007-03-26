@@ -158,6 +158,7 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     protected void updateArrayStatus() {
         arrayStatusDisplay.setText(controller.getArrayStatus());
         arrayStatusDisplay.validate();
+        revalidate();
     }
 
     private void createAndStartDynamicScheduler() {

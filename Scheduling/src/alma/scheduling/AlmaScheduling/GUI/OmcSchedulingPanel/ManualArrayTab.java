@@ -133,6 +133,7 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     protected void updateArrayStatus() {
         arrayStatusDisplay.setText(controller.getArrayStatus());
         arrayStatusDisplay.validate();
+        revalidate();
     }
         
     public void stop() throws Exception {

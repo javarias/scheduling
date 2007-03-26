@@ -305,6 +305,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     protected void updateArrayStatus() {
         arrayStatusDisplay.setText(controller.getArrayStatus());
         arrayStatusDisplay.validate();
+        revalidate();
     }
     private void executeSBs(){
         //get all ids from the queueSB table and send them to control
