@@ -44,52 +44,98 @@ for line in file1.readlines():
 
 #pgbeg("/xw",1,1)
 pgbeg(sys.argv[2]+".ps/cps",1,1)
-pgpap(11.0,0.5)
+pgpap(10.5,0.75)
 color =1
 pgsci(color)
-pgswin(0, 24, max(endday)+1.5, min(startday)-0.5)
-pgbox('',0,0,'MV',1,0)
-pgswin(0, 24, max(endday)+0.5, min(startday)-1.5)
+#left side labelling
+#pgswin(0, 24, max(endday)+1.5, min(startday)-1.5)
+pgswin(0, 24, 31+0.5, 0-0.5);
 pgbox('',0,0,'NV',1,0)
+#right side labelling
+#pgswin(0, 24, max(endday)+2.5, min(startday)-0.5)
+pgswin(0, 24, 32+.5,1-0.5)
+pgbox('',0,0,'MV',1,0)
 pglab("LST", "Calander Day", "Schedule")
-pgswin(0, 24, max(endday)+ 2.0, min(startday)-1.0)
+pgswin(0, 24, max(endday)+2.0, min(startday)-1.0)
 pgbox('BSCNT1',0,0,'BSCTV',1,0)
 
 i =0
-excep_color = 3
-excel_color = 5
-good_color = 6
-ave_color = 12
-bave_color = 7
-poor_color = 8
-dismal_color = 2
-any_color = 4
+#excep_color = 3
+#excel_color = 5
+#good_color = 6
+#ave_color = 12
+#bave_color = 7
+#poor_color = 8
+#dismal_color = 2
+#any_color = 4
+band1= 3
+band2= 5
+band3= 6
+band4=12 
+band5= 7
+band6= 8
+band7= 2
+band8= 4
+band9= 11
+band10=10 
 
+name =""
 while i < len(lststart):
-    if str(weathernames[i]) == "exceptional":
-        pgsci(excep_color)
+#if str(weathernames[i]) == "exceptional":
+#        pgsci(excep_color)
+#    
+#    if str(weathernames[i]) == "excellent":
+#        pgsci(excel_color)
+#    
+#    if str(weathernames[i]) == "good":
+#        pgsci(good_color)
+#    
+#    if str(weathernames[i]) == "average":
+#        pgsci(ave_color)
+#    
+#    if str(weathernames[i]) == "belowaverage":
+#        pgsci(bave_color)
+#    
+#    if str(weathernames[i]) == "poor":
+#        pgsci(poor_color)
+#    
+#    if str(weathernames[i]) == "dismal":
+#        pgsci(dismal_color)
+#    
+#    if str(weathernames[i]) == "any":
+#        pgsci(any_color)
+#
+#    if str(weathernames[i]) == "null":
+    if str(freq_bands[i]) == "1":
+        pgsci(band1)
     
-    if str(weathernames[i]) == "excellent":
-        pgsci(excel_color)
+    if str(freq_bands[i]) == "2":
+        pgsci(band2)
     
-    if str(weathernames[i]) == "good":
-        pgsci(good_color)
+    if str(freq_bands[i]) == "3":
+        pgsci(band3)
     
-    if str(weathernames[i]) == "average":
-        pgsci(ave_color)
+    if str(freq_bands[i]) == "4":
+        pgsci(band4)
     
-    if str(weathernames[i]) == "belowaverage":
-        pgsci(bave_color)
+    if str(freq_bands[i]) == "5":
+        pgsci(band5)
     
-    if str(weathernames[i]) == "poor":
-        pgsci(poor_color)
+    if str(freq_bands[i]) == "6":
+        pgsci(band6)
     
-    if str(weathernames[i]) == "dismal":
-        pgsci(dismal_color)
-    
-    if str(weathernames[i]) == "any":
-        pgsci(any_color)
+    if str(freq_bands[i]) == "7":
+        pgsci(band7)
+
+    if str(freq_bands[i]) == "8":
+        pgsci(band8)
      
+    if str(freq_bands[i]) == "9":
+        pgsci(band9)
+    
+    if str(freq_bands[i]) == "10":
+        pgsci(band10)
+    
     pgsfs(1)
     if lststart[i] > midnights[i]:
         pgrect( lststart[i], lststart[i]+execlen[i], startday[i]-1, startday[i])
@@ -101,26 +147,24 @@ while i < len(lststart):
         pgrect( lststart[i], lststart[i]+execlen[i], startday[i]-1, startday[i])
     else:
         pgrect( lststart[i], lststart[i]+execlen[i], startday[i], startday[i]+1)
+    name = sbname[i]
     i+=1
 
 
 i=0 
 pgsci(1)
 pgsch(0.7)
-x=0.2
+x=0.6
 while i < len(lststart):
-    if x >= 0.8:
-        x = 0.2
-    else:
-        x +=0.4
+#x = 0.5
     if lststart[i] > midnights[i]:
         pgtext(lststart[i], startday[i]+x -1, sbname[i])
-        x+=0.2
-        pgtext(lststart[i], startday[i]+x -1, 'Band '+str(freq_bands[i]))
+#        x+=0.2
+#        pgtext(lststart[i], startday[i]+x -1, 'Band '+str(freq_bands[i]))
     else:
         pgtext(lststart[i], startday[i]+x, sbname[i])
-        x+=0.2
-        pgtext(lststart[i], startday[i]+x, 'Band '+str(freq_bands[i]))
+#        x+=0.2
+#        pgtext(lststart[i], startday[i]+x, 'Band '+str(freq_bands[i]))
     
     i+=1
 
@@ -143,22 +187,38 @@ pgline( x,y)
 
 pgmtxt('B', 3, 1.0, 1.0, 'Vertical line is midnight civil time')
 
-pgsci(excep_color)
-pgmtxt('B', -8,1.0, 1.0, 'Green is exceptional weather')
-pgsci(excel_color)
-pgmtxt('B', -7,1.0, 1.0, 'Light blue is excellent weahter')
-pgsci(good_color)
-pgmtxt('B', -6,1.0, 1.0, 'Magenta is good weahter')
-pgsci(ave_color)
-pgmtxt('B', -5,1.0, 1.0, 'Purple is average weahter')
-pgsci(bave_color)
-pgmtxt('B', -4,1.0, 1.0, 'Yellow is below average weahter')
-pgsci(poor_color)
-pgmtxt('B', -3,1.0, 1.0, 'Orange is poor weahter')
-pgsci(dismal_color)
-pgmtxt('B', -2,1.0, 1.0, 'Red is dismal weahter')
-pgsci(any_color)
-pgmtxt('B', -1,1.0, 1.0, 'Dark blue color is any weahter')
+#pgsci(excep_color)
+#pgmtxt('B', -8,1.0, 1.0, 'Green is exceptional weather')
+#pgsci(excel_color)
+#pgmtxt('B', -7,1.0, 1.0, 'Light blue is excellent weahter')
+#pgsci(good_color)
+#pgmtxt('B', -6,1.0, 1.0, 'Magenta is good weahter')
+#pgsci(ave_color)
+#pgmtxt('B', -5,1.0, 1.0, 'Purple is average weahter')
+#pgsci(bave_color)
+#pgmtxt('B', -4,1.0, 1.0, 'Yellow is below average weahter')
+#pgsci(poor_color)
+#pgmtxt('B', -3,1.0, 1.0, 'Orange is poor weahter')
+#pgsci(dismal_color)
+#pgmtxt('B', -2,1.0, 1.0, 'Red is dismal weahter')
+#pgsci(any_color)
+#pgmtxt('B', -1,1.0, 1.0, 'Dark blue color is any weahter')
+pgsci(band1)
+pgmtxt('B', -8,1.0, 1.0, 'Freq.Band 1')
+pgsci(band2)
+pgmtxt('B', -7,1.0, 1.0, 'Freq.Band 2')
+pgsci(band3)
+pgmtxt('B', -6,1.0, 1.0, 'Freq.Band 3')
+pgsci(band4)
+pgmtxt('B', -5,1.0, 1.0, 'Freq.Band 4')
+pgsci(band5)
+pgmtxt('B', -4,1.0, 1.0, 'Freq.Band 5')
+pgsci(band6)
+pgmtxt('B', -3,1.0, 1.0, 'Freq. Band 6')
+pgsci(band7)
+pgmtxt('B', -2,1.0, 1.0, 'Freq. Band 7')
+pgsci(band8)
+pgmtxt('B', -1,1.0, 1.0, 'Freq. Band 8')
  
 sim_start=""
 sim_end=""
