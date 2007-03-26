@@ -53,7 +53,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         super(cs);
         parent = p;
         arrayName = a;
-        arrayStatus = "active";
+        arrayStatus = "Active";
         startInteractiveScheduler();
         try{
             consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);

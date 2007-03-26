@@ -35,6 +35,7 @@ import alma.acs.nc.Consumer;
 
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
+import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.xmlstore.XmlStoreNotificationEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
@@ -49,6 +50,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
     private String schedulerName;
+    private String arrayStatus;
     private Queued_Operator_to_Scheduling qsComp;
 
     
@@ -56,6 +58,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         super(cs);
         parent = p;
         arrayName = a;
+        arrayStatus = "Active";
         try{
             //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
@@ -64,6 +67,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
             ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
+            ctrl_consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
             ctrl_consumer.consumerReady();
             
             getMSRef();
@@ -203,6 +207,22 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         return currentEB;
     }
 
+    protected String getArrayStatus(){
+        return arrayStatus;
+    }
+
+    private void setArrayStatus(String stat){
+        arrayStatus = stat;
+        parent.updateArrayStatus();
+    }
+
+    public void receive(DestroyedAutomaticArrayEvent e){
+        System.out.println("Automatic array destroyed event received for "+e.arrayName);
+        if(e.arrayName.equals(arrayName)){
+            setArrayStatus("Destroyed");
+        }
+    }
+    
     public void receive(ExecBlockStartedEvent e){
         logger.info("EXEC started event");
         String exec_id = e.execId.entityId;

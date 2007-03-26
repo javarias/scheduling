@@ -248,7 +248,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
 
     protected void updateArrayStatus() {
-        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
+        arrayStatusDisplay.setText(controller.getArrayStatus());
         arrayStatusDisplay.validate();
     }
     

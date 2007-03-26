@@ -48,6 +48,8 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
+    private JLabel arrayStatusDisplay;
+
 
     /**
       *Tester constructor
@@ -118,6 +120,8 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     }
     
     private void createBottomPanel() {
+        JLabel arrayStatusL = new JLabel("Array Status =");
+        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
         destroyArrayB = new JButton("Destroy Array");
         destroyArrayB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -126,7 +130,9 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
                     setEnable(false);
                 }
         });
-        bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.add(arrayStatusL);
+        bottomPanel.add(arrayStatusDisplay);
         bottomPanel.add(destroyArrayB);
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -148,6 +154,12 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         super.stop();
         exit();
     }
+
+    protected void updateArrayStatus() {
+        arrayStatusDisplay.setText(controller.getArrayStatus());
+        arrayStatusDisplay.validate();
+    }
+
     private void createAndStartDynamicScheduler() {
         try {
             controller.startDynamicScheduling();

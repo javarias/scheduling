@@ -45,6 +45,7 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     private JPanel middlePanel;
     private JButton createConsoleB;
     private JButton destroyB;
+    private JLabel arrayStatusDisplay;
 
     public ManualArrayTab(PluginContainerServices cs, String aName){
         super();
@@ -89,6 +90,8 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
         });
         middlePanel.add(createConsoleB);
         middlePanel.add(destroyB);
+        JLabel arrayStatusL = new JLabel("Array Status =");
+        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
     }
 
     private void doCreateConsoleButton(){
@@ -126,7 +129,12 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     
     public void exit(){
     }
-    
+  
+    protected void updateArrayStatus() {
+        arrayStatusDisplay.setText(controller.getArrayStatus());
+        arrayStatusDisplay.validate();
+    }
+        
     public void stop() throws Exception {
         super.stop();
         exit();

@@ -80,9 +80,9 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     
     private void createBottomPanel() {
         bottomPanel = new JPanel();
-        JLabel foo = new JLabel("NOTE: Manual Arrays are not currently displayed here!");
-        bottomPanel.add(foo);
-        add(bottomPanel, BorderLayout.SOUTH);
+        //JLabel foo = new JLabel("NOTE: Manual Arrays are not currently displayed here!");
+        //bottomPanel.add(foo);
+        //add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public void exit(){

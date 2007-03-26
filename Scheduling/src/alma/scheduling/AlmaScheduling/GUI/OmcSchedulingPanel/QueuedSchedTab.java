@@ -42,6 +42,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 
     //private String schedulerName;
     private String arrayName;
+    private JLabel arrayStatusDisplay;
     private String type;
     private QueuedSchedTabController controller;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
@@ -122,6 +123,8 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private void createTopPanel() {
         createArchivePanel();
         destroyArrayB = new JButton("Destroy Array");
+        JLabel arrayStatusL = new JLabel("Array Status =");
+        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
         topPanel = new JPanel(new FlowLayout());
         destroyArrayB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -131,6 +134,8 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 }
         });
         JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        p.add(arrayStatusL);
+        p.add(arrayStatusDisplay);
         p.add(destroyArrayB);
         topPanel = new JPanel(new BorderLayout());
         topPanel.add(p, BorderLayout.NORTH);
@@ -296,6 +301,10 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
             e.printStackTrace();
         }
         //executionInfo.append(info);
+    }
+    protected void updateArrayStatus() {
+        arrayStatusDisplay.setText(controller.getArrayStatus());
+        arrayStatusDisplay.validate();
     }
     private void executeSBs(){
         //get all ids from the queueSB table and send them to control

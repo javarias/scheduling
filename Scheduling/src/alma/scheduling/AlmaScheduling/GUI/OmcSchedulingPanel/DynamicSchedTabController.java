@@ -43,6 +43,7 @@ import alma.acs.nc.Consumer;
 import alma.acs.container.ContainerServices;
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
+import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.xmlstore.XmlStoreNotificationEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
@@ -54,6 +55,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     private String currentSBId;
     private String currentExecBlockId;
     private String arrayName;
+    private String arrayStatus;
     private DynamicSchedTab parent;
     private Dynamic_Operator_to_Scheduling dsComp;
     
@@ -61,10 +63,14 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         super(cs);
         parent = p;
         arrayName = a;
+        arrayStatus = "Active";
         try{
             consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             consumer.consumerReady();
+            ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            ctrl_consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
+            ctrl_consumer.consumerReady();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -76,6 +82,15 @@ public class DynamicSchedTabController extends SchedulingPanelController {
 
     public void setSchedulerName(String n){
         schedulername = n;
+    }
+    
+    protected String getArrayStatus() {
+        return arrayStatus;
+    }
+    
+    private void setArrayStatus(String stat){
+        arrayStatus = stat;
+        parent.updateArrayStatus();
     }
 
     public void startDynamicScheduling() throws InvalidOperationEx {
@@ -188,6 +203,13 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         } catch(Exception e){
             logger.severe("SP Couldn't respond to DS: "+e.toString());
             e.printStackTrace();
+        }
+    }
+    
+    public void receive(DestroyedAutomaticArrayEvent e){
+        System.out.println("Automatic array destroyed event received for "+e.arrayName);
+        if(e.arrayName.equals(arrayName)){
+            setArrayStatus("Destroyed");
         }
     }
     

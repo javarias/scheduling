@@ -28,15 +28,28 @@ import java.util.logging.Logger;
 import alma.scheduling.MasterSchedulerIF;
 import alma.exec.extension.subsystemplugin.*;
 import alma.Control.console.gui.CCLConsolePlugin;
+import alma.Control.DestroyedManualArrayEvent;
+import alma.acs.nc.Consumer;
 
 public class ManualArrayTabController extends SchedulingPanelController {
     private String arrayName="";
+    private String arrayStatus="";
     private ManualArrayTab parent;
+    private Consumer consumer = null;
     
     public ManualArrayTabController(PluginContainerServices cs, String a, ManualArrayTab p){
         super(cs);
         parent = p;
         arrayName = a;
+        arrayStatus = "Active";
+        try {
+            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            consumer.addSubscription(alma.Control.DestroyedManualArrayEvent.class, this);
+            consumer.consumerReady();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     protected void setArrayInUse(String arrayName){
@@ -48,6 +61,13 @@ public class ManualArrayTabController extends SchedulingPanelController {
         }
     }
 
+    protected String getArrayStatus() {
+        return arrayStatus;
+    }
+    private void setArrayStatus(String s){
+        arrayStatus = s;
+        parent.updateArrayStatus();
+    }
     protected boolean createConsolePlugin() {
         if(arrayName.equals("")){
             return false;
@@ -70,5 +90,11 @@ public class ManualArrayTabController extends SchedulingPanelController {
             releaseMSRef();
         } catch(Exception e){}
     }
-
+    
+    public void receive(DestroyedManualArrayEvent e){
+        System.out.println("Manual array destroyed event received for "+e.arrayName);
+        if(e.arrayName.equals(arrayName)){
+            setArrayStatus("Destroyed");
+        }
+    }
 }
