@@ -157,7 +157,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 
         //first row: right hand cell == sbTable + button
         JPanel sbPanel = new JPanel(new BorderLayout());
-        sbs = new SBTable(false, new Dimension(150,60));
+        sbs = new SBTable(false, new Dimension(150,75));
         sbs.setOwner(this);
         JScrollPane sbPane = new JScrollPane(sbs,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -178,7 +178,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         centerPanel.add(sbPanel);
         //second row: left hand cell == sbTable + buttons (PROBLEMATIC ONE!)
         JPanel queuePanel = new JPanel(new BorderLayout());
-        queueSBs = new SBTable(true, new Dimension(150,60));
+        queueSBs = new SBTable(true, new Dimension(150,75));
         queueSBs.setOwner(this);
         JScrollPane queueSbPane = new JScrollPane(queueSBs,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,

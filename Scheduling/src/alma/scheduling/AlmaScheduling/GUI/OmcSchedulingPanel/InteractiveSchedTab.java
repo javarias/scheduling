@@ -38,7 +38,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
     //private String schedulerName;
-    private String arrayName;
+    //private String arrayName;
     private String type;
     
     private ArchiveSearchFieldsPanel archiveSearchPanel;
@@ -51,6 +51,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     private JButton stopB;
     private SBTable sbs;
     private ProjectTable projects; 
+    private JLabel arrayStatusDisplay;
   //  private boolean sessionStarted;
     private boolean searchingOnProject; 
 
@@ -65,12 +66,12 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     protected void doSetup(String aName){
         searchingOnProject=true;
-        arrayName = aName;
-        controller = new InteractiveSchedTabController(container, arrayName, this);
+        //arrayName = aName;
+        controller = new InteractiveSchedTabController(container, aName, this);
         controller.setArrayInUse(aName);
         controller.getISRef();
         type = "interactive"; 
-        setTitle(arrayName+" (Interactive)");
+        setTitle(aName+" (Interactive)");
         createLayout();
         archiveSearchPanel.setCS(container);
         projects.setCS(container);
@@ -82,7 +83,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     private void doInitialSearch() {
         archiveSearchPanel.doSearch();
     }
-    public void selectFirstResult(){
+    protected void selectFirstResult(){
         projects.showFirstProject();
       
     }
@@ -91,7 +92,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         return controller.getSchedulerName();
     }
     public String getArrayName(){
-        return arrayName;
+        return controller.getArrayName();
     }
     public String getSchedulerType(){
         return type;
@@ -123,6 +124,8 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
 
     private void createTopPanel() {
         createArchivePanel();
+        JLabel arrayStatusL = new JLabel("Array Status =");
+        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
         destroyArrayB = new JButton("Destroy Array");
         destroyArrayB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -134,6 +137,8 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                 }
         });
         JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        p.add(arrayStatusL);
+        p.add(arrayStatusDisplay);
         p.add(destroyArrayB);
         topPanel = new JPanel(new BorderLayout());
         topPanel.add(p, BorderLayout.NORTH);
@@ -143,7 +148,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
       * Top panel contains check boxes for determining if we
       * search by project or by sb.
       */
-    public void createArchivePanel() {
+    private void createArchivePanel() {
         archiveSearchPanel = new ArchiveSearchFieldsPanel();
         archiveSearchPanel.setOwner(this);
         archiveSearchPanel.connected(true);
@@ -152,7 +157,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     /**
       * Middle panel contains he search text boxes and the buttons.
       */
-    public void createMiddlePanel() {
+    private void createMiddlePanel() {
         middlePanel = new JPanel(new GridLayout(2,2));
 
         //first row: lefthand cell = project table
@@ -204,7 +209,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     /**
       * If true then search fields & execute button are enabled and stop disabled
       */
-    public void setEnable(boolean b) {
+    protected void setEnable(boolean b) {
         archiveSearchPanel.setPanelEnabled(b);
         execB.setEnabled(b);
         stopB.setEnabled(!b);
@@ -213,26 +218,40 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     /**
       *
       */
-    public void setSearchMode(boolean b) {
+    protected void setSearchMode(boolean b) {
         searchingOnProject = b;
         projects.setSearchMode(b);
         sbs.setSearchMode(b);
     }
     
-    public void updateSBView(SBLite[] sblites){
+    protected void updateSBView(SBLite[] sblites){
         sbs.setRowInfo(sblites, false);
         sbs.selectFirstSB();
     }
 
-    public void updateProjectView(ProjectLite[] projectLites) {
+    protected void updateProjectView(ProjectLite[] projectLites) {
         projects.setRowInfo(projectLites);
     }
 
-    public void clearTables() {
+    protected void clearTables() {
         sbs.clear();
         projects.clear();
     }
 
+    protected void setSBStatus(String sb, String status){
+        sbs.setSBExecStatus(sb, status);
+        if(status.equals("RUNNING")){
+            setEnable(false);
+        } else {
+            setEnable(true);
+        }
+    }
+
+    protected void updateArrayStatus() {
+        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
+        arrayStatusDisplay.validate();
+    }
+    
     private void executeSB(){
         ExecuteSBThread exec = new ExecuteSBThread();
         Thread t = controller.getCS().getThreadFactory().newThread(exec);
@@ -242,14 +261,6 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         StopSBThread stop = new StopSBThread();
         Thread t = controller.getCS().getThreadFactory().newThread(stop);
         t.start();
-    }
-    public void setSBStatus(String sb, String status){
-        sbs.setSBExecStatus(sb, status);
-        if(status.equals("RUNNING")){
-            setEnable(false);
-        } else {
-            setEnable(true);
-        }
     }
 
     class ExecuteSBThread implements Runnable {

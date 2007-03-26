@@ -33,6 +33,7 @@ import alma.scheduling.Define.*;
 import alma.acs.nc.Consumer;
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
+import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.xmlstore.XmlStoreNotificationEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
@@ -45,12 +46,14 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     //private String currentSBId;
     //private String currentExecBlockId;
     private String arrayName;
+    private String arrayStatus;
     private InteractiveSchedTab parent;
     
     public InteractiveSchedTabController(PluginContainerServices cs, String a, InteractiveSchedTab p){
         super(cs);
         parent = p;
         arrayName = a;
+        arrayStatus = "active";
         startInteractiveScheduler();
         try{
             consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
@@ -60,6 +63,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
             ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
+            ctrl_consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
             ctrl_consumer.consumerReady();
         }catch(Exception e){
             e.printStackTrace();
@@ -127,6 +131,17 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             releaseMSRef();
         }catch(Exception e){
         }
+    }
+    protected String getArrayName(){
+        return arrayName;
+    }
+
+    protected String getArrayStatus() {
+        return arrayStatus;
+    }
+    private void setArrayStatus(String stat){
+        arrayStatus = stat;
+        parent.updateArrayStatus();
     }
 
     public void startInteractiveSession(){
@@ -204,6 +219,13 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         } catch(Exception ex){
             logger.severe("SP: Error ending interactive session");
             ex.printStackTrace();
+        }
+    }
+
+    public void receive(DestroyedAutomaticArrayEvent e){
+        System.out.println("Automatic array destroyed event received for "+e.arrayName);
+        if(e.arrayName.equals(arrayName)){
+            setArrayStatus("Destroyed");
         }
     }
 
