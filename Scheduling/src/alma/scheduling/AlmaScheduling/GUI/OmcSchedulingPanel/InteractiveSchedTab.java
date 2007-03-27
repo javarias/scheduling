@@ -98,6 +98,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         return type;
     }
     public void exit(){
+        controller.releaseISRef();
         controller.stopInteractiveScheduling();
     }
     ////////////////////////////////////
@@ -251,6 +252,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         arrayStatusDisplay.setText(controller.getArrayStatus());
         arrayStatusDisplay.validate();
         revalidate();
+        System.out.println("array status label should be updated now to "+controller.getArrayStatus());
     }
     
     private void executeSB(){

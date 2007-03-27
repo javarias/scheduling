@@ -54,12 +54,11 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         parent = p;
         arrayName = a;
         arrayStatus = "Active";
-        startInteractiveScheduler();
         try{
             consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             consumer.consumerReady();
-            ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);
             ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
             ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
@@ -67,7 +66,9 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             ctrl_consumer.consumerReady();
         }catch(Exception e){
             e.printStackTrace();
+            logger.severe("SP: Error getting consumers for IS");
         }
+        startInteractiveScheduler();
     }
 
     public String getSchedulerName(){
@@ -114,10 +115,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
     public void releaseISRef(){
         try{
+            /*
             logger.info("About to release "+scheduler.name());
                 getMSRef();
                 masterScheduler.stopInteractiveScheduler(schedulername);
                 releaseMSRef();
+            */
             container.releaseComponent(schedulername);
         } catch(Exception e){
             e.printStackTrace();
@@ -223,7 +226,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(DestroyedAutomaticArrayEvent e){
-        System.out.println("Automatic array destroyed event received for "+e.arrayName);
+        logger.info("SP: Automatic array destroyed event received for "+e.arrayName);
         if(e.arrayName.equals(arrayName)){
             setArrayStatus("Destroyed");
         }
