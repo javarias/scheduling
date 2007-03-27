@@ -159,7 +159,9 @@ public class DynamicSchedTabController extends SchedulingPanelController {
       */
     protected void destroyArray(){
         destroyArray(arrayName);
-        stopDynamicScheduling();
+        StopDS foo = new StopDS();
+        Thread t = new Thread(foo);
+        t.start();
     }
 
     private void getDynamicSchedComponent() throws Exception {
@@ -229,6 +231,13 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         }
         public void run(){
             processXmlStoreNotificationEvent(event);
+        }
+    }
+
+    class StopDS implements Runnable {
+        public StopDS(){}
+        public void run(){
+            stopDynamicScheduling();
         }
     }
 }

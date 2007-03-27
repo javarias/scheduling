@@ -30,19 +30,31 @@ public class ArrayTableController extends SchedulingPanelController {
     private PluginContainerServices container;
 
     public ArrayTableController (PluginContainerServices cs){
+        super(cs);
         container = cs;
     }
 
     protected void destroyArray(String name) {
-        try {
-            getMSRef();
-            masterScheduler.destroyArray(name);
-            releaseMSRef();
-        } catch(Exception e){
-            e.printStackTrace();
-            logger.severe("SCHEDULING_PANEL: Array "+name+" was not destroyed");
-        }
+        DoDestroyArray foo = new DoDestroyArray(name);
+        Thread t = new Thread (foo);
+        t.start();
     }
 
+    class DoDestroyArray implements Runnable {
+        private String name;
+        public DoDestroyArray(String n){
+            name = n;
+        }
+        public void run() {
+            try {
+                getMSRef();
+                masterScheduler.destroyArray(name);
+                releaseMSRef();
+            } catch(Exception e){
+                e.printStackTrace();
+                logger.severe("SCHEDULING_PANEL: Array "+name+" was not destroyed");
+            }
+        }
+    }
     
 }

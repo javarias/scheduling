@@ -29,25 +29,30 @@ import alma.Control.DestroyedManualArrayEvent;
 import alma.Control.CreatedManualArrayEvent;
 import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.Control.CreatedAutomaticArrayEvent;
+import alma.Control.ExecBlockStartedEvent;
+import alma.Control.ExecBlockEndedEvent;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class ExistingArraysTabController extends SchedulingPanelController {
     private ExistingArraysTab parent;
-    private PluginContainerServices container; 
+  //  private PluginContainerServices container; 
     private Consumer consumer;
 
     public ExistingArraysTabController(PluginContainerServices cs, ExistingArraysTab p){
         super(cs);
-        container = cs;
+   //     container = cs;
         parent = p;
         try {
-            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
+            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);
             
             consumer.addSubscription(alma.Control.CreatedManualArrayEvent.class, this);
             consumer.addSubscription(alma.Control.CreatedAutomaticArrayEvent.class, this);
             consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
             consumer.addSubscription(alma.Control.DestroyedManualArrayEvent.class, this);
+         
+          //  consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
+            //consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
             
             consumer.consumerReady();
         } catch(Exception e){
@@ -63,7 +68,7 @@ public class ExistingArraysTabController extends SchedulingPanelController {
     }
     public void receive(DestroyedAutomaticArrayEvent event) {
         String name = event.arrayName;
-        logger.info("SP: Received destroy array event for "+name);
+        logger.info("SP: Received destroy array event for "+name+" in existing array tab");
         parent.removeArray(name);
     }
     public void receive(CreatedManualArrayEvent event) {
@@ -74,5 +79,13 @@ public class ExistingArraysTabController extends SchedulingPanelController {
         String name = event.arrayName;
         parent.removeArray(name);
     }
+
+    /*
+     public void receive(ExecBlockStartedEvent e) {
+         logger.info("Existing array tab got exec block started event");
+     }
+     public void receive(ExecBlockEndedEvent e) {
+         logger.info("Existing array tab got exec block ended event");
+     }*/
         
 }

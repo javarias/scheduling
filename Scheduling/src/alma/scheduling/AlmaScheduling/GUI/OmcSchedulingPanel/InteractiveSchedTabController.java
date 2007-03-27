@@ -41,29 +41,31 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 public class InteractiveSchedTabController extends SchedulingPanelController {
     private Interactive_PI_to_Scheduling scheduler;
     private String schedulername;
-    private Consumer consumer = null;
-    private Consumer ctrl_consumer = null;
+    private Consumer consumer;
     //private String currentSBId;
     //private String currentExecBlockId;
     private String arrayName;
     private String arrayStatus;
     private InteractiveSchedTab parent;
     
+    private PluginContainerServices foo;
+
     public InteractiveSchedTabController(PluginContainerServices cs, String a, InteractiveSchedTab p){
         super(cs);
         parent = p;
+        foo=cs;
         arrayName = a;
         arrayStatus = "Active";
         try{
-            consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
-            consumer.addSubscription(XmlStoreNotificationEvent.class, this);
+            //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
+            //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
+            //consumer.consumerReady();
+            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, foo);
+            consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
+            consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
+            consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
+            consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
             consumer.consumerReady();
-            ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);
-            ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
-            ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
-            ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
-            ctrl_consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
-            ctrl_consumer.consumerReady();
         }catch(Exception e){
             e.printStackTrace();
             logger.severe("SP: Error getting consumers for IS");
@@ -86,19 +88,20 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
     protected void destroyArray(){
-        stopInteractiveScheduling();
         destroyArray(arrayName);
+        StopIS foo = new StopIS();
+        Thread t = new Thread(foo);
+        t.start();
     }
 
     protected void stopInteractiveScheduling() {
         try {
+            consumer.disconnect();
             getMSRef();
             masterScheduler.stopInteractiveScheduler(schedulername);
             releaseMSRef();
-            ctrl_consumer.disconnect();
-            consumer.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -115,12 +118,6 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
     public void releaseISRef(){
         try{
-            /*
-            logger.info("About to release "+scheduler.name());
-                getMSRef();
-                masterScheduler.stopInteractiveScheduler(schedulername);
-                releaseMSRef();
-            */
             container.releaseComponent(schedulername);
         } catch(Exception e){
             e.printStackTrace();
@@ -187,6 +184,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(ExecBlockStartedEvent e) {
+        logger.info("got eb started in IS");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         if(scheduler.getCurrentSB().equals(sbid) ){
@@ -200,6 +198,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(ExecBlockEndedEvent e){
+        logger.info("got eb ended in IS");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
@@ -225,14 +224,14 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
 
-    public void receive(DestroyedAutomaticArrayEvent e){
-        logger.info("SP: Automatic array destroyed event received for "+e.arrayName);
-        if(e.arrayName.equals(arrayName)){
+    public void receive(DestroyedAutomaticArrayEvent event) {
+        String name = event.arrayName;
+        logger.info("SP: Received destroy array event for "+name+" in IS");
+        if(name.equals(arrayName)){
             setArrayStatus("Destroyed");
         }
     }
-
-
+    
     public void receive(ASDMArchivedEvent e){
     }
 
@@ -248,6 +247,13 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
         public void run(){
             processXmlStoreNotificationEvent(event);
+        }
+    }
+
+    class StopIS implements Runnable {
+        public StopIS(){ }
+        public void run(){
+            stopInteractiveScheduling();
         }
     }
 }

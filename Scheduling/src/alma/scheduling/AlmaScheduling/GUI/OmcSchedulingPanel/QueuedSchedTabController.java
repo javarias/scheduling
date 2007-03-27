@@ -156,8 +156,10 @@ public class QueuedSchedTabController extends SchedulingPanelController {
 
     }
     protected void destroyArray() {
-        stopQueuedScheduling();
         destroyArray(arrayName);
+        StopQS foo = new StopQS();
+        Thread t = new Thread(foo);
+        t.start();
     }
 
 
@@ -296,4 +298,10 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         }
     }
 
+    class StopQS implements Runnable {
+        public StopQS (){}
+        public void run (){
+            stopQueuedScheduling();
+        }
+    }
 }

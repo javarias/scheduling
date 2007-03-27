@@ -68,8 +68,7 @@ public class ArrayTable extends JTable {
         manageColumnSizes();
         rtClickMenu = new JPopupMenu();
         addMouseListener(new MouseListener(){
-            public void mouseClicked(MouseEvent e) {
-            }
+            public void mouseClicked(MouseEvent e) { }
             public void mouseEntered(MouseEvent e){ }
             public void mouseExited(MouseEvent e){ }
             public void mousePressed(MouseEvent e){
@@ -89,26 +88,31 @@ public class ArrayTable extends JTable {
     }
 
     private void getSelectedArray(){
-        int row = getSelectedRow();
-        currentArray = (String)arrayRowInfo[row][0];
+        try {
+            int row = getSelectedRow();
+            currentArray = (String)arrayRowInfo[row][0];
+        } catch(Exception e){
+            logger.severe("Crap problem getting currently selected array...");
+        }
     }
 
     private void updateRightClickMenu() {
         rtClickMenu.removeAll();
-        getSelectedArray();
-        JMenuItem item1 = new JMenuItem("Open Scheduler");
-        item1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
+       // getSelectedArray();
+        //JMenuItem item1 = new JMenuItem("Open Scheduler");
+        //item1.setToolTipText("Not Implemented yet");
+       // item1.addActionListener(new ActionListener() {
+         //   public void actionPerformed(ActionEvent event){
                 //
-            }
-        });
-        rtClickMenu.add(item1);
+        //    }
+        //});
+        //rtClickMenu.add(item1);
         JMenuItem item2 = new JMenuItem("Destroy Array");
         item2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
-                getSelectedArray();
-                logger.fine("SP: about to destroy "+currentArray);
-                controller.destroyArray(currentArray);
+                DoDestroyArray foo = new DoDestroyArray();
+                Thread t = new Thread(foo);
+                t.start();
             }
         });
         rtClickMenu.add(item2);
@@ -291,6 +295,23 @@ public class ArrayTable extends JTable {
                        e.getX(), e.getY());
             }
         }
+    }
+    
+
+    class DoDestroyArray implements Runnable {
+        //private String name;
+        public DoDestroyArray(){//String n){
+          //  name = n;
+        }
+        public void run(){
+            logger.fine("SP: about to destroy "+currentArray);
+            getSelectedArray();
+            if(currentArray.equals("")){
+                return;
+            }
+            controller.destroyArray(currentArray);
+        }
+        
     }
 
 }
