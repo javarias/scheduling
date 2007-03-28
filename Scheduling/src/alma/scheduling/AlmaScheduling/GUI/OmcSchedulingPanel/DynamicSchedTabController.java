@@ -145,13 +145,15 @@ public class DynamicSchedTabController extends SchedulingPanelController {
             releaseDynamicSchedComponent();
             getMSRef();
             masterScheduler.stopDynamicScheduler(schedulername);
-            consumer.disconnect();
             releaseMSRef();
             //container.releaseComponent(schedulername);
         } catch(Exception e) {
             logger.warning("SCHEDULING_PANEL: DS problem destroying array");
             logger.warning("SCHEDULING_PANEL: "+e.toString());
         }
+        try {
+            consumer.disconnect();
+        } catch(Exception e){} //if it complains it means they've already disconnected it
     }
     /**
       * Destroy the array and release the scheduler (remove its reference 

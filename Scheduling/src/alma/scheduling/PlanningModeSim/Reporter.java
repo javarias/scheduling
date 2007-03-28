@@ -557,10 +557,13 @@ public class Reporter extends BasicComponent {
         String antennaPlotCmdString = cmd2 +" "+ inputfilename;
         //System.out.println(scheduleCmdString);
         //System.out.println(inputfilename);
-        Process p;
         try{
-            p = Runtime.getRuntime().exec(scheduleCmdString);
-            p = Runtime.getRuntime().exec(antennaPlotCmdString);
+            CreateScheduleFile foo1 = new CreateScheduleFile(scheduleCmdString);   
+            CreateAntennaLocationFile foo2 = new CreateAntennaLocationFile(antennaPlotCmdString);
+            Thread t1 = new Thread(foo1);
+            Thread t2 = new Thread(foo2);
+            t1.start();
+            t2.start();
         } catch(Exception e){
             e.printStackTrace();
             logger.warning("Error writing analysis files");
@@ -589,5 +592,33 @@ public class Reporter extends BasicComponent {
                 File.separator+"antenna_positions.gif";
         }catch(Exception e){}
         return f;
+    }
+
+    class CreateScheduleFile implements Runnable {
+        private String command;
+        public CreateScheduleFile (String cmd){ 
+            command = cmd;
+        }
+        public void run(){
+            try {
+                Process p = Runtime.getRuntime().exec(command);
+            } catch(Exception e){
+                logger.warning("Error writing schedule file using command \n\t"+command);
+            }
+        }
+    }
+
+    class CreateAntennaLocationFile implements Runnable{
+        private String command;
+        public CreateAntennaLocationFile (String cmd){
+            command = cmd;
+        }
+        public void run(){
+            try {
+                Process p = Runtime.getRuntime().exec(command);
+            } catch(Exception e){
+                logger.warning("Error writing antenna location file using command \n\t"+command);
+            }
+        }
     }
 }
