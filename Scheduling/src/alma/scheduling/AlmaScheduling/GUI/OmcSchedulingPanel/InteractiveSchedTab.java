@@ -99,7 +99,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     public void exit(){
         controller.releaseISRef();
-        controller.stopInteractiveScheduling();
+        //controller.stopInteractiveScheduling();
     }
     ////////////////////////////////////
     public void start() throws Exception {
