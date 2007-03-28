@@ -96,10 +96,14 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     protected void stopInteractiveScheduling() {
         try {
-            consumer.disconnect();
             getMSRef();
             masterScheduler.stopInteractiveScheduler(schedulername);
             releaseMSRef();
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        try{
+            consumer.disconnect();
         } catch (Exception e) {
             //e.printStackTrace();
         }

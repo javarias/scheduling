@@ -100,7 +100,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 ///////////////////////////////
     public void exit(){
-        //controller.stopQueuedScheduling();
+        controller.stopQueuedScheduling();
     }
     public String getSchedulerType(){
         return type;

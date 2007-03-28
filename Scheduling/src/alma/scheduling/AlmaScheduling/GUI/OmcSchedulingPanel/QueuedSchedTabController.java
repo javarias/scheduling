@@ -170,14 +170,13 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 masterScheduler.stopQueuedScheduler(arrayName);
             } catch(Exception e) {}
             releaseMSRef();
-            ctrl_consumer.disconnect();
             container.releaseComponent(qsComp.name());
-            //cant set to null coz tab needs them for closing!
-            //arrayName = null;
-            //schedulerName = null;
         } catch(Exception e) {
             e.printStackTrace();
         }
+        try {
+            ctrl_consumer.disconnect();
+        } catch(Exception e){} //if it complains it means they've already disconnected it
     }
     private boolean doesSbBelong(String id){
         boolean b= false;
