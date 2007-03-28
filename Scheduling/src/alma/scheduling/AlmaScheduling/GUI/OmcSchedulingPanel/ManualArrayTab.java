@@ -42,9 +42,10 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     private String type;
     private String title;
     private ManualArrayTabController controller;
+    private JPanel topPanel;
     private JPanel middlePanel;
     private JButton createConsoleB;
-    private JButton destroyB;
+    private JButton destroyArrayB;
     private JLabel arrayStatusDisplay;
 
     public ManualArrayTab(PluginContainerServices cs, String aName){
@@ -63,18 +64,27 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     private void createLayout(){
         setBorder(new TitledBorder("Manual Array"));
         setLayout(new BorderLayout());
+        createTopPanel();
         createMiddlePanel();
         Dimension d = getPreferredSize();
+        add(topPanel,BorderLayout.NORTH);
         add(middlePanel,BorderLayout.CENTER);
     }
     public String getTitle() {
         return title;
     }
 
+    private void createTopPanel(){
+        topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel arrayStatusL = new JLabel("Array Status =");
+        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
+        topPanel.add(arrayStatusL);
+        topPanel.add(arrayStatusDisplay);
+    }
     /**
       * Middle panel contains he search text boxes and the buttons.
       */
-    public void createMiddlePanel() {
+    private void createMiddlePanel() {
         middlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         createConsoleB = new JButton("Create CCL Console");
         createConsoleB.addActionListener(new ActionListener() {
@@ -82,16 +92,14 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
                     doCreateConsoleButton();
                 }
         });
-        destroyB = new JButton("Destroy Array");
-        destroyB.addActionListener(new ActionListener() {
+        destroyArrayB = new JButton("Destroy Array");
+        destroyArrayB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
                     doDestroyButton();
                 }
         });
         middlePanel.add(createConsoleB);
-        middlePanel.add(destroyB);
-        JLabel arrayStatusL = new JLabel("Array Status =");
-        arrayStatusDisplay = new JLabel(controller.getArrayStatus());
+        middlePanel.add(destroyArrayB);
     }
 
     private void doCreateConsoleButton(){
@@ -110,7 +118,7 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
       * If true then search fields & execute button are enabled and stop disabled
       */
     public void setEnable(boolean b) {
-        destroyB.setEnabled(b);
+        destroyArrayB.setEnabled(b);
         createConsoleB.setEnabled(b);
         repaint();
     }
@@ -131,7 +139,11 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     }
   
     protected void updateArrayStatus() {
-        arrayStatusDisplay.setText(controller.getArrayStatus());
+        String stat = controller.getArrayStatus();
+        if(stat.equals("Destroyed")){
+            destroyArrayB.setEnabled(false);        
+        }
+        arrayStatusDisplay.setText(stat);
         arrayStatusDisplay.validate();
         revalidate();
     }
@@ -160,7 +172,7 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
             try {
                 controller.destroyArray();
                 //so they can't press it twice!
-                destroyB.setEnabled(false);
+                destroyArrayB.setEnabled(false);
             } catch(Exception e) {
                 e.printStackTrace();
                 showErrorPopup(e.toString(), "destroy array");

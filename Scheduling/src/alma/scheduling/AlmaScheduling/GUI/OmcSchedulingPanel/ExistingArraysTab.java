@@ -102,4 +102,8 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
         repaint();
         validate();
     }
+
+    protected void openSchedulerForArray(String array) {
+        //do later when its ok to make an ICD change
+    }
 }

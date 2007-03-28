@@ -303,7 +303,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //executionInfo.append(info);
     }
     protected void updateArrayStatus() {
-        arrayStatusDisplay.setText(controller.getArrayStatus());
+        String stat = controller.getArrayStatus();
+        if(stat.equals("Destroyed")){
+            destroyArrayB.setEnabled(false);        
+        }
+        arrayStatusDisplay.setText(stat);
         arrayStatusDisplay.validate();
         revalidate();
     }

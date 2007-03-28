@@ -66,7 +66,7 @@ public class ArrayTable extends JTable {
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
             setHorizontalAlignment(SwingConstants.LEFT);
         manageColumnSizes();
-        rtClickMenu = new JPopupMenu();
+        createRightClickMenu();
         addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e) { }
             public void mouseEntered(MouseEvent e){ }
@@ -78,7 +78,7 @@ public class ArrayTable extends JTable {
                 showPopup(e);
             }
             private void showPopup(MouseEvent e) {
-                updateRightClickMenu();
+                //updateRightClickMenu();
                 if (e.isPopupTrigger()) {
                    rtClickMenu.show(e.getComponent(),
                        e.getX(), e.getY());
@@ -96,27 +96,32 @@ public class ArrayTable extends JTable {
         }
     }
 
-    private void updateRightClickMenu() {
-        rtClickMenu.removeAll();
+    private void createRightClickMenu() {
+        rtClickMenu = new JPopupMenu();
+       // rtClickMenu.removeAll();
        // getSelectedArray();
-        //JMenuItem item1 = new JMenuItem("Open Scheduler");
-        //item1.setToolTipText("Not Implemented yet");
-       // item1.addActionListener(new ActionListener() {
-         //   public void actionPerformed(ActionEvent event){
-                //
-        //    }
-        //});
-        //rtClickMenu.add(item1);
-        JMenuItem item2 = new JMenuItem("Destroy Array");
-        item2.addActionListener(new ActionListener() {
+        JMenuItem item1;
+        /*
+        item1 = new JMenuItem("Open Scheduler");
+        item1.setToolTipText("Not Implemented yet");
+        item1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event){
+                DoOpenScheduler foo = new DoOpenScheduler();
+                Thread t = new Thread(foo);
+                t.start();
+            }
+        });
+        rtClickMenu.add(item1);
+        */
+        item1 = new JMenuItem("Destroy Array");
+        item1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 DoDestroyArray foo = new DoDestroyArray();
                 Thread t = new Thread(foo);
                 t.start();
             }
         });
-        rtClickMenu.add(item2);
-
+        rtClickMenu.add(item1);
     }
     
     public void setCS(PluginContainerServices cs){
@@ -300,18 +305,34 @@ public class ArrayTable extends JTable {
 
     class DoDestroyArray implements Runnable {
         //private String name;
-        public DoDestroyArray(){//String n){
+        public DoDestroyArray(){
           //  name = n;
         }
         public void run(){
-            logger.fine("SP: about to destroy "+currentArray);
             getSelectedArray();
             if(currentArray.equals("")){
                 return;
             }
+            logger.fine("SP: about to destroy "+currentArray);
             controller.destroyArray(currentArray);
         }
         
     }
+
+    class DoOpenScheduler implements Runnable {
+        public DoOpenScheduler() {
+        }
+        public void run() {
+            /*
+            getSelectedArray();
+            if(currentArray.equals("")){
+                return;
+            }
+            logger.fine("SP: about to open scheduler for array "+currentArray);
+            (ExistingArraysTab)parent.openSchedulerForArray(currentArray);
+            */
+        }
+    }
+
 
 }

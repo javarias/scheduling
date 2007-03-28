@@ -249,7 +249,11 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
 
     protected void updateArrayStatus() {
-        arrayStatusDisplay.setText(controller.getArrayStatus());
+        String stat = controller.getArrayStatus();
+        if(stat.equals("Destroyed")){
+            destroyArrayB.setEnabled(false);        
+        }
+        arrayStatusDisplay.setText(stat);
         arrayStatusDisplay.validate();
         revalidate();
         System.out.println("array status label should be updated now to "+controller.getArrayStatus());
