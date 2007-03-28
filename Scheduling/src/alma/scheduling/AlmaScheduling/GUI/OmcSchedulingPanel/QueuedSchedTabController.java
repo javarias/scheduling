@@ -171,12 +171,13 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             } catch(Exception e) {}
             releaseMSRef();
             container.releaseComponent(qsComp.name());
+            if(ctrl_consumer != null){
+                ctrl_consumer.disconnect();
+                ctrl_consumer = null;
+            }
         } catch(Exception e) {
             e.printStackTrace();
         }
-        try {
-            ctrl_consumer.disconnect();
-        } catch(Exception e){} //if it complains it means they've already disconnected it
     }
     private boolean doesSbBelong(String id){
         boolean b= false;

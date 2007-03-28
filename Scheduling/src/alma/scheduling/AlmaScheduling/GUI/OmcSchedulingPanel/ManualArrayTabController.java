@@ -88,7 +88,10 @@ public class ManualArrayTabController extends SchedulingPanelController {
             getMSRef();
             masterScheduler.destroyArray(arrayName);
             releaseMSRef();
-            consumer.disconnect();
+            if(conumser != null){
+                consumer.disconnect();
+                consumer = null;
+            }
         } catch(Exception e){}
     }
     
