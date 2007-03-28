@@ -555,8 +555,8 @@ public class Reporter extends BasicComponent {
         String outputfilename = inputfilename.substring(0, (inputfilename.length() -4))+"_graph";
         String scheduleCmdString = cmd1 +" "+ stats +" "+ outputfilename +" "+ inputfilename;
         String antennaPlotCmdString = cmd2 +" "+ inputfilename;
-        System.out.println(scheduleCmdString);
-        System.out.println(inputfilename);
+        //System.out.println(scheduleCmdString);
+        //System.out.println(inputfilename);
         Process p;
         try{
             p = Runtime.getRuntime().exec(scheduleCmdString);
