@@ -84,7 +84,7 @@ for x in antennaY:
 
 #pgbeg("/xw", 1, 1) 
 #pgbeg("antenna_positions.ps/cps", 1, 1) #to file
-pgbeg("antenna_positions.gif/GIF", 1, 1) #to file
+pgbeg("_tmp_antenna_positions.gif/GIF", 1, 1) #to file
 pgpap(8.0,1.0)
 pgsvp(0.1, 0.9, 0.1, 0.9 )
 

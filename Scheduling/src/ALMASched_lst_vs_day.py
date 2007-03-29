@@ -5,6 +5,8 @@ import sys
 from math import floor
 from math import ceil
 from numarray import array
+import time
+import string
 
 #print sys.argv[0] #script name
 #print sys.argv[1] # stats filename
@@ -52,17 +54,15 @@ for line in file1.readlines():
 #Save to color post script file            
 #pgbeg(sys.argv[2]+".ps/cps",1,1) 
 #Save to gif file            
-#pgbeg(sys.argv[2]+".gif",1,1)
-pgbeg(sys.argv[2]+".gif/GIF",1,1)
+foo = "_tmp_schedule.gif"   
+pgbeg(foo+"/GIF",1,1)
 pgpap(10.5,0.75)
 color =1
 pgsci(color)
 #left side labelling
-#pgswin(0, 24, max(endday)+1.5, min(startday)-1.5)
 pgswin(0, 24, 31+0.5, 0-0.5);
 pgbox('',0,0,'NV',1,0)
 #right side labelling
-#pgswin(0, 24, max(endday)+2.5, min(startday)-0.5)
 pgswin(0, 24, 32+.5,1-0.5)
 pgbox('',0,0,'MV',1,0)
 pglab("LST", "Calander Day", "Schedule")
@@ -70,14 +70,7 @@ pgswin(0, 24, max(endday)+2.0, min(startday)-1.0)
 pgbox('BSCNT1',0,0,'BSCTV',1,0)
 
 i =0
-#excep_color = 3
-#excel_color = 5
-#good_color = 6
-#ave_color = 12
-#bave_color = 7
-#poor_color = 8
-#dismal_color = 2
-#any_color = 4
+
 band1= 3
 band2= 5
 band3= 6
@@ -91,31 +84,6 @@ band10=10
 
 name =""
 while i < len(lststart):
-#if str(weathernames[i]) == "exceptional":
-#        pgsci(excep_color)
-#    
-#    if str(weathernames[i]) == "excellent":
-#        pgsci(excel_color)
-#    
-#    if str(weathernames[i]) == "good":
-#        pgsci(good_color)
-#    
-#    if str(weathernames[i]) == "average":
-#        pgsci(ave_color)
-#    
-#    if str(weathernames[i]) == "belowaverage":
-#        pgsci(bave_color)
-#    
-#    if str(weathernames[i]) == "poor":
-#        pgsci(poor_color)
-#    
-#    if str(weathernames[i]) == "dismal":
-#        pgsci(dismal_color)
-#    
-#    if str(weathernames[i]) == "any":
-#        pgsci(any_color)
-#
-#    if str(weathernames[i]) == "null":
     if str(freq_bands[i]) == "1":
         pgsci(band1)
     
@@ -197,22 +165,6 @@ pgline( x,y)
 
 pgmtxt('B', 3, 1.0, 1.0, 'Vertical line is midnight civil time')
 
-#pgsci(excep_color)
-#pgmtxt('B', -8,1.0, 1.0, 'Green is exceptional weather')
-#pgsci(excel_color)
-#pgmtxt('B', -7,1.0, 1.0, 'Light blue is excellent weahter')
-#pgsci(good_color)
-#pgmtxt('B', -6,1.0, 1.0, 'Magenta is good weahter')
-#pgsci(ave_color)
-#pgmtxt('B', -5,1.0, 1.0, 'Purple is average weahter')
-#pgsci(bave_color)
-#pgmtxt('B', -4,1.0, 1.0, 'Yellow is below average weahter')
-#pgsci(poor_color)
-#pgmtxt('B', -3,1.0, 1.0, 'Orange is poor weahter')
-#pgsci(dismal_color)
-#pgmtxt('B', -2,1.0, 1.0, 'Red is dismal weahter')
-#pgsci(any_color)
-#pgmtxt('B', -1,1.0, 1.0, 'Dark blue color is any weahter')
 pgsci(band1)
 pgmtxt('B', -8,1.0, 1.0, 'Freq.Band 1')
 pgsci(band2)
@@ -242,4 +194,5 @@ for x in input_file.readlines():
 pgsci(1)
 pgmtxt('T', 2, 0.5, 0.5 ,str(sim_start))
 pgmtxt('T', 1, 0.5, 0.5 ,str(sim_end))
+
 pgend()

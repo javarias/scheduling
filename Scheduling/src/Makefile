@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.23 2007/03/22 21:08:59 sslucero Exp $ "
+# "@(#) $Id: Makefile,v 1.24 2007/03/29 19:42:35 sslucero Exp $ "
 #
 # Makefile of Scheduling Module
 #
@@ -35,7 +35,7 @@ DynamicSchedulingSubsystem_EXTRAS = alma/scheduling/Image/*.jpg
 #COMPONENTS_JARFILES = schedulingComp 
 #schedulingComp_DIRS =  alma/scheduling/AlmaScheduling
 
-#SCRIPTS = runSchedulingPanel
+SCRIPTS = runSchedSimGUI
 #>>>>> END OF standard rules
 
 
