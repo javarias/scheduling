@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.62 2007/03/19 13:37:22 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.63 2007/03/29 14:17:15 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -363,7 +363,6 @@ public class ALMAControl implements Control {
             }
             String arrayName = control_system.createManualArray(antenna);
             manualArrays.add(arrayName);
-            //ManualArrayMonitor mon = alma.Control.
             logger.info("SCHEDULING: Array "+arrayName+" created with "+antenna.length+" antennas.");
             return arrayName;
         } catch(InvalidRequest e1) {
@@ -396,13 +395,23 @@ public class ALMAControl implements Control {
      */
     public void destroyArray(String name) throws SchedulingException {
         try {
+            boolean found = false;
     	    logger.info("SCHEDULING about to destroy array "+name);
             for(int i=0; i < auto_controllers.size(); i++){
 	            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
 	          	    auto_controllers.removeElementAt(i);
+                    found = true;
                 }
 	        }
-            
+            if(!found){
+                for(int i=0; i < manualArrays.size(); i++){
+                    if(((String)manualArrays.elementAt(i)).equals(name)){
+                        manualArrays.removeElementAt(i);
+                        found = true;
+                        break;
+                    }
+                }
+            }
             containerServices.releaseComponent(name);
             control_system.destroyArray(name);
         } catch(InvalidRequest e1) {
@@ -434,15 +443,15 @@ public class ALMAControl implements Control {
     public String[] getActiveArray() throws SchedulingException {
         try {
             ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
-            ResourceId[] manualArrays = control_system.getManualArrayComponents();
-            int all = automaticArrays.length + manualArrays.length;
+            ResourceId[] mas = control_system.getManualArrayComponents();
+            int all = automaticArrays.length + mas.length;
             String[] allArrays = new String[all];
             int x=0;
             for(int i=0; i < automaticArrays.length; i++){
                 allArrays[x++] = automaticArrays[i].ComponentName;
             }
-            for(int i=0; i < manualArrays.length; i++){
-                allArrays[x++] = manualArrays[i].ComponentName;
+            for(int i=0; i < mas.length; i++){
+                allArrays[x++] = mas[i].ComponentName;
             }
             if(allArrays.length != all) {
                 throw new SchedulingException(
@@ -517,8 +526,8 @@ public class ALMAControl implements Control {
             for(int i=0;i < automaticArrays.length; i++){
                 logger.info("SCHEDULING: auto-array name = "+automaticArrays[i].ComponentName);
             }
-            ResourceId[] manualArrays = control_system.getManualArrayComponents();
-            int all = automaticArrays.length + manualArrays.length;
+            ResourceId[] mas = control_system.getManualArrayComponents();
+            int all = automaticArrays.length + mas.length;
             ArrayInfo[] allInfo = new ArrayInfo[all];
             int x=0; //counter for adding to 'allInfo'
             for(int i=0; i < automaticArrays.length; i++){
@@ -538,7 +547,7 @@ public class ALMAControl implements Control {
 
                 x++;
             }
-            for(int i=0; i < manualArrays.length; i++){
+            for(int i=0; i < mas.length; i++){
                 x++;
             }
         

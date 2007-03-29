@@ -79,7 +79,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.88 2007/03/19 13:37:22 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.89 2007/03/29 14:17:15 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -465,8 +465,8 @@ public class ALMAMasterScheduler extends MasterScheduler
                 logger.fine("SCHEDULING: Dynamic Scheduler has ended at " + config.getActualEndTime());
                 //release DSComp
                 logger.fine("SCHEDULING: DS Component ("+comp.name()+") about to be released");
-                logger.info("SCHEDULING_MS: releasing "+comp.name());
-                //containerServices.releaseComponent(comp.name());
+                //logger.info("SCHEDULING_MS: releasing "+comp.name());
+                releaseDSComp(comp.name());
             }
 //            destroyArray(arrayname);
         } catch(Exception e) {
@@ -479,6 +479,19 @@ public class ALMAMasterScheduler extends MasterScheduler
         //    InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
         //    AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
         //    throw e2.toInvalidOperationEx();
+        }
+    }
+
+    private void releaseDSComp(String name){
+        for(int i=0; i < dynamicComps.size(); i++){
+            if(((Dynamic_Operator_to_Scheduling)dynamicComps.elementAt(i)).name().equals(name)){
+                try {
+                    containerServices.releaseComponent(name);
+                } catch(Exception e){
+                    logger.warning("SCHEDULING: Error releasing dynamic scheduling component");
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
