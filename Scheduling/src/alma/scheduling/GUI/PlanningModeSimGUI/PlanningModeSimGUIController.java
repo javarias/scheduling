@@ -73,7 +73,7 @@ public class PlanningModeSimGUIController implements Runnable {
     //Stuff gotten from first tab!
     private String startTime, endTime, logLevel, freqSetupTime, projSetupTime,
                     advanceClock, latitude, longitude, timezone, altitude,
-                    minAngle, currentDirectory;
+                    minAngle, currentDirectory, simInputFile, simOutputFile, simStatFile;
     //Stuff gotten from second tab!
     //private Vector antennaConfigs;
     private String[][] antennaConfigs;
@@ -107,6 +107,15 @@ public class PlanningModeSimGUIController implements Runnable {
     public void run() {
         this.gui = new PlanningModeSimGUI(this);
         getTabs();
+    }
+
+    protected void cleanUpFiles(){
+        try {
+            File f1 = new File(simulator.getAntennaConfigFilename());
+            f1.delete();
+            File f2 = new File(simulator.getScheduleGraphFilename());
+            f2.delete();
+        }catch(Exception e){}
     }
     
     protected URL getImage(String name) {
@@ -447,7 +456,7 @@ public class PlanningModeSimGUIController implements Runnable {
         JPanel p = (JPanel)comp3[0];
         Component[] comp4 = p.getComponents();
         JTabbedPane tp = (JTabbedPane)comp4[1];
-        tp.removeAll();
+        //tp.removeAll();
         createSimulationOutputView(tp);
         
     }
@@ -478,9 +487,9 @@ public class PlanningModeSimGUIController implements Runnable {
         //        new JScrollPane(new JTextArea()));
         
         ImageIcon schedule_graph = new ImageIcon(simulator.getScheduleGraphFilename());
-        System.out.println("loading "+simulator.getScheduleGraphFilename());
+        //System.out.println("loading "+simulator.getScheduleGraphFilename());
         ImageIcon antennaLoc = new ImageIcon(simulator.getAntennaConfigFilename());
-        System.out.println("loading "+simulator.getAntennaConfigFilename());
+        //System.out.println("loading "+simulator.getAntennaConfigFilename());
         
         JPanel p = new JPanel();
         
@@ -652,6 +661,25 @@ public class PlanningModeSimGUIController implements Runnable {
         return false;
     }
 
+    public String getInputFile(){
+        return simInputFile;
+    }
+    public String getOuputFile(){
+        return simOutputFile;
+    }
+    public String getStatFile(){
+        return simStatFile;
+    }
+    public void setInputFile(String f){
+        simInputFile = f;
+    }
+    public void setOutputFile(String f){
+        simOutputFile = f;
+    }
+    public void setStatFile(String f){
+        simStatFile = f;
+    }
+
     class RunSimulation implements Runnable {
         public RunSimulation(){}
         public void run(){
@@ -663,12 +691,16 @@ public class PlanningModeSimGUIController implements Runnable {
         } else {
             simulator = new Simulator();
             try {
+                setInputFile(data_filename+".txt");
+                setOutputFile("output.txt");
+                setStatFile("stats_output.txt");
                 simulator.initialize(currentDirectory, data_filename+".txt", "output.txt", "log.txt");
                 Thread t = new Thread(simulator);
                 t.start();
                 try {
                     t.join();
                     simulationDone = true;
+                    Thread.sleep(20);
                     clearInputFields();
                 } catch(Exception ex) {}
             } catch(Exception e) {
@@ -684,12 +716,5 @@ public class PlanningModeSimGUIController implements Runnable {
         PlanningModeSimGUIController controller = new PlanningModeSimGUIController();
         Thread t = new Thread(controller);
         t.start();
-        /*
-        java.util.Map foo =System.getenv();
-        java.util.Set set = foo.keySet();
-        for(java.util.Iterator<String> i = set.iterator(); i.hasNext();){
-            String x = i.next();
-            System.out.println(x +" "+ foo.get(x));
-        }*/
     }
 }

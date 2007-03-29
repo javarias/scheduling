@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.BoxLayout;
@@ -51,10 +52,12 @@ public class WeatherDataTab extends JScrollPane {
     private JComboBox modelType, totalfuncs;
     private int totalWeatherFuncs, totalWeatherFiles;
     private boolean isRealMode;
+    private JFrame parent;
 
 
-    public WeatherDataTab() {
+    public WeatherDataTab(JFrame p) {
         super();
+        parent = p;
         setViewportView(createSelectModelView());
     }
     
@@ -106,6 +109,11 @@ public class WeatherDataTab extends JScrollPane {
         opacityFile.setPreferredSize(tfSize);
         files.add(opacityFile);
         JButton opacityB = new JButton("Browse");
+        opacityB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    opacityFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load Opacity Data File"));
+                }
+        });
         buttons.add(opacityB);
         
         JLabel rmsL = new JLabel("RMS Datafile: ");
@@ -114,6 +122,11 @@ public class WeatherDataTab extends JScrollPane {
         rmsFile.setPreferredSize(tfSize);
         files.add(rmsFile);
         JButton rmsB = new JButton("Browse");
+        rmsB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    rmsFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load RMS Data File"));
+                }
+        });
         buttons.add(rmsB);
         JLabel windL = new JLabel("Wind Velocity Datafile: ");
         labels.add(windL);
@@ -121,6 +134,11 @@ public class WeatherDataTab extends JScrollPane {
         windFile.setPreferredSize(tfSize);
         files.add(windFile);
         JButton windB = new JButton("Browse");
+        windB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    windFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load Wind Data File"));
+                }
+        });
         buttons.add(windB);
         
         centerPanel.add(labels);

@@ -84,7 +84,12 @@ public class PlanningModeSimGUI extends JFrame {
     public String createFileChooser(String type, String name) {
         String result = null;
         int returnVal=0;
+        chooser = new JFileChooser();
+        chooser.setFileFilter(new TxtFileFilter());
         File f = chooser.getCurrentDirectory();
+        //if(file.equals("txt")){
+          //  chooser.setFileFilter(new TxtFileFilter());
+        //} 
         //System.out.println(System.getProperty("user.dir"));
         chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
         chooser.setDialogTitle(name);
@@ -94,7 +99,12 @@ public class PlanningModeSimGUI extends JFrame {
             returnVal = chooser.showOpenDialog(this);
         }
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            result = chooser.getSelectedFile().getName();
+            try {
+                result = chooser.getSelectedFile().getCanonicalPath();
+            } catch(Exception e){
+                result = chooser.getSelectedFile().getName();
+            }
+            //result = chooser.getSelectedFile().getName();
         }
         return result;
     }
@@ -102,7 +112,6 @@ public class PlanningModeSimGUI extends JFrame {
     private void guiSetup() {
         chooser = new JFileChooser();
         chooser.setAcceptAllFileFilterUsed(true);
-        chooser.setFileFilter(new TxtFileFilter());
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
@@ -156,7 +165,15 @@ public class PlanningModeSimGUI extends JFrame {
         });
 
         simulation.add(runSim);
-        
+
+        JMenuItem runScripts = new JMenuItem("Run Scripts");
+        runScripts.setMnemonic(KeyEvent.VK_C);
+        runScripts.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                runAnalysisScripts();
+            }
+        });
+        //simulation.add(runScripts); 
         menuBar.add(simulation);
 
         setJMenuBar(menuBar);
@@ -237,7 +254,7 @@ public class PlanningModeSimGUI extends JFrame {
         outputPanes.addTab("Properties", new SimulationPropertiesTab());
         outputPanes.addTab("Antennas", new AntennaTab());
         outputPanes.addTab("Frequency", new FrequencyBandTab());
-        outputPanes.addTab("Weather", new WeatherDataTab());
+        outputPanes.addTab("Weather", new WeatherDataTab(this));
         outputPanes.addTab("Weights", new AlgorithmWeightsTab());
         outputPanes.addTab("Projects", new ProjectsTab());
         return outputPanes;
@@ -256,9 +273,66 @@ public class PlanningModeSimGUI extends JFrame {
     }
 
     public void exit() {
+        cleanUpFiles();
         dispose();
     }
 
+    private void cleanUpFiles(){
+        controller.cleanUpFiles();
+    }
+
+    /////////////////////
+    private void runAnalysisScripts(){
+        String cmd1 = "ALMASched_lst_vs_day";
+        String cmd2 = "ALMASchedSim_antennaLocation";
+        String stats = controller.getStatFile(); //input.getStatsFile().getAbsolutePath();
+        String inputfilename = controller.getInputFile(); //input.getInputFile().getAbsolutePath();
+        String outputfilename = inputfilename.substring(0, (inputfilename.length() -4))+"_graph";
+        System.out.println("Stupid output file name = "+outputfilename);
+        String scheduleCmdString = cmd1 +" "+ stats +" "+ outputfilename +" "+ inputfilename;
+        String antennaPlotCmdString = cmd2 +" "+ inputfilename;
+        //System.out.println(scheduleCmdString);
+        //System.out.println(inputfilename);
+        try{
+            CreateScheduleFile foo1 = new CreateScheduleFile(scheduleCmdString);   
+            CreateAntennaLocationFile foo2 = new CreateAntennaLocationFile(antennaPlotCmdString);
+            Thread t1 = new Thread(foo1);
+            Thread t2 = new Thread(foo2);
+            t1.start();
+            t2.start();
+        } catch(Exception e){
+            e.printStackTrace();
+          //  logger.warning("Error writing analysis files");
+        }
+    }
+     
+    class CreateScheduleFile implements Runnable {
+        private String command;
+        public CreateScheduleFile (String cmd){ 
+            command = cmd;
+        }
+        public void run(){
+            try {
+                Process p = Runtime.getRuntime().exec(command);
+            } catch(Exception e){
+                //logger.warning("Error writing schedule file using command \n\t"+command);
+            }
+        }
+    }
+
+    class CreateAntennaLocationFile implements Runnable{
+        private String command;
+        public CreateAntennaLocationFile (String cmd){
+            command = cmd;
+        }
+        public void run(){
+            try {
+                Process p = Runtime.getRuntime().exec(command);
+            } catch(Exception e){
+                //logger.warning("Error writing antenna location file using command \n\t"+command);
+            }
+        }
+    }
    
     class TxtFileFilter extends FileFilter {
         private Hashtable filters = null;
@@ -310,4 +384,5 @@ public class PlanningModeSimGUI extends JFrame {
             runSim.setEnabled(false);
         }
     }
+
 }

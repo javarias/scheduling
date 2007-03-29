@@ -529,7 +529,8 @@ public class Reporter extends BasicComponent {
 	}
 
     
-    private void detailedExecutionStatistics(PrintStream o) {
+    private synchronized void detailedExecutionStatistics(PrintStream o) {
+    //    System.out.println("Start detailed exec stats");
         ExecutionStatistics[] stats;
         try {
             stats = archive.getAllExecutionStatistics();
@@ -545,9 +546,11 @@ public class Reporter extends BasicComponent {
             e.printStackTrace();
         }
         
+    //    System.out.println("end detailed exec stats");
     }
 
-    private void runAnalysisScripts(){
+    private synchronized void runAnalysisScripts(){
+        //System.out.println("start scripts ");
         String cmd1 = "ALMASched_lst_vs_day";
         String cmd2 = "ALMASchedSim_antennaLocation";
         String stats = input.getStatsFile().getAbsolutePath();
@@ -564,10 +567,17 @@ public class Reporter extends BasicComponent {
             Thread t2 = new Thread(foo2);
             t1.start();
             t2.start();
+            try{
+                t1.join();
+            }catch(Exception e){}
+            try{
+                t2.join();
+            }catch(Exception e){}
         } catch(Exception e){
             e.printStackTrace();
             logger.warning("Error writing analysis files");
         }
+       // System.out.println("end scripts ");
     }
 
     public String getOutputFilename(){
@@ -582,14 +592,19 @@ public class Reporter extends BasicComponent {
   //      System.out.println("3"+input.getInputFile().getPath());
 //        System.out.println("4"+input.getInputFile().getParentFile().getCanonicalPath());
     //    } catch(Exception e){}
-        return inputfile.substring( 0, (inputfile.length() -4))+"_graph.gif";
+        String f ="";
+        try{
+            f =input.getInputFile().getParentFile().getCanonicalPath()+File.separator+"_tmp_schedule.gif";
+        }catch(Exception e){}
+        return f;
+        //return inputfile.substring( 0, (inputfile.length() -4))+"_graph.gif";
     }
 
     public String getAntennaConfigFilename(){
         String f="";
         try{
             f= input.getInputFile().getParentFile().getCanonicalPath()+
-                File.separator+"antenna_positions.gif";
+                File.separator+"_tmp_antenna_positions.gif";
         }catch(Exception e){}
         return f;
     }
@@ -601,7 +616,31 @@ public class Reporter extends BasicComponent {
         }
         public void run(){
             try {
+                String a = new String("");
                 Process p = Runtime.getRuntime().exec(command);
+                BufferedReader in  = new BufferedReader(new
+                    InputStreamReader(p.getInputStream()),5000);
+                int i = 0;
+                p.waitFor();
+              //  System.out.println("schedule Input:");
+                while (( a = in.readLine()) != null) {
+                    System.out.println(a);
+                    i++;
+                }
+                p.waitFor();
+                in.close();
+                in  = new BufferedReader(new InputStreamReader(p.getErrorStream()),5000);
+                i = 0;
+                p.waitFor();
+                System.out.println("schedule Error:");
+                while (( a = in.readLine()) != null) {
+                    System.out.println(a);
+                    i++;
+                }
+                p.waitFor();
+                in.close();
+            //    System.out.println("schedule exitvalue is " + p.exitValue());
+              //  System.out.println("end schedule process");
             } catch(Exception e){
                 logger.warning("Error writing schedule file using command \n\t"+command);
             }
@@ -615,7 +654,32 @@ public class Reporter extends BasicComponent {
         }
         public void run(){
             try {
+                String a = new String("");
                 Process p = Runtime.getRuntime().exec(command);
+                BufferedReader in  = new BufferedReader(new
+                    InputStreamReader(p.getInputStream()),5000);
+                int i = 0;
+                p.waitFor();
+              //  System.out.println("antenna Input:");
+                while (( a = in.readLine()) != null) {
+                    System.out.println(a);
+                    i++;
+                }
+                p.waitFor();
+                in.close();
+                in  = new BufferedReader(new InputStreamReader(p.getErrorStream()),5000);
+                i = 0;
+                p.waitFor();
+              //  System.out.println("antenna Error:");
+                while (( a = in.readLine()) != null) {
+                    System.out.println(a);
+                    i++;
+                }
+                p.waitFor();
+                in.close();
+              //  System.out.println("antenna exitvalue is " + p.exitValue());
+
+              //  System.out.println("end antenna process");
             } catch(Exception e){
                 logger.warning("Error writing antenna location file using command \n\t"+command);
             }

@@ -82,7 +82,7 @@ public class SimulationPropertiesTab extends JScrollPane {
         ///////////////////
         gridPanel = new JPanel();
         gridPanel.setLayout(gridbag);
-        label = new JLabel("Begin Time ");
+        label = new JLabel("Begin Time: (yyyy-mm-ddThh:mm:ss)");
         c.gridwidth = 1;
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
@@ -104,7 +104,7 @@ public class SimulationPropertiesTab extends JScrollPane {
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
-        label = new JLabel("End Time ");
+        label = new JLabel("End Time: (yyyy-mm-ddThh:mm:ss)");
         c.gridwidth = 1;
         gridbag.setConstraints(label,c);
         gridPanel.add(label);
