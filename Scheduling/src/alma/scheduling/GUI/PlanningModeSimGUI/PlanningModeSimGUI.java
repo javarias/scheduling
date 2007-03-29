@@ -73,6 +73,8 @@ public class PlanningModeSimGUI extends JFrame {
     private JMenuItem load;
     private JMenuItem exit;
     private final JMenuItem runSim = new JMenuItem("Run Simulation");
+    private JMenuItem saveAntenna;
+    private JMenuItem saveSchedule;
 
     public PlanningModeSimGUI(PlanningModeSimGUIController c) {
         this.controller = c;
@@ -81,21 +83,20 @@ public class PlanningModeSimGUI extends JFrame {
 
     }
 
-    public String createFileChooser(String type, String name) {
+    public String createFileChooser(String type, String name, String action) {
         String result = null;
         int returnVal=0;
         chooser = new JFileChooser();
-        chooser.setFileFilter(new TxtFileFilter());
-        File f = chooser.getCurrentDirectory();
-        //if(file.equals("txt")){
-          //  chooser.setFileFilter(new TxtFileFilter());
-        //} 
-        //System.out.println(System.getProperty("user.dir"));
         chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
         chooser.setDialogTitle(name);
-        if(type.equals("save") ) {
+        if(type.equals("save") && action.equals("txtfile") ) {
+            chooser.setFileFilter(new TxtFileFilter());
             returnVal = chooser.showSaveDialog(this);
-        } else if(type.equals("load") ) {
+        } else if(type.equals("save") && action.equals("giffile") ) {
+            chooser.setFileFilter(new JPGFileFilter());
+            returnVal = chooser.showSaveDialog(this);
+        } else if(type.equals("load") && action.equals("txtfile") ) {
+            chooser.setFileFilter(new TxtFileFilter());
             returnVal = chooser.showOpenDialog(this);
         }
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -166,6 +167,7 @@ public class PlanningModeSimGUI extends JFrame {
 
         simulation.add(runSim);
 
+        /*
         JMenuItem runScripts = new JMenuItem("Run Scripts");
         runScripts.setMnemonic(KeyEvent.VK_C);
         runScripts.addActionListener(new ActionListener() {
@@ -173,7 +175,28 @@ public class PlanningModeSimGUI extends JFrame {
                 runAnalysisScripts();
             }
         });
-        //simulation.add(runScripts); 
+        simulation.add(runScripts); 
+        */
+        saveSchedule = new JMenuItem("Save Schedule GIF");
+        saveSchedule.setMnemonic(KeyEvent.VK_S);
+        saveSchedule.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                doSaveScheduleJPG();
+            }
+        });
+        
+        saveAntenna = new JMenuItem("Save Antenna Location GIF");
+        saveAntenna.setMnemonic(KeyEvent.VK_A);
+        saveAntenna.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                doSaveAntennaJPG();
+            }
+        });
+
+        saveSchedule.setEnabled(false);
+        saveAntenna.setEnabled(false);
+        simulation.add(saveSchedule); 
+        simulation.add(saveAntenna); 
         menuBar.add(simulation);
 
         setJMenuBar(menuBar);
@@ -195,8 +218,9 @@ public class PlanningModeSimGUI extends JFrame {
         getContentPane().add(createContentPanels(),BorderLayout.CENTER);
         setVisible(true);
     }
+
     private void doSaveAction(){
-        String s = createFileChooser("save", "Save Simulation Input file");
+        String s = createFileChooser("save", "Save Simulation Input file","txtfile");
         if (s != null) {
             File f = chooser.getCurrentDirectory();
             //String name = f.toString() + File.separator + chooser.getSelectedFile().getName();
@@ -209,7 +233,7 @@ public class PlanningModeSimGUI extends JFrame {
         }
     }
     private void doLoadAction(){
-        String s = createFileChooser("load", "Load input file");
+        String s = createFileChooser("load", "Load input file","txtfile");
         if(s != null) {
             controller.loadFile(chooser.getSelectedFile().getPath(),
                                 chooser.getSelectedFile().getName());
@@ -219,6 +243,8 @@ public class PlanningModeSimGUI extends JFrame {
     }
     private void doNewSimulationAction(){
         runSim.setEnabled(true);
+        saveSchedule.setEnabled(false);
+        saveAntenna.setEnabled(false);
         controller.startingNewSimulation();
         getContentPane().remove(1);
         getContentPane().add(createContentPanels(),BorderLayout.CENTER);
@@ -226,9 +252,24 @@ public class PlanningModeSimGUI extends JFrame {
         getContentPane().validate();
     }
     private void doRunSimulationAction(){
+        saveSchedule.setEnabled(true);
+        saveAntenna.setEnabled(true);
         RunSimulationThread sim = new RunSimulationThread();
         Thread t = new Thread(sim);
         t.run();
+    }
+
+    private void doSaveScheduleJPG(){
+        String s = createFileChooser("save", "Save Schedule Image","giffile");
+        if(s !=null){
+            controller.saveScheduleJPG(s);
+        }
+    }
+    private void doSaveAntennaJPG(){
+        String s = createFileChooser("save", "Save Antenna Location Image","giffile");
+        if(s!=null){
+            controller.saveAntennaJPG(s);
+        }
     }
 
     private JPanel createGUIHeader() {
@@ -264,7 +305,7 @@ public class PlanningModeSimGUI extends JFrame {
     //}
 
     public String getProjectFile() {
-        String s = createFileChooser("load","Load Project File");
+        String s = createFileChooser("load","Load Project File","txtfile");
         if(s == null) {
             System.out.println("Canceled project load");
             return "";
@@ -339,6 +380,7 @@ public class PlanningModeSimGUI extends JFrame {
         public TxtFileFilter(){
             filters = new Hashtable();
             addExtension("txt");
+            addExtension("TXT");
         }
 
         public boolean accept(File f){
@@ -374,6 +416,49 @@ public class PlanningModeSimGUI extends JFrame {
         }
 
     } //end of TxtFileFilter class
+
+  class JPGFileFilter extends FileFilter {
+        private Hashtable filters = null;
+        public JPGFileFilter(){
+            filters = new Hashtable();
+            addExtension("jpg");
+            addExtension("JPG");
+        }
+
+        public boolean accept(File f){
+            if(f!=null){
+                if(f.isDirectory()){
+                    return true;
+                }
+                String extension = getExtension(f);
+                if(extension !=null && filters.get(getExtension(f)) != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void addExtension(String extension){
+            if(filters == null){
+                filters = new Hashtable(3);
+            }
+            filters.put(extension.toLowerCase(), this);
+        }
+        public String getDescription(){
+            return "JPG Image File";
+        }
+        public String getExtension (File f){
+            if(f !=null){
+                String filename=f.getName();
+                int i=filename.lastIndexOf(".");
+                if(i>0 && i<filename.length()-1) {
+                    return filename.substring(i+1).toLowerCase();
+                }
+            }
+            return null;
+        }
+
+    } //end of GIF FileFilter class
+
 
     class RunSimulationThread implements Runnable {
         public RunSimulationThread(){}

@@ -111,7 +111,7 @@ public class WeatherDataTab extends JScrollPane {
         JButton opacityB = new JButton("Browse");
         opacityB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
-                    opacityFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load Opacity Data File"));
+                    opacityFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load Opacity Data File","txtfile"));
                 }
         });
         buttons.add(opacityB);
@@ -124,7 +124,7 @@ public class WeatherDataTab extends JScrollPane {
         JButton rmsB = new JButton("Browse");
         rmsB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
-                    rmsFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load RMS Data File"));
+                    rmsFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load RMS Data File","txtfile"));
                 }
         });
         buttons.add(rmsB);
@@ -136,7 +136,7 @@ public class WeatherDataTab extends JScrollPane {
         JButton windB = new JButton("Browse");
         windB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
-                    windFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load Wind Data File"));
+                    windFile.setText(((PlanningModeSimGUI)parent).createFileChooser("load","Load Wind Data File","txtfile"));
                 }
         });
         buttons.add(windB);

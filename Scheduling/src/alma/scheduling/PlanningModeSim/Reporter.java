@@ -632,7 +632,6 @@ public class Reporter extends BasicComponent {
                 in  = new BufferedReader(new InputStreamReader(p.getErrorStream()),5000);
                 i = 0;
                 p.waitFor();
-                System.out.println("schedule Error:");
                 while (( a = in.readLine()) != null) {
                     System.out.println(a);
                     i++;

@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.63 2007/03/29 14:17:15 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.64 2007/03/29 22:54:46 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -267,10 +267,17 @@ public class ALMAControl implements Control {
 
     public void stopAllScheduling() throws SchedulingException {
         try {
+            AutomaticArrayCommand foo;
             for(int i=0; i < auto_controllers.size(); i++){
-                ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).stop();
+                foo = ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp());
+                foo.stop();
+                containerServices.releaseComponent(foo.name());
             }
             removeAutomaticArray(true,"");
+
+            for(int i=0; i<manualArrays.size();i++){
+                containerServices.releaseComponent(((String)manualArrays.elementAt(i)));
+            }
         } catch(Exception e) {
             e.printStackTrace(System.out);
             throw new SchedulingException (e);

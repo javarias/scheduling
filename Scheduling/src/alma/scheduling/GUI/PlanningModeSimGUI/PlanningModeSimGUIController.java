@@ -39,7 +39,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JRootPane;
@@ -678,6 +680,28 @@ public class PlanningModeSimGUIController implements Runnable {
     }
     public void setStatFile(String f){
         simStatFile = f;
+    }
+
+    protected void saveScheduleJPG(String name){
+        try {
+            File f1 = new File(simulator.getScheduleGraphFilename());
+            BufferedImage img = ImageIO.read(f1);
+            File f2 = new File(name+".jpg");
+            ImageIO.write(img, "jpg", f2);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void saveAntennaJPG(String name){
+        try {
+            File f1= new File(simulator.getAntennaConfigFilename());
+            BufferedImage img = ImageIO.read(f1);
+            File f2 = new File(name+".jpg");
+            ImageIO.write(img, "jpg", f2);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     class RunSimulation implements Runnable {
