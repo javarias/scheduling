@@ -98,6 +98,7 @@ public class PlanningModeSimGUIController implements Runnable {
     private String data_filename;
     private boolean simulationDone; //used to know whether to save the properties file or the simulation output
     private String simOutputContents="";
+    private File startupfile;
 
     public PlanningModeSimGUIController() {
         data_filename=null;
@@ -106,9 +107,17 @@ public class PlanningModeSimGUIController implements Runnable {
         simulationDone = false;
     }
     
+    public PlanningModeSimGUIController(File f) {
+        this();
+        startupfile = f;
+    }
+
     public void run() {
         this.gui = new PlanningModeSimGUI(this);
         getTabs();
+        try{
+            setInitialFile(startupfile);
+        }catch(Exception e){}
     }
 
     protected void cleanUpFiles(){
@@ -135,12 +144,12 @@ public class PlanningModeSimGUIController implements Runnable {
         Component[] comp4 = p.getComponents();
         JTabbedPane tp = (JTabbedPane)comp4[1];
         Component[] comp5 = tp.getComponents();
-        simPropTab = (SimulationPropertiesTab)comp5[0];
-        antennaTab = (AntennaTab)comp5[1];
-        frequencyTab = (FrequencyBandTab)comp5[2];
-        weatherTab = (WeatherDataTab)comp5[3];
-        algorithmTab = (AlgorithmWeightsTab)comp5[4];
-        projTab = (ProjectsTab)comp5[5];
+        projTab = (ProjectsTab)comp5[0];
+        simPropTab = (SimulationPropertiesTab)comp5[1];
+        antennaTab = (AntennaTab)comp5[2];
+        frequencyTab = (FrequencyBandTab)comp5[3];
+        weatherTab = (WeatherDataTab)comp5[4];
+        algorithmTab = (AlgorithmWeightsTab)comp5[5];
     }
 
     protected void saveToFile(String dir, String filename) {
@@ -506,10 +515,13 @@ public class PlanningModeSimGUIController implements Runnable {
         pane.addTab("Antenna Configuration", new JScrollPane(p));
     }
 
-    
+    protected void setInitialFile(File f){
+        loadFile(System.getProperty("user.dir") + File.separator + f.getName()
+                , f.getName());
+    }
+
     /**
-     * Pop up a file chooser so that the user can pick which file to 
-     * load. The file is then loaded and the contents of the file are
+     * The file is loaded and the contents of the file are
      * displayed in their appropriate fields.
      */
     public void loadFile(String filepathname, String filename) {
@@ -707,38 +719,49 @@ public class PlanningModeSimGUIController implements Runnable {
     class RunSimulation implements Runnable {
         public RunSimulation(){}
         public void run(){
-        File f = new File(currentDirectory+ File.separator + data_filename+".txt");
-        if(!f.exists()){
-            System.out.println(f.getName());
-            System.out.println("A data file must be properly created " 
-                + "before a simulation can be run.");
-        } else {
-            simulator = new Simulator();
-            try {
-                setInputFile(data_filename+".txt");
-                setOutputFile("output.txt");
-                setStatFile("stats_output.txt");
-                simulator.initialize(currentDirectory, data_filename+".txt", "output.txt", "log.txt");
-                Thread t = new Thread(simulator);
-                t.start();
+            File f = new File(currentDirectory+ File.separator + data_filename+".txt");
+            if(!f.exists()){
+                System.out.println(f.getName());
+                System.out.println("A data file must be properly created " 
+                    + "before a simulation can be run.");
+            } else {
+                simulator = new Simulator();
                 try {
-                    t.join();
-                    simulationDone = true;
-                    Thread.sleep(20);
-                    clearInputFields();
-                } catch(Exception ex) {}
-            } catch(Exception e) {
-                System.out.println("Error initializing simulator!");
-                e.printStackTrace(System.out);
+                    setInputFile(data_filename+".txt");
+                    setOutputFile("output.txt");
+                    setStatFile("stats_output.txt");
+                    simulator.initialize(currentDirectory, data_filename+".txt", "output.txt", "log.txt");
+                    Thread t = new Thread(simulator);
+                    t.start();
+                    try {
+                        t.join();
+                        simulationDone = true;
+                        Thread.sleep(20);
+                        clearInputFields();
+                    } catch(Exception ex) {}
+                } catch(Exception e) {
+                    System.out.println("Error initializing simulator!");
+                    e.printStackTrace(System.out);
+                }
             }
-        }
+            gui.simulationComplete();
         }
     }
     //////////////////////////////////////////////
 
     public static void main(String args[]) {
-        PlanningModeSimGUIController controller = new PlanningModeSimGUIController();
-        Thread t = new Thread(controller);
-        t.start();
-    }
+        try {
+            //System.out.println(args[0]);
+            File f = new File(args[0]);
+            PlanningModeSimGUIController controller = new 
+                PlanningModeSimGUIController(f);
+            Thread t = new Thread(controller);
+            t.start();
+        } catch(Exception e){
+            PlanningModeSimGUIController controller = new 
+                PlanningModeSimGUIController();
+            Thread t = new Thread(controller);
+            t.start();
+        }
+    } 
 }

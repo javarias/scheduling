@@ -62,6 +62,7 @@ import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.JProgressBar;
 
 public class PlanningModeSimGUI extends JFrame {
     private PlanningModeSimGUIController controller; 
@@ -75,6 +76,8 @@ public class PlanningModeSimGUI extends JFrame {
     private final JMenuItem runSim = new JMenuItem("Run Simulation");
     private JMenuItem saveAntenna;
     private JMenuItem saveSchedule;
+    private JProgressBar progressBar;
+    private JPanel headerPanel;
 
     public PlanningModeSimGUI(PlanningModeSimGUIController c) {
         this.controller = c;
@@ -257,6 +260,28 @@ public class PlanningModeSimGUI extends JFrame {
         RunSimulationThread sim = new RunSimulationThread();
         Thread t = new Thread(sim);
         t.run();
+        //start a progress bar 
+        progressBar = new JProgressBar(0,100);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        progressBar.setIndeterminate(true);
+        progressBar.setString("Running Simulation");
+        JPanel p = new JPanel(new GridLayout(4,1));
+        p.add(progressBar);
+        p.add(new JLabel());
+        p.add(new JLabel());
+        p.add(new JLabel());
+        headerPanel.add(p, BorderLayout.CENTER);
+        headerPanel.revalidate();
+    }
+
+    protected void simulationComplete() {
+        progressBar.setBorderPainted(false);
+        progressBar.setStringPainted(false);
+        progressBar.setIndeterminate(false);
+        headerPanel.remove(progressBar);
+        headerPanel.validate();
+        runSim.setEnabled(true);
     }
 
     private void doSaveScheduleJPG(){
@@ -274,9 +299,9 @@ public class PlanningModeSimGUI extends JFrame {
 
     private JPanel createGUIHeader() {
         ImageIcon almaImage = new ImageIcon(controller.getImage("alma_logo.jpg"));
-        JPanel panel = new JPanel(new BorderLayout());
+        headerPanel = new JPanel(new BorderLayout());
         JLabel logo = new JLabel(almaImage);
-        panel.add(logo,BorderLayout.EAST);
+        headerPanel.add(logo,BorderLayout.EAST);
         JLabel title1 = new JLabel("Scheduling");
         title1.setFont(new Font("", Font.ITALIC, 24));
         JLabel title2 = new JLabel("Planning Mode Simulator");
@@ -284,20 +309,20 @@ public class PlanningModeSimGUI extends JFrame {
         JPanel titlepanel = new JPanel(new GridLayout(2,1));
         titlepanel.add(title1);
         titlepanel.add(title2);
-        panel.add(titlepanel,BorderLayout.CENTER);
+        headerPanel.add(titlepanel,BorderLayout.WEST);
 
-        return panel;
+        return headerPanel;
     }
 
     private JTabbedPane createContentPanels() {
         JTabbedPane outputPanes = new JTabbedPane();
         outputPanes.setTabPlacement(JTabbedPane.TOP);
+        outputPanes.addTab("Projects", new ProjectsTab());
         outputPanes.addTab("Properties", new SimulationPropertiesTab());
         outputPanes.addTab("Antennas", new AntennaTab());
         outputPanes.addTab("Frequency", new FrequencyBandTab());
         outputPanes.addTab("Weather", new WeatherDataTab(this));
         outputPanes.addTab("Weights", new AlgorithmWeightsTab());
-        outputPanes.addTab("Projects", new ProjectsTab());
         return outputPanes;
     }
 

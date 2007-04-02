@@ -239,70 +239,180 @@ public class AlgorithmWeightsTab extends JScrollPane {
      * @return String The string representation of the weight for the position elevation
      */
     public String getPositionElevationWeight() {
-        return posElev.getText();
+        String val ="";
+        if(posElev.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(posElev.getText());
+                val = posElev.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for the maximum position
      * @return String the string representation for the weight for the maximum position
      */
     public String getPositionMaxWeight() {
-        return posMax.getText();
+        String val ="";
+        if(posMax.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(posMax.getText());
+                val = posMax.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for the weather.
      * @return String The string representation for the weather weight
      */
     public String getWeatherWeight() {
-        return weather.getText();
+        String val ="";
+        if(weather.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(weather.getText());
+                val = weather.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for the Same Project / Same Band 
      * @return String The string representation for the same project / same band weight
      */
     public String getSPSBWeight() {
-        return spsb.getText();
+        String val ="";
+        if(spsb.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(spsb.getText());
+                val = spsb.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for the Same Project / different Band 
      * @return String The string representation for the same project / different band weight
      */
     public String getSPDBWeight() {
-        return spdb.getText();
+        String val ="";
+        if(spdb.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(spdb.getText());
+                val = spdb.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for the different Project / Same Band 
      * @return String The string representation for the different project / same band weight
      */
     public String getDPSBWeight() {
-        return dpsb.getText();
+        String val ="";
+        if(dpsb.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(dpsb.getText());
+                val = dpsb.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for the different Project / different Band 
      * @return String The string representation for the different project / different band weight
      */
     public String getDPDBWeight() {
-        return dpdb.getText();
+        String val ="";
+        if(dpdb.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(dpdb.getText());
+                val = dpdb.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for a new project
      * @return String The string representation of the weight for a  new project
      */
     public String getNewProjectWeight() {
-        return newProj.getText();
+        String val ="";
+        if(newProj.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(newProj.getText());
+                val = newProj.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for if its the last SB in a project
      * @return String The string representation of the weight for if its the last SB in the project
      */
     public String getLastSBWeight(){
-        return lastSB.getText();
+        String val ="";
+        if(lastSB.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(lastSB.getText());
+                val = lastSB.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
     /**
      * Get the weight for priority.
      * @return String The string representation of the weight put on priority
      */
     public String getPriorityWeight() {
-        return pri.getText();
+        String val ="";
+        if(pri.getText().equals("")){
+                //fine
+        }else {
+            try{
+                double tmp = Double.parseDouble(pri.getText());
+                val = pri.getText();
+            } catch(Exception e){
+                val = "";
+            }
+        }
+        return val;
     }
 
     
