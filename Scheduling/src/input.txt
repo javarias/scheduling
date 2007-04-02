@@ -1,5 +1,5 @@
 Simulation.beginTime = 2006-05-01T00:00:00
-Simulation.endTime = 2006-05-31T00:00:00
+Simulation.endTime = 2006-05-10T00:00:00
 Simulation.mode = PLANNING
 Simulation.logLevel = CONFIG
 Simulation.setUpTime = 120
@@ -88,9 +88,9 @@ FrequencyBand.9 = 10; 787.0; 950.0; 868.5; 163.0;
 Weather.modelType = real
 # numberFuntions for real mode is the number of weather files being used
 Weather.numberFunctions = 3
-Weather.0 = opacity; Opacity.04
-Weather.1 = rms; PhaseStability.Nrao.2003
-Weather.2 = wind; WindSpeed.04
+Weather.0 = opacity; /export/home/solar/sslucero/SCHEDULING_working/SCHEDULING/Scheduling/test/weatherFiles/Opacity.04
+Weather.1 = rms; /export/home/solar/sslucero/SCHEDULING_working/SCHEDULING/Scheduling/test/weatherFiles/PhaseStability.Nrao.2003
+Weather.2 = wind; /export/home/solar/sslucero/SCHEDULING_working/SCHEDULING/Scheduling/test/weatherFiles/WindSpeed.04
 
 
 Weight.positionElevation =  0.1
@@ -100,4 +100,4 @@ Weight.priority = 0.1
 
 
 projectSourceType = JavaProperties
-projectSource = project.txt
+projectSource = input_project.txt
