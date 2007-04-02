@@ -1,0 +1,230 @@
+# Properties of the simulation.
+
+# The beginning and ending time of the simulation.
+Simulation.beginTime = 2006-05-01T00:00:00
+Simulation.endTime = 2006-05-31T00:00:00
+
+# Simulation mode: FULL, PLANNING, or CONFLICT
+Simulation.mode = PLANNING
+# The logging level: CONFIG, FINE, FINER, or FINEST
+Simulation.logLevel = CONFIG
+# The time, in seconds, that is required to change to a different
+# observing setup, for example, to change frequency bands.
+Simulation.setUpTime = 120
+# The time, in seconds, that is required to change from one project
+# to a different project.
+Simulation.changeProjectTime = 300
+# The time, in seconds, to advance the clock when nothing can be 
+# scheduled.
+Simulation.advanceClock = 300
+
+# Site Characteristics
+# Site longitude in degrees.
+Site.longitude = -67.75436287
+#Site.longitude = 107.6177275
+# Site latitude in degrees.
+Site.latitude = -23.02271113
+#Site.latitude = 34.0787491666667
+# The time zone of the site.
+Site.timeZone = -4
+#Site.timeZone = -6
+# Site altitude in meters.
+Site.altitude = 2124.0
+# Site minimum elevation angle above the horizon.
+Site.minimumElevationAngle = 1.0
+# Number of antennas.
+Site.numberAntennas = 50
+# Antenna Configuration; 
+Site.antennaConfiguration = compact
+#Information about the locations
+Site.datum = SAM 1956 
+Site.zone = UTM Zone 19 K
+#Antenna Details
+# antenna name; x location (m); y location (m); z location (m); pad; nutator (true/false)
+Antenna.0 = ALMA1; 627789.81; 7453079.62; 0.0; 1; false
+Antenna.1 = ALMA2; 627806.26; 7453082.62; 0.0; 2; false
+Antenna.2 = ALMA3; 627801.31; 7453100.27; 0.0; 3; false
+Antenna.3 = ALMA4; 627818.16; 7453068.35; 0.0; 4; false
+Antenna.4 = ALMA5; 627848.62; 7453047.47; 0.0; 5; false
+Antenna.5 = ALMA6; 627844.52; 7453070.45; 0.0; 6; false
+Antenna.6 = ALMA7; 627839.69; 7453091.26; 0.0; 7; false
+Antenna.7 = ALMA8; 627833.36; 7453104.9; 0.0; 8; false
+Antenna.8 = ALMA9; 627814.26; 7453128.29; 0.0; 9; false
+Antenna.9 = ALMA10; 627803.3; 7453138.64; 0.0; 10; false
+Antenna.10 = ALMA11; 627861.26; 7453055.91; 0.0; 11; false
+Antenna.11 = ALMA12; 627860.31; 7453071.14; 0.0; 12; false
+Antenna.12 = ALMA13; 627824.72; 7453089.41; 0.0; 13; false
+Antenna.13 = ALMA14; 627840.4; 7453118.33; 0.0; 14; false
+Antenna.14 = ALMA15; 627834.85; 7453132.37; 0.0; 15; false
+Antenna.15 = ALMA16; 627803.74; 7453158.27; 0.0; 16; false
+Antenna.16 = ALMA17; 627817.2; 7453107.16; 0.0; 17; false
+Antenna.17 = ALMA18; 627782.36; 7453066.47; 0.0; 18; false
+Antenna.18 = ALMA19; 627773.43; 7453081.3; 0.0; 19; false
+Antenna.19 = ALMA20; 627762.59; 7453069.82; 0.0; 20; false
+Antenna.20 = ALMA21; 627780.13; 7453100.26; 0.0; 21; false
+Antenna.21 = ALMA22; 627780.58; 7453139.65; 0.0; 22; false
+Antenna.22 = ALMA23; 627764.71; 7453124.97; 0.0; 23; false
+Antenna.23 = ALMA24; 627749.51; 7453108.03; 0.0; 24; false
+Antenna.24 = ALMA25; 627739.3; 7453087.9; 0.0; 25; false
+Antenna.25 = ALMA26; 627736.72; 7453060.58; 0.0; 26; false
+Antenna.26 = ALMA27; 627730.34; 7453046.95; 0.0; 27; false
+Antenna.27 = ALMA28; 627767.25; 7453147.06; 0.0; 28; false
+Antenna.28 = ALMA29; 627753.22; 7453136.8; 0.0; 29; false
+Antenna.29 = ALMA30; 627755.38; 7453094.18; 0.0; 30; false
+Antenna.30 = ALMA31; 627728.02; 7453097.99; 0.0; 31; false
+Antenna.31 = ALMA32; 627720.42; 7453073.19; 0.0; 32; false
+Antenna.32 = ALMA33; 627717.98; 7453038.02; 0.0; 33; false
+Antenna.33 = ALMA34; 627746.8; 7453074.57; 0.0; 34; false
+Antenna.34 = ALMA35; 627797.54; 7453066.13; 0.0; 35; false
+Antenna.35 = ALMA36; 627808; 7453045.89; 0.0; 36; false
+Antenna.36 = ALMA37; 627772.1; 7453045.88; 0.0; 37; false
+Antenna.37 = ALMA28; 627742.81; 7453027.71; 0.0; 38; false
+Antenna.38 = ALMA29; 627759.05; 7453021.54; 0.0; 39; false
+Antenna.39 = ALMA40; 627780.82; 7453014.65; 0.0; 40; false
+Antenna.40 = ALMA41; 627800.04; 7453013.74; 0.0; 41; false
+Antenna.41 = ALMA42; 627825.62; 7453028.83; 0.0; 42; false
+Antenna.42 = ALMA43; 627840.3; 7453025.46; 0.0; 43; false
+Antenna.43 = ALMA44; 627743.11; 7453012.46; 0.0; 44; false
+Antenna.44 = ALMA45; 627759.6; 7453005.88; 0.0; 45; false
+Antenna.45 = ALMA46; 627786.62; 7453030.28; 0.0; 46; false
+Antenna.46 = ALMA47; 627803.34; 7452997.74; 0.0; 47; false
+Antenna.47 = ALMA48; 627821.5; 7453003.23; 0.0; 48; false
+Antenna.48 = ALMA49; 627853.47; 7453017.97; 0.0; 49; false
+Antenna.49 = ALMA50; 627808.2; 7453027.93; 0.0; 50; false
+
+
+# Frequency Bands
+
+#     Syntax:
+#         FrequencyBand.numberOfBands = N
+#         FrequencyBand.<i> = nameOfBand; minimumFrequency; maximumFrequency
+# where 0 <= i < N, and N is the number of frequency bands.  
+# Frequencies are in GHz.
+FrequencyBand.numberOfBands = 10
+FrequencyBand.0 = 1;   31.3;  45.0
+FrequencyBand.1 = 2;   67.0;  90.0
+FrequencyBand.2 = 3;   84.0; 116.0
+FrequencyBand.3 = 4;  125.0; 168.0
+FrequencyBand.4 = 5;  163.0; 211.0
+FrequencyBand.5 = 6;  211.0; 275.0
+FrequencyBand.6 = 7;  275.0; 373.0
+FrequencyBand.7 = 8;  385.0; 500.0
+FrequencyBand.8 = 9;  602.0; 720.0
+FrequencyBand.9 = 10; 787.0; 950.0
+
+# Types of weather models. Right now we have 2
+#   Real weather data
+#   Diurnal weather model
+# To use: one or the other must be specified. If both are specfiied only the
+# first will be used.
+#
+# modelType should be real or diurnal. 
+Weather.modelType = real
+# Specify the number of weather functions that are going to exist.
+# Weather.numberFunctions = N
+Weather.numberFunctions = 3
+
+# To define real weather functions simply put the name of it.
+# Currently wind, rms and opacity are supported.
+Weather.0 = rms; weatherFiles/PhaseStability.Nrao.2003
+Weather.1 =wind; weatherFiles/WindSpeed.04
+Weather.2 = opacity; weatherFiles/Opacity.04
+
+# Diurnal Weather model parameters
+
+#     Weather.<i> = functionName; units; p0; p1; p2; s0; s1; t0; t1
+# where 0 <= i < N.  The formula used is:
+#		f(T) = p0*sin(t0*T + s0) + p1*cos(t1*T + s1) + p2;		
+# where T is the time of day in radians.
+# For the R1 simulation, there is only one weather function.
+#Weather.0 = quality; ; 0.15; -0.03; 0.7; 0.0; 6.0; 2.0; 2.0
+
+
+# The dynamic scheduling algorithm
+
+# For the R4 simulation, there is one dynamic scheduling algorithm.
+# For it, one can specify the weights on the various factors computed
+# in the algorithm.  The definitions of the factors are given below.
+#
+# positionElevation
+#     sin of the current elevation or 0.0 if the source is not visible, 
+#         max = 1.0 min = 0.0
+# positionMaximum
+#     Returns 1.0 if the current LST is close to the LST at the maximum
+#     elevation of the source and diminishes as it is further away.   
+#         max = 1.0 min = 0.0
+# weather
+#     weather expression evaluation, max = 1.0 min = 0.0
+# priority
+#     the scientific priority, value: 10(high)/9/8/7/6/5/4/3/2/1
+# sameProjectSameBand
+#     SB belongs to same project and frequency band as current, value: 1/0
+# sameProjectDifferentBand
+#     SB belongs to same project as current but has a different frequency band, 
+#         value: 1/0
+# differentProjectSameBand
+#     SB belongs to a different project but has same frequency band as current, 
+#         value: 1/0
+# differentProjectDifferentBand
+#     SB belongs to a different project and has different frequency band from 
+#         current, value: 1/0
+# newProject
+#     the cost of starting a new project, value: 1/0
+# oneSBRemaining
+#     only one SB remains in the project, value: 1/0
+# The success calculation is:
+#     positionWeight * positionFactor + weatherWeight * weatherFactor
+# The ranking calculation is:
+#     priorityWeight * priorityFactor + 
+#     sameProjectSameBandWeight * sameProjectSameBandFactor +
+#     sameProjectDifferentBandWeight * sameProjectDifferentBandFactor +
+#     differentProjectSameBandWeight * differentProjectSameBandFactor +
+#     differentProjectDifferentBandWeight * differentProjectDifferentBandFactor +
+#     newProjectWeight * newProjectFactor +
+#     oneSBRemainingWeight * oneSBRemainingFactor
+# The final score is:
+#     success * ranking
+
+Weight.positionElevation = 0.1
+Weight.positionMaximum = 0.1
+Weight.weather = 0.9
+Weight.priority = 0.1
+#Weight.sameProjectSameBand = 0.1
+#Weight.sameProjectDifferentBand = 0.1
+#Weight.differentProjectSameBand = 0.1
+#Weight.differentProjectDifferentBand = 0.1
+#Weight.newProject = 0.1
+#Weight.oneSBRemaining = 0.1
+
+######################
+# Weather Constraints
+######################
+#wind units are m/s
+#rms is given here as tau225 on a 300m baseline
+#opacity units apparantly don't exist according to mark holdaway... ?
+
+#WeatherConstraints.exceptional = wind < 2.0 -> 0.9; wind <= 2.0 -> 0.5; wind > 2.0 -> 0.1; opacity < 0.1 -> 0.9; opacity <= 0.1 -> 0.5; opacity > 0.1 -> 0.1; rms < 2.0 -> 0.9; rms <= 2.0 -> 0.5; rms > 2.0 -> 0.1
+
+#WeatherConstraints.excellent =  wind < 5.0 -> 0.9; wind <= 5.0 -> 0.5; wind > 5.0 -> 0.1; opacity < 0.2 -> 0.9; opacity <= 0.2 -> 0.5; opacity > 0.2 -> 0.1; rms < 5.0 -> 0.9; rms <= 5.0 -> 0.5; rms > 5.0 -> 0.1
+
+#WeatherConstraints.good = wind < 10.0 -> 0.9; wind <= 10.0 -> 0.5; wind > 10.0 -> 0.1; opacity < 0.3 -> 0.9; opacity <= 0.3 -> 0.5;opacity > 0.3 -> 0.1; rms < 8.0 -> 0.9; rms <= 8.0 -> 0.5; rms > 8.0 -> 0.1
+
+#WeatherConstraints.average =  wind < 11.0 -> 0.9; wind <= 11.0 -> 0.5; wind > 11.0 -> 0.1; opacity < 0.4 -> 0.9; opacity <= 0.4 -> 0.5; opacity > 0.4 -> 0.1; rms < 10.0 -> 0.9; rms <= 10.0 -> 0.5; rms > 10.0 -> 0.1
+
+#WeatherConstraints.belowaverage=  wind < 15.0 -> 0.9; wind <= 15.0 -> 0.5; wind > 15.0 -> 0.1; opacity < 0.5 -> 0.9; opacity <= 0.5 -> 0.5; opacity > 0.5 -> 0.1; rms < 15.0 -> 0.9; rms <= 15.0 -> 0.5; rms > 15.0 -> 0.1;
+
+#WeatherConstraints.poor = wind < 20.0 -> 0.9; wind <= 20.0 -> 0.5; wind > 20.0 -> 0.1; opacity < 0.6 -> 0.9; opacity <= 0.6 -> 0.5; opacity > 0.6 -> 0.1; rms < 17.0 -> 0.9; rms <= 17.0 -> 0.5; rms > 17.0 -> 0.1
+
+#WeatherConstraints.dismal = wind < 30.0 -> 0.9; wind <= 30.0 -> 0.5; wind > 30.0 -> 0.1; opacity < 0.7 -> 0.9; opacity <= 0.7 -> 0.5; opacity > 0.7 -> 0.1; rms < 20.0 -> 0.9; rms <= 20.0 -> 0.5; rms > 20.0 -> 0.1
+
+#WeatherConstraints.any = wind >= 0.0 -> 1.0; wind <= 0.0 -> 1.0 rms >= 0.0 -> 1.0; rms <= 0.0 ->1.0; opacity >= 0.0 ->1.0; opacity <= 0.0 ->1.0 
+
+# Indicate the source of the project data.
+# The projectSourceType tells what kind of input the source data is.
+# At present, only JavaPoperties is supported.  In the future,
+# there will be other possibilities, such as an archive.
+# The projectSource is the name of the project source file.
+# This name is relative to the same directory that is specified
+# in the simulation input.
+projectSourceType = JavaProperties
+projectSource = project4.txt

@@ -1,0 +1,47 @@
+# Project data with sets and target lists
+
+# Project data is entered in the form of data identifying the project
+# followed by a list of sets that belong to that project.  Following each
+# set is a series of target entries.  An ObsUnitSet is created for each set 
+# entry and a scheduling block, belonging to that set, is created for each 
+# target entry.
+#
+# Syntax:
+#
+#     numberProjects = N
+#     project.<i> = projectName; PI; priority; numberSets 
+#	  set.<i>.<j> = setName; frequency-band; frequency; weather-condition; numberTargets
+#     target.<i>.<j>.<k> = targetName; ra; dec; frequency; total-time; weather-condition; repeat-count; lstBegin; lstEnd
+#
+# where 0 <= i < N and 
+# 		0 <= j < numberSets[i] and 
+#		0 <= k < numberTargets[i][j].
+# Units: ra hours, dec degrees, frequency GHz, total-time minutes.
+# 
+# All sets must specify the same frequency band.  A default frequency and 
+# weather-condition must be specified for the set but these may be overridden
+# on the target.  There are no optional parameters on the set statement.
+# 
+# There are a number of optional parameters on a target statement, however.
+# a. The "repeat-count" is optional and may be omitted (in which case it is 0).
+# b. The LST range is optional; however if lstBegin is specified, then repeat-count
+#    and lstEnd must be specified.  The purpose of the LST range is to request
+#    support of expanded U-V coverage. 
+# c. The "frequency" and "weather-condition" on a target are optional and if
+#    not specified are inherited from the set.
+# 
+# The priority is: highest, higher, high, mediumPlus, medium, mediumMinus, low, lower, lowest, background
+# 
+# The weather-condition is: exceptional, excellent, good, average, belowaverage, poor, dismal, any
+
+numberProjects = 2
+# two projects, different frequencys and opacity expectations of 0.17 at
+# tauzenith,  
+project.0 = A17; Mel Wright; higher; 1
+set.0.0 = setA17; 7; 345; exceptional; 1
+target.0.0.0 = A17.1; 6.0; 30.0; 345.0; 60.0; 0.05 tau(225); 0.0; 0.0; 50 
+
+project.1  = A03; Mel Wright; high; 1
+set.1.0 = setA03; 6; 240.0; exceptional; 1
+target.1.0.0 = A03.0; 6.0; 30.0; 240.0; 60.0; 0.17 tau(225); 0.0;0.0; 250
+
