@@ -60,10 +60,12 @@ pgpap(10.5,0.75)
 color =1
 pgsci(color)
 #left side labelling
-pgswin(0, 24, 31+0.5, 0-0.5);
+#pgswin(0, 24, 31+0.5, 0-0.5);
+pgswin(0, 24, max(endday)+1.5, min(startday)-1.5)
 pgbox('',0,0,'NV',1,0)
 #right side labelling
-pgswin(0, 24, 32+.5,1-0.5)
+#pgswin(0, 24, 32+.5,1-0.5)
+pgswin(0, 24, max(endday)+2.5, min(startday)-0.5)
 pgbox('',0,0,'MV',1,0)
 pglab("LST", "Calander Day", "Schedule")
 pgswin(0, 24, max(endday)+2.0, min(startday)-1.0)
