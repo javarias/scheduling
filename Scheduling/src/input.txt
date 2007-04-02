@@ -1,0 +1,103 @@
+Simulation.beginTime = 2006-05-01T00:00:00
+Simulation.endTime = 2006-05-31T00:00:00
+Simulation.mode = PLANNING
+Simulation.logLevel = CONFIG
+Simulation.setUpTime = 120
+Simulation.changeProjectTime = 300
+Simulation.advanceClock = 300
+
+
+Site.longitude = -67.75436287
+Site.latitude = -23.02271113
+Site.timeZone = -4
+Site.altitude = 2124.0
+Site.minimumElevationAngle = 1.0
+Site.numberAntennas = 50
+Site.datum = SAM 1956
+Site.zone = UTM Zone 19 K
+Site.antennaConfiguration = Compact
+
+
+# Antenna.# = Name; X Loc; Y Loc; Z Loc; Pad name; Nutator? yes/no
+Antenna.0 = ALMA1; 627789.81; 7453079.62; 0.0; 1; no
+Antenna.1 = ALMA2; 627806.26; 7453082.62; 0.0; 2; no
+Antenna.2 = ALMA3; 627801.31; 7453100.27; 0.0; 3; no
+Antenna.3 = ALMA4; 627818.16; 7453068.35; 0.0; 4; no
+Antenna.4 = ALMA5; 627848.62; 7453047.47; 0.0; 5; no
+Antenna.5 = ALMA6; 627844.52; 7453070.45; 0.0; 6; no
+Antenna.6 = ALMA7; 627839.69; 7453091.26; 0.0; 7; no
+Antenna.7 = ALMA8; 627833.36; 7453104.9; 0.0; 8; no
+Antenna.8 = ALMA9; 627814.26; 7453128.29; 0.0; 9; no
+Antenna.9 = ALMA10; 627803.3; 7453138.64; 0.0; 10; no
+Antenna.10 = ALMA11; 627861.26; 7453055.91; 0.0; 11; no
+Antenna.11 = ALMA12; 627860.31; 7453071.14; 0.0; 12; no
+Antenna.12 = ALMA13; 627824.72; 7453089.41; 0.0; 13; no
+Antenna.13 = ALMA14; 627840.4; 7453118.33; 0.0; 14; no
+Antenna.14 = ALMA15; 627834.85; 7453132.37; 0.0; 15; no
+Antenna.15 = ALMA16; 627803.74; 7453158.27; 0.0; 16; no
+Antenna.16 = ALMA17; 627817.2; 7453107.16; 0.0; 17; no
+Antenna.17 = ALMA18; 627782.36; 7453066.47; 0.0; 18; no
+Antenna.18 = ALMA19; 627773.43; 7453081.3; 0.0; 19; no
+Antenna.19 = ALMA20; 627762.59; 7453069.82; 0.0; 20; no
+Antenna.20 = ALMA21; 627780.13; 7453100.26; 0.0; 21; no
+Antenna.21 = ALMA22; 627780.58; 7453139.65; 0.0; 22; no
+Antenna.22 = ALMA23; 627764.71; 7453124.97; 0.0; 23; no
+Antenna.23 = ALMA24; 627749.51; 7453108.03; 0.0; 24; no
+Antenna.24 = ALMA25; 627739.3; 7453087.9; 0.0; 25; no
+Antenna.25 = ALMA26; 627736.72; 7453060.58; 0.0; 26; no
+Antenna.26 = ALMA27; 627730.34; 7453046.95; 0.0; 27; no
+Antenna.27 = ALMA28; 627767.25; 7453147.06; 0.0; 28; no
+Antenna.28 = ALMA29; 627753.22; 7453136.8; 0.0; 29; no
+Antenna.29 = ALMA30; 627755.38; 7453094.18; 0.0; 30; no
+Antenna.30 = ALMA31; 627728.02; 7453097.99; 0.0; 31; no
+Antenna.31 = ALMA32; 627720.42; 7453073.19; 0.0; 32; no
+Antenna.32 = ALMA33; 627717.98; 7453038.02; 0.0; 33; no
+Antenna.33 = ALMA34; 627746.8; 7453074.57; 0.0; 34; no
+Antenna.34 = ALMA35; 627797.54; 7453066.13; 0.0; 35; no
+Antenna.35 = ALMA36; 627808; 7453045.89; 0.0; 36; no
+Antenna.36 = ALMA37; 627772.1; 7453045.88; 0.0; 37; no
+Antenna.37 = ALMA28; 627742.81; 7453027.71; 0.0; 38; no
+Antenna.38 = ALMA29; 627759.05; 7453021.54; 0.0; 39; no
+Antenna.39 = ALMA40; 627780.82; 7453014.65; 0.0; 40; no
+Antenna.40 = ALMA41; 627800.04; 7453013.74; 0.0; 41; no
+Antenna.41 = ALMA42; 627825.62; 7453028.83; 0.0; 42; no
+Antenna.42 = ALMA43; 627840.3; 7453025.46; 0.0; 43; no
+Antenna.43 = ALMA44; 627743.11; 7453012.46; 0.0; 44; no
+Antenna.44 = ALMA45; 627759.6; 7453005.88; 0.0; 45; no
+Antenna.45 = ALMA46; 627786.62; 7453030.28; 0.0; 46; no
+Antenna.46 = ALMA47; 627803.34; 7452997.74; 0.0; 47; no
+Antenna.47 = ALMA48; 627821.5; 7453003.23; 0.0; 48; no
+Antenna.48 = ALMA49; 627853.47; 7453017.97; 0.0; 49; no
+Antenna.49 = ALMA50; 627808.2; 7453027.93; 0.0; 50; no
+
+
+FrequencyBand.numberOfBands = 10
+FrequencyBand.0 = 1; 31.3; 45.0; 38.15; 13.7; 
+FrequencyBand.1 = 2; 67.0; 90.0; 78.5; 23.0; 
+FrequencyBand.2 = 3; 84.0; 116.0; 100.0; 32.0; 
+FrequencyBand.3 = 4; 125.0; 168.0; 146.5; 43.0; 
+FrequencyBand.4 = 5; 163.0; 211.0; 187.0; 48.0; 
+FrequencyBand.5 = 6; 211.0; 275.0; 243.0; 64.0; 
+FrequencyBand.6 = 7; 275.0; 373.0; 324.0; 98.0; 
+FrequencyBand.7 = 8; 385.0; 500.0; 442.5; 115.0; 
+FrequencyBand.8 = 9; 602.0; 720.0; 661.0; 118.0; 
+FrequencyBand.9 = 10; 787.0; 950.0; 868.5; 163.0; 
+
+
+# modelType should be real or diurnal.
+Weather.modelType = real
+# numberFuntions for real mode is the number of weather files being used
+Weather.numberFunctions = 3
+Weather.0 = opacity; Opacity.04
+Weather.1 = rms; PhaseStability.Nrao.2003
+Weather.2 = wind; WindSpeed.04
+
+
+Weight.positionElevation =  0.1
+Weight.positionMaximum =  0.1
+Weight.weather =  0.9
+Weight.priority = 0.1
+
+
+projectSourceType = JavaProperties
+projectSource = project.txt
