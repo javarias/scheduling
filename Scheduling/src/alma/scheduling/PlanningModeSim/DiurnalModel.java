@@ -139,9 +139,13 @@ public class DiurnalModel {
 	 * @param time The specified time as hours and fractions thereof.
 	 * @return The value of the psecified function at the specified time.
 	 */
-	public double compute (double time) {
+	public double compute(double time) {
 		return sinusoidalFormula(time);
 	}
+
+    public double compute(Double t) {
+		return sinusoidalFormula(t.doubleValue());
+    }
 	
 	/**
 	 * Compute the quantity for the current time as specified by the clock.

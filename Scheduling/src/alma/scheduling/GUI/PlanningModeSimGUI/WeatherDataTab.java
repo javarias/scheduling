@@ -357,14 +357,6 @@ public class WeatherDataTab extends JScrollPane {
         StringTokenizer token;
         String name;
         if(((String)v.elementAt(0)).equals("real")) {
-            /*
-            isRealMode = true;
-            setTotalWeatherFuncs((String)v.elementAt(1));
-            setViewportView(createRealModelView());
-            windFile.setText( (String)v.elementAt(2));
-            rmsFile.setText( (String)v.elementAt(3));
-            opacityFile.setText( (String)v.elementAt(4));
-               */
             isRealMode = true;
             setTotalWeatherFuncs((String)v.elementAt(1));
             setViewportView(createRealModelView());
@@ -382,10 +374,10 @@ public class WeatherDataTab extends JScrollPane {
                     "new weather parameters into account");
                 }
             }
-        } else if( ((String)v.elementAt(0)).equals("real")){
+        } else if( ((String)v.elementAt(0)).equals("diurnal")){
             isRealMode = false;
-            setTotalWeatherFuncs((String)v.elementAt(1));
             setViewportView(createDiurnalView());
+            setTotalWeatherFuncs((String)v.elementAt(1));
             token = new StringTokenizer((String)v.elementAt(2), ";");
             setWeatherName(token.nextToken());
             setUnits(token.nextToken());

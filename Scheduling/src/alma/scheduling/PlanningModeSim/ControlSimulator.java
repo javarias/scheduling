@@ -297,9 +297,11 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setLSTMax(sb.getTarget().getLstMax());
         e.setLSTSet(sb.getTarget().getLstSet());
         //gotta get currect conditions
-        e.setOpacity(weather.getCurrentOpacity(clock.getDateTime(), freq, el));
-        e.setRMS(weather.getCurrentRMS(clock.getDateTime(), freq, el, baseline));
-        e.setWind(weather.getCurrentWindSpeed(clock.getDateTime()));
+        try {
+            e.setOpacity(weather.getCurrentOpacity(clock.getDateTime(), freq, el));
+            e.setRMS(weather.getCurrentRMS(clock.getDateTime(), freq, el, baseline));
+            e.setWind(weather.getCurrentWindSpeed(clock.getDateTime()));
+        } catch(Exception ex){}
         Date d1 = input.getBeginTime().getDate();
         Date d2 = input.getEndTime().getDate();
         Time t= new Time(0,0,0.0);

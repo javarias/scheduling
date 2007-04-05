@@ -586,12 +586,6 @@ public class Reporter extends BasicComponent {
 	
     public String getScheduleGraphFilename(){
         String inputfile = input.getInputFile().getAbsolutePath();
-    //    try {
-      //  System.out.println("1"+input.getInputFile().getCanonicalPath());
-        //System.out.println("2"+input.getInputFile().getParent());
-  //      System.out.println("3"+input.getInputFile().getPath());
-//        System.out.println("4"+input.getInputFile().getParentFile().getCanonicalPath());
-    //    } catch(Exception e){}
         String f ="";
         try{
             f =input.getInputFile().getParentFile().getCanonicalPath()+File.separator+"_tmp_schedule.gif";

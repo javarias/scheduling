@@ -39,7 +39,9 @@ public class PreConditions {
 		for (int i = 0; i < functionName.length; ++i) {
 			try {
 				classObj = obj[i].getClass();
-                if (!classObj.getName().equals("alma.scheduling.PlanningModeSim.RmsModel")){
+                if (classObj.getName().equals("alma.scheduling.PlanningModeSim.DiurnalModel")){
+    				method[i] = classObj.getMethod("compute", Double.class);
+                } else if (!classObj.getName().equals("alma.scheduling.PlanningModeSim.RmsModel")){
     				method[i] = classObj.getMethod("compute", Double.class, Double.class);
                 } else { //so if we're doing RMS we have 3 doubles to pass in
     				method[i] = classObj.getMethod("compute", Double.class, Double.class, Double.class);
