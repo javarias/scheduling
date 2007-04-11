@@ -50,7 +50,7 @@ package alma.scheduling.Define;
  * 2000, Willmann-Bell, Inc., ISBN 0-943396-61-1.  See
  * chapter 7, "Julian day", and chapter 12, "Sideral Time".
  * 
- * @version $Id: DateTime.java,v 1.10 2006/09/25 16:08:32 sslucero Exp $
+ * @version $Id: DateTime.java,v 1.11 2007/04/11 22:15:38 sslucero Exp $
  * @author Allen Farris
  */
 public class DateTime {
@@ -216,7 +216,8 @@ public class DateTime {
      * @return long The acs time.
      */
     static public long unixToAcs(long unixTime) {
-        long acsTime = (unixTime + (CONVERSION * 1000) * 10000);
+        long acsTime = (unixTime + (CONVERSION * 1000) * 1000);
+        //long acsTime = (unixTime + (CONVERSION * 1000) * 10000);
         System.out.println("SCHEDULING: ACS TIME = "+acsTime);
         return acsTime;
     }
