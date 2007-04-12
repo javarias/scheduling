@@ -197,6 +197,12 @@ public class ExecutionStatistics {
     public double getLSTatVeryEndMidnight(){
         return scheduleEndMNLst;
     }
+    public int getStartMonth() {
+        return getStartTime().getDate().getMonth();
+    }
+    public int getEndMonth() {
+        return getEndTime().getDate().getMonth();
+    }
 
     /**
       * NOTE: The order in toString and getColumnsInfoString MUST MATCH other wise
@@ -223,7 +229,9 @@ public class ExecutionStatistics {
                getEndDay()+", "+
                getLSTatMidnight()+", "+
                getLSTatVeryStartMidnight()+", "+
-               getLSTatVeryEndMidnight()+
+               getLSTatVeryEndMidnight()+", "+
+               getStartMonth()+", "+
+               getEndMonth()+
                "";
             /*
                getProjectName() +", "+
@@ -265,6 +273,8 @@ public class ExecutionStatistics {
                "## 17. LST at Midnight on startday\n"+
                "## 18. LST at Midnight on startday of simulation\n"+
                "## 19. LST at Midnight on endday of simulation\n"+
+               "## 20. Start Month\n"+
+               "## 21. End Month\n"+
                "";
         /*
         return "## 1.  SB Name \n"+

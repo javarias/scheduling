@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.49 2007/01/29 17:44:05 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.50 2007/04/12 21:54:18 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -174,30 +174,6 @@ public class ProjectUtil {
 		}
 	}
 	
-	/**
-	 * Check an EntityId: format "uid://X0000000000000079/X00000000"
-	 * @param s The string to be checked.
-	 * @throws SchedulingException If the string has an invalid format.
-	static public void checkEntityId(String s) throws SchedulingException {
-		if (s == null || s.length() == 0)
-			return;
-		if ((s.length() != 33) || (!s.startsWith("uid://X")) ||
-				(s.charAt(23) != '/' || s.charAt(24) != 'X'))
-			throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
-		for (int i = 7; i < 23; ++i) {
-			if (!((s.charAt(i) >= '0' && s.charAt(i) <= '9') ||
-				  (s.charAt(i) >= 'a' && s.charAt(i) <= 'f')))
-				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
-		}
-		for (int i = 25; i < 33; ++i) {
-			if (!((s.charAt(i) >= '0' && s.charAt(i) <= '9') ||
-					(s.charAt(i) >= 'a' && s.charAt(i) <= 'f')))
-				throw new SchedulingException ("Invalid format for EntityId (" + s + ")");
-		}
-	}
-
-	 */
-
 	//////////////////////////////////////////////////////////////
 	// The following private methods are used to support the 	//
 	// "validate(Project project)" method.						//
@@ -796,109 +772,6 @@ public class ProjectUtil {
         return null;
     }
 
-//////////////                    
- /*   public static Source createOpticalSBSource(OpticalCameraControlT oc_ctrl, 
-            OpticalCameraTargetT target, ArrayList allEqs) 
-                throws SchedulingException { //target == opticalTargetList[i]
-
-        Source sbSource = new Source();
-        FieldSourceT fieldSource = target.getFieldSource();
-    	if (fieldSource == null){
-	    	throw new SchedulingException("There is no FieldSourceT object in the scheduling block");// with id " + 
-        }
-	    SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
-    	if (coord == null){
-	       	throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block"); //with id " + 
-        }
-	    LongitudeT lng = coord.getLongitude(); 	// in degrees
-    	double ra = lng.getContent();
-		LatitudeT lat = coord.getLatitude();	// in degrees
-	    double dec = lat.getContent();
-    	String coordType = coord.getSystem().toString(); // must be J2000
-        if (!coordType.equals("J2000")){
-            throw new SchedulingException(coordType + " is not supported.  Must be J2000");
-        }
-        Equatorial eq = new Equatorial((ra /24.0),dec);
-        allEqs.add(eq);
-        try {
-            sbSource.setSourceName(fieldSource.getSourceName());
-        } catch(Exception e) {
-            sbSource.setSourceName("Source was not named.");
-        }
-        try {
-            sbSource.setSolarSystemObj(fieldSource.getSolarSystemObject().toString());
-        } catch(Exception e) {
-            sbSource.setSolarSystemObj("Not a solar system object.");
-        }
-        SourcePropertyT[] sourceProperties = fieldSource.getSourceProperty();
-        try {
-            sbSource.setNumberSourceProperties(fieldSource.getSourcePropertyCount());
-            //only really care about the first one!
-            sbSource.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
-        } catch(Exception e){}
-        try {
-            sbSource.setMinMagnitude(oc_ctrl.getMinMagnitude().getValue());
-            sbSource.setMaxMagnitude(oc_ctrl.getMaxMagnitude().getValue());
-        } catch(Exception e){}
-        return sbSource;
-    }    
-
-    
-    public static Source createObsTargetSource(ObsTargetT target, ArrayList eqList, FrequencySetupT freq)
-        throws SchedulingException {
-    	FieldSourceT fieldSource = target.getFieldSource();
-        if (fieldSource == null){
-            throw new SchedulingException("There is no FieldSourceT object in the scheduling block");// with id " + 
-//                    sb.getSchedBlockId());
-        }
-        SkyCoordinatesT coord = fieldSource.getSourceCoordinates();
-        if (coord == null){
-            throw new SchedulingException("There is no SkyCoordinatesT object in the scheduling block ");//with id " + 
-    //                sb.getSchedBlockId());
-        }
-        LongitudeT lng = coord.getLongitude(); 	// in degrees
-        try {
-            double ra = lng.getContent();
-            LatitudeT lat = coord.getLatitude();	// in degrees
-            double dec = lat.getContent();
-            Equatorial eq = new Equatorial((ra /24.0),dec);
-            eqList.add(eq);
-        } catch(Exception e) {
-            System.out.println("Equatorial not created");
-        }
-        String coordType = coord.getSystem().toString(); // must be J2000
-        if (!coordType.equals("J2000"))
-            throw new SchedulingException(coordType + " is not supported.  Must be J2000");
-        Source sbSource = new Source();
-        if(fieldSource.getSourceName() != null){
-            sbSource.setSourceName(fieldSource.getSourceName());
-        } else {
-            sbSource.setSourceName("Source was not named.");
-        }
-        try {
-            sbSource.setSolarSystemObj(fieldSource.getSolarSystemObject().toString());
-        } catch(Exception e) {
-            sbSource.setSolarSystemObj("Not a solar system object.");
-        }
-        SourcePropertyT[] sourceProperties = fieldSource.getSourceProperty();
-        if(sourceProperties != null) {
-            sbSource.setNumberSourceProperties(fieldSource.getSourcePropertyCount());
-            //only really care about the first one!
-            try {
-                sbSource.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
-            } catch(NullPointerException npe) {
-                sbSource.setVisibleMagnitude(0.0);
-            }
-        }
-        if(freq != null) {
-            //don't think units are set for frequency...
-            sbSource.setRestFrequency(freq.getRestFrequency().getContent(), "");
-            sbSource.setTransition(freq.getTransitionName());
-        }
-        return sbSource;
-    }*/
-///////////////                    
-	
 	/**
 	 * Update the specified Project object using the specified ProjectStatus object.
 	 * @param project

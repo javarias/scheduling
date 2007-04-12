@@ -235,15 +235,16 @@ public class Simulator implements Runnable {
 			MasterScheduler masterScheduler = (MasterScheduler)container.getComponent(Container.MASTER_SCHEDULER);
 
 			ClockSimulator clock = (ClockSimulator)container.getComponent(Container.CLOCK);
-			
+			DateTime start = clock.getDateTime();
 			// Let the reporter know we are starting.
-			reporter.schedulingIsBeginning(clock.getDateTime());
+			reporter.schedulingIsBeginning(start);
 			
 			// Run the simulation.
 			masterScheduler.runSimulation();
 			
+            DateTime end = clock.getDateTime();
 			// Let the reporter know we have finished.
-			reporter.schedulingIsComplete(clock.getDateTime(),0,"");
+			reporter.schedulingIsComplete(end,0,"");
 			
             outputResultsFilename = reporter.getOutputFilename();
             scheduleGraphFilename = reporter.getScheduleGraphFilename();

@@ -184,6 +184,12 @@ public class WeatherModel extends BasicComponent {
 		logger.severe("WeatherModel.error " + message);
 	}
 
+    /**
+      * Returns the weather model's type.
+      */
+    public String getWeatherModelType(){
+        return type;
+    }
 	/**
 	 * Get the list of function names.
 	 */
@@ -261,5 +267,4 @@ public class WeatherModel extends BasicComponent {
         return val;
     }
         
-	
 }
