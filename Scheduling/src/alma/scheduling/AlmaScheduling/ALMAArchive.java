@@ -72,7 +72,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.70 2007/01/09 17:00:22 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.71 2007/04/12 21:53:07 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -194,31 +194,31 @@ public class ALMAArchive implements Archive {
      */
 	public Project[] getAllProject() throws SchedulingException {
         try {
-        Project[] projects = null;
-        Vector tmp_projects = new Vector();
+            Project[] projects = null;
+            Vector tmp_projects = new Vector();
         
-        ObsProject[] obsProj = getAllObsProjects();
-        logger.info("obsproject length = "+obsProj.length);
-        for(int i=0; i < obsProj.length; i++) {
-            ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
-            if(ps == null) { //no project status for this project. so create one
-                 logger.warning("SCHEDULING: no ps for this project");
-            } else {
+            ObsProject[] obsProj = getAllObsProjects();
+            logger.info("obsproject length = "+obsProj.length);
+            for(int i=0; i < obsProj.length; i++) {
+                ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
+                if(ps == null) { //no project status for this project. so create one
+                     logger.warning("SCHEDULING: no ps for this project");
+                } else {
             //TODO should check project queue.. if project exists don't map a new one.
-                SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
-                Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
-                        new DateTime(System.currentTimeMillis()));
-                tmp_projects.add(p);
+                    SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
+                    Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
+                            new DateTime(System.currentTimeMillis()));
+                    tmp_projects.add(p);
+                }
+                    
             }
-                
-        }
-        projects = new Project[tmp_projects.size()];
-        for(int i=0; i < tmp_projects.size();i++) {
-            projects[i] = (Project)tmp_projects.elementAt(i);
-        }
-	    logger.info("SCHEDULING: Scheduling converted "+projects.length+
-                " Projects from ObsProject found archived.");
-        return projects;
+            projects = new Project[tmp_projects.size()];
+            for(int i=0; i < tmp_projects.size();i++) {
+                projects[i] = (Project)tmp_projects.elementAt(i);
+            }
+	        logger.info("SCHEDULING: Scheduling converted "+projects.length+
+                    " Projects from ObsProject found archived.");
+            return projects;
         } catch (Exception e) {
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             try {
@@ -243,8 +243,12 @@ public class ALMAArchive implements Archive {
             //logger.info("Getting PS for Project");
             //logger.info("PS xml: "+xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
-            ps = ProjectUtil.updateProjectStatus(p);
-            updateProjectStatus(ps);
+            //check time of update, if one exists DON'T do new mapping!
+            String timeOfUpdate = ps.getTimeOfUpdate();
+	    	if (timeOfUpdate == null || timeOfUpdate.length() == 0) {
+                ps = ProjectUtil.updateProjectStatus(p);
+                updateProjectStatus(ps);
+		    }
         } catch(Exception e) {
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
@@ -266,6 +270,13 @@ public class ALMAArchive implements Archive {
             String ps_id = p.getProjectStatusRef().getEntityId();
 	    //logger.info("Retrieving project status "+ps_id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
+            if(!xml.entityTypeName.equals("ProjectStatus")){
+                logger.warning("SCHEDULING: Retrieved a "+xml.entityTypeName+" when we wanted a ProjectStatus");
+                logger.warning("SCHEDULING: uid was "+ps_id+" and xml was:");
+                logger.warning(xml.xmlString);
+            } else {
+                logger.fine(xml.xmlString);
+            }
             //logger.info("Getting PS for ObsProject");
             //logger.info("PROJECT STATUS: "+ xml.xmlString);
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
