@@ -57,7 +57,7 @@ for line in file1.readlines():
 pgbeg(sys.argv[2]+".ps/cps",1,1) 
 #Save to gif file            
 foo = "_tmp_schedule.gif"   
-#pgbeg(foo+"/GIF",1,1)
+pgbeg(foo+"/GIF",1,1)
 pgpap(10.5,0.75)
 pgsvp(0.1, 0.8, 0.1, 0.9)   
 color =1
