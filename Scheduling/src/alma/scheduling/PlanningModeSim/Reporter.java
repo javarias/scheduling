@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.io.*;
 //import java.io.FileOutputStream;
 //import java.io.IOException;
+import java.util.Map;
 import java.util.ArrayList;
 import java.text.NumberFormat;
 
@@ -551,17 +552,22 @@ public class Reporter extends BasicComponent {
 
     private synchronized void runAnalysisScripts(){
         //System.out.println("start scripts ");
+        Map<String, String> weatherFiles = input.getWeatherFileNames();
         String cmd1 = "ALMASched_lst_vs_day";
         String cmd2 = "ALMASchedSim_antennaLocation";
         String stats = input.getStatsFile().getAbsolutePath();
         String inputfilename = input.getInputFile().getAbsolutePath();
         String outputfilename = inputfilename.substring(0, (inputfilename.length() -4))+"_graph";
-        String scheduleCmdString = cmd1 +" "+ stats +" "+ outputfilename +" "+ inputfilename;
+        String weatherfilename = weatherFiles.get("opacity");
+        String scheduleCmdString1 = cmd1 +" "+ stats +" "+ outputfilename +" "+ inputfilename ;
+        String scheduleCmdStringOP = scheduleCmdString1 +" "+weatherFiles.get("opacity") +" opacity"; 
+        String scheduleCmdStringRMS = scheduleCmdString1 +" "+weatherFiles.get("rms") +" rms"; 
+        String scheduleCmdStringWIND = scheduleCmdString1 +" "+weatherFiles.get("wind") +" wind velocity";
         String antennaPlotCmdString = cmd2 +" "+ inputfilename;
         //System.out.println(scheduleCmdString);
         //System.out.println(inputfilename);
         try{
-            CreateScheduleFile foo1 = new CreateScheduleFile(scheduleCmdString);   
+            CreateScheduleFile foo1 = new CreateScheduleFile(scheduleCmdStringOP);   
             CreateAntennaLocationFile foo2 = new CreateAntennaLocationFile(antennaPlotCmdString);
             Thread t1 = new Thread(foo1);
             Thread t2 = new Thread(foo2);

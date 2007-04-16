@@ -188,7 +188,17 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	 */
 	private int advanceClock;
 
+    /**
+      * Weather Mode we're using for simulation (real/diurnal)
+      */
+    private String weatherMode;
+    
     private Map<String, String[]> weatherConstraintsMap;
+    /**
+      * In real mode; Map a file name to its weather type: 
+      * I.e: opacity -> opacityFilename
+      */
+    private Map<String, String> weatherFiles;
 	
 	/**
 	 * Create a SimulationInput object.
@@ -372,6 +382,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		advanceClock = getInt(Tag.advanceClock);
 
         //getWeatherConstraints();
+        getWeatherInfo();
 		logger.info(instanceName + ".initialized");
 	}
 
@@ -401,6 +412,28 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			error("ProjectSourceType must be JavaProperties at this time.");
 		}
 	}
+    private void getWeatherInfo() throws SimulationException {
+        weatherMode = getString(Tag.weatherModelType);
+        if(weatherMode.equals("real")){
+            getWeatherFiles();
+        } else if(weatherMode.equals("diurnal")){
+            getWeatherConstraints();
+        } else{
+        }
+    }
+
+    private void getWeatherFiles() throws SimulationException{
+        int num = Integer.parseInt(getString(Tag.numberWeatherFunctions));
+        String tmp;
+        StringTokenizer st;
+        weatherFiles = new LinkedHashMap<String, String> ();
+        for(int i=0;i < num;i++){
+            tmp = getString(Tag.weather+"."+i);
+            System.out.println(tmp);
+            st = new StringTokenizer(tmp,";");
+            weatherFiles.put(st.nextToken(), st.nextToken());
+        }
+    }
     private void getWeatherConstraints() throws SimulationException {
         weatherConstraintsMap = new LinkedHashMap<String, String[]>();
         StringTokenizer st;
@@ -1185,6 +1218,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	public Program[] getProgram() {
 		return set;
 	}
+
+    public Map<String, String> getWeatherFileNames(){
+        return weatherFiles;
+    }
 
 	// The following methods have package access because they are used by
 	// the simulator to set beginning and ending times of the simulation.

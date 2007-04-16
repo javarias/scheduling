@@ -60,9 +60,9 @@ public class Tag {
 	public static final String numberWeatherFunctions	= "Weather.numberFunctions";
 	public static final String weather					= "Weather";
 	public static final String weatherModelType			= "Weather.modelType";
-	public static final String windFile					= "Weather";
-	public static final String rmsFile					= "Weather";
-	public static final String opacityFile				= "Weather";
+	//public static final String windFile					= "Weather";
+	//public static final String rmsFile					= "Weather";
+	//public static final String opacityFile				= "Weather";
 	public static final String setUpTime				= "Simulation.setUpTime";
 	public static final String changeProjectTime		= "Simulation.changeProjectTime";
 	public static final String advanceClock				= "Simulation.advanceClock";
