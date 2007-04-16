@@ -1,0 +1,11 @@
+numberProjects = 2
+
+project.0 = A17; Mel Wright; higher; 1
+set.0.0 = setA17; 7; 345; Exceptional; 1
+target.0.0.0 = A17.1; 6.0; 30.0; 345.0; 60.0; 0.05 tau(225); 0.0; 0.0; 50
+
+project.1 = A03; Mel Wright; high; 1
+set.1.0 = setA03; 6; 240.0; Exceptional; 1
+target.1.0.0 = A03.0; 6.0; 30.0; 240.0; 60.0; 0.17 tau(225); 0.0; 0.0; 250
+
+
