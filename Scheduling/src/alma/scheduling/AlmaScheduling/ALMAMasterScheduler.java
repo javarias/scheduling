@@ -73,13 +73,13 @@ import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
 import alma.scheduling.Scheduler.*;
 //import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
-import alma.scheduling.GUI.InteractiveSchedGUI.ArchiveQueryWindowController;
+//import alma.scheduling.GUI.InteractiveSchedGUI.ArchiveQueryWindowController;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.89 2007/03/29 14:17:15 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.90 2007/04/18 14:06:34 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
