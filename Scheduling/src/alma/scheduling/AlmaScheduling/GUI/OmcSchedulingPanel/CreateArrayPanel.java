@@ -209,7 +209,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //String cbeName;
         ChessboardStatusEvent event=null;
         for (int i=0; i < antNames.length; i++){
-            event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE, "");
+            event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE, null);
             twelveMeterChessboard.processStatusChange(event);
         }
     }
@@ -225,7 +225,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         if( !enabled) {
             ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
             for(int i=0; i < all[0].length; i++){
-                event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE, "");
+                event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE, null);
                 twelveMeterChessboard.processStatusChange(event);
             }
         }
