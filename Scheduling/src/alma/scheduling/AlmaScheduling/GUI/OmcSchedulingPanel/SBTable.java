@@ -138,7 +138,9 @@ public class SBTable extends JTable {
         int[] rows = getSelectedRows();
         if(rows.length > 1) {
             //not good!
-            return "";
+            return "You can only execute one at a time";
+        } else if (rows.length < 1){
+            return "You must selected one SB!";
         }
         //get row number,
         int row = getSelectedRow();
@@ -330,6 +332,8 @@ public class SBTable extends JTable {
             String displayStatus = getDisplayStatus(status);            
             if( ((String)sbRowInfo[row][uidLoc]).equals(id)){ //good
                 sbRowInfo[row][execLoc] = displayStatus;
+                        
+                changeBackgroundColor(row, displayStatus);
             }
             manageColumnSizes();
             repaint();
@@ -338,6 +342,18 @@ public class SBTable extends JTable {
         }
     }
     
+    private void changeBackgroundColor(int row, String s) {
+        ListSelectionModel selectionModel = getSelectionModel();
+        selectionModel.setSelectionInterval(row, execLoc);
+        if(s.equals("F") || s.equals("AB") || s.equals("FAIL") || 
+                s.equals("FAILED") || s.equals("ABORTED") ){
+            setBackground(Color.RED);
+        } else {
+            setBackground(Color.WHITE);
+        }
+        selectionModel.clearSelection();
+    }
+
     private boolean isRowToBeRemoved(int[] rows, int r){
         for (int i=0; i< rows.length; i++){
             if(rows[i] == r) {
@@ -373,6 +389,7 @@ public class SBTable extends JTable {
             int i= getRowPosForSB(sbid);
             if(i != -1) {
                 setValueAt(getDisplayStatus(status), i, execLoc);
+                changeBackgroundColor(i, getDisplayStatus(status));
             } //else sb not found in table.
         } //else ignore
         manageColumnSizes();

@@ -205,6 +205,8 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     protected String getCurrentSB(){
         return currentSB;
     }
+
+    //used to check if any of the selected sb marked fro removal is running
     protected String getCurrentEB(){
         return currentEB;
     }
@@ -277,6 +279,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             parent.updateExecutionInfo("Waiting for it to be Archived.\n");
             parent.setSBStatus(sbid, completion);
             //TODO: Set stop buttons to disabled if last SB in queue.
+            parent.updateExecutionRow();
     }
     
     public void receive(ASDMArchivedEvent e){
@@ -294,7 +297,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             //set status to ARCHIVED
             SBLite sb = getSBLite(sbid);
             parent.updateExecutionInfo("ASDM archive status for "+sb.sbName+" is "+completion+".\n");
-            parent.updateExecutionRow();
+            parent.updateArchivingRow();
         }
     }
 

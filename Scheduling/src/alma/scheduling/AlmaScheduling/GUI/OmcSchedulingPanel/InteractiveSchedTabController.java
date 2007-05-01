@@ -42,7 +42,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     private Interactive_PI_to_Scheduling scheduler;
     private String schedulername;
     private Consumer consumer;
-    //private String currentSBId;
+    private String currentSBId;
     //private String currentExecBlockId;
     private String arrayName;
     private String arrayStatus;
@@ -56,6 +56,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         foo=cs;
         arrayName = a;
         arrayStatus = "Active";
+        currentSBId = "";
         try{
             //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
@@ -96,6 +97,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     protected void stopInteractiveScheduling() {
         try {
+    //        consumer.disconnect();
             getMSRef();
             masterScheduler.stopInteractiveScheduler(schedulername);
             releaseMSRef();
@@ -158,7 +160,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public synchronized void executeSB(String id) throws SchedulingException {
         try{
             logger.info("IS: Sending sb ("+id+") to be executed");
-            //currentSBId = id;
+            currentSBId = id;
             getMSRef();
             ProjectLite project = masterScheduler.getProjectLiteForSB(id);
             scheduler.startSession(project.piName, project.uid);
@@ -185,14 +187,20 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         Thread t = new Thread(processor);
         t.start();
     }
-
+    int startC =0;
+    int stopC =0;
     public void receive(ExecBlockStartedEvent e) {
-        logger.info("got eb started in IS");
-        String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
+        String exec_id = e.execId.entityId;
+        logger.info("got start event in IS for sb "+sbid);
+        if(!sbid.equals(currentSBId)){
+            return;
+        }
         if(scheduler.getCurrentSB().equals(sbid) ){
             scheduler.setCurrentEB(exec_id);
             //currentExecBlockId = exec_id;
+            logger.finest("Got start event for "+sbid+", ctr = "+startC);
+            startC++;
             
         }
         //startInteractiveSession();
@@ -204,11 +212,18 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         logger.info("got eb ended in IS");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
+        logger.info("got ended event in IS for sb "+sbid);
+        if(!sbid.equals(currentSBId)){
+            return;
+        }
         logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
                 !scheduler.getCurrentEB().equals(exec_id) ){
             System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
            // currentExecBlockId = exec_id;
+        } else {
+            logger.finest("got stop for sb "+sbid+", ctr = "+stopC);
+            stopC++;
         }
         String completion;
         System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
@@ -225,6 +240,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             logger.severe("SP: Error ending interactive session");
             ex.printStackTrace();
         }
+        currentSBId = "";
     }
 
     public void receive(DestroyedAutomaticArrayEvent event) {

@@ -62,6 +62,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton stopB;
     private JButton stopQB;
     private int currentExecutionRow;
+    private int archivingRow;
     
     
     public QueuedSchedTab(String aName){
@@ -314,6 +315,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private void executeSBs(){
         //get all ids from the queueSB table and send them to control
         currentExecutionRow =0;
+        archivingRow=0;
         controller.runQueuedScheduling(queueSBs.getAllSBIds());
         //setStopButtonsEnabled(true);
     }
@@ -321,8 +323,15 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         currentExecutionRow++;
     }
     
+    protected void updateArchivingRow(){
+        archivingRow++;
+    }
     public void setSBStatus(String sbid, String status){
-        queueSBs.setSBExecStatusForRow(currentExecutionRow, sbid, status);
+        if(status.equals("ARCHIVED")){
+            queueSBs.setSBExecStatusForRow(archivingRow, sbid, status);
+        }else{
+            queueSBs.setSBExecStatusForRow(currentExecutionRow, sbid, status);
+        }
     }
     
     private void stopSB(){

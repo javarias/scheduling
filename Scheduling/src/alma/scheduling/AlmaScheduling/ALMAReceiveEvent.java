@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.41 2006/12/01 00:23:25 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.42 2007/05/01 21:08:06 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -331,10 +331,12 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * @return ExecBlock The exec block with the given id. Returns null if not in the queue.
       */
     private ExecBlock retrieveExecBlock(String ebId) {
+        logger.info("SCHEDULING: Retrieving EB "+ebId+" from list");
         ExecBlock eb = null;
         for(int i=0; i < currentEB.size(); i++) {
             if( ((ExecBlock)currentEB.elementAt(i)).getId().equals(ebId) ){
                 eb = (ExecBlock)currentEB.elementAt(i);
+                logger.info("SCHEDULING: Found eb "+eb.getExecId()+" in list");
                 break;
             }
         }
@@ -392,6 +394,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             eb.setTimeOfUpdate(startEb);
             //eb.setSessionId(e.sessionId);
             eb.setSessionId(e.sessionId.partId);
+            logger.info("SCHEDULING: Adding current EB "+eb.getExecId()+" to current list");
             currentEB.add(eb);
             createObservedSession(eb);
             //manager.createProjectWebpage(projectUid);
@@ -434,7 +437,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //logger.info("SCHEDULING: end time is "+ e.endTime);
             logger.info("SCHEDULING: end time is "+ endEb.toString());
             logger.info("********************************");
-            logger.info("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+". ASDM/ExecBlock = "+e.execId.entityId);
+            logger.info("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+" with ASDM/ExecBlock = "+e.execId.entityId);
             //TODO change this when we start getting exec block end events for all reasons
             eb.setEndTime(endEb, Status.COMPLETE);
             eb.setTimeOfUpdate(endEb);

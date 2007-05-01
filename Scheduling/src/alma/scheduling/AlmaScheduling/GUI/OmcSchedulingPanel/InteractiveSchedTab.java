@@ -276,6 +276,13 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         public void run() {
             try {
                 String sbId =sbs.returnSelectedSBId();
+                if(sbId.equals("You can only execute one at a time")){
+                    showErrorPopup(sbId, "executeSB");
+                    return;
+                } else if (sbId.equals( "You must selected one SB!")){
+                    showErrorPopup(sbId, "executeSB");
+                    return;
+                }
                 if(!sbId.equals("")){
                     controller.executeSB(sbId);
                     //setEnable(false);
@@ -284,7 +291,8 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                 //check if a sb has been selected.
             }catch(Exception e){
                 e.printStackTrace();
-                showErrorPopup(e.toString(), "executeSB");
+                logger.severe("SCHEDULING_PANEL: Error starting a SB");
+                showErrorPopup(e.toString()+", Try destroying the array and starting again", "executeSB");
             }
         }
     }
@@ -299,6 +307,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                 stopB.setEnabled(false);
             } catch(Exception e) {
                 e.printStackTrace();
+                logger.severe("SCHEDULING_PANEL: Error stopping a SB");
                 showErrorPopup(e.toString(), "stopSB");
             }
         }

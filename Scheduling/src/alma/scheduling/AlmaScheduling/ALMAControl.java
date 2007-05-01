@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.64 2007/03/29 22:54:46 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.65 2007/05/01 21:08:06 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -271,6 +271,7 @@ public class ALMAControl implements Control {
             for(int i=0; i < auto_controllers.size(); i++){
                 foo = ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp());
                 foo.stop();
+                control_system.destroyArray(foo.getArrayComponentName());
                 containerServices.releaseComponent(foo.name());
             }
             removeAutomaticArray(true,"");

@@ -65,7 +65,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.81 2007/02/05 23:56:43 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.82 2007/05/01 21:08:06 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -723,12 +723,16 @@ public class ALMAProjectManager extends ProjectManager {
     public boolean isPipelineNeeded(String sbid) {
         boolean needed = false;
         SB sb = sbQueue.get(sbid);
-        Program prog = sb.getParent();
-        if(prog.getDataReductionProcedureName() == null || 
-                prog.getDataReductionProcedureName().equals("") ) {
+        try {
+            Program prog = sb.getParent();
+            if(prog.getDataReductionProcedureName() == null || 
+                    prog.getDataReductionProcedureName().equals("") ) {
+                needed = false;
+            } else {
+                needed = true;
+            }
+        } catch(Exception e){
             needed = false;
-        } else {
-            needed = true;
         }
         return needed;
     }
@@ -937,17 +941,12 @@ public class ALMAProjectManager extends ProjectManager {
             p= pQueue.get(projIds[i]);
             x = searchStr.indexOf("*");
             tmp = searchStr.substring(0,x);
-            System.out.println("SUBSTRING: "+tmp);
             if(attr.equals("pI")){
-                System.out.println("PI: "+p.getPI());
                 if(p.getPI().contains(tmp)){
-                    System.out.println("it contains it");
                     res.add(projIds[i]);
                 }
             } else if(attr.equals("projectName")){
-                System.out.println("Project name: "+p.getProjectName());
                 if(p.getProjectName().contains(tmp)){
-                    System.out.println("it contains it");
                     res.add(projIds[i]);
                 }
             }
@@ -1070,7 +1069,7 @@ public class ALMAProjectManager extends ProjectManager {
         logger.info("project Queue size at start of pollarchive = "+pQueue.size());
         logger.info("sb queue size at start of pollarchive = "+sbQueue.size());
         logger.info("ps queue size at start of pollarchive = "+psQueue.size());
-        logger.info("SCHEDULING: polling archive for (eventually new/updated) projects");
+        logger.info("SCHEDULING: polling archive for new/updated projects");
         Project[] projectList = new Project[0];
         Vector<ProjectStatus> tmpPS = new Vector<ProjectStatus>();
         ProjectStatus ps;

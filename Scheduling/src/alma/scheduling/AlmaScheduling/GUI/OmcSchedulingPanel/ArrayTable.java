@@ -206,7 +206,7 @@ public class ArrayTable extends JTable {
         int size = oldInfo.length + 1;
         int ctr =0;
         arrayRowInfo = new Object[size][2];
-        for(int i=0; i < size; i++){
+        for(int i=0; i < (size-1); i++){
             arrayRowInfo[i][0] = oldInfo[i][0];
             arrayRowInfo[i][1] = oldInfo[i][1];
             ctr++;

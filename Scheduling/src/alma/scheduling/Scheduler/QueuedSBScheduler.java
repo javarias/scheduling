@@ -146,14 +146,10 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	 * @throws SchedulingException 
 	 */
 	public boolean executeSBs() throws SchedulingException {
-        logger.info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        logger.info("start of execution");
 		/*if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");
 		}
         */
-        logger.info("Queue size at start of executeSB = "+config.getQueue().size());
-        logger.info("SBs not done size at start of executeSB = "+sbsNotDone.length);
         if(config.getQueue().getRunning().length > 0) {
 
             return false;
@@ -192,6 +188,10 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             logger.info("SCHEDULING: SB "+sb.getId()+" is completed.");
             return true;
         }
+        logger.info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        logger.info("start of execution");
+        logger.info("Queue size at start of executeSB = "+config.getQueue().size());
+        logger.info("SBs not done size at start of executeSB = "+sbsNotDone.length);
         logger.info("QS: set current SB to "+sb.getId());
 		config.startExecSB(sb.getId());
         logger.info("QS: current SB should now be "+sb.getId());

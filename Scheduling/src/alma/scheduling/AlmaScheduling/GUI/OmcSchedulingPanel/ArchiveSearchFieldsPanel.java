@@ -161,7 +161,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         c.gridwidth =1;
         gridbag.setConstraints(l,c);
         p.add(l);
-        String[] foo= {"All","SingleFieldInterferometry","OpticalPointing","TowerHolography"};
+        String[] foo= {"All","Single Field Interferometry","Optical Pointing","Tower Holography", "Expert Mode"};
         sbModeNameChoices = new JComboBox(foo);
         sbModeNameChoices.setSelectedIndex(0);
         c.gridwidth = GridBagConstraints.REMAINDER;

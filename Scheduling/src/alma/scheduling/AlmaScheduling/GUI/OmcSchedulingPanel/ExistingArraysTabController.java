@@ -73,10 +73,12 @@ public class ExistingArraysTabController extends SchedulingPanelController {
     }
     public void receive(CreatedManualArrayEvent event) {
         String name = event.arrayName;
+        logger.info("SP: Received created array event for "+name);
         parent.addArray(name, "manual");
     }
     public void receive(DestroyedManualArrayEvent event) {
         String name = event.arrayName;
+        logger.info("SP: Received destroy array event for "+name+" in existing array tab");
         parent.removeArray(name);
     }
 
