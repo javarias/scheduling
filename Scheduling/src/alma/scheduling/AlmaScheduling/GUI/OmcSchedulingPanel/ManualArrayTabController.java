@@ -25,9 +25,10 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.logging.Logger;
+import java.lang.reflect.Constructor;
 import alma.scheduling.MasterSchedulerIF;
 import alma.exec.extension.subsystemplugin.*;
-import alma.Control.console.gui.CCLConsolePlugin;
+//import alma.Control.console.gui.CCLConsolePlugin;
 import alma.Control.DestroyedManualArrayEvent;
 import alma.acs.nc.Consumer;
 
@@ -73,7 +74,13 @@ public class ManualArrayTabController extends SchedulingPanelController {
             return false;
         }
         try {
-            CCLConsolePlugin ctrl = new CCLConsolePlugin(arrayName);
+            Class[] paramTypes = {String.class};
+            String pluginImpl = "alma.Control.console.gui.CCLConsolePlugin";
+            Class c = Class.forName(pluginImpl);
+            Constructor constr = c.getConstructor(paramTypes);
+            Object[] args = {arrayName};
+            SubsystemPlugin ctrl = (SubsystemPlugin)constr.newInstance(args);
+            //CCLConsolePlugin ctrl = new CCLConsolePlugin(arrayName);
             getCS().startChildPlugin("CCL Console", (SubsystemPlugin)ctrl);
         }catch(Exception e){
             e.printStackTrace();
