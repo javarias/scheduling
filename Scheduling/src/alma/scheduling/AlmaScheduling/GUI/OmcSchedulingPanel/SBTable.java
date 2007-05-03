@@ -64,6 +64,7 @@ public class SBTable extends JTable {
     private boolean projectSearchMode;
     private JPopupMenu rtClickMenu = null;
     private CopySBUID curUIDinCB = null;
+    private ErrorBackgroundRenderer changeRowColor;
 
     /**
       * @param b True if you want a column for execution status
@@ -131,6 +132,9 @@ public class SBTable extends JTable {
             }                
         });
         manageColumnSizes();
+        changeRowColor = new ErrorBackgroundRenderer();
+        setDefaultRenderer(Color.class, changeRowColor);
+        renderColumns(changeRowColor);
     }
 
     
@@ -219,6 +223,19 @@ public class SBTable extends JTable {
                 fireTableCellUpdated(row, col);
             }
         };
+    }
+
+    private void renderColumns(TableCellRenderer r){
+        for(int i=0; i < getModel().getColumnCount(); i++){
+            renderColumn(getColumnModel().getColumn(i), r);
+        }
+    }
+    private void renderColumn(TableColumn col, TableCellRenderer r){
+        try{
+            col.setCellRenderer(r);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void setRowInfo(SBLite[] sblites, boolean queuedList){
@@ -343,15 +360,23 @@ public class SBTable extends JTable {
     }
     
     private void changeBackgroundColor(int row, String s) {
+        //selectionModel.setSelectionInterval(row, execLoc);
         ListSelectionModel selectionModel = getSelectionModel();
-        selectionModel.setSelectionInterval(row, execLoc);
+        selectionModel.clearSelection();
         if(s.equals("F") || s.equals("AB") || s.equals("FAIL") || 
                 s.equals("FAILED") || s.equals("ABORTED") ){
-            setBackground(Color.RED);
+            //setBackground(Color.RED);
+            System.out.println("setting row "+row+" to red");
+            changeRowColor.setColor(Color.RED);
+            changeRowColor.setRowToColor(row);
         } else {
-            setBackground(Color.WHITE);
+            System.out.println("setting row "+row+" to white");
+            changeRowColor.setColor(Color.WHITE);
+            changeRowColor.setRowToColor(row);
+            //setBackground(Color.WHITE);
         }
-        selectionModel.clearSelection();
+        revalidate();
+        validate();
     }
 
     private boolean isRowToBeRemoved(int[] rows, int r){
@@ -443,7 +468,7 @@ public class SBTable extends JTable {
                         i);
 
                 width = Math.max(width, c.getPreferredSize().width);
-                ((DefaultTableCellRenderer)r).
+                ((ErrorBackgroundRenderer)r).
                      setHorizontalAlignment(SwingConstants.LEFT);
             }
             column.setPreferredWidth(Math.max(headerWidth,width)+5);
@@ -599,6 +624,50 @@ public class SBTable extends JTable {
                 rtClickMenu.show(e.getComponent(),
                        e.getX(), e.getY());
             }
+        }
+    }
+
+    class ErrorBackgroundRenderer extends JLabel implements TableCellRenderer {
+        private int rowToColor = -1;
+        private Color color = Color.WHITE;
+        
+        public ErrorBackgroundRenderer(){}
+        
+        public void setRowToColor(int r){
+            rowToColor = r;
+        }
+        
+        public void setColor(Color c){
+            color = c;
+        }
+        
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+
+            setOpaque(true); //JLabel isn't opaque by default
+            if (value != null){
+                setText(value.toString());
+            }
+            if(table.getFont() != null){
+                setFont(table.getFont());
+            }
+
+            if(row == rowToColor) {
+                setBackground(color);
+            } else {
+                setBackground(Color.WHITE);
+            }
+            if(isSelected){//if the row is not selected then use the custom color
+                setBackground(table.getSelectionBackground());
+            }
+              //  setBackground(color);
+            //else //if the row is selected use the default selection color
+              //  setBackground(table.getSelectionBackground());
+            setForeground(table.getForeground());
+ 
+            return this;
+            //return super.getTableCellRendererComponent
+              //  (table, value, isSelected, hasFocus, row, column);
         }
     }
 }

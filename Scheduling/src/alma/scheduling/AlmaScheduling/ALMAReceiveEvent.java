@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.42 2007/05/01 21:08:06 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.43 2007/05/03 22:27:01 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -439,7 +439,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.info("********************************");
             logger.info("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+" with ASDM/ExecBlock = "+e.execId.entityId);
             //TODO change this when we start getting exec block end events for all reasons
-            eb.setEndTime(endEb, Status.COMPLETE);
+            if(eb == null){
+                logger.severe("SCHEDULNG: exec block retrieved from list was null");
+            }
+            if(e.status == alma.Control.Completion.SUCCESS) {
+                eb.setEndTime(endEb, Status.COMPLETE);
+            } else {
+                eb.setEndTime(endEb, Status.ABORTED);// need to make a failed thing in Status
+            }
             eb.setTimeOfUpdate(endEb);
             //send out an end session event
             endSession(eb);

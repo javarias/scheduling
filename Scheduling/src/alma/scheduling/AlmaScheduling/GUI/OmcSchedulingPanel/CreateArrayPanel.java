@@ -68,7 +68,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     public void connectedSetup(PluginContainerServices cs) {
         super.onlineSetup(cs);
+        System.out.println("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
+        initializeChessboards();
         createALMAAntennaChessboards();
         add(chessboardPanel, BorderLayout.CENTER);
         setEnabled(false);
@@ -102,6 +104,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
 
     private void createALMAAntennaChessboards(){
+        System.out.println("create alma chessboard");
         chessboardPanel.removeAll();
         chessboardPanel = new JPanel(new BorderLayout());
         JPanel cbPanel = new JPanel(new GridLayout(3,1));
@@ -209,7 +212,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //String cbeName;
         ChessboardStatusEvent event=null;
         for (int i=0; i < antNames.length; i++){
-            event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE, null);
+            event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE);//, null);
             twelveMeterChessboard.processStatusChange(event);
         }
     }
@@ -225,7 +228,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         if( !enabled) {
             ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
             for(int i=0; i < all[0].length; i++){
-                event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE, null);
+                event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
                 twelveMeterChessboard.processStatusChange(event);
             }
         }
@@ -236,10 +239,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         arrayMode = mode;
         GetAntennaThread ant = new GetAntennaThread();
         if(controller == null){
-            System.out.println("crappy controller");
+            System.out.println("crappy controller == null");
         }
         if(controller.getCS() == null){
-            System.out.println("crappy CS");
+            System.out.println("crappy CS== null");
         }
         Thread t = controller.getCS().getThreadFactory().newThread(ant);
         t.start();

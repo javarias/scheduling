@@ -51,6 +51,8 @@ public class CreateArrayController extends SchedulingPanelController {
     private ChessboardEntry[] entries7 = new ChessboardEntry[12];
     private ChessboardEntry[] entriesTP = new ChessboardEntry[4];
     private Map map12;
+    private Map map7;
+    private Map mapTP;
 
     public CreateArrayController(){//PluginContainerServices cs){
         super();
@@ -114,6 +116,10 @@ public class CreateArrayController extends SchedulingPanelController {
     //row three for TP
     private void createOfflineChessboards(){
         if(tmcdb == null){
+            if(logger == null) {
+                System.out.print("Logger null, tried to connect to TMCDB but failed");
+                return;
+            }
             logger.severe("SP: CANNOT CONNECT TO TMCDB");
             return;
         }
@@ -124,20 +130,24 @@ public class CreateArrayController extends SchedulingPanelController {
             String[] antennaNames = new String[startupInfo.length];
             for(int i=0; i < startupInfo.length; i++){
                 antennaNames[i] = startupInfo[i].antennaName;
-                System.out.println("Antenna name from CTRL: "+ antennaNames[i]);
+                logger.info("Antenna name from CTRL: "+ antennaNames[i]);
             }
             map12 = alma.common.gui.chessboard.MapToNumber.createMapping(antennaNames,"twelveMeter");
-            Map map7 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(12);
-            Map mapTP = alma.common.gui.chessboard.MapToNumber.createEmptyMap(4);
+            map7 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(12);
+            mapTP = alma.common.gui.chessboard.MapToNumber.createEmptyMap(4);
             String[] twelve = new String[map12.size()];
             twelve = (String[])map12.values().toArray(twelve);
+            String[] twelve_real = new String[map12.size()];
+            twelve_real = (String[])map12.keySet().toArray(twelve_real);
             for(int i=0; i < 50; i++){
-                entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i]); 
+               // System.out.println(twelve_real[i]);
+                entries12[i] = null;
+                entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
             }
             String[] seven = new String[map7.size()];
             seven = (String[])map7.values().toArray(seven);
             for(int i=0; i < 12; i++){
-                entries7[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, seven[i]); 
+                entries7[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, seven[i], "foo"); 
             }
             String[] tp = new String[mapTP.size()];
             tp = (String[])mapTP.values().toArray(tp);
@@ -163,8 +173,7 @@ public class CreateArrayController extends SchedulingPanelController {
         String[] foo1 = new String[generic1.size()];
         foo1 = (String[])generic1.values().toArray(foo1); 
         for(int i=0; i < foo1.length; i++){
-            //System.out.println((String)foo1[i]);
-            entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, (String)foo1[i]);
+            entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, (String)foo1[i],"not connect to TMCDB yet");
         }
         String[] foo2 = new String[generic2.size()];
         foo2 = (String[])generic2.values().toArray(foo2); 
@@ -183,7 +192,7 @@ public class CreateArrayController extends SchedulingPanelController {
         return allEntries;
     }
     public ChessboardEntry[][] getAntennasForOfflineChessboards(){
-        //createOfflineChessboard();
+        createOfflineChessboards();
         return allEntries;
     }
 
@@ -197,9 +206,7 @@ public class CreateArrayController extends SchedulingPanelController {
         try {
             getControlRef();
             antennas= control.getAvailableAntennas();
-            System.out.println("Got antennas from CONTROL:");
-            //System.out.println(antennas[0]);
-            //System.out.println(antennas[1]);
+            logger.info("Got antennas from CONTROL:");
             releaseControlRef();
             String tmpName;
             //for now create an array of 'offline' entries
@@ -235,9 +242,9 @@ public class CreateArrayController extends SchedulingPanelController {
                     break;
                 }
             }
-            System.out.println("AntennaName = "+antennas[i]);
+            logger.info("AntennaName = "+antennas[i]);
         }
-        System.out.println("Antennas to create array with = "+antennas.length);
+        logger.info("Antennas to create array with = "+antennas.length);
         String arrayName = null;
         getMSRef();
         try {
