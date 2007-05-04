@@ -30,13 +30,14 @@ package alma.scheduling.AlmaScheduling;
 import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.Vector;
-
+import java.io.StringReader;
+import java.sql.Timestamp;
 import alma.scheduling.Define.*;
-//import alma.scheduling.SBLite;
+
+
 
 import alma.xmlentity.XmlEntityStruct;
 
-import java.sql.Timestamp;
 
 import alma.acs.container.ContainerServices;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -65,6 +66,7 @@ import alma.entity.xmlbinding.obsproject.types.*;
 import alma.entity.xmlbinding.specialsb.*;
 import alma.entities.commonentity.*;
 
+import alma.hla.runtime.DatamodelInstanceChecker;
 
 /**
  * This class provides all the functionalitiy from the archvie which 
@@ -72,7 +74,7 @@ import alma.entities.commonentity.*;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.72 2007/05/01 21:08:06 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.73 2007/05/04 16:40:22 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -97,6 +99,9 @@ public class ALMAArchive implements Archive {
     //ALMA Clock
     private ALMAClock clock;
 
+    private String schemaVersion="";
+    private DatamodelInstanceChecker dic=null;
+
     /**
       *
       */
@@ -106,6 +111,16 @@ public class ALMAArchive implements Archive {
         this.clock = c;
         ACSJMSTopicConnectionImpl.containerServices=containerServices;
         getArchiveComponents();
+        getSchemaVersion();
+        getDatamodelInstanceChecker();
+    }
+
+    protected void getSchemaVersion() {
+        ObsProjectEntityT p = new ObsProjectEntityT();
+        schemaVersion = p.getDatamodelVersion(); 
+    }
+    protected void getDatamodelInstanceChecker(){
+        dic = new DatamodelInstanceChecker();
     }
 
     public void sendAlarm(String ff, String fm, int fc, String fs) {
@@ -332,6 +347,25 @@ public class ALMAArchive implements Archive {
         }
         return ps;
     }
+
+    protected boolean matchSchemaVersion(String x){
+        boolean match = false;
+        //get entity's version 
+        try {
+            StringReader  rdr = new StringReader(x);
+            String entityVersion = dic.getDatamodelVersion(rdr);
+            //compare to schemaVersion
+            logger.info("SCHEDULING: SchemaVersion of entity = "+entityVersion+
+                        "; SchemaVersion Scheduling likes = "+schemaVersion);
+            if(entityVersion.equals(schemaVersion)){
+                match = true;
+            }
+        }catch(Exception e){
+            logger.warning("SCHEDULING: Error trying to compare schema versions. Will not do a compare");
+        }
+        return match;
+
+    }
     
 
     /**
@@ -358,11 +392,26 @@ public class ALMAArchive implements Archive {
                         e.printStackTrace(System.out);
                     }
                     ObsProject p=null;
+                    StatusStruct status=null;
                     for(int i=0; i <  newArchUpdates.length; i++){
+                        //get status for this entitiy and see if it matches the schema we like
+                        //logger.fine("SCHEDULING: getting status object for "+newArchUpdates[i]);
+                        //status = archOperationComp.status(newArchUpdates[i]);
                         xml = archOperationComp.retrieveDirty( newArchUpdates[i] );
-                        logger.info("timestamp = "+xml.timeStamp);
-                        p = (ObsProject)entityDeserializer.deserializeEntity(xml, ObsProject.class);
-                        tmpObsProject.add(p);
+                        System.out.println("SchemaVersion in XmlEntityStruct: "+xml.schemaVersion);
+                        logger.fine("timestamp = "+xml.timeStamp);
+                        //if( matchSchemaVersion(xml.xmlString) ){ //} else { }
+                        try {
+                            p = (ObsProject)entityDeserializer.deserializeEntity(xml, ObsProject.class);
+                            tmpObsProject.add(p);
+                        }catch(EntityException ee) {
+                            matchSchemaVersion(xml.xmlString);
+                            logger.warning("SCHEDULING: ObsProject ("+newArchUpdates[i]+") doesnt match the "+
+                                    "schema version scheduling was compiled against. Scheduling will not "+
+                                    "recognize this ObsProject until it is recompiled against the APDM/castor "+
+                                    "classes generated for this ObsProject's schema");
+                        }
+                                    
                     } 
                 }catch(Exception e){
                     logger.severe("SCHEDULING: Error "+e.toString());
@@ -382,11 +431,21 @@ public class ALMAArchive implements Archive {
                     QueryResult res = cursor.next();
                     try {
                         xml = archOperationComp.retrieveDirty(res.identifier);
+                        System.out.println("SchemaVersion in xmlEntityStruct: "+xml.schemaVersion);
                         //logger.info("PROJECT : "+ xml.xmlString);
                         //System.out.println("PROJECT taken out of archive: "+ xml.xmlString);
-                        ObsProject obsProj= (ObsProject)
-                            entityDeserializer.deserializeEntity(xml, ObsProject.class);
-                        tmpObsProject.add(obsProj);
+                        //if( matchSchemaVersion(xml.xmlString) ){ } else {
+                        try {
+                            ObsProject obsProj= (ObsProject)
+                                entityDeserializer.deserializeEntity(xml, ObsProject.class);
+                            tmpObsProject.add(obsProj);
+                        }catch(EntityException ee) {
+                            matchSchemaVersion(xml.xmlString);
+                            logger.warning("SCHEDULING: ObsProject ("+res.identifier+") doesnt match the "+
+                                    "schema version scheduling was compiled against. Scheduling will not "+
+                                    "recognize this ObsProject until it is recompiled against the APDM/castor "+
+                                    "classes generated for this ObsProject's schema");
+                        }
                     }catch(Exception e) {
                         sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
                         try {

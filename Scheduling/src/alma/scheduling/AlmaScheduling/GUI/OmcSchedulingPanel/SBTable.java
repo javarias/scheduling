@@ -366,11 +366,9 @@ public class SBTable extends JTable {
         if(s.equals("F") || s.equals("AB") || s.equals("FAIL") || 
                 s.equals("FAILED") || s.equals("ABORTED") ){
             //setBackground(Color.RED);
-            System.out.println("setting row "+row+" to red");
             changeRowColor.setColor(Color.RED);
             changeRowColor.setRowToColor(row);
         } else {
-            System.out.println("setting row "+row+" to white");
             changeRowColor.setColor(Color.WHITE);
             changeRowColor.setRowToColor(row);
             //setBackground(Color.WHITE);

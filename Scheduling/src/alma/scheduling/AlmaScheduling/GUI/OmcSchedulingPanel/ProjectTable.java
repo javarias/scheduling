@@ -195,7 +195,7 @@ public class ProjectTable extends JTable {
             projRowInfo[i][uidLoc]= projects[i].uid;
         }
         manageColumnSizes();
-        System.out.println("Project Table size "+getSize().toString());
+        //System.out.println("Project Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
