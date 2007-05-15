@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.50 2007/04/12 21:54:18 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.51 2007/05/15 15:52:22 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -709,7 +709,7 @@ public class ProjectUtil {
                 }
             }
             
-    		if (eq.length == 1) {
+    		if (eq.length <= 1) {
 		    	Target target = new Target (eq[0],3600.0,3600.0);
 	    		sb.setTarget(target);
     		} else {

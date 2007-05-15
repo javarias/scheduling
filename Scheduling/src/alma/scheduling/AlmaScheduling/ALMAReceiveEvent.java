@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.43 2007/05/03 22:27:01 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.44 2007/05/15 15:52:22 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -373,7 +373,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         //the processes below are still being thought out and may not be the
         //best way to do what needs to be done.
         try {
-            logger.info("SCHEDULING: Received sb start event from control.");
+            logger.info("SCHEDULING: Received exec block start event from control.");
             logger.info("SCHEDULING: ExecBlock (ASDM) = "+  e.execId.entityId+" for SB ="+e.sbId.entityId );
             logger.info("SCHEDULING: session id ="+ e.sessionId.entityId);
             //logger.info("SCHEDULING: arrayname = "+ e.arrayName);
@@ -440,7 +440,11 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.info("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+" with ASDM/ExecBlock = "+e.execId.entityId);
             //TODO change this when we start getting exec block end events for all reasons
             if(eb == null){
-                logger.severe("SCHEDULNG: exec block retrieved from list was null");
+                logger.severe("SCHEDULNG: EB in sched's list was null. Implies Sched did not receive EB start event. Setting SB as aborted");
+                //get sb and set it to not running
+                SB sb = manager.getSBQueue().get(e.sbId.entityId);
+                sb.setAborted(endEb);
+                return;
             }
             if(e.status == alma.Control.Completion.SUCCESS) {
                 eb.setEndTime(endEb, Status.COMPLETE);

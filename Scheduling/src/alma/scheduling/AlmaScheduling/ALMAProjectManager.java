@@ -65,7 +65,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.82 2007/05/01 21:08:06 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.83 2007/05/15 15:52:22 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1405,6 +1405,10 @@ public class ALMAProjectManager extends ProjectManager {
         }
         projectlite.allSBIds = sbids;
         return projectlite;
+    }
+
+    protected SBQueue getSBQueue(){
+        return sbQueue;
     }
 
     public void createProjectWebpage(String uid) {

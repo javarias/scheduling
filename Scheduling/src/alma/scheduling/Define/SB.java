@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.21 2007/03/21 20:18:52 sslucero Exp $
+ * @version $Id: SB.java,v 1.22 2007/05/15 15:52:22 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -410,6 +410,10 @@ public class SB implements ProgramMember {
 					throw new IllegalStateException("Invalid state change! Exec block is null. Cannot change state to COMPLETE!");
 			}
 	}
+    public void setAborted(DateTime t){
+        status.setEnded(t, Status.ABORTED);
+        parent.execEnd(this, t, 0, Status.ABORTED);
+    }
 
 	////////////////////////////////////////////////////////////////////////
 	// Routine getters and setters
