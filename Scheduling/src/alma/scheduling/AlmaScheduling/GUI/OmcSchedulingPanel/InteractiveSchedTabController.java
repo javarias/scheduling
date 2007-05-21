@@ -252,6 +252,16 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
     
     public void receive(ASDMArchivedEvent e){
+        String sbid = e.workingDCId.schedBlock.entityId;
+        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
+        String asdmId = e.asdmId.entityId;
+        String completion = e.status;
+        //System.out.println("got archived event: completion = "+completion);
+        if(sbid.equals(currentSBId)){
+            if(completion.equals("complete")){
+                parent.setSBStatus(sbid, "ARCHIVED");
+            }
+        }
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {
