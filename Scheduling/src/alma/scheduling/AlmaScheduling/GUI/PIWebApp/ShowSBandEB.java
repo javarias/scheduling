@@ -42,19 +42,20 @@ public class ShowSBandEB extends JApplet implements ActionListener{
 
 	URL filename,filename1,filename2;
 	JTable SBControl;
-	String[] SBheader={"SB name","Mode","Status","Number of SB","Completed SB","Failed SB","EstimatedExecuted Time",
-						"Progress"};
+	String[] SBheader={"SBName","Source","Mode","Status","SBDuration","numEB","numScan","numRepeat",
+						"frequence","frequenceBand","line"};
 	Object[][] SBvalue ={
-			{"","","","","","","",""},
-			{"","","","","","","",""},
-			{"","","","","","","",""}
+			{"SB1","Ori_1686","Expert","Running","60480000","2","3","3","240","2","1"},
+			{"","","","","","","","","","",""},
+			{"","","","","","","","","","",""},
 	};
 	private final JTabbedPane pane = new JTabbedPane();
-	JTextArea Info;
-	JPanel mainpanel1,mainpanel2;
+	private final JTabbedPane EBpane = new JTabbedPane();
+	//JTextArea Info;
+	JPanel mainpanel1,mainpanel2,mainpanel3;
 	JPanel DPSPanel,PQLPanel,ESBPanel,PlSPanel;
-	JPanel[] panelgroup = {DPSPanel,PQLPanel,ESBPanel,PlSPanel};
-	String[] panelname = {"Data Processing Parameter","QuickLook Picture","Execute SchedBlock","Pipeline Script"};
+	JPanel[] panelgroup = {DPSPanel,PlSPanel,ESBPanel,PQLPanel};
+	String[] panelname = {"Science Goal","Weather Constraint","Execute SchedBlock","QuickLook Picture"};
 	JLabel picture ;
 	
 	
@@ -80,7 +81,7 @@ public class ShowSBandEB extends JApplet implements ActionListener{
             
             sbs[0] = obj;
 	        Project project1 = ProjectUtil.map(obj2, sbs, obj1, datetime);
-	        
+	        /*
 	        System.out.println("DataReduction:"+project1.getProgram().getDataReductionProcedureName());
 	        Info.append("DataReduction:"+project1.getProgram().getDataReductionProcedureName()+"\n");
 	        Info.append("ID:"+project1.getId()+"\n");
@@ -94,9 +95,11 @@ public class ShowSBandEB extends JApplet implements ActionListener{
 	        Info.append("Compled:"+Integer.toString(project1.getNumberProgramsCompleted())+"\n");
 	        Info.append("used time:"+Integer.toString(project1.getTotalUsedTimeInSeconds())+"\n");
 	        Info.append("unitset "+project1.getProgram().getObsUnitSetStatusId()+"\n");
+	        */
+	        
             System.out.println(project1.getNumberProgramsCompleted());
             System.out.println(project1.getTotalUsedTimeInSeconds());
-            Info.addNotify();
+            //Info.addNotify();
             mainpanel1.addNotify();
 		}
 		catch (Exception e) {
@@ -109,9 +112,13 @@ public class ShowSBandEB extends JApplet implements ActionListener{
 		container.setLayout(new BorderLayout(5,5));
 		container.setPreferredSize(new Dimension(800,600));
 		mainpanel1 = new JPanel();
-		mainpanel1.setLayout(new GridLayout(2,2));
+		//mainpanel1.setLayout(new GridLayout(1,2));
+		mainpanel1.setLayout(new BorderLayout(5,5));
 		mainpanel2 = new JPanel();
-		mainpanel2.setLayout(new GridLayout(2,2));
+		mainpanel2.setLayout(new GridLayout(1,2));
+		mainpanel3 = new JPanel();
+		mainpanel3.setLayout(new GridLayout(1,2));
+		
 		SBControl = new JTable(SBvalue,SBheader);
 		SBvalue[0][0]="sb1";
 		SBvalue[0][1]="Expert";
@@ -129,65 +136,80 @@ public class ShowSBandEB extends JApplet implements ActionListener{
 		SBscrollPane.setBorder(SBtitle);
 		SBscrollPane.setPreferredSize(new Dimension(800,100));
 		SBControl.addNotify();
-		Info = new JTextArea(200,250);
-		Info.setPreferredSize(new Dimension(300,120));
-		JScrollPane scrollPane = 
-		    new JScrollPane(Info,
-		                    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-		                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		Info.setEditable(false);
+		//Info = new JTextArea(200,250);
+		//Info.setPreferredSize(new Dimension(300,120));
+		//JScrollPane scrollPane = 
+		//    new JScrollPane(Info,
+		//                    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+		//                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		//Info.setEditable(false);
 	    SBdetail(mainpanel1);
 	    //SBdetail(mainpanel2);
-		pane.addTab("ObsUnitSet",mainpanel1);
+		mainpanel1.add(mainpanel3,BorderLayout.CENTER);
+		EBpane.addTab("EB1",mainpanel2);
+		mainpanel1.add(EBpane,BorderLayout.SOUTH);
+		pane.addTab("SB1",mainpanel1);
+		//EBpane.addTab("EB2",mainpanel2);
+
 		//pane.addTab("SchedBlock2",mainpanel2);
+		
 		//mainpanel.add(Info,BorderLayout.CENTER);
 		container.add(SBscrollPane,BorderLayout.NORTH);
 		container.add(pane,BorderLayout.CENTER);
+		//container.add(EBpane,BorderLayout.SOUTH);
 	}
 	
 	
 	    void SBdetail(JPanel mainpanel) {
+	    	JScrollPane SciencePane=null;
 	    	for (int i=0;i<panelgroup.length;i++) {
 	    		panelgroup[i]= new JPanel();
 	    		if (i==0) {
-	    		JLabel para,unit,angResol,angResolvalue,velResol,velResolvalue,tBsenGoal,tBsenGoalvalue,
-	    				rMsGoal,rMsGoalvalue;
-	    		para = new JLabel("Parameter");
-	    		unit = new JLabel("Unit");
-	    		angResol=new JLabel("angularResolution");
-	    		angResolvalue = new JLabel("1 arcsec");
-	    		velResol=new JLabel("velocityResolution");
-	    		velResolvalue = new JLabel("2 km/s");
-	    		tBsenGoal=new JLabel("tBSensityGoal");
-	    		tBsenGoalvalue= new JLabel("3 K");
-	    		rMsGoal=new JLabel("rMsGoal");
-	    		rMsGoalvalue= new JLabel("4 Jy");
-	    		JLabel[] labelgroup ={para,unit,angResol,angResolvalue,velResol,velResolvalue,tBsenGoal,tBsenGoalvalue,
-		    	  		rMsGoal,rMsGoalvalue};
-	    		panelgroup[i].setLayout(new GridLayout(5,2));
+	    			JLabel ScienceGoal,unit,representFreq,representFreqvalue,minAcceptAngResol,minAcceptAngResolvalue,
+	    				maxacceptAngresol,maxacceptAngresolvalue,OBMode,unit1,OBminAcceptAngResol,OBminAcceptAngResolvalue,
+	    				OBmaxacceptAngresol,OBmaxacceptAngresolvalue;
+		    		
+	    			ScienceGoal = new JLabel("ScienceGoal");
+	    			unit = new JLabel(" ");
+	    			representFreq=new JLabel("representativeFrequence:");
+	    			representFreqvalue=new JLabel("240 GHz");
+	    			minAcceptAngResol=new JLabel("MinAcceptableAngResolution:");
+	    			minAcceptAngResolvalue=new JLabel("none");
+	    			maxacceptAngresol = new JLabel("MaxAcceptableAngResolution:");
+	    			maxacceptAngresolvalue = new JLabel("none");
+	    			
+	    			OBMode = new JLabel("ObservingMode");
+	    			unit1 = new JLabel(" ");
+	    			OBminAcceptAngResol=new JLabel("MinAcceptableAngResolution:");
+	    			OBminAcceptAngResolvalue=new JLabel("none");
+	    			OBmaxacceptAngresol = new JLabel("MaxAcceptableAngResolution:");
+	    			OBmaxacceptAngresolvalue = new JLabel("none");
+	    		
+	    			JLabel[] labelgroup ={ScienceGoal,unit,representFreq,representFreqvalue,minAcceptAngResol,minAcceptAngResolvalue,
+		    				maxacceptAngresol,maxacceptAngresolvalue,OBMode,unit1,OBminAcceptAngResol,OBminAcceptAngResolvalue,
+		    				OBmaxacceptAngresol,OBmaxacceptAngresolvalue};
+	    		
+	    		panelgroup[i].setLayout(new GridLayout(7,2));
 	    		for (int j=0;j<labelgroup.length;j++){
 	    		panelgroup[i].add(labelgroup[j]);
 	    		}
+	    		SciencePane = new JScrollPane(panelgroup[i]);
 	    		}
 	    		
 	    		if(i==1){
-	    			String[] Calibration= {"AmplitudeChart","AtmosphereSysTempChart",
-	    									"AtmosphereTauChart","CurvAmplitudeChart",
-	    									"CurvePhaseChart","DelayChart",
-	    									"FocusChart","PhaseChart",
-	    									"PointingChart","SeeingChart"};
-	    			JComboBox QuickLookList = new JComboBox(Calibration);
-	    			picture = new JLabel();
-	    			QuickLookList.setSelectedIndex(4);
-	    			QuickLookList.addActionListener(this);
-	    			picture.setFont(picture.getFont().deriveFont(Font.ITALIC));
-	    		    picture.setHorizontalAlignment(JLabel.CENTER);
-	    		    updateLabel("http://frank.aoc.nrao.edu:8080/quicklook.jpg");
-	    		    picture.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
-	    		    picture.setPreferredSize(new Dimension(177, 122+10));    
-	    		    panelgroup[i].setLayout(new BorderLayout());
-	    		    panelgroup[i].add(QuickLookList,BorderLayout.NORTH);
-	    		    panelgroup[i].add(picture,BorderLayout.CENTER);
+	    			panelgroup[i].setLayout(new GridLayout(4,2));
+	    			JLabel MaxPWVC,MaxPWVCvalue,Seeing,Seeingvalue,PhaseStability,PhaseStabilityvalue;
+	    			//JLabel[] Weathergroup = {MaxPWVC,MaxPWVCvalue,Seeing,Seeingvalue,PhaseStability,PhaseStabilityvalue};
+	    			MaxPWVC= new JLabel("MaxPWVC:");
+	    			MaxPWVCvalue= new JLabel("none");
+	    			Seeing= new JLabel("Seeing");
+	    			Seeingvalue=new JLabel("none");
+	    			PhaseStability = new JLabel("PhaseStability:");
+	    			PhaseStabilityvalue = new JLabel("none");
+	    			JLabel[] Weathergroup = {MaxPWVC,MaxPWVCvalue,Seeing,Seeingvalue,PhaseStability,PhaseStabilityvalue};
+	    			for (int j=0;j<Weathergroup.length;j++){
+	    	    		panelgroup[i].add(Weathergroup[j]);
+	    	    		}
 	    		}
 				
 	    		if (i==2) {
@@ -211,18 +233,35 @@ public class ShowSBandEB extends JApplet implements ActionListener{
 	    		}
 	    		
 	    		if(i==3)  {
-	    			    			
-	    			panelgroup[i].setLayout(new GridLayout(1,1));
-	    			panelgroup[i].add(Info);
-	    			
+	    			String[] Calibration= {"AmplitudeChart","AtmosphereSysTempChart",
+							"AtmosphereTauChart","CurvAmplitudeChart",
+							"CurvePhaseChart","DelayChart",
+							"FocusChart","PhaseChart",
+							"PointingChart","SeeingChart"};
+	    			JComboBox QuickLookList = new JComboBox(Calibration);
+	    			picture = new JLabel();
+	    			QuickLookList.setSelectedIndex(4);
+	    			QuickLookList.addActionListener(this);
+	    			picture.setFont(picture.getFont().deriveFont(Font.ITALIC));
+	    			picture.setHorizontalAlignment(JLabel.CENTER);
+	    			updateLabel("http://frank.aoc.nrao.edu:8080/quicklook.jpg");
+	    			picture.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
+	    			picture.setPreferredSize(new Dimension(177, 122+10));    
+	    			panelgroup[i].setLayout(new BorderLayout());
+	    			panelgroup[i].add(QuickLookList,BorderLayout.NORTH);
+	    			panelgroup[i].add(picture,BorderLayout.CENTER);	
 	    		}
  				panelgroup[i].setPreferredSize(new Dimension(200,250));
 				TitledBorder title = BorderFactory.createTitledBorder(panelname[i]);
 				title.setTitleJustification(TitledBorder.CENTER);
 				title.setTitleColor(Color.RED);
 				panelgroup[i].setBorder(title);
-				mainpanel.add(panelgroup[i]);
 			}
+	    	mainpanel3.add(SciencePane);
+	    	mainpanel3.add(panelgroup[1]);
+	    	mainpanel2.add(panelgroup[2]);
+	    	mainpanel2.add(panelgroup[3]);
+	    	//mainpanel1.add(mainpanel2,BorderLayout.SOUTH);
 	    }
 	    
 	    /** Listens to the combo box. */
@@ -268,5 +307,4 @@ public class ShowSBandEB extends JApplet implements ActionListener{
             System.err.println("createGUI didn't successfully complete");
         }
 	}
-
 }

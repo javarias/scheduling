@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+</HEAD>
+<script>
+	//showMenu() function used to display the info which hide by Div
+	function showMenu(){
+		//get the button object
+		var obj = document.getElementById("menu1");
+		//get the Div object
+		var dv = document.getElementById("mydiv");
+		//show the Div
+		dv.style.display = "block";
+		//asign the top of Div as the previous's offsetTop+height
+		dv.style.top = obj.offsetTop + obj.height;
+		//asign the left of Div as the privious's offsetLeft
+		dv.style.left = obj.offsetLeft;
+	}
+	//hideIt()function used to hide the Div 
+	function hideIt(){
+		document.getElementById("mydiv").style.display = "none";
+	}
+</script>
+
+<Body>
+<input type="image" id="menu1" src="btn1.gif"> 
+<input type="button" onclick="showMenu();" value="?"> 
+<div id="mydiv" style="position:absolute;display:none;width:1px;" onclick="hideIt();"> 
+<Table border>
+<TR><TH><TH><TH>velocity<TH>speed</TR>
+<TR><TH>aaa<TH>BBB<TH>ccc</TR>
+<TR><TH>aaa<TH>BBB<TH>ccc</TR>
+</table>
+</div> 
+<H3 style="position:relative">This is source info test 1</H3>
+<APPLET CODE="alma/scheduling/AlmaScheduling/GUI/PIWebApp/Asdminfo.class"
+	ARCHIVE="../../../../../../lib/systementities.jar,
+			 ../../../../../../lib/commons-logging.jar,
+			 ../../../../../../lib/xercesImpl.jar,
+			 ../../../../../../lib/castor.jar,
+			 ../../../../../../lib/APDMEntities.jar,
+			 ../../../../../../lib/schedulingComp.jar "
+        width=800 height=400>
+</APPLET>
+</body>
+</HTML>
+
