@@ -8,23 +8,27 @@ public class SPAntennaStatus implements ChessboardStatus {
 	private static final String OFFLINE_STRING = "ANT_OFFLINE";
 	
 	private boolean shouldFlash;
-	private String name;
-	private Color color;
+	private String description;
+	private Color bgColor;
+	private Color fgColor;
 	private static ChessboardStatus[] values = null;
 	
 	/**
 	 */
-	private SPAntennaStatus(String name)
+	private SPAntennaStatus(String description)
 	{
-		this.color = null;
-		this.name = name;
+		this.fgColor = null;
+		this.bgColor = null;
+		this.description = description;
 		this.shouldFlash = false;
 		
-		// configure the status with proper color and/or flashing attributes
-		if(name.equals(ONLINE_STRING)) {
-			this.color = Color.green;
-		} else if(name.equals(OFFLINE_STRING)) {
-			this.color = Color.lightGray;
+		// configure the status with proper colors and/or flashing attributes
+		if(description.equals(ONLINE_STRING)) {
+			this.bgColor = Color.green;
+			this.fgColor = Color.white;
+		} else if(description.equals(OFFLINE_STRING)) {
+			this.bgColor = Color.lightGray;
+			this.bgColor = Color.black;
 		} 
 	}
 	
@@ -39,29 +43,38 @@ public class SPAntennaStatus implements ChessboardStatus {
 	/** 
 	 * Required method of <code>ChessboardStatus</code> interface.
 	 * 
-	 * @return the color that should be used to render the status in the user interface.
+	 * @return the background color that should be used to render the status in the user interface.
 	 */
-	public Color getColor() {
-		return this.color;
+	public Color getBgColor() {
+		return this.bgColor;
 	}
 
 	/** 
 	 * Required method of <code>ChessboardStatus</code> interface.
 	 * 
-	 * @return the name of the status.
+	 * @return the foreground color that should be used to render the status in the user interface.
 	 */
-	public String getName() {
-		return this.name;
+	public Color getFgColor() {
+		return this.fgColor;
+	}
+
+	/** 
+	 * Required method of <code>ChessboardStatus</code> interface.
+	 * 
+	 * @return the description of the status.
+	 */
+	public String getDescription() {
+		return this.description;
 	}
 	
 	/**
 	 * Overriding generic toString method from <code>Object</code> to get
 	 * something more user-friendly.
 	 * 
-	 * @return a string representation of this status which is the same as the status name.
+	 * @return a string representation of this status which is the same as the status description.
 	 */
 	public String toString() {
-		return this.name;
+		return this.description;
 	}
 	
 	/** 
