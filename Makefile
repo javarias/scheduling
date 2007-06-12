@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.5 2004/08/10 16:17:33 sroberts Exp $"
+# "@(#) $Id: Makefile,v 1.6 2007/06/12 21:37:54 wlin Exp $"
 #
 # Makefile of ........
 #
@@ -26,6 +26,15 @@
 # Beta continas the moduels beta1, beta2 and beta3
 #
 # Modify as appropriate to your subsystem
+ifdef INTLIST
+       INSTALL_DIR := $(shell echo $(INTLIST) | awk -F: '{print $$1}')
+else
+ifdef INTROOT
+   INSTALL_DIR=$(INTROOT)
+else
+   INSTALL_DIR=$(ACSROOT)
+endif
+endif 
 
 SUBSYSTEM = SCHEDULING
 
@@ -147,8 +156,11 @@ $(Test):
 #
 clean:	
 	$(canned)
-all:	
+all:	cli	
 	$(canned)
+cli:
+	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INSTALL_DIR}/lib
+
 install:
 	$(canned)
 man:
