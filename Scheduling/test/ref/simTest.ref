@@ -3,6 +3,9 @@
 1 - INFO: Component names and services have been set.
 1 - INFO: Simulator:  Container created.
 1 - INFO: reporter.initialized
+1 - rms; weatherFiles/PhaseStability.Nrao.---.-------------
+1 - wind; weatherFiles/WindSpeed.04
+1 - opacity; weatherFiles/Opacity.04
 1 - INFO: input.initialized
 1 - INFO: telescope.initialized
 1 - INFO: operator.initialized
@@ -32929,3 +32932,7 @@
 1 - INFO: The simulation has ended.
 1 - SCHED: in reporter, all execs = 240
 1 - SCHED: in reporter, all projs =2
+1 - Traceback (most recent call last):
+1 -   File "/----/bin/ALMASched_lst_vs_day", line ---.------------- in ?
+1 -     pgsci(getcolor(float(wval[i])))
+1 - OverflowError: long int too large to convert to int

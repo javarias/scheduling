@@ -4,6 +4,6 @@ PROLOGUE prologue
 3 pubTest testPublisher
 #4 queuedSchedTest testQueuedScheduling
 #4 specialSBTest testStoreSpecialSB
-4 psTest testProjectStatus
+#4 psTest testProjectStatus
 5 alarmTest testAcsAlarm
 EPILOGUE epilogue
