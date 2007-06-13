@@ -25,6 +25,7 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.logging.Logger;
+import java.util.ArrayList;
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.MasterSchedulerIF;
@@ -43,6 +44,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     private String schedulername;
     private Consumer consumer;
     private String currentSBId;
+    private ArrayList<String> waitingForArchivedSB;
     //private String currentExecBlockId;
     private String arrayName;
     private String arrayStatus;
@@ -57,6 +59,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         arrayName = a;
         arrayStatus = "Active";
         currentSBId = "";
+        waitingForArchivedSB = new ArrayList<String>();
         try{
             //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
@@ -204,6 +207,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             
         }
         //startInteractiveSession();
+        waitingForArchivedSB.add(sbid);
         parent.setSBStatus(sbid, "RUNNING");
        // parent.setEnabled(false);
     }
@@ -256,11 +260,16 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
+        System.out.println("Current SB = "+currentSBId);
         //System.out.println("got archived event: completion = "+completion);
-        if(sbid.equals(currentSBId)){
+        //if(sbid.equals(currentSBId)){
+        if(waitingForArchivedSB.contains(sbid)){
+            logger.info("in list");
             if(completion.equals("complete")){
                 parent.setSBStatus(sbid, "ARCHIVED");
             }
+        }else{
+            logger.info("not in list");
         }
     }
 
