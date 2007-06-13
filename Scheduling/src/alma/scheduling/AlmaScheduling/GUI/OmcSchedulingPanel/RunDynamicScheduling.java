@@ -48,8 +48,8 @@ public class RunDynamicScheduling implements Runnable {
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                    container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
+                        //"IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
         } catch(Exception e){
             e.printStackTrace();

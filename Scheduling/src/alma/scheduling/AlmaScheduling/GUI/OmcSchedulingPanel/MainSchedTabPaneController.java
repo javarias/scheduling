@@ -67,7 +67,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     public void checkOperationalState() {
         try {
             MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
-                narrow(getCS().getComponent("SCHEDULING_MASTER_COMP"));
+                narrow(getCS().getComponentNonSticky("SCHEDULING_MASTER_COMP"));
             ROstringSeq csh = sched_mc.currentStateHierarchy();
             CompletionHolder ch = new CompletionHolder();
             String[] states = csh.get_sync(ch);

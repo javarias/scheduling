@@ -81,7 +81,7 @@ public class CreateArrayController extends SchedulingPanelController {
     private void getControlRef() {
         try {
             control = alma.Control.ControlMasterHelper.narrow(
-                    container.getComponent("CONTROL/MASTER"));
+                    container.getComponentNonSticky("CONTROL/MASTER"));
             logger.info("SCHEDULING_PANEL: Got control system in array creator");
         } catch(Exception e){
             e.printStackTrace();

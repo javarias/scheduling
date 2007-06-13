@@ -54,8 +54,8 @@ public class SchedulingPanelController {
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                    container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
+                        //"IDL:alma/scheduling/MasterSchedulerIF:1.0"));
                 logger.info("SCHEDULING_PANEL: Got MS");
             }
         } catch(Exception e){
