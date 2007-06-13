@@ -50,7 +50,7 @@ import alma.scheduling.MasterSchedulerIF;
 /**
   * Plugin GUI for Exec 
   *
-  * @version $Id: DisplaySBPlugin.java,v 1.4 2006/09/11 14:32:52 sslucero Exp $
+  * @version $Id: DisplaySBPlugin.java,v 1.5 2007/06/13 22:17:31 sslucero Exp $
   */
 public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
 
@@ -179,8 +179,8 @@ public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
         try{
             if(ms == null) {
                 ms = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                        cs.getDefaultComponent(
-                            "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                        cs.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
+                            //"IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
         } catch(Exception e) {
             ms = null;
