@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.6 2007/06/12 21:37:54 wlin Exp $"
+# "@(#) $Id: Makefile,v 1.7 2007/06/13 22:14:30 sslucero Exp $"
 #
 # Makefile of ........
 #
@@ -95,7 +95,7 @@ clean_log:
 #
 # building all modules
 #
-build:	
+build:	cli
 	@$(ECHO) "############ build $(SUBSYSTEM) Software         #################"| tee -a build.log
 	@for member in  $(foreach name, $(MODULES), $(name) ) ; do \
 		    if [ ! -d $${member} ]; then \
