@@ -49,7 +49,7 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.17 2006/11/09 14:22:54 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.18 2007/06/27 22:24:10 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -80,7 +80,7 @@ public class ALMAPipeline implements SciPipeline {
      * Connect to the pipeline components
      */
     private void getPipelineComponents() {
-        logger.info("About to connect to Science Pipeline Component");
+        logger.finest("About to connect to Science Pipeline Component");
         try {
             sci_pipelineComp = alma.pipelinescience.SciPipeManagerHelper.narrow(
                 containerServices.getDefaultComponent("IDL:alma/pipelinescience/SciPipeManager:1.0"));
@@ -91,7 +91,7 @@ public class ALMAPipeline implements SciPipeline {
             sci_pipelineAvailable = false;
             sci_pipelineComp = null;
         }
-        logger.info("About to connect to QuickLook Pipeline Component");
+        logger.finest("About to connect to QuickLook Pipeline Component");
         try {
             quicklookComp = alma.pipelineql.QlDisplayManagerHelper.narrow(
                 containerServices.getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0"));
@@ -177,7 +177,7 @@ public class ALMAPipeline implements SciPipeline {
                                       String title){
         try {
             quicklookComp.startQlSession(sessionR, sbR, title);
-            logger.info("SCHEDULING: Told QL session is about to start");
+            logger.fine("SCHEDULING: Told QL session is about to start");
             ql_startOk = true;
         }catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
             logger.warning("SCHEDULING: Caught quicklook error when session starts, should keep going with sb session");
@@ -189,7 +189,7 @@ public class ALMAPipeline implements SciPipeline {
         if(ql_startOk){
             try {
                 quicklookComp.endQlSession(sessionR, sbR);
-                logger.info("SCHEDULING: Told QL session is about to end");
+                logger.fine("SCHEDULING: Told QL session is about to end");
             }catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
                 logger.warning("SCHEDULING: Caught quicklook error when session ends");
             }

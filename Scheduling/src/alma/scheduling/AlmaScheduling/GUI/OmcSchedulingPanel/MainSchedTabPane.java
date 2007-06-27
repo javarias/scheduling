@@ -92,7 +92,7 @@ public class MainSchedTabPane extends JTabbedPane {
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
-                logger.info("in close operation");
+                logger.fine("in close operation");
                 closeTab(overTabIndex);
             }
         });
@@ -106,7 +106,7 @@ public class MainSchedTabPane extends JTabbedPane {
         archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);
         controller.checkOperationalState();
-        logger.info("SCHEDULING_PANEL: Second setup, connected to manager");
+        logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
         logger.finest("SCHEDULING_PANEL: Finest log");
     }
 
@@ -121,7 +121,14 @@ public class MainSchedTabPane extends JTabbedPane {
         //middlePanel.selectDefaultAntenna();
     }
     public void connectedToALMA(boolean b){
+        initializeChessboardsWithALMA();
         archiveTab.connectToALMA(b);
+    }
+    
+    public void setOfflineDisplay(){
+        resetMainViewButtons();
+        createArrayEnabled = false;
+        middlePanel.setEnabled(false);
     }
     
     private void createExistingArrayTab() {
@@ -348,7 +355,7 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     public void closeTabEvent(MouseEvent e, int tabIndex) {
-        logger.info("in close tab event");
+        logger.fine("in close tab event");
         EventListener close[] = getListeners(CloseTabListener.class);
         overTabIndex = tabIndex;
         for(int i=0; i< close.length; i++){
@@ -368,9 +375,9 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private int getSchedulerPosition(SchedulerTab tab){
-        logger.info("SchedTab Info: "+tab.getArrayName() +"; "+tab.getSchedulerName() +";"+tab.getSchedulerType());
+        logger.fine("SchedTab Info: "+tab.getArrayName() +"; "+tab.getSchedulerName() +";"+tab.getSchedulerType());
         for(int i=0; i< allSchedulers.size(); i++){
-            logger.info("SchedTab "+i+" Info: "+allSchedulers.elementAt(i).getArrayName() +"; "+
+            logger.fine("SchedTab "+i+" Info: "+allSchedulers.elementAt(i).getArrayName() +"; "+
                allSchedulers.elementAt(i).getSchedulerName() +"; "+ allSchedulers.elementAt(i).getSchedulerType());
 
             if(allSchedulers.elementAt(i).getArrayName().equals(tab.getArrayName()) &&

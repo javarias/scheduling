@@ -62,10 +62,14 @@ import alma.entity.xmlbinding.valuetypes.*;
 import alma.entity.xmlbinding.valuetypes.types.*;
 import alma.asdmIDLTypes.IDLEntityRef;
 
+import alma.acs.entityutil.EntityDeserializer;
+import alma.acs.entityutil.EntitySerializer;
+import alma.xmlentity.XmlEntityStruct;
+
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.83 2007/05/15 15:52:22 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.84 2007/06/27 22:24:10 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -81,6 +85,9 @@ public class ALMAProjectManager extends ProjectManager {
     private Vector specialSBs;
     private ALMAClock clock;
 
+    private EntityDeserializer entityDeserializer;
+    private EntitySerializer entitySerializer;
+    
     public ALMAProjectManager(ContainerServices cs, 
                               ALMAOperator o, 
                               ALMAArchive a, 
@@ -107,6 +114,15 @@ public class ALMAProjectManager extends ProjectManager {
             querySpecialSBs();
         } catch(Exception e) {
         }
+        try {
+            entitySerializer = EntitySerializer.getEntitySerializer(
+                containerServices.getLogger());
+            entityDeserializer = EntityDeserializer.getEntityDeserializer(
+                containerServices.getLogger());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+            
     }
 
     /**
@@ -167,10 +183,10 @@ public class ALMAProjectManager extends ProjectManager {
         SBQueue dynamicSBs = new SBQueue();
         for(int i=0; i < sbQueue.size();i++){
             if(!sbQueue.get(i).getIndefiniteRepeat()){
-                logger.info("doesn't repeat indefinitely, qualifies for DS");
+                logger.fine("doesn't repeat indefinitely, qualifies for DS");
                 dynamicSBs.add(sbQueue.get(i));
             } else{
-                logger.info("doesn't qualify for DS");
+                logger.fine("doesn't qualify for DS");
             }
         }
         return dynamicSBs;
@@ -193,11 +209,11 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public SBQueue mapQueuedSBsToProjects(String[] sbs) {
         SBQueue queuedSBs= new SBQueue();
-        logger.info("number of sbs to be queued = "+sbs.length);
+        logger.fine("number of sbs to be queued = "+sbs.length);
         for (int i=0; i < sbs.length; i++){
             queuedSBs.add(sbQueue.get(sbs[i]));
         }
-        logger.info("number of sbs in queue = "+queuedSBs.size());
+        logger.fine("number of sbs in queue = "+queuedSBs.size());
         return queuedSBs;
     }
     
@@ -245,44 +261,49 @@ public class ALMAProjectManager extends ProjectManager {
       * its status to complete. If not set it back to ready.
       */
     public void setSBComplete(ExecBlock eb) {
+        try {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
-        logger.info("##########################");
-        logger.info("eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
-        logger.info("sb's status in PM = "+completed.getStatus().getStatus());
-        logger.info("sb's starttime in PM = "+completed.getStatus().getStartTime());
-        logger.info("##########################");
+        logger.fine("##########################");
+        logger.fine("SCHEDULING: eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
+        logger.fine("SCHEDULING: sb's status in PM = "+completed.getStatus().getStatus());
+        logger.fine("SCHEDULING: sb's starttime in PM = "+completed.getStatus().getStartTime());
+        logger.fine("##########################");
 	    //If this SB has reached its maximum number of repeats set it to complete.
         if(completed.getIndefiniteRepeat()) {
-            logger.info("SCHEDULING: This sb ("+completed.getId()+") has an indefinite repeat count");
+            logger.fine("SCHEDULING: This sb ("+completed.getId()+") has an indefinite repeat count");
             try {
 	            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
-                logger.info("SCHEDULING: indefinite-repeat sb keeps status = "+completed.getStatus().getStatus());
+                logger.fine("SCHEDULING: indefinite-repeat sb keeps status = "+completed.getStatus().getStatus());
             }catch (Exception e){ 
 		        logger.severe(e.toString());
     	    }
+            updateProjectStatus(eb, completed.getStatus());
             return;
         }
         
         if( (completed.getNumberExec()) > completed.getMaximumNumberOfExecutions()  ){
-            logger.info("###########set to complete####");
-            logger.info("Number of executions before next added = "+completed.getNumberExec());
+            logger.fine("###########set to complete####");
+            logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
-            logger.info("Setting end time for "+eb.getId());
-            logger.info("Total# executions done = "+completed.getNumberExec());
-            logger.info("Total allowed executions = "+completed.getMaximumNumberOfExecutions());
-            logger.info("#################################");
+            logger.fine("SCHEDULING: Setting end time for "+eb.getId());
+            logger.fine("SCHEDULING: Total# executions done = "+completed.getNumberExec());
+            logger.fine("SCHEDULING: Total allowed executions = "+completed.getMaximumNumberOfExecutions());
+            logger.fine("#################################");
         } else { //set it to ready
-            logger.info("##########set to ready###########");
-            logger.info("Number of executions before next added = "+completed.getNumberExec());
+            logger.fine("##########set to ready###########");
+            logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
-            logger.info("Setting end time for "+eb.getId());
-            logger.info("Total # executions done = "+completed.getNumberExec());
-            logger.info("Total allowed executions = "+completed.getMaximumNumberOfExecutions());
-            logger.info("#################################");
+            logger.fine("SCHEDULING: Setting end time for "+eb.getId());
+            logger.fine("SCHEDULING: Total # executions done = "+completed.getNumberExec());
+            logger.fine("SCHEDULING: Total allowed executions = "+completed.getMaximumNumberOfExecutions());
+            logger.fine("#################################");
         }
-        logger.info("SCHEDULING: sb status = "+completed.getStatus().getStatus());
+        logger.fine("SCHEDULING: sb status = "+completed.getStatus().getStatus());
         updateProjectStatus(eb, completed.getStatus());
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -303,7 +324,7 @@ public class ALMAProjectManager extends ProjectManager {
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
         String proj_id = sb.getProject().getId();
-        logger.info ("SCHEDULING: updating project status for "+proj_id);
+        logger.fine ("SCHEDULING: updating project status for "+proj_id);
         ProjectStatus[] allPS = psQueue.getAll();
         ProjectStatus ps = null;
         for(int i=0; i < allPS.length; i++){
@@ -325,13 +346,39 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusTChoice choice = ps.getObsProgramStatus().getObsUnitSetStatusTChoice(); 
         //ObsUnitSet
         ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
-        SBStatusT[] sbs=new SBStatusT[0];
-        for(int i=0; i < sets.length; i++) {
-            sbs = parseObsUnitSetStatus(sets[i]);
+        SBStatusT[] sbs = choice.getSBStatus();
+        //System.out.println("SCHED: Existing SBs in PS = "+sbs.length);
+        Vector<SBStatusT> foo = new Vector<SBStatusT>();
+        for(int i=0; i < sbs.length; i++){
+            foo.add(sbs[i]);
         }
+        for(int i=0; i < sets.length; i++) {
+            foo = parseObsUnitSetStatus(sets[i], foo);
+        }
+        sbs = new SBStatusT[foo.size()];
+        sbs = foo.toArray(sbs);
+        //System.out.println("SCHED: total list of SBs in PS = "+sbs.length);
         
-        SBStatusT status = updateSBStatus(sb, sbs);
-        logger.info("SCHEDULING: SB's status is "+sb.getStatus().getStatus());
+       // System.out.println("SCHED: About to get sbstatus for sb "+sb.getId());
+        SBStatusT status = getSBStatusMatch(sb, sbs);
+        ///Temporary
+        /*try {
+            XmlEntityStruct xml = entitySerializer.serializeEntity(ps);
+            System.out.println(xml.xmlString);
+        }catch(Exception e){
+            e.printStackTrace();
+        }*/
+        addExecStatus(eb, status);
+        ///Temporary
+       /* try {
+            XmlEntityStruct xml = entitySerializer.serializeEntity(ps);
+            System.out.println(xml.xmlString);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        */
+        try {
+        logger.fine("SCHEDULING: SB's status is "+sb.getStatus().getStatus());
         StatusT stat = status.getStatus();
         if(sbStatus.getStatus().equals("notdefined")){
             stat.setState(StatusTStateType.NOTDEFINED);
@@ -348,8 +395,8 @@ public class ALMAProjectManager extends ProjectManager {
             stat.setEndTime(sb.getStatus().getEndTime().toString());
         }
         status.setStatus(stat);
-        logger.info("SCHEDULING: SBStatus's status is "+status.getStatus().toString());
-        logger.info("SCHEDULING: got "+sbs.length+" sb status' in this PS");
+        logger.fine("SCHEDULING: SBStatus's status is "+status.getStatus().toString());
+        logger.fine("SCHEDULING: got "+sbs.length+" sb status' in this PS");
         try {
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
@@ -357,12 +404,16 @@ public class ALMAProjectManager extends ProjectManager {
             logger.severe("SCHEDULING: Could not update project status in archive!");
             e.printStackTrace(System.out);
         }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         //return ids;
     }
 
-    private SBStatusT updateSBStatus(SB sb, SBStatusT[] allSBs) {
+    private SBStatusT getSBStatusMatch(SB sb, SBStatusT[] allSBs) {
         SBStatusT match=null;
         for(int i=0; i < allSBs.length; i++){
+            //System.out.println("SCHED: sbstatus sb ref "+allSBs[i].getSchedBlockRef().getEntityId());
             if(allSBs[i].getSchedBlockRef().getEntityId().equals(sb.getId())){
                 match = allSBs[i];
                 break;
@@ -370,10 +421,35 @@ public class ALMAProjectManager extends ProjectManager {
         }
         return match;
     }
+    private void addExecStatus(ExecBlock eb, SBStatusT sbStatus) {
+
+        ExecStatusT es = new ExecStatusT();
+        StatusT execStatus = new StatusT();
+        ExecBlockRefT ref = new ExecBlockRefT();
+        ref.setExecBlockId(eb.getExecId());
+        es.setExecBlockRef(ref);
+        es.setArrayName(eb.getArrayName());
+        es.setTimeOfCreation(eb.getStatus().getStartTime().toString());
+        execStatus.setStartTime(eb.getStatus().getStartTime().toString());
+        execStatus.setEndTime(eb.getStatus().getEndTime().toString());
+        StatusTStateType state;
+        if(eb.getStatus().getStatus().equals("complete")){
+            state = StatusTStateType.COMPLETE;
+        }else if( eb.getStatus().getStatus().equals("aborted") ) {
+            state = StatusTStateType.ABORTED;
+        } else {
+            state = StatusTStateType.NOTDEFINED;
+        }
+        execStatus.setState(state);
+        es.setStatus(execStatus);
+        //System.out.println("SBStatus has "+sbStatus.getExecStatus().length+" exec status', adding one more.");
+        sbStatus.addExecStatus(es);
+        //System.out.println("SBStatus now has "+sbStatus.getExecStatus().length+" exec status'");
+    }
 
  
      //TODO: Rename this method.
-    public SBStatusT[] parseObsUnitSetStatus(ObsUnitSetStatusT set) {
+    public Vector<SBStatusT> parseObsUnitSetStatus(ObsUnitSetStatusT set,Vector v) {
         logger.finest("SCHEDULING: Set PartID = "+set.getEntityPartId());
         SBStatusT[] sbs = null;
         ObsUnitSetStatusT[] obs = null;
@@ -381,13 +457,23 @@ public class ALMAProjectManager extends ProjectManager {
             logger.finest("SCHEDULING: more than one obs unit set status in PS");
             obs = set.getObsUnitSetStatusTChoice().getObsUnitSetStatus();
             for(int i=0; i< obs.length; i++) {
-                sbs = parseObsUnitSetStatus(obs[i]);
+              //  sbs = parseObsUnitSetStatus(obs[i], v);
+                v = parseObsUnitSetStatus(obs[i], v);
             }
         }
         if(set.getObsUnitSetStatusTChoice().getSBStatusCount() > 0) {
             sbs = set.getObsUnitSetStatusTChoice().getSBStatus();
+            for (int i=0; i < sbs.length; i++){
+                v.add(sbs[i]);
+            }
         }
-        return sbs;
+        //System.out.println("SCHED: sb vector now = "+ v.size());
+        //System.out.println("SCHED: returning "+sbs.length+" sb status'");
+        //for(int i=0;i< sbs.length; i++){
+        //    System.out.println("SCHED: in queue = "+sbs[i].getSchedBlockRef().getEntityId());
+        //}
+        return v;
+        //return sbs;
     }
 
     /**
@@ -436,14 +522,17 @@ public class ALMAProjectManager extends ProjectManager {
         Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
         session.setSessionId(eb.getSessionId());
-        session.setProgram(p);
         session.setStartTime(new DateTime(System.currentTimeMillis()));
         //System.out.println("EXEC BLOCK: eb id ="+eb.getId());
         session.addExec(eb);
+        //System.out.println("Program's session count = "+p.getAllSession().length);
         p.addObservedSession(session);
+        //System.out.println("Program's session count after add = "+p.getAllSession().length);
         
         //Project proj = pQueue.get(p.getProject().getId());
         Program prog =  addProgram(p);
+        session.setProgram(p);
+        logger.fine("This program now has "+prog.getAllSession().length+" sessions");
         Project proj = prog.getProject();
         if(proj == null) {
             logger.severe("SCHEDULING: project was null!!!"); //should never happen.
@@ -451,7 +540,7 @@ public class ALMAProjectManager extends ProjectManager {
         }
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
-            logger.info("SCHEDULING: updating project status with session "+session.getSessionId());
+            logger.fine("SCHEDULING: updating project status with session "+session.getSessionId());
             ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
@@ -517,7 +606,7 @@ public class ALMAProjectManager extends ProjectManager {
         sessionStart(sessionId, sbid);
         IDLEntityRef sessionRef = new IDLEntityRef();
         sessionRef.entityId = sb.getProject().getProjectStatusId();
-        logger.info("Project status for sb ("+sb.getId()+") is "+sessionRef.entityId);
+        logger.fine("Project status for sb ("+sb.getId()+") is "+sessionRef.entityId);
         sessionRef.partId = sessionId;
         sessionRef.entityTypeName = "ProjectStatus";
         sessionRef.instanceVersion ="1.0";
@@ -538,14 +627,14 @@ public class ALMAProjectManager extends ProjectManager {
         } else {
             title = title +"undefined_sb_name";
         }
-        logger.info("SCHEDULING: title for quicklook = "+title);
+        logger.fine("SCHEDULING: title for quicklook = "+title);
         try {
             pipeline.startQuickLookSession(sessionRef, sbRef, title);
         } catch (Exception e){
             logger.warning("SCHEDULING: Quick look not available.");
         }
         try {
-            logger.info("SCHEDULING: Session with id == "+sessionId+" (start event sent)");
+            logger.fine("SCHEDULING: Session with id == "+sessionId+" (start event sent)");
             long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
             StartSessionEvent start_event = new StartSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
@@ -778,9 +867,9 @@ public class ALMAProjectManager extends ProjectManager {
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         //archive.updateProjectStatus(ps);
 
-        logger.info("SCHEDULING: Starting Pipeline");
+        logger.fine("SCHEDULING: Starting Pipeline");
         String pprString = archive.getPPRString(ps, ppr.getId());
-        logger.info("SCHEDULING: (in PM) PPR string =  "+pprString);
+        logger.fine("SCHEDULING: (in PM) PPR string =  "+pprString);
         String pipelineResult = pipeline.processRequest(pprString);
     }
 
@@ -935,19 +1024,36 @@ public class ALMAProjectManager extends ProjectManager {
     public String[] getWildCardResults(String[] projIds, String searchStr, String attr){
         Vector res = new Vector();
         Project p;
-        String tmp;
-        int x;
+        String tmp="";
+        int x1, x2, len;
         for(int i=0;i < projIds.length; i++){
             p= pQueue.get(projIds[i]);
-            x = searchStr.indexOf("*");
-            tmp = searchStr.substring(0,x);
-            if(attr.equals("pI")){
-                if(p.getPI().contains(tmp)){
-                    res.add(projIds[i]);
+            len = searchStr.length();
+            if( len == 1 && searchStr.equals("*")) {
+                //only contains * so we return everything
+                res.add(projIds[i]);
+            } else {
+                if(searchStr.startsWith("*") && searchStr.endsWith("*")){
+                    x2 = (searchStr.substring(1,searchStr.length()).indexOf("*")) +1; 
+                    //added one above coz our substring was of len 1
+                    tmp = searchStr.substring(1, x2);
+                } else if(searchStr.startsWith("*") ){
+                    tmp = searchStr.substring(1, searchStr.length());
+                } else if( searchStr.endsWith("*")){
+                    tmp = searchStr.substring(0, searchStr.length() -1);
                 }
-            } else if(attr.equals("projectName")){
-                if(p.getProjectName().contains(tmp)){
-                    res.add(projIds[i]);
+            //x = searchStr.indexOf("*");
+            //System.out.println("SEARCHING: "+x);
+            //tmp = searchStr.substring(0,x);
+           // System.out.println("SEARCHING: "+tmp);
+                if(attr.equals("pI")){
+                    if(p.getPI().contains(tmp)){
+                        res.add(projIds[i]);
+                    }
+                } else if(attr.equals("projectName")){
+                    if(p.getProjectName().contains(tmp)){
+                        res.add(projIds[i]);
+                    }
                 }
             }
         }
@@ -1066,10 +1172,10 @@ public class ALMAProjectManager extends ProjectManager {
       * then updates the queues (project queue, sb queue & project status queue)
       */
     private void pollArchive() throws SchedulingException {
-        logger.info("project Queue size at start of pollarchive = "+pQueue.size());
-        logger.info("sb queue size at start of pollarchive = "+sbQueue.size());
-        logger.info("ps queue size at start of pollarchive = "+psQueue.size());
-        logger.info("SCHEDULING: polling archive for new/updated projects");
+        logger.fine("project Queue size at start of pollarchive = "+pQueue.size());
+        logger.fine("sb queue size at start of pollarchive = "+sbQueue.size());
+        logger.fine("ps queue size at start of pollarchive = "+psQueue.size());
+        logger.fine("SCHEDULING: polling archive for new/updated projects");
         Project[] projectList = new Project[0];
         Vector<ProjectStatus> tmpPS = new Vector<ProjectStatus>();
         ProjectStatus ps;
@@ -1191,9 +1297,9 @@ public class ALMAProjectManager extends ProjectManager {
             e.printStackTrace(System.out);
             throw new SchedulingException(e);
         }
-        logger.info("Size of pQueue = "+pQueue.size());
-        logger.info("Size of psQueue = "+psQueue.size());
-        logger.info("Size of sbQueue = "+sbQueue.size());
+        logger.fine("Size of pQueue = "+pQueue.size());
+        logger.fine("Size of psQueue = "+psQueue.size());
+        logger.fine("Size of sbQueue = "+sbQueue.size());
     }
 
     /**
@@ -1333,7 +1439,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     public SBLite[] getSBLites() {
-        logger.info("SCHEDULING: Called getSBLites()");
+        logger.fine("SCHEDULING: Called getSBLites()");
         SBLite[] sbliteArray=null;
         SBLite sblite;
         Vector<SBLite> sbliteVector = new Vector<SBLite>();
@@ -1360,7 +1466,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     public SBLite[] getSBLite(String[] ids) {
-        logger.info("SCHEDULING: Called getSBLite(ids)");
+        logger.fine("SCHEDULING: Called getSBLite(ids)");
         try {
             pollArchive();
         } catch(Exception e) {
@@ -1377,7 +1483,7 @@ public class ALMAProjectManager extends ProjectManager {
 
     public ProjectLite[] getProjectLites(String[] ids) {
         getUpdates();
-        logger.info("SCHEDULING: Called getProjectLites(ids)");
+        logger.fine("SCHEDULING: Called getProjectLites(ids)");
         ProjectLite[] projectliteArray=new ProjectLite[ids.length];
         for(int i=0; i < ids.length; i++){
             projectliteArray[i] = createProjectLite(ids[i]);

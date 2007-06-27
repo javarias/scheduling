@@ -83,7 +83,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
                     SchedulerInfo[] active = masterScheduler.getAllActiveSchedulers();
                     releaseMSRef();
                     for(int i=0; i < active.length; i++){
-                        logger.info("Active Scheduler "+(i+1)+": "+
+                        logger.fine("Active Scheduler "+(i+1)+": "+
                                 active[i].schedulerCompName+"; "+
                                 active[i].schedulerType+"; "+
                                 active[i].schedulerArray+"; "+
@@ -131,7 +131,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         try {
             control = alma.Control.ControlMasterHelper.narrow(
                 getCS().getComponent("CONTROL/MASTER"));
-            logger.info("SCHEDULING_PANEL: Got Control in MainTab");
+            logger.fine("SCHEDULING_PANEL: Got Control in MainTab");
         } catch(Exception e){
             control = null;
         }
@@ -140,7 +140,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     private void releaseControlRef(){
         if(control != null) {
             getCS().releaseComponent(masterScheduler.name());
-            logger.info("SCHEDULING_PANEL: Released Control in MainTab");
+            logger.fine("SCHEDULING_PANEL: Released Control in MainTab");
         }
     }
 ////////////////////////////////////    
@@ -162,12 +162,11 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     }
 
     public void receive(SchedulingStateEvent e){
-        logger.info("GOT SchedulingStateEvent: "+e.state);
+        logger.fine("GOT SchedulingStateEvent: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
             setOperationalStartState();
         }else if(e.state == SchedulingState.OFFLINE){
-            connected = false;
-            parent.connectedToALMA(connected);
+            setOfflineState();
         } else {
             return;
         }
@@ -175,6 +174,11 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     private void setOperationalStartState() {
         connected = true;
         parent.setDefaults();
+        parent.connectedToALMA(connected);
+    }
+    private void setOfflineState() {
+        parent.setOfflineDisplay();
+        connected = false;
         parent.connectedToALMA(connected);
     }
 

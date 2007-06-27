@@ -356,7 +356,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         // this might cause problems if one sb is finished and we're waiting for the next
         //exec block started event to update the currentSB, gotta think of something better
         if(isSelectedSBRunning()){
-            logger.info("Scheduler ("+controller.getSchedulerName() +"): cannot remove a running sb from the queue");
+            logger.warning("Scheduler ("+controller.getSchedulerName() +"): cannot remove a running sb from the queue");
             //force de-selection
             queueSBs.clearSelectedItems();
             return;

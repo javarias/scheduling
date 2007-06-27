@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.44 2007/05/15 15:52:22 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.45 2007/06/27 22:24:10 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -158,35 +158,35 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ScienceProcessingRequestEnd The event sent by the Pipeline subsystem
      */
     public void receive(ScienceProcessingDoneEvent e) {
-        logger.info("SCHEDULING: Starting to process the pipeline event");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the pipeline event");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
 ////////////////////////
 // TELCAL
 ////////////////////////
     public void receive(AmpliCalReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the AmpliCalReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the AmpliCalReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(AmpCurveReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the AmpCurveReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the AmpCurveReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(AntennaPositionsReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the AntennaPositionsReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the AntennaPositionsReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(AtmosphereReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the AtmosphereReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the AtmosphereReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(DelayReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the DelayReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the DelayReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
 
     /**
@@ -196,18 +196,18 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param FocusReducedEvent The event sent by the Telcal subsystem
      */
     public void receive(FocusReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the focus reduced event");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the focus reduced event");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(PhaseCalReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the PhaseCalReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the PhaseCalReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(PhaseCurveReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the PhaseCurveReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the PhaseCurveReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
 
     /**
@@ -217,18 +217,18 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param PointingReducedEvent The event sent by the Telcal subsystem
      */
     public void receive(PointingReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the pointing reduced event");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the pointing reduced event");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(PointingModelReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the PointingModelReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the PointingModelReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
     
     public void receive(SkydipReducedEvent e) {
-        logger.info("SCHEDULING: Starting to process the SkydipReducedEvent");
-        logger.info("SCHEDULING: Nothing to do yet.");
+        logger.fine("SCHEDULING: Starting to process the SkydipReducedEvent");
+        logger.fine("SCHEDULING: Nothing to do yet.");
     }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -253,7 +253,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * @param ControlEvent
      */
     private void updateSB(ControlEvent e) {
-        logger.info("SCHEDULING: updating the SB after event from control received");
+        logger.fine("SCHEDULING: updating the SB after event from control received");
         manager.updateSB(e);
     }
 
@@ -267,7 +267,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void createObservedSession(ExecBlock eb) {
         try {
-            logger.info("SCHEDULING: Start of a Session!");
+            logger.fine("SCHEDULING: Start of a Session!");
             manager.createObservedSession(eb);
         }catch(Exception ex) {
             logger.severe("SCHEDULING: error! ");
@@ -283,7 +283,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      */
     private void endSession(ExecBlock eb) {
         try {
-            logger.info("SCHEDULING: End of a Session! ");
+            logger.fine("SCHEDULING: End of a Session! ");
             manager.sendEndSessionEvent(eb);
         } catch(Exception e) {
             logger.severe("SCHEDULING: error! ");
@@ -319,7 +319,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * @param ExecBlock
       */
     private void sbCompleted(ExecBlock eb){
-        logger.info("SCHEDULING: setting SB to complete.");
+        logger.fine("SCHEDULING: setting SB to complete.");
         manager.setSBComplete(eb);
     }
     
@@ -331,12 +331,12 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * @return ExecBlock The exec block with the given id. Returns null if not in the queue.
       */
     private ExecBlock retrieveExecBlock(String ebId) {
-        logger.info("SCHEDULING: Retrieving EB "+ebId+" from list");
+        logger.fine("SCHEDULING: Retrieving EB "+ebId+" from list");
         ExecBlock eb = null;
         for(int i=0; i < currentEB.size(); i++) {
             if( ((ExecBlock)currentEB.elementAt(i)).getId().equals(ebId) ){
                 eb = (ExecBlock)currentEB.elementAt(i);
-                logger.info("SCHEDULING: Found eb "+eb.getExecId()+" in list");
+                logger.fine("SCHEDULING: Found eb "+eb.getExecId()+" in list");
                 break;
             }
         }
@@ -373,28 +373,25 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         //the processes below are still being thought out and may not be the
         //best way to do what needs to be done.
         try {
-            logger.info("SCHEDULING: Received exec block start event from control.");
-            logger.info("SCHEDULING: ExecBlock (ASDM) = "+  e.execId.entityId+" for SB ="+e.sbId.entityId );
-            logger.info("SCHEDULING: session id ="+ e.sessionId.entityId);
-            //logger.info("SCHEDULING: arrayname = "+ e.arrayName);
+            logger.fine("SCHEDULING: Received exec block start event from control.");
+            logger.fine("SCHEDULING: ExecBlock (ASDM) = "+  e.execId.entityId+" for SB ="+e.sbId.entityId );
+            logger.fine("SCHEDULING: session id ="+ e.sessionId.entityId);
             DateTime startEb = new DateTime(UTCUtility.utcOmgToJava(e.startTime));
-            //logger.info("SCHEDULING: start time = "+ startEb.toString());
-            logger.info("SCHEDULING: SB ("+e.sbId.entityId+") started at "+startEb.toString()+" on "+e.arrayName);
+            logger.fine("SCHEDULING: SB ("+e.sbId.entityId+") started at "+startEb.toString()+" on "+e.arrayName);
             //create an execblock internal to scheduling. 
             ExecBlock eb = createExecBlock(e);
             //ArrayTime at = new ArrayTime(e.startTime);
             //DateTime startEb = at.arrayTimeToDateTime();
-            logger.info("********************************");
-            logger.info("SCHEDULING: Recording start time for: "+e.execId.entityId);
-            //logger.info("SCHEDULING: start time is : "+e.startTime);
-            logger.info("SCHEDULING: start time is : "+startEb.toString());
-            logger.info("********************************");
+            logger.fine("********************************");
+            logger.fine("SCHEDULING: Recording start time for: "+e.execId.entityId);
+            logger.fine("SCHEDULING: start time is : "+startEb.toString());
+            logger.fine("********************************");
             eb.setStartTime(startEb);
             eb.setTimeOfCreation(startEb);
             eb.setTimeOfUpdate(startEb);
             //eb.setSessionId(e.sessionId);
             eb.setSessionId(e.sessionId.partId);
-            logger.info("SCHEDULING: Adding current EB "+eb.getExecId()+" to current list");
+            logger.fine("SCHEDULING: Adding current EB "+eb.getExecId()+" to current list");
             currentEB.add(eb);
             createObservedSession(eb);
             //manager.createProjectWebpage(projectUid);
@@ -419,10 +416,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     }
     private void processExecBlockEndedEvent(ExecBlockEndedEvent e) {
         try{
-            logger.info("SCHEDULING: Event reason = end");
-            logger.info("SCHEDULING: Received sb end event from control.");
+            logger.fine("SCHEDULING: Event reason = end");
+            logger.fine("SCHEDULING: Received sb end event from control.");
             DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
-            logger.info("SCHEDULING: end time is "+ endEb.toString());
+            logger.fine("SCHEDULING: end time is "+ endEb.toString());
             //create a control event internal to scheduling.
             //this object contains the info from controls event which sched wants
             //ArrayTime at = new ArrayTime(e.endTime);
@@ -432,12 +429,11 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //eb = createExecBlock(e);
             ExecBlock eb = retrieveExecBlock(e.execId.entityId);
             //DateTime endEb = at.arrayTimeToDateTime();
-            logger.info("********************************");
-            logger.info("SCHEDULING: Setting end time for: "+e.execId.entityId);
-            //logger.info("SCHEDULING: end time is "+ e.endTime);
-            logger.info("SCHEDULING: end time is "+ endEb.toString());
-            logger.info("********************************");
-            logger.info("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+" with ASDM/ExecBlock = "+e.execId.entityId);
+            logger.fine("********************************");
+            logger.fine("SCHEDULING: Setting end time for: "+e.execId.entityId);
+            logger.fine("SCHEDULING: end time is "+ endEb.toString());
+            logger.fine("********************************");
+            logger.fine("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+" with ASDM/ExecBlock = "+e.execId.entityId);
             //TODO change this when we start getting exec block end events for all reasons
             if(eb == null){
                 logger.severe("SCHEDULNG: EB in sched's list was null. Implies Sched did not receive EB start event. Setting SB as aborted");

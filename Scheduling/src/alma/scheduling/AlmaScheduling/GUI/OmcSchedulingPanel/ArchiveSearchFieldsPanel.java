@@ -38,7 +38,7 @@ import alma.scheduling.ProjectLite;
 
 public class ArchiveSearchFieldsPanel extends JPanel {
     private JButton searchB;
-    //private JButton clearB;
+    private JButton clearB;
     private JCheckBox projectCB;
     private JCheckBox sbCB;
     private JTextField piNameTF;
@@ -90,7 +90,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         projNameTF.setEnabled(b);
         piNameTF.setEnabled(b);
         searchB.setEnabled(b);
-        //clearB.setEnabled(b);
+        clearB.setEnabled(b);
     }
 
     private void createCheckBoxes(){ 
@@ -224,7 +224,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         p.add(expertQueryTF);
         */
         ////
-        JPanel bp = new JPanel(new GridLayout(1,2));
+        JPanel bp = new JPanel(new GridLayout(1,3));
+        bp.add(new JLabel());//spacer
         searchB = new JButton("Search");
         searchB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -236,20 +237,43 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                     showConnectMessage();
                     return;     
                 }
-                doClear();
+                doClearPreviousSearch();
                 doSearch();
             }
         });
         searchB.setToolTipText("Click here to search archive.");
-        bp.add(new JLabel());
         bp.add(searchB);
+        clearB = new JButton("Clear");
+        clearB.setToolTipText("Click here to clear search fields.");
+        clearB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                if(!connectedToALMA){
+                    showConnectMessage();
+                    return;
+                }
+                if(controller == null) {
+                    showConnectMessage();
+                    return;     
+                }
+                doClearSearchFields();
+            }
+        });
+        bp.add(clearB);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(bp,c);
         p.add(bp);
         add(p, BorderLayout.CENTER);
     }
 
-    private void doClear(){
+    private void doClearSearchFields(){
+        piNameTF.setText("*");
+        projNameTF.setText("*");
+        projTypeChoices.setSelectedIndex(0);
+        sbModeNameChoices.setSelectedIndex(0);
+        sbModeTypeChoices.setSelectedIndex(0);
+    }
+
+    private void doClearPreviousSearch(){
         String name =parent.getClass().getName();
         if(name.contains("SearchArchiveOnlyTab")){
             ((SearchArchiveOnlyTab)parent).clearTables();

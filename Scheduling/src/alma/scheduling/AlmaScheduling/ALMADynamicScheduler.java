@@ -101,7 +101,7 @@ public class ALMADynamicScheduler
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{
-        logger.info("SCHEDULING: Dynamic Scheduler execute() ");
+        logger.fine("SCHEDULING: Dynamic Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
@@ -159,7 +159,7 @@ public class ALMADynamicScheduler
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }
-        logger.info("DSComp has sb "+sbid+" with message = "+ currentMessageId);
+        logger.fine("DSComp has sb "+sbid+" with message = "+ currentMessageId);
         try{
             (alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getDefaultComponent(
@@ -193,7 +193,7 @@ public class ALMADynamicScheduler
         allSB_cbDesc = descIn;
     }
     public void setCbForTopSBs(CBstringSeq cb, CBDescIn descIn){
-        logger.info("SCHEDULING: Setting callback info for TopSBs");
+        logger.fine("SCHEDULING: Setting callback info for TopSBs");
         topSB_cb = cb;
         topSB_cbDesc = descIn;
     }

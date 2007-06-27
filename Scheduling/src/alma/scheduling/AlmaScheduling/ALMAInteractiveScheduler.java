@@ -97,7 +97,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{
-        logger.info("SCHEDULING: Interactive Scheduler execute() ");
+        logger.fine("SCHEDULING: Interactive Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
@@ -202,8 +202,8 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws InvalidOperationEx, NoSuchSBEx {
 
         try {
-            logger.info("sb id: "+sbId);
-            logger.info("scheduler id: "+schedulerId);
+            logger.fine("sb id: "+sbId);
+            logger.fine("scheduler id: "+schedulerId);
             masterScheduler.executeInteractiveSB(sbId, schedulerId);
         } catch(Exception e){
             logger.severe("SCHEDULING: executeSB in IS_COMP: error = "+e.toString());

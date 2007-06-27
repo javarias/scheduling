@@ -63,31 +63,31 @@ public class ExistingArraysTabController extends SchedulingPanelController {
 
     public void receive(CreatedAutomaticArrayEvent event) {
         String name = event.arrayName;
-        logger.info("SP: Received created array event for "+name);
+        logger.fine("SP: Received created array event for "+name);
         parent.addArray(name, "automatic");
     }
     public void receive(DestroyedAutomaticArrayEvent event) {
         String name = event.arrayName;
-        logger.info("SP: Received destroy array event for "+name+" in existing array tab");
+        logger.fine("SP: Received destroy array event for "+name+" in existing array tab");
         parent.removeArray(name);
     }
     public void receive(CreatedManualArrayEvent event) {
         String name = event.arrayName;
-        logger.info("SP: Received created array event for "+name);
+        logger.fine("SP: Received created array event for "+name);
         parent.addArray(name, "manual");
     }
     public void receive(DestroyedManualArrayEvent event) {
         String name = event.arrayName;
-        logger.info("SP: Received destroy array event for "+name+" in existing array tab");
+        logger.fine("SP: Received destroy array event for "+name+" in existing array tab");
         parent.removeArray(name);
     }
 
     /*
      public void receive(ExecBlockStartedEvent e) {
-         logger.info("Existing array tab got exec block started event");
+         logger.fine("Existing array tab got exec block started event");
      }
      public void receive(ExecBlockEndedEvent e) {
-         logger.info("Existing array tab got exec block ended event");
+         logger.fine("Existing array tab got exec block ended event");
      }*/
         
 }

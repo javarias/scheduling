@@ -85,7 +85,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         try {
             getMSRef();
             schedulername = masterScheduler.startInteractiveScheduling1(arrayName);
-            logger.info("SCHEDULINGPANEL: Interactive scheduling ("+schedulername+") started on array "+arrayName+".");
+            logger.fine("SCHEDULINGPANEL: Interactive scheduling ("+schedulername+") started on array "+arrayName+".");
             releaseMSRef();
         } catch(Exception e) {
             e.printStackTrace();
@@ -121,7 +121,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }catch(Exception e){
             e.printStackTrace();
         }
-        logger.info("Got interactive scheduler reference");
+        logger.fine("Got interactive scheduler reference");
 
     }
     public void releaseISRef(){
@@ -162,7 +162,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     public synchronized void executeSB(String id) throws SchedulingException {
         try{
-            logger.info("IS: Sending sb ("+id+") to be executed");
+            logger.fine("IS: Sending sb ("+id+") to be executed");
             currentSBId = id;
             getMSRef();
             ProjectLite project = masterScheduler.getProjectLiteForSB(id);
@@ -176,7 +176,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     public synchronized void stopSB()throws SchedulingException{
         try{
-            logger.info("IS: Requesting sb to stop");
+            logger.fine("IS: Requesting sb to stop");
             scheduler.stopSB();
             //scheduler.endSession();
         }catch( Exception e){
@@ -185,7 +185,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(XmlStoreNotificationEvent event) {
-        //logger.info("IS: got xml update event");
+        //logger.fine("IS: got xml update event");
         CheckArchiveEvent processor = new CheckArchiveEvent(event);
         Thread t = new Thread(processor);
         t.start();
@@ -195,7 +195,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void receive(ExecBlockStartedEvent e) {
         String sbid = e.sbId.entityId;
         String exec_id = e.execId.entityId;
-        logger.info("got start event in IS for sb "+sbid);
+        logger.fine("got start event in IS for sb "+sbid);
         if(!sbid.equals(currentSBId)){
             return;
         }
@@ -213,14 +213,14 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(ExecBlockEndedEvent e){
-        logger.info("got eb ended in IS");
+        logger.fine("got eb ended in IS");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
-        logger.info("got ended event in IS for sb "+sbid);
+        logger.fine("got ended event in IS for sb "+sbid);
         if(!sbid.equals(currentSBId)){
             return;
         }
-        logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
+        logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
                 !scheduler.getCurrentEB().equals(exec_id) ){
             System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
@@ -239,7 +239,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
         try {
             scheduler.endSession();
-            logger.info("SP: Stopped IS session");
+            logger.fine("SP: Stopped IS session");
         } catch(Exception ex){
             logger.severe("SP: Error ending interactive session");
             ex.printStackTrace();
@@ -249,7 +249,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     public void receive(DestroyedAutomaticArrayEvent event) {
         String name = event.arrayName;
-        logger.info("SP: Received destroy array event for "+name+" in IS");
+        logger.fine("SP: Received destroy array event for "+name+" in IS");
         if(name.equals(arrayName)){
             setArrayStatus("Destroyed");
         }
@@ -257,24 +257,24 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     
     public void receive(ASDMArchivedEvent e){
         String sbid = e.workingDCId.schedBlock.entityId;
-        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
+        logger.fine("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
         System.out.println("Current SB = "+currentSBId);
         //System.out.println("got archived event: completion = "+completion);
         //if(sbid.equals(currentSBId)){
         if(waitingForArchivedSB.contains(sbid)){
-            logger.info("in list");
+            logger.fine("in list");
             if(completion.equals("complete")){
                 parent.setSBStatus(sbid, "ARCHIVED");
             }
         }else{
-            logger.info("not in list");
+            logger.fine("not in list");
         }
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {
-    //    logger.info("SCHEDULING_PANEL: not doing anything with xml store notification event for now");
+    //    logger.fine("SCHEDULING_PANEL: not doing anything with xml store notification event for now");
     }
 
     class CheckArchiveEvent implements Runnable {

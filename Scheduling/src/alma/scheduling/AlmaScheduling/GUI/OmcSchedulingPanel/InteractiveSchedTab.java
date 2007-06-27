@@ -243,6 +243,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         sbs.setSBExecStatus(sb, status);
         if(status.equals("RUNNING")){
             setEnable(false);
+            closeExecutionWaitingThing();
         } else {
             setEnable(true);
         }
@@ -258,7 +259,15 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         revalidate();
         System.out.println("array status label should be updated now to "+controller.getArrayStatus());
     }
-    
+
+    private void openExecutionWaitingThing(){
+        //JOptionPane.showMessageDialog(this, "Please wait, Preparing for SB Execution",
+          //      "Waiting",JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void closeExecutionWaitingThing(){
+    }
+
     private void executeSB(){
         ExecuteSBThread exec = new ExecuteSBThread();
         Thread t = controller.getCS().getThreadFactory().newThread(exec);
@@ -284,6 +293,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     return;
                 }
                 if(!sbId.equals("")){
+                    openExecutionWaitingThing();
                     controller.executeSB(sbId);
                     //setEnable(false);
                     //setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event

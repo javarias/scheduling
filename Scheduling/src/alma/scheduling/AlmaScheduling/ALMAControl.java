@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.65 2007/05/01 21:08:06 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.66 2007/06/27 22:24:10 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -95,7 +95,7 @@ public class ALMAControl implements Control {
             org.omg.CORBA.Object obj = containerServices.getComponent(
                     "CONTROL/MASTER");
             control_system = alma.Control.ControlMasterHelper.narrow(obj);
-            logger.info("SCHEDULING: Got ControlMasterComponent");
+            logger.fine("SCHEDULING: Got ControlMasterComponent");
             if(control_system.getMasterState() != 
                 alma.Control.SystemState.OPERATIONAL){
                     throw new SchedulingException("SCHEDULING: control not operational yet");
@@ -175,8 +175,8 @@ public class ALMAControl implements Control {
 
         //send out start of session
         IDLEntityRef sessionRef = manager.sendStartSessionEvent(sbId);
-        logger.info("SCHEDULING: Sending BestSBs to Control!");
-        logger.info("SCHEDULING: Array being used has name = "+arrayName);
+        logger.fine("SCHEDULING: Sending BestSBs to Control!");
+        logger.fine("SCHEDULING: Array being used has name = "+arrayName);
         
         AutomaticArrayCommand ctrl = getAutomaticArray(arrayName);
         try{
@@ -185,8 +185,9 @@ public class ALMAControl implements Control {
             sbRef.partId = "";
             sbRef.entityTypeName = "SchedBlock";
             sbRef.instanceVersion = "1.0";
-            //logger.info("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
+            //logger.fine("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
             if(ctrl !=null){
+                logger.info("SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName);
                 ctrl.observe(sbRef, sessionRef, 0L); 
             } else {
                 logger.severe("***************************************");
@@ -194,11 +195,11 @@ public class ALMAControl implements Control {
                 logger.severe("***************************************");
             }
         } catch(InvalidRequest e1) {
-            logger.severe("SCHEDULING: could not observe!");
+            logger.severe("SCHEDULING: could not observe sb("+sbId+") on array "+arrayName+"!");
             logger.severe("SCHEDULING: Problem was: "+e1.toString());
             sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
         } catch(InaccessibleException e2) {
-            logger.severe("SCHEDULING: could not observe!");
+            logger.severe("SCHEDULING: could not observe sb("+sbId+") on array "+arrayName+"!");
             logger.severe("SCHEDULING: Problem was: "+e2.toString());
             sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
             try {
@@ -309,7 +310,7 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
             for(int i=0;i < antenna.length; i++){
-                logger.info("SCHEDULING: antenna name = "+antenna[i]);
+                logger.fine("SCHEDULING: antenna name = "+antenna[i]);
             }
             String arrayName="";
             try {
@@ -327,8 +328,8 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
-            logger.info("SCHEDULING: Scheduling created array = "+ ctrl.getArrayComponentName());
-            logger.info("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
+            logger.info("SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName());
+            logger.fine("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
             return ctrl.getArrayComponentName();
             /*
         } catch(InvalidRequest e1) {
@@ -367,11 +368,11 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Something went very wrong when setting up ALMAControl");
             }
             for(int i=0; i <  antenna.length; i++){
-                logger.info("ANTENNA: "+antenna[i]);
+                logger.fine("ANTENNA: "+antenna[i]);
             }
             String arrayName = control_system.createManualArray(antenna);
             manualArrays.add(arrayName);
-            logger.info("SCHEDULING: Array "+arrayName+" created with "+antenna.length+" antennas.");
+            logger.fine("SCHEDULING: Array "+arrayName+" created with "+antenna.length+" antennas.");
             return arrayName;
         } catch(InvalidRequest e1) {
             e1.printStackTrace();
@@ -532,7 +533,7 @@ public class ALMAControl implements Control {
         try {
             ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
             for(int i=0;i < automaticArrays.length; i++){
-                logger.info("SCHEDULING: auto-array name = "+automaticArrays[i].ComponentName);
+                logger.fine("SCHEDULING: auto-array name = "+automaticArrays[i].ComponentName);
             }
             ResourceId[] mas = control_system.getManualArrayComponents();
             int all = automaticArrays.length + mas.length;
@@ -616,10 +617,10 @@ public class ALMAControl implements Control {
       * @throws SchedulingException
       */
     private AutomaticArrayCommand getAutomaticArray(String name) throws SchedulingException {
-        logger.info("SCHEDULING: looking for array with id = "+ name);
+        logger.fine("SCHEDULING: looking for array with id = "+ name);
         for(int i=0; i < auto_controllers.size(); i++){
             if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
-                logger.info("SCHEDULING: found array with id = "+ ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
+                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
                 
                 return (AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp();
             }
@@ -686,9 +687,9 @@ public class ALMAControl implements Control {
     public void getWeatherStations() throws SchedulingException {
         try { 
             String[] weather = control_system.getWeatherStations();
-            logger.info("SCHEDULING: Current weather stations ");
+            logger.fine("SCHEDULING: Current weather stations ");
             for(int i=0; i < weather.length; i++) {
-                logger.info("\tStation id ="+ weather[i]);
+                logger.fine("\tStation id ="+ weather[i]);
             }
         }catch(InaccessibleException e) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);

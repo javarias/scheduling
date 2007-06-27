@@ -37,7 +37,7 @@ import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 
 /**
- * @version $Id: ProjectManager.java,v 1.12 2006/02/21 21:30:19 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.13 2007/06/27 22:24:10 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -51,7 +51,7 @@ public class ProjectManager implements Runnable,
     protected ProjectManagerTaskControl pmTaskControl;
 
     public ProjectManager() {
-        System.out.println("SCHEDULING: PM created!");
+        //System.out.println("SCHEDULING: PM created!");
         this.stopCommand = false;
     }
     
@@ -65,7 +65,7 @@ public class ProjectManager implements Runnable,
       *
       */
     public void setStopCommand(boolean stop) {
-        System.out.println("SCHEDULING: in PM stop command set");
+        //System.out.println("SCHEDULING: in PM stop command set");
         this.stopCommand = stop;
     }
     public boolean getStopCommand() {

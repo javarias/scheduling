@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.19 2007/03/19 13:37:22 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.20 2007/06/27 22:24:10 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -78,7 +78,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
      * mode to run, Dynamic or Interactive.
      */
     public void run() {
-        logger.info("SCHEDULING: Running in DYNAMIC mode");
+        logger.fine("SCHEDULING: Running in DYNAMIC mode");
     	config.setTask(Thread.currentThread());
         runDynamic();
     }
@@ -137,7 +137,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     		logger.severe("SCHEDULING: "+name() + ": Configuraton error! " + msg);
     		return;
     	}
-    	logger.info("SCHEDULING: "+name() + ": Configuration object validated.");
+    	logger.fine("SCHEDULING: "+name() + ": Configuration object validated.");
     	
     	// Create the dynamic scheduling algorithm object.
     	try {
@@ -152,13 +152,13 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                 "algorithm ! " + err.toString());
     		return;
     	}
-    	logger.info("SCHEDULING: "+name() + ": Dynamic scheduling algorithm created.");
+    	logger.fine("SCHEDULING: "+name() + ": Dynamic scheduling algorithm created.");
     	
     	// Set the start and end times.  (The ending time may be null.)
     	DateTime start = clock.getDateTime();
     	DateTime end = config.getCommandedEndTime();
     	config.start(start,end);
-    	logger.info("SCHEDULING: "+name() + ": Started " + start);
+    	logger.fine("SCHEDULING: "+name() + ": Started " + start);
     	
     	// Go into the major run-time loop.
     	// We'll need the following variables in the loop.
@@ -171,7 +171,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     		// 1. Check to see if the master scheduler told us to stop.
     		if (config.isStopFlag()) {
     			checkRunning();
-    			logger.info("SCHEDULING: "+name() + ": Stopping because stop flag is set.");
+    			logger.fine("SCHEDULING: "+name() + ": Stopping because stop flag is set.");
     			break;
     		}
     		
@@ -181,7 +181,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     			now = clock.getDateTime();
     			if (now.ge(end)) {
     				checkRunning();
-    				logger.info("SCHEDULING: "+name() + ": Stopping because we are at the end "+
+    				logger.fine("SCHEDULING: "+name() + ": Stopping because we are at the end "+
                         "of the scheduling period.");
 					break;
     			}
@@ -190,9 +190,9 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     		// 3. Check to see if there are any scheduling units in the queue.
     		if (config.getQueue().size() == 0) {
     			checkRunning();
-    			logger.info("SCHEDULING: "+name() + ": Stopping because there are no more "+
+    			logger.fine("SCHEDULING: "+name() + ": Stopping because there are no more "+
                     "scheduling units.");
-                logger.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in scheduler.");
+                logger.fine("SCHEDULING: Nothing Can Be Scheduled Event sent out, in scheduler.");
 
                 //NothingCanBeScheduled.NoResources
 				break;
@@ -220,17 +220,17 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     			try {
     				config.sleepingOn();
     				Thread.sleep(sleepTime);
-                    logger.info("SCHEDULING: Scheduler is sleeping..");
+                    logger.fine("SCHEDULING: Scheduler is sleeping..");
     			} catch (InterruptedException err) {
-                    logger.info("SCHEDULING: Scheduler's sleeping interrupted!");
+                    logger.fine("SCHEDULING: Scheduler's sleeping interrupted!");
     			}
     		}
     	};
     	
     	config.normalEnd(clock.getDateTime());
-    	logger.info(name() + " has ended!");
-    	logger.info(name() + " started " + config.getActualStartTime());
-    	logger.info(name() + " ended " + config.getActualEndTime());
+    	logger.fine(name() + " has ended!");
+    	logger.fine(name() + " started " + config.getActualStartTime());
+    	logger.fine(name() + " ended " + config.getActualEndTime());
     }
 
     /**
@@ -249,12 +249,12 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     	
     	if (best == null) {
     		// There will be no best list if there is nothing left to schedule.
-            logger.info("SCHEDULING: "+name()+" nothing left to schedule. BestSB == null");
+            logger.fine("SCHEDULING: "+name()+" nothing left to schedule. BestSB == null");
     		return true;
     	}
     	
     	// Log the best list.
-    	logger.info("SCHEDULING: ** "+name() + ": " + best.toString());
+    	logger.fine("SCHEDULING: ** "+name() + ": " + best.toString());
         // create a message to correspond to this selectSB request
         // Submit the list to the operator to get the id of the best SB from 
         //the list
@@ -268,10 +268,10 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     		// Get response.
     		switch (config.getAction()) {
      		    case SchedulerConfiguration.CONTINUE:
-                    logger.info("SCHEDULING: continue");
+                    logger.fine("SCHEDULING: continue");
     			    return false;
         		case SchedulerConfiguration.STOP:
-                    logger.info("SCHEDULING: stop");
+                    logger.fine("SCHEDULING: stop");
         			return true;
     	    	case SchedulerConfiguration.FILLER:
     		    	logger.severe("SCHEDULING: "+name() + ": Invalid action response! Fillers "+
@@ -290,11 +290,11 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                         + config.getAction() + ")"); 
     	    }
     	} else {
-            logger.info("SCHEDULING: best sb presented to operator = "+best.getBestSelection());
+            logger.fine("SCHEDULING: best sb presented to operator = "+best.getBestSelection());
             //check if any sbs are currently running.
             SB[] sbs = config.getQueue().getRunning();
             if( sbs.length > 0 ){
-                logger.info("SCHEDULING: There's an SB running!");
+                logger.fine("SCHEDULING: There's an SB running!");
                 try {
                     Thread.sleep(config.getSleepTime() * 1000);
                 }catch(Exception e) {}
@@ -306,17 +306,17 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                 //TODO need a thread that waits for the operator's response..
                 String sbid = config.getOperator().selectSB(
                         best, m, config.getArrayName(), getId());
-                logger.info("SCHEDULING: Operator picked sb = "+sbid);
+                logger.fine("SCHEDULING: Operator picked sb = "+sbid);
         		// We've got somthing to schedule.
                 //SB selectedSB = config.getQueue().get(best.getBestSelection());
                 SB selectedSB = config.getQueue().get(sbid);
-                logger.info("SCHEDULING: get sb = "+sbid+" from queue");
+                logger.fine("SCHEDULING: get sb = "+sbid+" from queue");
                 if(selectedSB == null) {
                     logger.severe("SCHEDULING: problem getting sb = "+sbid+" from queue");
                     return true;
                 }
                 if(selectedSB.getStatus().isReady() ){ //&& selectedSB.getStartTime() == null) 
-                    logger.info("SCHEDULING: About to schedule sb = "+selectedSB.getId());
+                    logger.fine("SCHEDULING: About to schedule sb = "+selectedSB.getId());
                     //Check if its already running.
                     //times and status stuff done here coz Control obj doesn't have 
                     //have (or need) the whole queue.
@@ -348,12 +348,12 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     }
                     if(selection == -1) { //wasn't one of the ones selected to be best, 
                         //obviously in the queue (coz we just got it out) so send it to control
-                        logger.info("SCHEDULING: SB not one of the best ones, but it was selected!");
+                        logger.fine("SCHEDULING: SB not one of the best ones, but it was selected!");
       		            config.getControl().execSB(config.getArrayName(), selectedSB.getId());
                     }
       		        //config.getControl().execSB(config.getArrayName(), best);
                 } else {
-                    logger.info("SCHEDULING: SB is not ready to be executed.");
+                    logger.fine("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...
                 }
             } catch (Exception e) {
@@ -364,7 +364,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                 e.printStackTrace(System.out);
                 return true;
             }
-    		logger.info("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
+    		logger.fine("SCHEDULING: "+name() + ": executing " + best.getBestSelection());
     	}
 
     	return false;

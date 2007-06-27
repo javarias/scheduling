@@ -97,7 +97,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         //tell MS to startScheduling
         try {
             getMSRef();
-            logger.info("Creating DS Component!!!");
+            logger.fine("Creating DS Component!!!");
             schedulername = masterScheduler.createDynamicSchedulingComponent(arrayName);
             getDynamicSchedComponent();
             setCallbackInfo();
@@ -114,7 +114,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     private void setCallbackInfo() throws Exception {
        ResponseReceiver allSbResponse = new ResponseReceiver() {
             public void incomingResponse (Object x) {
-                logger.info("DS allSbResponse class: "+x.getClass().getName());
+                logger.fine("DS allSbResponse class: "+x.getClass().getName());
                 updateSBTableWithAllSBs((String[])x);
             }
             public void incomingException (Exception x) {
@@ -123,9 +123,9 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         };
        ResponseReceiver topSbResponse = new ResponseReceiver() {
             public void incomingResponse (Object x) {
-                logger.info("***************************");
-                logger.info("DS topSbResponse class: "+x.getClass().getName());
-                logger.info("***************************");
+                logger.fine("***************************");
+                logger.fine("DS topSbResponse class: "+x.getClass().getName());
+                logger.fine("***************************");
                 updateSBTableWithTopSBs((String[])x);
             }
             public void incomingException (Exception x) {
@@ -177,7 +177,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     }
 
     private void updateSBTableWithAllSBs(String[] s) {
-        logger.info("Responded with all SBs");
+        logger.fine("Responded with all SBs");
         try{
            setCallbackInfo();
         } catch(Exception e) {
@@ -187,7 +187,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     }
     
     private void updateSBTableWithTopSBs(String[] s) {
-        logger.info("Responded with list of top SBs");
+        logger.fine("Responded with list of top SBs");
         try{
             setCallbackInfo();
         } catch(Exception e) {
@@ -196,14 +196,14 @@ public class DynamicSchedTabController extends SchedulingPanelController {
         }
         getMSRef();
         SBLite[] topSBs = masterScheduler.getSBLite(s);
-        logger.info("number of top sbs = "+topSBs.length);
+        logger.fine("number of top sbs = "+topSBs.length);
         parent.updateTableWithSBList(topSBs);
         releaseMSRef();
     }
 
     public void respondToDS(String sbid) {
         try {
-            logger.info("DSComp is given sb = "+sbid);
+            logger.fine("DSComp is given sb = "+sbid);
             dsComp.selectSB(sbid);
         } catch(Exception e){
             logger.severe("SP Couldn't respond to DS: "+e.toString());
@@ -223,7 +223,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
 
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {
-    //    logger.info("SCHEDULING_PANEL: not doing anything with xml store notification event for now");
+    //    logger.fine("SCHEDULING_PANEL: not doing anything with xml store notification event for now");
     }
 
     class CheckArchiveEvent implements Runnable {

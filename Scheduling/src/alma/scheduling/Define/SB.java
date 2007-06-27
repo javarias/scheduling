@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.22 2007/05/15 15:52:22 sslucero Exp $
+ * @version $Id: SB.java,v 1.23 2007/06/27 22:24:10 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -268,9 +268,13 @@ public class SB implements ProgramMember {
 	
 	/**
 	 * Add an ExecBlock to this SB.
+     * Used in the execEnd method but since there is times when the to add an EB without
+     * the whole execEnd stuff this method is public. Mainly for use in initializing existing 
+     * project status' information on system startup with an EB that didn't have a proper 
+     * end time or state.
 	 * @param x The ExecBlock to be added.
 	 */
-	private void addExec(ExecBlock x) {
+	public void addExec(ExecBlock x) {
 		x.setProject(getProject());
 		x.setParent(this);
 		exec.add(x);

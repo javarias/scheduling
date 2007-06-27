@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.19 2007/03/19 13:37:22 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.20 2007/06/27 22:24:10 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -146,7 +146,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			config.errorEnd(msg,clock.getDateTime());
 			error(msg);
 		}
-        config.getLog().info("SCHEDULING: Interactive scheduler created");
+        config.getLog().fine("SCHEDULING: Interactive scheduler created");
 
 	}
 	
@@ -206,9 +206,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 	 * the PI in the interactive scheduling block. 
 	 */
 	public void login(String PI, String projId, SB interactiveSB) throws SchedulingException {
-        logger.info("id =" +interactiveSB.getProject().getId());
-        logger.info("PI =" +PI);
-        logger.info("PI of sb =" +interactiveSB.getProject().getPI());
+        logger.fine("id =" +interactiveSB.getProject().getId());
+        logger.fine("PI =" +PI);
+        logger.fine("PI of sb =" +interactiveSB.getProject().getPI());
 //		if (sessionStarted) {
 //			error("Cannot login.  A session is already underway.");
   //          return;
@@ -234,7 +234,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " started.";
 		//operator.send(msg, config.getArrayName());
-		logger.info(msg);
+		logger.fine(msg);
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		String msg = "Interactive session for project " + projectId + 
 			" with PI " + PI + " ended.";
 		//operator.send(msg, config.getArrayName());
-		logger.info(msg);
+		logger.fine(msg);
 		config.normalEnd(clock.getDateTime());
 	//	sessionStarted = false;
 		PI = null;
@@ -357,7 +357,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");
 		}
-        logger.info("INTERACTIVE_SCHEDULER: About to get "+sbId+" from queue");
+        logger.fine("INTERACTIVE_SCHEDULER: About to get "+sbId+" from queue");
 		//SB sb = queue.get(sbId);
 		if (sb == null) {
 			error("Cannot execute SB " + sbId + ". It does not exist.");
@@ -377,15 +377,13 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
             sb.setStartTime(clock.getDateTime());
         }
         sb.setRunning();
-//logger.info("############### SB's status = "+sb.getStatus().toString());
-  //      logger.info("############### SB's starttime = "+sb.getStatus().getStartTime());
-        logger.info("INTERACTIVE_SCHEDULER: Sending sb("+best.getBestSelection()+", status:"+sb.getStatus().toString()+") to control at time="+sb.getStatus().getStartTime());
+        logger.fine("INTERACTIVE_SCHEDULER: Sending sb("+best.getBestSelection()+", status:"+sb.getStatus().toString()+") to control at time="+sb.getStatus().getStartTime());
 		control.execSB(config.getArrayName(),best);
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been started.";
 		//operator.send(msg, config.getArrayName());
-		logger.info(msg);
+		logger.fine(msg);
 	}
 
     public void stop() throws SchedulingException {
@@ -420,9 +418,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 					" does not match the currently executing SB (" + tmp + ")");
 		}
         SB sb = queue.get(sbId);
-        logger.info("SCHEDULING: Before stop, sb status = "+sb.getStatus().toString());
+        logger.fine("SCHEDULING: Before stop, sb status = "+sb.getStatus().toString());
 		control.stopSB(config.getArrayName(),sbId);
-        logger.info("SCHEDULING: after stop, sb status = "+sb.getStatus().toString());
+        logger.fine("SCHEDULING: after stop, sb status = "+sb.getStatus().toString());
         //setting the sb status will be handled in the project manager eventually
         //but for now we set it here and disgard the exec block
         //TODO delete next 2 lines when control sends execblockendedevent in stop.
@@ -433,7 +431,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been stopped.";
 		//operator.send(msg, config.getArrayName());
-		logger.info(msg);
+		logger.fine(msg);
 	}
 
 	// Starting the science pipeline.

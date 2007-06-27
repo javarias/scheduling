@@ -103,7 +103,7 @@ public class ALMAQueuedScheduler
     }
 
     public void execute() throws ComponentLifecycleException{
-        logger.info("SCHEDULING: Queued Scheduler execute() ");
+        logger.fine("SCHEDULING: Queued Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
                     container.getDefaultComponent(
@@ -149,7 +149,7 @@ public class ALMAQueuedScheduler
     public void addSB(String sbid){
         try {
             sbQueue.add(sbid);
-            logger.info("QS_SCHEDULER: adding sb to queue");
+            logger.fine("QS_SCHEDULER: adding sb to queue");
             if(execStarted){
                 masterScheduler.addSBToQueue(sbid, schedulerId);
             }
@@ -192,7 +192,7 @@ public class ALMAQueuedScheduler
         //hmm do i need the sbids?
         for(int x=0; x < i.length; x++){
             if(sbid[x].equals(sbQueue.elementAt(i[x])) ) {
-                logger.info("QS: removing "+sbQueue.elementAt(i[x]));
+                logger.fine("QS: removing "+sbQueue.elementAt(i[x]));
                 sbQueue.removeElementAt(i[x]);
             } else {
                 logger.severe("no match when removing sb");
@@ -200,7 +200,7 @@ public class ALMAQueuedScheduler
         }
         //tell MS to tell scheduler to take these out of its queue.
         if(execStarted){
-            logger.info("QS: exec started, removing sbs from scheduler");
+            logger.fine("QS: exec started, removing sbs from scheduler");
             try {
                 masterScheduler.removeQueuedSBs(sbid, i, schedulerId);
             } catch(Exception e){

@@ -170,12 +170,12 @@ public class ALMAOperator implements Operator {
         }
         try {
             timer.join();
-            logger.info("SCHEDULING: timer joined! timeout reached?");
+            logger.fine("SCHEDULING: timer joined! timeout reached?");
         } catch(InterruptedException e) {
-            logger.info("SCHEDULING: timer was interrupted!");
+            logger.fine("SCHEDULING: timer was interrupted!");
             message.setReply(bestSBId);
         }
-        logger.info("SCHEDULING: best sb id = "+message.getReply());
+        logger.fine("SCHEDULING: best sb id = "+message.getReply());
         return message.getReply();
     }
 

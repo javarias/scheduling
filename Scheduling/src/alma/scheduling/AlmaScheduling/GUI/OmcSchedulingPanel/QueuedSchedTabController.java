@@ -228,7 +228,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     }
     
     public void receive(ExecBlockStartedEvent e){
-        logger.info("EXEC started event");
+        logger.fine("EXEC started event");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         currentSB = sbid;
@@ -248,7 +248,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     }
             
     public void receive(ExecBlockEndedEvent e){
-        logger.info("EXEC ended event");
+        logger.fine("EXEC ended event");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
         if(!doesSbBelong(sbid)){
@@ -256,7 +256,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             return;
         }
         SBLite sb = getSBLite(sbid);
-        logger.info("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
+        logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         String completion;
         switch(e.status.value()) {
             case 0:
@@ -283,9 +283,9 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     }
     
     public void receive(ASDMArchivedEvent e){
-        //logger.info("asdm archived event");
+        //logger.fine("asdm archived event");
         String sbid = e.workingDCId.schedBlock.entityId;
-        logger.info("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
+        logger.fine("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
         //System.out.println("got archived event: completion = "+completion);

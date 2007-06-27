@@ -80,7 +80,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 			config.errorEnd(msg,clock.getDateTime());
 			error(msg);
 		}
-        config.getLog().info("SCHEDULING: Queued Scheduler created");
+        config.getLog().fine("SCHEDULING: Queued Scheduler created");
 	}
 	
 	/**
@@ -100,7 +100,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	            config.errorEnd(msg,clock.getDateTime());
     			error(msg);
     		}
-            config.getLog().info("SCHEDULING: Queued Scheduler configuration set");
+            config.getLog().fine("SCHEDULING: Queued Scheduler configuration set");
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -160,20 +160,20 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
 		if (sbsNotDone == null || sbsNotDone.length == 0) {
 			//error("No SBs to execute");
-            logger.info("SCHEDULING: No sbs to execute");
+            logger.fine("SCHEDULING: No sbs to execute");
             return true;
 		}
         //String[] ids = queue.getAllReadyIds();
 		//if (ids == null) {
 			//error("No ready SBs to execute");
-            //logger.info("SCHEDULING: No sbs ready to execute");
+            //logger.fine("SCHEDULING: No sbs ready to execute");
             //return true;
 		//}
         String[] scores = new String[sbsNotDone.length];
         double[] d = new double[sbsNotDone.length];
-        logger.info("QS: creating bestSB with sbsnotdone size = "+sbsNotDone.length);
+        logger.fine("QS: creating bestSB with sbsnotdone size = "+sbsNotDone.length);
         for(int i=0; i < sbsNotDone.length; i++){
-            logger.info("QS: sb in list ="+sbsNotDone[i]);
+            logger.fine("QS: sb in list ="+sbsNotDone[i]);
         }
 		BestSB best = new BestSB (sbsNotDone, scores, d, d, d, clock.getDateTime());
         //TODO might be problem here not matching the sbsNotDone list
@@ -181,21 +181,21 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         if (sb == null) {
             return true;
         }
-        logger.info("QS: best selection sb = "+sb.getId());
+        logger.fine("QS: best selection sb = "+sb.getId());
         //TODO need to check that if there are more than one sbs in queue then selection 
         //     count needs to be increased.
         if(sb.getStatus().getStatus().equals("complete")){
-            logger.info("SCHEDULING: SB "+sb.getId()+" is completed.");
+            logger.fine("SCHEDULING: SB "+sb.getId()+" is completed.");
             return true;
         }
-        logger.info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        logger.info("start of execution");
-        logger.info("Queue size at start of executeSB = "+config.getQueue().size());
-        logger.info("SBs not done size at start of executeSB = "+sbsNotDone.length);
-        logger.info("QS: set current SB to "+sb.getId());
+        logger.fine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        logger.fine("start of execution");
+        logger.fine("Queue size at start of executeSB = "+config.getQueue().size());
+        logger.fine("SBs not done size at start of executeSB = "+sbsNotDone.length);
+        logger.fine("QS: set current SB to "+sb.getId());
 		config.startExecSB(sb.getId());
-        logger.info("QS: current SB should now be "+sb.getId());
-        logger.info("QS: confirmed ="+config.getCurrentSBId());
+        logger.fine("QS: current SB should now be "+sb.getId());
+        logger.fine("QS: confirmed ="+config.getCurrentSBId());
 		if (!sb.getStatus().isStarted()) {
 			config.decrementSbsNotStarted();
 		}
@@ -205,15 +205,15 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         try {
             sb.setRunning();
         } catch(Exception e) {
-            logger.info("SCHEDULING: Cannot set sb to running state.");
-            logger.info(e.toString());
+            logger.fine("SCHEDULING: Cannot set sb to running state.");
+            logger.fine(e.toString());
             return true;
         }
 		control.execSB(config.getArrayName(),best);
         takeIdFromSBsNotDone(sb.getId());
-        logger.info("SCHEDULING: Queued scheduler execute # "+execCount);
+        logger.fine("SCHEDULING: Queued scheduler execute # "+execCount);
         execCount++;
-        logger.info("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        logger.fine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         return false;
 	}
 
@@ -227,8 +227,8 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         return sb;
     }
     private void takeIdFromSBsNotDone(String id) {
-        logger.info("QS: Take sb ("+id+") out of list to run");
-        logger.info("inital list len = "+sbsNotDone.length);
+        logger.fine("QS: Take sb ("+id+") out of list to run");
+        logger.fine("inital list len = "+sbsNotDone.length);
         String[] newIdList= new String[sbsNotDone.length -1];
         boolean flag=false;
         int ctr=0;
@@ -246,11 +246,11 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             sbsNotDone = new String[newIdList.length];
             sbsNotDone = newIdList;
         }
-        logger.info("new list len = "+sbsNotDone.length);
+        logger.fine("new list len = "+sbsNotDone.length);
     }
 
     public void addSB(SB sb){
-        logger.info("QueuedScheduler: queued size before = "+config.getQueue().size());
+        logger.fine("QueuedScheduler: queued size before = "+config.getQueue().size());
         config.getQueue().add(sb);
         ArrayList<String> all = new ArrayList<String>();
         for(int i=0; i < sbsNotDone.length; i++){
@@ -259,35 +259,35 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         all.add(sb.getId());
         sbsNotDone = new String[all.size()];
         sbsNotDone = all.toArray(sbsNotDone);
-        logger.info("QueuedScheduler: queued size after = "+config.getQueue().size());
-        logger.info("QueuedScheduler: SB added");
+        logger.fine("QueuedScheduler: queued size after = "+config.getQueue().size());
+        logger.fine("QueuedScheduler: SB added");
     }
 
     public synchronized void removeSbAt(SB sb, int i){
         try{
             //take sb from queue and from list of sbs not done if its in there.
-            logger.info("SCHEDULER: removing sb "+sb.getId());
+            logger.fine("SCHEDULER: removing sb "+sb.getId());
             ArrayList<String> all = new ArrayList<String>();
             for(int x=0; x < sbsNotDone.length; x++){
                 all.add(sbsNotDone[x]);
             }
-            logger.info("sbsNotDone size before remove is "+sbsNotDone.length);
-            logger.info("all's size before remove is "+all.size());
+            logger.fine("sbsNotDone size before remove is "+sbsNotDone.length);
+            logger.fine("all's size before remove is "+all.size());
             // need to modify the sbsNotDone with execCount because that list decreases as
             // sbs are executed.
             int j= i-execCount;
             if(all.get(j).equals(sb.getId())){
                 all.remove(j);
-                logger.info("took out "+sb.getId()+" from all");
+                logger.fine("took out "+sb.getId()+" from all");
                 config.getQueue().remove(sb.getId(), i);
-                logger.info("QueuedScheduler: queued size after sb removed. = "+config.getQueue().size());
+                logger.fine("QueuedScheduler: queued size after sb removed. = "+config.getQueue().size());
             } else {
-                logger.info("QueuedScheduler: no match, nothing removed.");
+                logger.fine("QueuedScheduler: no match, nothing removed.");
             }
-            logger.info("all's size after remove is "+all.size());
+            logger.fine("all's size after remove is "+all.size());
             sbsNotDone = new String[all.size()];
             sbsNotDone = all.toArray(sbsNotDone);
-            logger.info("sbsNotDone size after remove is "+sbsNotDone.length);
+            logger.fine("sbsNotDone size after remove is "+sbsNotDone.length);
     } catch(Exception e){
             e.printStackTrace();
         }
@@ -315,8 +315,8 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 		control.stopSB(config.getArrayName(),tmp);
 		//control.stopSB(config.getArrayName(),sbId);
         // check that its set to not running in config
-        //logger.info("SB "+sbId+" stopped, another should start if there are more");
-        logger.info("SB "+tmp+" stopped, another should start if there are more");
+        //logger.fine("SB "+sbId+" stopped, another should start if there are more");
+        logger.fine("SB "+tmp+" stopped, another should start if there are more");
 	}
 
     public void run() {

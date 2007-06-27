@@ -77,7 +77,7 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
     }
 
     public void exit(){
-        logger.info("Calling exit in ExecFrameForSchedulingPanel");
+        logger.fine("Calling exit in ExecFrameForSchedulingPanel");
         mainSchedPanel.exit();
     }
 

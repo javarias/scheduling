@@ -60,18 +60,21 @@ public class CreateArrayController extends SchedulingPanelController {
     public void secondSetup(PluginContainerServices cs){
         super.onlineSetup(cs);
         if(cs == null) {
-            logger.info("**************** probelm ");
+            logger.fine("**************** probelm ");
         }
     }
 
     protected void updateChessboardWithALMANames(){
-        askTMCDBForRealAntennaInfo();
+        connectToTMCDB();
         createOfflineChessboards();
     }
 
-    private void askTMCDBForRealAntennaInfo(){ 
+    private void connectToTMCDB(){ 
        try {
-            tmcdb = TMCDBComponentHelper.narrow(container.getDefaultComponent("IDL:alma/TMCDB/TMCDBComponent:1.0"));
+           if(tmcdb == null) {
+                tmcdb = TMCDBComponentHelper.narrow(
+                        container.getDefaultComponent("IDL:alma/TMCDB/TMCDBComponent:1.0"));
+           }
         } catch (Exception e) {
             //TODO do more here
             e.printStackTrace();
@@ -82,7 +85,7 @@ public class CreateArrayController extends SchedulingPanelController {
         try {
             control = alma.Control.ControlMasterHelper.narrow(
                     container.getComponentNonSticky("CONTROL/MASTER"));
-            logger.info("SCHEDULING_PANEL: Got control system in array creator");
+            logger.fine("SCHEDULING_PANEL: Got control system in array creator");
         } catch(Exception e){
             e.printStackTrace();
             logger.severe("SCHEDULING_PANEL: Error getting components from array creator");
@@ -120,8 +123,12 @@ public class CreateArrayController extends SchedulingPanelController {
                 System.out.print("Logger null, tried to connect to TMCDB but failed");
                 return;
             }
-            logger.severe("SP: CANNOT CONNECT TO TMCDB");
-            return;
+            try {
+                connectToTMCDB();
+            } catch (Exception e) {
+                logger.severe("SP: CANNOT CONNECT TO TMCDB");
+                return;
+            }
         }
         StartupAntennaIDL[] startupInfo ;
         try {
@@ -130,7 +137,7 @@ public class CreateArrayController extends SchedulingPanelController {
             String[] antennaNames = new String[startupInfo.length];
             for(int i=0; i < startupInfo.length; i++){
                 antennaNames[i] = startupInfo[i].antennaName;
-                logger.info("Antenna name from CTRL: "+ antennaNames[i]);
+                logger.fine("Antenna name from CTRL: "+ antennaNames[i]);
             }
             map12 = alma.common.gui.chessboard.MapToNumber.createMapping(antennaNames,"twelveMeter");
             map7 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(12);
@@ -173,7 +180,7 @@ public class CreateArrayController extends SchedulingPanelController {
         String[] foo1 = new String[generic1.size()];
         foo1 = (String[])generic1.values().toArray(foo1); 
         for(int i=0; i < foo1.length; i++){
-            entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, (String)foo1[i],"not connect to TMCDB yet");
+            entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, (String)foo1[i],"not connected to TMCDB yet");
         }
         String[] foo2 = new String[generic2.size()];
         foo2 = (String[])generic2.values().toArray(foo2); 
@@ -206,7 +213,7 @@ public class CreateArrayController extends SchedulingPanelController {
         try {
             getControlRef();
             antennas= control.getAvailableAntennas();
-            logger.info("Got antennas from CONTROL:");
+            logger.fine("Got antennas from CONTROL:");
             releaseControlRef();
             String tmpName;
             //for now create an array of 'offline' entries
@@ -242,9 +249,9 @@ public class CreateArrayController extends SchedulingPanelController {
                     break;
                 }
             }
-            logger.info("AntennaName = "+antennas[i]);
+            logger.fine("AntennaName = "+antennas[i]);
         }
-        logger.info("Antennas to create array with = "+antennas.length);
+        logger.fine("Antennas to create array with = "+antennas.length);
         String arrayName = null;
         getMSRef();
         try {
