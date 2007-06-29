@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.46 2007/06/29 17:23:01 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.47 2007/06/29 17:25:10 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -444,11 +444,11 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             }
             if(e.status == alma.Control.Completion.SUCCESS) {
                 eb.setEndTime(endEb, Status.COMPLETE);
-                logger.info("SCHEDULING: SB("+sb.getId()+") completed successfuly on array "+
+                logger.info("SCHEDULING: SB("+eb.getParent().getId()+") completed successfuly on array "+
                         eb.getArrayName());
             } else {
                 eb.setEndTime(endEb, Status.ABORTED);// need to make a failed thing in Status
-                logger.info("SCHEDULING: SB("+sb.getId()+") was aborted on array "+ eb.getArrayName());
+                logger.info("SCHEDULING: SB("+eb.getParent().getId()+") was aborted on array "+ eb.getArrayName());
             }
             eb.setTimeOfUpdate(endEb);
             //send out an end session event
