@@ -69,7 +69,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.84 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.85 2007/07/10 14:24:53 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -278,7 +278,7 @@ public class ALMAProjectManager extends ProjectManager {
             }catch (Exception e){ 
 		        logger.severe(e.toString());
     	    }
-            updateProjectStatus(eb, completed.getStatus());
+            updateSBStatusInProjectStatus(eb, completed.getStatus());
             return;
         }
         
@@ -300,9 +300,27 @@ public class ALMAProjectManager extends ProjectManager {
             logger.fine("#################################");
         }
         logger.fine("SCHEDULING: sb status = "+completed.getStatus().getStatus());
-        updateProjectStatus(eb, completed.getStatus());
+        updateSBStatusInProjectStatus(eb, completed.getStatus());
         }catch(Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setProjectComplete(Project p){
+        //get all the SBs in this project
+        boolean complete = false;
+        SB[] sbs = p.getAllSBs();
+        //check status of them all
+        for(int i=0;i <  sbs.length; i++){
+            if(sb.getStatus().isComplete()){
+                complete = true;
+            } else {
+                complete = false;
+            }
+        }
+        //if all are set to be complete then set project as complete.
+        if(complete) {
+            
         }
     }
 
@@ -319,7 +337,7 @@ public class ALMAProjectManager extends ProjectManager {
       * 
       * 
       */
-    public synchronized void updateProjectStatus(ExecBlock eb, Status sbStatus) {
+    public synchronized void updateSBStatusInProjectStatus(ExecBlock eb, Status sbStatus) {
         //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
@@ -865,7 +883,6 @@ public class ALMAProjectManager extends ProjectManager {
         Program prog = ppr.getProgram();
         Project proj = prog.getProject();
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
-        //archive.updateProjectStatus(ps);
 
         logger.fine("SCHEDULING: Starting Pipeline");
         String pprString = archive.getPPRString(ps, ppr.getId());

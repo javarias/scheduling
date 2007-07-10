@@ -28,7 +28,6 @@ public class SPAntennaStatus implements ChessboardStatus {
 			this.bgColor = Color.green;
 		} else if(description.equals(OFFLINE_STRING)) {
 			this.bgColor = Color.lightGray;
-		//	this.bgColor = Color.black;
 		} 
 	}
 	
@@ -109,6 +108,13 @@ public class SPAntennaStatus implements ChessboardStatus {
 		
 		return SPAntennaStatus.values;
 	}
+    
+    public String getName(){
+        return "";
+    }
+    public Color getColor(){
+        return null;
+    }
 }
 
 
