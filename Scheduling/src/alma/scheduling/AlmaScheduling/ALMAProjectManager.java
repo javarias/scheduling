@@ -69,7 +69,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.85 2007/07/10 14:24:53 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.86 2007/07/11 13:22:42 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -306,6 +306,7 @@ public class ALMAProjectManager extends ProjectManager {
         }
     }
 
+    /*
     private void setProjectComplete(Project p){
         //get all the SBs in this project
         boolean complete = false;
@@ -322,7 +323,7 @@ public class ALMAProjectManager extends ProjectManager {
         if(complete) {
             
         }
-    }
+    }*/
 
     /**
       *
@@ -1538,4 +1539,6 @@ public class ALMAProjectManager extends ProjectManager {
         //start a new webpage for project with uid
         //email PI with webpage address
     }
+
+
 }
