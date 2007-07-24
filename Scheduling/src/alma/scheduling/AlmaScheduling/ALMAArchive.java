@@ -74,7 +74,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.74 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.75 2007/07/24 20:49:32 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -731,11 +731,11 @@ public class ALMAArchive implements Archive {
     public synchronized void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
         try {
             XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
-            //logger.info("SCHEDULING: updated PS: "+xml.xmlString);
+            logger.fine("SCHEDULING: updated PS: "+xml.xmlString);
             logger.fine("SCHEDULING: About to retrieve Project Status with uid "+ps.getProjectStatusEntity().getEntityId());
             XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
             xml2.xmlString = xml.xmlString;
-            //logger.info("About to save PS: "+xml2.xmlString);
+            logger.fine("About to save PS: "+xml2.xmlString);
             archOperationComp.update(xml2);
         } catch(Exception e){
             logger.severe("SCHEDULING: error updating PS in archive, "+e.toString());

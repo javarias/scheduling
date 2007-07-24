@@ -108,7 +108,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.15 2006/09/26 18:49:49 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.16 2007/07/24 20:49:32 sslucero Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -211,7 +211,8 @@ public class SchedulerConfiguration extends TaskControl {
         if (sb == null)
             throw new IllegalArgumentException ("The SB with id " + sbId +
                     "is not in the configuration queue.");
-        if (sb.getStatus().isComplete()) {
+        //if (sb.getStatus().isComplete()) {
+        if (sb.getStatus().isObserved()) {
             incrementSbsCompleted();
         } else if (sb.getStatus().isAborted()) {
             incrementSbsFailed();

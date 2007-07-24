@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * that can be accessed and updated by multiple threads, viz., the 
  * MasterScheduler and Scheduler objects.
  * 
- * @version $Id: SBQueue.java,v 1.8 2007/03/19 13:37:22 sslucero Exp $
+ * @version $Id: SBQueue.java,v 1.9 2007/07/24 20:49:32 sslucero Exp $
  * @author Allen Farris
  */
 public class SBQueue {
@@ -235,6 +235,19 @@ public class SBQueue {
 		z = (SB[])y.toArray(z);
 		return z;
 	}
+	public synchronized SB[] getObserved() {
+		SB x = null;
+		ArrayList y = new ArrayList ();
+		for (int i = 0; i < queue.size(); ++i) {
+			x = (SB)queue.get(i);
+			if (x.getStatus().isObserved()) {
+				y.add(x);
+			}
+		}
+		SB[] z = new SB [y.size()];
+		z = (SB[])y.toArray(z);
+		return z;
+    }
 
 	/**
 	 * Get all SBs in the queue whose status is ABORTED.

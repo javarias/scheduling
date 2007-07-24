@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.20 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.21 2007/07/24 20:49:32 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -353,6 +353,13 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
         String sbId = sb.getId();
         //*****************
         config.getQueue().add(sb); //hack!
+        if(sb.getNumberExec() >= sb.getMaximumNumberOfExecutions()){
+            logger.warning("SCHEDULING: SB is complete. It can not be executed again.");
+            // NOTE: If this text is ever changed the 'if' statement in ALMAMasterScheduler
+            // method executeInteractiveSB needs to be updated otherwise exception won't 
+            // as intended!
+            throw new SchedulingException("SB has reached its maximum execution count.");
+        }
         //*****************
 		if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");

@@ -36,6 +36,7 @@ import alma.SchedulingExceptions.InvalidObjectEx;
 import alma.SchedulingExceptions.UnidentifiedResponseEx;
 import alma.SchedulingExceptions.SBExistsEx;
 import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidObjectEx;
 import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
@@ -199,18 +200,20 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     }*/
 
     public void executeSB(String sbId) 
-        throws InvalidOperationEx, NoSuchSBEx {
+        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
 
         try {
             logger.fine("sb id: "+sbId);
             logger.fine("scheduler id: "+schedulerId);
             masterScheduler.executeInteractiveSB(sbId, schedulerId);
-        } catch(Exception e){
-            logger.severe("SCHEDULING: executeSB in IS_COMP: error = "+e.toString());
-            e.printStackTrace();
-            InvalidOperation e1 = new InvalidOperation("executeSB",e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+        } catch(InvalidOperationEx e){
+            logger.severe("SCHEDULING: executeSB in IS_COMP: error = "+e.getMessage());
+            //e.printStackTrace();
+            //InvalidOperation e1 = new InvalidOperation("executeSB",e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e);
             throw e2.toInvalidOperationEx();
+        } catch (CannotRunCompleteSBEx e) {
+            throw e;
         }
     }
 

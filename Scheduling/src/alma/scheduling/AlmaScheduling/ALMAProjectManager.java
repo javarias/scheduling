@@ -69,7 +69,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.86 2007/07/11 13:22:42 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.87 2007/07/24 20:49:32 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -261,7 +261,8 @@ public class ALMAProjectManager extends ProjectManager {
       * its status to complete. If not set it back to ready.
       */
     public void setSBComplete(ExecBlock eb) {
-        try {
+      //  try {
+        ProjectStatus ps;
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
         logger.fine("##########################");
@@ -278,18 +279,27 @@ public class ALMAProjectManager extends ProjectManager {
             }catch (Exception e){ 
 		        logger.severe(e.toString());
     	    }
-            updateSBStatusInProjectStatus(eb, completed.getStatus());
+            ps = updateSBStatusInProjectStatus(eb, completed.getStatus());
+            //ps = updateObsUnitSetStatusStats(completed.getId(), eb, ps);
+            try {
+                psQueue.updateProjectStatus(ps);
+                archive.updateProjectStatus(ps);
+            } catch(Exception e) {
+                logger.severe("SCHEDULING: Could not update project status in archive!");
+                e.printStackTrace(System.out);
+            }
             return;
         }
         
-        if( (completed.getNumberExec()) > completed.getMaximumNumberOfExecutions()  ){
+        if( completed.getNumberExec() > completed.getMaximumNumberOfExecutions()  ){
             logger.fine("###########set to complete####");
             logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
-            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.COMPLETE);
+            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.OBSERVED);
             logger.fine("SCHEDULING: Setting end time for "+eb.getId());
             logger.fine("SCHEDULING: Total# executions done = "+completed.getNumberExec());
             logger.fine("SCHEDULING: Total allowed executions = "+completed.getMaximumNumberOfExecutions());
             logger.fine("#################################");
+            //update ProjectStatus to say this SB is completed/observed
         } else { //set it to ready
             logger.fine("##########set to ready###########");
             logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
@@ -300,9 +310,16 @@ public class ALMAProjectManager extends ProjectManager {
             logger.fine("#################################");
         }
         logger.fine("SCHEDULING: sb status = "+completed.getStatus().getStatus());
-        updateSBStatusInProjectStatus(eb, completed.getStatus());
-        }catch(Exception e) {
-            e.printStackTrace();
+        ps = updateSBStatusInProjectStatus(eb, completed.getStatus());
+        if(completed.getStatus().getStatus().equals("observed")){
+            ps = updateObsUnitSetStatusStats(completed.getId(),eb, ps);
+        }
+        try {
+            psQueue.updateProjectStatus(ps);
+            archive.updateProjectStatus(ps);
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Could not update project status in archive!");
+            e.printStackTrace(System.out);
         }
     }
 
@@ -326,6 +343,117 @@ public class ALMAProjectManager extends ProjectManager {
     }*/
 
     /**
+      * Right now just setting the number of sbs passed/failed. Eventually
+      * we'll worry about whether the OUS passed...
+      * This should be called AFTER the SBStatus has been updated!
+      * Also updates the SB/Program/Project objects.
+      */
+    private synchronized ProjectStatus updateObsUnitSetStatusStats(String sb_id, 
+                                                                   ExecBlock eb,
+                                                                   ProjectStatus ps) {
+        //get project status
+        try {
+            logger.fine("SCHEDULING: about to update ObsUnitSetStatus for sb "+sb_id);
+            //top level obs unit set which is actually the ObsProgram.
+            //check if sb belongs here
+            SB sb = sbQueue.get(sb_id);
+            Program p = sb.getParent();
+            ObsUnitSetStatusT set = ps.getObsProgramStatus();
+            if(isSbInThisSet(sb_id, set)){
+                if(eb.getStatus().getStatus().equals("aborted")){
+                    int x = set.getNumberSBsFailed();
+                    set.setNumberSBsFailed(x + 1);
+                    p.setNumberSBsFailed(x +1);
+                    logger.fine("aborted; x = "+ x+1);
+                }else if(eb.getStatus().getStatus().equals("complete")){
+                    int x = set.getNumberSBsCompleted();
+                    set.setNumberSBsCompleted(x + 1);
+                    p.setNumberSBsCompleted(x +1);
+                    logger.fine("completed; x = "+ x+1);
+                } else {
+                    logger.warning(
+                        "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid"+
+                        eb.getStatus().getStatus());
+                }
+            } else {
+
+                ObsUnitSetStatusTChoice choice = set.getObsUnitSetStatusTChoice(); 
+                //ObsUnitSet
+                ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
+                findSet(sets, sb_id, eb, set, p);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ps;
+    }
+
+    /**
+      * A recursive function to go through the tree of obs unit set status' to find the
+      * right obs unit set status which contains the sb status, there fore updating the
+      * # sb failed/completed field. Also updates the SB/Program/Project objects.
+      */
+    private synchronized void findSet(ObsUnitSetStatusT[] sets, String id, 
+                                      ExecBlock eb, ObsUnitSetStatusT parent, Program p){
+        try {
+        logger.fine("SCHEDULING: finding set for sb "+id);
+        for(int i=0; i < sets.length; i++){
+            if(isSbInThisSet(id, sets[i])){
+                //System.out.println("&&&&&&&&&& STATUS = "+eb.getStatus().getStatus());
+                if(eb.getStatus().getStatus().equals("aborted")){
+                    int x = sets[i].getNumberSBsFailed();
+                    sets[i].setNumberSBsFailed(x + 1);
+                    int y = parent.getNumberSBsFailed();
+                    parent.setNumberSBsFailed(y + 1);
+                    logger.fine("aborted; sb ct = "+ x+1);
+                    logger.fine("aborted; parent ct = "+ y+1);
+                }else if(eb.getStatus().getStatus().equals("complete")){
+                    int x = sets[i].getNumberSBsCompleted();
+                    int y = parent.getNumberSBsCompleted();
+                    sets[i].setNumberSBsCompleted(x+1);
+                    parent.setNumberSBsCompleted(y+1);
+                    logger.fine("completed; sb ct = "+ x+1);
+                    logger.fine("completed; parent ct = "+ y+1);
+                } else {
+                    logger.warning(
+                        "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid"+
+                        eb.getStatus().getStatus());
+                }
+                return;
+            } else {
+                logger.fine("SCHEDULING: sb not in set, trying next level");
+            }
+        }
+        logger.fine("SCHEDULING: sets length = "+sets.length);
+        for(int i=0;i< sets.length; i++){
+            logger.fine("SCHEDULING: wasn't there trying again for sb "+id);
+            ObsUnitSetStatusTChoice choice = sets[i].getObsUnitSetStatusTChoice(); 
+            ObsUnitSetStatusT[] sets2 = choice.getObsUnitSetStatus();
+            findSet(sets2, id, eb, sets[i], p);
+        }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+      * A method which checks if the given sb_id is in the given obs unit set status.
+      */
+    private synchronized boolean isSbInThisSet(String sb_id, ObsUnitSetStatusT set) {
+        ObsUnitSetStatusTChoice c = set.getObsUnitSetStatusTChoice();
+        if (c.getSBStatusCount() == 0){
+            return false;
+        } else {
+            SBStatusT[] sbs = c.getSBStatus();
+            for(int i=0; i < sbs.length; i++){
+                if(sbs[i].getSchedBlockRef().getEntityId().equals(sb_id)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
       *
       */
     public void removeCompletedProjectFromQueue(String proj_id){
@@ -334,11 +462,8 @@ public class ALMAProjectManager extends ProjectManager {
 
     
     /**
-      * 
-      * 
-      * 
       */
-    public synchronized void updateSBStatusInProjectStatus(ExecBlock eb, Status sbStatus) {
+    public synchronized ProjectStatus updateSBStatusInProjectStatus(ExecBlock eb, Status sbStatus) {
         //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
@@ -355,12 +480,6 @@ public class ALMAProjectManager extends ProjectManager {
         //ids[0] = ps.getProjectStatusEntity().getEntityId(); //for pipeline back in ALMAReceiveEvent
         logger.finest("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
 
-        /**
-          * For R2 there is the assumption that there is only one SB inside one ObsUnitSet
-          * which is inside one ObsProgram.
-          * Need something recursive here!
-          */
-        
         //top level obs unit set which is actually the ObsProgram.
         ObsUnitSetStatusTChoice choice = ps.getObsProgramStatus().getObsUnitSetStatusTChoice(); 
         //ObsUnitSet
@@ -376,26 +495,8 @@ public class ALMAProjectManager extends ProjectManager {
         }
         sbs = new SBStatusT[foo.size()];
         sbs = foo.toArray(sbs);
-        //System.out.println("SCHED: total list of SBs in PS = "+sbs.length);
-        
-       // System.out.println("SCHED: About to get sbstatus for sb "+sb.getId());
         SBStatusT status = getSBStatusMatch(sb, sbs);
-        ///Temporary
-        /*try {
-            XmlEntityStruct xml = entitySerializer.serializeEntity(ps);
-            System.out.println(xml.xmlString);
-        }catch(Exception e){
-            e.printStackTrace();
-        }*/
         addExecStatus(eb, status);
-        ///Temporary
-       /* try {
-            XmlEntityStruct xml = entitySerializer.serializeEntity(ps);
-            System.out.println(xml.xmlString);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        */
         try {
         logger.fine("SCHEDULING: SB's status is "+sb.getStatus().getStatus());
         StatusT stat = status.getStatus();
@@ -412,21 +513,23 @@ public class ALMAProjectManager extends ProjectManager {
         } else if (sbStatus.getStatus().equals("complete")){
             stat.setState(StatusTStateType.COMPLETE);
             stat.setEndTime(sb.getStatus().getEndTime().toString());
+        } else if (sbStatus.getStatus().equals("observed")){
+            stat.setState(StatusTStateType.OBSERVED);
+            stat.setEndTime(sb.getStatus().getEndTime().toString());
+        } else if (sbStatus.getStatus().equals("processed")){
+            stat.setState(StatusTStateType.PROCESSED);
+            stat.setEndTime(sb.getStatus().getEndTime().toString());
+        } else if (sbStatus.getStatus().equals("canceled")){
+            stat.setState(StatusTStateType.CANCELED);
+            stat.setEndTime(sb.getStatus().getEndTime().toString());
         }
         status.setStatus(stat);
         logger.fine("SCHEDULING: SBStatus's status is "+status.getStatus().toString());
         logger.fine("SCHEDULING: got "+sbs.length+" sb status' in this PS");
-        try {
-            psQueue.updateProjectStatus(ps);
-            archive.updateProjectStatus(ps);
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: Could not update project status in archive!");
-            e.printStackTrace(System.out);
-        }
         } catch(Exception e){
             e.printStackTrace();
         }
-        //return ids;
+        return ps;
     }
 
     private SBStatusT getSBStatusMatch(SB sb, SBStatusT[] allSBs) {
@@ -454,6 +557,7 @@ public class ALMAProjectManager extends ProjectManager {
         StatusTStateType state;
         if(eb.getStatus().getStatus().equals("complete")){
             state = StatusTStateType.COMPLETE;
+            //state = StatusTStateType.OBSERVED;
         }else if( eb.getStatus().getStatus().equals("aborted") ) {
             state = StatusTStateType.ABORTED;
         } else {
@@ -461,14 +565,12 @@ public class ALMAProjectManager extends ProjectManager {
         }
         execStatus.setState(state);
         es.setStatus(execStatus);
-        //System.out.println("SBStatus has "+sbStatus.getExecStatus().length+" exec status', adding one more.");
         sbStatus.addExecStatus(es);
-        //System.out.println("SBStatus now has "+sbStatus.getExecStatus().length+" exec status'");
     }
 
  
      //TODO: Rename this method.
-    public Vector<SBStatusT> parseObsUnitSetStatus(ObsUnitSetStatusT set,Vector v) {
+    public Vector<SBStatusT> parseObsUnitSetStatus(ObsUnitSetStatusT set, Vector v) {
         logger.finest("SCHEDULING: Set PartID = "+set.getEntityPartId());
         SBStatusT[] sbs = null;
         ObsUnitSetStatusT[] obs = null;
@@ -476,7 +578,6 @@ public class ALMAProjectManager extends ProjectManager {
             logger.finest("SCHEDULING: more than one obs unit set status in PS");
             obs = set.getObsUnitSetStatusTChoice().getObsUnitSetStatus();
             for(int i=0; i< obs.length; i++) {
-              //  sbs = parseObsUnitSetStatus(obs[i], v);
                 v = parseObsUnitSetStatus(obs[i], v);
             }
         }
@@ -486,13 +587,7 @@ public class ALMAProjectManager extends ProjectManager {
                 v.add(sbs[i]);
             }
         }
-        //System.out.println("SCHED: sb vector now = "+ v.size());
-        //System.out.println("SCHED: returning "+sbs.length+" sb status'");
-        //for(int i=0;i< sbs.length; i++){
-        //    System.out.println("SCHED: in queue = "+sbs[i].getSchedBlockRef().getEntityId());
-        //}
         return v;
-        //return sbs;
     }
 
     /**

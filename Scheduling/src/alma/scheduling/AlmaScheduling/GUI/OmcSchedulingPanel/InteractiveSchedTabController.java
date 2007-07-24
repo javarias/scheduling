@@ -31,6 +31,7 @@ import alma.scheduling.ProjectLite;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.Define.*;
+import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.acs.nc.Consumer;
 import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
@@ -160,7 +161,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
 
-    public synchronized void executeSB(String id) throws SchedulingException {
+    public synchronized void executeSB(String id) 
+        throws SchedulingException, CannotRunCompleteSBEx {
         try{
             logger.fine("IS: Sending sb ("+id+") to be executed");
             currentSBId = id;
@@ -169,6 +171,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             scheduler.startSession(project.piName, project.uid);
             scheduler.executeSB(id);
             scheduler.setCurrentSB(id);
+        }catch(CannotRunCompleteSBEx e){
+            throw e;
         }catch( Exception e){
             throw new SchedulingException (e);
         }

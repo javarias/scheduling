@@ -35,6 +35,7 @@ import javax.swing.table.*;
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 
 public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
     //private String schedulerName;
@@ -299,10 +300,14 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     //setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
                 }
                 //check if a sb has been selected.
+            } catch(CannotRunCompleteSBEx e){
+                logger.severe("SCHEDULING_PANEL: Error running SB, its complete");
+                showErrorPopup("This SB has reached its max execution count.", "executeSB");
             }catch(Exception e){
                 e.printStackTrace();
                 logger.severe("SCHEDULING_PANEL: Error starting a SB");
-                showErrorPopup(e.toString()+", Try destroying the array and starting again", "executeSB");
+                showErrorPopup(e.toString()+", "+e.getMessage(), "executeSB");
+                //showErrorPopup(e.toString()+", Try destroying the array and starting again", "executeSB");
             }
         }
     }

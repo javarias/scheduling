@@ -77,7 +77,7 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.52 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.53 2007/07/24 20:49:32 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -479,6 +479,13 @@ public class ProjectUtil {
 		program.setTimeOfCreation(now);
 		program.setTimeOfUpdate(now);
 		program.setParent(parent);
+        try{
+            program.setNumberSBsCompleted(ous.getNumberSBsCompleted());
+        } catch(Exception e){}// will throw exception if not set, not a problem
+        try{
+            program.setNumberSBsFailed(ous.getNumberSBsFailed());
+        } catch(Exception e){}// will throw exception if not set, not a problem
+        
 		// We get SciPipelineRequest and Sessions from the ProjectStatus. 
         //TAC priority == scientific priority???
         int tac = set.getObsUnitControl().getTacPriority();
@@ -587,14 +594,9 @@ public class ProjectUtil {
                     e.printStackTrace();
                 }
 			    if(hasStatus){
-             //       System.out.println("SB Stat ct ="+sbStats.length);
-              //      for(int j=0; j < sbStats.length; j++){
-                        execs = sbStats[i].getExecStatus();
-                        sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
-                        memberSB = assignExecStatusToSB(memberSB, sbrefid, execs);
-                        //System.out.println("returned: SB ("+memberSB.getId()+") has "+
-                                //memberSB.getExec().length+" execs");
-               //     }
+                    execs = sbStats[i].getExecStatus();
+                    sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
+                    memberSB = assignExecStatusToSB(memberSB, sbrefid, execs);
                 }
 				program.addMember(memberSB);
 			}
@@ -669,7 +671,6 @@ public class ProjectUtil {
     }
 
     static private SB assignExecStatusToSB(SB sb, String sbid, ExecStatusT[] execs) {
-        //System.out.println("About to assign exec status' to sb");
         if(sbMatches(sb, sbid)){
             if(execs.length < 1){
                 return sb;
@@ -677,25 +678,19 @@ public class ProjectUtil {
             ExecStatusT stat;
             ExecBlock eb;
             StatusT e_status;
-            //System.out.println("Number of Execs in "+sbid+" = "+execs.length);
             for(int i=0; i <  execs.length; i++){
                 stat = execs[i];
                 eb = new ExecBlock(stat.getExecBlockRef().getExecBlockId(), stat.getArrayName());
                 try {
                     eb.setStartTime(new DateTime(stat.getStatus().getStartTime()));
                 } catch(Exception e) {
-                    //e.printStackTrace();
                     eb.setStartTime(new DateTime(stat.getTimeOfCreation()));
                 }
                 e_status = stat.getStatus();
                 try {
                     eb.setEndTime(new DateTime(e_status.getEndTime()), e_status.getState().getType());
                 } catch(Exception e) { 
-                    //eb.setEndTime(new DateTime(stat.getTimeOfUpdate()), e_status.getState().getType());
                 }
-                //    System.out.println("Adding EB("+eb.getExecId()+") to Sb("+sb.getId()+") with execEnd");
-                //    sb.execEnd(eb,new DateTime(stat.getTimeOfUpdate()),e_status.getState().getType() );
-                //    System.out.println("Adding EB("+eb.getExecId()+") to Sb("+sb.getId()+") with addExec");
                 try {
                     sb.addExec(eb);
                 } catch(Exception e){
@@ -1423,7 +1418,8 @@ public class ProjectUtil {
 		obsUnitSetRef.setDocumentVersion("1");
 		target.setObsUnitSetRef(obsUnitSetRef);
 		target.setTimeOfUpdate(now.toString());
-		
+
+		target.setNumberSBsCompleted(source.getNumberSBsCompleted());
 		// Set the state of this program.
 		target.setStatus(assignState(source.getStatus()));
 		

@@ -55,6 +55,8 @@ import alma.SchedulingExceptions.InvalidObjectEx;
 import alma.SchedulingExceptions.UnidentifiedResponseEx;
 import alma.SchedulingExceptions.SBExistsEx;
 import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.CannotRunCompleteSBEx;
+import alma.SchedulingExceptions.wrappers.AcsJCannotRunCompleteSBEx;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidObjectEx;
 import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
@@ -79,7 +81,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.92 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.93 2007/07/24 20:49:32 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1250,7 +1252,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     // Interactive_Scheduler_to_MasterScheduler
     public void executeInteractiveSB(String sbId, String schedulerId) 
-        throws InvalidOperationEx, NoSuchSBEx {
+        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
 
         Scheduler scheduler = getScheduler(schedulerId);
         String type = scheduler.getType();
@@ -1263,12 +1265,14 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             logger.fine("Looking for SB ("+sbId+") in queue... "+sbQueue.get(sbId)+" == is it there?");
             ((InteractiveScheduler)scheduler).execute(sbQueue.get(sbId));
-        } catch(Exception e) {
-            e.printStackTrace();
-            InvalidOperation e1 = new InvalidOperation("executeInteractiveSB",
-                   e.toString());
-            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
-            throw e2.toInvalidOperationEx();
+        } catch(SchedulingException e) {
+            if(e.getMessage().equals("SB has reached its maximum execution count.") ){
+                AcsJCannotRunCompleteSBEx e1 = new AcsJCannotRunCompleteSBEx(e);
+                throw e1.toCannotRunCompleteSBEx();
+            } else {
+                AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e);
+                throw e2.toInvalidOperationEx();
+            }
         }
     }
     

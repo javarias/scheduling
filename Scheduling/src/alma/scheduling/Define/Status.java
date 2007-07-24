@@ -54,7 +54,7 @@ package alma.scheduling.Define;
  * the "ready", "waiting", or "running" state.  If the unit's end time
  * has been set the state is either "complete" or "aborted".  
  * 
- * @version $Id: Status.java,v 1.7 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: Status.java,v 1.8 2007/07/24 20:49:32 sslucero Exp $
  * @author Allen Farris
  */
 public class Status {
@@ -64,6 +64,9 @@ public class Status {
 	static public final int RUNNING		= 3;
 	static public final int ABORTED		= 4;
 	static public final int COMPLETE	= 5;
+	static public final int OBSERVED	= 6;
+	static public final int PROCESSED	= 7;
+	static public final int CANCELED	= 8;
 	
 	private int status;
 	private DateTime readyTime;
@@ -162,8 +165,9 @@ public class Status {
         //System.out.println("Status end = "+time.toString());
 		if (startTime == null || startTime.gt(time)) 
 			throw new UnsupportedOperationException("Cannot set 'ended' before setting 'started'.");
-		if (!(status == COMPLETE || status == ABORTED ))
-			throw new UnsupportedOperationException("If component has ended, status must be either COMPLETE or ABORTED.");
+		//if (!(status == COMPLETE || status == ABORTED ))
+		if (!(status == OBSERVED || status == ABORTED || status ==COMPLETE ))
+			throw new UnsupportedOperationException("If component has ended, status must be either OBSERVED or ABORTED.");
 		this.status = status;
 		this.endTime = new DateTime (time);
 	}
@@ -179,6 +183,9 @@ public class Status {
 			case 3: return "running";
 			case 4: return "aborted";
 			case 5: return "complete";
+			case 6: return "observed";
+			case 7: return "processed";
+			case 8: return "canceled";
 			default: return "***";
 		}
 	}
@@ -228,6 +235,10 @@ public class Status {
 	public boolean isComplete() {
 		return status == COMPLETE;
 	}
+
+    public boolean isObserved() {
+        return status == OBSERVED;
+    }
 	
 	/**
 	 * return true if the status is aborted
