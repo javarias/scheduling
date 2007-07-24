@@ -69,7 +69,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.87 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.88 2007/07/24 22:53:58 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -291,7 +291,7 @@ public class ALMAProjectManager extends ProjectManager {
             return;
         }
         
-        if( completed.getNumberExec() > completed.getMaximumNumberOfExecutions()  ){
+        if( completed.getNumberExec() >= completed.getMaximumNumberOfExecutions()  ){
             logger.fine("###########set to complete####");
             logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.OBSERVED);
@@ -312,6 +312,7 @@ public class ALMAProjectManager extends ProjectManager {
         logger.fine("SCHEDULING: sb status = "+completed.getStatus().getStatus());
         ps = updateSBStatusInProjectStatus(eb, completed.getStatus());
         if(completed.getStatus().getStatus().equals("observed")){
+            //should be done after the SBStatus is updated.
             ps = updateObsUnitSetStatusStats(completed.getId(),eb, ps);
         }
         try {
@@ -381,6 +382,12 @@ public class ALMAProjectManager extends ProjectManager {
                 //ObsUnitSet
                 ObsUnitSetStatusT[] sets = choice.getObsUnitSetStatus();
                 findSet(sets, sb_id, eb, set, p);
+            }
+            //do this after findSet coz findSet recursively will update parent OUSS.
+            if(set.getTotalSBs() == set.getNumberSBsCompleted()){
+                //ObsProgramStatus is complete so project is complete!
+                set.getStatus().setEndTime(eb.getStatus().getEndTime().toString());
+                ps.getStatus().setEndTime(eb.getStatus().getEndTime().toString());
             }
         }catch(Exception e){
             e.printStackTrace();
