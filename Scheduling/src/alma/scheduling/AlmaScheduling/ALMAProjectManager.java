@@ -69,7 +69,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.88 2007/07/24 22:53:58 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.89 2007/07/26 14:40:57 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -386,7 +386,9 @@ public class ALMAProjectManager extends ProjectManager {
             //do this after findSet coz findSet recursively will update parent OUSS.
             if(set.getTotalSBs() == set.getNumberSBsCompleted()){
                 //ObsProgramStatus is complete so project is complete!
+                set.getStatus().setState(StatusTStateType.COMPLETE);
                 set.getStatus().setEndTime(eb.getStatus().getEndTime().toString());
+                ps.getStatus().setState(StatusTStateType.COMPLETE);
                 ps.getStatus().setEndTime(eb.getStatus().getEndTime().toString());
             }
         }catch(Exception e){
@@ -399,6 +401,8 @@ public class ALMAProjectManager extends ProjectManager {
       * A recursive function to go through the tree of obs unit set status' to find the
       * right obs unit set status which contains the sb status, there fore updating the
       * # sb failed/completed field. Also updates the SB/Program/Project objects.
+      * TODO at some point update this info in the Program and in the recursive find
+      * pass the proper program.
       */
     private synchronized void findSet(ObsUnitSetStatusT[] sets, String id, 
                                       ExecBlock eb, ObsUnitSetStatusT parent, Program p){
@@ -421,6 +425,10 @@ public class ALMAProjectManager extends ProjectManager {
                     parent.setNumberSBsCompleted(y+1);
                     logger.fine("completed; sb ct = "+ x+1);
                     logger.fine("completed; parent ct = "+ y+1);
+                    sets[i].getStatus().setState(StatusTStateType.COMPLETE);
+                    sets[i].getStatus().setEndTime(eb.getStatus().getEndTime().toString());
+                    int z = parent.getNumberObsUnitSetsCompleted();
+                    parent.setNumberObsUnitSetsCompleted(z+1);
                 } else {
                     logger.warning(
                         "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid"+
