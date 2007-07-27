@@ -239,7 +239,7 @@ public class Reporter extends BasicComponent {
 		projectSummary(out,endTime);
 		statistics(out,endTime);
         detailedExecutionStatistics(execStatsOut);
-        runAnalysisScripts();
+        //runAnalysisScripts();
 	}
 	
 	private void showSummary(PrintStream o, DateTime endTime) {
