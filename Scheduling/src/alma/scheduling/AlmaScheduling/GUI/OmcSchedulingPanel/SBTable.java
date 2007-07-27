@@ -515,6 +515,11 @@ public class SBTable extends JTable {
     private void showSBInfo(SBLite sb){
         sbInfo.setText("");
         sbInfo.append("SB Name: "+sb.sbName+"\n");
+        if(sb.isComplete == true){
+            sbInfo.append("SB Status: complete \n");
+        } else {
+            sbInfo.append("SB Status: not complete \n");
+        }
         sbInfo.append("Priority: "+sb.priority+"\n");
         sbInfo.append("RA: "+sb.ra+"\n");
         sbInfo.append("DEC: "+sb.dec+"\n");

@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * A Program is a hierarchical tree whose leaves are SB objects. 
  * It is an ObsProgram as viewed by the scheduling subsystem.
  * 
- * @version $Id: Program.java,v 1.9 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: Program.java,v 1.10 2007/07/27 20:36:40 sslucero Exp $
  * @author Allen Farris
  */
 public class Program implements ProgramMember {
@@ -398,7 +398,9 @@ public class Program implements ProgramMember {
 		if (parent != null)
 			parent.updateAllNumberSBsCompleted();
 	}
+    
 	private void updateAllNumberSBsFailed() {
+        //System.out.println("Updating all number of SBs Failed");
 		++numberSBsFailed;
 		if (parent != null)
 			parent.updateAllNumberSBsFailed();
@@ -463,13 +465,14 @@ public class Program implements ProgramMember {
 		// 3. If time used in seconds is not 0, update the timeUsed.
 		updateAllTimeUsed(timeUsedInSeconds);
 		// 4. If unit has ended, update number completed or failed.
+        /* took out coz we update else where depending on status of execution 
 		if (unit.getStatus().isEnded()) {
 			if (unit.getStatus().isComplete())
 				updateAllNumberSBsCompleted();
 			else
 				updateAllNumberSBsFailed();
 			checkParent(unit,time);
-		}
+		}*/
 	}
 	
 	
@@ -817,6 +820,7 @@ public class Program implements ProgramMember {
     }
         
     public void setNumberSBsFailed(int i){
+        //System.out.println("Number sbs failed in program  = "+i);
         numberSBsFailed = i;
     }
 

@@ -74,7 +74,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.75 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.76 2007/07/27 20:36:40 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -290,11 +290,9 @@ public class ALMAArchive implements Archive {
                 logger.warning("SCHEDULING: Retrieved a "+xml.entityTypeName+" when we wanted a ProjectStatus");
                 logger.warning("SCHEDULING: uid was "+ps_id+" and xml was:");
                 logger.warning(xml.xmlString);
-            } else {
-                logger.fine(xml.xmlString);
-            }
-            //logger.info("Getting PS for ObsProject");
-            //logger.info("PROJECT STATUS: "+ xml.xmlString);
+            } //else {
+                //logger.fine(xml.xmlString);
+            //}
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
         } catch(NullPointerException npe){
             logger.warning("SCHEDULING: Project had no Project Status. Creating one.");
@@ -731,11 +729,11 @@ public class ALMAArchive implements Archive {
     public synchronized void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
         try {
             XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
-            logger.fine("SCHEDULING: updated PS: "+xml.xmlString);
-            logger.fine("SCHEDULING: About to retrieve Project Status with uid "+ps.getProjectStatusEntity().getEntityId());
+            //logger.finest("SCHEDULING: updated PS: "+xml.xmlString);
+            //logger.finest("SCHEDULING: About to retrieve Project Status with uid "+ps.getProjectStatusEntity().getEntityId());
             XmlEntityStruct xml2 = archOperationComp.retrieveDirty(ps.getProjectStatusEntity().getEntityId());
             xml2.xmlString = xml.xmlString;
-            logger.fine("About to save PS: "+xml2.xmlString);
+            //logger.finest("About to save PS: "+xml2.xmlString);
             archOperationComp.update(xml2);
         } catch(Exception e){
             logger.severe("SCHEDULING: error updating PS in archive, "+e.toString());

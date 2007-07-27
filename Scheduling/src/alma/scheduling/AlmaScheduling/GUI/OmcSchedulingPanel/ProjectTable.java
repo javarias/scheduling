@@ -213,6 +213,11 @@ public class ProjectTable extends JTable {
     private void showProjectInfo(ProjectLite p){
         projectInfo.setText("");
         projectInfo.append("Project Name = "+p.projectName +"\n");
+        if(p.isComplete == true) {
+            projectInfo.append("Project's status = complete\n");  
+        } else {
+            projectInfo.append("Project's status = not complete\n");  
+        }
         projectInfo.append("PI Name = "+p.piName+"\n");
         projectInfo.append("Status = "+p.status +"\n");  
         projectInfo.append("Total number of SBs = "+p.totalSBs +"\n");  

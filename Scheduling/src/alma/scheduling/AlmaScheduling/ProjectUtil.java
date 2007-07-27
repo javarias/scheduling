@@ -45,6 +45,7 @@ import alma.entities.commonentity.*;
 import alma.scheduling.Define.*;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * The ProjectUtil class is a collection of static methods that
@@ -77,12 +78,13 @@ import java.util.ArrayList;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.53 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.54 2007/07/27 20:36:40 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
 	
 	static private final String nullPartId = "X00000000";
+    static private Logger logger = Logger.getLogger("Scheduling's ProjectUtil Logger");
 
 	/**
 	 * Check the specified project for internal consistency.
@@ -375,10 +377,8 @@ public class ProjectUtil {
             ous = ps.getObsProgramStatus();
         }catch (Exception e){
             e.printStackTrace();
-            //System.out.println("ObsUnitSet null in PS. Probably coz first time loaded into scheduling");
         }
 
-        //System.out.println("Start to initialize program");
 		Program program = initialize(obs.getObsProgram().getObsPlan(), sched, 
 		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
@@ -467,7 +467,6 @@ public class ProjectUtil {
 			boolean[] schedUsed, Project project, Program parent,  
 			ObsUnitSetStatusT ous, DateTime now) throws SchedulingException {
 		
-      //System.out.println("In initializing program method for project "+ project.getId());
 	  Program program = null;
       try {
         if(set.getEntityPartId() == null) {
@@ -552,19 +551,7 @@ public class ProjectUtil {
                 } catch(Exception e){
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,null,now);
                 }
-            //    if(hasStatus){
-               //     System.out.println("OUS Stat ct ="+status.length);
-                 //   for(int j=0; j < status.length; j++){
-             //           session = status[i].getSession();
-              //          if(session != null || session.length > 0){
-               //             partId = status[i].getEntityPartId();
-                 //           memberProgram = assignSessionToProgram(memberProgram, partId, session);
-            //                System.out.println("returned: prog. (of prj "+
-            //                        memberProgram.getProject().getId()+") has "+
-             //                       memberProgram.getAllSession().length+" sessions");
-                  //      }
-                    //}
-                //}
+
 				program.addMember(memberProgram);
 			}
 		} else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
@@ -606,9 +593,6 @@ public class ProjectUtil {
             session = ous.getSession();
             if(session != null || session.length > 0){
                 program  = assignSessionToProgram(program,set.getEntityPartId(),  session);
-               // System.out.println("returned: Top level Prog. (of prj "+
-              //          program.getProject().getId()+") has "+program.getAllSession().length+
-                 //       " sessions");
             }
         }catch(Exception e){
         //if we get this exception its fine and means there were no sessions to add
@@ -629,7 +613,6 @@ public class ProjectUtil {
           e.printStackTrace();
       }
       // Return the newly created program.
-      //System.out.println("PU: This program has "+program.getAllSession().length+" sessions");
 	  return program;
 	}
 
@@ -640,10 +623,8 @@ public class ProjectUtil {
       * that has the given part id.
       */
     static private Program assignSessionToProgram(Program member, String currentId, SessionT[] sessions){
-        //System.out.println("In Assigning Session to Program Method");
         if(memberMatches((Program)member, currentId)){
             ObservedSession s;
-            //System.out.println("Program matches id we want, number of sessions = "+sessions.length);
             for (int j=0; j < sessions.length; j++){
                 s = new ObservedSession();
                 s.setSessionId(sessions[j].getEntityPartId());
@@ -663,7 +644,6 @@ public class ProjectUtil {
                         s.addExec(eb);
                     }
                     ((Program)member).addObservedSession(s);
-                    //System.out.println("program has "+((Program)member).getAllSession().length+" sessions");
                 }
             }
         }
@@ -694,7 +674,7 @@ public class ProjectUtil {
                 try {
                     sb.addExec(eb);
                 } catch(Exception e){
-                    System.out.println("Error added exec block "+eb.getExecId());
+                    logger.warning("Error adding exec block "+eb.getExecId());
                 }
             }
         }
@@ -732,9 +712,6 @@ public class ProjectUtil {
 	static private SB initialize(SchedBlockRefT schedRef, SchedBlock[] schedArray, boolean[] schedUsed, Project project, Program parent, DateTime now) 
 		throws SchedulingException {
             
-            //TODO Need to split all this stuff up...
-            //System.out.println("In SB initialize method for project = "+project.getId());
-            
     	SB sb = new SB (schedRef.getEntityId());
         try {
     
@@ -747,16 +724,12 @@ public class ProjectUtil {
 		// We need to use the entityId to get the SchedBlock from the sched array.
     		SchedBlock sched = null;
 	    	for (int i = 0; i < schedArray.length; ++i) {
-                //System.out.println("SB init, schedArray: "+schedArray[i].getSchedBlockEntity().getEntityId());
-               // System.out.println("SB init, sb: "+sb.getSchedBlockId());
 		    	if (schedArray[i].getSchedBlockEntity().getEntityId().equals(sb.getSchedBlockId())) {
 			    	sched = schedArray[i];
 				    schedUsed[i] = true;
-                    //System.out.println("schedUsed = true");
     				break;
 	    		}
 		    }
-            //System.out.println("Initializing SB("+sb.getSchedBlockId()+")");
     		if (sched == null)
 	    		throw new SchedulingException("The scheduling block with id " + sb.getSchedBlockId() +
 		    			" is not in the specified SchedBlock array.");
@@ -877,7 +850,6 @@ public class ProjectUtil {
 
                     sb.addSource(source);
                 } else {
-                    //System.out.println("FS is null..");
                     eq[i] = new Equatorial(0.0,0.0);
                 }
             }
@@ -1074,10 +1046,8 @@ public class ProjectUtil {
                 Program p = (Program)program.getMember(setMember[i].getEntityPartId());
 				memberProgram = updateProgram(setMember[i], p, sched,schedUsed,project,program,now);
                 if(program.memberExists(memberProgram.getId())){
-                    //System.out.println("updating program");
 				    program.updateMember(memberProgram);
                 } else {
-                    //System.out.println("adding program");
 				    program.addMember(memberProgram);
                 }
 			}
@@ -1087,12 +1057,10 @@ public class ProjectUtil {
 			SB memberSB = null;
 			for (int i = 0; i < setMember.length; ++i) {
                 if(program.memberExists(setMember[i].getEntityId())){
-                    //System.out.println("updating sb");
                     SB currentSB = (SB)program.getMember(setMember[i].getEntityId());
 				    memberSB = updateSchedBlock(setMember[i],sched,schedUsed,project,program,now,currentSB);
 				    program.updateMember(memberSB);
                 } else {
-                    //System.out.println("adding sb");
 				    memberSB = initialize(setMember[i],sched,schedUsed,project,program,now);
                     //check if its set to ready
                     if(!memberSB.getStatus().isReady()){
@@ -1130,7 +1098,6 @@ public class ProjectUtil {
 
         SB sb;
         if(existingSB == null) {
-            //System.out.println("Setting up new sb in update");
     		sb = new SB (schedRef.getEntityId());
 
             if(existingSB.getSbStatusId() == null) {
@@ -1141,7 +1108,6 @@ public class ProjectUtil {
 	    	sb.setProject(project);
 		    sb.setTimeOfCreation(now);
     		sb.setTimeOfUpdate(now);
-        //System.out.println("SB parent part id (in sb initialize PU)"+parent.getObsUnitSetStatusId());
 	    	sb.setParent(parent);
         } else {
             sb =existingSB;
@@ -1363,7 +1329,7 @@ public class ProjectUtil {
         try {
             return ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
         } catch(Exception e){
-            System.out.println("SCHEDULING: Error updating ProjectStatus.");
+            logger.severe("SCHEDULING: Error updating ProjectStatus.");
             e.printStackTrace(System.out);
             return null;
         }
@@ -1401,6 +1367,9 @@ public class ProjectUtil {
 			case Status.RUNNING: target.setState(StatusTStateType.RUNNING); break;
 			case Status.ABORTED: target.setState(StatusTStateType.ABORTED); break;
 			case Status.COMPLETE: target.setState(StatusTStateType.COMPLETE); break;
+			case Status.OBSERVED: target.setState(StatusTStateType.OBSERVED); break;
+			case Status.PROCESSED: target.setState(StatusTStateType.PROCESSED); break;
+			case Status.CANCELED: target.setState(StatusTStateType.CANCELED); break;
 		}
 		target.setReadyTime(source.getReadyTime() == null ? "" : source.getReadyTime().toString());
 		target.setStartTime(source.getStartTime() == null ? "" : source.getStartTime().toString());
@@ -1409,7 +1378,6 @@ public class ProjectUtil {
 	}
 	
 	static private ObsUnitSetStatusT assignObsProgramStatus(Program source, DateTime now) {
-        //System.out.println("Assigning obs program status");
 		ObsUnitSetStatusT target = new ObsUnitSetStatusT ();
 		target.setEntityPartId(source.getId());
 		ObsProjectRefT obsUnitSetRef = new ObsProjectRefT ();
@@ -1434,9 +1402,7 @@ public class ProjectUtil {
 		target.setNumberSBsFailed(source.getNumberSBsFailed());
 		
 		// Set the session list.
-        //System.out.println("PU: assignObsProgram: about to assign all sessions "+source.getAllSession().length);
         SessionT[] list = assignSession(source.getAllSession());
-        //System.out.println("PU: got session list to be added of size = "+list.length);
 		target.setSession(list);
 		
 		// Set the PipelineProcessingRequest.
@@ -1469,10 +1435,8 @@ public class ProjectUtil {
 	static private SessionT[] assignSession(ObservedSession[] session) {
 		SessionT[] list = new SessionT [session.length];
 		SessionT x = null; 
-        //System.out.println("In assignSession, with session list of size = "+session.length);
         try {
 		for (int i = 0; i < session.length; ++i) {
-            //System.out.println("In assignSession loop #"+i);
 			x = new SessionT ();
 			// Set the part id.
 			x.setEntityPartId(session[i].getSessionId());
@@ -1504,7 +1468,7 @@ public class ProjectUtil {
 			list[i] = x;
 		}
         }catch(Exception e) {
-            System.out.println("What happened???");
+            logger.severe("SCHEDULING: error assigning session to PS");
             e.printStackTrace();
         }
 		return list;
@@ -1515,9 +1479,7 @@ public class ProjectUtil {
     }
 	
 	static private PipelineProcessingRequestT assignPPR(SciPipelineRequest ppr) {
-        //System.out.println("Assign PPR!");
 		if (ppr == null){
-            //System.out.println("ppr == null");
 			return null;
         }
 		PipelineProcessingRequestT target = new PipelineProcessingRequestT ();
@@ -1566,7 +1528,6 @@ public class ProjectUtil {
 		// Set the processing parameters.
 		Object[] parm = ppr.getParms();
         if(parm != null) {
-            //System.out.println("Params = "+parm.length);
             PipelineParameterT[] pparams = new PipelineParameterT[parm.length];
 		    for (int i = 0; i < parm.length; ++i){
                 pparams[i] = new PipelineParameterT();
@@ -1601,12 +1562,12 @@ public class ProjectUtil {
                     pparams[i].setName("ProjectType");
                     pparams[i].setValue(parm[i].toString());
                 } else {
-                    System.out.println("Class type for data processing param is: "+parm[i].getClass().getName());
+                    logger.fine("SCHED: Class type for data processing param is: "+parm[i].getClass().getName());
                 }
             }
     		target.setPipelineParameter(pparams);
         } else {
-            System.out.println("Params = null!");
+            logger.warning("SCHEDULING: Pipeline Params = null!");
         }
 		// OK, we're done.
 		return target;
@@ -1617,7 +1578,6 @@ public class ProjectUtil {
 		SBStatusT target = new SBStatusT ();
 		
 		// Set the status part-id.
-        //System.out.println("SB status id being set = "+sb.getSbStatusId());
 		target.setEntityPartId(sb.getSbStatusId());
 		
 		// Set the reference to the SchedBlock.
@@ -1762,83 +1722,4 @@ public class ProjectUtil {
 
 
 
-   /*
-	static private ObsUnitSetStatusT updateObsProgramStatus(Program source, 
-            ObsUnitSetStatusT currentOUS, DateTime now) {
-        
-        if(!source.getProgramId().equals(currentOUS.getEntityPartId())) {
-            //problem, updating wrong one.
-            //TODO: throw error.. or something
-            System.out.println("Program ID does not match what you're updating.");
-            return null;
-        }
-        if(!source.getProject().getObsProjectId().equals(currentOUS.getObsUnitSetRef().getEntityId())){
-            System.out.println("Project ID does not match what you're updating.");
-            return null;
-        }
-        if(!source.getProgramId().equals(currentOUS.getObsUnitSetRef().getPartId())){
-            System.out.println("Project ID does not match what you're updating.");
-            return null;
-        }
-		currentOUS.setTimeOfUpdate(now.toString());
-		
-		// Set the state of this program.
-		currentOUS.setStatus(assignState(source.getStatus()));
-		
-		// Set the totals.
-		currentOUS.setTotalRequiredTimeInSec(source.getTotalRequiredTimeInSeconds());
-		currentOUS.setTotalUsedTimeInSec(source.getTotalUsedTimeInSeconds());
-		currentOUS.setTotalObsUnitSets(source.getTotalPrograms());
-		currentOUS.setNumberObsUnitSetsCompleted(source.getNumberProgramsCompleted());
-		currentOUS.setNumberObsUnitSetsFailed(source.getNumberProgramsFailed());
-		currentOUS.setTotalSBs(source.getTotalSBs());
-		currentOUS.setNumberSBsCompleted(source.getNumberSBsCompleted());
-		currentOUS.setNumberSBsFailed(source.getNumberSBsFailed());
-		
-		// Set the session list.
-		currentOUS.setSession(assignSession(source.getAllSession()));
-		//currentOUS.setSession(updateSession(source.getAllSession()));
-		
-		// Set the PipelineProcessingRequest.
-		currentOUS.setPipelineProcessingRequest(assignPPR(source.getSciPipelineRequest()));
-		//currentOUS.setPipelineProcessingRequest(updatePPR(source.getSciPipelineRequest()));
-		
-		// Set the members of this program.
-		ProgramMember[] member = source.getMember();
-		Program pgm = null;
-		SB sb = null;
-		ObsUnitSetStatusTChoice currentSet = currentOUS.getObsUnitSetStatusTChoice();
-        ObsUnitSetStatusT ousStatus = null;
-		if (member[0] instanceof Program) {
-			for (int i = 0; i < member.length; ++i) {
-				pgm = (Program)member[i];
-                //if the program exists then isthere is its index in the array, else its -1
-                int isthere = obsUnitSetStatusExists(currentSet, pgm.getProgramId());
-                if(isthere != -1 ){
-                    //can't just add it again..we'll get 2, replace the old one with the new one
-                    System.out.println("Replace obs unit set status in update");
-				    currentSet.setObsUnitSetStatus(isthere,updateObsProgramStatus(pgm,now));
-                } else {
-                    System.out.println("adding obs unit set status in update");
-				    currentSet.addObsUnitSetStatus(assignObsProgramStatus(pgm,now));
-                }
-			}			
-		} else {
-			for (int i = 0; i < member.length; ++i) {
-				sb = (SB)member[i];
-                //if the sb exists then isthere is its index in the array, else its -1
-                int isthere=sbStatusExists(currentSet, sb.getId());
-                if(isthere != -1) {
-                    //can't just add it again..we'll get 2, replace old with new
-                    System.out.println("Replace sbstatus in update");
-				    //currentSet.setSBStatus(isthere, updateSbStatus(sb,now));
-                } else {
-                    System.out.println("adding sbstatus in update");
-				    set.addSBStatus(assignSBStatus(sb,now));
-                }
-			}
-		}
-		currentOUS.setObsUnitSetStatusTChoice(set);
-		return currentOUS;
-    }
-    */
+   
