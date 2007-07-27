@@ -19633,11 +19633,3 @@
 1 - INFO: The simulation has ended.
 1 - SCHED: in reporter, all execs = 240
 1 - SCHED: in reporter, all projs =2
-1 - Traceback (most recent call last):
-1 -   File "/----/bin/ALMASchedSim_antennaLocation", line 3, in ?
-1 -     import ppgplot
-1 - ImportError: No module named ppgplot
-1 - Traceback (most recent call last):
-1 -   File "/----/bin/ALMASched_lst_vs_day", line 2, in ?
-1 -     import ppgplot
-1 - ImportError: No module named ppgplot
