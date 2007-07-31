@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>PI webpage show the detail info for SB and EB</title>
+<link rel="stylesheet" type="text/css" href="ajaxtabs/ajaxtabs.css" />
+
+<script type="text/javascript" src="ajaxtabs/ajaxtabs.js">
+
+/***********************************************
+* Ajax Tabs Content script- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+</script>
+</head>
+
+<body>
+<h4>ObsUnitSet</h4>
+<table border=1>
+<tr><td>SBName</td><td>Source</td><td>Mode</td><td>Status</td><td>SBDuration</td><td>NumEB</td>
+    <td>NumScan</td><td>NumRepeat</td><td>Frequence</td><td>Frequence Band</td><td>line</td></tr>
+<tr><td>sb1</td><td>Ori_1686</td><td>Expert</td><td>Ready</td><td>Ready</td><td>1</td>
+    <td>1</td><td>0</td><td>2</td><td>240G Hz</td><td>1</td></tr>
+</tr>
+</table>
+<hr size=3 width=100% noshade>
+<h4>Science Goal<h4>
+<ul id="maintab" class="shadetabs">
+<li class="selected"><a href="#default" rel="ajaxcontentarea">Source identification and Coordinate</a></li>
+<li><a href="external.htm" rel="ajaxcontentarea">Angular Resolution</a></li>
+<li><a href="external1.htm" rel="ajaxcontentarea">Source Flux/Rms</a></li>
+<li><a href="external2.htm" rel="ajaxcontentarea">line identification</a></li>
+<li><a href="external3.htm" rel="ajaxcontentarea">Desired Velocity</a></li>
+<li><a href="external4.htm" rel="ajaxcontentarea">Desired Dynamic Range</a></li>
+</ul>
+
+<!a name="SciGoalSource">
+<div id="ajaxcontentarea" class="contentstyle">
+<table border=1>
+<tr><td>source</td><td>X</td><td>Y</td><td>Z</td></tr>
+<tr><td>Ori_1686</td><td>1111</td><td>2222</td><td>3333</td></tr>
+<tr><td>M_26</td><td>12343</td><td>22332</td><td>113333</td></tr>
+</table>
+</div>
+<!/a>
+<hr size=3 width=100% noshade>
+<h4>Weather Constraint</h4>
+<table>
+<tr><td>MaxPWVC</td><td>none</td></tr>
+<tr><td>Seeing</td><td>none</td></tr>
+<tr><td>PhaseStability</td><td>none</td></tr>
+</table>
+<hr size=3 width=100% noshade>
+<br/>
+<form method="POST" action="sample">
+Select Schedule Block
+<select name="sbChoice">
+<option>sb1
+<option>sb2
+</select>
+</form>
+<br>
+<ul id="maintab" class="shadetabs">
+<li class="selected"><a href="#default" rel="ajaxcontentarea">Execute Block 1</a></li>
+<li><a href="#default" rel="ajaxcontentarea">Execute Block 2</a></li>
+<li><a href="#default" rel="ajaxcontentarea">Execute Block 3</a></li>
+<li><a href="#default" rel="ajaxcontentarea">Execute Block 4</a></li>
+<li><a href="#default" rel="ajaxcontentarea">Execute Block 5</a></li>
+</ul>
+
+<div id="ajaxcontentarea" class="contentstyle">
+<table border=1>
+<tr><td>Parameter</td><td>Value</td><td width=100 rowspan=22 bgcolor=#fffff0></td><td colspan=5><form method="POST" Action="SAMPLE">
+    QuickLook Picture<SELECT NAME="CHOICE">
+    <OPTION>Ampilitude
+    <OPTION>AtmosphereSystemp
+    <OPTION>AtmosphereTau
+    <OPTION>CurveAmpilitude
+    <OPTION>CurvePhase
+    <OPTION>Delay
+    <OPTION>Focus
+    <OPTION>Phase
+    <OPTION>Pointing
+    <OPTION>Seeing
+    </select>
+    </form></td></tr>
+<tr><td>ExecBlockId</td><td>ExecBlock_0</td><td colspan=5 rowspan=21>
+    <img src="ajaxtabs/Focus_offset.jpg">
+    </td></tr>
+<tr><td>TelescopeName</td><td>test</td></tr>
+<tr><td>configName</td><td>A</td></tr>
+<tr><td>Numantenna</td><td>2</td></tr>
+<tr><td>baseRangeMin</td><td>0.0</td></tr>
+<tr><td>baseRangeMax</td><td>0.0</td></tr>
+<tr><td>baseRmsMinor</td><td>0.0</td></tr>
+<tr><td>baseRmsMajor</td><td>0.0</td></tr>
+<tr><td>basePa</td><td>0.0</td></tr>
+<tr><td>TimeInterval</td><td>4673445432323</td></tr>
+<tr><td>ObserveName</td><td>No name</td></tr>
+<tr><td>ObservingLog</td><td>1 1 "one"</td></tr>
+<tr><td>SchedulerMode</td><td>Queue</td></tr>
+<tr><td>ProjectId</td><td>test</td></tr>
+<tr><td>siteLongitude</td><td>0.0</td></tr>
+<tr><td>siteLatitude</td><td>0.0</td></tr>
+<tr><td>siteAltitude</td><td>0.0</td></tr>
+<tr><td>flagRow</td><td>false</td></tr>
+<tr><td>execBlockUID</td><td>null</td></tr>
+<tr><td>abort</td><td>false</td></tr>
+<tr><td>antennaID</td><td>1 2</td></tr>
+</table>
+</div>
+
+<script type="text/javascript">
+//Start Ajax tabs script for UL with id="maintab" Separate multiple ids each with a comma.
+startajaxtabs("maintab")
+</script>
+
+</body>
+
+</html>
