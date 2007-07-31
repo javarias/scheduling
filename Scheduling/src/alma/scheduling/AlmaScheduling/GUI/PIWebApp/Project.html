@@ -97,7 +97,7 @@ else
 </table>
 
 <H2>SB and EB Summary</H2>
-<APPLET CODE="alma/scheduling/AlmaScheduling/GUI/PIWebApp/ShowProjectStatus.class"
+<!APPLET CODE="alma/scheduling/AlmaScheduling/GUI/PIWebApp/ShowProjectStatus.class"
 	ARCHIVE="systementities.jar,
 		commons-logging.jar,
 		xercesImpl.jar,
@@ -105,6 +105,18 @@ else
 		APDMEntities.jar,
 		schedulingComp.jar "
         width=800 height=500>
-</APPLET>
+<!/APPLET>
+<h4>SB Status</h4>
+<table border=1>
+<tr><td>TimeOfUpdate</td><td>Status</td><td>ReadyTime</td><td>StartTime</td><td>EndTime</td><td>TotalRequiredTime</td><td>TotalUsedTime</td><td>Percentage</td></tr>
+<tr><td>2007-0112T 18:30:21</td><td>running</td><td>2007-0112T 18:29:11</td><td>2007-0112T 18:30:05</td><td>unknown</td><td>432000</td><td>0</td><td>0</td></tr>
+<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+<h4>EB Status </h4>
+<table border=1>
+<tr><td>SourceName</td><td>EBName</td><td>Status</td><td>NumberOfAntenna</td><td>ConfigureName</td><td>OperatorResult</td><td>QuicklookResult</td><td>PipelineResult</td></tr>
+<tr><td>Ori_1686</td><td>EB1</td><td>Running</td><td>2</td><td>cfg1</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td>Alp_Umn_43</td><td>EB2</td><td>Running</td><td>2</td><td>cfg2</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+</table>
 </BODY>
 </HTML>

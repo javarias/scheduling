@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.io.*;
+import java.lang.*;
 //alma
 
 import alma.entity.xmlbinding.projectstatus.*;
@@ -58,9 +59,9 @@ public class SBDetail extends JApplet implements ActionListener {
 	private final JTabbedPane pane = new JTabbedPane();
 	JTextArea Info;
 	JPanel mainpanel1,mainpanel2;
-	JPanel ExecuteBlock,PLSPanel,SchedCPanel,WeatherandTempCPanel;
-	JPanel[] panelgroup = {ExecuteBlock,PLSPanel,SchedCPanel,WeatherandTempCPanel};
-	String[] panelname = {"Execute Block","Pipeline Script","Scheduler Constraints","WeatherandTemporal Constraints"};
+	JPanel ExecuteBlock,RepTPanel,SchedCPanel,WeatherandTempCPanel;
+	JPanel[] panelgroup = {ExecuteBlock,RepTPanel,SchedCPanel,WeatherandTempCPanel};
+	String[] panelname = {"Execute Block","Representative Target","Scheduler Constraints","WeatherandTemporal Constraints"};
 	JLabel picture ;
 	
 	
@@ -173,7 +174,6 @@ public class SBDetail extends JApplet implements ActionListener {
 	    		}
 	    		
 	    		if(i==1){
-	    			/*
 	    			String[] RepresentativeTargetheader= {"abstractInstrumentSpecId","fieldSourceId",
 	    									"observingParametersIdList","TotalPowerMeasurement"};
 	    			String[][] RepresentativeTargetvalue ={
@@ -188,9 +188,6 @@ public class SBDetail extends JApplet implements ActionListener {
 	    			panelgroup[i].setLayout(new GridLayout(1,1));
 	    		    JScrollPane scrollpane = new JScrollPane(RerTargettable);
 	    		    panelgroup[i].add(scrollpane);
-	    		    */
-	    			panelgroup[i].setLayout(new GridLayout(1,1));
-	    			panelgroup[i].add(Info);
 	    		}
 				
 	    		if (i==2) {

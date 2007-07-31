@@ -37,6 +37,7 @@ public class GetProject extends HttpServlet {
 	String manager;
 	private Logger m_logger = null;
 	private ComponentClient m_componentClient = null;
+	String acsComponent ="USERREPOSITORY";
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException,
@@ -45,6 +46,7 @@ public class GetProject extends HttpServlet {
 		m_logger = Logger.getLogger("PIWebPage");
 		manager = System.getProperty("ACS.manager");
 		manager = "corbaloc::146.88.7.168:3000/Manager";
+		
 		
 		Properties props = System.getProperties();
 		//System.out.println("testACS:properties:"+props);
@@ -62,9 +64,11 @@ public class GetProject extends HttpServlet {
 		
 		try {
 			out.println("<h2>this is before run m component</h2>");
-		m_componentClient = new AdvancedComponentClient(m_logger,manager,"PIWebPage");
+		m_componentClient = new ComponentClient(null,manager,"PIWebPage");
 		out.println("<h2>this is after run m component</h2>");
-		cs = m_componentClient.getContainerServices();
+		//cs = m_componentClient.getContainerServices();
+		//org.omg.CORBA.Object compObj=cs.getContainerServices().getComponent(acsComponent);
+		//UserRepositoryComponent urComp = UserRepositoryComponentHelper.narrow(compObj);
 		archive = new ALMAArchive(cs, new ALMAClock());
 		}
 		catch (Exception e) {

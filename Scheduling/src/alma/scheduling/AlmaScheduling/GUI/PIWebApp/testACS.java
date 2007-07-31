@@ -21,7 +21,7 @@ public class testACS {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public  String readvalue() {
 		// TODO Auto-generated method stub
 		 ContainerServices cs;
 		 String manager;
@@ -40,10 +40,11 @@ public class testACS {
 		archive = new ALMAArchive(cs, new ALMAClock());
 		}
 		catch (Exception e) {
-		    System.out.println ("QLSESSIONGUI_TEST: Contructor error " +
+		    System.out.println ("TestACS: Contructor error " +
 		        e.toString());
 		    //e.printStackTrace();
 		    m_componentClient = null;
 		}
+		return manager;
 	}
 }

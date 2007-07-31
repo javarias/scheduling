@@ -34,10 +34,6 @@ import alma.entity.xmlbinding.projectstatus.ObsUnitSetStatusTChoice;
 import alma.scheduling.AlmaScheduling.ProjectUtil;
 import alma.scheduling.Define.*;
 
-import alma.scheduling.AlmaScheduling.ALMAArchive;
-import alma.scheduling.AlmaScheduling.ALMAClock;
-import alma.scheduling.Define.*;
-
 //acs
 
 
@@ -54,12 +50,11 @@ public class ShowProjectStatus extends JApplet {
 	URL filename;
 	JLabel testLabel = new JLabel("test");
 	JPanel mainPanel,ObsandSBpanel ;
-	JTable EBtable,ObsProgramStatustable,ObsandSBtable,Sourcetable;
-	String[] EBcolumnNames = {"SourceName","EBName","Status","numberofAntenna",
-								"ConfignameName","QuickLookResult","OperatorResult","PipelineResult"};
-	Object[][] EBdata = {
-							{"Ori_1686","eb1","Running","2","cfg1","none","none","none"},
-							{"Alp_Umn_43","eb2","Running","2","cfg2","none","none","none"}
+	JTable ProjectStatustable,ObsProgramStatustable,ObsandSBtable;
+	String[] ProjcolumnNames = {"Project Name","PI Name","TimeOfUpdate","Project Status",
+								"ReadyTime","StartTime","EndTime"};
+	Object[][] projdata = {
+							{"","","","","","",""}
 							};
 	//	component for ObsprogramStatus
 	
@@ -77,20 +72,13 @@ public class ShowProjectStatus extends JApplet {
 	Object[][] SBvalue ={
 								{"","","","","","","",""},
 								{"","","","","","","",""},
+								{"","","","","","","",""},
+								{"","","","","","","",""},
 								{"","","","","","","",""}
 	};
-	
-	String[] sourceColumnNames = {"SourceName","SB","Band","frequence","line","Configuration","QA(operator)",
-			                      "QA(Quicklook results","QA(pipeline results)"};
-	Object[][] sourcevalue ={
-			{"Ori_1686","SB1","2","240GHz","2","cfg1"," "," "," "},
-			{"alp_UMa_4301","SB2","3","350GHz","2","cfg1"," "," "," "}
-	};
 	         
-	DefaultTableModel dm,sourcedm;
+	DefaultTableModel dm;
 	JProgressBar progressBar;
-
-	
     //the timer animating the images
 	
 	protected void loadAppletParameters() {
@@ -112,23 +100,25 @@ public class ShowProjectStatus extends JApplet {
         } catch (Exception e) { 
             System.err.println("createGUI didn't successfully complete");
         }
+
+        
     }
 	
 	void makeUI(Container container) {
 		ObsandSBpanel = new JPanel();
-		//ObsandSBpanel.setPreferredSize(new Dimension(800,250));
+		ObsandSBpanel.setPreferredSize(new Dimension(800,250));
 		container.setLayout(new BorderLayout(5,20));
 	
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
-		//mainPanel.setPreferredSize(new Dimension(800,80));
-		TitledBorder EBtitle,Obsprogtitle,SBtitle,Sourcetitle;
-		EBtitle = BorderFactory.createTitledBorder("EB Status");
-		EBtitle.setTitleJustification(TitledBorder.CENTER);
-		EBtable = new JTable(EBdata,EBcolumnNames);
-		EBtable.setPreferredScrollableViewportSize(new Dimension(800,35));
+		mainPanel.setPreferredSize(new Dimension(800,200));
+		TitledBorder title,Obsprogtitle,SBtitle;
+		title = BorderFactory.createTitledBorder("Project Status");
+		title.setTitleJustification(TitledBorder.CENTER);
+		ProjectStatustable = new JTable(projdata,ProjcolumnNames);
+ 		ProjectStatustable.setPreferredScrollableViewportSize(new Dimension(800,35));
  		//ProjectStatustable.setEnabled(false);
-		EBtable.setRowHeight(30);
+ 		ProjectStatustable.setRowHeight(30);
  		//ProjectStatustable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
  		//JScrollPane scrollpane= new JScrollPane(ProjectStatustable);
  		// set up the Obs Program table
@@ -141,9 +131,6 @@ public class ShowProjectStatus extends JApplet {
 				return String.class;
 			}
 		};
-		
-		
-		
 	    dm.setDataVector(obsprogram,ObsProgramColumnNames);
 	    ObsProgramStatustable = new JTable(dm);
 	    ObsProgramStatustable.setPreferredScrollableViewportSize(new Dimension(800,35));
@@ -151,37 +138,18 @@ public class ShowProjectStatus extends JApplet {
  		//ObsProgramStatustable.setEnabled(false);
  		ObsProgramStatustable.setDefaultRenderer(String.class,new MultiLineCellRenderer());
  		
- 		sourcedm=new DefaultTableModel() {
-			public Class getColumnClass(int columnIndex){
-				return String.class;
-			}
-		};
-		sourcedm.setDataVector(sourcevalue,sourceColumnNames);
- 		Sourcetable= new JTable(sourcevalue,sourceColumnNames);
- 		Sourcetable.setDefaultRenderer(String.class,new MultiLineCellRenderer());
- 		Sourcetable.setPreferredScrollableViewportSize(new Dimension(800,90));
- 		Sourcetable.setRowHeight(30);
- 		Sourcetitle = BorderFactory.createTitledBorder("Source Status");
- 		Sourcetitle.setTitleColor(Color.GREEN);
- 		Sourcetitle.setTitleJustification(TitledBorder.CENTER);
- 		
  		JScrollPane Obsscrollpane= new JScrollPane(ObsProgramStatustable);
- 		JScrollPane EBscrollpane= new JScrollPane(EBtable);
- 		JScrollPane Sourcepane = new JScrollPane(Sourcetable);
- 		
-		EBscrollpane.setPreferredSize(new Dimension(800,40));
-		//mainPanel.setBorder(EBtitle);
-		EBscrollpane.setBorder(EBtitle);
+ 		JScrollPane Progscrollpane= new JScrollPane(ProjectStatustable);
+		Progscrollpane.setPreferredSize(new Dimension(800,40));
+		//mainPanel.setBorder(title);
+		Progscrollpane.setBorder(title);
 		Obsscrollpane.setBorder(Obsprogtitle);
 		Obsscrollpane.setPreferredSize(new Dimension(800,60));
-		Sourcepane.setPreferredSize(new Dimension(800,200));
-		Sourcepane.setBorder(Sourcetitle);
-		mainPanel.add(EBscrollpane);
-		//mainPanel.add(Sourcepane);
-		//mainPanel.add(Obsscrollpane);
+		mainPanel.add(Progscrollpane);
+		mainPanel.add(Obsscrollpane);
 		ObsandSBtable = new JTable(SBvalue,SBheader);
 		JScrollPane SBscrollpane= new JScrollPane(ObsandSBtable);
-		SBscrollpane.setPreferredSize(new Dimension(800,80));
+		SBscrollpane.setPreferredSize(new Dimension(800,200));
 		SBtitle = BorderFactory.createTitledBorder("SBStatus");
 		SBtitle.setTitleJustification(TitledBorder.CENTER);
 		SBtitle.setTitleColor(Color.RED);
@@ -189,8 +157,8 @@ public class ShowProjectStatus extends JApplet {
 		ObsandSBpanel.add(SBscrollpane);
 		//ObsandSBpanel.setBackground(Color.blue);
 		progressBar = new JProgressBar(0, 100);
-		container.add(mainPanel,BorderLayout.CENTER);
-		container.add(ObsandSBpanel,BorderLayout.NORTH);
+		container.add(mainPanel,BorderLayout.NORTH);
+		container.add(ObsandSBpanel,BorderLayout.CENTER);
 		//container.add(progressBar,BorderLayout.SOUTH);
 	}
 	
@@ -207,7 +175,6 @@ public class ShowProjectStatus extends JApplet {
             //File xmlfile1 = new File(filename1);
             //FileReader fr1 = new FileReader(xmlfile1);
             //ObsUnitSetStatusTChoice obsunit= ObsUnitSetStatusTChoice.unmarshalObsUnitSetStatusTChoice(fr1);
-            /*
             projdata[0][0]=obj.getName();
             projdata[0][1]=obj.getPI();
             projdata[0][2]=obj.getTimeOfUpdate();
@@ -216,7 +183,6 @@ public class ShowProjectStatus extends JApplet {
             projdata[0][5]=obj.getStatus().getStartTime();
             projdata[0][6]=obj.getStatus().getEndTime();
             ProjectStatustable.addNotify();
-            */
             //collect information for ObsprogramStatus
             obsprogram[0][0]=obj.getObsProgramStatus().getTimeOfUpdate();
             obsprogram[0][1]=obj.getObsProgramStatus().getStatus().getState().toString();
@@ -286,6 +252,6 @@ public class ShowProjectStatus extends JApplet {
 	      int height = (int) getPreferredSize().getHeight();
 	      if (height > table.getRowHeight(row))
 	        table.setRowHeight(row, height);
-	      return this; 
+	      return this;
 	    }
 	  }
