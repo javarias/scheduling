@@ -223,6 +223,10 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         parent.setSBStatus(sbid, "RUNNING");
         parent.closeExecutionWaitingThing();
        // parent.setEnabled(false);
+        //parent.updateSBInfo(sbid);
+        // TODO do something like the search but don't want to reset selected 
+        // things to first project..
+        //parent.doArchiveSearch();
     }
 
     public void receive(ExecBlockEndedEvent e){

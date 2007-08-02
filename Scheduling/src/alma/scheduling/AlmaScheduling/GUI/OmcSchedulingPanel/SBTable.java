@@ -153,7 +153,7 @@ public class SBTable extends JTable {
         return uid;
     }
 
-    private void showSelectedSBDetails(String id){
+    protected void showSelectedSBDetails(String id){
         SBLite sb = controller.getSBLite(id);
         showSBInfo(sb);
         if(!projectSearchMode){

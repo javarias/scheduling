@@ -84,10 +84,10 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         projects.setCS(container);
         sbs.setCS(container);
         setEnable(true);
-        doInitialSearch();
+        doArchiveSearch();
     }
     
-    private void doInitialSearch() {
+    protected void doArchiveSearch() {
         archiveSearchPanel.doSearch();
     }
     protected void selectFirstResult(){
@@ -171,7 +171,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
 
     /**
-      * Middle panel contains he search text boxes and the buttons.
+      * Middle panel contains the search text boxes and the buttons.
       */
     private void createMiddlePanel() {
         middlePanel = new JPanel(new GridLayout(2,2));
@@ -252,6 +252,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     protected void updateSBView(SBLite[] sblites){
         sbs.setRowInfo(sblites, false);
         sbs.selectFirstSB();
+    }
+    protected void updateSBInfo(String id) {
+        sbs.showSelectedSBDetails(id);
     }
 
     protected void updateProjectView(ProjectLite[] projectLites) {
@@ -362,11 +365,13 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
             } catch(CannotRunCompleteSBEx e){
                 logger.severe("SCHEDULING_PANEL: Error running SB, its complete");
                 showErrorPopup("This SB has reached its max execution count.", "executeSB");
+                closeExecutionWaitingThing();
             }catch(Exception e){
                 e.printStackTrace();
                 logger.severe("SCHEDULING_PANEL: Error starting a SB");
                 showErrorPopup(e.toString()+", "+e.getMessage(), "executeSB");
-                //showErrorPopup(e.toString()+", Try destroying the array and starting again", "executeSB");
+                stopNowSB();
+                closeExecutionWaitingThing();
             }
         }
     }

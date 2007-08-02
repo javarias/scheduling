@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.55 2007/08/02 15:14:42 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.56 2007/08/02 22:04:05 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1725,7 +1725,121 @@ public class ProjectUtil {
         return -1;
     }
 
-    static public SB updateSB(SB oldSB, SchedBlock newSB) {
-        return oldSB;
+    static public SB updateSB(SB oldSB, SchedBlock newSB, DateTime now) 
+        throws SchedulingException {
+            
+        SchedBlock sched = newSB;
+        SB sb = oldSB;
+        try{
+            sb.setTimeOfUpdate(now);
+            sb.setSBName(sched.getName());
+            int tac = sched.getObsUnitControl().getTacPriority();
+            if(tac > 10 || tac < 1) {
+                tac = 1;
+            }
+            sb.setScientificPriority(new Priority(tac));
+            int pri = sched.getObsUnitControl().getUserPriority();
+            if(pri > 10 || pri < 1) {
+                pri = 1;
+            }
+            sb.setUserPriority(new Priority(pri));
+            sb.setObservingScript(sched.getObsProcedure().getObsProcScript());
+            if (sched.hasStandardMode()){
+                sb.setStandardScript(sched.getStandardMode());
+            }else {
+                sb.setStandardScript(false);
+            }
+            SchedBlockControlT ctrl = sched.getSchedBlockControl();
+            if (ctrl == null) {
+                sb.setMaximumTimeInSeconds(1800);
+                sb.setMaximumNumberOfExecutions(1);
+            } else {
+                TimeT tt = ctrl.getSBMaximumTime();
+                if (tt == null) {
+                    sb.setMaximumTimeInSeconds(1800);
+                } else {
+                    double maxTime = tt.getContent();
+                    sb.setMaximumTimeInSeconds((int)(maxTime * 60 + 0.05));
+                }
+                int execcount = ctrl.getExecutionCount();
+                if (execcount < 1){
+                    throw new SchedulingException("Invalid execution count (" + execcount + ").");
+                }
+                sb.setMaximumNumberOfExecutions(execcount);
+                sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
+                FieldSourceT[] fieldSources = sched.getFieldSource();
+                FieldSourceT fs;
+                TargetT[] targets = sched.getTarget();
+                Source source;
+                SkyCoordinatesT coord;
+                String fs_id;
+                Equatorial[] eq = new Equatorial[targets.length];
+                String[] op_params_list;
+                for(int i=0; i < targets.length; i++){
+                    fs_id = targets[i].getFieldSourceId();
+                    fs = getFieldSourceFromList(fieldSources, fs_id);
+                    if(fs != null){
+                        coord = fs.getSourceCoordinates();
+                        if (coord == null){
+                            throw new SchedulingException(
+                               "There is no SkyCoordinatesT object in the scheduling block");
+                        }
+                        LongitudeT lng = coord.getLongitude();
+                        double ra = lng.getContent();
+                        LatitudeT lat = coord.getLatitude();
+                        double dec = lat.getContent();
+                        String coordType = coord.getSystem().toString(); // must be J2000
+                        if (!coordType.equals("J2000")){
+                            throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                        }
+                        eq[i] = new Equatorial((ra /24.0),dec);
+                        source = new Source();
+                        //TODO add source stuff..
+                        try {
+                            source.setSourceName(fs.getSourceName());
+                        } catch(Exception e) {
+                            source.setSourceName("Source was not named.");
+                        }
+                        try {
+                            source.setSolarSystemObj(fs.getSolarSystemObject().toString());
+                        } catch(Exception e) {
+                            source.setSolarSystemObj("Not a solar system object.");
+                        }
+                        SourcePropertyT[] sourceProperties = fs.getSourceProperty();
+                        try {
+                            source.setNumberSourceProperties(fs.getSourcePropertyCount());
+                            //only really care about the first one!
+                            source.setVisibleMagnitude(sourceProperties[0].getVisibleMagnitude().getValue());
+                        } catch(Exception e){}
+                        try {
+                            //TODO FIX Eventaully to get REAL values from SchedBlockChoice2
+                            source.setMinMagnitude(1);
+                            //source.setMinMagnitude(op_params.getMinMagnitude().getValue());
+                            source.setMaxMagnitude(-1);
+                            //source.setMaxMagnitude(op_params.getMaxMagnitude().getValue());
+                        } catch(Exception e){}
+    
+                        sb.addSource(source);
+                    } else {
+                        eq[i] = new Equatorial(0.0,0.0);
+                    }
+                    if (eq.length <= 1) {
+                        Target target = new Target (eq[0],3600.0,3600.0);
+                        sb.setTarget(target);
+                    } else {
+                        Target target = new Target (eq);
+                        sb.setTarget(target);
+                    }
+                    SchedulingConstraintsT constraints = sched.getSchedulingConstraints();
+                    FrequencyT freq = constraints.getRepresentativeFrequency();
+                    sb.setCenterFrequency(freq.getContent());
+                    FrequencyBand band = getFrequencyBand(freq);
+                    sb.setFrequencyBand(band);
+                }
+            }
+        } catch(Exception e){
+            throw new SchedulingException (e);
+        }
+        return sb;
     }
 }

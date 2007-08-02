@@ -74,7 +74,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.77 2007/08/02 15:14:42 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.78 2007/08/02 22:04:05 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -751,7 +751,7 @@ public class ALMAArchive implements Archive {
                 while(cursor.hasNext()){
                     QueryResult res = cursor.next();
                     xml = archOperationComp.retrieve(res.identifier);
-                    tmp.add((SchedBlock)entityDeserializer.deserializeEntity(xml, ProjectStatus.class));
+                    tmp.add((ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class));
                 }
                 ps = new ProjectStatus[tmp.size()];
                 ps = (ProjectStatus[])tmp.toArray(ps);

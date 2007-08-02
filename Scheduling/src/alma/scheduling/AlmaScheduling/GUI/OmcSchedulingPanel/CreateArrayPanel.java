@@ -56,7 +56,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         super();
         super.setBorder(new TitledBorder("Create Array"));
         allArrays = new Vector<String>();
-        setSize(400,300);
+        //setSize(400,300);
         controller= new CreateArrayController();
         createGenericAntennaChessboards();
         add(chessboardPanel, BorderLayout.CENTER);

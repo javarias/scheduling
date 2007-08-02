@@ -70,7 +70,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.91 2007/08/02 15:14:42 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.92 2007/08/02 22:04:05 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1322,8 +1322,8 @@ public class ALMAProjectManager extends ProjectManager {
     
         try {
             // Get all Projects, SBs and PS's from the archive
-            checkSBUpdates();
-            checkPSUpdates();
+           // checkSBUpdates();
+            //checkPSUpdates();
             projectList = archive.getAllProject();
             logger.finest("ProjectList size =  "+projectList.length);
             ArrayList<Project> projects = new ArrayList<Project>(projectList.length);
@@ -1456,7 +1456,7 @@ public class ALMAProjectManager extends ProjectManager {
                     throw new SchedulingException (
                             "SCHEDULING: Trying to update a SB which isn't in the queue!");
                 }
-                sb = ProjectUtil.updateSB(sb, sbs[i]);
+                sb = ProjectUtil.updateSB(sb, sbs[i], clock.getDateTime());
                 sbQueue.replace(sb);
             }
         } catch(SchedulingException e){
@@ -1623,6 +1623,7 @@ public class ALMAProjectManager extends ProjectManager {
         sblite.rank = 0 ;
         //have to get PS to get this info
         ProjectStatus ps = getPSForSB(id);
+        System.out.println("SCHEDULING: got PS ("+ps.getProjectStatusEntity().getEntityId()+") for sb");
         sblite.isComplete = isSBComplete(ps, id);
         return sblite;
     }
@@ -1734,19 +1735,25 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusT prog = ps.getObsProgramStatus();
         SBStatusT sb;
         if(isSbInThisSet(sb_id, prog)){
+            System.out.println("SCHEDULING: sb in top level set");
             sb = getSBStatus(prog, sb_id);
         } else {
             sb = findSB(prog, sb_id);
         }
-        if(sb.getStatus().getState().toString().equals("complete")){
+        if(sb.getStatus().getState().toString().equals("complete")
+                || sb.getStatus().getState().toString().equals("observed")){
+
+            System.out.println("SB ("+sb_id+") is complete");
             return true;
         } else {
+            System.out.println("SB ("+sb_id+") is not complete");
             return false;
         }
 
     }
     
     private SBStatusT findSB(ObsUnitSetStatusT o, String id){
+        System.out.println("SCHEDULING: finding sb");
         ObsUnitSetStatusTChoice c = o.getObsUnitSetStatusTChoice();
         ObsUnitSetStatusT[] sets;
         SBStatusT[] sbs;
