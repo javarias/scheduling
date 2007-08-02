@@ -47,7 +47,7 @@ public class MainSchedTabPane extends JTabbedPane {
     private JPanel mainPanel;
     private JPanel topPanel;
     private ExistingArraysTab arraysTab;
-    private SearchArchiveOnlyTab archiveTab;
+    //private SearchArchiveOnlyTab archiveTab;
     private CreateArrayPanel middlePanel;
     private JPanel showAntennaPanel;
     private JPanel middleButtonPanel;
@@ -79,13 +79,12 @@ public class MainSchedTabPane extends JTabbedPane {
         allSchedulers = new Vector<SchedulerTab>();
         createMainTab();
         maxSize = getSize();
-        //System.out.println("Main tab size = "+maxSize.toString());
         setMaximumSize(maxSize);
-        createSearchArchiveOnlyTab();
+  //      createSearchArchiveOnlyTab();
         createExistingArrayTab();
         addTab("Main",mainPanel);
         addTab("Existing Arrays", arraysTab);
-        addTab("Search", archiveTab);
+       // addTab("Search", archiveTab);
         //addTab("Manual", new ManualArrayTab(null,"foo"));
         //addTab("Queued", new QueuedSchedTab("foo","foo"));
       //  addTab("Dynamic", new DynamicSchedTab("foo","foo"));
@@ -103,7 +102,7 @@ public class MainSchedTabPane extends JTabbedPane {
         controller.setup(cs);
         logger = cs.getLogger();
         arraysTab.connectedSetup(cs);
-        archiveTab.connectedSetup(cs);
+        //archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);
         controller.checkOperationalState();
         logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
@@ -112,6 +111,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
     private void initializeChessboardsWithALMA(){
         middlePanel.initializeChessboards();
+        validate();
     }
 
     public void setDefaults(){
@@ -121,8 +121,7 @@ public class MainSchedTabPane extends JTabbedPane {
         //middlePanel.selectDefaultAntenna();
     }
     public void connectedToALMA(boolean b){
-        initializeChessboardsWithALMA();
-        archiveTab.connectToALMA(b);
+        //tell chessboards to getTMCDB if its null
     }
     
     public void setOfflineDisplay(){
@@ -136,10 +135,11 @@ public class MainSchedTabPane extends JTabbedPane {
         arraysTab.setMaxSize(maxSize);
     }
     
-    private void createSearchArchiveOnlyTab() {
+ /*   private void createSearchArchiveOnlyTab() {
         archiveTab = new SearchArchiveOnlyTab();
         archiveTab.setMaxSize(maxSize);
     }
+    */
     private void createMainTab(){ 
         mainPanel = new JPanel(new BorderLayout());
         try {
@@ -202,6 +202,19 @@ public class MainSchedTabPane extends JTabbedPane {
         manualB.setBackground(origButtonColor);
     }
     
+    protected void disableSchedulerButtons() {
+        interactiveB.setEnabled(false);
+        queuedB.setEnabled(false);
+        dynamicB.setEnabled(false);
+        manualB.setEnabled(false);
+    }
+    protected void enableSchedulerButtons() {
+        interactiveB.setEnabled(true);
+        queuedB.setEnabled(true);
+        dynamicB.setEnabled(true);
+        manualB.setEnabled(true);
+    }
+
     public void createTopPanel(){
         topPanel = new JPanel(new GridLayout(1,2));
         topPanel.setBorder(new TitledBorder("Start New Scheduler"));
@@ -269,71 +282,6 @@ public class MainSchedTabPane extends JTabbedPane {
     }
 
     private void updateAntennaView(){
-    }
-
-    public void openSchedulerTab(String mode, String array) {
-        SchedulerTab tab=null;
-        if(mode.equals("interactive")){
-            //allSchedulers.add(tab);
-            //addTab(tab.getTitle(), (JPanel)tab);
-            //TODO put on thread
-            try {
-                tab = controller.createSchedulerTab(mode, array);
-                ((InteractiveSchedTab)tab).setMaxSize(maxSize);
-                controller.openScheduler(tab);
-              //  ((InteractiveSchedTab)tab).doSetup(array);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        } else if (mode.equals("queued")){
-            try {
-                tab = controller.createSchedulerTab(mode,array);
-                ((QueuedSchedTab)tab).setMaxSize(maxSize);
-                //allSchedulers.add(tab);
-                controller.openScheduler(tab);
-           // addTab(tab.getTitle(), (JPanel)tab);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        } else if (mode.equals("dynamic")){
-            try {
-                tab = controller.createSchedulerTab(mode,array);
-           // allSchedulers.add(tab);
-          //  addTab(tab.getTitle(), (JPanel)tab);
-                ((DynamicSchedTab)tab).setMaxSize(maxSize);
-                controller.openScheduler(tab);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        } else if( mode.equals("manual")){
-            try {
-                tab = controller.createSchedulerTab(mode,array);
-            //allSchedulers.add(tab);
-                ((ManualArrayTab)tab).setMaxSize(maxSize);
-                controller.openScheduler(tab);
-            //addTab(tab.getTitle(), (JPanel)tab);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-        }
-       // if(tab != null){
-           // int i = indexOfTab(tab.getTitle());
-         //   setSelectedIndex(i);
-       // }
-    }
-
-    protected void addSchedulerTab(SchedulerTab tab){
-        try {
-            controller.getCS().startChildPlugin(
-                    tab.getTitle(), (SubsystemPlugin)tab);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        //addTab(tab.getTitle(), (JPanel)tab);
-        //if(tab != null){
-          //  int i = indexOfTab(tab.getTitle());
-         //   setSelectedIndex(i);
-        //}
     }
 
     protected void setExistingArrays(String[] automatic, String[] manual) {

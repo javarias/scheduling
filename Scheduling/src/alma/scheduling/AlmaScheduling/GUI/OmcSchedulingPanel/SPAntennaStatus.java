@@ -8,6 +8,7 @@ public class SPAntennaStatus implements ChessboardStatus {
 	private static final String OFFLINE_STRING = "ANT_OFFLINE";
 	
 	private boolean shouldFlash;
+	private boolean isSelectable;
 	private String description;
 	private Color bgColor;
 	private Color fgColor;
@@ -21,6 +22,7 @@ public class SPAntennaStatus implements ChessboardStatus {
 		this.bgColor = null;
 		this.description = description;
 		this.shouldFlash = false;
+		this.isSelectable = true;
 		
         this.fgColor = Color.black;
 		// configure the status with proper colors and/or flashing attributes
@@ -85,6 +87,10 @@ public class SPAntennaStatus implements ChessboardStatus {
 	public boolean shouldFlash() {
 		return this.shouldFlash;
 	}
+    
+    public boolean isSelectable() {
+        return this.isSelectable;
+    }
 
 	/** 
 	 * Required method of the <code>ChessboardStatus</code> interface. Returns

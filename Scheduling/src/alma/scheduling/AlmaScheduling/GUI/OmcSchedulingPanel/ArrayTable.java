@@ -107,7 +107,7 @@ public class ArrayTable extends JTable {
         item1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 DoOpenScheduler foo = new DoOpenScheduler();
-                Thread t = new Thread(foo);
+                Thread t = controller.getCS().getThreadFactory().newThread(foo);
                 t.start();
             }
         });
@@ -117,7 +117,7 @@ public class ArrayTable extends JTable {
         item1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
                 DoDestroyArray foo = new DoDestroyArray();
-                Thread t = new Thread(foo);
+                Thread t = controller.getCS().getThreadFactory().newThread(foo);
                 t.start();
             }
         });

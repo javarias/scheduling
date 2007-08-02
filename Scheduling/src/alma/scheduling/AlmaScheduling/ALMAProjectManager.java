@@ -56,6 +56,7 @@ import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.specialsb.*;
+import alma.entity.xmlbinding.schedblock.*;
 import alma.entity.xmlbinding.projectstatus.*;
 import alma.entity.xmlbinding.projectstatus.types.*;
 import alma.entity.xmlbinding.valuetypes.*;
@@ -69,7 +70,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.90 2007/07/27 20:36:40 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.91 2007/08/02 15:14:42 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1321,6 +1322,8 @@ public class ALMAProjectManager extends ProjectManager {
     
         try {
             // Get all Projects, SBs and PS's from the archive
+            checkSBUpdates();
+            checkPSUpdates();
             projectList = archive.getAllProject();
             logger.finest("ProjectList size =  "+projectList.length);
             ArrayList<Project> projects = new ArrayList<Project>(projectList.length);
@@ -1438,6 +1441,51 @@ public class ALMAProjectManager extends ProjectManager {
         logger.fine("Size of pQueue = "+pQueue.size());
         logger.fine("Size of psQueue = "+psQueue.size());
         logger.fine("Size of sbQueue = "+sbQueue.size());
+    }
+
+    /**
+      * Ask the archive for any updated SBs since the last query time
+      * update any new ones in the queue.
+      */
+    private void checkSBUpdates() throws SchedulingException {
+        try {
+            SchedBlock[] sbs = archive.queryRecentSBs();
+            for(int i=0; i < sbs.length; i++){
+                SB sb = sbQueue.get(sbs[i].getSchedBlockEntity().getEntityId());
+                if(sb == null){
+                    throw new SchedulingException (
+                            "SCHEDULING: Trying to update a SB which isn't in the queue!");
+                }
+                sb = ProjectUtil.updateSB(sb, sbs[i]);
+                sbQueue.replace(sb);
+            }
+        } catch(SchedulingException e){
+            logger.warning("SCHEDULING: Problem checking for SB updates");
+            throw e;
+        }
+    
+    }
+    
+    /**
+      * Ask the archive for any updated ProjectStatus' since the last query time
+      * update any new ones in the queue.
+      * Should be done after checking for project updates and SB updates
+      */
+    private void checkPSUpdates() throws SchedulingException {
+        try {
+            ProjectStatus[] ps = archive.queryRecentProjectStatus();
+            for(int i=0; i < ps.length; i++){
+                ProjectStatus p = psQueue.get(ps[i].getProjectStatusEntity().getEntityId());
+                if(p == null){
+                    throw new SchedulingException (
+                            "SCHEDULING: Trying to update a ProjectStatus which isn't in the queue!");
+                }
+                psQueue.replace(p);
+            }
+        } catch(SchedulingException e){
+            logger.warning("SCHEDULING: Problem checking for ProjectStatus updates");
+            throw e;
+        }
     }
 
     /**
@@ -1587,7 +1635,6 @@ public class ALMAProjectManager extends ProjectManager {
         try {
             pollArchive();
             Project[] projects = pQueue.getAll();
-//System.out.println("# of projects retrieved in getSBLite = "+projects.length);
             for(int i=0; i < projects.length; i++){
                 //get all the sbs of this project
                 SB[] sbs = projects[i].getAllSBs ();

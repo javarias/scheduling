@@ -367,6 +367,8 @@ public class ControlSimulator extends BasicComponent implements Control {
 		// Don't need it in the simulation.
 	}
 
+        public void stopSBNow(String name, String id) throws SchedulingException {}
+
     public void setAntennaOfflineNow(String antennaId) 
         throws SchedulingException {
 		// Don't need it in the simulation.

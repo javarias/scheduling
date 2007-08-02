@@ -163,7 +163,7 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     protected void destroyArray(){
         destroyArray(arrayName);
         StopDS foo = new StopDS();
-        Thread t = new Thread(foo);
+        Thread t = container.getThreadFactory().newThread(foo);
         t.start();
     }
 
@@ -212,7 +212,6 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     }
     
     public void receive(DestroyedAutomaticArrayEvent e){
-        System.out.println("Automatic array destroyed event received for "+e.arrayName);
         if(e.arrayName.equals(arrayName)){
             setArrayStatus("Destroyed");
         }

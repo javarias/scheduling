@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.54 2007/07/27 20:36:40 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.55 2007/08/02 15:14:42 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1347,6 +1347,13 @@ public class ProjectUtil {
         return ps;
         
     }
+
+    static public ProjectStatus updateProjectStatus(ProjectStatus oldPS, 
+                                                    ProjectStatus newPS, 
+                                                    DateTime t){
+        return oldPS;
+    }
+
     static private ObsUnitSetStatusT updateProgramStatus(Program prog, ObsUnitSetStatusT obs, DateTime t) 
         throws SchedulingException {
         
@@ -1718,8 +1725,7 @@ public class ProjectUtil {
         return -1;
     }
 
+    static public SB updateSB(SB oldSB, SchedBlock newSB) {
+        return oldSB;
+    }
 }
-
-
-
-   

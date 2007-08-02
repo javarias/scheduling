@@ -62,7 +62,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.66 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.67 2007/08/02 15:14:42 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -263,6 +263,19 @@ public class ALMAControl implements Control {
             	e4.printStackTrace(System.out);
             }
             throw new SchedulingException(e2);
+        }
+    }
+
+    public void stopSBNow(String name, String id) throws SchedulingException{
+         AutomaticArrayCommand ctrl = getAutomaticArray(name);
+        try{
+            logger.info("SCHEDULING: Stopping scheduling on array "+name);
+            //if(ctrl != null) {
+                ctrl.stopNow(); 
+        } catch (Exception e){
+            logger.severe("SCHEDULING: could not abort SB "+id+"!");
+            e.printStackTrace();
+            throw new SchedulingException(e);
         }
     }
 

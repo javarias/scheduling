@@ -42,6 +42,7 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     private String type;
     private String title;
     private ManualArrayTabController controller;
+    private JPanel mainPanel;
     private JPanel topPanel;
     private JPanel middlePanel;
     private JButton createConsoleB;
@@ -62,14 +63,18 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
     private void createLayout(){
-        setBorder(new TitledBorder("Manual Array"));
-        setLayout(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(new TitledBorder("Manual Array"));
         createTopPanel();
         createMiddlePanel();
-        Dimension d = getPreferredSize();
-        add(topPanel,BorderLayout.NORTH);
-        add(middlePanel,BorderLayout.CENTER);
+        mainPanel.add(topPanel,BorderLayout.NORTH);
+        mainPanel.add(middlePanel,BorderLayout.CENTER);
+        Dimension d = mainPanel.getPreferredSize();
+        mainPanel.setMaximumSize(d);
+        mainPanel.setMinimumSize(d);
+        add(mainPanel);
     }
+
     public String getTitle() {
         return title;
     }

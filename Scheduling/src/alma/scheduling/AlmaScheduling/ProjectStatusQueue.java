@@ -36,7 +36,7 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.4 2004/12/02 17:01:27 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.5 2007/08/02 15:14:42 sslucero Exp $
  */
 public class ProjectStatusQueue {
 
@@ -310,5 +310,13 @@ public class ProjectStatusQueue {
             }
         }
     }
-    
+
+    public synchronized void replace (ProjectStatus ps) {
+        for(int i=0; i < queue.size(); i++){
+            if(ps.getProjectStatusEntity().getEntityId().equals( 
+                        ((ProjectStatus)queue.get(i)).getProjectStatusEntity().getEntityId() ) ){
+                queue.set(i, ps);
+            }
+        }
+    }
 }

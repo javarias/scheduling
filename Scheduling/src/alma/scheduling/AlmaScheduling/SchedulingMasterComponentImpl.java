@@ -33,6 +33,7 @@ import alma.acs.genfw.runtime.sm.*;
 import alma.ACS.ComponentStates;
 import alma.ACS.MasterComponentPackage.*;
 import alma.acs.container.ContainerServices;
+import alma.acs.container.AdvancedContainerServices;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.ComponentLifecycleException;
 import alma.acs.nc.*;
@@ -42,13 +43,11 @@ import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
 
 import alma.acs.component.client.ComponentClient;
-import alma.acs.commandcenter.meta.*;
-import alma.acs.container.AdvancedContainerServices;
 
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.30 2007/06/27 22:24:10 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.31 2007/08/02 15:14:42 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {

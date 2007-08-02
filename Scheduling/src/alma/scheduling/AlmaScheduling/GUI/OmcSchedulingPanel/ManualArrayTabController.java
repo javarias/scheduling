@@ -103,7 +103,6 @@ public class ManualArrayTabController extends SchedulingPanelController {
     }
     
     public void receive(DestroyedManualArrayEvent e){
-        System.out.println("Manual array destroyed event received for "+e.arrayName);
         if(e.arrayName.equals(arrayName)){
             setArrayStatus("Destroyed");
         }

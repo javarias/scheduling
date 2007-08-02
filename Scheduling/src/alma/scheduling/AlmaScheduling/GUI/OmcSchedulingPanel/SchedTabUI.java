@@ -49,7 +49,6 @@ public class SchedTabUI extends BasicTabbedPaneUI {
         closeB.setSize(BUTTONSIZE-1, BUTTONSIZE-1);
         closeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                System.out.println("Close pressed!");
             }
         });
     }

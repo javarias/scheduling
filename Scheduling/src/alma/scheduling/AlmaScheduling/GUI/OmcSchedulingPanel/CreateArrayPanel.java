@@ -38,7 +38,7 @@ import alma.common.gui.chessboard.*;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
-
+    private Logger logger;
     private String[] availableAntennas;
     private Vector<String> allArrays;
     private int columnIndex = 0;
@@ -68,7 +68,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     public void connectedSetup(PluginContainerServices cs) {
         super.onlineSetup(cs);
-        System.out.println("SECOND SETUP FOR ANTENNA PANEL");
+        logger = cs.getLogger();
+        logger.fine("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
         initializeChessboards();
         createALMAAntennaChessboards();
@@ -78,6 +79,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     protected void initializeChessboards() {
         controller.updateChessboardWithALMANames();
+        createALMAAntennaChessboards();
+        add(chessboardPanel, BorderLayout.CENTER);
     }
 
     public void setEnabled(boolean enabled){
@@ -86,6 +89,15 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         disableChessboards(enabled);
         repaint();
         validate();
+    }
+
+    private void disableCreateArrayPanel() {
+        ((MainSchedTabPane)parent).disableSchedulerButtons();
+        setEnabled(false);
+    }
+    private void enableCreateArrayPanel() {
+        ((MainSchedTabPane)parent).enableSchedulerButtons();
+        //setEnabled(true);
     }
     
     private void createGenericAntennaChessboards(){
@@ -104,7 +116,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
 
     private void createALMAAntennaChessboards(){
-        System.out.println("create alma chessboard");
         chessboardPanel.removeAll();
         chessboardPanel = new JPanel(new BorderLayout());
         JPanel cbPanel = new JPanel(new GridLayout(3,1));
@@ -118,6 +129,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         cbPanel.add(createTPChessboard(all[2]));
         chessboardPanel.add(cbPanel, BorderLayout.CENTER);
         chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
+        validate();
     }
 
     private JPanel createTwelveMeterChessboard(ChessboardEntry[] foo) {
@@ -185,7 +197,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         cancelB = new JButton("Cancel");
         cancelB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                exit();
+                //exit();
                 setEnabled(false);
                 ((MainSchedTabPane)parent).resetMainViewButtons();
             }
@@ -239,10 +251,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         arrayMode = mode;
         GetAntennaThread ant = new GetAntennaThread();
         if(controller == null){
-            System.out.println("crappy controller == null");
+            logger.fine("crappy controller == null");
         }
         if(controller.getCS() == null){
-            System.out.println("crappy CS== null");
+            logger.fine("crappy CS== null");
         }
         Thread t = controller.getCS().getThreadFactory().newThread(ant);
         t.start();
@@ -264,6 +276,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             }
         }
         String arrayName;
+        disableCreateArrayPanel();
         try {
             arrayName = controller.createArray(arrayMode, selected);
             allArrays.add(arrayName);
@@ -275,7 +288,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             return false;
         }
         //tell parent component to open new scheduler tab.
-        openNewSchedulerTab(arrayMode, arrayName);
+//        openNewSchedulerTab(arrayMode, arrayName);
         return true;
     }
 
@@ -283,17 +296,17 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
       * @param am ArrayMode
       * @param an Array Name
       */
-    public void openNewSchedulerTab(String am, String an) {
-        OpenSchedulerTab newTab = new OpenSchedulerTab(am, an);
-        Thread t = new Thread(newTab);
-        t.start();
-    }
+//    public void openNewSchedulerTab(String am, String an) {
+//        OpenSchedulerTab newTab = new OpenSchedulerTab(am, an);
+//        Thread t = new Thread(newTab);
+//        t.start();
+//    }
 
 
-    public void exit() {
+ //   public void exit() {
         //clearAntennaTables();
-    }
-    class OpenSchedulerTab implements Runnable {
+   // }
+/*    class OpenSchedulerTab implements Runnable {
         private String mode;
         private String array;
         public OpenSchedulerTab(String m, String arrayName) {
@@ -305,6 +318,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             //unselect the button now
         }
     }
+    */
     class GetAntennaThread implements Runnable {
         public GetAntennaThread(){
         }
@@ -319,10 +333,14 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         }
         public void run(){
             if(createArray()) {
-                exit();
+              //  exit();
                 setEnabled(false);
                 ((MainSchedTabPane)parent).resetMainViewButtons();
             }
+            //reset buttons
+            ((MainSchedTabPane)parent).resetMainViewButtons();
+            //re-enable panel
+            enableCreateArrayPanel();
         }
     }
 }

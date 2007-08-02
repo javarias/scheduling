@@ -115,9 +115,11 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
 
     public void aboutToAbort() {
         try {
-            container.releaseComponent(masterScheduler.name());
+            if (masterScheduler != null) {
+                container.releaseComponent(masterScheduler.name());
+            }
         } catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     /////////////////////////////////////////////////////////////////////
@@ -223,6 +225,17 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         } catch(Exception e) {
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("stopSB",e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            throw e2.toInvalidOperationEx();
+        }
+    }
+
+    public void stopNowSB() throws InvalidOperationEx {
+        try {
+            masterScheduler.stopInteractiveSBNow(schedulerId);
+        } catch(Exception e) {
+            e.printStackTrace();
+            InvalidOperation e1 = new InvalidOperation("stopNowSB",e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }

@@ -45,6 +45,7 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     private JButton destroyArrayB;
     private JButton modifyB;
     private JButton acceptB;
+    private JPanel mainPanel;
     private JPanel topPanel;
     private JPanel centerPanel;
     private JPanel bottomPanel;
@@ -74,10 +75,18 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     }
     
     private void createLayout() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         createTopPanel();
         createCenterPanel();
         createBottomPanel();
+        mainPanel.add(topPanel);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        Dimension d = mainPanel.getPreferredSize();
+        mainPanel.setMaximumSize(d);
+        mainPanel.setMinimumSize(d);
+        add(mainPanel);
         createAndStartDynamicScheduler();
     }
 
@@ -85,7 +94,6 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         topPanel = new JPanel();
         JLabel l = new JLabel("Dynamic Scheduling on Array "+arrayName);
         topPanel.add(l);
-        add(topPanel);//,BorderLayout.NORTH);
     }
     private void createCenterPanel(){
         centerPanel = new JPanel();
@@ -101,7 +109,6 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
                 public void actionPerformed(ActionEvent e) {
                     //getSBId that is selected
                     String selectedSB = sbs.returnSelectedSBId();
-                    System.out.println("Selected SB = "+selectedSB);
                     //Get SB selected from Table.
                     respondToDS(selectedSB);
                 }
@@ -116,7 +123,6 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         p1.add(buttons, BorderLayout.NORTH);
 
         centerPanel.add(p1);
-        add(centerPanel, BorderLayout.CENTER);
     }
     
     private void createBottomPanel() {
@@ -134,7 +140,6 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         bottomPanel.add(arrayStatusL);
         bottomPanel.add(arrayStatusDisplay);
         bottomPanel.add(destroyArrayB);
-        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     public String getSchedulerType(){
@@ -147,7 +152,9 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
         return arrayName;
     }
     public void exit(){
-        controller.stopDynamicScheduling();
+        try {
+            controller.stopDynamicScheduling();
+        } catch(Exception e){}
     }
 
     public void stop() throws Exception {

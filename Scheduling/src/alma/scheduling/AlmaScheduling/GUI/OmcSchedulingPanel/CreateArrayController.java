@@ -60,24 +60,25 @@ public class CreateArrayController extends SchedulingPanelController {
     public void secondSetup(PluginContainerServices cs){
         super.onlineSetup(cs);
         if(cs == null) {
-            logger.fine("**************** probelm ");
+            logger = Logger.getLogger("OFFLINE SP");
+            logger.warning("SchedulingPanel: problem getting CS");
         }
     }
 
     protected void updateChessboardWithALMANames(){
-        connectToTMCDB();
+        getTMCDBComponent();
         createOfflineChessboards();
     }
 
-    private void connectToTMCDB(){ 
+    private void getTMCDBComponent(){ 
        try {
-           if(tmcdb == null) {
-                tmcdb = TMCDBComponentHelper.narrow(
-                        container.getDefaultComponent("IDL:alma/TMCDB/TMCDBComponent:1.0"));
+           if(tmcdb == null){
+                tmcdb = TMCDBComponentHelper.narrow(container.getDefaultComponent("IDL:alma/TMCDB/TMCDBComponent:1.0"));
            }
         } catch (Exception e) {
             //TODO do more here
             e.printStackTrace();
+            tmcdb = null;
         }
     }
     
@@ -120,13 +121,6 @@ public class CreateArrayController extends SchedulingPanelController {
     private void createOfflineChessboards(){
         if(tmcdb == null){
             if(logger == null) {
-                System.out.print("Logger null, tried to connect to TMCDB but failed");
-                return;
-            }
-            try {
-                connectToTMCDB();
-            } catch (Exception e) {
-                logger.severe("SP: CANNOT CONNECT TO TMCDB");
                 return;
             }
         }
@@ -139,15 +133,14 @@ public class CreateArrayController extends SchedulingPanelController {
                 antennaNames[i] = startupInfo[i].antennaName;
                 logger.fine("Antenna name from CTRL: "+ antennaNames[i]);
             }
-            map12 = alma.common.gui.chessboard.MapToNumber.createMapping(antennaNames,"twelveMeter");
-            map7 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(12);
-            mapTP = alma.common.gui.chessboard.MapToNumber.createEmptyMap(4);
+            map12 = alma.common.gui.chessboard.internals.MapToNumber.createMapping(antennaNames,"twelveMeter");
+            map7 = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(12);
+            mapTP = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(4);
             String[] twelve = new String[map12.size()];
             twelve = (String[])map12.values().toArray(twelve);
             String[] twelve_real = new String[map12.size()];
             twelve_real = (String[])map12.keySet().toArray(twelve_real);
             for(int i=0; i < 50; i++){
-               // System.out.println(twelve_real[i]);
                 entries12[i] = null;
                 entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
             }
@@ -174,9 +167,9 @@ public class CreateArrayController extends SchedulingPanelController {
       * For displaying only, can't do anything with these 
       */
     public ChessboardEntry[][] getGenericAntennaMapping() {
-        Map generic1 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(50);
-        Map generic2 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(12);
-        Map generic3 = alma.common.gui.chessboard.MapToNumber.createEmptyMap(4);
+        Map generic1 = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(50);
+        Map generic2 = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(12);
+        Map generic3 = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(4);
         String[] foo1 = new String[generic1.size()];
         foo1 = (String[])generic1.values().toArray(foo1); 
         for(int i=0; i < foo1.length; i++){

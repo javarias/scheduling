@@ -72,7 +72,6 @@ public class ProjectTable extends JTable {
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //setMaximumSize(size);
         setPreferredScrollableViewportSize(size);
-        //System.out.println("Size: "+size.width);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
             setHorizontalAlignment(SwingConstants.LEFT);
@@ -195,7 +194,6 @@ public class ProjectTable extends JTable {
             projRowInfo[i][uidLoc]= projects[i].uid;
         }
         manageColumnSizes();
-        //System.out.println("Project Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
@@ -223,7 +221,6 @@ public class ProjectTable extends JTable {
         projectInfo.append("Total number of SBs = "+p.totalSBs +"\n");  
         projectInfo.append("Total number of SBs completed = "+p.completeSBs +"\n"); 
         projectInfo.append("Total number of SBs failed = "+p.failedSBs +"\n");  
-        //System.out.println("Project Info size "+projectInfo.getSize().toString());
         projectInfo.repaint();
         projectInfo.validate();
     }
@@ -232,8 +229,8 @@ public class ProjectTable extends JTable {
         String[] ids = p.allSBIds;
         SBLite[] sbs = controller.getSBLites(ids);
         String par = parent.getClass().getName();
-        if(par.contains("SearchArchiveOnlyTab")){
-            ((SearchArchiveOnlyTab)parent).updateSBView(sbs);
+        if(par.contains("SearchArchiveOnlyPlugin")){
+            ((SearchArchiveOnlyPlugin)parent).updateSBView(sbs);
         } else if(par.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateSBView(sbs);
         } else if(par.contains("QueuedSchedTab")){
@@ -293,21 +290,15 @@ public class ProjectTable extends JTable {
             column.setPreferredWidth(Math.max(headerWidth,width)+5);
             allColumnWidth += Math.max(headerWidth,width)+5;
         }
-     //   System.out.println("all prj col wid: "+ allColumnWidth);
-     //   System.out.println("total prj preferred size: "+ 
-      //          getPreferredScrollableViewportSize().width);
         if(allColumnWidth < getPreferredScrollableViewportSize().width) {
             int difference = getPreferredScrollableViewportSize().width - allColumnWidth;
-           // System.out.println("prj difference: "+ difference);
             int currentSize;
             int totalColumns = columns.getColumnCount();
             for(int i=0;i< totalColumns; i++) {
                 column = getColumnModel().getColumn(i);
                 currentSize = column.getPreferredWidth();
-               // System.out.println("prj Current size: "+currentSize);
                 column.setPreferredWidth(currentSize +
                         (difference/totalColumns));
-               // System.out.println("New Prj Col width: "+column.getPreferredWidth()+" total columns = "+totalColumns+"; current col # = "+i);
             }
         }
         validate();

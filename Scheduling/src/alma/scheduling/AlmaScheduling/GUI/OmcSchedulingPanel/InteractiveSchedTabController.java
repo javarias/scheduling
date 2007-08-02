@@ -51,12 +51,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     private String arrayStatus;
     private InteractiveSchedTab parent;
     
-    private PluginContainerServices foo;
+    //private PluginContainerServices foo;
 
     public InteractiveSchedTabController(PluginContainerServices cs, String a, InteractiveSchedTab p){
         super(cs);
         parent = p;
-        foo=cs;
+        //foo=cs;
         arrayName = a;
         arrayStatus = "Active";
         currentSBId = "";
@@ -65,7 +65,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             //consumer.consumerReady();
-            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, foo);
+            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
             consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
             consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
@@ -94,8 +94,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
     protected void destroyArray(){
         destroyArray(arrayName);
-        StopIS foo = new StopIS();
-        Thread t = new Thread(foo);
+        StopIS stopIs = new StopIS();
+        Thread t = container.getThreadFactory().newThread(stopIs);
         t.start();
     }
 
@@ -116,7 +116,6 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     public void getISRef() {
         try {
-            System.out.println("scheduler name = "+ schedulername);
             scheduler = alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
                     container.getComponent(schedulername));
         }catch(Exception e){
@@ -188,10 +187,19 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
 
+    public synchronized void stopNowSB()throws SchedulingException{
+        try{
+            logger.info("IS: Requesting sb to abort");
+            scheduler.stopNowSB();
+        }catch( Exception e){
+            throw new SchedulingException (e);
+        }
+    }
+
     public void receive(XmlStoreNotificationEvent event) {
         //logger.fine("IS: got xml update event");
         CheckArchiveEvent processor = new CheckArchiveEvent(event);
-        Thread t = new Thread(processor);
+        Thread t = container.getThreadFactory().newThread(processor);
         t.start();
     }
     int startC =0;
@@ -213,10 +221,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         //startInteractiveSession();
         waitingForArchivedSB.add(sbid);
         parent.setSBStatus(sbid, "RUNNING");
+        parent.closeExecutionWaitingThing();
        // parent.setEnabled(false);
     }
 
     public void receive(ExecBlockEndedEvent e){
+        parent.closeExecutionWaitingThing();
         logger.fine("got eb ended in IS");
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
@@ -227,14 +237,14 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
                 !scheduler.getCurrentEB().equals(exec_id) ){
-            System.out.println("Problem! SB id and exec block id are not current.. this shouldnt happen!");
+            logger.info("Problem! SB id and exec block id are not current.. this shouldnt happen!");
            // currentExecBlockId = exec_id;
         } else {
             logger.finest("got stop for sb "+sbid+", ctr = "+stopC);
             stopC++;
         }
         String completion;
-        System.out.println("Completion value from control: "+e.status.value()+" : "+e.status.toString());
+        logger.info("Completion value from control: "+e.status.value()+" : "+e.status.toString());
         completion = e.status.toString();//completions[e.status.value()];
         parent.setSBStatus(sbid, completion);
         if(scheduler.getCurrentEB().equals(exec_id)){
@@ -264,8 +274,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         logger.fine("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
-        System.out.println("Current SB = "+currentSBId);
-        //System.out.println("got archived event: completion = "+completion);
+        logger.info("Current SB = "+currentSBId);
         //if(sbid.equals(currentSBId)){
         if(waitingForArchivedSB.contains(sbid)){
             logger.fine("in list");

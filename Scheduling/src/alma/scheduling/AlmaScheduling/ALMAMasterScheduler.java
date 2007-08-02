@@ -81,7 +81,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.93 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.94 2007/08/02 15:14:42 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -134,13 +134,16 @@ public class ALMAMasterScheduler extends MasterScheduler
     private int d_sched_count=0;
     //keep track of arrays
     private Vector arraysInUse;
+    //Keeps track of the scheduler modes for each array
+    private LinkedHashMap<String, ArrayModeEnum> schedModeForArray;
     
     /** 
      * Constructor
      */
     public ALMAMasterScheduler() {
         super();
-        ACSJMSTopicConnectionImpl.containerServices=containerServices;
+        //SL: took this out coz its not needed anymore according to Alessandro
+        //ACSJMSTopicConnectionImpl.containerServices=containerServices;
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -161,6 +164,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.queuedComps = new Vector();
             this.dynamicComps = new Vector();
             allSchedulers = new LinkedHashMap<String, Scheduler>();
+            schedModeForArray = new LinkedHashMap<String, ArrayModeEnum>();
             this.containerServices = cs;
             this.instanceName = containerServices.getName();
             this.logger = containerServices.getLogger();
@@ -487,6 +491,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             if(((Dynamic_Operator_to_Scheduling)dynamicComps.elementAt(i)).name().equals(name)){
                 try {
                     containerServices.releaseComponent(name);
+                    dynamicComps.remove(i);
                 } catch(Exception e){
                     logger.warning("SCHEDULING: Error releasing dynamic scheduling component");
                     e.printStackTrace();
@@ -710,7 +715,12 @@ public class ALMAMasterScheduler extends MasterScheduler
             if(comp.name().equals(n)) {
                 logger.fine("SCHEDULING: Stopping interactive scheduler component "
                         +comp.name());
+                interactiveComps.remove(i);
                 containerServices.releaseComponent(comp.name());
+                id= comp.getSchedulerId();
+                InteractiveScheduler scheduler = (InteractiveScheduler)allSchedulers.get(id);
+                scheduler = null;
+                allSchedulers.remove(id);
             }
         }
     }
@@ -1016,6 +1026,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
         }
+        schedModeForArray.put(name, schedulingMode);
         return name;
     }
 
@@ -1055,6 +1066,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     break;
                 }
             }
+            schedModeForArray.remove(name);
         } catch(SchedulingException e) {
             InvalidOperation e1 = new InvalidOperation("destroyArray", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -1291,6 +1303,21 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
     }
 
+    public void stopInteractiveSBNow(String schedulerId) 
+        throws InvalidOperationEx, NoSuchSBEx {
+            
+        Scheduler scheduler = getScheduler(schedulerId);
+        checkSchedulerType(scheduler.getType(), "interactive");
+        try {
+            ((InteractiveScheduler)scheduler).stopNow();
+        } catch(Exception e) {
+            InvalidOperation e1 = new InvalidOperation("stopInteractiveSBNow",
+                   e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            throw e2.toInvalidOperationEx();
+        }
+    }
+
     public void startInteractiveSession(String pi, String projectId, 
             String schedulerId) throws InvalidOperationEx{
 
@@ -1331,6 +1358,19 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
     }
 
+    ////////////// Methods to set/get scheduler modes for a given array ///////////
+   // public void setSchedulerModeForArray(String arrayname, ArrayModeEnum schedMode )
+    //    throws InvalidOperationEx {
+
+        // TODO check to see if array exists, if not throw exception
+  //      schedModeForArray.put(arrayname, schedMode);
+//    }
+
+    public ArrayModeEnum getSchedulerModeForArray(String arrayname) throws InvalidOperationEx {
+        // TODO check to see if array exists, if not throw exception
+        return (ArrayModeEnum)schedModeForArray.get(arrayname);
+    }
+    
     ////////////////////////////////////////////////////////////////
 
     private void checkSchedulerType(String type, String shouldbe) throws InvalidOperationEx {

@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
+import javax.swing.JProgressBar;
 
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
@@ -44,20 +45,25 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     private InteractiveSchedTabController controller;
+    private JPanel mainPanel;
     private JPanel topPanel;
     private JPanel middlePanel;
     private JPanel bottomPanel;
     private JButton destroyArrayB;
     private JButton execB;
     private JButton stopB;
+    private JButton stopnowB;
     private SBTable sbs;
     private ProjectTable projects; 
     private JLabel arrayStatusDisplay;
   //  private boolean sessionStarted;
     private boolean searchingOnProject; 
+    private JProgressBar progressBar;
+    private boolean pBarOpen = false;
 
     public InteractiveSchedTab(){
         super();
+        createLayout();
     }
 
     public InteractiveSchedTab(PluginContainerServices cs, String aName){
@@ -99,12 +105,16 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         return type;
     }
     public void exit(){
-        controller.releaseISRef();
-        controller.stopInteractiveScheduling();
+        try {
+            controller.releaseISRef();
+            controller.stopInteractiveScheduling();
+        } catch(Exception e){
+            //exception thrown when user actually destroyed the array before exiting. Good User
+        }
     }
     ////////////////////////////////////
     public void start() throws Exception {
-        super.start();
+     //   super.start();
         validate();
     }
     public void stop() throws Exception {
@@ -114,14 +124,17 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     ////////////////////////////////////
     
     private void createLayout(){
-        setBorder(new TitledBorder("Interactive Scheduling"));
-        setLayout(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setMaximumSize(new Dimension(300,500));
+        mainPanel.setBorder(new TitledBorder("Interactive Scheduling"));
         createTopPanel();
         createMiddlePanel();
-        Dimension d = getPreferredSize();
-        add(topPanel,BorderLayout.NORTH);
-        //add(archiveSearchPanel,BorderLayout.NORTH);
-        add(middlePanel,BorderLayout.CENTER);
+        mainPanel.add(topPanel,BorderLayout.NORTH);
+        mainPanel.add(middlePanel,BorderLayout.CENTER);
+        Dimension d = mainPanel.getPreferredSize();
+        mainPanel.setMaximumSize(d);
+        mainPanel.setMinimumSize(d);
+        add(mainPanel);
     }
 
     private void createTopPanel() {
@@ -135,6 +148,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     controller.destroyArray();
                     destroyArrayB.setEnabled(false);
                     stopB.setEnabled(false);
+                    stopnowB.setEnabled(false);
                     execB.setEnabled(false);
                 }
         });
@@ -189,15 +203,23 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
             }
         });
         stopB = new JButton("Stop");
-        stopB.setToolTipText("Will stop the currently running SB on this array");
+        stopB.setToolTipText("Stops the currently running SB on this array, nicely");
         stopB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 stopSB();
             }
         });
+        stopnowB = new JButton("Abort");
+        stopnowB.setToolTipText("Aborts the SB, right away.");
+        stopnowB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                stopNowSB();
+            }
+        });
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
         buttons.add(execB);
         buttons.add(stopB);
+        buttons.add(stopnowB);
         sbPanel.add(buttons, BorderLayout.SOUTH);
         middlePanel.add(sbPanel);
         
@@ -215,6 +237,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         archiveSearchPanel.setPanelEnabled(b);
         execB.setEnabled(b);
         stopB.setEnabled(!b);
+        stopnowB.setEnabled(!b);
         repaint();
     }
     /**
@@ -244,30 +267,60 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         sbs.setSBExecStatus(sb, status);
         if(status.equals("RUNNING")){
             setEnable(false);
-            closeExecutionWaitingThing();
         } else {
             setEnable(true);
         }
     }
+    
+    private void openExecutionWaitingThing(){
+        progressBar = new JProgressBar(0,100);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        progressBar.setIndeterminate(true);
+        progressBar.setString("Execution Starting..");
+
+        //middlePanel
+        Component[] comps1 = middlePanel.getComponents();
+        //sbPanel
+        Component[] comps2 = ((JPanel)comps1[1]).getComponents();
+        //Execute & Stop buttons
+        JPanel buttons = (JPanel)comps2[1];
+        buttons.removeAll();
+        buttons.add(progressBar);
+        buttons.add(stopnowB);
+        stopnowB.setEnabled(true);
+        buttons.revalidate();
+        pBarOpen = true;
+    }
+
+    public void closeExecutionWaitingThing(){
+        if(pBarOpen) {
+            //middlePanel
+            Component[] comps1 = middlePanel.getComponents();
+            //sbPanel
+            Component[] comps2 = ((JPanel)comps1[1]).getComponents();
+            JPanel buttons = (JPanel)comps2[1];
+            buttons.removeAll();
+            buttons.add(execB);
+            buttons.add(stopB);
+            buttons.add(stopnowB);
+            setEnabled(false);
+            buttons.revalidate();
+        }
+    }
+
 
     protected void updateArrayStatus() {
         String stat = controller.getArrayStatus();
         if(stat.equals("Destroyed")){
             destroyArrayB.setEnabled(false);        
+            closeExecutionWaitingThing();
         }
         arrayStatusDisplay.setText(stat);
         arrayStatusDisplay.validate();
         revalidate();
-        System.out.println("array status label should be updated now to "+controller.getArrayStatus());
     }
 
-    private void openExecutionWaitingThing(){
-        //JOptionPane.showMessageDialog(this, "Please wait, Preparing for SB Execution",
-          //      "Waiting",JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void closeExecutionWaitingThing(){
-    }
 
     private void executeSB(){
         ExecuteSBThread exec = new ExecuteSBThread();
@@ -277,6 +330,12 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     private void stopSB(){
         StopSBThread stop = new StopSBThread();
         Thread t = controller.getCS().getThreadFactory().newThread(stop);
+        t.start();
+    }
+
+    private void stopNowSB(){ 
+        StopNowThread stopnow = new StopNowThread();
+        Thread t = controller.getCS().getThreadFactory().newThread(stopnow);
         t.start();
     }
 
@@ -312,7 +371,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         }
     }
 
-    class StopSBThread implements Runnable{
+    class StopSBThread implements Runnable {
         public StopSBThread() {
         }
         public void run() {
@@ -320,11 +379,29 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                 controller.stopSB();
                 //so they can't press stop twice!
                 stopB.setEnabled(false);
+                stopnowB.setEnabled(false);
             } catch(Exception e) {
                 e.printStackTrace();
                 logger.severe("SCHEDULING_PANEL: Error stopping a SB");
                 showErrorPopup(e.toString(), "stopSB");
             }
         }
+    }
+
+    class StopNowThread implements Runnable {
+        public StopNowThread(){
+        }
+        public void run(){
+            try {
+                controller.stopNowSB();
+            } catch (Exception e){
+                e.printStackTrace();
+                logger.severe("SCHEDULING_PANEL: Error aborting SB");
+                showErrorPopup(e.toString(), "stopNowSB");
+            }
+        }
+    }
+
+    public void main(String[] args){
     }
 }

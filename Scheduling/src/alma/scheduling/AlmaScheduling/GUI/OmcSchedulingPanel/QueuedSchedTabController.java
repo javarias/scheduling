@@ -98,18 +98,14 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     protected void addSBs(String[] ids){
         ArrayList<String> all = new ArrayList<String>();
         if(sbs_to_run != null){
-            System.out.println("orig sbs in table: ");
             for(int i=0; i < sbs_to_run.length; i++){
-                System.out.println("\t"+ sbs_to_run[i]);
                 all.add(sbs_to_run[i]);
             }
         } 
-        System.out.println("should be order as above: "+all.toString());
         for(int i=0; i < ids.length; i++){
             qsComp.addSB(ids[i]);
             all.add(ids[i]);
         }
-        System.out.println(all.toString());
         sbs_to_run = new String[all.size()];
         sbs_to_run = all.toArray(sbs_to_run);
     }
@@ -125,16 +121,13 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 if(index != ind[i]){
                     //if the index isn't in the lest to delete
                     //add it back
-                    System.out.println("keeping sb "+sbs_to_run[index]);
                     modified.add(sbs_to_run[index]);
-                } else {
-                    System.out.println("not keeping "+sbs_to_run[index]);
-                }
+                } //else {
+                //}
             }
         }
         sbs_to_run = new String[modified.size()];
         sbs_to_run = modified.toArray(sbs_to_run);
-        System.out.println(modified.toString());
         try {
             qsComp.removeSBs(ids, ind);
         } catch(Exception e) {
@@ -158,7 +151,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     protected void destroyArray() {
         destroyArray(arrayName);
         StopQS foo = new StopQS();
-        Thread t = new Thread(foo);
+        Thread t = container.getThreadFactory().newThread(foo);
         t.start();
     }
 
@@ -221,7 +214,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     }
 
     public void receive(DestroyedAutomaticArrayEvent e){
-        System.out.println("Automatic array destroyed event received for "+e.arrayName);
+        logger.fine("Automatic array destroyed event received for "+e.arrayName);
         if(e.arrayName.equals(arrayName)){
             setArrayStatus("Destroyed");
         }
@@ -288,7 +281,6 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         logger.fine("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
-        //System.out.println("got archived event: completion = "+completion);
         boolean belongs = doesSbBelong(sbid);
         if(belongs){
             if(completion.equals("complete")){

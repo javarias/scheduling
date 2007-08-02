@@ -95,7 +95,6 @@ public class SBTable extends JTable {
         //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //setPreferredSize(size);
         setPreferredScrollableViewportSize(size);
-        //System.out.println("Size: "+size.width);
         //setMaximumSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
@@ -155,7 +154,6 @@ public class SBTable extends JTable {
     }
 
     private void showSelectedSBDetails(String id){
-        //System.out.println("SB ID = "+id);
         SBLite sb = controller.getSBLite(id);
         showSBInfo(sb);
         if(!projectSearchMode){
@@ -256,7 +254,6 @@ public class SBTable extends JTable {
             }
         }
         manageColumnSizes();
-        //System.out.println("SB Table size "+getSize().toString());
         repaint();
         revalidate();
         validate();
@@ -285,7 +282,6 @@ public class SBTable extends JTable {
             newRowInfo[tmpCtr][uidLoc] = sbs[i].schedBlockRef;
             if(withExec){
                 newRowInfo[tmpCtr][execLoc] = "N/A";
-                //System.out.println("Exec location = "+execLoc);
             }
             tmpCtr++;
         }
@@ -389,7 +385,6 @@ public class SBTable extends JTable {
    
     private String getDisplayStatus(String status){
         String displayStatus="";
-        //System.out.println("Execution Status = "+status);
         if(status.equals("ARCHIVED")){
             displayStatus = "AR";
         } else if(status.equals("COMPLETE")){
@@ -473,27 +468,18 @@ public class SBTable extends JTable {
             allColumnWidth += Math.max(headerWidth,width)+5;
         }
         //now make sure we fill the whole column if there's extra
-        //System.out.println("sb all col wid: "+ allColumnWidth);
-        //System.out.println("sb total preferred size: "+ 
-          //      getPreferredScrollableViewportSize().width);
         if(allColumnWidth < getPreferredScrollableViewportSize().width) {
-       // System.out.println("******************************************");
             int difference = getPreferredScrollableViewportSize().width - allColumnWidth;
-           // System.out.println("sb difference: "+ difference);
             int currentSize;
             int totalColumns = columns.getColumnCount();
             for(int i=0;i< totalColumns; i++) {
                 column = getColumnModel().getColumn(i);
                 currentSize = column.getPreferredWidth();
-              //  System.out.println("sb Current size: "+currentSize);
                 column.setPreferredWidth(currentSize +
                         (difference/totalColumns));
-            //    System.out.println("New SB Col width: "+column.getWidth()+" total columns = "+totalColumns+"; current col # = "+i);
-          //      System.out.println("New SB Col width: "+column.getPreferredWidth()+" total columns = "+totalColumns+"; current col # = "+i);
             }
         }
         validate();
-        //System.out.println("******************************************");
     }
 
     public JScrollPane getSBInfoView(){
@@ -529,14 +515,13 @@ public class SBTable extends JTable {
         sbInfo.append("Rank: "+sb.rank+"\n");
         sbInfo.repaint();
         sbInfo.validate();
-        //System.out.println("SB Info size "+sbInfo.getSize().toString());
     }
 
     private void showSBProject(SBLite sb){
         ProjectLite[] p = controller.getProjectLite(sb.projectRef);
         String par = parent.getClass().getName();
-        if(par.contains("SearchArchiveOnlyTab")){
-            ((SearchArchiveOnlyTab)parent).updateProjectView(p);
+        if(par.contains("SearchArchiveOnlyPlugin")){
+            ((SearchArchiveOnlyPlugin)parent).updateProjectView(p);
         } else if(par.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateProjectView(p);
         } else if(par.contains("QueuedSchedTab")){

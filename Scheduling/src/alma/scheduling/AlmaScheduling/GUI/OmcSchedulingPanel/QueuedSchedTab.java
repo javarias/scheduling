@@ -47,7 +47,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private QueuedSchedTabController controller;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     //private JPanel middlePanel;
-    //private JPanel bottomPanel;
+    private JPanel mainPanel;
     private JPanel topPanel;
     private JPanel centerPanel;
     private boolean searchingOnProject;
@@ -101,7 +101,9 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 ///////////////////////////////
     public void exit(){
-        controller.stopQueuedScheduling();
+        try {
+            controller.stopQueuedScheduling();
+        } catch(Exception e){}
     }
     public String getSchedulerType(){
         return type;
@@ -114,12 +116,16 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 ///////////////////////////////
     private void createLayout(){
-        setBorder(new TitledBorder("Queued Scheduling"));
-        setLayout(new BorderLayout());
+        mainPanel = new JPanel();
+        mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
+        mainPanel.setLayout(new BorderLayout());
         createTopPanel();
+        mainPanel.add(topPanel,BorderLayout.NORTH);
+        mainPanel.add(createCenterPanel(),BorderLayout.CENTER);
         Dimension d = getPreferredSize();
-        add(topPanel,BorderLayout.NORTH);
-        add(createCenterPanel(),BorderLayout.CENTER);
+        mainPanel.setMaximumSize(d);
+        mainPanel.setMinimumSize(d);
+        add(mainPanel);
     }
     private void createTopPanel() {
         createArchivePanel();
@@ -345,9 +351,6 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //get selected SBs from sbTable
         String[] selectedSBs = sbs.getSelectedSBs();
         SBLite[] sbs = controller.getSBLites(selectedSBs);
-        for(int i=0; i < sbs.length; i++){
-            System.out.println("sb lites "+sbs[i].schedBlockRef);
-        }
         //pass these to queuedSBTable
         queueSBs.setRowInfo(sbs, true);
         controller.addSBs(selectedSBs);

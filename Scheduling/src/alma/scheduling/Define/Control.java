@@ -31,7 +31,7 @@ package alma.scheduling.Define;
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version $Id: Control.java,v 1.11 2006/07/18 19:51:58 sslucero Exp $
+ * @version $Id: Control.java,v 1.12 2007/08/02 15:14:42 sslucero Exp $
  * @author Allen Farris
  */
 public interface Control {
@@ -73,6 +73,14 @@ public interface Control {
 	 */
 	public void stopSB(String name, String id)
 		throws SchedulingException;
+	/**
+	 * Aborts the currently executing SB.
+	 * @param name The array on which the SB is currently executing.
+	 * @param id The entity-id of the SB to stop.
+	 */
+	public void stopSBNow(String name, String id)
+		throws SchedulingException;
+	
 	
 	/**
 	 * Create a sub-array.

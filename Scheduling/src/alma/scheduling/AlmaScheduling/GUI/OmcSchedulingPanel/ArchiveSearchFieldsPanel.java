@@ -72,8 +72,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         parent = p;
     }
     private void setSearchMode(boolean m){
-        if(parent.getClass().getName().contains("SearchArchiveOnlyTab")){
-            ((SearchArchiveOnlyTab)parent).setSearchMode(m);
+        if(parent.getClass().getName().contains("SearchArchiveOnlyPlugin")){
+            ((SearchArchiveOnlyPlugin)parent).setSearchMode(m);
         } else if(parent.getClass().getName().contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).setSearchMode(m);
         } else if(parent.getClass().getName().contains("QueuedSchedTab")){
@@ -275,8 +275,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
 
     private void doClearPreviousSearch(){
         String name =parent.getClass().getName();
-        if(name.contains("SearchArchiveOnlyTab")){
-            ((SearchArchiveOnlyTab)parent).clearTables();
+        if(name.contains("SearchArchiveOnlyPlugin")){
+            ((SearchArchiveOnlyPlugin)parent).clearTables();
         } else if(name.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).clearTables();
         } else if(name.contains("QueuedSchedTab")){
@@ -315,8 +315,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
 
     public void displaySBResults(SBLite[] results){
         String name =parent.getClass().getName();
-        if(name.contains("SearchArchiveOnlyTab")){
-            ((SearchArchiveOnlyTab)parent).updateSBView(results);
+        if(name.contains("SearchArchiveOnlyPlugin")){
+            ((SearchArchiveOnlyPlugin)parent).updateSBView(results);
         } else if(name.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateSBView(results);
         } else if(name.contains("QueuedSchedTab")){
@@ -330,8 +330,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     
     public void displayProjectResults(ProjectLite[] results){
         String name =parent.getClass().getName();
-        if(name.contains("SearchArchiveOnlyTab")){
-            ((SearchArchiveOnlyTab)parent).updateProjectView(results);
+        if(name.contains("SearchArchiveOnlyPlugin")){
+            ((SearchArchiveOnlyPlugin)parent).updateProjectView(results);
         } else if(name.contains("InteractiveSchedTab")){
             ((InteractiveSchedTab)parent).updateProjectView(results);
         } else if(name.contains("QueuedSchedTab")){
@@ -365,10 +365,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                 displayProjectResults((ProjectLite[])res.elementAt(0));
             } else if(sbCB.isSelected()){
                 displaySBResults((SBLite[])res.elementAt(1));
-            } else {
-            //shouldnt have happened
-                System.out.println("both of the CBs aren't selected!");
-            }
+            } 
             if(parent.getClass().getName().contains("Interactive")){
                 ((InteractiveSchedTab)parent).selectFirstResult();
             } else if(parent.getClass().getName().contains("Queued")){

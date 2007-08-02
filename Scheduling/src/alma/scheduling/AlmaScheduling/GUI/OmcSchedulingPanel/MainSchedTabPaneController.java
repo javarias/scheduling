@@ -40,28 +40,16 @@ import alma.ACSErr.CompletionHolder;
 public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control=null;
     private Consumer consumer;
-    private boolean connected = false;
+    //private boolean connected = false;
     private MainSchedTabPane parent;
 
     public MainSchedTabPaneController(MainSchedTabPane p){
         super();
-        connected = false;
+        //connected = false;
         parent = p;
     }
     public void setup(PluginContainerServices cs){
         super.onlineSetup(cs);
-        try {
-            consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
-            consumer.addSubscription(SchedulingStateEvent.class, this);
-            consumer.consumerReady();
-        }catch(Exception e){
-            logger.severe("SCHEDULING_PANEL: problem getting NC to get state event");
-            logger.severe("SCHEDULING_PANEL: setting state to connected anyways: COULD CAUSE PROBLEMS");
-            //todo send alarm
-            connected = true;
-            e.printStackTrace();
-        }
-
     }
 
     public void checkOperationalState() {
@@ -71,34 +59,10 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
             ROstringSeq csh = sched_mc.currentStateHierarchy();
             CompletionHolder ch = new CompletionHolder();
             String[] states = csh.get_sync(ch);
-            for(int i=0; i < states.length; i++){
-                System.out.println(states[i]);
-            }
             //check if we're already operational!
             if(states.length ==2) {
                 if(states[1].equals("OPERATIONAL")){
                     setOperationalStartState();
-                    //check for existing schedulers
-                    getMSRef();
-                    SchedulerInfo[] active = masterScheduler.getAllActiveSchedulers();
-                    releaseMSRef();
-                    for(int i=0; i < active.length; i++){
-                        logger.fine("Active Scheduler "+(i+1)+": "+
-                                active[i].schedulerCompName+"; "+
-                                active[i].schedulerType+"; "+
-                                active[i].schedulerArray+"; "+
-                                active[i].schedulerId);
-                    }
-                    if ( active.length > 0 ) {
-                        //start a new thread to create all the existing tabs.
-                        DisplayExistingSchedulers existing = new DisplayExistingSchedulers(active);
-                        Thread t = getCS().getThreadFactory().newThread(existing);
-                        t.start();
-                        //and presumably there will ne the same number of arrays! so lets get those
-                        DisplayExistingArrays arrays = new DisplayExistingArrays();
-                        Thread a = getCS().getThreadFactory().newThread(arrays);
-                        a.start();
-                    }
                 }
             }
         } catch(Exception e){
@@ -158,23 +122,26 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     }
 
     public boolean areWeConnected(){
-        return connected;
+        return super.connected;
     }
 
+    /**
+      * Need receive here to set start state with defaults
+      */
     public void receive(SchedulingStateEvent e){
-        logger.fine("GOT SchedulingStateEvent: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
             setOperationalStartState();
         }else if(e.state == SchedulingState.OFFLINE){
-            setOfflineState();
+            super.connected = false;
+            parent.connectedToALMA(super.connected);
         } else {
             return;
         }
     }
     private void setOperationalStartState() {
-        connected = true;
+        super.connected = true;
         parent.setDefaults();
-        parent.connectedToALMA(connected);
+        parent.connectedToALMA(super.connected);
     }
     private void setOfflineState() {
         parent.setOfflineDisplay();

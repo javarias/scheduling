@@ -108,7 +108,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.21 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.22 2007/08/02 15:14:42 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -440,6 +440,36 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		//operator.send(msg, config.getArrayName());
 		logger.fine(msg);
 	}
+
+    public void stopNow() throws SchedulingException{
+        try {
+            String sbid= config.getCurrentSBId();
+            //System.out.println("Is sb executing? "+ config.isSBExecuting());
+    		if (!config.isSBExecuting()) {
+	    		error("Invalid operation. There is no scheduling block currently executing.");
+		    }
+    		String tmp = config.getCurrentSBId();
+	    	if (!tmp.equals(sbid)) {
+		    	error("The SB specified in the stop method (" + sbid +
+			    		" does not match the currently executing SB (" + tmp + ")");
+    		}
+            SB sb = queue.get(sbid);
+            logger.info("SCHEDULING: Before stop, sb status = "+sb.getStatus().toString());
+    		control.stopSBNow(config.getArrayName(),sbid);
+            logger.info("SCHEDULING: after stop, sb status = "+sb.getStatus().toString());
+            //setting the sb status will be handled in the project manager eventually
+            //but for now we set it here and disgard the exec block
+        
+		    String msg = "Scheduling block " + sbid  + 
+			    " in interactive session for project " + projectId + 
+    			" with PI " + PI + " has been aborted.";
+		    logger.info(msg); 
+        } catch(Exception e){
+            logger.severe(e.toString());
+            e.printStackTrace();
+            throw new SchedulingException (e); 
+        }
+    }
 
 	// Starting the science pipeline.
 	

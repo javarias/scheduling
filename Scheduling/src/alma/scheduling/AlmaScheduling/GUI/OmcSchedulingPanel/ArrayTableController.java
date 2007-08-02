@@ -27,16 +27,15 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class ArrayTableController extends SchedulingPanelController {
-    private PluginContainerServices container;
 
     public ArrayTableController (PluginContainerServices cs){
         super(cs);
-        container = cs;
     }
+
 
     protected void destroyArray(String name) {
         DoDestroyArray foo = new DoDestroyArray(name);
-        Thread t = new Thread (foo);
+        Thread t = getCS().getThreadFactory().newThread (foo);
         t.start();
     }
 

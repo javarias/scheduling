@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- *File SearchArchiveOnlyTab.java
+ *File SearchArchiveOnlyPlugin.java
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
@@ -36,34 +36,37 @@ import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
-    //private PluginContainerServices container;
-    //private Logger logger;
+public class SearchArchiveOnlyPlugin extends SchedulingPanelGeneralPanel {
+    private JPanel mainPanel;
     private ArchiveSearchFieldsPanel archiveSearchPanel;
     private JPanel middlePanel;
-    //private JPanel bottomPanel;
     private SBTable sbs;
     private ProjectTable projects;
     private boolean connectedToALMA;
     private boolean searchingOnProject;
+    private SearchArchiveOnlyController controller;
 
-    public SearchArchiveOnlyTab(){
+    public SearchArchiveOnlyPlugin(){
         super();
-        setBorder(new TitledBorder("Search Archive"));
-        setLayout(new BorderLayout());
-        createTopPanel();
-        createMiddlePanel();
-        Dimension d = getPreferredSize();
-        add(archiveSearchPanel,BorderLayout.NORTH);
-        add(middlePanel,BorderLayout.CENTER);
        // add(bottomPanel,BorderLayout.SOUTH);
+        createLayout();
         connectedToALMA=false;
+        controller = new SearchArchiveOnlyController(this);
+    }
+
+    public void setServices(PluginContainerServices cs){
+        super.setServices(cs);
+        logger.fine("In setServies1");
+        connectedSetup(cs);
+    }
+
+    public void start() {
     }
 
     public void connectedSetup(PluginContainerServices cs){
-     //   container = cs;
-     //   logger = cs.getLogger();
         super.onlineSetup(cs);
+        controller.setup(cs);
+        controller.checkOperationalState();
         archiveSearchPanel.setCS(cs);
         projects.setCS(cs);
         sbs.setCS(cs);
@@ -77,16 +80,29 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
         projects.setSearchMode(b);
         sbs.setSearchMode(b);
     }
+
     public void connectToALMA(boolean x) {
         connectedToALMA=x;
         archiveSearchPanel.connected(connectedToALMA);
     }
 
+    private void createLayout(){
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(new TitledBorder("Search Archive"));
+        createTopPanel();
+        createMiddlePanel();
+        mainPanel.add(archiveSearchPanel,BorderLayout.NORTH);
+        mainPanel.add(middlePanel,BorderLayout.CENTER);
+        Dimension d = mainPanel.getPreferredSize();
+        mainPanel.setMaximumSize(d);
+        mainPanel.setMinimumSize(d);
+        add(mainPanel, BorderLayout.CENTER);
+    }
     /**
       * Top panel contains check boxes for determining if we
       * search by project or by sb.
       */
-    public void createTopPanel() {
+    private void createTopPanel() {
         archiveSearchPanel = new ArchiveSearchFieldsPanel();
         archiveSearchPanel.setOwner(this);
         archiveSearchPanel.connected(connectedToALMA);
@@ -95,7 +111,7 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
     /**
       * Middle panel contains he search text boxes and the buttons.
       */
-    public void createMiddlePanel() {
+    private void createMiddlePanel() {
         middlePanel = new JPanel(new GridLayout(2,2));
         //first row: left hand cell = project table
         Dimension size = new Dimension(200,150);
@@ -137,5 +153,8 @@ public class SearchArchiveOnlyTab extends SchedulingPanelGeneralPanel {
     public void clearTables() {
         sbs.clear();
         projects.clear();
+    }
+    private boolean areWeConnected(){
+        return controller.areWeConnected();
     }
 }

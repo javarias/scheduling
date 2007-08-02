@@ -74,7 +74,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.76 2007/07/27 20:36:40 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.77 2007/08/02 15:14:42 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -95,6 +95,7 @@ public class ALMAArchive implements Archive {
     private DateTime lastSpecialSBQuery;
     private DateTime lastSBQuery;
     private DateTime lastProjectQuery;
+    private DateTime lastProjectStatusQuery;
     
     //ALMA Clock
     private ALMAClock clock;
@@ -213,6 +214,7 @@ public class ALMAArchive implements Archive {
             Vector tmp_projects = new Vector();
         
             ObsProject[] obsProj = getAllObsProjects();
+            //SchedBlock[] sbs1 = 
             logger.fine("obsproject length = "+obsProj.length);
             for(int i=0; i < obsProj.length; i++) {
                 ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
@@ -225,7 +227,6 @@ public class ALMAArchive implements Archive {
                             new DateTime(System.currentTimeMillis()));
                     tmp_projects.add(p);
                 }
-                    
             }
             projects = new Project[tmp_projects.size()];
             for(int i=0; i < tmp_projects.size();i++) {
@@ -626,101 +627,6 @@ public class ALMAArchive implements Archive {
         return sb;
     }
 
-    /**
-      *
-      */
-    /*
-    public SBLite[] getSBLites() {
-	    logger.info("SCHEDULING: Called getSBLites");
-        SBLite[] sbliteArray=null;
-        SBLite sblite;
-        Vector<SBLite> sbliteVector = new Vector<SBLite>();
-        try {
-            pollArchive();
-            //Project[] projects = getAllProject();
-//System.out.println("# of projects retrieved in getSBLite = "+projects.length);
-            String sid,pid,sname,pname,pi,pri;
-            double ra,dec,freq,score,success,rank;
-            long maxT;
-            for(int i=0; i < projects.length; i++){
-                //get all the sbs of this project
-                SB[] sbs = projects[i].getAllSBs ();
-//System.out.println("# of sbs  retrieved in getSBLite for project "+i+" = "+sbs.length);
-                for(int j=0; j < sbs.length; j++) {
-                    sblite = new SBLite();
-                    sid = sbs[j].getId();
-                    if(sid == null || sid =="") {
-                        sid = "WARNING: Problem with SB id";
-                    }
-                    sblite.schedBlockRef =sid;
-                    //sblite.schedBlockRef = sbs[j].getId();
-                    pid = sbs[j].getProject().getId();
-                    if(pid ==null||pid=="") {
-                        pid = "WARNING: problem with project id";   
-                    }
-                    sblite.projectRef = pid;
-                    //sblite.projectRef = sbs[j].getProject().getId();
-                    sblite.obsUnitsetRef = "";
-
-                    sname =sbs[j].getSBName();
-                    if(sname == null || sname ==""){
-                        sname = "WARNING: problem with SB name";
-                    }
-                    sblite.sbName =sname;
-                    //sblite.sbName = sbs[j].getSBName();
-                    pname = sbs[j].getProject().getProjectName();
-                    if(pname == null ||pname =="") {
-                        pname = "WARNING: problem with project name";
-                    }
-                    sblite.projectName = pname;
-                    //sblite.projectName = sbs[j].getProject().getProjectName();
-                    pi = sbs[j].getProject().getPI();sbs[j].getProject().getPI();
-                    if(pi == null || pi == ""){
-                        pi = "WARNING: problem with pi";
-                    }
-                    sblite.PI = pi;
-                    //sblite.PI = sbs[j].getProject().getPI();
-                    pri = sbs[j].getProject().getScientificPriority().getPriority();
-                    if(pri == null || pri =="") {
-                        pri = "WARNING: problem with scientific priority";
-                    }
-                    sblite.priority = pri;
-                    //sblite.priority = sbs[j].getProject().getScientificPriority().getPriority();
-		            try {
-	                    ra = sbs[j].getTarget().getCenter().getRa();
-        	 	    } catch(NullPointerException npe) {
-		            	logger.warning("SCHEDULING: RA object == null in SB, setting to 0.0");
-            			ra = 0.0;
-		            }
-                    sblite.ra = ra;
-                    //sblite.ra = sbs[j].getTarget().getCenter().getRa();
-        		    try {
-	                    dec = sbs[j].getTarget().getCenter().getDec();
-	 	            } catch(NullPointerException npe) {
-            			logger.warning("SCHEDULING: DEC object == null in SB, setting to 0.0");
-			            dec = 0.0;
-        		    }
-                    sblite.dec = dec;
-                    //sblite.dec = sbs[j].getTarget().getCenter().getDec();
-                    sblite.freq = 0;//sbs[j].getFrequencyBand().getHighFrequency();
-                    sblite.maxTime = 0;
-                    sblite.score = 0;
-                    sblite.success = 0; 
-                    sblite.rank = 0 ;
-
-                    sbliteVector.add(sblite);
-                }
-            }
-            sbliteArray = new SBLite[sbliteVector.size()];
-            sbliteArray = sbliteVector.toArray(sbliteArray);
-            
-        } catch(Exception e) {
-	        logger.severe(e.toString());
-            e.printStackTrace(System.out);
-        }
-        return sbliteArray;
-    }
-    */
 
 
     /**
@@ -780,39 +686,6 @@ public class ALMAArchive implements Archive {
         return project;
     }
 
-    /*
-    public ObsProject getProjectForSB(String sbid) throws SchedulingException {
-        try {
-            String query = new String("/prj:ObsProject//sbl:SchedBlockRef[entityId=\""+sbid+"\"]");
-            String schema = new String("ObsProject");
-            Cursor cursor = archOperationComp.query(query, schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying obsproject");
-                throw new SchedulingException("SCHEDULING: Cursor was null when querying obsproject");
-            }
-            ObsProject proj=null;
-            QueryResult res = cursor.next();
-            //TODO deprecated method; will have to retrieve objsproject with res.identifier thing
-            proj = (ObsProject)entityDeserializer.deserializeEntity(res.xml,ObsProject.class); 
-            if(cursor.hasNext()){
-                throw new SchedulingException("SCHEDULING: getting proj with sb ref, should only be one proj!");
-            }
-            cursor.close();
-            return proj;
-
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
-        //} catch(NotFound e) {
-           // logger.severe("SCHEDULING: "+e.toString());
-        //} catch(MalformedURI e) {
-         //   logger.severe("SCHEDULING: "+e.toString());
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
-        }
-    }*/
-
     /**
      * Given a project object, its archive entry is retrieved, updated 
      * and stored back into the archive.
@@ -844,23 +717,112 @@ public class ALMAArchive implements Archive {
         return program;
     }
     public void updateProgram(Program s) throws SchedulingException{ }
-
-	// SB
-    public Cursor querySBs() throws SchedulingException {
+    
+    //General
+   /* private Cursor generalQuery(String schema, String query, DateTime lastUpdate){
         try {
-            String query = new String("/sbl:SchedBlock");
-            String schema = new String("SchedBlock");
-            Cursor cursor = archOperationComp.query(query, schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying SchedBlocks");
-                throw new SchedulingException("SCHEDULING: Cursor was null when querying SBs");
+            Cursor cursor = archOperationComp.queryRecent(query, schema);
+            return cursor
+        } catch (ArchiveInteralError e){
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }
+    }*/
+    
+    // ProjectStatus 
+    public ProjectStatus[] queryRecentProjectStatus() throws SchedulingException {
+        String schema = new String("ProjectStatus");
+        String query = new String("/ps:ProjectStatus");
+        ProjectStatus[] ps=new ProjectStatus[0];
+        XmlEntityStruct xml;
+        try {
+            if (lastProjectStatusQuery != null){
+                String[] ids = archOperationComp.queryRecent(schema, lastProjectStatusQuery.toString()+".000");
+                if(ids.length > 0){
+                    ps = new ProjectStatus[ids.length];
+                    for(int i=0; i < ids.length; i++){
+                        xml = archOperationComp.retrieve(ids[i]);
+                        ps[i] = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class);
+                    }
+                }
+            } else {
+                Cursor cursor = archOperationComp.query(query, schema);
+                Vector tmp = new Vector();
+                while(cursor.hasNext()){
+                    QueryResult res = cursor.next();
+                    xml = archOperationComp.retrieve(res.identifier);
+                    tmp.add((SchedBlock)entityDeserializer.deserializeEntity(xml, ProjectStatus.class));
+                }
+                ps = new ProjectStatus[tmp.size()];
+                ps = (ProjectStatus[])tmp.toArray(ps);
             }
-            return cursor;
+            lastProjectStatusQuery = clock.getDateTime();
+            return ps;
+        }catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(DirtyEntity e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException (e);
         }
     }
+
+	// SB
+    public SchedBlock[] queryRecentSBs() throws SchedulingException {
+        String schema = new String("SchedBlock");
+        String query = new String("/sbl:SchedBlock");
+        SchedBlock[] sbs=new SchedBlock[0];
+        XmlEntityStruct xml;
+        try {
+            if (lastSBQuery != null){
+                String[] ids = archOperationComp.queryRecent(schema, lastSBQuery.toString()+".000");
+                if(ids.length > 0){
+                    sbs = new SchedBlock[ids.length];
+                    for(int i=0; i < ids.length; i++){
+                        xml = archOperationComp.retrieve(ids[i]);
+                        sbs[i] = (SchedBlock)entityDeserializer.deserializeEntity(xml, SchedBlock.class);
+                    }
+                }
+            } else {
+                Cursor cursor = archOperationComp.query(query, schema);
+                Vector tmp = new Vector();
+                while(cursor.hasNext()){
+                    QueryResult res = cursor.next();
+                    xml = archOperationComp.retrieve(res.identifier);
+                    tmp.add((SchedBlock)entityDeserializer.deserializeEntity(xml, SchedBlock.class));
+                }
+                sbs = new SchedBlock[tmp.size()];
+                sbs = (SchedBlock[])tmp.toArray(sbs);
+            }
+            lastSBQuery = clock.getDateTime();
+            return sbs;
+        }catch(NotFound e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(MalformedURI e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(EntityException e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(DirtyEntity e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }catch(ArchiveInternalError e) {
+            logger.severe("SCHEDULING: "+e.toString());
+            throw new SchedulingException (e);
+        }
+    }
+
     /** 
      *
      */
@@ -868,18 +830,8 @@ public class ALMAArchive implements Archive {
         SB sbs[]=null;
         Vector tmp_sbs = new Vector();
         int i = 0;// the index of the SB array, sbs
-        //String query = new String("/sbl:SchedBlock");
-        //String schema = new String("SchedBlock");
-        //String className = new String(
-        //    "alma.entity.xmlbinding.schedblock.SchedBlock");
         try {
-            /*
-            Cursor cursor = archOperationComp.query(query, schema);
-            if(cursor == null) {
-                logger.severe("SCHEDULING: cursor was null when querying SchedBlocks");
-                return null;
-            }*/
-            Cursor cursor = querySBs();
+            Cursor cursor = archOperationComp.query("/sbl:ScheduBlock", "SchedBlock");
             while (cursor.hasNext()){
                 QueryResult res = cursor.next();
                 try {
@@ -889,8 +841,6 @@ public class ALMAArchive implements Archive {
                 }
             }  
             int size = tmp_sbs.size();
-            //System.out.println("in archive, sb length = "+size);
-            
             sbs = new SB[size];
             for (int x=0; x < size; x++) {
                 sbs[x] = (SB)tmp_sbs.elementAt(x);
@@ -920,7 +870,7 @@ public class ALMAArchive implements Archive {
      */
 	public SB getSB(String id) throws SchedulingException{
         SB sb = null;
-        try {
+       /* try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
             //System.out.println("SB: "+xml.xmlString);
             sb = convertToSB2(xml);
@@ -936,7 +886,7 @@ public class ALMAArchive implements Archive {
         //    logger.severe("SCHEDULING: "+e.toString());
         } catch(Exception e) {
             logger.severe("SCHEDULING: "+e.toString());
-        }
+        }*/
         return sb;
     }
 
@@ -1106,7 +1056,7 @@ public class ALMAArchive implements Archive {
             //XmlEntityStruct xml_struct = archOperationComp.updateRetrieve(sb_id);
             //XmlEntityStruct xml_struct = archOperationComp.retrieve(sb_id);
             XmlEntityStruct xml_struct = archOperationComp.retrieveDirty(sb_id);
-            sb = convertToSB2(xml_struct);
+            //sb = convertToSB2(xml_struct);
             //System.out.println(xml_struct.xmlString);
             //String proj_id = schedblock.getObsProjectRef().getEntityId();
             //if(proj_id == null) {
@@ -1120,41 +1070,11 @@ public class ALMAArchive implements Archive {
             throw new Exception (e);
         } catch (NotFound e) {
             throw new Exception (e);
-        //} catch (DirtyEntity e) {
-        //    throw new Exception (e);
-        } catch(EntityException e) {
-            throw new Exception (e);
         }
         return sb;
     }
 
-    /** 
-     * Given the retrieved XmlEntityStruct it is converted into an SB object
-     * @param XmlEntityStruct
-     * @return SB
-     * @throws Exception
-     */
-    private SB convertToSB2(XmlEntityStruct xml) throws Exception {
-        SB sb = null;
-        /*
-        //System.out.println(xml.xmlString);
-        try {
-            SchedBlock schedblock = (SchedBlock) 
-                entityDeserializer.deserializeEntity(xml, Class.forName(
-                    "alma.entity.xmlbinding.schedblock.SchedBlock"));
-            sb = new ALMASB(schedblock, schedblock.getSchedBlockEntity().getEntityId());
-            //sb.setCenterFrequency(schedblock.
-            sb.setParent(new Program("not implemented yet"));
-            sb.getParent().setReady(new DateTime(System.currentTimeMillis()));
-            
-        } catch(EntityException e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            throw new Exception (e);
-        }
-        */
-        return sb;
-    }
-
+    /*
     private Project convertToProject1(QueryResult res)throws Exception {
         String proj_id = res.identifier;
         Project proj = null;
@@ -1186,7 +1106,7 @@ public class ALMAArchive implements Archive {
      *
      * @param xml The XmlEntityStruct retrieved from the archive
      * @return Project
-     */
+     *
     private Project convertToProject2(XmlEntityStruct xml) throws Exception {
         Project proj=null;
         //ALMAProject proj = null;
@@ -1201,7 +1121,7 @@ public class ALMAArchive implements Archive {
             throw new Exception (e);
         }
         return proj;
-    }
+    }*/
 
 
 
@@ -1211,7 +1131,7 @@ public class ALMAArchive implements Archive {
      *
      * @param ControlEvent The event from control.
      * @throws SchedulingException
-     */
+     **/
     public void updateSB(ControlEvent ce) throws SchedulingException{
         try {
             SB sb = getSB(ce.getSBId());

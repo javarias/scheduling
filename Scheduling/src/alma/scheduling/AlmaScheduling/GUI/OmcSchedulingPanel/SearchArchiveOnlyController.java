@@ -20,48 +20,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * File SchedulingPanelController.java
+ * File SearchArchiveOnlyController.java
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.SchedulerInfo;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
-
-import java.util.logging.Logger;
+import alma.exec.extension.subsystemplugin.*;
 import alma.acs.nc.Consumer;
-
 import alma.ACS.MasterComponent;
 import alma.ACS.ROstringSeq;
 import alma.ACSErr.CompletionHolder;
 
-public class SchedulingPanelController {
-    protected MasterSchedulerIF masterScheduler;
-    protected PluginContainerServices container;
-    protected Logger logger;
-    protected Consumer consumer;
-    protected boolean connected;
+public class SearchArchiveOnlyController extends SchedulingPanelController{
+    private Consumer consumer;
+    //private boolean connected = false;
+    private SearchArchiveOnlyPlugin parent;
 
-    public SchedulingPanelController(){
-        masterScheduler=null;
-        container=null;
-        logger=null;
-        consumer =null;
-        connected =false;
+    public SearchArchiveOnlyController(SearchArchiveOnlyPlugin p) {
+        super();
+       // connected = false;
+        parent = p;
     }
 
-    public SchedulingPanelController(PluginContainerServices cs) {
-        this();
-        container = cs;
-        logger = cs.getLogger();
-    }
-    public void onlineSetup(PluginContainerServices cs) {
-        container = cs;
-        logger = cs.getLogger();
-        try {
+    public void setup(PluginContainerServices cs){
+        super.onlineSetup(cs);
+     /*   try {
             consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
             consumer.addSubscription(SchedulingStateEvent.class, this);
             consumer.consumerReady();
@@ -71,63 +56,34 @@ public class SchedulingPanelController {
             //todo send alarm
             connected = true;
             e.printStackTrace();
-        }
-    }
-    protected void getMSRef() {
-        try {
-            if(masterScheduler == null) {
-                masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
-                        //"IDL:alma/scheduling/MasterSchedulerIF:1.0"));
-                logger.fine("SCHEDULING_PANEL: Got MS");
-            }
-        } catch(Exception e){
-            e.printStackTrace();
-            logger.severe("SCHEDULING_PANEL: Error getting MS: "+e.toString()); 
-        }
-    }
-    
-    protected void releaseMSRef(){
-        try {
-            if(masterScheduler != null){
-                container.releaseComponent(masterScheduler.name());
-                logger.fine("SCHEDULING_PANEL: Released MS.");
-            }
-        } catch(Exception e){
-            e.printStackTrace();
-            logger.severe("SCHEDULING_PANCEL: Error releasing MS: "+e.toString());
-        }
+        }*/
     }
 
-    public PluginContainerServices getCS() {
-        return container;
+    private void setOperationalStartState() {
+        super.connected = true;
+        parent.connectToALMA(super.connected);
     }
     
-    protected void destroyArray(String arrayname){
-        try {
-            getMSRef();
-            masterScheduler.destroyArray(arrayname);
-            releaseMSRef();
-        }catch(Exception e){
-            logger.warning("SCHEDULING_PANEL: Error destorying array "+arrayname+", see if it still exists.");
-        }
+    public boolean areWeConnected() {
+        return super.connected;
     }
-
+    
+    /**
+      * Need receive to set start state
+      */
     public void receive(SchedulingStateEvent e){
         logger.info("GOT SchedulingStateEvent: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
-            //setOperationalStartState();
-            connected = true;
+            setOperationalStartState();
         }else if(e.state == SchedulingState.OFFLINE){
-            connected = false;
-            //parent.connectedToALMA(connected);
+            super.connected = false;
+            parent.connectToALMA(super.connected);
         } else {
             return;
         }
     }
-
-
-    public void checkOperationalState() {    
+   
+    public void checkOperationalState() {
         try {
             MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
                 narrow(getCS().getComponentNonSticky("SCHEDULING_MASTER_COMP"));
@@ -137,9 +93,7 @@ public class SchedulingPanelController {
             //check if we're already operational!
             if(states.length ==2) {
                 if(states[1].equals("OPERATIONAL")){
-                    //setOperationalStartState();
-                    connected = true;
-                    //check for existing schedulers
+                    setOperationalStartState();
                 }
             }
         } catch(Exception e){
@@ -148,4 +102,3 @@ public class SchedulingPanelController {
         }
     }
 }
-
