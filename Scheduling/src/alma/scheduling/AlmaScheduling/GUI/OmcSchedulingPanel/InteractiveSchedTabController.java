@@ -189,7 +189,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
 
     public synchronized void stopNowSB()throws SchedulingException{
         try{
-            logger.info("IS: Requesting sb to abort");
+            logger.fine("IS: Requesting sb to abort");
             scheduler.stopNowSB();
         }catch( Exception e){
             throw new SchedulingException (e);
@@ -237,14 +237,14 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
                 !scheduler.getCurrentEB().equals(exec_id) ){
-            logger.info("Problem! SB id and exec block id are not current.. this shouldnt happen!");
+            logger.warning("Problem! SB id and exec block id are not current.. this shouldnt happen!");
            // currentExecBlockId = exec_id;
         } else {
             logger.finest("got stop for sb "+sbid+", ctr = "+stopC);
             stopC++;
         }
         String completion;
-        logger.info("Completion value from control: "+e.status.value()+" : "+e.status.toString());
+        logger.fine("Completion value from control: "+e.status.value()+" : "+e.status.toString());
         completion = e.status.toString();//completions[e.status.value()];
         parent.setSBStatus(sbid, completion);
         if(scheduler.getCurrentEB().equals(exec_id)){
@@ -274,7 +274,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         logger.fine("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
-        logger.info("Current SB = "+currentSBId);
+        logger.fine("Current SB = "+currentSBId);
         //if(sbid.equals(currentSBId)){
         if(waitingForArchivedSB.contains(sbid)){
             logger.fine("in list");

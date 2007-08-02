@@ -72,7 +72,7 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
       * Need receive to set start state
       */
     public void receive(SchedulingStateEvent e){
-        logger.info("GOT SchedulingStateEvent: "+e.state);
+        logger.fine("GOT SchedulingStateEvent: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
             setOperationalStartState();
         }else if(e.state == SchedulingState.OFFLINE){

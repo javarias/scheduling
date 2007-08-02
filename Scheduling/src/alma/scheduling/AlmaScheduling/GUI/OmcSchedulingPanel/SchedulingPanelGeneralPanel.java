@@ -115,7 +115,7 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
         try {
             if(ms != null){
                 container.releaseComponent(ms.name());
-                logger.info("SP SP: Released MS.");
+                logger.fine("SP: Released MS.");
             }
         } catch(Exception e){
             logger.severe("SP: Error releasing MS: "+e.toString());
