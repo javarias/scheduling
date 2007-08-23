@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.47 2007/06/29 17:25:10 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.48 2007/08/23 17:01:39 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -425,7 +425,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //ArrayTime at = new ArrayTime(e.endTime);
             ControlEvent ce = new ControlEvent(e.execId.entityId, e.sbId.entityId, e.arrayName, e.status.value(), endEb);//at.arrayTimeToDateTime());
             //update the sb with the new info from the event
-            updateSB(ce);
+            //took out for now coz it isn't implemented.. probably won't need it back in
+            //coz sb is updated
+            //updateSB(ce);
             //eb = createExecBlock(e);
             ExecBlock eb = retrieveExecBlock(e.execId.entityId);
             //DateTime endEb = at.arrayTimeToDateTime();

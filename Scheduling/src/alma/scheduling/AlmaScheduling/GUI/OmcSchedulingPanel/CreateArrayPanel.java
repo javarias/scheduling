@@ -72,6 +72,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         logger.fine("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
         initializeChessboards();
+        remove(chessboardPanel);
         createALMAAntennaChessboards();
         add(chessboardPanel, BorderLayout.CENTER);
         setEnabled(false);
@@ -117,6 +118,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     private void createALMAAntennaChessboards(){
         chessboardPanel.removeAll();
+        remove(chessboardPanel);
         chessboardPanel = new JPanel(new BorderLayout());
         JPanel cbPanel = new JPanel(new GridLayout(3,1));
         cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
@@ -287,50 +289,28 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                     "Error creating array", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        //tell parent component to open new scheduler tab.
-//        openNewSchedulerTab(arrayMode, arrayName);
         return true;
     }
 
-    /**
-      * @param am ArrayMode
-      * @param an Array Name
-      */
-//    public void openNewSchedulerTab(String am, String an) {
-//        OpenSchedulerTab newTab = new OpenSchedulerTab(am, an);
-//        Thread t = new Thread(newTab);
-//        t.start();
-//    }
-
-
- //   public void exit() {
-        //clearAntennaTables();
-   // }
-/*    class OpenSchedulerTab implements Runnable {
-        private String mode;
-        private String array;
-        public OpenSchedulerTab(String m, String arrayName) {
-            mode =m;
-            array = arrayName;
+    class UpdateCB implements Runnable {
+        private String[] vals;
+        public UpdateCB(String[] v){
+            vals = v;
         }
         public void run() {
-            ((MainSchedTabPane)parent).openSchedulerTab(mode, array);
-            //unselect the button now
+            updateChessboard(vals);
         }
     }
-    */
     class GetAntennaThread implements Runnable {
-        public GetAntennaThread(){
-        }
+        public GetAntennaThread(){}
         public void run(){ 
             String[] onlineAntennasForChessboard = controller.getAntennasForActiveChessboards();
-            updateChessboard(onlineAntennasForChessboard);
+            javax.swing.SwingUtilities.invokeLater(new UpdateCB(onlineAntennasForChessboard)); 
         }
     }
 
     class CreateArrayThread implements Runnable{
-        public CreateArrayThread(){
-        }
+        public CreateArrayThread(){ }
         public void run(){
             if(createArray()) {
               //  exit();

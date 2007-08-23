@@ -280,7 +280,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
         progressBar.setIndeterminate(true);
-        progressBar.setString("Execution Starting..");
+        progressBar.setString("Execution Starting");
 
         //middlePanel
         Component[] comps1 = middlePanel.getComponents();
@@ -290,6 +290,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         JPanel buttons = (JPanel)comps2[1];
         buttons.removeAll();
         buttons.add(progressBar);
+        buttons.add(new JLabel());
         buttons.add(stopnowB);
         stopnowB.setEnabled(true);
         buttons.revalidate();

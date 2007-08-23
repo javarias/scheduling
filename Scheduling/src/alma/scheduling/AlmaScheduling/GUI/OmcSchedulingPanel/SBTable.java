@@ -154,14 +154,11 @@ public class SBTable extends JTable {
     }
 
     protected void showSelectedSBDetails(String id){
-        SBLite sb = controller.getSBLite(id);
-        showSBInfo(sb);
-        if(!projectSearchMode){
-            showSBProject(sb);
-        }
-        updateRightClickMenu(id);
+        GetSBLite x = new GetSBLite(id);
+        Thread t = controller.getCS().getThreadFactory().newThread(x);
+        t.start();
     }
-
+    
     private void updateRightClickMenu(String uid){
         rtClickMenu.removeAll();
         JMenuItem menuItem = new JMenuItem("Copy "+uid+" to System clipboard");
@@ -237,28 +234,9 @@ public class SBTable extends JTable {
     }
 
     public void setRowInfo(SBLite[] sblites, boolean queuedList){
-        clearSelection();
-        if(queuedList){
-            //do a special thing
-            updateRowsForQueue(sblites);
-            return;
-        }
-        int size = sblites.length;
-        sbRowInfo = new Object[size][infoSize];
-        for(int i=0; i<size; i++){
-            sbRowInfo[i][sbLoc] = sblites[i].sbName;
-            sbRowInfo[i][pnLoc] = sblites[i].projectName;
-            sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
-            if(withExec){
-                setSBExecStatus((String)sbRowInfo[i][uidLoc], "N/A");
-            }
-        }
-        manageColumnSizes();
-        repaint();
-        revalidate();
-        validate();
+        javax.swing.SwingUtilities.invokeLater(new UpdateSBRows(sblites, queuedList));
     }
-    
+
     private void updateRowsForQueue(SBLite[] sbs){
         //get existing row info
         int newSize = sbRowInfo.length+sbs.length;
@@ -509,30 +487,22 @@ public class SBTable extends JTable {
         }
         sbInfo.append("Max. execution count : "+sb.maxExec+"\n");
         sbInfo.append("Priority: "+sb.priority+"\n");
-        sbInfo.append("RA: "+sb.ra+"\n");
-        sbInfo.append("DEC: "+sb.dec+"\n");
-        sbInfo.append("Frequency: "+sb.freq+"\n");
-        /*
-        sbInfo.append("Score: "+sb.score+"\n");
-        sbInfo.append("Success: "+sb.success+"\n");
-        sbInfo.append("Rank: "+sb.rank+"\n");
-        */
+        //sbInfo.append("RA: "+sb.ra+"\n");
+        //sbInfo.append("DEC: "+sb.dec+"\n");
+        //sbInfo.append("Frequency: "+sb.freq+"\n");
+        //sbInfo.append("Score: "+sb.score+"\n");
+        //sbInfo.append("Success: "+sb.success+"\n");
+        //sbInfo.append("Rank: "+sb.rank+"\n");
         sbInfo.repaint();
         sbInfo.validate();
     }
+    
 
     private void showSBProject(SBLite sb){
-        ProjectLite[] p = controller.getProjectLite(sb.projectRef);
-        String par = parent.getClass().getName();
-        if(par.contains("SearchArchiveOnlyPlugin")){
-            ((SearchArchiveOnlyPlugin)parent).updateProjectView(p);
-        } else if(par.contains("InteractiveSchedTab")){
-            ((InteractiveSchedTab)parent).updateProjectView(p);
-        } else if(par.contains("QueuedSchedTab")){
-            ((QueuedSchedTab)parent).updateProjectView(p);
-        }
+        Thread t = controller.getCS().getThreadFactory().newThread(new GetProjectLite(sb));
+        t.start();
     }
-
+     
     public void clear() {
         if(withExec) {
             sbRowInfo = new Object[0][infoSize];
@@ -653,14 +623,81 @@ public class SBTable extends JTable {
             if(isSelected){//if the row is not selected then use the custom color
                 setBackground(table.getSelectionBackground());
             }
-              //  setBackground(color);
-            //else //if the row is selected use the default selection color
-              //  setBackground(table.getSelectionBackground());
             setForeground(table.getForeground());
  
             return this;
-            //return super.getTableCellRendererComponent
-              //  (table, value, isSelected, hasFocus, row, column);
         }
     }
+
+    class GetSBLite implements Runnable {
+        private String id;
+        public GetSBLite(String i){
+            id = i;
+        }
+        public void run() {
+            SBLite sb = controller.getSBLite(id);
+            updateRightClickMenu(id);
+            javax.swing.SwingUtilities.invokeLater(new ShowSBDetails(sb));
+        }
+    }
+    class ShowSBDetails implements Runnable {
+        private SBLite sb;
+        public ShowSBDetails(SBLite s){
+            sb = s;
+        }
+        public void run(){
+            showSBInfo(sb);
+            if(!projectSearchMode){
+                showSBProject(sb);
+            }
+        }
+    }
+    class GetProjectLite implements Runnable {
+        private SBLite sb;
+        public GetProjectLite(SBLite s){
+            sb = s;
+        }
+        public void run() {
+            ProjectLite[] p = controller.getProjectLite(sb.projectRef);
+            String par = parent.getClass().getName();
+            if(par.contains("SearchArchiveOnlyPlugin")){
+                ((SearchArchiveOnlyPlugin)parent).updateProjectView(p);
+            } else if(par.contains("InteractiveSchedTab")){
+                ((InteractiveSchedTab)parent).updateProjectView(p);
+            } else if(par.contains("QueuedSchedTab")){
+                ((QueuedSchedTab)parent).updateProjectView(p);
+            }
+        }
+    }
+    class UpdateSBRows implements Runnable {
+        private SBLite[] sblites;
+        private boolean queuedList;
+        public UpdateSBRows(SBLite[] s, boolean b) {
+            sblites = s;
+            queuedList = b;
+        }
+        public void run(){
+            clearSelection();
+            if(queuedList){
+                //do a special thing
+                updateRowsForQueue(sblites);
+                return;
+            }
+            int size = sblites.length;
+            sbRowInfo = new Object[size][infoSize];
+            for(int i=0; i<size; i++){
+                sbRowInfo[i][sbLoc] = sblites[i].sbName;
+                sbRowInfo[i][pnLoc] = sblites[i].projectName;
+                sbRowInfo[i][uidLoc] = sblites[i].schedBlockRef;
+                if(withExec){
+                    setSBExecStatus((String)sbRowInfo[i][uidLoc], "N/A");
+                }
+            }
+            manageColumnSizes();
+            repaint();
+            revalidate();
+            validate();
+        }
+    }
+
 }

@@ -74,7 +74,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.79 2007/08/23 16:33:54 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.80 2007/08/23 17:01:39 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -510,7 +510,6 @@ public class ALMAArchive implements Archive {
         try {
             XmlEntityStruct ps_xml = entitySerializer.serializeEntity(
                 newPS, newPS.getProjectStatusEntity());
-            //System.out.println("dummy PROJECT STATUS: "+ps_xml.xmlString);
             archOperationComp.store(ps_xml);
         } catch(EntityException ee) {
             throw new SchedulingException(
@@ -890,7 +889,7 @@ public class ALMAArchive implements Archive {
         return sb;
     }
 
-	public void updateSB(SB sb) throws SchedulingException{
+	/*public void updateSB(SB sb) throws SchedulingException{
         try {
             XmlEntityStruct retrieved_sb = archOperationComp.retrieveDirty(sb.getId());
             //retrieved_sb = modifyRetrievedSB(retrieved_sb, sb);
@@ -905,7 +904,7 @@ public class ALMAArchive implements Archive {
             logger.severe("SCHEDULING: "+e.toString());
         }
         
-    }
+    }*/
 
 	// SchedulingPolicy
 	public Policy[] getPolicy() throws SchedulingException{
@@ -1249,6 +1248,24 @@ public class ALMAArchive implements Archive {
         } catch(EntityException e){
             logger.severe("SCHEDULING: "+e.toString());
             throw new SchedulingException(e);
+        }
+    }
+
+    protected void printProjectStatusFromObject(ProjectStatus ps){
+        try {
+            XmlEntityStruct xml = entitySerializer.serializeEntity(ps, ps.getProjectStatusEntity());
+            logger.fine("ProjectStatus XML from object: "+ xml.xmlString);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void printProjectStatusFromArchive(String id){
+        try {
+            XmlEntityStruct xml = archOperationComp.retrieve(id);
+            logger.fine("ProjectStatus XML from Archive: "+ xml.xmlString);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
     

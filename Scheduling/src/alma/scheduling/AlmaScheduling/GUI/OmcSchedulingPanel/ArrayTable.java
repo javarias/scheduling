@@ -101,18 +101,6 @@ public class ArrayTable extends JTable {
        // rtClickMenu.removeAll();
        // getSelectedArray();
         JMenuItem item1;
-        /*
-        item1 = new JMenuItem("Open Scheduler");
-        item1.setToolTipText("Not Implemented yet");
-        item1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event){
-                DoOpenScheduler foo = new DoOpenScheduler();
-                Thread t = controller.getCS().getThreadFactory().newThread(foo);
-                t.start();
-            }
-        });
-        rtClickMenu.add(item1);
-        */
         item1 = new JMenuItem("Destroy Array");
         item1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event){
@@ -318,21 +306,5 @@ public class ArrayTable extends JTable {
         }
         
     }
-
-    class DoOpenScheduler implements Runnable {
-        public DoOpenScheduler() {
-        }
-        public void run() {
-            /*
-            getSelectedArray();
-            if(currentArray.equals("")){
-                return;
-            }
-            logger.fine("SP: about to open scheduler for array "+currentArray);
-            (ExistingArraysTab)parent.openSchedulerForArray(currentArray);
-            */
-        }
-    }
-
 
 }

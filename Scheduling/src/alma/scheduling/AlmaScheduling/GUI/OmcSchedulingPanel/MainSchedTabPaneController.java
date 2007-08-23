@@ -122,6 +122,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     }
 
     public boolean areWeConnected(){
+        checkOperationalState();
         return super.connected;
     }
 

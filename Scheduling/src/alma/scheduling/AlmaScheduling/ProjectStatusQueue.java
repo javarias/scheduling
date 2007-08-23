@@ -27,6 +27,8 @@
 package alma.scheduling.AlmaScheduling;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import alma.scheduling.Define.SchedulingException;
 import alma.entity.xmlbinding.projectstatus.*;
 
@@ -36,16 +38,18 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.6 2007/08/23 16:33:54 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.7 2007/08/23 17:01:39 sslucero Exp $
  */
 public class ProjectStatusQueue {
 
+    private Logger logger;
 	private ArrayList queue;
 
 	/**
 	 * Create an enpty queue of ProjectStatus.
 	 */
 	public ProjectStatusQueue() {
+        logger = Logger.getLogger("ProjectStatusQueue");
 		queue = new ArrayList ();
 	}
 
@@ -314,8 +318,12 @@ public class ProjectStatusQueue {
             throw new SchedulingException(
                     "SCHEDULING: Cannot update ProjectStatus coz it doesn't exist in the queue. Try adding it.");
         }
+        ProjectStatus x;
+        logger.finest("PS id passed in = "+ps_id);
         for(int i = 0; i< queue.size(); i++) {
-            if( ps_id.equals(((ProjectStatus)queue.get(i)).getProjectStatusEntity().getEntityId()) ){
+            x = (ProjectStatus)queue.get(i);
+            logger.finest("PS id queue = "+x.getProjectStatusEntity().getEntityId());
+            if( ps_id.equals(x.getProjectStatusEntity().getEntityId()) ){
                 queue.set(i, ps);
             }
         }

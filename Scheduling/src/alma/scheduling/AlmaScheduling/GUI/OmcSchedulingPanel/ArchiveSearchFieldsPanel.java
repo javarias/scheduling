@@ -341,7 +341,6 @@ public class ArchiveSearchFieldsPanel extends JPanel {
 
     public void doSearch() {
         SPSearchArchiveThread foo = new SPSearchArchiveThread();
-        //Thread t = new Thread(foo);
         Thread t = controller.getCS().getThreadFactory().newThread(foo);
         t.start();
     }
@@ -361,6 +360,16 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             //returns a vector, first item will be matching projects
             //second item will be matching sbs.
             Vector res = controller.doQuery(sbquery, pName, pi, type);
+            javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
+            
+        }
+    }
+    class UpdateThread implements Runnable {
+        private Vector res;
+        public UpdateThread (Vector v) {
+            res = v;
+        }
+        public void run() {
             if(projectCB.isSelected() ){
                 displayProjectResults((ProjectLite[])res.elementAt(0));
             } else if(sbCB.isSelected()){

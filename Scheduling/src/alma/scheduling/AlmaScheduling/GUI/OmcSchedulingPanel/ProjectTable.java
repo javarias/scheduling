@@ -183,22 +183,9 @@ public class ProjectTable extends JTable {
     }
 
     public void setRowInfo(ProjectLite[] projects) {
-        javax.swing.SwingUtilities.invokeLater(new ClearItems());
-        int size = projects.length;
-      // projectLites = projects;
-        projRowInfo = new Object[size][infoSize];
-        for(int i=0; i < size; i++) {
-            projRowInfo[i][0]= projects[i].projectName;
-            projRowInfo[i][1]= projects[i].piName;
-            projRowInfo[i][2]= projects[i].version;
-            projRowInfo[i][uidLoc]= projects[i].uid;
-        }
-        manageColumnSizes();
-        repaint();
-        revalidate();
-        validate();
+        javax.swing.SwingUtilities.invokeLater(new UpdateProjectRows(projects));
     }
-    
+
     public JScrollPane getProjectInfoView(){
         JScrollPane p = new JScrollPane(projectInfo,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -304,18 +291,11 @@ public class ProjectTable extends JTable {
         validate();
     }
 
-    class ClearItems implements Runnable {
-        public ClearItems() {}
-        public void run() {
-            clearSelectedItems();
-        }
-        
-        public void clearSelectedItems(){
-            projectInfo.setText("");
-            clearSelection();
-            getSelectionModel().clearSelection();
-            validate();
-        }
+    public void clearSelectedItems(){
+        projectInfo.setText("");
+        clearSelection();
+        getSelectionModel().clearSelection();
+        validate();
     }
 
     //copy/paste class
@@ -364,4 +344,27 @@ public class ProjectTable extends JTable {
         }
     }
 
+    class UpdateProjectRows implements Runnable {
+        private ProjectLite[] projects;
+        public UpdateProjectRows(ProjectLite[] p){
+            projects = p;
+        }
+        public void run() {
+            clearSelectedItems();
+            int size = projects.length;
+            // projectLites = projects;
+            projRowInfo = new Object[size][infoSize];
+            for(int i=0; i < size; i++) {
+                projRowInfo[i][0]= projects[i].projectName;
+                projRowInfo[i][1]= projects[i].piName;
+                projRowInfo[i][2]= projects[i].version;
+                projRowInfo[i][uidLoc]= projects[i].uid;
+            }
+            manageColumnSizes();
+            repaint();
+            revalidate();
+            validate();
+        }
+    }
+    
 }

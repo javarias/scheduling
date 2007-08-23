@@ -216,6 +216,7 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 		throw new SchedulingException(message);
 	}
 
+    /*
 	public void updateSB(SB s) throws SchedulingException {
 		for (int i = 0; i < unit.length; ++i) {
 			if (unit[i] == s) {
@@ -225,7 +226,7 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 		String message = "Archive.notFound: Scheduling block " + s.getId() + " was not found.";
 		logger.fine(message);
 		throw new SchedulingException(message);
-	}
+	}*/
 
 	// Policies.
 	

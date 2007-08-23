@@ -70,7 +70,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.93 2007/08/23 16:33:54 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.94 2007/08/23 17:01:39 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -267,7 +267,8 @@ public class ALMAProjectManager extends ProjectManager {
         SB completed = sbQueue.get(eb.getParent().getId());
         eb.setParent(completed);// replaced its sb-parent so exec block has full sb
         logger.fine("##########################");
-        logger.fine("SCHEDULING: eb ("+eb.getId()+") has start time = "+eb.getStatus().getStartTime());
+        logger.fine("SCHEDULING: eb ("+eb.getId()+") has start time = "
+                +eb.getStatus().getStartTime());
         logger.fine("SCHEDULING: sb's status in PM = "+completed.getStatus().getStatus());
         logger.fine("SCHEDULING: sb's starttime in PM = "+completed.getStatus().getStartTime());
         logger.fine("##########################");
@@ -276,12 +277,15 @@ public class ALMAProjectManager extends ProjectManager {
             logger.fine("SCHEDULING: This sb ("+completed.getId()+") has an indefinite repeat count");
             try {
 	            completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
-                logger.fine("SCHEDULING: indefinite-repeat sb keeps status = "+completed.getStatus().getStatus());
+                logger.fine("SCHEDULING: indefinite-repeat sb keeps status = "
+                        +completed.getStatus().getStatus());
             }catch (Exception e){ 
 		        logger.severe(e.toString());
     	    }
+            ps = getProjectStatusForSB(completed);
+            archive.printProjectStatusFromObject(ps);
+            archive.printProjectStatusFromArchive(ps.getProjectStatusEntity().getEntityId());
             ps = updateSBStatusInProjectStatus(eb, completed.getStatus());
-            //ps = updateObsUnitSetStatusStats(completed.getId(), eb, ps);
             try {
                 psQueue.updateProjectStatus(ps);
                 archive.updateProjectStatus(ps);
@@ -294,20 +298,24 @@ public class ALMAProjectManager extends ProjectManager {
         
         if( completed.getNumberExec() >= completed.getMaximumNumberOfExecutions()  ){
             logger.fine("###########set to complete####");
-            logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
+            logger.fine("SCHEDULING: Number of executions before next added = "
+                    +completed.getNumberExec());
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.OBSERVED);
             logger.fine("SCHEDULING: Setting end time for "+eb.getId());
             logger.fine("SCHEDULING: Total# executions done = "+completed.getNumberExec());
-            logger.fine("SCHEDULING: Total allowed executions = "+completed.getMaximumNumberOfExecutions());
+            logger.fine("SCHEDULING: Total allowed executions = "
+                    +completed.getMaximumNumberOfExecutions());
             logger.fine("#################################");
             //update ProjectStatus to say this SB is completed/observed
         } else { //set it to ready
             logger.fine("##########set to ready###########");
-            logger.fine("SCHEDULING: Number of executions before next added = "+completed.getNumberExec());
+            logger.fine("SCHEDULING: Number of executions before next added = "
+                    +completed.getNumberExec());
             completed.execEnd(eb,eb.getStatus().getEndTime(), Status.READY);
             logger.fine("SCHEDULING: Setting end time for "+eb.getId());
             logger.fine("SCHEDULING: Total # executions done = "+completed.getNumberExec());
-            logger.fine("SCHEDULING: Total allowed executions = "+completed.getMaximumNumberOfExecutions());
+            logger.fine("SCHEDULING: Total allowed executions = "
+                    +completed.getMaximumNumberOfExecutions());
             logger.fine("#################################");
         }
         logger.fine("SCHEDULING: sb status = "+completed.getStatus().getStatus());
@@ -490,17 +498,10 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public void removeCompletedProjectFromQueue(String proj_id){
     }
-
-
     
-    /**
-      */
-    public synchronized ProjectStatus updateSBStatusInProjectStatus(ExecBlock eb, Status sbStatus) {
-        //String[] ids=new String[2]; //ProjectStatus ID and ObsUnitSet partID: temporary for R2
-        SB sb = eb.getParent();
-        sb = sbQueue.get(sb.getId());
+    private ProjectStatus getProjectStatusForSB(SB sb){
         String proj_id = sb.getProject().getId();
-        logger.fine ("SCHEDULING: updating SBStatus project status for "+proj_id);
+        logger.fine ("SCHEDULING: getting project status for project ("+proj_id+")");
         ProjectStatus[] allPS = psQueue.getAll();
         ProjectStatus ps = null;
         for(int i=0; i < allPS.length; i++){
@@ -509,6 +510,14 @@ public class ALMAProjectManager extends ProjectManager {
                 break;
             }
         }
+        return ps;
+    }
+    /**
+      */
+    public synchronized ProjectStatus updateSBStatusInProjectStatus(ExecBlock eb, Status sbStatus) {
+        SB sb = eb.getParent();
+        sb = sbQueue.get(sb.getId());
+        ProjectStatus ps = getProjectStatusForSB(sb);
         logger.finest("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
 
         //top level obs unit set which is actually the ObsProgram.
