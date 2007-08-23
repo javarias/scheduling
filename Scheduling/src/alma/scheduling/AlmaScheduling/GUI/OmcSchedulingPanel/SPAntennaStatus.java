@@ -22,14 +22,15 @@ public class SPAntennaStatus implements ChessboardStatus {
 		this.bgColor = null;
 		this.description = description;
 		this.shouldFlash = false;
-		this.isSelectable = true;
 		
         this.fgColor = Color.black;
 		// configure the status with proper colors and/or flashing attributes
 		if(description.equals(ONLINE_STRING)) {
 			this.bgColor = Color.green;
+		    this.isSelectable = true;
 		} else if(description.equals(OFFLINE_STRING)) {
 			this.bgColor = Color.lightGray;
+		    this.isSelectable = false;
 		} 
 	}
 	

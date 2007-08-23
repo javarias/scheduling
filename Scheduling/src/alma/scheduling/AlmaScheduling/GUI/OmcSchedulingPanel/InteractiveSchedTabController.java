@@ -204,6 +204,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
     int startC =0;
     int stopC =0;
+
     public void receive(ExecBlockStartedEvent e) {
         String sbid = e.sbId.entityId;
         String exec_id = e.execId.entityId;

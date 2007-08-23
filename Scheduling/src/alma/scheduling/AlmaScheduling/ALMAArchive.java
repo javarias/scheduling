@@ -74,7 +74,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.78 2007/08/02 22:04:05 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.79 2007/08/23 16:33:54 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -435,7 +435,7 @@ public class ALMAArchive implements Archive {
                         logger.fine("SCHEDULING: About to retrieve project with uid "+res.identifier+", gotten from Query");
                         xml = archOperationComp.retrieveDirty(res.identifier);
                         //System.out.println("SchemaVersion in xmlEntityStruct: "+xml.schemaVersion);
-                        //logger.info("PROJECT : "+ xml.xmlString);
+                        //logger.finest("PROJECT : "+ xml.xmlString);
                         //System.out.println("PROJECT taken out of archive: "+ xml.xmlString);
                         //if( matchSchemaVersion(xml.xmlString) ){ } else {
                         try {

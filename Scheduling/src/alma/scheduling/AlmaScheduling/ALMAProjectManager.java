@@ -70,7 +70,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.92 2007/08/02 22:04:05 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.93 2007/08/23 16:33:54 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -530,7 +530,6 @@ public class ALMAProjectManager extends ProjectManager {
         try {
         logger.fine("SCHEDULING: SB's status is "+sb.getStatus().getStatus());
         StatusT stat = status.getStatus();
-        System.out.println("updating SB status ("+status.getSchedBlockRef().getEntityId()+")");
         if(sbStatus.getStatus().equals("notdefined")){
             stat.setState(StatusTStateType.NOTDEFINED);
         } else if (sbStatus.getStatus().equals("waiting")){
@@ -1132,14 +1131,14 @@ public class ALMAProjectManager extends ProjectManager {
         Vector v_uids = new Vector();
         if(schema.equals("ObsProject")) {
             for(int i=0;i< tmp.length; i++) {
-                logger.finest(tmp[i]);
+                logger.finest("proj. id = "+tmp[i]);
                 if(pQueue.isExists(tmp[i])){
                     v_uids.add(tmp[i]);
                 }
             }
         } else if (schema.equals("SchedBlock")){
             for(int i=0;i< tmp.length; i++) {
-                logger.finest(tmp[i]);
+                logger.finest("sb id = "+tmp[i]);
                 if(sbQueue.isExists(tmp[i])){
                     v_uids.add(tmp[i]);
                 }
@@ -1319,6 +1318,7 @@ public class ALMAProjectManager extends ProjectManager {
         Vector<ProjectStatus> tmpPS = new Vector<ProjectStatus>();
         ProjectStatus ps;
         Vector<SB> tmpSBs = new Vector<SB>();
+        Vector<Integer> indicesToRemove = new Vector<Integer>();
     
         try {
             // Get all Projects, SBs and PS's from the archive
@@ -1328,32 +1328,45 @@ public class ALMAProjectManager extends ProjectManager {
             logger.finest("ProjectList size =  "+projectList.length);
             ArrayList<Project> projects = new ArrayList<Project>(projectList.length);
             for(int i=0; i < projectList.length; i++) {
+                logger.finest("project id = "+projectList[i].getId());
                 projects.add(projectList[i]);
             }
             logger.finest("Projects size =  "+projects.size());
-            for(int i=0; i < projects.size(); i++) {
+            int size = projects.size();
+            for(int i=0; i < size; i++) {
                 //if project status is complete don't add
                 ps = archive.getProjectStatus( projects.get(i) );
+                if(ps == null){
+                    logger.warning("Project status for project "+((Project)projects.get(i)).getId());
+                }
                 //check if proj04ect status is complete
-                logger.finest("PS status = "+ps.getStatus().getState().toString());
+                logger.finest("iteration "+i+" out of "+size);
+                logger.finest("PS ("+ps.getProjectStatusEntity().getEntityId()+") "+
+                        "status = "+ps.getStatus().getState().toString());
                 if(!ps.getStatus().getState().toString().equals("complete")){
+                    logger.finest("Adding non complete ProjectStatus "+
+                            ps.getProjectStatusEntity().getEntityId());
                     tmpPS.add(ps);
                     SB[] sbs = archive.getSBsForProject( projects.get(i).getId() );
                     for(int j=0; j< sbs.length; j++){
                         tmpSBs.add( sbs[j] );
                     }
                 } else {
-                    logger.finest("PS status = "+ps.getStatus().getState().toString());
-                    //project status says project is complete.
-                    //take PS out of tmpPS
-                    tmpPS = removePSElement(tmpPS, projects.get(i).getProjectStatusId());
-                    //take project's sbs out of tmpSBs
-                    tmpSBs = removeSBElements(tmpSBs, projects.get(i).getId());
-                    //take project out of the temp Project array so it
-                    //doesn't get put into the pQueue.
-                    projects.remove(i);
-                    //TODO: Should check if its in the queues already and remove
+                    logger.finest("PS "+ps.getProjectStatusEntity().getEntityId()+" complete");
+                    indicesToRemove.add(new Integer(i));
                 }
+            }
+            for(int i=0;i < indicesToRemove.size(); i++){
+                //project status says project is complete.
+                //take PS out of tmpPS
+                tmpPS = removePSElement(tmpPS, projects.get(indicesToRemove.elementAt(i).intValue()).getProjectStatusId());
+                //take project's sbs out of tmpSBs
+                tmpSBs = removeSBElements(tmpSBs, projects.get(indicesToRemove.elementAt(i).intValue()).getId());
+                //take project out of the temp Project array so it
+                //doesn't get put into the pQueue.
+                logger.finest("Project "+projects.get(indicesToRemove.elementAt(i).intValue()).getId()+" is complete, take out of queue");
+                projects.remove(indicesToRemove.elementAt(i).intValue());
+                //TODO: Should check if its in the queues already and remove
             }
 
             logger.finest("projects = "+projects.size());
@@ -1370,6 +1383,7 @@ public class ALMAProjectManager extends ProjectManager {
                
             for(int i=0; i < projects.size(); i++){
                 newProject = projects.get(i);
+                logger.finest("iteration "+i+", project = "+newProject.getId());
                 //does project exist in queue?
                 if(pQueue.isExists( newProject.getId() )){
                     oldProject = pQueue.get(newProject.getId());
@@ -1615,6 +1629,11 @@ public class ALMAProjectManager extends ProjectManager {
             logger.warning("SCHEDULING: DEC object == null in SB, setting to 0.0");
             dec = 0.0;
         }
+        if(sb.getIndefiniteRepeat()){
+            sblite.maxExec = "indefinite";
+        } else {
+            sblite.maxExec = String.valueOf(sb.getMaximumNumberOfExecutions());
+        }
         sblite.dec = dec;
         sblite.freq = 0;
         sblite.maxTime = 0;
@@ -1622,8 +1641,8 @@ public class ALMAProjectManager extends ProjectManager {
         sblite.success = 0; 
         sblite.rank = 0 ;
         //have to get PS to get this info
+        System.out.println("SBid "+id);
         ProjectStatus ps = getPSForSB(id);
-        System.out.println("SCHEDULING: got PS ("+ps.getProjectStatusEntity().getEntityId()+") for sb");
         sblite.isComplete = isSBComplete(ps, id);
         return sblite;
     }
@@ -1716,6 +1735,7 @@ public class ALMAProjectManager extends ProjectManager {
     public ProjectStatus getPSForProject(String p_id){
         Project p = pQueue.get(p_id);
         String ps_id = p.getProjectStatusId();
+        System.out.println("PSid "+ps_id);
         ProjectStatus ps = psQueue.get(ps_id);
         return ps;
     }
@@ -1735,7 +1755,6 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusT prog = ps.getObsProgramStatus();
         SBStatusT sb;
         if(isSbInThisSet(sb_id, prog)){
-            System.out.println("SCHEDULING: sb in top level set");
             sb = getSBStatus(prog, sb_id);
         } else {
             sb = findSB(prog, sb_id);
@@ -1743,17 +1762,14 @@ public class ALMAProjectManager extends ProjectManager {
         if(sb.getStatus().getState().toString().equals("complete")
                 || sb.getStatus().getState().toString().equals("observed")){
 
-            System.out.println("SB ("+sb_id+") is complete");
             return true;
         } else {
-            System.out.println("SB ("+sb_id+") is not complete");
             return false;
         }
 
     }
     
     private SBStatusT findSB(ObsUnitSetStatusT o, String id){
-        System.out.println("SCHEDULING: finding sb");
         ObsUnitSetStatusTChoice c = o.getObsUnitSetStatusTChoice();
         ObsUnitSetStatusT[] sets;
         SBStatusT[] sbs;

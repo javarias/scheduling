@@ -36,7 +36,7 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.5 2007/08/02 15:14:42 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.6 2007/08/23 16:33:54 sslucero Exp $
  */
 public class ProjectStatusQueue {
 
@@ -63,6 +63,7 @@ public class ProjectStatusQueue {
 	 * @param item The ProjectStatus to be added.
 	 */
 	public synchronized void add(ProjectStatus item) {
+        //System.out.println("adding "+ item.getProjectStatusEntity().getEntityId());
 		queue.add(item);
 	}
 
@@ -110,14 +111,23 @@ public class ProjectStatusQueue {
 	 * if there is no such entity.
 	 */
 	public synchronized ProjectStatus get(String entityId) {
+        //System.out.println("getting ps "+entityId);
+        //System.out.println("get in PSQueue: queue size = "+queue.size());
 		ProjectStatus x = null;
-		for (int i = 0; i < queue.size(); ++i) {
+		//for (int i = 0; i < queue.size(); i++) {
+		//	x = (ProjectStatus)queue.get(i);
+        //   System.out.println(x.getProjectStatusEntity().getEntityId());
+        //}
+		for (int i = 0; i < queue.size(); i++) {
 			x = (ProjectStatus)queue.get(i);
+          //  System.out.println("comparing to PS "+ x.getProjectStatusEntity().getEntityId());
 			//if (x.getId().equals(entityId)) {
 			if (x.getProjectStatusEntity().getEntityId().equals(entityId)) {
+            //    System.out.println("returning ps "+entityId);
 				return x;
 			}
 		}
+//        System.out.println("returning null");
 		return null;
 	}
 
@@ -126,7 +136,7 @@ public class ProjectStatusQueue {
 	 * @return All ProjectStatus in the queue in the form of an array.
 	 */
 	public synchronized ProjectStatus[] getAll() {
-        System.out.println("queue size = "+queue.size());
+  //      System.out.println("getAll in PSQueue: queue size = "+queue.size());
 		ProjectStatus[] x = new ProjectStatus [queue.size()];
         for(int i=0; i<queue.size(); i++){
             x[i] = (ProjectStatus)queue.get(i);

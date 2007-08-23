@@ -183,7 +183,7 @@ public class ProjectTable extends JTable {
     }
 
     public void setRowInfo(ProjectLite[] projects) {
-        clearSelection();
+        javax.swing.SwingUtilities.invokeLater(new ClearItems());
         int size = projects.length;
       // projectLites = projects;
         projRowInfo = new Object[size][infoSize];
@@ -218,9 +218,9 @@ public class ProjectTable extends JTable {
         }
         projectInfo.append("PI Name = "+p.piName+"\n");
         projectInfo.append("Status = "+p.status +"\n");  
-        projectInfo.append("Total number of SBs = "+p.totalSBs +"\n");  
-        projectInfo.append("Total number of SBs completed = "+p.completeSBs +"\n"); 
-        projectInfo.append("Total number of SBs failed = "+p.failedSBs +"\n");  
+        projectInfo.append("Total SBs = "+p.totalSBs +"\n");  
+        projectInfo.append("Total SBs complete = "+p.completeSBs +"\n"); 
+        projectInfo.append("Total SBs failed = "+p.failedSBs +"\n");  
         projectInfo.repaint();
         projectInfo.validate();
     }
@@ -304,8 +304,18 @@ public class ProjectTable extends JTable {
         validate();
     }
 
-    public void clearSelectedItems(){
-        getSelectionModel().clearSelection();
+    class ClearItems implements Runnable {
+        public ClearItems() {}
+        public void run() {
+            clearSelectedItems();
+        }
+        
+        public void clearSelectedItems(){
+            projectInfo.setText("");
+            clearSelection();
+            getSelectionModel().clearSelection();
+            validate();
+        }
     }
 
     //copy/paste class

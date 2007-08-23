@@ -356,9 +356,10 @@ public class SBTable extends JTable {
     }
     
     private void changeBackgroundColor(int row, String s) {
-        //selectionModel.setSelectionInterval(row, execLoc);
-        ListSelectionModel selectionModel = getSelectionModel();
-        selectionModel.clearSelection();
+        //ListSelectionModel selectionModel = getSelectionModel();
+        //selectionModel.clearSelection();
+        //sbInfo.setText("");
+        clearSelection();
         if(s.equals("F") || s.equals("AB") || s.equals("FAIL") || 
                 s.equals("FAILED") || s.equals("ABORTED") ){
             //setBackground(Color.RED);
@@ -506,13 +507,16 @@ public class SBTable extends JTable {
         } else {
             sbInfo.append("SB Status: not complete \n");
         }
+        sbInfo.append("Max. execution count : "+sb.maxExec+"\n");
         sbInfo.append("Priority: "+sb.priority+"\n");
         sbInfo.append("RA: "+sb.ra+"\n");
         sbInfo.append("DEC: "+sb.dec+"\n");
         sbInfo.append("Frequency: "+sb.freq+"\n");
+        /*
         sbInfo.append("Score: "+sb.score+"\n");
         sbInfo.append("Success: "+sb.success+"\n");
         sbInfo.append("Rank: "+sb.rank+"\n");
+        */
         sbInfo.repaint();
         sbInfo.validate();
     }
@@ -566,6 +570,7 @@ public class SBTable extends JTable {
     }
 
     public void clearSelectedItems(){
+        sbInfo.setText("");
         getSelectionModel().clearSelection();
     }
     
