@@ -70,7 +70,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.94 2007/08/23 17:01:39 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.95 2007/08/23 20:23:30 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1650,7 +1650,7 @@ public class ALMAProjectManager extends ProjectManager {
         sblite.success = 0; 
         sblite.rank = 0 ;
         //have to get PS to get this info
-        System.out.println("SBid "+id);
+        //System.out.println("SBid "+id);
         ProjectStatus ps = getPSForSB(id);
         sblite.isComplete = isSBComplete(ps, id);
         return sblite;
@@ -1744,7 +1744,7 @@ public class ALMAProjectManager extends ProjectManager {
     public ProjectStatus getPSForProject(String p_id){
         Project p = pQueue.get(p_id);
         String ps_id = p.getProjectStatusId();
-        System.out.println("PSid "+ps_id);
+        //System.out.println("PSid "+ps_id);
         ProjectStatus ps = psQueue.get(ps_id);
         return ps;
     }
