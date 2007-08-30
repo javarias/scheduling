@@ -56,7 +56,7 @@ public class SearchArchiveOnlyPlugin extends SchedulingPanelGeneralPanel {
 
     public void setServices(PluginContainerServices cs){
         super.setServices(cs);
-        logger.fine("In setServies1");
+        logger.fine("### setServices in SearchArchive Plugin ###");
         connectedSetup(cs);
     }
 
@@ -154,7 +154,7 @@ public class SearchArchiveOnlyPlugin extends SchedulingPanelGeneralPanel {
         sbs.clear();
         projects.clear();
     }
-    private boolean areWeConnected(){
+    protected boolean areWeConnected(){
         return controller.areWeConnected();
     }
 }

@@ -106,8 +106,8 @@ public class ALMAQueuedScheduler
         logger.fine("SCHEDULING: Queued Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                    container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
+                        
         } catch(Exception e){
             e.printStackTrace();
             masterScheduler=null;

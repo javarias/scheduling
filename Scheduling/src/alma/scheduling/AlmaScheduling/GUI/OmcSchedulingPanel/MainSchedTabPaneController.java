@@ -39,7 +39,7 @@ import alma.ACSErr.CompletionHolder;
 
 public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control=null;
-    private Consumer consumer;
+   // private Consumer consumer;
     //private boolean connected = false;
     private MainSchedTabPane parent;
 
@@ -50,8 +50,10 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
     }
     public void setup(PluginContainerServices cs){
         super.onlineSetup(cs);
+        logger.fine("SP: setup called MainSchedTabController");
     }
 
+    /*
     public void checkOperationalState() {
         try {
             MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
@@ -70,7 +72,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
             //e.printStackTrace();
         }
     }
-
+*/
     protected SchedulerTab createSchedulerTab(String mode, String array){ //String title) {
         SchedulerTab tab=null;
         if(mode.equals("interactive")){
@@ -121,15 +123,16 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         return res;
     }
 
-    public boolean areWeConnected(){
-        checkOperationalState();
-        return super.connected;
-    }
+//    public boolean areWeConnected(){
+  //      checkOperationalState();
+    //    return super.connected;
+    //}
 
     /**
       * Need receive here to set start state with defaults
-      */
+    */
     public void receive(SchedulingStateEvent e){
+        logger.fine("GOT SchedulingStateEvent in Main Ctrl: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
             setOperationalStartState();
         }else if(e.state == SchedulingState.OFFLINE){

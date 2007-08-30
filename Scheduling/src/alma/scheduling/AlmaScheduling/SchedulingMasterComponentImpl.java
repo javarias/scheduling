@@ -47,7 +47,7 @@ import alma.acs.component.client.ComponentClient;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.31 2007/08/02 15:14:42 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.32 2007/08/30 21:42:45 sslucero Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -121,10 +121,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     public void reinitSubsystem() throws AcsStateActionException {
         m_logger.fine("SCHEDULING MC: reinitSubsystem() method called.");
         try {
-            AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
-            adv.forceReleaseComponent(masterScheduler.name());
+            //AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
+            //adv.forceReleaseComponent(masterScheduler.name());
+            m_containerServices.releaseComponent(masterScheduler.name());
             masterScheduler = null;
-        } catch(AcsJContainerServicesEx ce){
+        } catch(Exception ce){
             m_logger.severe("SCHEDULING MC: Unable to shutdown master scheduler component.");
             ce.printStackTrace();
             try {
@@ -168,10 +169,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             //    m_containerServices.releaseComponent(masterScheduler.name());
 
                 try { 
-                    AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
-                    adv.forceReleaseComponent(masterScheduler.name());
+                    //AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
+                    //adv.forceReleaseComponent(masterScheduler.name());
+                    m_containerServices.releaseComponent(masterScheduler.name());
                     masterScheduler = null;
-                } catch(AcsJContainerServicesEx ce){
+                } catch(Exception ce){
                     m_logger.severe("SCHEDULING MC: Unable to shutdown master scheduler component.");
                     ce.printStackTrace();
                     try {

@@ -84,10 +84,6 @@ public class MainSchedTabPane extends JTabbedPane {
         createExistingArrayTab();
         addTab("Main",mainPanel);
         addTab("Existing Arrays", arraysTab);
-       // addTab("Search", archiveTab);
-        //addTab("Manual", new ManualArrayTab(null,"foo"));
-        //addTab("Queued", new QueuedSchedTab("foo","foo"));
-      //  addTab("Dynamic", new DynamicSchedTab("foo","foo"));
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
@@ -106,7 +102,6 @@ public class MainSchedTabPane extends JTabbedPane {
         middlePanel.connectedSetup(cs);
         controller.checkOperationalState();
         logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
-        logger.finest("SCHEDULING_PANEL: Finest log");
     }
 
     private void initializeChessboardsWithALMA(){
@@ -118,10 +113,13 @@ public class MainSchedTabPane extends JTabbedPane {
         initializeChessboardsWithALMA();
         doInteractiveButton();
         //select antenna 1 already..
-        //middlePanel.selectDefaultAntenna();
     }
     public void connectedToALMA(boolean b){
         //tell chessboards to getTMCDB if its null
+        if(!b){
+            resetMainViewButtons();
+        }
+        middlePanel.setEnabled(b);
     }
     
     public void setOfflineDisplay(){

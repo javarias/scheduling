@@ -101,8 +101,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         logger.fine("SCHEDULING: Interactive Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                    container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
         } catch(Exception e){
             e.printStackTrace();
             masterScheduler=null;
@@ -128,6 +127,11 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws InvalidOperationEx, InvalidObjectEx {
             
         try {
+            System.out.println("pi id = "+piId);
+            System.out.println("project id = "+projectId);
+            System.out.println("scheduler id = "+schedulerId);
+            if(masterScheduler == null){
+            }
             masterScheduler.startInteractiveSession(piId, projectId, schedulerId);
         }catch(Exception e){
             e.printStackTrace();

@@ -310,6 +310,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
             buttons.add(stopnowB);
             setEnabled(false);
             buttons.revalidate();
+            validate();
         }
     }
 
@@ -357,7 +358,11 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     return;
                 }
                 if(!sbId.equals("")){
-                    openExecutionWaitingThing();
+                    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                openExecutionWaitingThing();
+                            }
+                    });
                     controller.executeSB(sbId);
                     //setEnable(false);
                     //setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
@@ -366,13 +371,21 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
             } catch(CannotRunCompleteSBEx e){
                 logger.severe("SCHEDULING_PANEL: Error running SB, its complete");
                 showErrorPopup("This SB has reached its max execution count.", "executeSB");
-                closeExecutionWaitingThing();
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            closeExecutionWaitingThing();
+                        }
+                });
             }catch(Exception e){
                 e.printStackTrace();
                 logger.severe("SCHEDULING_PANEL: Error starting a SB");
                 showErrorPopup(e.toString()+", "+e.getMessage(), "executeSB");
                 stopNowSB();
-                closeExecutionWaitingThing();
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            closeExecutionWaitingThing();
+                        }
+                });
             }
         }
     }

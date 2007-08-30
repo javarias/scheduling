@@ -70,7 +70,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.95 2007/08/23 20:23:30 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.96 2007/08/30 21:42:45 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -375,7 +375,7 @@ public class ALMAProjectManager extends ProjectManager {
                     set.setNumberSBsFailed(x + 1);
                     p.setNumberSBsFailed(x +1);
                     logger.fine("aborted; x = "+ (x+1));
-                }else if(eb.getStatus().getStatus().equals("complete")){
+                }else if(eb.getStatus().getStatus().equals("observed")){
                     int x = set.getNumberSBsCompleted();
                     set.setNumberSBsCompleted(x + 1);
                     p.setNumberSBsCompleted(x +1);
@@ -518,6 +518,7 @@ public class ALMAProjectManager extends ProjectManager {
         SB sb = eb.getParent();
         sb = sbQueue.get(sb.getId());
         ProjectStatus ps = getProjectStatusForSB(sb);
+        logger.finest("SCHEDULING: about to update sbStatus for "+sb.getId());
         logger.finest("SCHEDULING: about to update PS::"+ps.getProjectStatusEntity().getEntityId());
 
         //top level obs unit set which is actually the ObsProgram.
@@ -537,7 +538,8 @@ public class ALMAProjectManager extends ProjectManager {
         SBStatusT status = getSBStatusMatch(sb, sbs);
         addExecStatus(eb, status);
         try {
-        logger.fine("SCHEDULING: SB's status is "+sb.getStatus().getStatus());
+        logger.fine("SCHEDULING: SB's status, for SB "+status.getSchedBlockRef().getEntityId()+
+                " is "+sb.getStatus().getStatus());
         StatusT stat = status.getStatus();
         if(sbStatus.getStatus().equals("notdefined")){
             stat.setState(StatusTStateType.NOTDEFINED);
@@ -1018,6 +1020,19 @@ public class ALMAProjectManager extends ProjectManager {
         String pprString = archive.getPPRString(ps, ppr.getId());
         logger.fine("SCHEDULING: (in PM) PPR string =  "+pprString);
         String pipelineResult = pipeline.processRequest(pprString);
+    }
+
+    /**
+      * Checks to see if the SB's parent (obsunitset) is complete
+      */
+    protected boolean isObsUnitSetComplete(String sbid) {
+        SB sb = sbQueue.get(sbid);
+        Program p = sb.getParent();
+        if(p.getStatus().isComplete()){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void managerStopped() {
@@ -1741,6 +1756,7 @@ public class ALMAProjectManager extends ProjectManager {
         //start a new webpage for project with uid
         //email PI with webpage address
     }
+
     public ProjectStatus getPSForProject(String p_id){
         Project p = pQueue.get(p_id);
         String ps_id = p.getProjectStatusId();

@@ -54,7 +54,7 @@ package alma.scheduling.Define;
  * the "ready", "waiting", or "running" state.  If the unit's end time
  * has been set the state is either "complete" or "aborted".  
  * 
- * @version $Id: Status.java,v 1.8 2007/07/24 20:49:32 sslucero Exp $
+ * @version $Id: Status.java,v 1.9 2007/08/30 21:42:45 sslucero Exp $
  * @author Allen Farris
  */
 public class Status {
@@ -143,10 +143,10 @@ public class Status {
 		if (startTime != null )
 			throw new UnsupportedOperationException("Cannot set start time!  Component has already been started.");
         if(readyTime == null) {
-            System.out.println("SCHED: in status, readyTime == null");
+            System.out.println("SCHED: in status, readyTime == null when doing setStarted");
         }
         if(readyTime.gt(time)){
-            System.out.println("SCHED: in status, readyTime > time");
+            System.out.println("SCHED: in status, readyTime > time when doing setStarted");
         }
 		//if (readyTime == null )  //|| readyTime.gt(time))
 		//	throw new UnsupportedOperationException("Cannot set 'started' before setting 'ready'.");
@@ -246,6 +246,14 @@ public class Status {
 	 */
 	public boolean isAborted() {
 		return status == ABORTED;
+	}
+	
+    /**
+	 * return true if the status is aborted
+	 * @return true if the status is aborted
+	 */
+	public boolean isProcessed() {
+		return status == PROCESSED;
 	}
 	
 	/**

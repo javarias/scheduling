@@ -64,6 +64,7 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
         cs = ctrl;
         logger = ctrl.getLogger();
         mainSchedPanel.secondSetup(cs);
+        logger.fine("### setServices in CreateArray Plugin ###");
     }
 
     public void start() throws Exception {

@@ -156,8 +156,8 @@ public class ALMAOperator implements Operator {
         
                 try {
                     (alma.scheduling.MasterSchedulerIFHelper.narrow( 
-                        containerServices.getDefaultComponent(
-                            "IDL:alma/scheduling/MasterSchedulerIF:1.0"))).response(
+                        containerServices.getComponentNonSticky(
+                            "SCHEDULING_MASTERSCHEDULER"))).response(
                                 message.getMessageId(), bestSBId);
                 } catch(Exception e) {
                     logger.severe("SCHEDULING: error getting MasterScheduler Component!");

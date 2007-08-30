@@ -104,8 +104,7 @@ public class ALMADynamicScheduler
         logger.fine("SCHEDULING: Dynamic Scheduler execute() ");
         try {
             this.masterScheduler =alma.scheduling.MasterSchedulerIFHelper.narrow(
-                    container.getDefaultComponent(
-                        "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                    container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
         } catch(Exception e){
             e.printStackTrace();
             masterScheduler=null;
@@ -162,8 +161,7 @@ public class ALMADynamicScheduler
         logger.fine("DSComp has sb "+sbid+" with message = "+ currentMessageId);
         try{
             (alma.scheduling.MasterSchedulerIFHelper.narrow(
-                container.getDefaultComponent(
-                    "IDL:alma/scheduling/MasterSchedulerIF:1.0"))).response(
+                container.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"))).response(
                         currentMessageId, sbid);
         }catch(Exception e) {
             logger.severe("SCHEDULING_DS: error trying to select SB "+e.toString());

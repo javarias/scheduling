@@ -34,7 +34,7 @@ import alma.ACS.ROstringSeq;
 import alma.ACSErr.CompletionHolder;
 
 public class SearchArchiveOnlyController extends SchedulingPanelController{
-    private Consumer consumer;
+    //private Consumer consumer;
     //private boolean connected = false;
     private SearchArchiveOnlyPlugin parent;
 
@@ -46,17 +46,7 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
 
     public void setup(PluginContainerServices cs){
         super.onlineSetup(cs);
-     /*   try {
-            consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
-            consumer.addSubscription(SchedulingStateEvent.class, this);
-            consumer.consumerReady();
-        }catch(Exception e){
-            logger.severe("SCHEDULING_PANEL: problem getting NC to get state event");
-            logger.severe("SCHEDULING_PANEL: setting state to connected anyways: COULD CAUSE PROBLEMS");
-            //todo send alarm
-            connected = true;
-            e.printStackTrace();
-        }*/
+        logger.fine("SP: setup in SearchArchiveCtrl");
     }
 
     private void setOperationalStartState() {
@@ -64,15 +54,16 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
         parent.connectToALMA(super.connected);
     }
     
-    public boolean areWeConnected() {
-        return super.connected;
-    }
+//    public boolean areWeConnected() {
+//        checkOperationalState();
+//        return super.connected;
+//    }
     
     /**
       * Need receive to set start state
       */
     public void receive(SchedulingStateEvent e){
-        logger.fine("GOT SchedulingStateEvent: "+e.state);
+        logger.fine("GOT SchedulingStateEvent in SAO_Ctrl: "+e.state);
         if(e.state == SchedulingState.ONLINE_PASS2){
             setOperationalStartState();
         }else if(e.state == SchedulingState.OFFLINE){
@@ -83,6 +74,7 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
         }
     }
    
+    /*
     public void checkOperationalState() {
         try {
             MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
@@ -100,5 +92,5 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
             logger.warning("SP: Problem checking master component state, check that SCHEDULING system is connected");
             //e.printStackTrace();
         }
-    }
+    }*/
 }

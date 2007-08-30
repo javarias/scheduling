@@ -147,17 +147,10 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     protected String getArrayStatus() {
         return arrayStatus;
     }
+
     private void setArrayStatus(String stat){
         arrayStatus = stat;
         parent.updateArrayStatus();
-    }
-
-    public void startInteractiveSession(){
-        try {
-            scheduler.startSession("","");
-        } catch(Exception e){
-            e.printStackTrace();
-        }
     }
 
     public synchronized void executeSB(String id) 
@@ -219,7 +212,6 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             startC++;
             
         }
-        //startInteractiveSession();
         waitingForArchivedSB.add(sbid);
         parent.setSBStatus(sbid, "RUNNING");
         parent.closeExecutionWaitingThing();

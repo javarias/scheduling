@@ -58,9 +58,11 @@ public class SchedulingPanelController {
         container = cs;
         logger = cs.getLogger();
     }
+
     public void onlineSetup(PluginContainerServices cs) {
         container = cs;
         logger = cs.getLogger();
+        logger.fine("SP: online setup of SchedulingPanelController");
         try {
             consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);
             consumer.addSubscription(SchedulingStateEvent.class, this);
@@ -112,9 +114,10 @@ public class SchedulingPanelController {
             logger.warning("SCHEDULING_PANEL: Error destorying array "+arrayname+", see if it still exists.");
         }
     }
-
     public void receive(SchedulingStateEvent e){
+        logger.fine("\n******************************");
         logger.fine("GOT SchedulingStateEvent: "+e.state);
+        logger.fine("******************************\n");
         if(e.state == SchedulingState.ONLINE_PASS2){
             //setOperationalStartState();
             connected = true;
@@ -127,7 +130,7 @@ public class SchedulingPanelController {
     }
 
 
-    public void checkOperationalState() {    
+    protected void checkOperationalState() {    
         try {
             MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
                 narrow(getCS().getComponentNonSticky("SCHEDULING_MASTER_COMP"));
@@ -144,8 +147,15 @@ public class SchedulingPanelController {
             }
         } catch(Exception e){
             logger.warning("SP: Problem checking master component state, check that SCHEDULING system is connected");
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
+    
+    protected boolean areWeConnected() {
+        checkOperationalState();
+        return connected;
+    }
+    
+
 }
 

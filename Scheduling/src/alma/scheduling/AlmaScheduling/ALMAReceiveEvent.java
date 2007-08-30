@@ -64,7 +64,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.48 2007/08/23 17:01:39 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.49 2007/08/30 21:42:45 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -302,14 +302,20 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         boolean startPipeline = manager.isPipelineNeeded(sbid);
         if(startPipeline) { //returned true and we want to start the pipeline
 
-            String result = null;
-            SciPipelineRequest ppr=null;
-            try {
-                ppr = manager.createSciPipelineRequest(sbid, "Empty Comment");
-                manager.startPipeline(ppr);
-            } catch(Exception ex) {
-                logger.severe("SCHEDULING: error starting the science pipeline");
-                ex.printStackTrace(System.out);
+            //check if SB's OUS is complete, if it is start the pipeline
+            if(manager.isObsUnitSetComplete(sbid)) {
+                logger.fine("SCHEDULING: ObsUnitSet/Parent of SB ("+sbid+") is complete, starting SciPipeline");
+                String result = null;
+                SciPipelineRequest ppr=null;
+                try {
+                    ppr = manager.createSciPipelineRequest(sbid, "Empty Comment");
+                    manager.startPipeline(ppr);
+                } catch(Exception ex) {
+                    logger.severe("SCHEDULING: error starting the science pipeline");
+                    ex.printStackTrace(System.out);
+                }
+            } else {
+                logger.fine("SCHEDULING: ObsUnitSet/Parent of SB ("+sbid+") is not complete, not starting SciPipeline at this time");
             }
         } //else { //returned false so not starting the pipeline.. ie do nothing..
         //}
