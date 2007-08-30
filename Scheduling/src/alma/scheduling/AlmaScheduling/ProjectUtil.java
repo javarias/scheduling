@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.57 2007/08/30 21:42:45 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.58 2007/08/30 21:48:27 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -398,7 +398,7 @@ public class ProjectUtil {
         } catch(Exception e){
             e.printStackTrace();
         }
-        System.out.println("just set project state to = "+project.getStatus().toString());
+        //System.out.println("just set project state to = "+project.getStatus().toString());
         try {
             project.getStatus().setStarted(new DateTime(ps.getStatus().getStartTime()));
         } catch(Exception e) {}
@@ -429,13 +429,13 @@ public class ProjectUtil {
             e.printStackTrace();
         }
 
-        System.out.println("project: ready =" + 
-                ((project.getStatus().getReadyTime() == null) ? "null" :
-                    project.getStatus().getReadyTime().toString() ) +
-                " start = "+ (( project.getStatus().getStartTime() == null) ? "null" : 
-                    project.getStatus().getStartTime().toString()) +
-                " end = "+  ((project.getStatus().getEndTime() == null) ? "null" : 
-                    project.getStatus().getEndTime().toString()) );
+        //System.out.println("project: ready =" + 
+         //       ((project.getStatus().getReadyTime() == null) ? "null" :
+          //          project.getStatus().getReadyTime().toString() ) +
+           //     " start = "+ (( project.getStatus().getStartTime() == null) ? "null" : 
+            //        project.getStatus().getStartTime().toString()) +
+             //   " end = "+  ((project.getStatus().getEndTime() == null) ? "null" : 
+              //      project.getStatus().getEndTime().toString()) );
 		return project;
 	}
 	
@@ -633,13 +633,13 @@ public class ProjectUtil {
                         e.printStackTrace();
                     }
                 }
-                System.out.println("SB: ready =" + 
-                    ((memberSB.getStatus().getReadyTime() == null) ? "null" :
-                        memberSB.getStatus().getReadyTime().toString() ) +
-                    " start = "+ (( memberSB.getStatus().getStartTime() == null) ? "null" : 
-                        memberSB.getStatus().getStartTime().toString()) +
-                    " end = "+  ((memberSB.getStatus().getEndTime() == null) ? "null" : 
-                        memberSB.getStatus().getEndTime().toString()) );
+                //System.out.println("SB: ready =" + 
+                 //   ((memberSB.getStatus().getReadyTime() == null) ? "null" :
+                  //      memberSB.getStatus().getReadyTime().toString() ) +
+                   // " start = "+ (( memberSB.getStatus().getStartTime() == null) ? "null" : 
+                    //    memberSB.getStatus().getStartTime().toString()) +
+                    //" end = "+  ((memberSB.getStatus().getEndTime() == null) ? "null" : 
+                     //   memberSB.getStatus().getEndTime().toString()) );
 
 				program.addMember(memberSB);
 			}
@@ -667,13 +667,13 @@ public class ProjectUtil {
           e.printStackTrace();
       }
       // Return the newly created program.
-        System.out.println("program: ready =" + 
-                ((program.getStatus().getReadyTime() == null) ? "null" :
-                    program.getStatus().getReadyTime().toString() ) +
-                " start = "+ (( program.getStatus().getStartTime() == null) ? "null" : 
-                    program.getStatus().getStartTime().toString()) +
-                " end = "+  ((program.getStatus().getEndTime() == null) ? "null" : 
-                    program.getStatus().getEndTime().toString()) );
+        //System.out.println("program: ready =" + 
+         //       ((program.getStatus().getReadyTime() == null) ? "null" :
+          //          program.getStatus().getReadyTime().toString() ) +
+           //     " start = "+ (( program.getStatus().getStartTime() == null) ? "null" : 
+            //        program.getStatus().getStartTime().toString()) +
+             //   " end = "+  ((program.getStatus().getEndTime() == null) ? "null" : 
+              //      program.getStatus().getEndTime().toString()) );
 	  return program;
 	}
     
@@ -1450,7 +1450,7 @@ public class ProjectUtil {
 		pstatus.setPI(project.getPI());
 		pstatus.setTimeOfUpdate(now.toString());
 		// The state of the project.
-        System.out.println("project state = "+ project.getStatus().toString());
+        //System.out.println("project state = "+ project.getStatus().toString());
 		pstatus.setStatus(assignState(project.getStatus()));
 		pstatus.setBreakpointTime(project.getBreakpointTime() == null ? "" : project.getBreakpointTime().toString());
 		// The obsProgram status.

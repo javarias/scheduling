@@ -127,9 +127,9 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws InvalidOperationEx, InvalidObjectEx {
             
         try {
-            System.out.println("pi id = "+piId);
-            System.out.println("project id = "+projectId);
-            System.out.println("scheduler id = "+schedulerId);
+            //System.out.println("pi id = "+piId);
+            //System.out.println("project id = "+projectId);
+            //System.out.println("scheduler id = "+schedulerId);
             if(masterScheduler == null){
             }
             masterScheduler.startInteractiveSession(piId, projectId, schedulerId);
