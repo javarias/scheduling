@@ -79,6 +79,9 @@ public class ArrayTable extends JTable {
             }
             private void showPopup(MouseEvent e) {
                 //updateRightClickMenu();
+		int row= rowAtPoint(new Point(e.getX(),e.getY()));
+		clearSelection();
+		setRowSelectionInterval(row,row);
                 if (e.isPopupTrigger()) {
                    rtClickMenu.show(e.getComponent(),
                        e.getX(), e.getY());
@@ -89,8 +92,12 @@ public class ArrayTable extends JTable {
 
     private void getSelectedArray(){
         try {
+
             int row = getSelectedRow();
-            currentArray = (String)arrayRowInfo[row][0];
+	    if(row>=0) {
+	            currentArray = (String)arrayRowInfo[row][0];
+		}
+
         } catch(Exception e){
             logger.severe("Crap problem getting currently selected array...");
         }
@@ -110,6 +117,7 @@ public class ArrayTable extends JTable {
             }
         });
         rtClickMenu.add(item1);
+	clearSelection();
     }
     
     public void setCS(PluginContainerServices cs){
@@ -298,6 +306,7 @@ public class ArrayTable extends JTable {
         }
         public void run(){
             getSelectedArray();
+	    clearSelection();
             if(currentArray.equals("")){
                 return;
             }
