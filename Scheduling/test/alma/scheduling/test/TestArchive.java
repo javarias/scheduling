@@ -120,7 +120,11 @@ public class TestArchive extends ComponentClientTestCase {
     }
 
     public static void main(String[] args) {
-        alma.acs.testsupport.tat.TATJUnitRunner.run(TestArchive.class);
+        try {
+            alma.acs.testsupport.tat.TATJUnitRunner.run(TestArchive.class);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
 

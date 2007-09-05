@@ -69,6 +69,10 @@ public class TestALMAControl extends ComponentClientTestCase {
 
     public static void main(String[] args) {
         System.out.println("Test");
-        alma.acs.testsupport.tat.TATJUnitRunner.run(TestALMAControl.class);
+        try {
+            alma.acs.testsupport.tat.TATJUnitRunner.run(TestALMAControl.class);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

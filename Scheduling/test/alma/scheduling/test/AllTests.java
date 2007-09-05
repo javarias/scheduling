@@ -52,6 +52,10 @@ public class AllTests {//extends TestSuite{
 
     public static void main(String[] args) {
         //junit.textui.TestRunner.run(AllTests.class);
-        alma.acs.testsupport.tat.TATJUnitRunner.run(AllTests.class);
+        try {
+            alma.acs.testsupport.tat.TATJUnitRunner.run(AllTests.class);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

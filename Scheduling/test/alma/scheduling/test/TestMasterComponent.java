@@ -179,6 +179,10 @@ public class TestMasterComponent extends ComponentClientTestCase {
       *
       */
     public static void main(String[] args) {
-        alma.acs.testsupport.tat.TATJUnitRunner.run(TestMasterComponent.class);
+        try {
+            alma.acs.testsupport.tat.TATJUnitRunner.run(TestMasterComponent.class);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }
