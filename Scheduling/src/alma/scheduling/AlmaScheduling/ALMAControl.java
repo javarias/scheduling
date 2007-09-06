@@ -26,6 +26,7 @@
 package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.Vector;
 import java.util.Properties;
 
@@ -54,6 +55,10 @@ import alma.Control.InvalidRequest;
 import alma.Control.InaccessibleException;
 import alma.Control.AntennaMode;
 
+//import alma.acscommon.OPERATOR;
+import alma.log_audience.OPERATOR;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.ArrayContextLogger;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSFaultState;
@@ -62,7 +67,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.67 2007/08/02 15:14:42 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.68 2007/09/06 17:59:03 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -75,7 +80,8 @@ public class ALMAControl implements Control {
     //list of current manual array monitors.
     private Vector manualArrays;
     //logger
-    private Logger logger;
+    private AcsLogger logger;
+    private ArrayContextLogger arraylogger;
     //list of current observing sessions
     private Vector observedSessions;
     private ALMAProjectManager manager;
@@ -86,7 +92,8 @@ public class ALMAControl implements Control {
         ACSJMSTopicConnectionImpl.containerServices=containerServices;
         this.manager = m;
         this.logger = cs.getLogger();
-            this.auto_controllers = new Vector<ArrayModeInfo>();
+        this.arraylogger = new ArrayContextLogger(logger);
+        this.auto_controllers = new Vector<ArrayModeInfo>();
         manualArrays = new Vector();
         this.observedSessions = new Vector();
         this.clock = new ALMAClock();
@@ -187,7 +194,8 @@ public class ALMAControl implements Control {
             sbRef.instanceVersion = "1.0";
             //logger.fine("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
             if(ctrl !=null){
-                logger.info("SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName);
+                arraylogger.log(Level.INFO, "SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName,
+                        OPERATOR.value, arrayName);
                 ctrl.observe(sbRef, sessionRef, 0L); 
             } else {
                 logger.severe("***************************************");
@@ -232,7 +240,10 @@ public class ALMAControl implements Control {
     public void stopSB(String name, String id) throws SchedulingException {
         AutomaticArrayCommand ctrl = getAutomaticArray(name);
         try{
-            logger.info("SCHEDULING: Stopping scheduling on array "+name);
+            //logger.info("SCHEDULING: Stopping scheduling on array "+name);
+            arraylogger.log(Level.INFO, 
+                    "SCHEDULING: Stopping scheduling on array "+name, 
+                    OPERATOR.value, name);
             //if(ctrl != null) {
                 ctrl.stop(); 
                 //removeAutomaticArray(false, name);
@@ -269,7 +280,9 @@ public class ALMAControl implements Control {
     public void stopSBNow(String name, String id) throws SchedulingException{
          AutomaticArrayCommand ctrl = getAutomaticArray(name);
         try{
-            logger.info("SCHEDULING: Stopping scheduling on array "+name);
+            //logger.info("SCHEDULING: Stopping scheduling on array "+name);
+           arraylogger.log(Level.INFO,"SCHEDULING: Stopping scheduling on array "+name,
+                   OPERATOR.value, name);
             //if(ctrl != null) {
                 ctrl.stopNow(); 
         } catch (Exception e){
@@ -341,7 +354,10 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
-            logger.info("SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName());
+            logger.logToAudience(Level.INFO,
+                    "SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName(),
+                    OPERATOR.value);
+            //logger.info("SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName());
             logger.fine("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
             return ctrl.getArrayComponentName();
             /*
@@ -418,7 +434,9 @@ public class ALMAControl implements Control {
     public void destroyArray(String name) throws SchedulingException {
         try {
             boolean found = false;
-    	    logger.info("SCHEDULING about to destroy array "+name);
+    	    //logger.info("SCHEDULING about to destroy array "+name);
+    	    logger.logToAudience(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
+    	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
 	            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
 	          	    auto_controllers.removeElementAt(i);

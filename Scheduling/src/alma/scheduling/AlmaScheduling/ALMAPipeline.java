@@ -49,13 +49,13 @@ import alma.asdmIDLTypes.IDLEntityRef;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.18 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.19 2007/09/06 17:59:03 sslucero Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
     private ContainerServices containerServices;
     //logger
-    private Logger logger;
+    private ALMASchedLogger logger;
     //science pipeline component
     private SciPipeManager sci_pipelineComp;
     //quicklook display component
@@ -71,7 +71,7 @@ public class ALMAPipeline implements SciPipeline {
       */
     public ALMAPipeline(ContainerServices cs) {
         this.containerServices = cs;
-        this.logger = cs.getLogger();
+        this.logger = new ALMASchedLogger(cs.getLogger());
         getPipelineComponents();
         entitySerializer = EntitySerializer.getEntitySerializer(cs.getLogger());
     }

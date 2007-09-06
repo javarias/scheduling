@@ -26,6 +26,7 @@
 package alma.scheduling.Scheduler;
 
 import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.SchedulingException;
 import java.util.logging.Logger;
@@ -34,7 +35,7 @@ import java.util.logging.Logger;
  * The Scheduler class is an abstract class that forms the basis for
  * the DynamicScheduler and InteractiveScheduler classes.
  * 
- * @version $Id: Scheduler.java,v 1.16 2006/08/23 21:36:08 sslucero Exp $
+ * @version $Id: Scheduler.java,v 1.17 2007/09/06 17:59:03 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -42,7 +43,7 @@ abstract public class Scheduler {
 	
     protected SchedulerConfiguration config;// = null;
     protected String arrayName = null;
-    protected Logger logger = null;
+    protected SchedLogger logger = null;
     protected Clock clock = null;
     protected DynamicSchedulingAlgorithm dsa = null;
     protected String type=""; //will be either queued, interactive or dynamic
@@ -56,7 +57,7 @@ abstract public class Scheduler {
     public void setConfiguration(SchedulerConfiguration c) {
     	this.config = c;
         if(config == null){
-            System.out.println("crappy");
+            System.out.println("SchedulerConfiguration is null ");
         }
     	this.arrayName = config.getArrayName();
     	this.clock = config.getClock();

@@ -78,13 +78,13 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.58 2007/08/30 21:48:27 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.59 2007/09/06 17:59:03 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
 	
 	static private final String nullPartId = "X00000000";
-    static private Logger logger = Logger.getLogger("Scheduling's ProjectUtil Logger");
+    static private SchedLogger logger = new SchedLogger("Scheduling's ProjectUtil Logger");
 
 	/**
 	 * Check the specified project for internal consistency.

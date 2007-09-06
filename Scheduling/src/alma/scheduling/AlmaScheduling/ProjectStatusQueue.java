@@ -29,6 +29,7 @@ package alma.scheduling.AlmaScheduling;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.SchedulingException;
 import alma.entity.xmlbinding.projectstatus.*;
 
@@ -38,18 +39,18 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.7 2007/08/23 17:01:39 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.8 2007/09/06 17:59:03 sslucero Exp $
  */
 public class ProjectStatusQueue {
 
-    private Logger logger;
+    private SchedLogger logger;
 	private ArrayList queue;
 
 	/**
 	 * Create an enpty queue of ProjectStatus.
 	 */
 	public ProjectStatusQueue() {
-        logger = Logger.getLogger("ProjectStatusQueue");
+        logger = new SchedLogger("ProjectStatusQueue"); //Logger.getLogger("ProjectStatusQueue");
 		queue = new ArrayList ();
 	}
 

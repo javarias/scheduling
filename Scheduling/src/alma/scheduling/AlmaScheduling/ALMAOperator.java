@@ -26,6 +26,7 @@
 package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import alma.scheduling.SBLite;
 import alma.acs.container.ContainerServices;
@@ -43,6 +44,10 @@ import alma.entities.commonentity.EntityT;
 import alma.exec.ReqType;
 import alma.exec.SubSystem;
 import alma.scheduling.Dynamic_Operator_to_Scheduling;
+
+import alma.log_audience.OPERATOR;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.ArrayContextLogger;
 /**
  * @author Sohaila Lucero
  */
@@ -52,7 +57,7 @@ public class ALMAOperator implements Operator {
     // queue to hold all messages
     private MessageQueue messageQueue;
     //logger
-    private Logger logger;
+    private ALMASchedLogger logger;
     //The Operator Component.
     private alma.exec.Scheduling_to_TelescopeOperator execSchedOperator;
     /**
@@ -60,7 +65,7 @@ public class ALMAOperator implements Operator {
       */
     public ALMAOperator(ContainerServices cs, MessageQueue queue) {
         this.containerServices = cs;
-        this.logger = cs.getLogger();
+        this.logger = new ALMASchedLogger(cs.getLogger());
         this.messageQueue = queue;
     }
 

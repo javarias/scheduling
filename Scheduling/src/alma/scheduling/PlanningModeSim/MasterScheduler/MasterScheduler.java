@@ -27,6 +27,7 @@ package alma.scheduling.PlanningModeSim.MasterScheduler;
 
 import alma.scheduling.Scheduler.*;
 
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.SB;

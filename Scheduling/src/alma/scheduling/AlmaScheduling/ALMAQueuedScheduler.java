@@ -62,7 +62,7 @@ public class ALMAQueuedScheduler
     private Vector<String> sbQueue;
     private ContainerServices container;
     private String arrayname;
-    private Logger logger;
+    private ALMASchedLogger logger;
     private MasterSchedulerIF masterScheduler;
     private boolean execStarted;
     
@@ -98,7 +98,7 @@ public class ALMAQueuedScheduler
         throws ComponentLifecycleException {
 
         container = cs;
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
         this.instanceName = container.getName();
     }
 

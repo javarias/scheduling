@@ -39,6 +39,7 @@ import alma.scheduling.Define.FrequencyBand;
 import alma.scheduling.Define.WeatherCondition;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.NothingCanBeScheduled;
 
 import java.util.logging.Logger;
@@ -78,7 +79,7 @@ import java.util.logging.Logger;
  * So, there is a good deal of thinking to be done on how to do this.
  * For now, the second method is not implemented.
  * 
- * @version $Id: DynamicSchedulingAlgorithm.java,v 1.7 2006/10/20 15:38:45 sslucero Exp $
+ * @version $Id: DynamicSchedulingAlgorithm.java,v 1.8 2007/09/06 17:59:03 sslucero Exp $
  * @author Allen Farris
  */
 public class DynamicSchedulingAlgorithm {
@@ -91,7 +92,7 @@ public class DynamicSchedulingAlgorithm {
 	
 	public DynamicSchedulingAlgorithm(String arrayname, Policy policy, 
         SBQueue queue, Clock clock, Telescope telescope, 
-        ProjectManager projectManager, Logger log, int bestNumber ) 
+        ProjectManager projectManager, SchedLogger log, int bestNumber ) 
         throws SchedulingException {
 		
         if(policy.getName().equals("R1Policy")) {

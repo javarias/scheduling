@@ -27,6 +27,7 @@
 package alma.scheduling.PlanningModeSim.Define;
 
 import java.util.logging.Logger;
+import alma.scheduling.Define.SchedLogger;
 
 /**
  * The BasicComponent class implements the component lifecycle methods
@@ -39,7 +40,7 @@ import java.util.logging.Logger;
 public abstract class BasicComponent implements ComponentLifecycle {
 	protected String instanceName;
 	protected ContainerServices containerServices;
-	protected Logger logger;
+	protected SchedLogger logger;
 	
 	protected BasicComponent() {
 		instanceName = null;
@@ -107,7 +108,7 @@ public abstract class BasicComponent implements ComponentLifecycle {
 	/**
 	 * @return
 	 */
-	public Logger getLogger() {
+	public SchedLogger getLogger() {
 		return logger;
 	}
 

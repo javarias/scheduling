@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SBLite;
+import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 import alma.exec.extension.subsystemplugin.*;
 
 import alma.acs.container.ContainerServices;
@@ -42,7 +43,7 @@ import alma.acs.container.ContainerServices;
 public class MainSchedTabPane extends JTabbedPane {
     private PluginContainerServices container;
     private boolean createArrayEnabled = false;
-    private Logger logger;
+    private ALMASchedLogger logger;
     private int overTabIndex;
     private JPanel mainPanel;
     private JPanel topPanel;
@@ -96,7 +97,7 @@ public class MainSchedTabPane extends JTabbedPane {
     public void secondSetup(PluginContainerServices cs){
         container = cs;
         controller.setup(cs);
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
         arraysTab.connectedSetup(cs);
         //archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);

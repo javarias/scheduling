@@ -32,6 +32,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
+import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 // Imports for copy/paste
@@ -52,7 +54,7 @@ public class ArrayTable extends JTable {
     private ArrayTableController controller;
     private JPopupMenu rtClickMenu = null;
     private String currentArray="";
-    private Logger logger;
+    private ALMASchedLogger logger;
     
     public ArrayTable(Dimension tableSize) {
         super(); 
@@ -122,7 +124,7 @@ public class ArrayTable extends JTable {
     
     public void setCS(PluginContainerServices cs){
         controller = new ArrayTableController(cs);
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
     }
     
     public void setOwner(JPanel p){

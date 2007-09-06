@@ -32,10 +32,14 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.sql.Timestamp;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.acs.nc.*;
+import alma.log_audience.OPERATOR;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.ArrayContextLogger;
 import alma.acs.container.ContainerServices;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
@@ -81,7 +85,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.94 2007/08/02 15:14:42 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.95 2007/09/06 17:59:03 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -136,6 +140,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Vector arraysInUse;
     //Keeps track of the scheduler modes for each array
     private LinkedHashMap<String, ArrayModeEnum> schedModeForArray;
+    private ALMASchedLogger logger;
+    private ArrayContextLogger arraylogger;
     
     /** 
      * Constructor
@@ -167,7 +173,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             schedModeForArray = new LinkedHashMap<String, ArrayModeEnum>();
             this.containerServices = cs;
             this.instanceName = containerServices.getName();
-            this.logger = containerServices.getLogger();
+            this.logger = new ALMASchedLogger(containerServices.getLogger());
 
             this.clock = new ALMAClock();
             this.archive = new ALMAArchive(containerServices, clock);
@@ -179,7 +185,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.telescope = new ALMATelescope();
             this.control = new ALMAControl(containerServices, manager);
             this.arraysInUse = new Vector();
-        
+            arraylogger = new ArrayContextLogger(containerServices.getLogger());
             logger.finest("SCHEDULING: MasterScheduler initialized");
         } catch(Exception e){
             logger.severe("SCHEDULING: Error initializing MASTER SCHEDULER (initialize)");
@@ -424,7 +430,8 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     public void startScheduling1(XmlEntityStruct schedulingPolicy, String arrayname) {
             
-        logger.info("SCHEDULING: Starting dynamic scheduling");
+        arraylogger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
+                OPERATOR.value, arrayname);
         try {
             manager.checkForProjectUpdates();
             logger.fine("SCHEDULING: got project updates");
@@ -540,7 +547,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     	throws InvalidOperationEx {
 
         try {    
-            logger.info("SCHEDULING: Starting queued scheduling");
+            arraylogger.log(Level.INFO, "SCHEDULING: Starting queued scheduling",
+                    OPERATOR.value, arrayname);
             manager.checkForProjectUpdates();
             //create a queue of sbs with these ids, 
             SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
@@ -666,7 +674,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                 createSchedulerConfiguration(
                         false, new SBQueue(), false, true, 0, arrayname, s_policy);
 
-            logger.info("SCHEDULING: Starting interactive scheduling on array "+arrayname);
+            arraylogger.log(Level.INFO, 
+                    "SCHEDULING: Starting interactive scheduling on array "+arrayname,
+                    OPERATOR.value, arrayname);
             if(!isArrayInUse(arrayname)){
                 setArrayInUse(arrayname);
             }
@@ -985,7 +995,6 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg =logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.info(logMsg);
                 name = control.createManualArray(antennaIdList);
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("manual");
@@ -995,7 +1004,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.info(logMsg);
+                logger.log(Level.INFO, logMsg, OPERATOR.value);
                 name = control.createArray(antennaIdList, "dynamic");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("dynamic");
@@ -1005,7 +1014,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.info(logMsg);
+                logger.log(Level.INFO, logMsg, OPERATOR.value);
                 name = control.createArray(antennaIdList, "queued");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("queued");
@@ -1015,7 +1024,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.info(logMsg);
+                logger.log(Level.INFO, logMsg, OPERATOR.value);
                 name = control.createArray(antennaIdList, "interactive");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("interactive");
@@ -1025,6 +1034,13 @@ public class ALMAMasterScheduler extends MasterScheduler
             e.printStackTrace();
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
+        }
+        if(!logMsg.equals("")){
+            logger.log(Level.INFO, logMsg, OPERATOR.value);
+        } else {
+            logger.log(Level.WARNING,
+                    "SCHEDULING: Problem occured in createArray Method",
+                    OPERATOR.value);
         }
         schedModeForArray.put(name, schedulingMode);
         return name;
@@ -1058,7 +1074,11 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public void destroyArray(String name) throws InvalidOperationEx {
         try {
-            logger.info("SCHEDULING: Destroying array "+name);
+            logger.log(Level.INFO, 
+                    "SCHEDULING: Destroying array "+name, OPERATOR.value);
+            arraylogger.log(Level.INFO, 
+                    "SCHEDULING: Destroying array "+name, 
+                    OPERATOR.value, name);
             control.destroyArray(name);
             for(int i=0; i < arraysInUse.size(); i++){
                 if(arraysInUse.elementAt(i).equals(name)){

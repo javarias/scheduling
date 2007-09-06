@@ -42,13 +42,14 @@ import alma.scheduling.Define.WeatherCondition;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.SchedLogger;
 
 import java.util.logging.Logger;
 
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R4Policy.java,v 1.3 2006/10/26 22:24:54 sslucero Exp $
+ * @version $Id: R4Policy.java,v 1.4 2007/09/06 17:59:03 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R4Policy extends PolicyType {
@@ -68,7 +69,7 @@ class R4Policy extends PolicyType {
     /**
       * the logger
       */
-	private Logger log;
+	private SchedLogger log;
     /**
       * The policy
       */
@@ -140,7 +141,7 @@ class R4Policy extends PolicyType {
 	
 	public R4Policy (String arrayName, Policy policy, SBQueue queue, 
 			Clock clock, Telescope telescope, ProjectManager projectManager,
-			Logger log, int bestNumber ) throws SchedulingException {
+			SchedLogger log, int bestNumber ) throws SchedulingException {
 		// Save the parameters.
 		this.arrayName = arrayName;
 		this.policy = policy;

@@ -28,22 +28,23 @@
 package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.Properties;
 import java.util.Vector;
 import java.io.StringReader;
 import java.sql.Timestamp;
 import alma.scheduling.Define.*;
 
-
-
 import alma.xmlentity.XmlEntityStruct;
-
 
 import alma.acs.container.ContainerServices;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityException;
+
+import alma.log_audience.OPERATOR;
+import alma.acs.logging.AcsLogger;
 
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
@@ -74,7 +75,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.80 2007/08/23 17:01:39 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.81 2007/09/06 17:59:03 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -86,7 +87,7 @@ public class ALMAArchive implements Archive {
     private Operational archOperationComp;
     //TODO should check project queue.. if project exists don't map a new one.
     //The logger
-    private Logger logger;
+    private AcsLogger logger;
     //Entity deserializer - makes entities from the archive human readable
     private EntityDeserializer entityDeserializer;
     //Entity Serializer - prepares entites for the archive
@@ -1175,6 +1176,7 @@ public class ALMAArchive implements Archive {
             updateProjectStatus(ps);
             logger.fine("SCHEDULING: Just updated ps, now gonna query ppr");
 
+            //TODO fix query here to include project status id
             String query = new String("/ps:ProjectStatus//ps:PipelineProcessingRequest[@entityPartId=\""+pprId+"\"]");
             String schema = new String("ProjectStatus");
             

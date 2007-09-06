@@ -33,12 +33,13 @@ import java.util.Vector;
 import javax.swing.table.*;
 import javax.swing.border.*;
 import java.util.logging.Logger;
+import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.common.gui.chessboard.*;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
-    private Logger logger;
+    private ALMASchedLogger logger;
     private String[] availableAntennas;
     private Vector<String> allArrays;
     private int columnIndex = 0;
@@ -68,7 +69,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     public void connectedSetup(PluginContainerServices cs) {
         super.onlineSetup(cs);
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
         logger.fine("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
         initializeChessboards();

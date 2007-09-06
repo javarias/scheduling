@@ -25,6 +25,7 @@
  */
 package alma.scheduling.PlanningModeSim;
 
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.Telescope;
 import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
 import alma.scheduling.PlanningModeSim.Define.ContainerServices;
@@ -56,7 +57,7 @@ public class TelescopeSimulator
 	/**
 	 * The Java logger used in this simulation.
 	 */
-	private Logger logger;
+	private SchedLogger logger;
 
 	public TelescopeSimulator() {		
 	}

@@ -62,7 +62,7 @@ public class ALMADynamicScheduler
     private ContainerServices container;
     private String arrayname;
     //private SBQueue queue;
-    private Logger logger;
+    private ALMASchedLogger logger;
     private MasterSchedulerIF masterScheduler;
     private String schedulerId;
     private CBstringSeq allSB_cb;
@@ -97,7 +97,7 @@ public class ALMADynamicScheduler
         throws ComponentLifecycleException {
 
         container = cs;
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{

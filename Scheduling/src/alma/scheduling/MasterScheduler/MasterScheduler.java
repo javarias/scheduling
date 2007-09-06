@@ -29,12 +29,13 @@ package alma.scheduling.MasterScheduler;
 import java.util.logging.Logger;
 
 import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Event.Publishers.PublishEvent;
 import alma.scheduling.ObsProjectManager.ProjectManager;
 
 /** 
-  * @version $Id: MasterScheduler.java,v 1.10 2006/02/21 15:10:42 sslucero Exp $
+  * @version $Id: MasterScheduler.java,v 1.11 2007/09/06 17:59:03 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class MasterScheduler implements Runnable {
@@ -44,7 +45,7 @@ public class MasterScheduler implements Runnable {
     // The obs project manager
     protected ProjectManager manager;
     //The logger
-    protected Logger logger;
+    protected SchedLogger logger;
     //The scheduling notification channel
     protected PublishEvent publisher;
 

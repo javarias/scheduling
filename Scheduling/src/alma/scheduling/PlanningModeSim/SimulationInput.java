@@ -29,6 +29,7 @@ import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
 import alma.scheduling.PlanningModeSim.Define.ContainerServices;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.FrequencyBand;
 import alma.scheduling.Define.SiteCharacteristics;
@@ -81,7 +82,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	/**
 	 * The Java logger used in this simulation.
 	 */
-	private Logger logger;
+	private SchedLogger logger;
 	
 	/**
 	 * The input file.

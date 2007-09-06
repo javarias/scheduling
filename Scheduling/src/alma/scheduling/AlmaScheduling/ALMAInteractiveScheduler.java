@@ -63,7 +63,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     private String currentEB;
     private ContainerServices container;
     private String arrayname;
-    private Logger logger;
+    private ALMASchedLogger logger;
     private MasterSchedulerIF masterScheduler;
     
     public ALMAInteractiveScheduler() {
@@ -94,7 +94,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws ComponentLifecycleException {
 
         container = cs;
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{

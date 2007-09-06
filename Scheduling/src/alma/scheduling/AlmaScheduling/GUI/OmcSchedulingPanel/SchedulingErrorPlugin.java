@@ -1,5 +1,6 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
+import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.*;
 import javax.swing.JPanel;
@@ -16,7 +17,7 @@ import javax.swing.JLabel;
 public class SchedulingErrorPlugin extends JPanel implements SubsystemPlugin{
 
     private PluginContainerServices container;
-    private Logger logger;
+    private ALMASchedLogger logger;
     private String error;
 
     public SchedulingErrorPlugin(String e){
@@ -26,12 +27,12 @@ public class SchedulingErrorPlugin extends JPanel implements SubsystemPlugin{
     public SchedulingErrorPlugin(String e, PluginContainerServices cs){
         this(e);
         container = cs;
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
     }
 
     public void setServices(PluginContainerServices cs){
         container = cs;
-        logger = cs.getLogger();
+        logger = new ALMASchedLogger(cs.getLogger());
     }
     
     public void start(){

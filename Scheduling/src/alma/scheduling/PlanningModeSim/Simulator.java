@@ -51,7 +51,7 @@ public class Simulator implements Runnable {
 	/**
 	 * The logger used by the simulator.
 	 */
-	private Logger logger;
+	private SchedLogger logger;
 	
 	/**
 	 * The container that controls the components.
@@ -105,7 +105,8 @@ public class Simulator implements Runnable {
 		}
 		// Create the logger and the log file.
 		FileHandler logText = null;
-		this.logger = Logger.getLogger("Scheduling.Simulator");
+		//this.logger = Logger.getLogger("Scheduling.Simulator");
+        this.logger = new SchedLogger("Scheduling.Simulator");
 		try {
 			logText = new FileHandler(logFile.getAbsolutePath());
 		} catch (IOException ioerr) {

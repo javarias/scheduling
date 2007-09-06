@@ -28,6 +28,7 @@ package alma.scheduling.PlanningModeSim;
 
 import alma.scheduling.PlanningModeSim.Define.ContainerServices;
 import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
+import alma.scheduling.Define.SchedLogger;
 
 import java.util.logging.Logger;
 
@@ -75,13 +76,13 @@ public class Container implements ContainerServices {
 	
 	
 	// The Logger.
-	private Logger logger;
+	private SchedLogger logger;
 	
 	/**
 	 * Construct a container.
 	 * @param logger The Java logger associated witb this container.
 	 */
-	public Container(Logger logger) {
+	public Container(SchedLogger logger) {
 		this.logger = logger;
 		
 		// Create the components.
@@ -137,7 +138,7 @@ public class Container implements ContainerServices {
 	 * Get the Logger.
 	 * @return Logger
 	 */
-	public Logger getLogger() {
+	public SchedLogger getLogger() {
 		return logger;
 	}
 
