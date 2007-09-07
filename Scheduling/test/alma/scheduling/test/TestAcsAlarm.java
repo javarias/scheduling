@@ -133,7 +133,7 @@ public class TestAcsAlarm {
 		sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
 		sendAlarm("Scheduling","SchedControlConnAlarm",3,ACSFaultState.ACTIVE);
 		sendAlarm("Scheduling","SchedArrayConnAlarm",1,ACSFaultState.ACTIVE);
-		sendAlarm("Scheduling","SchedSBAbortedAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedSBFailedAlarm",1,ACSFaultState.ACTIVE);
 		sendAlarm("Scheduling","SchedInvalidOperationAlarm",1,ACSFaultState.ACTIVE);
 		System.out.println("end send alarm");
 	//	assertTrue(true);
@@ -171,20 +171,16 @@ public class TestAcsAlarm {
 	}
 
 	public void initialize() throws AcsJContainerServicesEx {
-		System.out.println("GetComponentClient: container services initialize");
 		try {
 			//Get container services.
-			System.out.println("Get alarm interface");
 			m_componentClient = new AdvancedComponentClient(m_logger,managerLoc,"SchedulingAlarmTestClient");
 			if(m_componentClient==null)
 				System.exit(-1);
-			System.out.println("ComponentClient="+m_componentClient);
 			m_containerservices = m_componentClient.getContainerServices();
 			ACSJMSTopicConnectionImpl.containerServices=m_containerservices;
 			AlarmManager=alma.alarmsystem.AlarmServiceHelper.narrow(
 		        m_containerservices.getDefaultComponent("IDL:alma/alarmsystem/AlarmService:1.0"));
 			String m_compName = AlarmManager.name();
-			System.out.println("m_compName:"+m_compName);
 		} catch(Exception e) {
 			System.out.println("QLSessionManager:initialize"+e.toString());
 			m_containerservices = null;
