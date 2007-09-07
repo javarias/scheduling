@@ -15,7 +15,8 @@
 	<alarm-definition fault-family="Scheduling" fault-member="SchedArrayConnAlarm" fault-code="1"/>
 	<alarm-definition fault-family="Scheduling" fault-member="SchedControlConnAlarm" fault-code="1"/>
 	<alarm-definition fault-family="Scheduling" fault-member="SchedControlConnAlarm" fault-code="2"/>
-	<alarm-definition fault-family="Scheduling" fault-member="SchedSBAbortedConnAlarm" fault-code="1"/>
+	<alarm-definition fault-family="Scheduling" fault-member="SchedControlConnAlarm" fault-code="3"/>
+	<alarm-definition fault-family="Scheduling" fault-member="SchedSBFailedAlarm" fault-code="1"/>
 	<alarm-definition fault-family="Scheduling" fault-member="SchedInvalidOperationAlarm" fault-code="1"/>
 
 </alarm-definition-list>

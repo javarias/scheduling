@@ -56,7 +56,7 @@
 				<category-definition path="ROOT"/>
 			</category>
 			<alarm>
-				<alarm-definition fault-family="Scheduling" fault-member="SchedSBAbortedConnAlarm" fault-code="1"/>
+				<alarm-definition fault-family="Scheduling" fault-member="SchedSBFailedAlarm" fault-code="1"/>
 			</alarm>
 		</alarm-category-link>
 
