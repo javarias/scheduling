@@ -1,11 +1,10 @@
 1 - Alarm test start initialize
 1 - FINER: Logging configuration has been initialized, but not from CDB settings.
-1 - GetComponentClient: container services initialize
-1 - Get alarm interface
-1 - ACSAlarmSystem init error :init Alarm system reading error
-1 - ACSAlarmSystem init error :init Alarm system reading completed
-1 - m_compName:AlarmService
+1 - ----------T--:--:--.--- FINE [SchedulingAlarmTestClient] calling orb.resolve_initial_references
+1 - ----------T--:--:--.--- FINE [SchedulingAlarmTestClient] ready to talk with components!
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
 1 - ----------T--:--:--.--- INFO [SchedulingAlarmTestClient] component 'SchedulingAlarmTestClient' requested AdvancedContainerServices
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
 1 - start send alarm
 1 - log4j:WARN No appenders could be found for logger (cern.laser.source.alarmsysteminterface.impl.AlarmSystemInterfaceProxy).
 1 - log4j:WARN Please initialize the log4j system properly.
@@ -26,19 +25,43 @@
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
 1 - alarm had send
 1 - end send alarm
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedArchiveConnAlarm,1> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedSBFailedAlarm,1> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,3> Status: ACTIVE
-1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedSBAbortedAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,1> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedInvalidOperationAlarm,1> Status: ACTIVE
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] No CDB entry found for 'CMW.ALARM_SYSTEM.ALARMS.SOURCES.ALARM_SYSTEM_SOURCES' channel
+1 - ----------T--:--:--.--- FINER [SchedulingAlarmTestClient] Consumer#processEvent received an event of type SchedulingAlarmTestClient
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
