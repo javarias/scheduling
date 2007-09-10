@@ -82,6 +82,27 @@ public class ExistingArraysTabController extends SchedulingPanelController {
         parent.removeArray(name);
     }
 
+    protected String[] getCurrentAutomaticArrays() {
+        try {
+            getMSRef();
+            String[] a = masterScheduler.getActiveAutomaticArrays();
+            releaseMSRef();
+            return a;
+        }catch(Exception e){
+            return new String[0];
+        }
+    }
+    protected String[] getCurrentManualArrays() {
+        try {
+            getMSRef();
+            String[] a = masterScheduler.getActiveManualArrays();
+            releaseMSRef();
+            return a;
+        }catch(Exception e){
+            return new String[0];
+        }
+    }
+
     /*
      public void receive(ExecBlockStartedEvent e) {
          logger.fine("Existing array tab got exec block started event");

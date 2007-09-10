@@ -53,7 +53,15 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
         super.onlineSetup(cs);
         controller = new ExistingArraysTabController(cs, this);
         table.setCS(cs);
+        checkCurrentExistingArrays();
     }
+
+    private void checkCurrentExistingArrays() {
+        CheckExistingArrays foo  = new CheckExistingArrays();
+        Thread t = controller.getCS().getThreadFactory().newThread(foo);
+        t.start();
+    }
+
     
     private void createLayout() {
         setBorder(new TitledBorder("Existing Arrays"));
@@ -90,9 +98,17 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
     public void setEnable(boolean b){
     }
-
+    private String updateArrayName;
+    private String updateArrayType;
+        
     protected void addArray(String arrayname, String arraytype) {
-        table.addArray(arrayname, arraytype);
+        updateArrayName = arrayname;
+        updateArrayType = arraytype;
+        javax.swing.SwingUtilities.invokeLater(new Runnable(){
+                public void run(){
+                    table.addArray(updateArrayName, updateArrayType);
+                }
+        });
         repaint();
         validate();
     }
@@ -105,5 +121,33 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
     protected void openSchedulerForArray(String array) {
         //do later when its ok to make an ICD change
+    }
+
+
+    class CheckExistingArrays implements Runnable{
+        private String[] m_arrays;
+        private String[] a_arrays;
+        private int i;
+
+        public CheckExistingArrays(){ }
+        public void run() {
+            a_arrays = controller.getCurrentAutomaticArrays();
+            m_arrays = controller.getCurrentManualArrays();
+            for(i=0; i < a_arrays.length; i++){
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            addArray(a_arrays[i], "automatic");
+                        }
+                });
+            }
+            for(i=0; i < m_arrays.length; i++){
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            addArray(m_arrays[i], "manual");
+                        }
+                });
+                    
+            }
+        }
     }
 }

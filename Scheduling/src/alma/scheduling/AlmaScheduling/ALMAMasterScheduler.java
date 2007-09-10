@@ -85,7 +85,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.97 2007/09/10 20:01:20 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.98 2007/09/10 21:47:56 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -875,7 +875,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     public String[] getActiveAutomaticArrays() {
         String[] foo = new String[1];
         try {
-            foo = control.getActiveAutomaticArrays();
+            foo = control.getAllAutomaticArrays();
         } catch(Exception e){
             e.printStackTrace();
             logger.severe("SCHEDULING: Error returning active automatic arrays");
@@ -887,13 +887,22 @@ public class ALMAMasterScheduler extends MasterScheduler
     public String[] getActiveManualArrays() { 
         String[] foo = new String[1];
         try {
-            foo = control.getActiveManualArrays();
+            foo = control.getAllManualArrays();
         } catch(Exception e){
             e.printStackTrace();
             logger.severe("SCHEDULING: Error returning active manual arrays");
             foo[0] = "Problem with method";
         }
         return foo;
+    }
+
+    public String[] getAllActiveArrays() {
+        try {
+            String[] allArrays = control.getActiveArray();
+            return allArrays;
+        }catch(Exception e){
+            return new String[0];
+        }
     }
     ///////////////////
     private synchronized String getComponentName(String type, String id){
