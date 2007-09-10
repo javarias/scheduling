@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+</HEAD>
+<script language="javascript">
+function DoHide()
+{
+
+if(document.getElementById("table1").style.display=='block') 
+  {
+   document.getElementById("table1").style.display='none'; 
+   document.getElementById("B3").value="show Station table";
+  }
+else
+  {
+    document.getElementById("table1").style.display='block'; 
+    document.getElementById("B3").value="hide Station table"; 
+  }
+
+}
+
+function DoHide1()
+{
+
+if(document.getElementById("table2").style.display=='block') 
+  {
+   document.getElementById("table2").style.display='none'; 
+   document.getElementById("B4").value="show another table";
+  }
+else
+  {
+    document.getElementById("table2").style.display='block'; 
+    document.getElementById("B4").value="hide another table"; 
+  }
+
+}
+
+</script>
+
+<Body>
+<APPLET CODE="alma/scheduling/AlmaScheduling/GUI/PIWebApp/Asdminfo.class"
+	ARCHIVE="systementities.jar,
+		commons-logging.jar,
+		xercesImpl.jar,
+		castor.jar,
+		APDMEntities.jar,
+		schedulingComp.jar "
+        width=800 height=200>
+</APPLET>
+<p><input type="button" value="show Station table" name="B3" onclick="DoHide();"></p>
+<table border="1" width="100%" id="table1" style="display:none">
+<tr>
+<td>name</td>
+<td>position</td>
+<td>type</td>
+<td>stationId</td>
+</tr>
+
+<tr>
+<td>PAD001</td>
+<td>1 3 -1601361.555455 -5042191.805932 3554531.803007</td>
+<td>ANTENNA</td>
+<td>Station_0</td>
+</tr>
+
+<tr>
+<td>PAD003</td>
+<td>1 3 -1601361.555455 -5042191.805932 3554531.803007</td>
+<td>ANTENNA</td>
+<td>Station_1</td>
+</tr>
+</table>
+
+<p><input type="button" value="show another table" name="B4" onclick="DoHide1();"></p>
+<table border="1" width="100%" id="table2" style="display:none">
+
+<tr>
+<td>name</td>
+<td>position</td>
+<td>type</td>
+<td>stationId</td>
+</tr>
+
+<tr>
+<td>PAD001</td>
+<td>1 3 -1601361.555455 -5042191.805932 3554531.803007</td>
+<td>ANTENNA</td>
+<td>Station_0</td>
+</tr>
+
+<tr>
+<td>PAD003</td>
+<td>1 3 -1601361.555455 -5042191.805932 3554531.803007</td>
+<td>ANTENNA</td>
+<td>Station_1</td>
+</tr>
+</table>
+
+</body>
+</HTML>
+

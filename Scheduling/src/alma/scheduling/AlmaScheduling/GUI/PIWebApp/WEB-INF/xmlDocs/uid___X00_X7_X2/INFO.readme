@@ -1,0 +1,63 @@
+# This is a list of all the tables in the ASDM. 
+fromArchive: retrieved the ASDM with Archive uid :uid://X00/X7/X2
+ASDM.fromArchive: Main is empty.
+ASDM.fromArchive: AlmaCorrelatorMode is empty.
+ASDM.fromArchive: AlmaRadiometer is empty.
+ASDM.fromArchive: retrieved its AntennaTable using Archive uid :uid://X00/X7/X3
+ASDM.fromArchive: Beam is empty.
+ASDM.fromArchive: CalAmpli is empty.
+ASDM.fromArchive: CalAtmosphere is empty.
+ASDM.fromArchive: CalBandpass is empty.
+ASDM.fromArchive: CalCurve is empty.
+ASDM.fromArchive: CalData is empty.
+ASDM.fromArchive: CalDelay is empty.
+ASDM.fromArchive: CalDevice is empty.
+ASDM.fromArchive: CalFlux is empty.
+ASDM.fromArchive: CalFocus is empty.
+ASDM.fromArchive: CalFocusModel is empty.
+ASDM.fromArchive: CalGain is empty.
+ASDM.fromArchive: CalHolography is empty.
+ASDM.fromArchive: CalPhase is empty.
+ASDM.fromArchive: CalPointing is empty.
+ASDM.fromArchive: CalPointingModel is empty.
+ASDM.fromArchive: CalPosition is empty.
+ASDM.fromArchive: CalPrimaryBeam is empty.
+ASDM.fromArchive: CalReduction is empty.
+ASDM.fromArchive: CalSeeing is empty.
+ASDM.fromArchive: CalWVR is empty.
+ASDM.fromArchive: ConfigDescription is empty.
+ASDM.fromArchive: DataDescription is empty.
+ASDM.fromArchive: Doppler is empty.
+ASDM.fromArchive: Ephemeris is empty.
+ASDM.fromArchive: retrieved its ExecBlockTable using Archive uid :uid://X00/X7/X4
+ASDM.fromArchive: Feed is empty.
+ASDM.fromArchive: Field is empty.
+ASDM.fromArchive: FlagCmd is empty.
+ASDM.fromArchive: Focus is empty.
+ASDM.fromArchive: FocusModel is empty.
+ASDM.fromArchive: FreqOffset is empty.
+ASDM.fromArchive: GainTracking is empty.
+ASDM.fromArchive: History is empty.
+ASDM.fromArchive: Holography is empty.
+ASDM.fromArchive: Observation is empty.
+ASDM.fromArchive: Pointing is empty.
+ASDM.fromArchive: PointingModel is empty.
+ASDM.fromArchive: Polarization is empty.
+ASDM.fromArchive: Processor is empty.
+ASDM.fromArchive: Receiver is empty.
+ASDM.fromArchive: retrieved its SBSummaryTable using Archive uid :uid://X00/X7/X5
+ASDM.fromArchive: Scan is empty.
+ASDM.fromArchive: Seeing is empty.
+ASDM.fromArchive: Source is empty.
+ASDM.fromArchive: SourceParameter is empty.
+ASDM.fromArchive: SpectralWindow is empty.
+ASDM.fromArchive: SquareLawDetector is empty.
+ASDM.fromArchive: State is empty.
+ASDM.fromArchive: retrieved its StationTable using Archive uid :uid://X00/X7/X6
+ASDM.fromArchive: Subscan is empty.
+ASDM.fromArchive: SwitchCycle is empty.
+ASDM.fromArchive: SysCal is empty.
+ASDM.fromArchive: TotalPower is empty.
+ASDM.fromArchive: WVMCal is empty.
+ASDM.fromArchive: Weather is empty.
+

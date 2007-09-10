@@ -1,0 +1,55 @@
+<html>
+<head>
+<title></title>
+<script language="javascript">
+function DoHide()
+{
+
+if(document.getElementById("table1").style.display=='block') 
+  {
+
+   document.getElementById("table1").style.display='none'; 
+   document.getElementById("B3").value="showtable";
+  }
+else
+  {
+    document.getElementById("table1").style.display='block'; 
+    document.getElementById("B3").value="hidetable"; 
+  }
+
+}
+</script>
+</head>
+
+<body>
+
+<p><input type="button" value="showtable" name="B3" onclick="DoHide();"></p>
+<table border="1" width="100%" id="table1" style="display:block">
+<tr>
+<td>this is a table</td>
+<td>cell 2</td>
+
+<td>cell 3</td>
+<td>cell 4</td>
+<td>cell 5</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</table>
+<h1>this is the test</h1>
+</body>
+
+</html>

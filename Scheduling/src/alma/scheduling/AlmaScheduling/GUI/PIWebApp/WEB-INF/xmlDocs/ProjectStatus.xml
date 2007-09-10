@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProjectStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="Alma/Scheduling/ProjectStatus" almatype="APDM::ProjectStatus" xsi:type="ProjectStatus">
+    <ProjectStatusEntity entityId="uid://X00/X2/X4" entityIdEncrypted="none" entityTypeName="ProjectStatus" schemaVersion="1" documentVersion="1" datamodelVersion="1.56"/>
+    <ObsProjectRef entityId="uid://X00/X2/X1" partId="X00000000" entityTypeName="ObsProject" documentVersion="1"/>
+    <ObsProposalRef entityId="uid://X00/X2/X2" partId="X00000000" entityTypeName="ObsProposal" documentVersion="1"/>
+    <Name>short project</Name>
+    <PI>Sohaila Lucero</PI>
+    <TimeOfUpdate>2007-01-12T18:30:21</TimeOfUpdate>
+    <Status State="running">
+        <ns1:ReadyTime xmlns:ns1="Alma/ValueTypes">2007-01-12T18:29:11</ns1:ReadyTime>
+        <ns2:StartTime xmlns:ns2="Alma/ValueTypes">2007-01-12T18:30:05</ns2:StartTime>
+        <ns3:EndTime xmlns:ns3="Alma/ValueTypes"/>
+    </Status>
+    <BreakpointTime/>
+    <ObsProgramStatus almatype="APDM::ObsUnitSetStatus" entityPartId="1168472600022/12133422 3188671833">
+        <TimeOfUpdate>2007-01-12T18:30:21</TimeOfUpdate>
+        <Status State="running">
+            <ns4:ReadyTime xmlns:ns4="Alma/ValueTypes">2007-01-12T18:29:11</ns4:ReadyTime>
+            <ns5:StartTime xmlns:ns5="Alma/ValueTypes">2007-01-12T18:30:05</ns5:StartTime>
+            <ns6:EndTime xmlns:ns6="Alma/ValueTypes"/>
+        </Status>
+        <TotalRequiredTimeInSec>432000</TotalRequiredTimeInSec>
+        <TotalUsedTimeInSec>0</TotalUsedTimeInSec>
+        <TotalObsUnitSets>1</TotalObsUnitSets>
+        <NumberObsUnitSetsCompleted>0</NumberObsUnitSetsCompleted>
+        <NumberObsUnitSetsFailed>0</NumberObsUnitSetsFailed>
+        <TotalSBs>1</TotalSBs>
+        <NumberSBsCompleted>0</NumberSBsCompleted>
+        <NumberSBsFailed>0</NumberSBsFailed>
+        <ObsUnitSetStatus almatype="APDM::ObsUnitSetStatus" entityPartId="1152548792356/2020896 1457720384">
+            <TimeOfUpdate>2007-01-12T18:30:21</TimeOfUpdate>
+            <Status State="running">
+                <ns7:ReadyTime xmlns:ns7="Alma/ValueTypes">2007-01-12T18:29:11</ns7:ReadyTime>
+                <ns8:StartTime xmlns:ns8="Alma/ValueTypes">2007-01-12T18:30:05</ns8:StartTime>
+                <ns9:EndTime xmlns:ns9="Alma/ValueTypes"/>
+            </Status>
+            <TotalRequiredTimeInSec>432000</TotalRequiredTimeInSec>
+            <TotalUsedTimeInSec>0</TotalUsedTimeInSec>
+            <TotalObsUnitSets>0</TotalObsUnitSets>
+            <NumberObsUnitSetsCompleted>0</NumberObsUnitSetsCompleted>
+            <NumberObsUnitSetsFailed>0</NumberObsUnitSetsFailed>
+            <TotalSBs>1</TotalSBs>
+            <NumberSBsCompleted>0</NumberSBsCompleted>
+            <NumberSBsFailed>0</NumberSBsFailed>
+            <SBStatus almatype="APDM::SBStatus" entityPartId="X00000003">
+                <TimeOfUpdate>2007-01-12T18:30:21</TimeOfUpdate>
+                <Status State="running">
+                    <ns10:ReadyTime xmlns:ns10="Alma/ValueTypes">2007-01-12T18:29:11</ns10:ReadyTime>
+                    <ns11:StartTime xmlns:ns11="Alma/ValueTypes">2007-01-12T18:30:05</ns11:StartTime>
+                    <ns12:EndTime xmlns:ns12="Alma/ValueTypes"/>
+                </Status>
+                <TotalRequiredTimeInSec>432000</TotalRequiredTimeInSec>
+                <TotalUsedTimeInSec>0</TotalUsedTimeInSec>
+                <SchedBlockRef entityId="uid://X00/X2/X3" partId="X00000000" entityTypeName="SchedBlock" documentVersion="1"/>
+            </SBStatus>
+            <Session almatype="APDM::Session" entityPartId="X00000006">
+                <StartTime>2007-01-12T18:30:10</StartTime>
+                <EndTime>2007-01-12T18:30:21</EndTime>
+                <ExecBlockRef almatype="APDM::ExecBlockRef">
+                    <ExecBlockId>uid://X00/X7/X2</ExecBlockId>
+                </ExecBlockRef>
+            </Session>
+            <ObsUnitSetRef entityId="uid://X00/X2/X1" partId="1152548792356/2020896 1457720384" entityTypeName="ObsProject" documentVersion="1"/>
+        </ObsUnitSetStatus>
+        <ObsUnitSetRef entityId="uid://X00/X2/X1" partId="1168472600022/12133422 3188671833" entityTypeName="ObsProject" documentVersion="1"/>
+    </ObsProgramStatus>
+</ProjectStatus>
