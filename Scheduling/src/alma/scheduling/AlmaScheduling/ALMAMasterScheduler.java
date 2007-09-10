@@ -85,7 +85,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.96 2007/09/10 16:10:57 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.97 2007/09/10 20:01:20 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -242,6 +242,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             pipeline_nc.begin();
         
         } catch(Exception e){
+            e.printStackTrace();
             logger.severe("SCHEDULING: Error initializing MASTER SCHEDULER (execute)");
             throw new ComponentLifecycleException(e.toString());
         }

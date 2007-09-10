@@ -25,6 +25,7 @@
  */
 package alma.scheduling.Event.Receivers;
 
+import alma.scheduling.Define.*;
 import java.util.logging.Logger;
 /**
  * The ReceiveEvent class contains basic methods of a generic nature to
@@ -35,7 +36,7 @@ import java.util.logging.Logger;
  * @author Allen Farris
  */
 abstract public class ReceiveEvent {
-    protected Logger logger;
+    protected SchedLogger logger;
 	/**
 	 * 
 	 */

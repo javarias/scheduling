@@ -60,8 +60,8 @@ public class CreateArrayController extends SchedulingPanelController {
     public void secondSetup(PluginContainerServices cs){
         super.onlineSetup(cs);
         if(cs == null) {
-            logger = new SchedLogger("OFFLINE SP");
-            logger.warning("SchedulingPanel: problem getting CS");
+            //logger = Logger.getLogger("OFFLINE SP");
+            //logger.warning("SchedulingPanel: problem getting CS");
         }
     }
 

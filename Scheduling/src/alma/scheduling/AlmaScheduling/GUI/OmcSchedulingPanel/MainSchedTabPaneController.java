@@ -53,26 +53,6 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         logger.fine("SP: setup called MainSchedTabController");
     }
 
-    /*
-    public void checkOperationalState() {
-        try {
-            MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
-                narrow(getCS().getComponentNonSticky("SCHEDULING_MASTER_COMP"));
-            ROstringSeq csh = sched_mc.currentStateHierarchy();
-            CompletionHolder ch = new CompletionHolder();
-            String[] states = csh.get_sync(ch);
-            //check if we're already operational!
-            if(states.length ==2) {
-                if(states[1].equals("OPERATIONAL")){
-                    setOperationalStartState();
-                }
-            }
-        } catch(Exception e){
-            logger.warning("SP: Problem checking master component state, check that SCHEDULING system is connected");
-            //e.printStackTrace();
-        }
-    }
-*/
     protected SchedulerTab createSchedulerTab(String mode, String array){ //String title) {
         SchedulerTab tab=null;
         if(mode.equals("interactive")){
