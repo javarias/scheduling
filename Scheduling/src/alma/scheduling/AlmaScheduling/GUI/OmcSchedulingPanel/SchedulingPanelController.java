@@ -40,11 +40,12 @@ import alma.acs.nc.Consumer;
 import alma.ACS.MasterComponent;
 import alma.ACS.ROstringSeq;
 import alma.ACSErr.CompletionHolder;
+import alma.scheduling.Define.SchedLogger;
 
 public class SchedulingPanelController {
     protected MasterSchedulerIF masterScheduler;
     protected PluginContainerServices container;
-    protected ALMASchedLogger logger;
+    protected SchedLogger logger;
     protected Consumer consumer;
     protected boolean connected;
 
