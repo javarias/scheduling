@@ -15,6 +15,7 @@ public class testACS {
 
 	public testACS() {
 		super();
+		readvalue();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -38,6 +39,23 @@ public class testACS {
 		m_componentClient = new AdvancedComponentClient(m_logger,manager,"PIWebPage");
 		cs = m_componentClient.getContainerServices();
 		archive = new ALMAArchive(cs, new ALMAClock());
+		try {
+            Project[] p = archive.getAllProject();
+            //assertNotNull(p);
+            m_logger.info("Got "+p.length+" projects");
+            String uid1;
+            for (int i=0; i < p.length;i++){
+                uid1 = p[i].getId();
+                m_logger.info(uid1);
+            }
+
+            
+        } catch (Exception e) {
+            m_logger.severe("SCHED_TEST: Error");
+            e.printStackTrace();
+            throw new Exception(e);
+        }
+
 		}
 		catch (Exception e) {
 		    System.out.println ("TestACS: Contructor error " +
@@ -47,4 +65,9 @@ public class testACS {
 		}
 		return manager;
 	}
+	public static void main(String[] args){
+		testACS aaa = new testACS();
+	}
+
+	
 }
