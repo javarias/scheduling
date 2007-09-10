@@ -44,7 +44,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.13 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.14 2007/09/10 18:04:46 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -61,7 +61,7 @@ public class ALMAPublishEvent extends PublishEvent {
     public ALMAPublishEvent(ContainerServices cs) {
         super();
         this.container = cs;
-        this.logger = cs.getLogger();
+        this.logger = new ALMASchedLogger(cs.getLogger());
         this.sched_nc = AbstractNotificationChannel.createNotificationChannel(
             AbstractNotificationChannel.CORBA, 
                 alma.scheduling.CHANNELNAME_SCHEDULING.value, 

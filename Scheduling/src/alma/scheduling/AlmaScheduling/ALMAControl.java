@@ -67,7 +67,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.68 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.69 2007/09/10 18:04:46 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -80,7 +80,7 @@ public class ALMAControl implements Control {
     //list of current manual array monitors.
     private Vector manualArrays;
     //logger
-    private AcsLogger logger;
+    private ALMASchedLogger logger;
     private ArrayContextLogger arraylogger;
     //list of current observing sessions
     private Vector observedSessions;
@@ -91,8 +91,8 @@ public class ALMAControl implements Control {
         this.containerServices = cs;
         ACSJMSTopicConnectionImpl.containerServices=containerServices;
         this.manager = m;
-        this.logger = cs.getLogger();
-        this.arraylogger = new ArrayContextLogger(logger);
+        this.logger = new ALMASchedLogger(cs.getLogger());
+        this.arraylogger = new ArrayContextLogger(cs.getLogger());
         this.auto_controllers = new Vector<ArrayModeInfo>();
         manualArrays = new Vector();
         this.observedSessions = new Vector();
@@ -354,7 +354,7 @@ public class ALMAControl implements Control {
                 throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
-            logger.logToAudience(Level.INFO,
+            logger.log(Level.INFO,
                     "SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName(),
                     OPERATOR.value);
             //logger.info("SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName());
@@ -435,7 +435,7 @@ public class ALMAControl implements Control {
         try {
             boolean found = false;
     	    //logger.info("SCHEDULING about to destroy array "+name);
-    	    logger.logToAudience(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
+    	    logger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
     	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
 	            if( ((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {

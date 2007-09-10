@@ -28,8 +28,10 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.Vector;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import alma.acs.container.ContainerServices;
+import alma.log_audience.OPERATOR;
 import alma.acs.util.UTCUtility;
 
 import alma.scheduling.StartSessionEvent;
@@ -70,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.96 2007/08/30 21:42:45 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.97 2007/09/10 18:04:46 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -97,7 +99,7 @@ public class ALMAProjectManager extends ProjectManager {
                               ALMAClock c) {
         super();
         this.containerServices = cs;
-        this.logger = cs.getLogger();
+        this.logger = new ALMASchedLogger(cs.getLogger());
         this.publisher =(ALMAPublishEvent)p;
         this.oper = o;
         this.archive = a;
@@ -1479,6 +1481,9 @@ public class ALMAProjectManager extends ProjectManager {
         logger.fine("Size of pQueue = "+pQueue.size());
         logger.fine("Size of psQueue = "+psQueue.size());
         logger.fine("Size of sbQueue = "+sbQueue.size());
+        logger.log(Level.INFO, "The Scheduling Subsystem is currently managing "+
+                pQueue.size()+" projects, "+ sbQueue.size()+" sbs and "+psQueue.size()+
+                " project status'", OPERATOR.value);
     }
 
     /**

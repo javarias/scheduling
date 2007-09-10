@@ -75,7 +75,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.81 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.82 2007/09/10 18:04:46 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -87,7 +87,7 @@ public class ALMAArchive implements Archive {
     private Operational archOperationComp;
     //TODO should check project queue.. if project exists don't map a new one.
     //The logger
-    private AcsLogger logger;
+    private ALMASchedLogger logger;
     //Entity deserializer - makes entities from the archive human readable
     private EntityDeserializer entityDeserializer;
     //Entity Serializer - prepares entites for the archive
@@ -109,7 +109,7 @@ public class ALMAArchive implements Archive {
       */
     public ALMAArchive(ContainerServices cs, ALMAClock c){
         this.containerServices = cs;
-        this.logger = cs.getLogger();
+        this.logger = new ALMASchedLogger(cs.getLogger());
         this.clock = c;
         ACSJMSTopicConnectionImpl.containerServices=containerServices;
         getArchiveComponents();
