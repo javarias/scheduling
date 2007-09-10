@@ -46,6 +46,11 @@ public class ALMASchedLogger extends SchedLogger {
         arraylogger = new ArrayContextLogger(logger);
     }
 
+    public ALMASchedLogger(AcsLogger l){
+        logger = (AcsLogger)l;
+        arraylogger = new ArrayContextLogger(logger);
+    }
+
     public void configureLogger(String mode) {
         this.mode = mode;
     }

@@ -25,6 +25,10 @@
  */
 package alma.scheduling.Scheduler;
 
+import alma.log_audience.OPERATOR;
+
+import java.util.logging.Level;
+
 import alma.scheduling.Define.InteractiveSession;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SB;
@@ -108,7 +112,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.24 2007/08/30 21:42:45 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.25 2007/09/10 16:10:57 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -146,7 +150,7 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 			config.errorEnd(msg,clock.getDateTime());
 			error(msg);
 		}
-        config.getLog().fine("SCHEDULING: Interactive scheduler created");
+        config.getLog().log(Level.INFO,"SCHEDULING: Interactive scheduler created",OPERATOR.value);
 
 	}
 	

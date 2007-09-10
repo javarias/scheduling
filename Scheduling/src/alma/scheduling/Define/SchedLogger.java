@@ -34,12 +34,12 @@ public class SchedLogger extends Logger implements SchedLoggerIF {
     private String mode;
 
     public SchedLogger(){ 
-        super("SchedulingLogger","SchedulingResourceBundle");
+        super("SchedulingLogger",null);
         mode = "offline";
     }
 
     public SchedLogger(String name) {
-        super(name,"SchedulingResourceBundle");
+        super(name,null);
         mode = "offline";
     }
 

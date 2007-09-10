@@ -85,7 +85,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.95 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.96 2007/09/10 16:10:57 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -990,7 +990,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         String logMsg="";
         try {             
             if(schedulingMode == ArrayModeEnum.MANUAL) {
-                logMsg = "SCHEDULING: Creating an array for manual mode with "+antennaIdList+" antennas; [";
+                logMsg = "SCHEDULING: Creating an array for manual mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg =logMsg + antennaIdList[i] +", ";
                 }
@@ -999,7 +999,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("manual");
             } else if(schedulingMode == ArrayModeEnum.DYNAMIC){
-                logMsg = "SCHEDULING: Creating an array for dynamic mode with "+antennaIdList+" antennas; [";
+                logMsg = "SCHEDULING: Creating an array for dynamic mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
@@ -1009,7 +1009,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("dynamic");
             } else if(schedulingMode == ArrayModeEnum.QUEUED){
-                logMsg = "SCHEDULING: Creating an array for queued mode with "+antennaIdList+" antennas; [";
+                logMsg = "SCHEDULING: Creating an array for queued mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
@@ -1019,7 +1019,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("queued");
             } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
-                logMsg = "SCHEDULING: Creating an array for interactive mode with "+antennaIdList+" antennas; [";
+                logMsg = "SCHEDULING: Creating an array for interactive mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
