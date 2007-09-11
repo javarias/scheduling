@@ -1,3 +1,7 @@
+calling orb.resolve_initial_references
+ready to talk with components!
+No CDB entry found for
+Consumer#processEvent received an event of type
 ComponentClient=alma.acs.component.client.AdvancedComponentClient
 \[jacorb\.poa\] INFO : Using server ID
 \[jacorb\.poa\] INFO : oid:
