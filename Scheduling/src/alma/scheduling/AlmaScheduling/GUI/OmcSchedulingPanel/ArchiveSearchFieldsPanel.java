@@ -157,12 +157,13 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         gridbag.setConstraints(sep,c);
         p.add(sep);
         ////
-        l = new JLabel("SB Type");
+        l = new JLabel("SB Mode Name");
         c.gridwidth =1;
         gridbag.setConstraints(l,c);
         p.add(l);
-        String[] foo= {"All","Single Field Interferometry","Optical Pointing","Tower Holography", "Expert Mode"};
-        sbModeNameChoices = new JComboBox(foo);
+        String[] modeNameChoices = 
+            {"All","Single Field Interferometry","Optical Pointing","Tower Holography", "Expert Mode"};
+        sbModeNameChoices = new JComboBox(modeNameChoices);
         sbModeNameChoices.setSelectedIndex(0);
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(sbModeNameChoices,c);
@@ -182,12 +183,13 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         gridbag.setConstraints(sep,c);
         p.add(sep);
         ////
-        l = new JLabel("SB Mode");
+        l = new JLabel("SB Mode Type");
         c.gridwidth =1;
         gridbag.setConstraints(l,c);
         p.add(l);
         //TODO check if OT has this as something i can import
-        String[] modeTypeChoices = {"All","Observer","Observatory","Expert"}; 
+        String[] modeTypeChoices = 
+            {"All","Observatory", "User", "Expert"}; 
         sbModeTypeChoices = new JComboBox(modeTypeChoices);
         sbModeTypeChoices.setSelectedIndex(0);
         c.gridwidth =GridBagConstraints.REMAINDER;
@@ -210,20 +212,6 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         c.gridwidth =1;
         gridbag.setConstraints(sep,c);
         p.add(sep);
-        ////
-        // TODO Expert search mode later
-        ///
-        /*
-        l = new JLabel("Expert Search");
-        c.gridwidth =1;
-        gridbag.setConstraints(l,c);
-        p.add(l);
-        expertQueryTF = new JTextField();
-        c.gridwidth =1;
-        gridbag.setConstraints(expertQueryTF,c);
-        p.add(expertQueryTF);
-        */
-        ////
         JPanel bp = new JPanel(new GridLayout(1,3));
         bp.add(new JLabel());//spacer
         searchB = new JButton("Search");
@@ -304,10 +292,10 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             query="/sbl:SchedBlock[sbl:modeName=\""+sbModeName+"\"]";
         } else if(sbModeName.equals("All")) {
             //type == all so serching by mode only
-            query="/sbl:SchedBlock[sbl:modeType=\""+sbModeType+"\"]";
+            query="/sbl:SchedBlock[@modeType=\""+sbModeType+"\"]";
         } else {
             //searching with both!
-            query = "/sbl:SchedBlock[sbl:modeType=\""+
+            query = "/sbl:SchedBlock[@modeType=\""+
                         sbModeType+"\" and sbl:modeName=\""+sbModeName+"\"]";
         }
         return query;

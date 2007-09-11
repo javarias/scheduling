@@ -85,7 +85,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.98 2007/09/10 21:47:56 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.99 2007/09/11 17:55:30 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -896,6 +896,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         return foo;
     }
 
+    /*
     public String[] getAllActiveArrays() {
         try {
             String[] allArrays = control.getActiveArray();
@@ -903,7 +904,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         }catch(Exception e){
             return new String[0];
         }
-    }
+    }*/
     ///////////////////
     private synchronized String getComponentName(String type, String id){
         if(type.equals("interactive")){
@@ -1195,6 +1196,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         String[] results = new String[0];    
         String schema = new String("ObsProject");
         String foo1, foo2, foo3;
+        String query =  new String("/prj:ObsProject");
         if(projname.equals("") || projname.equals("*") || projname.contains("*")){
             foo1=new String("prj:projectName=*");
         } else {
@@ -1206,9 +1208,14 @@ public class ALMAMasterScheduler extends MasterScheduler
         } else {
             foo2 =new String( "prj:pI=\""+piname+"\"");
         }
-        String query = new String("/prj:ObsProject["+foo1+" and "+foo2+"]");
+        query = query + "["+foo1+" and "+foo2+"]";
+        if(!type.equals("All")){
+            query = query + 
+                "/prj:ObsProgram/prj:ObsPlan[prj:DataProcessingParameters[@projectType=\""+type+"\"]]";
+        }
         logger.fine("Scheduling Query = "+ query);                
         try {
+            System.out.println("ProjectQuery: "+query);
             results = manager.archiveQuery(query, schema);
         } catch(Exception e) {
             e.printStackTrace();
@@ -1224,6 +1231,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         return results;
     }
+
     public String[] getSBProjectUnion(String[] sbIds, String[] projectIds){
         return manager.getSBProjectUnion(sbIds, projectIds); 
     }
@@ -1240,6 +1248,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
         String[] results = new String[0];    
         try {
+            System.out.println("Query: "+query);
             results = manager.archiveQuery(query, schema);
         } catch(Exception e) {
             e.printStackTrace();
