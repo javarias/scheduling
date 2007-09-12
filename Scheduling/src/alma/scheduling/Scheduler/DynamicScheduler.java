@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.20 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.21 2007/09/12 21:22:38 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -199,6 +199,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     		}
     		
     		// 4. Do the required actions, which are mode dependent.
+            logger.info("*******About to go!");
     		try {
     			if (synchronous) {
     				if (synchronousMode()) {

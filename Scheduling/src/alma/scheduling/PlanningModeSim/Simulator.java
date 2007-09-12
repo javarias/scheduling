@@ -176,13 +176,13 @@ public class Simulator implements Runnable {
 		// Change the clock to an LST clock and set the beginning and ending times.
 		// Form the beginning time.
 		DateTime beginCivil = input.getBeginCivilTime();
-        System.out.println("CIVIL TIME: "+beginCivil.toString());
+        logger.info("CIVIL TIME: "+beginCivil.toString());
 		// Compute the corresponding LST in hours.
 		double lstHrs = beginCivil.getLocalSiderealTime();
-        System.out.println("LST hours: "+lstHrs);
+        logger.info("LST hours: "+lstHrs);
 		// Form the DateTime for the LST.
 		DateTime lstBegin = DateTime.add(beginCivil,(lstHrs / 24.0));
-        System.out.println("LST begin TIME: "+lstBegin.toString());
+        logger.info("LST begin TIME: "+lstBegin.toString());
 		clock.setTime(lstBegin);
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@");
         //System.out.println(clock.getDateTime());

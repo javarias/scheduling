@@ -146,7 +146,7 @@ public class MasterScheduler extends BasicComponent {
                     telescope, projectManager,policy,logger);			
 			
 			// Create a scheduler.
-            System.out.println("in MS: "+config.getArrayName());
+            logger.info("ArrayName: "+config.getArrayName());
 			scheduler = new DynamicScheduler(config);		
 			
 			// Create a thread for this scheduler

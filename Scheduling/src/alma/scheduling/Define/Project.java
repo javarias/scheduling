@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An Project is an observing project as viewed by the
  * scheduling subsystem. 
  * 
- * @version $Id: Project.java,v 1.8 2007/08/30 21:42:45 sslucero Exp $
+ * @version $Id: Project.java,v 1.9 2007/09/12 21:22:38 sslucero Exp $
  * @author Allen Farris
  */
 public class Project implements ProjectMember {
@@ -107,7 +107,7 @@ public class Project implements ProjectMember {
 		if (program == null)
 			throw new UnsupportedOperationException("Cannot set project to ready! Project's program has not been set.");
 		status.setReady(time);
-		//program.setReady(time);
+		program.setReady(time);
 		program.setTotals();
 	}
 

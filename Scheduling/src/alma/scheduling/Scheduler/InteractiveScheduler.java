@@ -112,7 +112,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.25 2007/09/10 16:10:57 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.26 2007/09/12 21:22:38 sslucero Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -386,9 +386,6 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		if (!sb.getStatus().isStarted()) {
 			config.decrementSbsNotStarted();
 		}
-        if(sb.getStatus().getStartTime() == null) {
-            sb.setStartTime(clock.getDateTime());
-        }
         System.out.println("SB: ready =" + 
             ((sb.getStatus().getReadyTime() == null) ? "null" :
                 sb.getStatus().getReadyTime().toString() ) +
@@ -396,6 +393,9 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
                 sb.getStatus().getStartTime().toString()) +
             " end = "+  ((sb.getStatus().getEndTime() == null) ? "null" : 
                 sb.getStatus().getEndTime().toString()) );
+        if(sb.getStatus().getStartTime() == null) {
+            sb.setStartTime(clock.getDateTime());
+        }
 
         sb.setRunning();
         logger.fine("INTERACTIVE_SCHEDULER: Sending sb("+best.getBestSelection()+", status:"+sb.getStatus().toString()+") to control at time="+sb.getStatus().getStartTime());

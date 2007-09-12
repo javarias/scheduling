@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.25 2007/08/30 21:42:45 sslucero Exp $
+ * @version $Id: SB.java,v 1.26 2007/09/12 21:22:38 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -326,7 +326,7 @@ public class SB implements ProgramMember {
 	 * @param time The time at which this SB started.
 	 */
 	public void setStartTime(DateTime time) {
-        //System.out.println("SB started");
+        //System.out.println("SB("+getId()+") start time set to "+time.toString());
 		status.setStarted(time);
 		parent.unitStarted(this,time);
 	}

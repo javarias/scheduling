@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.59 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.60 2007/09/12 21:22:38 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -389,6 +389,7 @@ public class ProjectUtil {
 		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
 		project.setProgram(program);
+		// Mark the project as ready.  (This also initializes the totals.)
         try {
         	project.setReady(new DateTime(ps.getStatus().getReadyTime()));
         }catch (java.lang.IllegalArgumentException iae){
@@ -398,7 +399,7 @@ public class ProjectUtil {
         } catch(Exception e){
             e.printStackTrace();
         }
-        //System.out.println("just set project state to = "+project.getStatus().toString());
+
         try {
             project.getStatus().setStarted(new DateTime(ps.getStatus().getStartTime()));
         } catch(Exception e) {}
@@ -406,8 +407,8 @@ public class ProjectUtil {
             project.getStatus().setEnded(new DateTime(ps.getStatus().getStartTime()), 
                 getStatusMatch(ps.getStatus()));
         } catch(Exception e) {}
-		
-		// Mark the project as ready.  (This also initializes the totals.)
+        //now set all the started/ended times in the program and SBs
+		program = setStatusInformation(program, obs.getObsProgram().getObsPlan(), ous, now); 
 		// Make sure that all the scheduling blocks in the sched array have been accounted for.
 		for (int i = 0; i < schedUsed.length; ++i) {
 			if (!schedUsed[i])
@@ -507,11 +508,11 @@ public class ProjectUtil {
 		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
         try {
     		program.setTimeOfCreation(new DateTime(ous.getStatus().getReadyTime()));
-            program.setReady(new DateTime(ous.getStatus().getReadyTime()));
+            //program.setReady(new DateTime(ous.getStatus().getReadyTime()));
 		    program.setTimeOfUpdate(new DateTime(ous.getTimeOfUpdate()));
         } catch(Exception e){
     		program.setTimeOfCreation(now);
-            program.setReady(now);
+            //program.setReady(now);
 		    program.setTimeOfUpdate(now);
         }
 		program.setParent(parent);
@@ -618,29 +619,17 @@ public class ProjectUtil {
                     sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
                     try {
         		        memberSB = initialize(setMember[i],sbStatus, sched,schedUsed,project,program,now);
-                        //System.out.println("initialized sb "+memberSB.getId());
                     }catch(Exception e){
                         e.printStackTrace();
                     }
                     memberSB = assignExecStatusToSB(memberSB, sbrefid, execs, sbStatus);
-                    //todo now update memberSB's status/state with what came from PS(sbstatus).
-                    memberSB = assignCompletionStatus(memberSB, sbStatus, now);
                 } else {
                     try {
         		        memberSB = initialize(setMember[i], null, sched,schedUsed,project,program,now);
-                        memberSB.setReady(now);
                     }catch(Exception e){
                         e.printStackTrace();
                     }
                 }
-                //System.out.println("SB: ready =" + 
-                 //   ((memberSB.getStatus().getReadyTime() == null) ? "null" :
-                  //      memberSB.getStatus().getReadyTime().toString() ) +
-                   // " start = "+ (( memberSB.getStatus().getStartTime() == null) ? "null" : 
-                    //    memberSB.getStatus().getStartTime().toString()) +
-                    //" end = "+  ((memberSB.getStatus().getEndTime() == null) ? "null" : 
-                     //   memberSB.getStatus().getEndTime().toString()) );
-
 				program.addMember(memberSB);
 			}
 		}
@@ -666,16 +655,76 @@ public class ProjectUtil {
       } catch(Exception e) {
           e.printStackTrace();
       }
-      // Return the newly created program.
-        //System.out.println("program: ready =" + 
-         //       ((program.getStatus().getReadyTime() == null) ? "null" :
-          //          program.getStatus().getReadyTime().toString() ) +
-           //     " start = "+ (( program.getStatus().getStartTime() == null) ? "null" : 
-            //        program.getStatus().getStartTime().toString()) +
-             //   " end = "+  ((program.getStatus().getEndTime() == null) ? "null" : 
-              //      program.getStatus().getEndTime().toString()) );
 	  return program;
 	}
+
+    private static Program setStatusInformation(Program p,
+            ObsUnitSetT set, ObsUnitSetStatusT ous, DateTime now) {
+        boolean hasStatus=false;
+        if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
+            //Program memberProgram = p;
+            ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
+            ObsUnitSetStatusTChoice choice = null;
+            ObsUnitSetStatusT[] status = null;
+            try {
+                choice = ous.getObsUnitSetStatusTChoice();
+                status = choice.getObsUnitSetStatus();
+                if(status.length < 1) {
+                    hasStatus = false;
+                } else{
+                    hasStatus = true;
+                }
+            } catch(Exception e){
+                hasStatus = false;
+            }
+            ProgramMember x=null;
+            for(int i=0; i < setMember.length; i++){
+                //System.out.println("part id of ous = "+setMember[i].getEntityPartId());
+                x = p.getMember(setMember[i].getEntityPartId());
+                //System.out.println("id of program = "+x.getId());
+                try {
+                    p = setStatusInformation ((Program)x, setMember[i], status[i], now);
+                } catch (Exception e) {
+                    p = setStatusInformation ((Program)x, setMember[i], null, now);
+                }
+            }
+        } else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
+            SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
+            ObsUnitSetStatusT[] foo = null;
+            ObsUnitSetStatusTChoice choice = null;
+            SBStatusT[] sbStats = null;
+            SB memberSB = null; 
+            try {
+                choice= ous.getObsUnitSetStatusTChoice();
+                foo= choice.getObsUnitSetStatus();
+                sbStats = choice.getSBStatus();
+                if(sbStats.length < 1){
+                    hasStatus =false;
+                } else{
+                    hasStatus = true;
+                }
+            } catch(Exception e){
+                hasStatus = false;
+            }
+            String sbrefid;
+            SBStatusT sbStatus = null;
+            for(int i=0; i <  setMember.length; i++){
+                if(hasStatus){
+                    sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
+                    memberSB = (SB)p.getMember(sbrefid);
+                    try {
+                        //System.out.println("Setting status info for SB");
+                        sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
+                        //only one!
+                        memberSB = assignCompletionStatus(memberSB, sbStatus, now);
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return p;
+    }
     
     private static SBStatusT getSBStatusForSBRef(String id, SBStatusT[] stats)
         throws SchedulingException {
@@ -717,31 +766,14 @@ public class ProjectUtil {
         throws SchedulingException{
 
         int state = getStatusMatch(status.getStatus());
-        /*
-        if(status.getStatus().getState().toString().equals("aborted")){
-            state = Status.ABORTED;
-        }else if(status.getStatus().getState().toString().equals("complete")){
-            state = Status.COMPLETE;
-        }else if(status.getStatus().getState().toString().equals("observed")){
-            state = Status.OBSERVED;
-        }else if(status.getStatus().getState().toString().equals("processed")){
-            state = Status.PROCESSED;
-        }else if(status.getStatus().getState().toString().equals("canceled")){
-            state = Status.CANCELED;
-        }else if(status.getStatus().getState().toString().equals("ready")){
-            state = Status.READY;
-        } else {
-            //TODO when project lifecycle starts before scheduling this should probably 
-            //be set to not defined
-            state = Status.READY;
-        }*/
         try {
+            /*
             try {
                 sb.setReady(new DateTime(status.getStatus().getReadyTime()));
             } catch(Exception e){
                 //e.printStackTrace();
                 sb.setReady(now);
-            }
+            }*/
                 
             try {
                 sb.setStartTime(new DateTime(status.getStatus().getStartTime()));
