@@ -4,4 +4,4 @@
 export ACS_INSTANCE=`cat sched_acs_instance.log`
 
 #run all the tests!
-acsStartJava -endorsed alma.scheduling.test.AllTests
+acsStartJava -endorsed alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.test.AllTests
