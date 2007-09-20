@@ -215,7 +215,7 @@ public class Reporter extends BasicComponent {
 	private void writeBeginning() {
 		// Write the initial data in the output file. Place this in Reporter.
 		SiteCharacteristics site = input.getSite();
-		out.println("ALMA Simulator Release R3.1 - 2006");
+		out.println("ALMA Simulator Release R5.0 - 2007");
 		out.println();
 		out.println("Beginning simulation run.  System time: " + DateTime.currentSystemTime());
 		out.println("Input properties from file: " + input.getInputFile().getAbsolutePath());
@@ -239,7 +239,7 @@ public class Reporter extends BasicComponent {
 		projectSummary(out,endTime);
 		statistics(out,endTime);
         detailedExecutionStatistics(execStatsOut);
-        //runAnalysisScripts();
+        runAnalysisScripts();
 	}
 	
 	private void showSummary(PrintStream o, DateTime endTime) {
@@ -434,7 +434,7 @@ public class Reporter extends BasicComponent {
 			
 			
 		} catch (SchedulingException err) {
-			err.printStackTrace(System.out);
+			err.printStackTrace();
 			System.exit(0);
 		}
 	}
@@ -462,9 +462,9 @@ public class Reporter extends BasicComponent {
         SB[] allSBs=null;
 		try {
 			ex = archive.getAllExec();
-            System.out.println("SCHED: in reporter, all execs = "+ex.length);
+            logger.info("SCHED: in reporter, all execs = "+ex.length);
 			prj = archive.getAllProject();
-            System.out.println("SCHED: in reporter, all projs ="+prj.length);
+            logger.info("SCHED: in reporter, all projs ="+prj.length);
 		} catch (SchedulingException err) {
 			String msg = "Reporter.error: Error accessing archive! " + err.toString();
 			logger.severe(msg);
@@ -531,7 +531,6 @@ public class Reporter extends BasicComponent {
 
     
     private synchronized void detailedExecutionStatistics(PrintStream o) {
-    //    System.out.println("Start detailed exec stats");
         ExecutionStatistics[] stats;
         try {
             stats = archive.getAllExecutionStatistics();
@@ -547,11 +546,9 @@ public class Reporter extends BasicComponent {
             e.printStackTrace();
         }
         
-    //    System.out.println("end detailed exec stats");
     }
 
     private synchronized void runAnalysisScripts(){
-        //System.out.println("start scripts ");
         Map<String, String> weatherFiles = input.getWeatherFileNames();
         String cmd1 = "ALMASched_lst_vs_day";
         String cmd2 = "ALMASchedSim_antennaLocation";
@@ -564,8 +561,6 @@ public class Reporter extends BasicComponent {
         String scheduleCmdStringRMS = scheduleCmdString1 +" "+weatherFiles.get("rms") +" rms"; 
         String scheduleCmdStringWIND = scheduleCmdString1 +" "+weatherFiles.get("wind") +" wind velocity";
         String antennaPlotCmdString = cmd2 +" "+ inputfilename;
-        //System.out.println(scheduleCmdString);
-        //System.out.println(inputfilename);
         try{
             CreateScheduleFile foo1 = new CreateScheduleFile(scheduleCmdStringOP);   
             CreateAntennaLocationFile foo2 = new CreateAntennaLocationFile(antennaPlotCmdString);
@@ -583,7 +578,6 @@ public class Reporter extends BasicComponent {
             e.printStackTrace();
             logger.warning("Error writing analysis files");
         }
-       // System.out.println("end scripts ");
     }
 
     public String getOutputFilename(){
@@ -622,9 +616,7 @@ public class Reporter extends BasicComponent {
                     InputStreamReader(p.getInputStream()),5000);
                 int i = 0;
                 p.waitFor();
-              //  System.out.println("schedule Input:");
                 while (( a = in.readLine()) != null) {
-                    System.out.println(a);
                     i++;
                 }
                 p.waitFor();
@@ -633,13 +625,10 @@ public class Reporter extends BasicComponent {
                 i = 0;
                 p.waitFor();
                 while (( a = in.readLine()) != null) {
-                    System.out.println(a);
                     i++;
                 }
                 p.waitFor();
                 in.close();
-            //    System.out.println("schedule exitvalue is " + p.exitValue());
-              //  System.out.println("end schedule process");
             } catch(Exception e){
                 logger.warning("Error writing schedule file using command \n\t"+command);
             }
@@ -659,9 +648,7 @@ public class Reporter extends BasicComponent {
                     InputStreamReader(p.getInputStream()),5000);
                 int i = 0;
                 p.waitFor();
-              //  System.out.println("antenna Input:");
                 while (( a = in.readLine()) != null) {
-                    System.out.println(a);
                     i++;
                 }
                 p.waitFor();
@@ -669,16 +656,11 @@ public class Reporter extends BasicComponent {
                 in  = new BufferedReader(new InputStreamReader(p.getErrorStream()),5000);
                 i = 0;
                 p.waitFor();
-              //  System.out.println("antenna Error:");
                 while (( a = in.readLine()) != null) {
-                    System.out.println(a);
                     i++;
                 }
                 p.waitFor();
                 in.close();
-              //  System.out.println("antenna exitvalue is " + p.exitValue());
-
-              //  System.out.println("end antenna process");
             } catch(Exception e){
                 logger.warning("Error writing antenna location file using command \n\t"+command);
             }

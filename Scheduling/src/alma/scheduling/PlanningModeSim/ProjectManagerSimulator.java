@@ -142,9 +142,9 @@ public class ProjectManagerSimulator
 			// Let the unit know it has ended.
             //ex.setParent(sb);
 			//sb.execEnd(ex,time,Status.COMPLETE);
-            System.out.println(sbId +" about to set READY");
+            logger.info(sbId +" about to set READY");
             sb.execEnd(ex,time,Status.READY);
-            System.out.println(sb.getStatus().getStatus());
+            logger.info(sb.getStatus().getStatus());
 			// Inform the reporter.
 			reporter.execEnd(arrayname,sbId,execId,time);
 		} catch (SchedulingException err) {

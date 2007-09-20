@@ -114,7 +114,8 @@ public class PlanningModeSimGUIController implements Runnable {
 
     public void run() {
         this.gui = new PlanningModeSimGUI(this);
-        getTabs();
+        //moved into loadFile coz its needed for loading from menu also
+        //getTabs();
         try{
             setInitialFile(startupfile);
         }catch(Exception e){}
@@ -126,6 +127,7 @@ public class PlanningModeSimGUIController implements Runnable {
             f1.delete();
             File f2 = new File(simulator.getScheduleGraphFilename());
             f2.delete();
+            //TODO delete tmp_sim files
         }catch(Exception e){}
     }
     
@@ -525,6 +527,7 @@ public class PlanningModeSimGUIController implements Runnable {
      * displayed in their appropriate fields.
      */
     public void loadFile(String filepathname, String filename) {
+        getTabs();
         data_filename = filename;
         Vector tab1 = new Vector();
         Vector tab2 = new Vector();
@@ -719,7 +722,9 @@ public class PlanningModeSimGUIController implements Runnable {
     class RunSimulation implements Runnable {
         public RunSimulation(){}
         public void run(){
-            File f = new File(currentDirectory+ File.separator + data_filename+".txt");
+            //File f = new File(currentDirectory+ File.separator + data_filename+".txt");
+            saveToFile(System.getenv("PWD"), "tmp_sim.txt");
+            File f = new File(currentDirectory+ File.separator +"tmp_sim.txt");
             if(!f.exists()){
                 System.out.println(f.getName());
                 System.out.println("A data file must be properly created " 

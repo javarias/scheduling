@@ -85,7 +85,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.99 2007/09/11 17:55:30 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.100 2007/09/20 16:08:25 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -325,8 +325,8 @@ public class ALMAMasterScheduler extends MasterScheduler
         Policy policy = new Policy();
         policy.setId("Temp ID");
         policy.setTimeOfCreation(new DateTime(System.currentTimeMillis()));
-        policy.setDescription("R4.0Policy testing!");
-        policy.setName("R4.0Policy");
+        policy.setDescription("R5.0Policy testing!");
+        policy.setName("R5.0Policy");
         PolicyFactor[] factors = new PolicyFactor[4];
         /////////////////////
         factors[0] = new PolicyFactor();

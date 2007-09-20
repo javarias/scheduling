@@ -56,8 +56,8 @@ for line in file1.readlines():
 #Save to color post script file            
 pgbeg(sys.argv[2]+".ps/cps",1,1) 
 #Save to gif file            
-foo = "_tmp_schedule.gif"   
-pgbeg(foo+"/GIF",1,1)
+#foo = "_tmp_schedule.gif"   
+#pgbeg(foo+"/GIF",1,1)
 pgpap(10.5,0.75)
 pgsvp(0.1, 0.8, 0.1, 0.9)   
 color =1
@@ -147,13 +147,13 @@ i=s_idx
 pgscr(1,1,1,1)
 pgscr(0,0,0,0)    
 while i < (e_idx+1):
-#while i < len(valsubset):
 # Get color associated with value
-    pgsfs(1)
-    pgsci(getcolor(float(wval[i])))
-#pgsci(getcolor(float(valsubset[i])))
-    if float(wtime[i+1]) > float(wtime[i]): 
-#     print 'first case'
+#    pgsfs(1)
+#    pgsci(getcolor(float(wval[i])))
+    
+    if (i+1) >= len(wtime):
+        break;
+    elif float(wtime[i+1]) > float(wtime[i]): 
         if not float(wday[i]) < 10.0:
             pgrect(float(wtime[i]), float(wtime[i+1]), 
                 float(wday[i].strip('0'))-1.0, float(wday[i].strip('0')))
@@ -189,6 +189,8 @@ pgbox('',0,0,'NV',1,0)
 pgbox('',0,0,'MV',1,0)
 pgbox('BSCNT1',0,0,'BSCTV',0,0)
 def makecolorwedge():    
+    print minOP
+    print maxOP
     pgsfs(1)
     pgsvp(0.95, 0.97, 0.2, 0.8)
     pgswin(0, 1, cmin-0.5, cmax+0.5)
@@ -217,8 +219,8 @@ while i < len(lststart):
 
 
 i=0 
-#pgsci(0)
-pgsch(0.7)
+pgsci(1)
+pgsch(0.6)
 x=0.6
 while i < len(lststart):
 #x = 0.5

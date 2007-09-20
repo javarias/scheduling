@@ -662,9 +662,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			error("All position factors cannot be 0");
             */
         
-		x[0].setName("R4.0Policy");
+       // try {
+		x[0].setName("R5.0Policy");
 		x[0].setVersion("V1.0");
-		x[0].setDescription("R4 Release -- 1 Oct, 2006");
+		x[0].setDescription("R5 Release -- 1 Oct, 2007");
 		x[0].setScoreCalculation("RankingCalculation * SuccessCalculation");
 		x[0].setSuccessCalculation("weatherWeight * weather");
 		x[0].setRankingCalculation("priorityWeight * priority ");
@@ -679,6 +680,9 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 		factor[1].setWeight(getDouble(Tag.weightPriority));
 		x[0].setFactor(factor);
 		policy = x;
+        //} catch(Exception e){
+          //  e.printStackTrace();
+        //}
 	}
 
 	/**

@@ -302,7 +302,7 @@ public class PlanningModeSimGUI extends JFrame {
         headerPanel = new JPanel(new BorderLayout());
         JLabel logo = new JLabel(almaImage);
         headerPanel.add(logo,BorderLayout.EAST);
-        JLabel title1 = new JLabel("Scheduling");
+        JLabel title1 = new JLabel("Dynamic Scheduling");
         title1.setFont(new Font("", Font.ITALIC, 24));
         JLabel title2 = new JLabel("Planning Mode Simulator");
         title2.setFont(new Font("", Font.ITALIC, 24));
@@ -326,9 +326,6 @@ public class PlanningModeSimGUI extends JFrame {
         return outputPanes;
     }
 
-    //private JTabbedPane clearContentPanels(){
-    //}
-
     public String getProjectFile() {
         String s = createFileChooser("load","Load Project File","txtfile");
         if(s == null) {
@@ -339,12 +336,29 @@ public class PlanningModeSimGUI extends JFrame {
     }
 
     public void exit() {
+        saveOutput();
         cleanUpFiles();
         dispose();
     }
 
     private void cleanUpFiles(){
         controller.cleanUpFiles();
+    }
+
+    private void saveOutput() {
+        int o = JOptionPane.showConfirmDialog(this, 
+                "Do you wish to save simulation input and output?",
+                "Save Information?",
+                JOptionPane.YES_NO_OPTION);
+
+        if(o == JOptionPane.YES_OPTION) {
+            doSaveAction();
+            //check if simulation has been run & if its has do..
+            doSaveAntennaJPG();
+            doSaveScheduleJPG();
+        } else if(o == JOptionPane.NO_OPTION){
+            //just quit
+        }
     }
 
     /////////////////////
@@ -489,7 +503,7 @@ public class PlanningModeSimGUI extends JFrame {
         public RunSimulationThread(){}
         
         public void run(){
-            doSaveAction();
+            //doSaveAction();
             controller.runSimulation();
             runSim.setEnabled(false);
         }

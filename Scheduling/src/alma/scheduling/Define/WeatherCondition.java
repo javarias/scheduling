@@ -83,7 +83,7 @@ import java.util.StringTokenizer;
  * return 0.4.  This result has the meaning that under the current conditions, 
  * the favorability rating is 40%.
  * 
- * @version $Id: WeatherCondition.java,v 1.7 2006/10/20 15:38:45 sslucero Exp $
+ * @version $Id: WeatherCondition.java,v 1.8 2007/09/20 16:08:25 sslucero Exp $
  * @author Allen Farris
  */
 public class WeatherCondition {
@@ -172,12 +172,14 @@ public class WeatherCondition {
 	}
 
     /**
+      * NOTE: Not using this anymore!
       * In this method we want to scale the value coming from the real weather data file
       * or the actual weather stations, so that its scaled in accordance to the sb we want 
       * to schedule.
       * NOTE: If the scaling changes it must also be changed in PlanningModeSim's opacityModel 
       * and/or RmsModel
       * The scales objects will be 2 or 3 objects. Frequency, Elevation, (and possibly) max Baseline
+      *
       */
     private Expression scaleCondition(Expression e, Object... scales) {
         StringTokenizer st = new StringTokenizer(e.toString(), ",");

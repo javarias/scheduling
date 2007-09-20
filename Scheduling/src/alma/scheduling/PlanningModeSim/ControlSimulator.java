@@ -220,12 +220,6 @@ public class ControlSimulator extends BasicComponent implements Control {
 			ExecBlock ex = new ExecBlock (containerServices.getEntityId(),name);
 			// Set the start time in the exec block.
 			ex.setStartTime(beg);
-           // System.out.println("EXECUTION Starting at "+beg.toString());
-            //System.out.println("EXECUTION Starting at LST "+beg.getLocalSiderealTime());
-            //System.out.println("EXECUTION ra min (h)= "+sb.getTarget().getMin().getRaInHours());
-            //System.out.println("EXECUTION ra min (rad)= "+sb.getTarget().getMin().getRa());
-            //System.out.println("EXECUTION ra max (h) = "+sb.getTarget().getMax().getRaInHours());
-            //System.out.println("EXECUTION ra max (rad) = "+sb.getTarget().getMax().getRa());
 			// Set the best unit.
 			ex.setBest(best);
 			// Store it in the archive.
@@ -270,7 +264,7 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setExecId(eb.getId());
         e.setArrayName(arrayname);
         e.setStartTime(eb.getStatus().getStartTime());
-        System.out.println("StartTime recorded as: "+eb.getStatus().getStartTime());
+        logger.info("StartTime recorded as: "+eb.getStatus().getStartTime());
         e.setEndTime(eb.getStatus().getEndTime());
         if(sblite != null){
             e.setScore(sblite.getScore());
@@ -287,11 +281,8 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setFrequency(sub.getCurrentFrequency());
         e.setFrequencyBandName(sb.getFrequencyBand().getName());
         e.setRA(sb.getTarget().getMax().getRa());
-        //System.out.println("RA : "+e.getRA());
         e.setDEC(sb.getTarget().getMax().getDec());
-        //System.out.println("DEC : "+e.getDEC());
         e.setWeatherConstraintName(sb.getWeatherConstraintName());
-        //System.out.println("DATETIME OF LST: "+clock.getDateTime());
         e.setElevation(sb.getElevation(clock.getDateTime(), input.getSite()));
         e.setLSTRise(sb.getTarget().getLstRise());
         e.setLSTMax(sb.getTarget().getLstMax());

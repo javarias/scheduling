@@ -79,7 +79,7 @@ import java.util.logging.Logger;
  * So, there is a good deal of thinking to be done on how to do this.
  * For now, the second method is not implemented.
  * 
- * @version $Id: DynamicSchedulingAlgorithm.java,v 1.8 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: DynamicSchedulingAlgorithm.java,v 1.9 2007/09/20 16:08:25 sslucero Exp $
  * @author Allen Farris
  */
 public class DynamicSchedulingAlgorithm {
@@ -87,7 +87,7 @@ public class DynamicSchedulingAlgorithm {
 	//private R2aPolicy dsa;
                     
     //private R1Policy dsa;
-    private R4Policy dsa;
+    private R5Policy dsa;
 
 	
 	public DynamicSchedulingAlgorithm(String arrayname, Policy policy, 
@@ -115,7 +115,14 @@ public class DynamicSchedulingAlgorithm {
               //      projectManager, log, bestNumber);
                     
         } else if(policy.getName().equals("R4.0Policy")){
+            log.info("R4Policy: not available anymore, use R5Policy");
+            /*
             dsa = new R4Policy(
+                    arrayname, policy, queue, clock, telescope,
+                    projectManager, log, bestNumber);
+                    */
+        } else if(policy.getName().equals("R5.0Policy")){
+            dsa = new R5Policy(
                     arrayname, policy, queue, clock, telescope,
                     projectManager, log, bestNumber);
         }

@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.26 2007/09/12 21:22:38 sslucero Exp $
+ * @version $Id: SB.java,v 1.27 2007/09/20 16:08:25 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -805,7 +805,7 @@ public class SB implements ProgramMember {
          precondition = p;
      }
 
-     public PreConditions getPreconditions(){
+     public PreConditions getPreConditions(){
          return precondition;
      }
 
