@@ -9,7 +9,7 @@ acsStart >& sched_acsStart.log
 
 #Get the instance which ACS started on
 export ACS_INSTANCE=`grep -m 1 "For this ACS session, please do an" sched_acsStart.log | cut -d\' -f2 | cut -d= -f2`
-
+export PGPLOT_FONT=/alma/ACS-6.0/casa/lib/pgplot/grfont.dat
 #Save the instance var to a file for easy access
 echo $ACS_INSTANCE > sched_acs_instance.log
 

@@ -1,0 +1,48 @@
+How is the weather values taken into account in the simulator?
+
+1. There is a weight associated to the weather (weight.3)
+2. A weather values is computed using the following logic:
+    For RMS:
+        - the value (X) from the data file is gotten.
+        - then given the frequency, elevation and baseline values we get a 
+          value (Y1) using the following formula:
+          Y1 = X * ( freq/11.2) * (sin(36 * PI/180) / sin(elevation)) * baseline^(1/3)
+    For Wind Speed:
+        - the actual value (Y2) in the data file is used.
+    For Opacity:
+        - the actual value (Y3) from the data file is used.
+
+    If in the future additional weather parameters were gotten they would be obtained
+    at this point.
+    
+3. The product of these values (Yi) is obtained and used to calculate a success factor
+   for the particular SB, given its elevation position (with its weight(weight.1)) and
+   its maximum elevation position (with its weight(weight.2)). The SUCCESS calculation
+   currently is:
+    
+    S = [ (elevation_position * weight.1) + (max_elevation_position * weight.2 )
+            + (weather * weight.3) ] / (weight.1 + weight.2 + weight.3)
+4. Each of the weights are determined by what the user has put into the scheduling 
+   policy.
+
+How is baseband determined?   
+    Given all the antennas defined in the input file (which is antenna locations in 
+    chile for the compact configuration of 50 antennas) the distance between each 
+    antenna is calculated and the maximum baseline is used.
+
+How is frequency determined?
+    Each SB is assigned a frequency which is used directly. 
+
+Weights for factors used in calculation of best SB found where?
+    They are found in the input file, prefixed with Weight.
+
+How is priority taken into account?
+    Priority is user/commity defined in the project files. It is also given a weight.
+    So when the score of a SB is being computed, there is a RANK caluclation which 
+    consists of 
+        rank = priority.weight * priority
+
+What is the final scoring of a SB?
+    Once the success of a SB is calculated and it is ranked then those two values are
+    multiplied to give the SB a score.
+        

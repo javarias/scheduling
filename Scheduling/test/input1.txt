@@ -1,8 +1,8 @@
 # Properties of the simulation.
 
 # The beginning and ending time of the simulation.
-Simulation.beginTime = 2006-05-01T00:00:00
-Simulation.endTime = 2006-05-31T00:00:00
+Simulation.beginTime = 2006-01-01T00:00:00
+Simulation.endTime = 2006-01-31T00:00:00
 
 # Simulation mode: FULL, PLANNING, or CONFLICT
 Simulation.mode = PLANNING
