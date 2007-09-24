@@ -163,7 +163,8 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
         }
         public void run() {
             if( controller.createConsolePlugin()) {
-                createConsoleB.setEnabled(false);
+		//always keep createConsoleB enable 
+                //createConsoleB.setEnabled(false);
             } else {
                 //inform error happened
             }
