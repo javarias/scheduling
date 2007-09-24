@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.97 2007/09/10 18:04:46 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.98 2007/09/24 22:38:57 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1848,4 +1848,24 @@ public class ALMAProjectManager extends ProjectManager {
         return null;
     }
 
+    protected IDLEntityRef[] startManualModeSession() throws SchedulingException {
+        IDLEntityRef[] refs = new IDLEntityRef[2];
+        //query for uid of manual mode sb
+        String p_id = archive.queryForManualModeProject();
+        Project p = pQueue.get(p_id);
+        SB[] sbs = p.getAllSBs();
+        if(sbs.length < 1 ){
+            throw new SchedulingException("SCHEDULING: Manual Mode project had not SB!");
+        }
+        String sbid = sbs[0].getId();
+        refs[0] = new IDLEntityRef();
+        refs[0].entityId = sbid;
+        refs[0].partId = "";
+        refs[0].entityTypeName="SchedBlock";
+        refs[0].instanceVersion="1.0";
+        //send start session event
+        refs[1] = sendStartSessionEvent(sbid);
+        //
+        return refs;
+    }
 }

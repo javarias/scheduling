@@ -75,7 +75,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.82 2007/09/10 18:04:46 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.83 2007/09/24 22:38:57 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -438,7 +438,7 @@ public class ALMAArchive implements Archive {
                         //System.out.println("SchemaVersion in xmlEntityStruct: "+xml.schemaVersion);
                         //logger.finest("PROJECT : "+ xml.xmlString);
                         //System.out.println("PROJECT taken out of archive: "+ xml.xmlString);
-                        //if( matchSchemaVersion(xml.xmlString) ){ } else {
+
                         try {
                             ObsProject obsProj= (ObsProject)
                                 entityDeserializer.deserializeEntity(xml, ObsProject.class);
@@ -1271,4 +1271,35 @@ public class ALMAArchive implements Archive {
         }
     }
     
+    /* Query to get project which has name = "manual mode" and pi = "manual mode"
+     * If one is not found and exception is thrown
+     * @return String The UID of the FIRST project
+     */
+    protected String queryForManualModeProject() throws SchedulingException {
+        try {
+            String query = "/prj:ObsProject[prj:pI=\"manual mode\" and "+
+                           "prj:projectName=\"manual mode\"";
+            String schema = "ObsProject";
+            Cursor cursor = archOperationComp.query(query, schema);
+            if(cursor == null) {
+                logger.severe("SCHEDULING: error querying manual mode project");
+                throw new SchedulingException("No manual mode project found");
+            }
+            //will only do it once.
+            while(cursor.hasNext()) {
+                QueryResult res = cursor.next();
+                try {
+                    //id of manual mode project
+                    return res.identifier;
+                } catch(Exception e){
+                    logger.severe("SCHEDULING: Could not return manual mode project id");
+                    throw new SchedulingException(e);
+                }
+            }
+        } catch(Exception e) {
+            logger.severe("SCHEDULING: Could not return manual mode project id");
+            throw new SchedulingException (e);
+        }
+        return null;
+    }
 }

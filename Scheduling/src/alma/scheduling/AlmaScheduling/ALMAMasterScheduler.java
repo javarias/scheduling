@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.sql.Timestamp;
 
 import alma.xmlentity.XmlEntityStruct;
+import alma.asdmIDLTypes.IDLEntityRef;
 import alma.acs.nc.*;
 import alma.log_audience.OPERATOR;
 import alma.acs.logging.AcsLogger;
@@ -85,7 +86,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.100 2007/09/20 16:08:25 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.101 2007/09/24 22:38:57 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1397,15 +1398,36 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
     }
 
+    ///// Method for manual mode
+    public IDLEntityRef[] startManualModeSession() throws InvalidOperationEx {
+        return null;
+    }
+    ///// Methods for Commissioning_Scheduler_to_MasterScheduler Interface /////////
+    public void executeCommissioningSB(String sbid, String schedulerid) 
+        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
+    }
+
+    public void addCommissioningSBToQueue(String sbid, String schedulerId) 
+        throws InvalidOperationEx, NoSuchSBEx {
+    }            
+     
+    public void removeCommissioningQueuedSBs(String[] sbid, int[] i, String schedulerId)
+        throws InvalidOperationEx, NoSuchSBEx {
+    }
+    public void stopCommissioningSB(String schedulerid) throws InvalidOperationEx, NoSuchSBEx {
+    }
+
+    public void stopCommissioningSBNow(String schedulerid) 
+        throws InvalidOperationEx, NoSuchSBEx {
+    }
+    public void stopCommissioningQueuedSB(String sbid, String schedulerId) 
+        throws InvalidOperationEx, NoSuchSBEx {
+    }
+    
     ////////////// Methods to set/get scheduler modes for a given array ///////////
-   // public void setSchedulerModeForArray(String arrayname, ArrayModeEnum schedMode )
-    //    throws InvalidOperationEx {
 
-        // TODO check to see if array exists, if not throw exception
-  //      schedModeForArray.put(arrayname, schedMode);
-//    }
-
-    public ArrayModeEnum getSchedulerModeForArray(String arrayname) throws InvalidOperationEx {
+    public ArrayModeEnum getSchedulerModeForArray(String arrayname) 
+        throws InvalidOperationEx {
         // TODO check to see if array exists, if not throw exception
         return (ArrayModeEnum)schedModeForArray.get(arrayname);
     }
