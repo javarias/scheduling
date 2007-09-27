@@ -63,6 +63,7 @@ public class Reporter extends BasicComponent {
 	private PrintStream out;
 	private PrintStream graph;
 	private PrintStream execStatsOut;
+	private PrintStream execSimpleStatsOut;
 	
 	private DateTime beginTime;
 	private DateTime endTime;
@@ -206,6 +207,7 @@ public class Reporter extends BasicComponent {
 			// Create the output text file.
 			out = new PrintStream (new FileOutputStream (input.getOutFile()));
             execStatsOut = new PrintStream(new FileOutputStream(input.getStatsFile()));
+            execSimpleStatsOut = new PrintStream(new FileOutputStream(new File( "simple_"+input.getStatsFile().getName()) ) );
 		} catch (IOException ioerr) {
 			 error("Could not open file " + input.getOutFile().getAbsolutePath() + " -- " + ioerr.toString());
 		}
@@ -239,6 +241,7 @@ public class Reporter extends BasicComponent {
 		projectSummary(out,endTime);
 		statistics(out,endTime);
         detailedExecutionStatistics(execStatsOut);
+        simpleExecutionStatistics(execSimpleStatsOut);
         runAnalysisScripts();
 	}
 	
@@ -545,7 +548,22 @@ public class Reporter extends BasicComponent {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        
+    }
+    private synchronized void simpleExecutionStatistics(PrintStream o) {
+        ExecutionStatistics[] stats;
+        try {
+            stats = archive.getAllExecutionStatistics();
+            if (stats.length > 0) {
+                o.println(stats[0].getSimpleStatsHeader());
+                //o.println(stats[0].getCurrentWeatherColumnInfoString());
+                for(int i=0; i < stats.length; i++){
+                    o.println(stats[i].getSimpleStats());
+                    //o.println(stats[i].getCurrentWeatherInfo());
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private synchronized void runAnalysisScripts(){

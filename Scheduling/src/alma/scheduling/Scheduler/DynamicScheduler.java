@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.21 2007/09/12 21:22:38 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.22 2007/09/27 19:43:04 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -246,6 +246,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     	
     	// Get the best list from the dsa.
     	BestSB best = dsa.getBest();
+
         //BestSB best = null;
     	
     	if (best == null) {
@@ -352,7 +353,6 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                         logger.fine("SCHEDULING: SB not one of the best ones, but it was selected!");
       		            config.getControl().execSB(config.getArrayName(), selectedSB.getId());
                     }
-      		        //config.getControl().execSB(config.getArrayName(), best);
                 } else {
                     logger.fine("SCHEDULING: SB is not ready to be executed.");
                     //do something else here eventually...

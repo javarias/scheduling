@@ -25,7 +25,7 @@
  */
  
 package alma.scheduling.PlanningModeSim;
-
+import java.util.ArrayList;
 import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.Antenna;
 import alma.scheduling.Define.BestSB;
@@ -86,7 +86,40 @@ public class OperatorSimulator
 			logger.severe("OperatorSimulator: entityId cannot be null or have zero length.");
 			return "";
 		}
-		// Leave the default selection.
+        //get scoresa & find index (i) of highest score
+        double[] scores = best.getScore();
+        int[] pri = best.getPriority();
+        int i =0;
+        double maxScore=0.0;
+        boolean duplicate=false;
+        ArrayList<Integer> duplicate_idx= new ArrayList<Integer>();
+        //get highest score
+        for(int x=0; x < scores.length; x++){
+            if(maxScore < scores[x]){
+                maxScore = scores[x];
+                i = x;
+            }
+        }
+        //see if there are any duplicates of this highest score
+        for(int x=0; x < scores.length; x++){
+            if (maxScore == scores[x]){
+                duplicate = true;
+                duplicate_idx.add(new Integer(x));
+            }
+        }
+
+        if(duplicate){
+            duplicate_idx.add(0, i); //add first instance 
+            //check which duplicate has the higher priority
+            int maxPri=0;
+            for(int x=0; x < duplicate_idx.size(); x++){
+                if(maxPri < pri[duplicate_idx.get(x).intValue()]){
+                    maxPri = pri[duplicate_idx.get(x).intValue()];
+                    i = duplicate_idx.get(x).intValue();
+                }
+            }
+        }
+        best.setSelection(i);
 		return best.getBestSelection();
 	}
 

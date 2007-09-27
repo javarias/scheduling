@@ -171,11 +171,12 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 		//}
         String[] scores = new String[sbsNotDone.length];
         double[] d = new double[sbsNotDone.length];
+        int[] pri = new int[sbsNotDone.length];
         logger.fine("QS: creating bestSB with sbsnotdone size = "+sbsNotDone.length);
         for(int i=0; i < sbsNotDone.length; i++){
             logger.fine("QS: sb in list ="+sbsNotDone[i]);
         }
-		BestSB best = new BestSB (sbsNotDone, scores, d, d, d, clock.getDateTime());
+		BestSB best = new BestSB (sbsNotDone, scores, d, d, d, pri, clock.getDateTime());
         //TODO might be problem here not matching the sbsNotDone list
         SB sb = getSBWithIdFromList(sbs, sbsNotDone[best.getSelection()]);
         if (sb == null) {

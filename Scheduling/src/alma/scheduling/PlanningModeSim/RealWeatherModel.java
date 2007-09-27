@@ -39,7 +39,7 @@ public class RealWeatherModel {
         initializedTime = clock.getDateTime();
         //buffered readers
         File f = new File(filename); 
-        System.out.println(f.toString());
+        //System.out.println(f.toString());
         reader = new BufferedReader(new FileReader(f));
         createDataMap();
     }
@@ -87,10 +87,11 @@ public class RealWeatherModel {
         for(; i.hasNext(); ){
             tmp1 = tmp2;
             tmp2 = (DateTime)i.next();
-            //System.out.println("Checking "+tmp1.toString() +" and "+
-            //        tmp2.toString() +" with "+now.toString());
+        //    System.out.println(tmp1.toString() +" : "+ tmp2.toString());
             if(now.ge(tmp1) && now.lt(tmp2)){
                 result = dataMap.get(tmp1);
+                //System.out.println("Result = "+ result+"; "+tmp1.toString() +" - "+tmp2.toString());
+                break;
             }
         }
         //System.out.println("In Compute: "+now.toString()+"; args.len="+args.length);
@@ -99,8 +100,9 @@ public class RealWeatherModel {
     }
     
     public double compute(Object... args) {
-        //System.out.println("COMPUTING REAL WEATHER MODEL");
-        return compute(clock.getDateTime(), args);
+        double x = compute(clock.getDateTime(), args);
+        //System.out.println("X = "+ x);
+        return x;
     }
 
     public double compute(Double d1, Double d2){

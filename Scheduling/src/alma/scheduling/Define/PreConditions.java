@@ -109,10 +109,12 @@ public class PreConditions {
          //   }
        // }else 
         if (name.equals("opacity")){
-            System.out.println("Current opacity = "+cur);
+            //System.out.println("Current opacity = "+cur);
             double limit= seeing.getMaxValue();
-            System.out.println("limit opacity = "+limit);
             if(limit >= cur) {
+           //     if(limit <= 0.05) {
+             //       System.out.println("limit = "+limit+"; current ="+cur);
+               // }
                 w=0.9;
             } else {
                 w=0.0;

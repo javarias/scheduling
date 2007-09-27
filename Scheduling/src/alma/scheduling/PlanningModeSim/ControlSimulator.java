@@ -189,6 +189,16 @@ public class ControlSimulator extends BasicComponent implements Control {
 			if (sb == null)
 				error("Scheding block " + best.getBestSelection() + " was not found.");
 			
+            //temporary: print best list
+            /*
+            String[] foo = best.getScoreString();
+            System.out.println("%%% Start %%%%%%%%%%");
+            for (int i=0;i<foo.length; i++){
+                System.out.println(foo[i]);
+            }
+            System.out.println("Best SB = "+sb.getId());
+            System.out.println("%%% END %%%%%%%%%");
+            */
 			// Check for a new project.
 			if (!sb.getProject().getId().equals(s.getCurrentProject())) {
 				// Apply the penalty for changing projects.
@@ -224,7 +234,6 @@ public class ControlSimulator extends BasicComponent implements Control {
 			ex.setBest(best);
 			// Store it in the archive.
 			archive.newExec(ex);
-            //Create execution statistics 
 			// Advance the clock (which simulates executing the scheduling unit).
 			clock.advance(sb.getMaximumTimeInSeconds());
 			DateTime end = clock.getDateTime();
@@ -242,6 +251,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
 			}
+            //Create execution statistics 
             double el = sb.getTarget().getElMax();
             double f = sb.getCenterFrequency();
             double bl = s.getMaxBaseline();
@@ -283,15 +293,15 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setRA(sb.getTarget().getMax().getRa());
         e.setDEC(sb.getTarget().getMax().getDec());
         e.setWeatherConstraintName(sb.getWeatherConstraintName());
-        e.setElevation(sb.getElevation(clock.getDateTime(), input.getSite()));
+        e.setElevation(sb.getElevation(eb.getStatus().getStartTime(), input.getSite()));
         e.setLSTRise(sb.getTarget().getLstRise());
         e.setLSTMax(sb.getTarget().getLstMax());
         e.setLSTSet(sb.getTarget().getLstSet());
         //gotta get currect conditions
         try {
-            e.setOpacity(weather.getCurrentOpacity(clock.getDateTime(), freq, el));
-            e.setRMS(weather.getCurrentRMS(clock.getDateTime(), freq, el, baseline));
-            e.setWind(weather.getCurrentWindSpeed(clock.getDateTime()));
+            e.setOpacity(weather.getCurrentOpacity(eb.getStatus().getStartTime(), freq, el));
+            e.setRMS(weather.getCurrentRMS(eb.getStatus().getStartTime(), freq, el, baseline));
+            e.setWind(weather.getCurrentWindSpeed(eb.getStatus().getStartTime()));
         } catch(Exception ex){}
         Date d1 = input.getBeginTime().getDate();
         Date d2 = input.getEndTime().getDate();
@@ -300,6 +310,15 @@ public class ControlSimulator extends BasicComponent implements Control {
         DateTime dt2 = new DateTime(d2,t);
         e.setLSTatVeryStartMidnight(dt1.getLocalSiderealTime());
         e.setLSTatVeryEndMidnight(dt2.getLocalSiderealTime());
+        /*
+        if(e.getOpacity() < 0.05 && e.getSBName().equals("A03.0")) {
+            System.out.println("////////");
+            System.out.println("Opacity = "+e.getOpacity());
+            String[] sbs = b.getSbId();
+            for(int i=0; i < sbs.length; i++){
+                System.out.println(sbs[i]);
+            }
+        }*/
         return e;
     }
 	/* (non-Javadoc)

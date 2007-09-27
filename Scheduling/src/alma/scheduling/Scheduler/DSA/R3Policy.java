@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.17 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.18 2007/09/27 19:43:04 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {
@@ -297,6 +297,7 @@ class R3Policy extends PolicyType {
 			double[] score = new double [list.length];
 			double[] success = new double [list.length];
 			double[] rank = new double [list.length];
+			int[] pri = new int [list.length];
 			for (i = 0; i < list.length; ++i) {
                 try {
     				id[i] = list[i].getSB().getId();
@@ -304,11 +305,12 @@ class R3Policy extends PolicyType {
 		    		score[i] = list[i].getScore();
 			    	success[i] = list[i].getSuccess();
 				    rank[i] = list[i].getRank();
+                    pri[i] = list[i].getPriority();
                 } catch(NullPointerException npe) {
                     npe.printStackTrace(System.out);
                 }   
 			}
-			best = new BestSB (id, getLiteSBs(list), scoreString, score, success, rank, clock.getDateTime());
+			best = new BestSB (id, getLiteSBs(list), scoreString, score, success, rank, pri, clock.getDateTime());
 		}
 		return best;
 	}

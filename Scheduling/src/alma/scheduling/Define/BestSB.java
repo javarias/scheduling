@@ -38,7 +38,7 @@ package alma.scheduling.Define;
  * If nothing can be scheduled, the BestSB object contains a NothingCanBeScheduled 
  * object that designates why nothing could be scheduled.
  * 
- * @version $Id: BestSB.java,v 1.9 2006/05/01 15:44:57 sslucero Exp $
+ * @version $Id: BestSB.java,v 1.10 2007/09/27 19:43:04 sslucero Exp $
  * @author Allen Farris
  */
 public class BestSB {
@@ -72,6 +72,10 @@ public class BestSB {
       *
       */
 	private double[] rank;
+    /**
+      *
+      */
+    private int[] priority;
     /**
       *
       */
@@ -113,7 +117,7 @@ public class BestSB {
 	 * @param time The time this selection was made.
 	 */
 	public BestSB(String[] sbId, String[] scoreString, double[] score, double[] success, 
-			double[] rank, DateTime time) {
+			double[] rank, int[] pri, DateTime time) {
 		if (scoreString.length != sbId.length) {
 			throw new IllegalArgumentException (
                "The sbId and scoreString arrays do not have the same number of dimensions.");
@@ -137,6 +141,7 @@ public class BestSB {
 		this.success = success;
 		this.rank = rank;
 		this.time = time;
+        this.priority = pri;
 		selection = 0;
 		nothing = null;
 	}
@@ -145,8 +150,8 @@ public class BestSB {
       * Constructor which includes sblites
       */
 	public BestSB(String[] sbId, LiteSB[] lites, String[] scoreString, double[] score, double[] success, 
-			double[] rank, DateTime time) {
-        this(sbId, scoreString, score, success, rank, time);
+			double[] rank, int[] pri, DateTime time) {
+        this(sbId, scoreString, score, success, rank, pri, time);
         this.liteSBs = lites;
     }
 
@@ -260,4 +265,7 @@ public class BestSB {
 		return success;
 	}
 
+    public int[] getPriority(){
+        return priority;
+    }
 }

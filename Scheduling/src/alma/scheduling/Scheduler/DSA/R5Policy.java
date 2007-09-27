@@ -34,7 +34,7 @@ import java.util.logging.Level;
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R5Policy.java,v 1.1 2007/09/20 20:17:47 sslucero Exp $
+ * @version $Id: R5Policy.java,v 1.2 2007/09/27 19:43:04 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R5Policy extends PolicyType {
@@ -282,6 +282,7 @@ class R5Policy extends PolicyType {
 			double[] score = new double [list.length];
 			double[] success = new double [list.length];
 			double[] rank = new double [list.length];
+            int[] priority = new int[list.length];
 			for (i = 0; i < list.length; ++i) {
                 try {
     				id[i] = list[i].getSB().getId();
@@ -289,11 +290,12 @@ class R5Policy extends PolicyType {
 		    		score[i] = list[i].getScore();
 			    	success[i] = list[i].getSuccess();
 				    rank[i] = list[i].getRank();
+                    priority[i] = list[i].getPriority();
                 } catch(NullPointerException npe) {
                     npe.printStackTrace();
                 }   
 			}
-			best = new BestSB (id, getLiteSBs(list), scoreString, score, success, rank, clock.getDateTime());
+			best = new BestSB (id, getLiteSBs(list), scoreString, score, success, rank, priority, clock.getDateTime());
 		}
 		return best;
 	}
@@ -458,6 +460,9 @@ class R5Policy extends PolicyType {
                 continue;
             }
 			unit[i].setScore(unit[i].getSuccess() * unit[i].getRank());
+            //if(unit[i].getScore() == 0.0) {
+              //  System.out.println(unit[i].getSB().getId() +" has 0 score");
+            //}
 		}
 	}
 
@@ -478,12 +483,10 @@ class R5Policy extends PolicyType {
 			u = unit[i];
 			if (u.getSuccess() == 0.0) {
 				u.setRank(0.0);
+                //System.out.println("SB "+u.getSB().getId()+" had 0 rank and success");
             } else {
-                //Took out temporarily to see if SBs work with weather properly
-                //seems priority is taking precedence
 				x = priorityW * u.getPriority();
 				u.setRank(x);
-           //     u.setRank(1.0); //temporarily set to 1
 			}
 		}
 	}
@@ -513,12 +516,13 @@ class R5Policy extends PolicyType {
                     ((positionElW * pEl) + (positionMaxW * pMax) + (weatherW * w)) / 
                         (positionElW + positionMaxW + weatherW);
 				u.setSuccess(tmp);
-                System.out.println("***");
+                /*System.out.println("***");
                 System.out.println(positionElW * pEl);
                 System.out.println(positionMaxW * pMax);
                 System.out.println(weatherW * w);
                 System.out.println(positionElW + positionMaxW + weatherW);
                 System.out.println(tmp);
+                */
 			}
 		}
 	}

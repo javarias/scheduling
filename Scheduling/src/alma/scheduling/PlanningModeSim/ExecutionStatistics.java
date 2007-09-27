@@ -221,7 +221,7 @@ public class ExecutionStatistics {
                getRA() +", "+
                getDEC() +", "+
                getElevation() +", "+
-               getWeatherConstraintName() +", "+
+               //getWeatherConstraintName() +", "+
                getOpacity() +", "+
                getRMS() +", "+
                getWind() +", "+
@@ -264,17 +264,17 @@ public class ExecutionStatistics {
                "## 8.  RA (Radians)\n"+
                "## 9.  DEC (Radians)\n"+
                "## 10. Elevation at execution Time\n"+
-               "## 11. Weather Constraint Name\n"+
-               "## 12. Opacity \n"+
-               "## 13. RMS \n"+
-               "## 14. Wind Speed (M/S) \n"+
-               "## 15. Start Day  \n"+
-               "## 16. End Day \n"+
-               "## 17. LST at Midnight on startday\n"+
-               "## 18. LST at Midnight on startday of simulation\n"+
-               "## 19. LST at Midnight on endday of simulation\n"+
-               "## 20. Start Month\n"+
-               "## 21. End Month\n"+
+               //"## 11. Weather Constraint Name\n"+
+               "## 11. Opacity \n"+
+               "## 12. RMS \n"+
+               "## 13. Wind Speed (M/S) \n"+
+               "## 14. Start Day  \n"+
+               "## 15. End Day \n"+
+               "## 16. LST at Midnight on startday\n"+
+               "## 17. LST at Midnight on startday of simulation\n"+
+               "## 18. LST at Midnight on endday of simulation\n"+
+               "## 19. Start Month\n"+
+               "## 20. End Month\n"+
                "";
         /*
         return "## 1.  SB Name \n"+
@@ -292,7 +292,7 @@ public class ExecutionStatistics {
                "## 13. Start Time \n"+
                "## 14. Start Time (LST)\n"+
                "## 15. End Day\n"+
-             2006-01-01T20:18:42  "## 16. End Time\n"+
+               "## 16. End Time\n"+
                "## 17. End Time (LST)\n"+
                "## 18. LST Rise \n"+
                "## 19. LST Max \n"+
@@ -321,6 +321,20 @@ public class ExecutionStatistics {
 
     public String getExecutedExecutionStatistics(){
         return "";
+    }
+
+    public String getSimpleStatsHeader() {
+        return "## 1.  SB Name \n"+
+               "## 2.  Score \n"+
+               "## 3.  Opacity \n"+
+               "## 4.  RMS \n"+
+               "## 5.  Wind Speed (M/S) \n"+
+               "## 6.  Frequency\n"+
+               "";
+    }
+    public String getSimpleStats() {
+        return getSBName() +", "+ getScore() +", "+
+            getOpacity() +", "+getRMS()+", "+ getWind()+", "+ getFrequency();
     }
 }
 
