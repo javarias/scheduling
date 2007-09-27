@@ -125,10 +125,22 @@ public class PlanningModeSimGUIController implements Runnable {
         try {
             File f1 = new File(simulator.getAntennaConfigFilename());
             f1.delete();
+        }catch(Exception e){}
+        try {
             File f2 = new File(simulator.getScheduleGraphFilename());
             f2.delete();
             //TODO delete tmp_sim files
-        }catch(Exception e){}
+        }catch(Exception e){ }
+        try {
+            File f3 = new File(System.getenv("PWD") + File.separator +
+                    "tmp_sim.txt");
+            f3.delete();
+        } catch(Exception e){}
+        try {
+            File f4 = new File(System.getenv("PWD") + File.separator +
+                    "tmp_sim_project.txt");
+            f4.delete();
+        } catch(Exception e){}
     }
     
     protected URL getImage(String name) {
