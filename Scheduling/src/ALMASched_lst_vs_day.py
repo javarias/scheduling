@@ -2,10 +2,14 @@
 import ppgplot
 from ppgplot import *
 import sys
+import os
 from math import log10
 from numarray import array
 import time
 import string
+
+#needed to run ppgplot..
+os.environ['PGPLOT_FONT'] = '/alma/ACS-6.0/casa/lib/pgplot/grfont.dat' 
 
 if len(sys.argv) < 6:
     print "\nScript Usage: "
@@ -129,7 +133,8 @@ while float(wday[t_idx+1]) == float(wday[e_idx]):
     t_idx +=1
 
 #pgbeg("/xw",1,1)
-pgbeg(sys.argv[2]+".ps/cps",1,1) 
+#pgbeg(sys.argv[2]+".ps/cps",1,1) 
+pgbeg("_tmp_schedule.gif/GIF", 1, 1) #to file
 pgpap(10.5,0.75)
 pgsvp(0.1, 0.8, 0.1, 0.9)   
 color =1
@@ -176,10 +181,6 @@ while i < (t_idx+1):
             float(wday[i]), float(wday[i])+1.0)
         pgrect(0.0, float(wtime[i+1]),
             float(wday[i])+1.0, float(wday[i])+2.0)
-#    if wday[i] == '02' and float(wtime[i]) == 0.017:
-#        print 'hmm'
-#        pgsci(0)
-#        pgrect(float(wtime[i]), float(wtime[i+1]), float(wday[i])-1.0, float(wday[i]))
         
     i += 1
 
@@ -190,7 +191,7 @@ def makecolorwedge():
     for i in range(cmin, cmax+1):  
         pgsci(i)
         pgrect(0,1,i-0.5, i+0.5)
-    pgsci(0)    
+    pgsci(1)    
     pgswin(0,1,float(minOP), float(maxOP))
     pgbox('BC',0,0,'BCNTSV',0,0)  
 
