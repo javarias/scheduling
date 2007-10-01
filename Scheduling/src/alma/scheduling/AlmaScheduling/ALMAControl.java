@@ -67,7 +67,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.69 2007/09/10 18:04:46 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.70 2007/10/01 17:40:12 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -340,9 +340,13 @@ public class ALMAControl implements Control {
             }
             String arrayName="";
             try {
-            arrayName = control_system.createAutomaticArray(antenna);
+                arrayName = control_system.createAutomaticArray(antenna);
             }catch(Exception e) {
                 e.printStackTrace();
+                logger.log(Level.WARNING,
+                    "SCHEDULING: Got error from control when trying to get new array name",
+                    OPERATOR.value);
+                throw new SchedulingException("SCHEDULING: Error getting new array name from control.");
             }
             AutomaticArrayCommand ctrl;
             try {
@@ -350,30 +354,18 @@ public class ALMAControl implements Control {
                     containerServices.getComponent(arrayName));
             } catch(Exception e) {
                 ctrl = null;
+                logger.log(Level.WARNING,
+                    "SCHEDULING: Got error trying to get automatic array componnet.",
+                    OPERATOR.value);
                 logger.severe("SCHEDULING: automatic array command is null");
-                throw new SchedulingException("SCHEDULING: Error with getting subarray & ArrayController!");
+                throw new SchedulingException("SCHEDULING: Error with getting ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
             logger.log(Level.INFO,
                     "SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName(),
                     OPERATOR.value);
-            //logger.info("SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName());
             logger.fine("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
             return ctrl.getArrayComponentName();
-            /*
-        } catch(InvalidRequest e1) {
-        	sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
-            throw new SchedulingException
-                ("SCHEDULING: Control error: "+ e1.toString());
-        } catch(InaccessibleException e2) {
-        	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
-        	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
-            throw new SchedulingException
-                ("SCHEDULING: Control error: "+ e2.toString());
-        } catch (AcsJContainerServicesEx e3) {
-            throw new SchedulingException
-                ("SCHEDULING: Error getting AutomaticArrayCommand component." +e3.toString());
-            */
         } catch (Exception e4) {
             e4.printStackTrace();
             throw new SchedulingException
