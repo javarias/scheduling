@@ -86,7 +86,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.101 2007/09/24 22:38:57 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.102 2007/10/01 16:39:40 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1044,6 +1044,9 @@ public class ALMAMasterScheduler extends MasterScheduler
             //telescope.addSubarray(a);
         } catch(SchedulingException e) {
             e.printStackTrace();
+            logger.log(Level.WARNING,
+                    "SCHEDULING: Error creating array. First check Control System logs.",
+                    OPERATOR.value);
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
         }

@@ -286,7 +286,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, e.toString()+
                     "\nMake sure these antennas are really available to "+
-                    "create this array. Also check state of Control System.", 
+                    "create this array. Also check state of Control "+
+                    "System and its logs.", 
                     "Error creating array", JOptionPane.ERROR_MESSAGE);
             return false;
         }
