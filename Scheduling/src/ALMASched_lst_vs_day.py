@@ -191,9 +191,9 @@ def makecolorwedge():
     for i in range(cmin, cmax+1):  
         pgsci(i)
         pgrect(0,1,i-0.5, i+0.5)
-    pgsci(1)    
+    pgsci(0)    
     pgswin(0,1,float(minOP), float(maxOP))
-    pgbox('BC',0,0,'BCNTSV',0,0)  
+    pgbox('BC',0,0,'BSCTVN',0,0)  
 
     
 
