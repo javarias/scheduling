@@ -46,3 +46,10 @@ What is the final scoring of a SB?
     Once the success of a SB is calculated and it is ranked then those two values are
     multiplied to give the SB a score.
         
+Why does it look like the scheduler picked the lower frequency SB when the 
+weather at execution time was good enough for the high frequency SB??
+    * During the evaluation of a set of scheduling block weather is evaluated, if the weather is bad for a high frequency project the lower one will be selected if its good for that one. However, there will be setup times required to switch between projects and frequency bands and if the weather gets better with in that time frame, the lower frequency SB will get better weather than it needs.Until optimization is done on the setup times for switching between projects and frequency bands, this is just bad luck for the high frequency project!
+
+Is the frequency setup time used in the scheduler/simulator yet?
+    No
+    
