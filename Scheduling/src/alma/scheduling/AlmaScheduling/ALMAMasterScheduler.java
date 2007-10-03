@@ -86,7 +86,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.102 2007/10/01 16:39:40 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.103 2007/10/03 17:02:11 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1403,7 +1403,16 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     ///// Method for manual mode
     public IDLEntityRef[] startManualModeSession() throws InvalidOperationEx {
-        return null;
+        try {
+            return manager.startManualModeSession();
+        } catch(SchedulingException e) {
+            e.printStackTrace();
+            InvalidOperation e1 = new InvalidOperation("startManualModeSession",
+                   e.toString());
+            AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
+            throw e2.toInvalidOperationEx();
+        }
+        
     }
     ///// Methods for Commissioning_Scheduler_to_MasterScheduler Interface /////////
     public void executeCommissioningSB(String sbid, String schedulerid) 
