@@ -75,7 +75,7 @@ import alma.hla.runtime.DatamodelInstanceChecker;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.83 2007/09/24 22:38:57 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.84 2007/10/03 21:26:50 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1278,7 +1278,7 @@ public class ALMAArchive implements Archive {
     protected String queryForManualModeProject() throws SchedulingException {
         try {
             String query = "/prj:ObsProject[prj:pI=\"manual mode\" and "+
-                           "prj:projectName=\"manual mode\"";
+                           "prj:projectName=\"manual mode\"]";
             String schema = "ObsProject";
             Cursor cursor = archOperationComp.query(query, schema);
             if(cursor == null) {
