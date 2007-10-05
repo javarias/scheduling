@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.60 2007/09/12 21:22:38 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.61 2007/10/05 17:09:54 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -525,11 +525,17 @@ public class ProjectUtil {
         
 		// We get SciPipelineRequest and Sessions from the ProjectStatus. 
         //TAC priority == scientific priority???
-        int tac = set.getObsUnitControl().getTacPriority();
-        if(tac > 10 || tac < 1) {
-            tac = 1;
+        try {
+            int tac = set.getObsUnitControl().getTacPriority();
+            if(tac > 10 || tac < 1) {
+                tac = 1;
+            }
+            program.setScientificPriority(new Priority(tac)); 
+        } catch(Exception e) {
+            //NOTE: TODO
+            //do not need tac priority when running test or commissioning projects
+            //but will need it in science projects running dynamically.
         }
-        program.setScientificPriority(new Priority(tac)); 
         int pri = set.getObsUnitControl().getUserPriority();
         if(pri > 10 || pri < 1) {
             pri = 1;
