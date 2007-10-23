@@ -50,6 +50,10 @@ Why does it look like the scheduler picked the lower frequency SB when the
 weather at execution time was good enough for the high frequency SB??
     * During the evaluation of a set of scheduling block weather is evaluated, if the weather is bad for a high frequency project the lower one will be selected if its good for that one. However, there will be setup times required to switch between projects and frequency bands and if the weather gets better with in that time frame, the lower frequency SB will get better weather than it needs.Until optimization is done on the setup times for switching between projects and frequency bands, this is just bad luck for the high frequency project!
 
+Currently we are using opacity measured at tau225, however eventually this should be changed to use mmh2o which is the freq independent.
+
+RMS is scaled using frequency, this caused a problem for us during testing when reporting scheduler/execution statistics because only one scaled value was reported giving the false impression that the weather was good enough for a higher priority (and higher frequency) SB, however if the higher frequency of the SB was used to scale the RMS it showed that the scheduler was correct in its choice because the RMS was not desireable for the other SB
+
 Is the frequency setup time used in the scheduler/simulator yet?
     No
     
