@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
+import alma.entity.xmlbinding.obsproject.types.ControlBlockTArrayRequestedType;
 
 public class ArchiveSearchFieldsPanel extends JPanel {
     private JButton searchB;
@@ -46,16 +47,21 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     private JComboBox projTypeChoices;
     private JComboBox sbModeNameChoices;
     private JComboBox sbModeTypeChoices;
+    private JComboBox arrayType;
     private JTextField expertQueryTF;
     private boolean connectedToALMA;
     private JPanel parent;
     private ArchiveSearchController controller;
     private boolean searchingOnProject;
+    private JPanel northPanel; 
     
     public ArchiveSearchFieldsPanel(){
         setLayout(new BorderLayout());
+        northPanel = new JPanel(new BorderLayout());
         createTextFields();
         createCheckBoxes();//need to do this 2nd coz other fields will be null when used
+        createArrayChoice();
+        add(northPanel, BorderLayout.NORTH);
         controller = null;
         connectedToALMA= false;
         searchingOnProject=true;
@@ -130,7 +136,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         JPanel p = new JPanel();
         p.add(p1);
         p.add(p2);
-        add(p,BorderLayout.NORTH);
+        northPanel.add(p, BorderLayout.WEST);
     }
 
     private void createTextFields() {
@@ -252,6 +258,21 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         p.add(bp);
         add(p, BorderLayout.CENTER);
     }
+    private void createArrayChoice() {
+        JLabel arrayL = new JLabel("Array Type");
+        String[] modeTypeChoices = {"All", 
+            ControlBlockTArrayRequestedType.ACA.toString(),
+            ControlBlockTArrayRequestedType.TWELVE_M.toString(),
+            ControlBlockTArrayRequestedType.SEVEN_M.toString(),
+            ControlBlockTArrayRequestedType.TP_ARRAY.toString()
+        };
+        arrayType = new JComboBox(modeTypeChoices);
+        arrayType.setSelectedIndex(0);
+        JPanel p = new JPanel();
+        p.add(arrayL);
+        p.add(arrayType);
+        northPanel.add(p, BorderLayout.EAST);
+    }
 
     private void doClearSearchFields(){
         piNameTF.setText("*");
@@ -343,11 +364,12 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             String pi = piNameTF.getText();
             String pName = projNameTF.getText();
             String type = (String)projTypeChoices.getSelectedItem();
+            String array = (String)arrayType.getSelectedItem();
             //if we know its for all SBs ignore it
             String sbquery = makeSBQuery();
             //returns a vector, first item will be matching projects
             //second item will be matching sbs.
-            Vector res = controller.doQuery(sbquery, pName, pi, type);
+            Vector res = controller.doQuery(sbquery, pName, pi, type, array);
             javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
             
         }

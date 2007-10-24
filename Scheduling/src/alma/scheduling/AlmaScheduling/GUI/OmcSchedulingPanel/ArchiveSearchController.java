@@ -39,12 +39,13 @@ public class ArchiveSearchController extends SchedulingPanelController {
     }
 
 
-    public Vector doQuery(String sbQuery, String pName, String piName, String pType) {
+    public Vector doQuery(String sbQuery, String pName, String piName, 
+            String pType, String aType) {
         Vector tmp = new Vector();
         try {
             getMSRef();
             String[] sbs = masterScheduler.queryArchive(sbQuery,"SchedBlock");
-            String[] projs = masterScheduler.queryForProject(pName,piName,pType);
+            String[] projs = masterScheduler.queryForProject(pName, piName, pType, aType);
             //do union now
             String[] unionSB = masterScheduler.getSBProjectUnion(sbs,projs);
             SBLite[] unionSBLites = masterScheduler.getSBLite(unionSB);
