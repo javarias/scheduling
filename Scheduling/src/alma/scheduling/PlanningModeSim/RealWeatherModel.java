@@ -18,7 +18,7 @@ public class RealWeatherModel {
     private String name;
     private String filename;
     private BufferedReader reader;
-    private Clock clock;
+    protected Clock clock;
     private Map<DateTime, Double> dataMap; //key = datetime as a string & value = corresponding value
 
     public RealWeatherModel(String f, String n) throws Exception{
@@ -63,6 +63,13 @@ public class RealWeatherModel {
                             new Time(new Double(st.nextToken())) );
                     tmp = st.nextToken(); //value
                     dataMap.put(dt, new Double(tmp));
+                    /*if(name.equals("rms")){
+                        Double x = new Double(tmp);
+                        if(x.doubleValue() != 9.51) {
+                            System.out.println(x.doubleValue());
+                        }
+                    }
+                    */
                 } catch(Exception e){
                     //System.out.println("Ignoring bad line: "+line);
                 }
@@ -73,23 +80,25 @@ public class RealWeatherModel {
 
     
     //eventually change these functions to read through all the data files
-    //and if a value for one year isn't available pick the one from a 
+    //and if a value forne year isn't available pick the one from a 
     //different year.
     
     public double compute(DateTime now, Object... args){
-        //System.out.println( "DateTime:now = "+now.toString());
+        //System.out.println("Super's compute!!");
         double result=0.0;
         //get time key closest to given time.
-        Iterator<DateTime> i = dataMap.keySet().iterator();
-        DateTime tmp1; //initially is nothing coz in our loop we set it to the first one
-        DateTime tmp2 = (DateTime)i.next();
+        Iterator<DateTime> i = null; 
+        i = dataMap.keySet().iterator();
+        DateTime tmp1 = null; //initially is nothing coz in our loop we set it to the first one
+        DateTime tmp2 = null;
+        tmp2 = (DateTime)i.next();
         DateTime key=null;
         for(; i.hasNext(); ){
             tmp1 = tmp2;
             tmp2 = (DateTime)i.next();
-        //    System.out.println(tmp1.toString() +" : "+ tmp2.toString());
             if(now.ge(tmp1) && now.lt(tmp2)){
                 result = dataMap.get(tmp1);
+                //System.out.println("now time = "+ now.toString());
                 //System.out.println("Result = "+ result+"; "+tmp1.toString() +" - "+tmp2.toString());
                 break;
             }
@@ -101,7 +110,7 @@ public class RealWeatherModel {
     
     public double compute(Object... args) {
         double x = compute(clock.getDateTime(), args);
-        //System.out.println("X = "+ x);
+        //System.out.println("time = "+ clock.getDateTime().toString()+" value = "+x);
         return x;
     }
 

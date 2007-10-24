@@ -26,13 +26,14 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.Define.Session;
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Session;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Archive;
@@ -57,8 +58,9 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 	private Program[] set;
 	private SB[] unit;
 	private Policy[] policy;
-	private ArrayList sExec;
-	private ArrayList execStats;
+	private ArrayList<ExecBlock> sExec;
+	private ArrayList<ExecutionStatistics>  execStats;
+    private ArrayList<SchedulerStats> schedulerStats;
 
 	private boolean initialLoad;
 
@@ -79,8 +81,9 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 
 	public void initialize() throws SimulationException {
 		clock = (ClockSimulator)containerServices.getComponent(Container.CLOCK);
-		sExec = new ArrayList ();
-        execStats = new ArrayList();
+		sExec = new ArrayList<ExecBlock>();
+        execStats = new ArrayList<ExecutionStatistics>();
+        schedulerStats = new ArrayList<SchedulerStats>();
 		logger.info(instanceName + ".initialized");
 	}
 
@@ -289,6 +292,14 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
     public ExecutionStatistics[] getAllExecutionStatistics() throws SchedulingException{
         ExecutionStatistics[] tmp = new ExecutionStatistics[execStats.size()];
         return (ExecutionStatistics[])execStats.toArray(tmp);
+    }
+
+    public void addSchedulerStats(SchedulerStats s){
+        schedulerStats.add(s);
+    }
+    public SchedulerStats[] getSchedulerStats(){
+        SchedulerStats[] x = new SchedulerStats[schedulerStats.size()];
+        return (SchedulerStats[])schedulerStats.toArray(x);
     }
 	
     public void storePipelineProcessingRequest(SciPipelineRequest ppr) {}

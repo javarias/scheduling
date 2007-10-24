@@ -95,7 +95,7 @@ public class Simulator implements Runnable {
 		File logFile = new File (directory,logFilename);
 		File outFile = new File (directory,outputFilename);
         File graphFile = new File(directory, "graph_"+outputFilename);
-        File statsFile = new File(directory, "stats_"+outputFilename);
+        File statsFile = new File(directory, "exec_"+outputFilename);
 			
 		// Make sure the input file exists.
 		if (!inputFile.exists()) {
@@ -106,7 +106,7 @@ public class Simulator implements Runnable {
 		// Create the logger and the log file.
 		FileHandler logText = null;
 		//this.logger = Logger.getLogger("Scheduling.Simulator");
-        this.logger = new SchedLogger("Scheduling.Simulator");
+        this.logger = new SchedLogger(Logger.getLogger("Scheduling.Simulator"));
 		try {
 			logText = new FileHandler(logFile.getAbsolutePath());
 		} catch (IOException ioerr) {

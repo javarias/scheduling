@@ -186,19 +186,10 @@ public class ControlSimulator extends BasicComponent implements Control {
 		
 			// Get the SB.
 			SB sb = archive.getSB(best.getBestSelection());
+            //System.out.println("SB = "+sb.getId());
 			if (sb == null)
 				error("Scheding block " + best.getBestSelection() + " was not found.");
 			
-            //temporary: print best list
-            /*
-            String[] foo = best.getScoreString();
-            System.out.println("%%% Start %%%%%%%%%%");
-            for (int i=0;i<foo.length; i++){
-                System.out.println(foo[i]);
-            }
-            System.out.println("Best SB = "+sb.getId());
-            System.out.println("%%% END %%%%%%%%%");
-            */
 			// Check for a new project.
 			if (!sb.getProject().getId().equals(s.getCurrentProject())) {
 				// Apply the penalty for changing projects.
@@ -220,7 +211,6 @@ public class ControlSimulator extends BasicComponent implements Control {
 			// Inform the project manager.
 			try {
                 //TODO, 1 should be name but not changing that in project yet..
-                // subarray name now string not int.
 				project.execStart(name,sb.getId(),beg);
 			} catch (SimulationException err) {
 				throw new SchedulingException(err.toString());
@@ -257,11 +247,14 @@ public class ControlSimulator extends BasicComponent implements Control {
             double bl = s.getMaxBaseline();
             ExecutionStatistics stats = createExecutionStatistics(name, sb, best, ex, s, el, f, bl);
             archive.addExecutionStatistics(stats);
+            //System.out.println("*** finished\n");
 	}
 
     private ExecutionStatistics createExecutionStatistics(
             String arrayname, SB sb, BestSB b, ExecBlock eb, Subarray sub,
             double el, double freq, double baseline) {
+
+        //NOTE: don't use el, its max elevation and we want current elevation!!
         LiteSB[] l = b.getLiteSBs();
         LiteSB sblite=null;
         for(int i=0; i<l.length; i++){
@@ -293,14 +286,19 @@ public class ControlSimulator extends BasicComponent implements Control {
         e.setRA(sb.getTarget().getMax().getRa());
         e.setDEC(sb.getTarget().getMax().getDec());
         e.setWeatherConstraintName(sb.getWeatherConstraintName());
-        e.setElevation(sb.getElevation(eb.getStatus().getStartTime(), input.getSite()));
+        double ele= sb.getElevation(eb.getStatus().getStartTime(), input.getSite());
+        //System.out.println("EL in exec stat: "+ele+" at "+eb.getStatus().getStartTime());
+        e.setElevation(ele);
         e.setLSTRise(sb.getTarget().getLstRise());
         e.setLSTMax(sb.getTarget().getLstMax());
         e.setLSTSet(sb.getTarget().getLstSet());
         //gotta get currect conditions
         try {
-            e.setOpacity(weather.getCurrentOpacity(eb.getStatus().getStartTime(), freq, el));
-            e.setRMS(weather.getCurrentRMS(eb.getStatus().getStartTime(), freq, el, baseline));
+            e.setOpacity(weather.getCurrentOpacity(eb.getStatus().getStartTime(), freq, ele));
+            double rms =weather.getCurrentRMS(eb.getStatus().getStartTime(), freq, ele, baseline); 
+            //System.out.println("setting rms in exec stat: "+rms);
+            e.setRMS(rms);
+            e.setRMSBeforeScale(weather.getRMSBeforeScale(eb.getStatus().getStartTime(), freq, ele, baseline));
             e.setWind(weather.getCurrentWindSpeed(eb.getStatus().getStartTime()));
         } catch(Exception ex){}
         Date d1 = input.getBeginTime().getDate();
@@ -310,15 +308,6 @@ public class ControlSimulator extends BasicComponent implements Control {
         DateTime dt2 = new DateTime(d2,t);
         e.setLSTatVeryStartMidnight(dt1.getLocalSiderealTime());
         e.setLSTatVeryEndMidnight(dt2.getLocalSiderealTime());
-        /*
-        if(e.getOpacity() < 0.05 && e.getSBName().equals("A03.0")) {
-            System.out.println("////////");
-            System.out.println("Opacity = "+e.getOpacity());
-            String[] sbs = b.getSbId();
-            for(int i=0; i < sbs.length; i++){
-                System.out.println(sbs[i]);
-            }
-        }*/
         return e;
     }
 	/* (non-Javadoc)

@@ -1,3 +1,29 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * File ExecutionStatistics.java
+ */
+
 package alma.scheduling.PlanningModeSim;
 import alma.scheduling.Define.Date;
 import alma.scheduling.Define.Time;
@@ -15,6 +41,7 @@ public class ExecutionStatistics {
     private double[] lstRange; //0 = rise, 1 = max, 2 = set
     private double opacity;
     private double rms;
+    private double pre_rms;
     private double wind;
     private String weatherConstraintName;
     private double scheduleStartMNLst; //lst at midnight of start day
@@ -94,6 +121,9 @@ public class ExecutionStatistics {
     }
     public void setRMS(double r){
         rms = r;
+    }
+    public void setRMSBeforeScale(double r){
+        pre_rms = r;
     }
     public void setWind(double w){
         wind = w;
@@ -184,6 +214,9 @@ public class ExecutionStatistics {
     }
     public double getRMS(){
         return rms;
+    }
+    public double getRMSBeforeScale(){
+        return pre_rms;
     }
     public double getWind(){
         return wind;
@@ -327,14 +360,19 @@ public class ExecutionStatistics {
         return "## 1.  SB Name \n"+
                "## 2.  Score \n"+
                "## 3.  Opacity \n"+
-               "## 4.  RMS \n"+
-               "## 5.  Wind Speed (M/S) \n"+
-               "## 6.  Frequency\n"+
+               "## 4.  RMS (scaled using freq of last sb evaluated)\n"+
+               "## 5.  RMS (not scaled)\n"+
+               "## 6.  Wind Speed (M/S) \n"+
+               "## 7.  Frequency\n"+
+               //"## 8.  Elevation\n"+
+               "## 8.  Time\n"+
                "";
     }
     public String getSimpleStats() {
         return getSBName() +", "+ getScore() +", "+
-            getOpacity() +", "+getRMS()+", "+ getWind()+", "+ getFrequency();
+            getOpacity() +", "+getRMS()+", "+getRMSBeforeScale()+", "+
+            getWind()+", "+ getFrequency()+ //", "+ getElevation()+
+            ", "+startTime.toString();
     }
 }
 

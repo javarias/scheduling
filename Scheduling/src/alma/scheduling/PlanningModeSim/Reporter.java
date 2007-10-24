@@ -26,6 +26,7 @@
  
 package alma.scheduling.PlanningModeSim;
 
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 import alma.scheduling.Define.DateTime;
@@ -64,6 +65,7 @@ public class Reporter extends BasicComponent {
 	private PrintStream graph;
 	private PrintStream execStatsOut;
 	private PrintStream execSimpleStatsOut;
+	private PrintStream schedulerStatsOut;
 	
 	private DateTime beginTime;
 	private DateTime endTime;
@@ -208,6 +210,7 @@ public class Reporter extends BasicComponent {
 			out = new PrintStream (new FileOutputStream (input.getOutFile()));
             execStatsOut = new PrintStream(new FileOutputStream(input.getStatsFile()));
             execSimpleStatsOut = new PrintStream(new FileOutputStream(new File( "simple_"+input.getStatsFile().getName()) ) );
+            schedulerStatsOut = new PrintStream(new FileOutputStream(new File( "scheduler_evaluations.txt") ) );
 		} catch (IOException ioerr) {
 			 error("Could not open file " + input.getOutFile().getAbsolutePath() + " -- " + ioerr.toString());
 		}
@@ -242,6 +245,7 @@ public class Reporter extends BasicComponent {
 		statistics(out,endTime);
         detailedExecutionStatistics(execStatsOut);
         simpleExecutionStatistics(execSimpleStatsOut);
+        schedulerStatistics(schedulerStatsOut);
         runAnalysisScripts();
 	}
 	
@@ -559,6 +563,21 @@ public class Reporter extends BasicComponent {
                 for(int i=0; i < stats.length; i++){
                     o.println(stats[i].getSimpleStats());
                     //o.println(stats[i].getCurrentWeatherInfo());
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized void schedulerStatistics(PrintStream o){
+        SchedulerStats[] stats;
+        try {
+            stats = archive.getSchedulerStats();
+            if (stats.length > 0) {
+                o.println(stats[0].getHeader());
+                for(int i=0; i < stats.length; i++){
+                    o.println(stats[i].toString());
                 }
             }
         } catch(Exception e) {

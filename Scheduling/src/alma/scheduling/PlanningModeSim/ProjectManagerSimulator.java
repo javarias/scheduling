@@ -39,6 +39,7 @@ import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
 
 import java.util.logging.Level;
 
@@ -186,4 +187,12 @@ public class ProjectManagerSimulator
     
     public void getUpdates() throws SchedulingException {}
     public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason){}
+    
+    public void addSchedulerStatsToArchive(SchedulerStats s){
+        archive.addSchedulerStats(s);
+    }
+    public SchedulerStats[] getSchedulerStatsFromArchive() {
+        return archive.getSchedulerStats();
+    }
+
 }

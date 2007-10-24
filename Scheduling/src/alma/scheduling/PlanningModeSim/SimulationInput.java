@@ -231,7 +231,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			throw new UnsupportedOperationException (
 				"Cannot change container services that have already been set.");
 		this.containerServices = containerServices;
-		this.logger = this.containerServices.getLogger();
+		this.logger =this.containerServices.getLogger();
 	}
 
 	/**
@@ -420,6 +420,8 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
         } else if(weatherMode.equals("diurnal")){
             getWeatherConstraints();
         } else{
+            logger.warning("Invalid weather model "+weatherMode+", exiting...");
+            System.exit(0);
         }
     }
 
@@ -966,25 +968,20 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
                     //tmp[0] is a blank space..
                     conds.setSeeing(0.0, Double.parseDouble(tmp[1].trim()), tmp[2].trim());
                 } //else keep default of 0.0
-               // tmp = s[6].split(" ");
-               // if(tmp.length == 2){
-                 //   conds.setPhase(Double.parseDouble(tmp[0].trim()), tmp[1].trim());
-                //} //else keep default of 0.0
-                //tmp = s[7].split(" ");
-               // if(tmp.length == 2){
-                 //   conds.setWindVel(Double.parseDouble(tmp[0].trim()), tmp[1].trim());
-                //} //else keep default of 0.0
+                tmp = s[6].split(" ");
+                if(tmp.length == 2){
+                    //conds.setPhase(0.0, Double.parseDouble(tmp[1].trim()), tmp[1].trim());
+                    conds.setPhase(0.0, Double.parseDouble(tmp[1].trim()), "");
+                } //else keep default of 0.0
+                tmp = s[7].split(" ");
+                if(tmp.length == 3){
+                    conds.setWindVel(0.0, Double.parseDouble(tmp[1].trim()), tmp[2].trim());
+                } //else keep default of 0.0
             }catch(Exception err){
+                err.printStackTrace();
 				error("Invalid Weather format in " + value[i]);
             }
               
-            /*
-			if (s[5].trim().length() == 0)
-				weatherCondition = weatherWord;
-			else
-				weatherCondition = s[5].trim();
-                */
-            
 			if (s.length == 9) {
 				try {
 					repeatCount = Integer.parseInt(s[8].trim());
@@ -1057,7 +1054,6 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			unitList.add(u);
 			set.addMember(u);
 		}
-
 	}
 	
 
@@ -1164,7 +1160,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	/**
 	 * @return
 	 */
-	public Logger getLogger() {
+	public SchedLogger getLogger() {
 		return logger;
 	}
 

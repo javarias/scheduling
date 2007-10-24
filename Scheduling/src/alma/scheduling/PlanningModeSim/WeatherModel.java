@@ -167,6 +167,7 @@ public class WeatherModel extends BasicComponent {
             	    ((RealWeatherModel)realModel[i]).initialize();
                 }
             } else if(type.equals("dirunal")){
+                logger.warning("DIURNAL WEATHER MODEL NOT SUPPORTED ANY MORE");
                 //for(int i=0; i < model.length; i++) {
                 //}
             }
@@ -248,6 +249,20 @@ public class WeatherModel extends BasicComponent {
         }
         if(rms != null){
             val = rms.compute(t, freq, el, bl);
+        }
+        return val;
+    }
+    public double getRMSBeforeScale(DateTime t, double freq, double el, double bl) {
+        RmsModel rms =null;
+        double val=0.0;
+        for(int i=0; i < realModel.length; i++){
+            if(realModel[i].getName().equals("rms")){
+                rms = (RmsModel)realModel[i];
+                break;
+            }
+        }
+        if(rms != null){
+            val = rms.computeWithNoScale(t, freq, el, bl);
         }
         return val;
     }
