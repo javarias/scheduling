@@ -43,12 +43,14 @@ import alma.SchedulingExceptions.wrappers.AcsJSBExistsEx;
 import alma.scheduling.Define.*;
 import alma.scheduling.Scheduler.*;
 
+import alma.log_audience.OPERATOR;
 import alma.ACS.ComponentStates;
 import alma.acs.container.ContainerServices;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
 import alma.xmlentity.XmlEntityStruct;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Vector;
 
@@ -210,11 +212,13 @@ public class ALMAQueuedScheduler
     }
     
     public void stopSB(String sbid){
+        logger.fine("qsComp's stop sb called, execstarted = "+execStarted);
         if(execStarted){
             try {
                 //don't really need to pass sb, coz scheduler takes
                 //current running sb but not changing interfaces right now
                 masterScheduler.stopQueuedSB(sbid, schedulerId);
+                logger.log(Level.INFO,"Queued SB stopped", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not stop SB "+sbid);
                 e.printStackTrace();

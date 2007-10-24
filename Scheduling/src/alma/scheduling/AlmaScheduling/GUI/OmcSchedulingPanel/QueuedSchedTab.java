@@ -341,6 +341,12 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
     
     private void stopSB(){
+        logger.fine("stopSB called in QS plugin");
+        try {
+            controller.stopSB();
+        }catch(Exception e){
+            showErrorPopup(e.toString(), "stopSB");
+        }
     }
 
     private void stopQueue(){

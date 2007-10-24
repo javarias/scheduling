@@ -87,7 +87,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.104 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.105 2007/10/24 21:50:52 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -454,6 +454,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             //get UID for scheduler
             String id = archive.getIdForScheduler();
             scheduler.setId(id);
+            scheduler.setType("dynamic");
             //add to Map
             allSchedulers.put(id, scheduler);
             Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
@@ -592,6 +593,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
                         containerServices.getComponent("QS_"+arrayname));
             scheduler.setId(qsComp.getSchedulerId());
+            scheduler.setType("queued");
             //add to Map
             allSchedulers.put(qsComp.getSchedulerId(), scheduler);
             containerServices.releaseComponent(qsComp.name());
@@ -696,6 +698,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
             String id = archive.getIdForScheduler();
             scheduler.setId(id);
+            scheduler.setType("interactive");
             schedComp.setSchedulerId(id);
             String name = schedComp.name();
             //add to Map
@@ -1320,6 +1323,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void stopQueuedSB(String sbid, String schedulerId) 
         throws InvalidOperationEx, NoSuchSBEx {
 
+            logger.fine("Stop queued SB in MS called");
         Scheduler scheduler = getScheduler(schedulerId);
         checkSchedulerType(scheduler.getType(), "queued");
         try{
@@ -1472,6 +1476,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     ////////////////////////////////////////////////////////////////
 
     private void checkSchedulerType(String type, String shouldbe) throws InvalidOperationEx {
+        logger.finest("MS: scheduler is of type "+type+" and should be "+shouldbe);
         if(!type.equals(shouldbe)){
             InvalidOperation e1 = new InvalidOperation("CheckSchedulerType",
                    "Wrong scheduler type: "+type);

@@ -59,6 +59,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         parent = p;
         arrayName = a;
         arrayStatus = "Active";
+        currentSB = "";
         try{
             //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
             //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
@@ -213,7 +214,20 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         arrayStatus = stat;
         parent.updateArrayStatus();
     }
-    public void stopSB(){
+
+    private boolean stopFlag=false;
+    public void stopSB() throws Exception {
+        try {
+            logger.fine("stopSB in QS Ctrller called");
+            if(!currentSB.equals("")){
+                qsComp.stopSB(currentSB);
+            } else {
+                stopFlag = true;
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
         
     }
     public void stopQueue(){
@@ -243,6 +257,10 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 parent.updateExecutionInfo("Execution started for SB: "+sb.sbName+"\n");
                 parent.setSBStatus(sbid, "RUNNING");
             }
+        }
+        if(stopFlag){
+            qsComp.stopSB(currentSB);
+            stopFlag = false;
         }
     }
             
@@ -279,6 +297,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             parent.setSBStatus(sbid, completion);
             //TODO: Set stop buttons to disabled if last SB in queue.
             parent.updateExecutionRow();
+            currentSB = "";
     }
     
     public void receive(ASDMArchivedEvent e){
