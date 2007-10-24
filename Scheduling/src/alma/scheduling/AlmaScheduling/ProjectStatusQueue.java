@@ -39,7 +39,7 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.8 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.9 2007/10/24 18:06:47 sslucero Exp $
  */
 public class ProjectStatusQueue {
 
@@ -50,7 +50,7 @@ public class ProjectStatusQueue {
 	 * Create an enpty queue of ProjectStatus.
 	 */
 	public ProjectStatusQueue() {
-        logger = new SchedLogger("ProjectStatusQueue"); //Logger.getLogger("ProjectStatusQueue");
+        logger = new SchedLogger(Logger.getLogger("Scheduling")); //Logger.getLogger("ProjectStatusQueue");
 		queue = new ArrayList ();
 	}
 

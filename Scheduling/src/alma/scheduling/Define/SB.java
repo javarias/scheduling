@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.27 2007/09/20 16:08:25 sslucero Exp $
+ * @version $Id: SB.java,v 1.28 2007/10/24 18:06:47 sslucero Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -794,11 +794,15 @@ public class SB implements ProgramMember {
         double sinDec = Math.sin(getTarget().getCenter().getDec());
         double cosDec = Math.cos(getTarget().getCenter().getDec());
         double hourToRad = Math.PI / 12.0;
+       // System.out.println("in sb: sinL "+sinL+"; cosL "+cosL+"; sinDec"+sinDec+"; cosDec "+cosDec+"; lst time "+
+         //       lst.getTimeOfDay()+"; ra "+ getTarget().getCenter().getRa());
+
 		double x = sinL * sinDec + cosL * cosDec * Math.cos(lst.getTimeOfDay()* hourToRad - getTarget().getCenter().getRa());
         //System.out.println("%%%%%%%%%%%%%%%%%%%%%%");
-        //System.out.println("ELEVATION = "+x);
+        double el = Math.asin(x);
+        //System.out.println("EL in sb = "+el+" at "+lst.toString());
         //System.out.println("%%%%%%%%%%%%%%%%%%%%%%");
-		return Math.asin(x);
+		return el;
 	}
     
     public void setPreconditions(PreConditions p){

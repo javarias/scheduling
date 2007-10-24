@@ -69,13 +69,15 @@ import alma.entities.commonentity.*;
 
 import alma.hla.runtime.DatamodelInstanceChecker;
 
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
+
 /**
  * This class provides all the functionalitiy from the archvie which 
  * is specific to the Scheduling Subsystem. It implements the Archive 
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.84 2007/10/03 21:26:50 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.85 2007/10/24 18:06:47 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1302,4 +1304,8 @@ public class ALMAArchive implements Archive {
         }
         return null;
     }
+    
+    public void addSchedulerStats(SchedulerStats s) { }
+    public SchedulerStats[] getSchedulerStats(){ return null; }
 }
+

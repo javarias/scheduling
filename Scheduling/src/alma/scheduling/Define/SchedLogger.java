@@ -28,30 +28,52 @@ package alma.scheduling.Define;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Handler;
+public class SchedLogger implements SchedLoggerIF {
+    private Logger logger;
+    protected String mode;
 
-public class SchedLogger extends Logger implements SchedLoggerIF {
-    //private Logger logger;
-    private String mode;
-
-    public SchedLogger(){ 
-        super("SchedulingLogger",null);
+    public SchedLogger(Logger l){ 
+        //super("SchedulingLogger",null);
+        logger = l;
         mode = "offline";
-    }
-
-    public SchedLogger(String name) {
-        super(name,null);
-        mode = "offline";
+       // log(Level.FINE,"SchedulingLogger Created");
     }
 
     public void configureLogger(String mode) {
         this.mode = mode;
+        logger.log(Level.FINE,"SchedulingLogger Created");
     }
 
     public void log(Level l, String msg, String audience ){
-        log(l, audience +" : "+ msg);
+        logger.log(l, audience +" : "+ msg);
     }
     
     public void log(Level l, String msg, String audience, String array ){
-        log(l, audience +" : "+"Array = "+array +" : "+ msg);
+        logger.log(l, audience +" : "+"Array = "+array +" : "+ msg);
+    }
+    public void info(String msg) {
+        logger.info(msg);
+    }
+    public void fine(String msg) {
+        logger.fine(msg);
+    }
+    public void finer(String msg) {
+        logger.finer(msg);
+    }
+    public void finest(String msg) {
+        logger.finest(msg);
+    }
+    public void severe(String msg) {
+        logger.severe(msg);
+    }
+    public void warning(String msg) {
+        logger.warning(msg);
+    }
+    public void addHandler(Handler handler){
+        logger.addHandler(handler);
+    }
+    public void setLevel(Level l){
+        logger.setLevel(l);
     }
 }

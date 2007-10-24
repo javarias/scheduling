@@ -29,22 +29,23 @@ package alma.scheduling.ObsProjectManager;
 import java.util.logging.Logger; 
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
-
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
- * @version $Id: ProjectManager.java,v 1.13 2007/06/27 22:24:10 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.14 2007/10/24 18:06:47 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
     alma.scheduling.Define.ProjectManager {
 
     //The logger
-    protected Logger logger;
+    protected SchedLogger logger;
     // True if the scheduling subsystem has been stopped
     protected boolean stopCommand;
 
@@ -142,5 +143,6 @@ public class ProjectManager implements Runnable,
 
     public void getUpdates() throws SchedulingException {}
     public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason){}
-    
+    public void addSchedulerStatsToArchive(SchedulerStats s){}    
+    public SchedulerStats[] getSchedulerStatsFromArchive(){ return null;}    
 }

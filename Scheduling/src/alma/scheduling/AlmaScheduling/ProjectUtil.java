@@ -78,13 +78,13 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.61 2007/10/05 17:09:54 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.62 2007/10/24 18:06:47 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
 	
 	static private final String nullPartId = "X00000000";
-    static private SchedLogger logger = new SchedLogger("Scheduling's ProjectUtil Logger");
+    static private SchedLogger logger = new SchedLogger(Logger.getLogger("Scheduling's ProjectUtil Logger"));
 
 	/**
 	 * Check the specified project for internal consistency.
@@ -1046,7 +1046,13 @@ public class ProjectUtil {
                 }
             }
             
-    		if (eq.length <= 1) {
+    		if (eq.length == 1) {
+		    	Target target = new Target (eq[0],3600.0,3600.0);
+	    		sb.setTarget(target);
+            } else if (eq.length < 1) {
+                //HACK!
+                eq = new Equatorial[1];
+                eq[0] = new Equatorial((24.0/24.0),1);
 		    	Target target = new Target (eq[0],3600.0,3600.0);
 	    		sb.setTarget(target);
     		} else {

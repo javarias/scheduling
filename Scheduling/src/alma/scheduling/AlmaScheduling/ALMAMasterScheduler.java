@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.sql.Timestamp;
 
 import alma.xmlentity.XmlEntityStruct;
@@ -86,7 +87,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.103 2007/10/03 17:02:11 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.104 2007/10/24 18:06:47 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -142,7 +143,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     //Keeps track of the scheduler modes for each array
     private LinkedHashMap<String, ArrayModeEnum> schedModeForArray;
     private ALMASchedLogger logger;
-    private ArrayContextLogger arraylogger;
+    //private ArrayContextLogger arraylogger;
     
     /** 
      * Constructor
@@ -175,7 +176,6 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.containerServices = cs;
             this.instanceName = containerServices.getName();
             this.logger = new ALMASchedLogger(containerServices.getLogger());
-
             this.clock = new ALMAClock();
             this.archive = new ALMAArchive(containerServices, clock);
             this.sbQueue = new SBQueue();
@@ -186,7 +186,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.telescope = new ALMATelescope();
             this.control = new ALMAControl(containerServices, manager);
             this.arraysInUse = new Vector();
-            arraylogger = new ArrayContextLogger(containerServices.getLogger());
+            //arraylogger = new ArrayContextLogger(containerServices.getLogger());
             logger.finest("SCHEDULING: MasterScheduler initialized");
         } catch(Exception e){
             logger.severe("SCHEDULING: Error initializing MASTER SCHEDULER (initialize)");
@@ -432,8 +432,10 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     public void startScheduling1(XmlEntityStruct schedulingPolicy, String arrayname) {
             
-        arraylogger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
+        logger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
                 OPERATOR.value, arrayname);
+        //arraylogger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
+        //        OPERATOR.value, arrayname);
         try {
             manager.checkForProjectUpdates();
             logger.fine("SCHEDULING: got project updates");
@@ -549,7 +551,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     	throws InvalidOperationEx {
 
         try {    
-            arraylogger.log(Level.INFO, "SCHEDULING: Starting queued scheduling",
+            //arraylogger.log(Level.INFO, "SCHEDULING: Starting queued scheduling",
+            logger.log(Level.INFO, "SCHEDULING: Starting queued scheduling",
                     OPERATOR.value, arrayname);
             manager.checkForProjectUpdates();
             //create a queue of sbs with these ids, 
@@ -575,7 +578,11 @@ public class ALMAMasterScheduler extends MasterScheduler
                         false, sbs, true, true, 5, arrayname, s_policy);
                 
             //a scheduler and go from there!
-            logger.fine("SCHEDULING: Master Scheduler creating queued scheduler");
+            try {
+                logger.fine("SCHEDULING: Master Scheduler creating queued scheduler");
+            } catch(Exception e ){
+                e.printStackTrace();
+            }
             if(!isArrayInUse(arrayname)){
                 setArrayInUse(arrayname);
             }
@@ -676,9 +683,10 @@ public class ALMAMasterScheduler extends MasterScheduler
                 createSchedulerConfiguration(
                         false, new SBQueue(), false, true, 0, arrayname, s_policy);
 
-            arraylogger.log(Level.INFO, 
-                    "SCHEDULING: Starting interactive scheduling on array "+arrayname,
-                    OPERATOR.value, arrayname);
+            //arraylogger.log(Level.INFO, 
+            logger.log(Level.INFO, 
+                    "SCHEDULING: Starting interactive scheduling on array "+
+                    arrayname, OPERATOR.value, arrayname);
             if(!isArrayInUse(arrayname)){
                 setArrayInUse(arrayname);
             }
@@ -1091,9 +1099,9 @@ public class ALMAMasterScheduler extends MasterScheduler
         try {
             logger.log(Level.INFO, 
                     "SCHEDULING: Destroying array "+name, OPERATOR.value);
-            arraylogger.log(Level.INFO, 
-                    "SCHEDULING: Destroying array "+name, 
-                    OPERATOR.value, name);
+            //arraylogger.log(Level.INFO, 
+              //      "SCHEDULING: Destroying array "+name, 
+                //    OPERATOR.value, name);
             control.destroyArray(name);
             for(int i=0; i < arraysInUse.size(); i++){
                 if(arraysInUse.elementAt(i).equals(name)){
@@ -1194,8 +1202,8 @@ public class ALMAMasterScheduler extends MasterScheduler
     /**
       * Returns the uids of the projects that match the given search criteria
       */
-    public String[] queryForProject(String projname, String piname, String type) 
-        throws InvalidOperationEx {
+    public String[] queryForProject(String projname, String piname, String type, 
+            String aType) throws InvalidOperationEx {
 
         String[] results = new String[0];    
         String schema = new String("ObsProject");
@@ -1213,9 +1221,26 @@ public class ALMAMasterScheduler extends MasterScheduler
             foo2 =new String( "prj:pI=\""+piname+"\"");
         }
         query = query + "["+foo1+" and "+foo2+"]";
+        boolean hasStart= false;
+        boolean needEndBracket = false;
         if(!type.equals("All")){
             query = query + 
-                "/prj:ObsProgram/prj:ObsPlan[prj:DataProcessingParameters[@projectType=\""+type+"\"]]";
+                "/prj:ObsProgram/prj:ObsPlan[prj:ObsUnitSet[prj:DataProcessingParameters[@projectType=\""+type+"\"]]";
+            needEndBracket = true;
+            hasStart = true;
+        }
+        if(!aType.equals("All")){
+            if(hasStart){
+                query = query + 
+                    "[prj:ObsUnitControl[@arrayRequested=\""+aType+"\"]]";
+            } else {
+                query = query + 
+                    "/prj:ObsProgram/prj:ObsPlan[prj:ObsUnitSet[prj:ObsUnitControl[@arrayRequested=\""+aType+"\"]]";
+                needEndBracket = true;
+            }
+        }
+        if(needEndBracket){
+            query = query + "]";
         }
         logger.fine("Scheduling Query = "+ query);                
         try {

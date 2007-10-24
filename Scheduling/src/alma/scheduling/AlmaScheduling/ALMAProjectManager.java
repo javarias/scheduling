@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.98 2007/09/24 22:38:57 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.99 2007/10/24 18:06:47 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1789,11 +1789,15 @@ public class ALMAProjectManager extends ProjectManager {
         } else {
             sb = findSB(prog, sb_id);
         }
-        if(sb.getStatus().getState().toString().equals("complete")
-                || sb.getStatus().getState().toString().equals("observed")){
-
-            return true;
-        } else {
+        try {
+            if(sb.getStatus().getState().toString().equals("complete")
+                    || sb.getStatus().getState().toString().equals("observed")){
+    
+                return true;
+            } else {
+                return false;
+            }
+        } catch(Exception e) {
             return false;
         }
 

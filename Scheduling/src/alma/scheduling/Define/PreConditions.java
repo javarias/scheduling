@@ -56,7 +56,37 @@ public class PreConditions {
 	}
     
     ////////////////////////////////////////////////////
+    //NOTE: these are used for debugging purposes only!
+    private double opacity=0.0;
+    private double rms=0.0;
+    private double wind=0.0;
+    private double opacitylimit=0.0;
+    private double rmslimit=0.0;
+    private double windlimit=0.0;
+    //private double rms=0.0;
+    public double getOpacity(){
+        return opacity;
+    }
+    public double getRMS(){
+        return rms;
+    }
+    public double getWind(){
+        return wind;
+    }
+    public double getOpacityLimit(){
+        return opacitylimit;
+    }
+    public double getRMSLimit(){
+        return rmslimit;
+    }
+    public double getWindLimit(){
+        return windlimit;
+    }
+    ////////////////////////////////////////////////////
     
+    /**
+      * If either is below its limit then 0.0 is returned!
+      */
     public float execute(Object... args){
 		try {
             float res=1.0F;
@@ -64,20 +94,20 @@ public class PreConditions {
             Double d;
             for(int i=0; i < functionName.length; i++){
                 //get current value
-               /* if(functionName[i].equals("rms")){
-                    d =(Double)(method[i].invoke(obj[i], args));
-                } else {
-                    d =(Double)(method[i].invoke(obj[i], args[0], args[1]));
-                }
-                */
-                //calculate weight
-                
                 if(functionName[i].equals("opacity")){
                     d =(Double)(method[i].invoke(obj[i], args[0], args[1]));
-                    //System.out.println("Current value = "+d.doubleValue());
-        		//	res = res * (float)(getWeight(functionName[i], d.doubleValue()));
-        			res = (float)(getWeight(functionName[i], d.doubleValue()));
+                    opacity = d;
+        			res = res * (float)(getWeight(functionName[i], d.doubleValue()));
+                } else if(functionName[i].equals("rms")){
+                    d =(Double)(method[i].invoke(obj[i], args));
+                    rms = d;
+        			res = res * (float)(getWeight(functionName[i], d.doubleValue()));
+                } else if(functionName[i].equals("wind")){
+                    d =(Double)(method[i].invoke(obj[i], args[0], args[1]));
+                    wind = d;
+        			res = res * (float)(getWeight(functionName[i], d.doubleValue()));
                 }
+
             }
             return res;
 		} catch (Exception err) {
@@ -99,6 +129,13 @@ public class PreConditions {
     }
     
     ////////////////////
+    /**
+      * 0.9 gives the highest weight, if execeeds limit set to 1 because
+      * result is mulitplied to other weather results and this will 
+      * essentially ignore it.
+      * Future: to have it not ignored set it to a lower weight or 0 if its
+      * impossible to scheduling with out this condition being met.
+      */
     public double getWeight(String name, double cur) {
         double w=0.0;
      //   if(name.equals("pwvc")){
@@ -109,34 +146,30 @@ public class PreConditions {
          //   }
        // }else 
         if (name.equals("opacity")){
-            //System.out.println("Current opacity = "+cur);
             double limit= seeing.getMaxValue();
+            opacitylimit = limit;
             if(limit >= cur) {
-           //     if(limit <= 0.05) {
-             //       System.out.println("limit = "+limit+"; current ="+cur);
-               // }
                 w=0.9;
             } else {
                 w=0.0;
             }
-        }//else if (name.equals("rms")){
-        /*
-            if(phase.getValue() > cur) {
-                w = 0.25;
+        }else if (name.equals("rms")){
+            double limit= phase.getMaxValue();
+            rmslimit = limit;
+            if(limit >= cur) {
+                w = 0.9;
             } else {
                 w=0.0;
             }
         }else if (name.equals("wind")){
-            if(windVel.getValue() > cur) {
-                w = 0.25;
+            double limit= windVel.getMaxValue();
+            windlimit = limit;
+            if(limit >= cur) {
+                w = 0.9;
             } else {
                 w=0.0;
             }
-            
-        //}else if (name.equals("")){
-        //}else if (name.equals("")){
         }
-        */
         return w;
     }
 

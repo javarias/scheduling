@@ -39,15 +39,21 @@ public class ALMASchedLogger extends SchedLogger {
 
     private AcsLogger logger;
     private ArrayContextLogger arraylogger;
-    private String mode;
+  //  private String mode;
     
     public ALMASchedLogger(Logger l){
+        super(l);
+        super.configureLogger("online");
         logger = (AcsLogger)l;
+        logger.log(Level.FINE, "ALMASchedLogger created");
         arraylogger = new ArrayContextLogger(logger);
     }
 
     public ALMASchedLogger(AcsLogger l){
+        super(l);
+        super.configureLogger("online");
         logger = (AcsLogger)l;
+        logger.log(Level.FINE, "ALMASchedLogger created");
         arraylogger = new ArrayContextLogger(logger);
     }
 
@@ -60,6 +66,7 @@ public class ALMASchedLogger extends SchedLogger {
     }
     
     public void log(Level l, String msg, String audience, String array ){
-        arraylogger.log(l, "In ALMASchedLogger: "+msg, audience, array);
+        arraylogger.log(l, "In ALMASchedLogger (array logger): "+msg, audience, array);
     }
+
 }

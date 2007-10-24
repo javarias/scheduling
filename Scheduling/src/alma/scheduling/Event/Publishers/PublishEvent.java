@@ -26,6 +26,7 @@
 package alma.scheduling.Event.Publishers;
 
 import java.util.logging.Logger;
+import alma.scheduling.Define.SchedLogger;
 import alma.acs.nc.AbstractNotificationChannel;
 import alma.acs.nc.SimpleSupplier;
 
@@ -33,14 +34,14 @@ import alma.acs.nc.SimpleSupplier;
  * The PublishEvent class contains methods to handle publishing all
  * events in the Scheduling system. 
  * 
- * @version $Id: PublishEvent.java,v 1.5 2005/08/08 21:53:41 sslucero Exp $
+ * @version $Id: PublishEvent.java,v 1.6 2007/10/24 18:06:47 sslucero Exp $
  * @author Allen Farris
  */
 public class PublishEvent {
 
     protected AbstractNotificationChannel sched_nc;
     //protected SimpleSupplier sched_nc;
-    protected Logger logger;
+    protected SchedLogger logger;
 	/**
 	 * 
 	 */

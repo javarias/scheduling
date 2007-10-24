@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.22 2007/09/27 19:43:04 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.23 2007/10/24 18:06:47 sslucero Exp $
  * @author Allen Farris
  *
  */
@@ -199,7 +199,6 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     		}
     		
     		// 4. Do the required actions, which are mode dependent.
-            logger.info("*******About to go!");
     		try {
     			if (synchronous) {
     				if (synchronousMode()) {
@@ -243,7 +242,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
     private boolean synchronousMode() throws SchedulingException {
 
     	DateTime now = clock.getDateTime();
-    	
+    //	System.out.println("START: "+now.toString());
     	// Get the best list from the dsa.
     	BestSB best = dsa.getBest();
 
@@ -328,6 +327,7 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     //starttime again. 
                     if(selectedSB.getStatus().getStartTime() == null) {
                         selectedSB.setStartTime(clock.getDateTime());
+                        //System.out.println("start time set = "+clock.getDateTime().toString());
                     }
                     //logger.info("SB is now "+selectedSB.getStatus().getStatus());
                     //TODO When Lindsey says so ;)
@@ -351,7 +351,9 @@ public class DynamicScheduler extends Scheduler implements Runnable {
                     if(selection == -1) { //wasn't one of the ones selected to be best, 
                         //obviously in the queue (coz we just got it out) so send it to control
                         logger.fine("SCHEDULING: SB not one of the best ones, but it was selected!");
+                        //System.out.println("before control "+clock.getDateTime().toString());
       		            config.getControl().execSB(config.getArrayName(), selectedSB.getId());
+                       // System.out.println("after control "+clock.getDateTime().toString());
                     }
                 } else {
                     logger.fine("SCHEDULING: SB is not ready to be executed.");

@@ -27,6 +27,7 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import alma.xmlentity.XmlEntityStruct;
 import alma.entities.commonentity.EntityT;
@@ -68,7 +69,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.53 2007/09/10 20:01:20 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.54 2007/10/24 18:06:47 sslucero Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services

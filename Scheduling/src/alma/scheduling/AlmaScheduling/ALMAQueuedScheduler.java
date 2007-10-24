@@ -140,7 +140,7 @@ public class ALMAQueuedScheduler
     public String getArray() throws InvalidOperationEx {
         if(arrayname == null) {
             AcsJInvalidOperationEx e = new AcsJInvalidOperationEx(
-                    new InvalidOperation("runQueue","No array defined!"));
+                    new InvalidOperation("getArray","No array defined!"));
             throw e.toInvalidOperationEx();
         }
         return arrayname;
@@ -211,6 +211,14 @@ public class ALMAQueuedScheduler
     
     public void stopSB(String sbid){
         if(execStarted){
+            try {
+                //don't really need to pass sb, coz scheduler takes
+                //current running sb but not changing interfaces right now
+                masterScheduler.stopQueuedSB(sbid, schedulerId);
+            } catch(Exception e) {
+                logger.warning("QS: could not stop SB "+sbid);
+                e.printStackTrace();
+            }
         }
     }
 

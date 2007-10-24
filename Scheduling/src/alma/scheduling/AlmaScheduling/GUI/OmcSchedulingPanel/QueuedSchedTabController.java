@@ -172,6 +172,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             e.printStackTrace();
         }
     }
+    
     private boolean doesSbBelong(String id){
         boolean b= false;
         for(int i=0; i <  sbs_to_run.length; i++){
@@ -211,6 +212,11 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     private void setArrayStatus(String stat){
         arrayStatus = stat;
         parent.updateArrayStatus();
+    }
+    public void stopSB(){
+        
+    }
+    public void stopQueue(){
     }
 
     public void receive(DestroyedAutomaticArrayEvent e){

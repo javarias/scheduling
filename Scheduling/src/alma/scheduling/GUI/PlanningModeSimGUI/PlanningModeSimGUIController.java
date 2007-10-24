@@ -512,9 +512,9 @@ public class PlanningModeSimGUIController implements Runnable {
         //        new JScrollPane(new JTextArea()));
         
         ImageIcon schedule_graph = new ImageIcon(simulator.getScheduleGraphFilename());
-        //System.out.println("loading "+simulator.getScheduleGraphFilename());
+        System.out.println("loading "+simulator.getScheduleGraphFilename());
         ImageIcon antennaLoc = new ImageIcon(simulator.getAntennaConfigFilename());
-        //System.out.println("loading "+simulator.getAntennaConfigFilename());
+        System.out.println("loading "+simulator.getAntennaConfigFilename());
         
         JPanel p = new JPanel();
         
@@ -746,7 +746,7 @@ public class PlanningModeSimGUIController implements Runnable {
                 try {
                     setInputFile(data_filename+".txt");
                     setOutputFile("output.txt");
-                    setStatFile("stats_output.txt");
+                    setStatFile("exec_output.txt");
                     simulator.initialize(currentDirectory, data_filename+".txt", "output.txt", "log.txt");
                     Thread t = new Thread(simulator);
                     t.start();
