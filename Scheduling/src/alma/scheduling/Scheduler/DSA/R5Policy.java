@@ -30,11 +30,13 @@ import alma.scheduling.Define.*;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.Vector;
+import java.util.ArrayList;
 
 /**
- * This is one of the dynamic scheduling algorithms for R3.
+ * This is one of the dynamic scheduling algorithms for R5.
  * 
- * @version $Id: R5Policy.java,v 1.2 2007/09/27 19:43:04 sslucero Exp $
+ * @version $Id: R5Policy.java,v 1.3 2007/10/24 18:03:22 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R5Policy extends PolicyType {
@@ -123,7 +125,10 @@ class R5Policy extends PolicyType {
       */
 	private int bestNumber;
 	
-	
+    private SchedulerStats[] schedulerStats;
+
+    private ArrayList<SchedulerStats> stats;
+
 	public R5Policy (String arrayName, Policy policy, SBQueue queue, 
 			Clock clock, Telescope telescope, ProjectManager projectManager,
 			SchedLogger log, int bestNumber ) throws SchedulingException {
@@ -136,7 +141,7 @@ class R5Policy extends PolicyType {
 		this.projectManager = projectManager;
 		this.log = log;
 		this.bestNumber = bestNumber;
-		
+		this.stats = new ArrayList<SchedulerStats>();
 		// Set the weighting factors.
 		setWeights();
 		
@@ -238,9 +243,14 @@ class R5Policy extends PolicyType {
 				log.severe("Improper scheduling factor name " + name);
 			}
 		}
+        //System.out.println(positionElW +", "+positionMaxW +", "+weatherW+", "+ priorityW);
 	}
 
+  //  private double[] opacity;
+   // private Vector tmpOp;
 
+    //class to add debugging information to be printed
+    //private DebugInfo[] foo = new DebugInfo[2];
 	/**
 	 * Get the best scheduling blocks to run at the specified time.
 	 * 
@@ -254,7 +264,13 @@ class R5Policy extends PolicyType {
 	 */
 	public BestSB getBest() throws SchedulingException {
 		// Check if there is something left to schedule.
-        
+        /*used to debug opacity getting set
+        opacity = null;
+        tmpOp = new Vector();
+        opacity = new double[tmpOp.size()];
+        for(int i=0; i < tmpOp.size(); i++){
+            opacity[i] = ((Double)tmpOp.elementAt(i)).doubleValue();
+        }*/
 		BestSB best = null;
         int i=0;
         for(; i < unit.length; i++){
@@ -276,6 +292,7 @@ class R5Policy extends PolicyType {
 			best = new BestSB(new NothingCanBeScheduled (
                 clock.getDateTime(), whyNothing(), ""));
             log.info("SCHEDULING: Nothing Can Be Scheduled Event sent out, in R5Policy");
+            //create schedule stats entry
 		} else {
 			String[] id = new String [list.length];
 			String[] scoreString = new String [list.length];
@@ -288,6 +305,7 @@ class R5Policy extends PolicyType {
     				id[i] = list[i].getSB().getId();
 	    			scoreString[i] = list[i].scoreToString();
 		    		score[i] = list[i].getScore();
+         //           System.out.println(score[i]);
 			    	success[i] = list[i].getSuccess();
 				    rank[i] = list[i].getRank();
                     priority[i] = list[i].getPriority();
@@ -297,6 +315,8 @@ class R5Policy extends PolicyType {
 			}
 			best = new BestSB (id, getLiteSBs(list), scoreString, score, success, rank, priority, clock.getDateTime());
 		}
+        //System.out.println("----- end -----");
+        //best.setOpacity(opacity);
 		return best;
 	}
 
@@ -453,17 +473,29 @@ class R5Policy extends PolicyType {
 	}
 
 	private void score() {
+        schedulerStats = new SchedulerStats[unit.length];
+        for(int i=0;i < unit.length; i++){
+            schedulerStats[i] = new SchedulerStats();
+            schedulerStats[i].setTime(clock.getDateTime());
+        }
 		success();
 		rank();		
+        double d;
 		for (int i = 0; i < unit.length; ++i) {
 			if (!unit[i].isReady()) {
                 continue;
             }
-			unit[i].setScore(unit[i].getSuccess() * unit[i].getRank());
-            //if(unit[i].getScore() == 0.0) {
-              //  System.out.println(unit[i].getSB().getId() +" has 0 score");
-            //}
+            d = unit[i].getSuccess() * unit[i].getRank();
+			unit[i].setScore(d);
+            schedulerStats[i].addScoreMapping(unit[i].getSB().getId(), d);
 		}
+        for(int i=0; i< schedulerStats.length; i++){
+            projectManager.addSchedulerStatsToArchive(schedulerStats[i]);
+        }
+        //foo[0].setName(unit[0].getSB().getId());
+        //foo[0].setScore(unit[0].getScore());
+        //foo[1].setName(unit[1].getSB().getId());
+        //foo[1].setScore(unit[1].getScore());
 	}
 
 	private void rank() {
@@ -477,20 +509,26 @@ class R5Policy extends PolicyType {
 		String currentProjectId = array.getCurrentProject();
 		FrequencyBand currentBand = array.getCurrentFrequencyBand();
 		for (int i = 0; i < unit.length; ++i) {
+           // if(unit[i].getSB().getId().equals("A17.1")) {
+            //    System.out.println("pri = "+unit[i].getPriority());
+           // }
 			if (!unit[i].isReady()) { 
                 continue;
             }
 			u = unit[i];
 			if (u.getSuccess() == 0.0) {
 				u.setRank(0.0);
-                //System.out.println("SB "+u.getSB().getId()+" had 0 rank and success");
             } else {
 				x = priorityW * u.getPriority();
 				u.setRank(x);
 			}
 		}
+        //foo[0].setRank(unit[0].getRank());
+        //foo[0].setPri(unit[0].getPriority());
+        //foo[1].setRank(unit[1].getRank());
+        //foo[1].setPri(unit[1].getPriority());
 	}
-	
+
 	private void success() {
 		double pEl = 0.0;
 		double pMax = 0.0;
@@ -503,9 +541,21 @@ class R5Policy extends PolicyType {
             }
 			u = unit[i];
 			sb = u.getSB();
+            //System.out.println("name: "+sb.getId());
             pEl = positionEl(u);
 			pMax = positionMax(u);
-			w = weather(sb, u.getMaxElevation());
+			w = weather(sb, u.getElevation(clock.getDateTime(),
+                            telescope.getSite()));
+            schedulerStats[i].setSBName(sb.getId());
+            schedulerStats[i].setElevation(pEl);
+            schedulerStats[i].setPriority(sb.getScientificPriority().getPriorityAsInt());
+            schedulerStats[i].setOpacity(op);
+            schedulerStats[i].setScaledRms(rms);
+            schedulerStats[i].setWind(wind);
+            // NOTE: 10/8/07
+            // using max elevation to get weather information gets into the weather
+            // prediction stuff which we're not gonna deal with right now.
+			//w = weather(sb, u.getMaxElevation());
             u.setPositionEl(pEl);
 			u.setPositionMax(pMax);
 			u.setWeather(w);
@@ -516,19 +566,27 @@ class R5Policy extends PolicyType {
                     ((positionElW * pEl) + (positionMaxW * pMax) + (weatherW * w)) / 
                         (positionElW + positionMaxW + weatherW);
 				u.setSuccess(tmp);
-                /*System.out.println("***");
-                System.out.println(positionElW * pEl);
-                System.out.println(positionMaxW * pMax);
-                System.out.println(weatherW * w);
-                System.out.println(positionElW + positionMaxW + weatherW);
-                System.out.println(tmp);
-                */
 			}
+            ////foo[i].setPEL(pEl);
+            //foo[i].setPMax(pMax);
+            //foo[i].setW(w);
+            //foo[i].setSuccess(u.getSuccess());
+            /*
+            if (clock.getDateTime().toString().equals("2006-03-03T03:29:17")){
+                
+                System.out.println("Name "+sb.getId());
+                System.out.println("pel "+pEl);
+                System.out.println("pmax "+pMax);
+                System.out.println("weather "+ w);
+                System.out.println("success "+u.getSuccess());
+            }
+            */
 		}
 	}
 
     private double positionEl(R5Unit u) {
 		if (u.isVisible(clock.getDateTime())) {
+            //System.out.println("Getting el in policy at "+clock.getDateTime().toString());
 			double tmp =Math.sin(u.getElevation(clock.getDateTime(),telescope.getSite()));
             return tmp;
         }
@@ -539,6 +597,7 @@ class R5Policy extends PolicyType {
 		// First, we make sure the source is visible.
 		DateTime t = clock.getDateTime();
 		if (!u.isVisible(t)) {
+            
 			return 0.0;
         }
 		// Second, make sure it is still visible at the end of the observing time.
@@ -586,9 +645,19 @@ class R5Policy extends PolicyType {
 		
 	}
 
+    //for scheduler stats
+    private double op;
+    private double rms;
+    private double wind;
+
 	private double weather(SB sb, double el) {
+        op = 0.0;
+        rms = 0.0;
+        wind = 0.0;
 		double x = 1.0;
         double baseline=telescope.getArray(arrayName).getMaxBaseline();
+        //System.out.println("-----------start-----------");
+       // System.out.println("Time1 = "+clock.getDateTime().toString());
 		/*try {
 			WeatherCondition w = sb.getWeatherConstraint();
 			if (w != null){
@@ -607,12 +676,112 @@ class R5Policy extends PolicyType {
 				x =  p.execute(new Double(sb.getCenterFrequency()), 
                                 new Double(el), 
                                 new Double(baseline));
-                //System.out.println("weather: "+x);
+                /*
+                for(int i=0; i < foo.length; i++){
+                    //for debug info thing
+                    foo[i].setOp(p.getOpacity());
+                }*/
             }
+            op = p.getOpacity();
+            rms = p.getRMS();
+            wind =p.getWind();
+
+           /* if (clock.getDateTime().toString().equals("2006-03-03T03:29:17")){
+                System.out.println("opacity "+p.getOpacity());
+                System.out.println("rms "+p.getRMS());
+                System.out.println("wind "+p.getWind());
+                System.out.println("opacity limit"+p.getOpacityLimit());
+                System.out.println("rms limit "+p.getRMSLimit());
+                System.out.println("wind limit "+p.getWindLimit());
+            }*/
+
 		} catch (Exception err) {
 			err.printStackTrace();
         }
+        //System.out.println("-----------end-----------");
 		return x;
 	}
 	
+    class DebugInfo {
+        private String name;
+        private double opacity;
+        private double score;
+        private double success;
+        private double rank;
+        private double w;
+        private double pEl;
+        private double pMax;
+        private int pri;
+        private DateTime time;
+
+        public DebugInfo(){}
+
+        public String getName(){
+            return name;
+        }
+        public double getOp(){
+            return opacity;
+        }
+        public double getScore(){
+            return score;
+        }
+        public double getSuccess(){
+            return success;
+        }
+        public double getRank(){
+            return rank;
+        }
+        public double getW(){
+            return w;
+        }
+        public double getPEL(){
+            return pEl;
+        }
+        public double getPMax(){
+            return pMax;
+        }
+        public int getPri(){
+            return pri;
+        }
+        public DateTime getTime(){
+            return time;
+        }
+        
+        public void setName(String x){
+            name=x;
+        }
+        public void setOp(double x){
+            opacity=x;
+        }
+        public void setScore(double x){
+            score=x;
+        }
+        public void setSuccess(double x){
+            success=x;
+        }
+        public void setRank(double x){
+            rank=x;
+        }
+        public void setW(double x){
+            w=x;
+        }
+        public void setPEL(double x){
+            pEl=x;
+        }
+        public void setPMax(double x){
+            pMax = x;
+        }
+        public void setPri(int x){
+            pri = x;
+        }
+        public void setTime(DateTime x){
+            time = x;
+        }
+
+        public String toString() {
+            return name +": \n\tPriority - "+ pri+", Opacity - "+opacity+", El - "+pEl +
+                ", Max El - "+pMax+",\n\tScore - "+score+", Success - "+success+", Rank - "+rank+
+                ",\n\tTime - "+time.toString();
+        }
+    }
 }

@@ -37,7 +37,7 @@ import java.text.NumberFormat;
 /**
  * The R5Unit class is used by the R5Policy class.
  * 
- * @version $Id: R5Unit.java,v 1.1 2007/09/20 20:17:47 sslucero Exp $
+ * @version $Id: R5Unit.java,v 1.2 2007/10/24 18:03:22 sslucero Exp $
  * @author Allen Farris
  */
 class R5Unit extends SchedulingUnit {
@@ -306,6 +306,9 @@ class R5Unit extends SchedulingUnit {
 		double cosL = site.getCosLatitude();						// cos(latitude)
 		double sinMinEl = site.getSinMinEl();						// sin of the minimum elevation
 		double x = sinL * sinDec + cosL * cosDec * Math.cos(lst.getTimeOfDay()* hourToRad - sb.getTarget().getCenter().getRa());
+        //System.out.println("in unit: sinL "+sinL+"; cosL "+cosL+"; sinDec"+sinDec+"; cosDec "+cosDec+"; lst time "+
+          //      lst.getTimeOfDay()+"; ra "+ sb.getTarget().getCenter().getRa());
+        //System.out.println("EL in unit = "+Math.asin(x)+" at "+lst.toString());
 		return Math.asin(x);
 	}
 
