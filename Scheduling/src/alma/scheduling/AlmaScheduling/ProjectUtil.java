@@ -78,7 +78,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.62 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.63 2007/10/25 15:49:50 sslucero Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -535,12 +535,18 @@ public class ProjectUtil {
             //NOTE: TODO
             //do not need tac priority when running test or commissioning projects
             //but will need it in science projects running dynamically.
+            //however should be set as something thats not NPE so setting to 0.
+            program.setScientificPriority(new Priority(0)); 
         }
-        int pri = set.getObsUnitControl().getUserPriority();
-        if(pri > 10 || pri < 1) {
-            pri = 1;
+        try {
+            int pri = set.getObsUnitControl().getUserPriority();
+            if(pri > 10 || pri < 1) {
+                pri = 1;
+            }
+            program.setUserPriority(new Priority(pri));
+        } catch(Exception e) {
+            program.setUserPriority(new Priority(0));
         }
-        program.setUserPriority(new Priority(pri));
 		program.setDataReductionProcedureName(set.getScienceProcessingScript());
         try {
             Object[] params = new Object[5];
