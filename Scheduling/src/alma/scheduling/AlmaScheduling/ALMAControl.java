@@ -67,7 +67,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.70 2007/10/01 17:40:12 sslucero Exp $
+ * @version $Id: ALMAControl.java,v 1.71 2007/10/29 16:53:48 sslucero Exp $
  */
 public class ALMAControl implements Control {
     
@@ -196,6 +196,8 @@ public class ALMAControl implements Control {
             if(ctrl !=null){
                 arraylogger.log(Level.INFO, "SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName,
                         OPERATOR.value, arrayName);
+                logger.fine("Session ("+sessionRef.partId+") has PS ("+sessionRef.entityId+") type "+
+                        "is "+sessionRef.entityTypeName+" and version = "+sessionRef.instanceVersion);
                 ctrl.observe(sbRef, sessionRef, 0L); 
             } else {
                 logger.severe("***************************************");
