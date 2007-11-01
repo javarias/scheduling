@@ -298,7 +298,7 @@ public class ControlSimulator extends BasicComponent implements Control {
             double rms =weather.getCurrentRMS(eb.getStatus().getStartTime(), freq, ele, baseline); 
             //System.out.println("setting rms in exec stat: "+rms);
             e.setRMS(rms);
-            e.setRMSBeforeScale(weather.getRMSBeforeScale(eb.getStatus().getStartTime(), freq, ele, baseline));
+            e.setRMSBeforeScale(weather.getRMSBeforeScale(eb.getStatus().getStartTime())); //, freq, ele, baseline));
             e.setWind(weather.getCurrentWindSpeed(eb.getStatus().getStartTime()));
         } catch(Exception ex){}
         Date d1 = input.getBeginTime().getDate();

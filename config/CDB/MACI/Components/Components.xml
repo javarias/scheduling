@@ -72,9 +72,19 @@
             Code="alma.ProjectRepositoryIF.LightweightProjectRepositoryImpl.LightweightProjectRepositoryHelper"
             Type="IDL:alma/ProjectRepositoryIF/LightweightProjectRepository:1.0"
             Container="java"/>
+<!-- ************ SCHEDULING Dynamic Comps **************** -->
+<!-- Used for the scheduling panel to mater scheduler interactions -->
 
       <_ Name="*"
             Code="alma.scheduling.AlmaScheduling.Interactive_PI_to_SchedulingHelper"
             Type="IDL:alma/scheduling/Interactive_PI_to_Scheduling:1.0"
             Container="schedulingContainer"/>             
+     <_ Name="*"
+            Code="alma.scheduling.AlmaScheduling.Queued_Operator_to_SchedulingHelper"
+            Type="IDL:alma/scheduling/Queued_Operator_to_Scheduling:1.0"
+            Container="schedulingContainer"/>
+     <_ Name="*"
+            Code="alma.scheduling.AlmaScheduling.Dynamic_Operator_to_SchedulingHelper"
+            Type="IDL:alma/scheduling/Dynamic_Operator_to_Scheduling:1.0"
+            Container="schedulingContainer"/>            
 </Components>

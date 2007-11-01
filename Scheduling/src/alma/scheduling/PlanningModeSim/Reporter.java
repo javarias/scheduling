@@ -60,6 +60,7 @@ public class Reporter extends BasicComponent {
 	static private final double radToDeg = 180.0 / Math.PI;
 
 	private ArchiveSimulator archive;
+    private WeatherModel weather;
 	private SimulationInput input;
 	private PrintStream out;
 	private PrintStream graph;
@@ -98,6 +99,7 @@ public class Reporter extends BasicComponent {
 	public void initialize() throws SimulationException {
 		input = (SimulationInput)containerServices.getComponent(Container.SIMULATION_INPUT);
 		archive = (ArchiveSimulator)containerServices.getComponent(Container.ARCHIVE);
+        weather = (WeatherModel)containerServices.getComponent(Container.WEATHER_MODEL);
 		logger.info(instanceName + ".initialized");
 	}
 
@@ -243,9 +245,17 @@ public class Reporter extends BasicComponent {
 		showSummary(out,endTime);
 		projectSummary(out,endTime);
 		statistics(out,endTime);
-        detailedExecutionStatistics(execStatsOut);
-        simpleExecutionStatistics(execSimpleStatsOut);
-        schedulerStatistics(schedulerStatsOut);
+        try {
+            ExecutionStatistics[] e_stats = archive.getAllExecutionStatistics();
+            detailedExecutionStatistics(execStatsOut,e_stats);
+            simpleExecutionStatistics(execSimpleStatsOut, e_stats);
+            SchedulerStats[] s_stats = archive.getSchedulerStats();
+            s_stats = setExecutedSBsInSchedulerStats(s_stats, e_stats);
+            schedulerStatistics(schedulerStatsOut, s_stats);
+        } catch(Exception e){
+            logger.warning("Error writting statistics files.");
+            e.printStackTrace();
+        }
         runAnalysisScripts();
 	}
 	
@@ -537,10 +547,9 @@ public class Reporter extends BasicComponent {
 	}
 
     
-    private synchronized void detailedExecutionStatistics(PrintStream o) {
-        ExecutionStatistics[] stats;
+    private synchronized void detailedExecutionStatistics(PrintStream o, 
+            ExecutionStatistics[] stats) {
         try {
-            stats = archive.getAllExecutionStatistics();
             if (stats.length > 0) {
                 o.println(stats[0].getColumnsInfoString());
                 //o.println(stats[0].getCurrentWeatherColumnInfoString());
@@ -553,10 +562,9 @@ public class Reporter extends BasicComponent {
             e.printStackTrace();
         }
     }
-    private synchronized void simpleExecutionStatistics(PrintStream o) {
-        ExecutionStatistics[] stats;
+    private synchronized void simpleExecutionStatistics(PrintStream o, 
+            ExecutionStatistics[] stats) {
         try {
-            stats = archive.getAllExecutionStatistics();
             if (stats.length > 0) {
                 o.println(stats[0].getSimpleStatsHeader());
                 //o.println(stats[0].getCurrentWeatherColumnInfoString());
@@ -570,19 +578,36 @@ public class Reporter extends BasicComponent {
         }
     }
 
-    private synchronized void schedulerStatistics(PrintStream o){
-        SchedulerStats[] stats;
+    private synchronized void schedulerStatistics(PrintStream o, SchedulerStats[] stats){
+        //SchedulerStats[] stats;
         try {
-            stats = archive.getSchedulerStats();
             if (stats.length > 0) {
                 o.println(stats[0].getHeader());
                 for(int i=0; i < stats.length; i++){
+                    //add a few things which we could easily do in the scheduler policy
+                    //stats[i].setTimeMinFromStart( stats[i].getTime()
+                    stats[i].setRms(weather.getRMSBeforeScale(stats[i].getTime()));
                     o.println(stats[i].toString());
                 }
             }
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+    private SchedulerStats[] setExecutedSBsInSchedulerStats(
+            SchedulerStats[] s, ExecutionStatistics[] e){
+        
+        for(int i=0; i < s.length;i++){
+            for(int j=0; j < e.length; j++){
+                if(s[i].getTime().eq(e[j].getStartTime())){
+                    if(s[i].getSBName().equals(e[j].getSBName())){
+                        s[i].setExecuted(true);
+                        break;
+                    }
+                }
+            }
+        }
+        return s;
     }
 
     private synchronized void runAnalysisScripts(){

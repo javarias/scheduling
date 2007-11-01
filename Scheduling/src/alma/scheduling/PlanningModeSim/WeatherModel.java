@@ -252,7 +252,7 @@ public class WeatherModel extends BasicComponent {
         }
         return val;
     }
-    public double getRMSBeforeScale(DateTime t, double freq, double el, double bl) {
+    public double getRMSBeforeScale(DateTime t){ //, double freq, double el, double bl) {
         RmsModel rms =null;
         double val=0.0;
         for(int i=0; i < realModel.length; i++){
@@ -262,7 +262,7 @@ public class WeatherModel extends BasicComponent {
             }
         }
         if(rms != null){
-            val = rms.computeWithNoScale(t, freq, el, bl);
+            val = rms.computeWithNoScale(t); //, freq, el, bl);
         }
         return val;
     }

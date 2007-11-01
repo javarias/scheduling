@@ -75,6 +75,9 @@ public class SchedulerStats {
     public void setTime(DateTime t){
         time = t;
     }
+    public void setTimeMinFromStart(int m){
+        timeMin = m;
+    }
 
     public void setScaledRms(double r){
         scaledRms = r;
@@ -109,7 +112,7 @@ public class SchedulerStats {
     }
     
     /*----------------------------------------------------------*/
-    public DateTime getTime(DateTime t){
+    public DateTime getTime(){
         return time;
     }
     public double getScaledRms(){
@@ -134,8 +137,13 @@ public class SchedulerStats {
     public int getTimeMinutes(){
         return timeMin;
     }
+    /* In radians */
     public double getElevation(){
         return el;
+    }
+    /* In degrees */
+    public double getElevationDegrees(){
+        return el * (180/Math.PI);
     }
     public int getPriority(){
         return priority;
@@ -163,12 +171,14 @@ public class SchedulerStats {
                "##10. HA = LST - RA [hours in range -12 to +12]\n"+
                "##11. Source elevation [ degrees]  - if nothing scheduled then set to 0.0\n"+
                "##12. SB priority [numerical value]\n"+
+               "##13. Was SB Executed? [true/false]\n"+
                //"## --- All sbs considered for this time and the score they got\n"+
                "";
     }
     public String toString(){
         String s = name+"; "+time.toString()+"; "+timeMin+"; "+opacity+"; "+scaledOp+"; "+
-            rms+"; "+scaledRms+"; "+wind+"; "+freq+"; "+ha+"; "+el+"; "+priority;
+            rms+"; "+scaledRms+"; "+wind+"; "+freq+"; "+ha+"; "+getElevationDegrees()+"; "+
+            priority+"; "+executed;
         /*
         ScoreMapping[] x = getAllScoreMappings();
         for(int i=0; i < x.length; i++){

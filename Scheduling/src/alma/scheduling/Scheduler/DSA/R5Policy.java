@@ -36,7 +36,7 @@ import java.util.ArrayList;
 /**
  * This is one of the dynamic scheduling algorithms for R5.
  * 
- * @version $Id: R5Policy.java,v 1.3 2007/10/24 18:03:22 sslucero Exp $
+ * @version $Id: R5Policy.java,v 1.4 2007/11/01 13:46:02 sslucero Exp $
  * @author Sohaila Lucero
  */
 class R5Policy extends PolicyType {
@@ -488,6 +488,9 @@ class R5Policy extends PolicyType {
             d = unit[i].getSuccess() * unit[i].getRank();
 			unit[i].setScore(d);
             schedulerStats[i].addScoreMapping(unit[i].getSB().getId(), d);
+            schedulerStats[i].setFrequency(unit[i].getSB().getCenterFrequency());
+            schedulerStats[i].setHa(clock.getDateTime().getLocalSiderealTime() - 
+                    unit[i].getSB().getTarget().getCenter().getRaInHours());
 		}
         for(int i=0; i< schedulerStats.length; i++){
             projectManager.addSchedulerStatsToArchive(schedulerStats[i]);
@@ -546,7 +549,7 @@ class R5Policy extends PolicyType {
 			pMax = positionMax(u);
 			w = weather(sb, u.getElevation(clock.getDateTime(),
                             telescope.getSite()));
-            schedulerStats[i].setSBName(sb.getId());
+            schedulerStats[i].setSBName(sb.getSBName());
             schedulerStats[i].setElevation(pEl);
             schedulerStats[i].setPriority(sb.getScientificPriority().getPriorityAsInt());
             schedulerStats[i].setOpacity(op);
