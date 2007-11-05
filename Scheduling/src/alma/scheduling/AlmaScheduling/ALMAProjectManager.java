@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.99 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.100 2007/11/05 21:18:40 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1785,9 +1785,17 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusT prog = ps.getObsProgramStatus();
         SBStatusT sb;
         if(isSbInThisSet(sb_id, prog)){
-            sb = getSBStatus(prog, sb_id);
+            try {
+                sb = getSBStatus(prog, sb_id);
+            }catch(Exception e){
+                return false;
+            }
         } else {
-            sb = findSB(prog, sb_id);
+            try {
+                sb = findSB(prog, sb_id);
+            }catch(Exception e){
+                return false;
+            }
         }
         try {
             if(sb.getStatus().getState().toString().equals("complete")
@@ -1807,7 +1815,19 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusTChoice c = o.getObsUnitSetStatusTChoice();
         ObsUnitSetStatusT[] sets;
         SBStatusT[] sbs;
-        if(c.getObsUnitSetStatusCount() > 0){
+        int ous_count = 0;
+        try {
+            ous_count = c.getObsUnitSetStatusCount();
+        }catch(Exception e) {
+            logger.info("SCHEDULING:  c.getObsUnitSetStatusCount() gives error with sb ("+id+")");
+        }
+        int sbstatus_count =0; 
+        try {
+            sbstatus_count = c.getSBStatusCount();
+        }catch(Exception e) {
+            logger.info("SCHEDULING:  c.getSBStatusCount() gives error with sb ("+id+")");
+        }
+        if(ous_count > 0){
             sets = c.getObsUnitSetStatus();
             for(int i=0; i < sets.length; i++){
                 if(isSbInThisSet(id, sets[i])){
@@ -1818,7 +1838,7 @@ public class ALMAProjectManager extends ProjectManager {
                     return findSB(sets[i], id);
                 }
             }
-        } else if (c.getSBStatusCount() > 0){
+        } else if (sbstatus_count > 0){
             if(isSbInThisSet(id, o)){
                 sbs = c.getSBStatus();
                 return getSBStatus(o, id);
