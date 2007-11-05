@@ -77,7 +77,7 @@ import alma.scheduling.Scheduler.DSA.SchedulerStats;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.85 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.86 2007/11/05 19:56:03 sslucero Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -225,10 +225,14 @@ public class ALMAArchive implements Archive {
                      logger.warning("SCHEDULING: no ps for this project");
                 } else {
             //TODO should check project queue.. if project exists don't map a new one.
-                    SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
-                    Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
-                            new DateTime(System.currentTimeMillis()));
-                    tmp_projects.add(p);
+                    try {
+                        SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
+                        Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
+                                new DateTime(System.currentTimeMillis()));
+                        tmp_projects.add(p);
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
             projects = new Project[tmp_projects.size()];
@@ -532,7 +536,7 @@ public class ALMAArchive implements Archive {
       */
     private SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
-            logger.severe("SCHEDULING: no sbs stuff available in project");
+            logger.severe("SCHEDULING: no sb stuff available in project ("+p.getObsProjectEntity().getEntityId()+")");
             throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
