@@ -68,6 +68,9 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
     public void showWarningPopup(String warning, String method) {
         JOptionPane.showMessageDialog(this, warning, method, JOptionPane.WARNING_MESSAGE);
     }
+    public void showInfoPopup(String msg, String title){
+        JOptionPane.showMessageDialog(this, msg, title, JOptionPane.INFORMATION_MESSAGE);
+    }
 
     //plugin stuff
 

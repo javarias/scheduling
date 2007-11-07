@@ -151,7 +151,7 @@ public class ALMAQueuedScheduler
     public void addSB(String sbid){
         try {
             sbQueue.add(sbid);
-            logger.fine("QS_SCHEDULER: adding sb to queue");
+            logger.fine("QS_SCHEDULER: adding sb "+sbid+" to queue");
             if(execStarted){
                 masterScheduler.addSBToQueue(sbid, schedulerId);
             }
@@ -181,13 +181,16 @@ public class ALMAQueuedScheduler
             throw e.toInvalidOperationEx();
         }
         String[] sbs = new String[sbQueue.size()];
+        logger.fine("SBs in queue:");
         for(int i=0; i < sbQueue.size(); i++){
             sbs[i]=(String)sbQueue.elementAt(i);
+            logger.fine("\tSB "+ sbs[i]+" in queue");
         }
         RunQueuedScheduling run = new RunQueuedScheduling(sbs);
         Thread t = container.getThreadFactory().newThread(run);
         t.start();
         execStarted = true;
+        //TODO: Eventually put in exeution TA that queue has finished.
     }
     
     public void removeSBs(String[] sbid, int[] i){
@@ -221,6 +224,45 @@ public class ALMAQueuedScheduler
                 logger.log(Level.INFO,"Queued SB stopped", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not stop SB "+sbid);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stopQueue() {
+        logger.fine("qsComp's stopQueue called, execstarted = "+execStarted);
+        if(execStarted){
+            try {
+                masterScheduler.stopQueue(schedulerId);
+                logger.log(Level.INFO,"Queued SB stopping", OPERATOR.value, arrayname);
+            } catch(Exception e) {
+                logger.warning("QS: could not stop queue");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void abortSB() {
+        logger.fine("qsComp's stopQueue called, execstarted = "+execStarted);
+        if(execStarted){
+            try {
+                masterScheduler.abortQueuedSB(schedulerId);
+                logger.log(Level.INFO,"Queued SB stopping", OPERATOR.value, arrayname);
+            } catch(Exception e) {
+                logger.warning("QS: could not stop queue");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void abortQueue(){
+        logger.fine("qsComp's stopQueue called, execstarted = "+execStarted);
+        if(execStarted){
+            try {
+                masterScheduler.abortQueue(schedulerId);
+                logger.log(Level.INFO,"Queued SB stopping", OPERATOR.value, arrayname);
+            } catch(Exception e) {
+                logger.warning("QS: could not stop queue");
                 e.printStackTrace();
             }
         }

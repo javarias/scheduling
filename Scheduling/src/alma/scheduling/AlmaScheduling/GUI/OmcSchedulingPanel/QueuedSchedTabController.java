@@ -230,7 +230,34 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         }
         
     }
-    public void stopQueue(){
+    public void stopWholeQueue() throws Exception{
+        try {
+            logger.fine("stopQueue in QS Ctrller called");
+            qsComp.stopQueue();
+        } catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void abortSB() throws Exception{
+        try {
+            logger.fine("abortSB in QS Ctrller called");
+            qsComp.abortSB();
+        } catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void abortQueue()  throws Exception{
+        try {
+            logger.fine("abortSB in QS Ctrller called");
+            qsComp.abortQueue();
+        } catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public void receive(DestroyedAutomaticArrayEvent e){

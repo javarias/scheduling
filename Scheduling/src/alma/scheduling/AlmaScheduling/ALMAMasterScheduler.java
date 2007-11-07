@@ -87,7 +87,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.105 2007/10/24 21:50:52 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.106 2007/11/07 21:57:02 sslucero Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1323,13 +1323,49 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void stopQueuedSB(String sbid, String schedulerId) 
         throws InvalidOperationEx, NoSuchSBEx {
 
-            logger.fine("Stop queued SB in MS called");
+        logger.fine("Stop queued SB in MS called");
         Scheduler scheduler = getScheduler(schedulerId);
         checkSchedulerType(scheduler.getType(), "queued");
         try{
             ((QueuedSBScheduler)scheduler).stop(sbid);
         } catch(SchedulingException e){
             logger.severe("SCHEDULING: Error stopping queued SB");
+            e.printStackTrace();
+        }
+    }
+
+    public void stopQueue(String schedulerId) throws InvalidOperationEx, NoSuchSBEx {
+        logger.fine("Stop queue in MS called");
+        Scheduler scheduler = getScheduler(schedulerId);
+        checkSchedulerType(scheduler.getType(), "queued");
+        try{
+            ((QueuedSBScheduler)scheduler).stopQueue();
+        } catch(SchedulingException e){
+            logger.severe("SCHEDULING: Error stopping queue");
+            e.printStackTrace();
+        }
+    }
+
+    public void abortQueuedSB(String schedulerId) throws InvalidOperationEx, NoSuchSBEx {
+        logger.fine("Abort queued SB in MS called");
+        Scheduler scheduler = getScheduler(schedulerId);
+        checkSchedulerType(scheduler.getType(), "queued");
+        try{
+            ((QueuedSBScheduler)scheduler).abortSB();
+        } catch(SchedulingException e){
+            logger.severe("SCHEDULING: Error stopping queued SB");
+            e.printStackTrace();
+        }
+    }
+    
+    public void abortQueue(String schedulerId) throws InvalidOperationEx, NoSuchSBEx {
+        logger.fine("Abort queue in MS called");
+        Scheduler scheduler = getScheduler(schedulerId);
+        checkSchedulerType(scheduler.getType(), "queued");
+        try{
+            ((QueuedSBScheduler)scheduler).abortQueue();
+        } catch(SchedulingException e){
+            logger.severe("SCHEDULING: Error stopping queue");
             e.printStackTrace();
         }
     }

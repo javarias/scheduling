@@ -61,6 +61,8 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton executeB;
     private JButton stopB;
     private JButton stopQB;
+    private JButton abortQB;
+    private JButton abortB;
     private int currentExecutionRow;
     private int archivingRow;
     
@@ -177,7 +179,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         sbPane.setBorder(new TitledBorder("SBs Found"));
         sbPanel.add(sbPane,BorderLayout.CENTER);
         addB = new JButton("Add to Queue");
-        addB.setToolTipText("Will add SB to queue.");
+        addB.setToolTipText("Will add SB to end of the queue.");
         addB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 addSBsToQueue();
@@ -209,7 +211,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 
         executeB = new JButton("Run Queue");
         //executeB = new JButton("Run");
-        executeB.setToolTipText("Will execute the queue.");
+        executeB.setToolTipText("Will execute all SBs in the queue.");
         executeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 executeSBs();
@@ -217,17 +219,32 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         });
         stopB = new JButton ("Stop SB");
         //stopB = new JButton ("Stop");
-        stopB.setToolTipText("Will stop the current SB and move to the next SB.");
+        stopB.setToolTipText("Will stop the SB at next subscan and move to the next SB.");
         stopB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 stopSB();
             }
         });
         stopQB = new JButton("Stop Queue");
-        stopQB.setToolTipText("Will stop the entire queue");
+        stopQB.setToolTipText("Will stop the entire queue at end of current SB's subscan.");
         stopQB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 stopQueue();
+            }
+        });
+
+        abortB = new JButton("Abort SB");
+        abortB.setToolTipText("Will abort the current SB right away.");
+        abortB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                abortCurrentSB();
+            }
+        });
+        abortQB = new JButton("Abort Queue");
+        abortQB.setToolTipText("Will abort the entire queue right away.");
+        abortQB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                abortQueue();
             }
         });
         JPanel buttonPanel = new JPanel();
@@ -239,6 +256,10 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
         foo.add(stopQB);
         foo.add(stopB);
+        buttonPanel.add(foo);
+        foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+        foo.add(abortB);
+        foo.add(abortQB);
         buttonPanel.add(foo);
 
         queuePanel.add(queueSbPane, BorderLayout.CENTER);
@@ -319,6 +340,8 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         revalidate();
     }
     private void executeSBs(){
+        queueSBs.resetStatusColumns();
+        executionInfo.setText("");
         //get all ids from the queueSB table and send them to control
         currentExecutionRow =0;
         archivingRow=0;
@@ -347,10 +370,31 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         }catch(Exception e){
             showErrorPopup(e.toString(), "stopSB");
         }
+        showInfoPopup("SB will stop after current subscan.","Stop message");
     }
 
     private void stopQueue(){
-        //controller.stopWholeQueue();
+        try {
+            controller.stopWholeQueue();
+        }catch(Exception e){
+            showErrorPopup(e.toString(), "stopQueue");
+        }
+        showInfoPopup("Queue will stop after current subscan.","Stop message");
+    }
+
+    private void abortCurrentSB(){
+        try {
+            controller.abortSB();
+        }catch(Exception e){
+            showErrorPopup(e.toString(), "abortSB");
+        }
+    }
+    private void abortQueue(){
+        try {
+            controller.abortQueue();
+        }catch(Exception e){
+            showErrorPopup(e.toString(), "abortQueue");
+        }
     }
     
     private void addSBsToQueue(){

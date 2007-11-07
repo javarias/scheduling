@@ -332,6 +332,20 @@ public class SBTable extends JTable {
             validate();
         }
     }
+
+    /**
+      * Used in queued scheduling
+      */
+    public void resetStatusColumns() {
+        if(withExec){
+            for(int i=0; i < sbRowInfo.length; i++){
+                sbRowInfo[i][execLoc] = "N/A"; 
+            }
+            repaint();
+            revalidate();
+            validate();
+        }
+    }
     
     private void changeBackgroundColor(int row, String s) {
         //ListSelectionModel selectionModel = getSelectionModel();

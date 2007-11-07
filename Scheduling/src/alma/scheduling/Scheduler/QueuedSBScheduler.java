@@ -26,6 +26,10 @@
 package alma.scheduling.Scheduler;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+
+import alma.log_audience.OPERATOR;
+
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
@@ -319,6 +323,32 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         logger.fine("SB "+tmp+" stopped, another should start if there are more");
 	}
 
+    public void stopQueue() throws SchedulingException {
+        //get current sb, and abort it,
+        stop(config.getCurrentSBId());
+        //remove everything from sbqueue
+        queue.clear();
+        //remove everything from sbsNotDone
+        sbsNotDone = new String[0];
+    }
+    
+    public void abortSB() throws SchedulingException {
+		if (!config.isSBExecuting()) {
+			error("Invalid operation. There is no scheduling block currently executing.");
+		}
+		String tmp = config.getCurrentSBId();
+        control.stopSBNow(config.getArrayName(), tmp);
+    }
+    
+    public void abortQueue() throws SchedulingException {
+        //get current sb, and abort it,
+        abortSB();
+        //remove everything from sbqueue
+        queue.clear();
+        //remove everything from sbsNotDone
+        sbsNotDone = new String[0];
+    }
+
     public void run() {
         try {
             sbsNotDone = queue.getAllIds();
@@ -329,6 +359,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
                 Thread.sleep(30);
             }
             config.getProjectManager().publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
+            logger.log(Level.INFO, "QueuedScheduler: Queue complete", OPERATOR.value, config.getArrayName());
          //   config.getControl().destroyArray(config.getArrayName());
         } catch(Exception e){
             e.printStackTrace(System.out);
