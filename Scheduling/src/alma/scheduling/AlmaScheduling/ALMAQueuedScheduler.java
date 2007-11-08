@@ -234,7 +234,7 @@ public class ALMAQueuedScheduler
         if(execStarted){
             try {
                 masterScheduler.stopQueue(schedulerId);
-                logger.log(Level.INFO,"Queued SB stopping", OPERATOR.value, arrayname);
+                logger.log(Level.INFO,"SB Queue stopped", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not stop queue");
                 e.printStackTrace();
@@ -243,26 +243,26 @@ public class ALMAQueuedScheduler
     }
 
     public void abortSB() {
-        logger.fine("qsComp's stopQueue called, execstarted = "+execStarted);
+        logger.fine("qsComp's abortSB called, execstarted = "+execStarted);
         if(execStarted){
             try {
                 masterScheduler.abortQueuedSB(schedulerId);
-                logger.log(Level.INFO,"Queued SB stopping", OPERATOR.value, arrayname);
+                logger.log(Level.INFO,"Queued SB aborted", OPERATOR.value, arrayname);
             } catch(Exception e) {
-                logger.warning("QS: could not stop queue");
+                logger.warning("QS: could not abort queue");
                 e.printStackTrace();
             }
         }
     }
 
     public void abortQueue(){
-        logger.fine("qsComp's stopQueue called, execstarted = "+execStarted);
+        logger.fine("qsComp's abortQueue called, execstarted = "+execStarted);
         if(execStarted){
             try {
                 masterScheduler.abortQueue(schedulerId);
-                logger.log(Level.INFO,"Queued SB stopping", OPERATOR.value, arrayname);
+                logger.log(Level.INFO,"Aborted whole Queue", OPERATOR.value, arrayname);
             } catch(Exception e) {
-                logger.warning("QS: could not stop queue");
+                logger.warning("QS: could not abort queue");
                 e.printStackTrace();
             }
         }
