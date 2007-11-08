@@ -58,6 +58,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	
 	// State variables
 	private boolean sessionStarted;
+    private boolean executing= false;
 	
 	// Identifying the session
 	private String PI;
@@ -352,7 +353,6 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         sbsNotDone = new String[0];
     }
 
-    private boolean executing= false;
     public void run() {
         try {
             sbsNotDone = queue.getAllIds();

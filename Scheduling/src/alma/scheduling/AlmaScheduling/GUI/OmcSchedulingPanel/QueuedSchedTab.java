@@ -342,6 +342,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         revalidate();
     }
     private void executeSBs(){
+        //TODO: check if queue is currently running
         queueSBs.resetStatusColumns();
         executionInfo.setText("");
         //get all ids from the queueSB table and send them to control

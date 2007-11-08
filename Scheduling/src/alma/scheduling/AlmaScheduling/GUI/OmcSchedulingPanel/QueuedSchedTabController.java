@@ -52,6 +52,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
     private String schedulerName;
     private String arrayStatus;
     private Queued_Operator_to_Scheduling qsComp;
+    private boolean aborted = false; 
 
     
     public QueuedSchedTabController(PluginContainerServices cs, QueuedSchedTab p, String a){
@@ -142,6 +143,8 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             for(int i=0; i < sb_ids.length; i++){
                 sbs_to_run[i] = sb_ids[i];
             }
+            //reset aborted flag
+            aborted = false;
             qsComp.runQueue();
         } catch(Exception e){
             e.printStackTrace();
@@ -244,6 +247,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         try {
             logger.fine("abortSB in QS Ctrller called");
             qsComp.abortSB();
+            aborted = true;
         } catch(Exception e){
             e.printStackTrace();
             throw e;
@@ -254,6 +258,7 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         try {
             logger.fine("abortSB in QS Ctrller called");
             qsComp.abortQueue();
+            aborted = true;
         } catch(Exception e){
             e.printStackTrace();
             throw e;
@@ -320,7 +325,11 @@ public class QueuedSchedTabController extends SchedulingPanelController {
                 break;
             }
             parent.updateExecutionInfo("Execution ended for SB: "+sb.sbName+".\n");
-            parent.updateExecutionInfo("Waiting for it to be Archived.\n");
+            if(!aborted) {
+                parent.updateExecutionInfo("Waiting for it to be Archived.\n");
+            } else {
+                parent.updateExecutionInfo("Aborted: nothing will be archived.\n");
+            }
             parent.setSBStatus(sbid, completion);
             //TODO: Set stop buttons to disabled if last SB in queue.
             parent.updateExecutionRow();
