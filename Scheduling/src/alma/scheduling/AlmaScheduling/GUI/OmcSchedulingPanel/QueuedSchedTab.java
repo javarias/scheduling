@@ -279,6 +279,8 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //second row: right hand cell == execution info text area
         executionInfo = new JTextArea();
         executionInfo.setEditable(false);
+        executionInfo.setMaximumSize(new Dimension(150,75));
+        executionInfo.setPreferredSize(new Dimension(150,75));
         JScrollPane taPane = new JScrollPane(executionInfo,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);

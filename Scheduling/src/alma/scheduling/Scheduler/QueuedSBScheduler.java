@@ -149,6 +149,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 	 * @throws SchedulingException 
 	 */
 	public boolean executeSBs() throws SchedulingException {
+        executing = true;
 		/*if (config.isSBExecuting()) {
 			error("Invalid operation. A scheduling block is currently executing.");
 		}
@@ -279,16 +280,18 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             logger.fine("all's size before remove is "+all.size());
             // need to modify the sbsNotDone with execCount because that list decreases as
             // sbs are executed.
-            int j= i-execCount;
-            if(all.get(j).equals(sb.getId())){
-                all.remove(j);
-                logger.fine("took out "+sb.getId()+" from all");
-                config.getQueue().remove(sb.getId(), i);
-                logger.fine("QueuedScheduler: queued size after sb removed. = "+config.getQueue().size());
-            } else {
-                logger.fine("QueuedScheduler: no match, nothing removed.");
+            if (all.size() > 0)  {
+                int j= i-execCount;
+                if(all.get(j).equals(sb.getId())){
+                    all.remove(j);
+                    logger.fine("took out "+sb.getId()+" from all");
+                    config.getQueue().remove(sb.getId(), i);
+                    logger.fine("QueuedScheduler: queued size after sb removed. = "+config.getQueue().size());
+                } else {
+                    logger.fine("QueuedScheduler: no match, nothing removed.");
+                }
+               logger.fine("all's size after remove is "+all.size());
             }
-            logger.fine("all's size after remove is "+all.size());
             sbsNotDone = new String[all.size()];
             sbsNotDone = all.toArray(sbsNotDone);
             logger.fine("sbsNotDone size after remove is "+sbsNotDone.length);
@@ -325,7 +328,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 
     public void stopQueue() throws SchedulingException {
         //get current sb, and abort it,
-        stop(config.getCurrentSBId());
+		control.stopSB(config.getArrayName(), config.getCurrentSBId());
         //remove everything from sbqueue
         queue.clear();
         //remove everything from sbsNotDone
@@ -349,11 +352,14 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
         sbsNotDone = new String[0];
     }
 
+    private boolean executing= false;
     public void run() {
         try {
             sbsNotDone = queue.getAllIds();
             while(true) {
                 if(executeSBs()) {
+                    //set to true inside the executeSBs method
+                    executing = false;
                     break;
                 }
                 Thread.sleep(30);

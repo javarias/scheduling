@@ -73,7 +73,7 @@ public class CreateArrayController extends SchedulingPanelController {
     private void getTMCDBComponent(){ 
        try {
            if(tmcdb == null){
-                tmcdb = TMCDBComponentHelper.narrow(container.getDefaultComponent("IDL:alma/TMCDB/TMCDBComponent:1.0"));
+                tmcdb = TMCDBComponentHelper.narrow(container.getComponentNonSticky("TMCDB"));
            }
         } catch (Exception e) {
             //TODO do more here
