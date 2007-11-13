@@ -134,7 +134,12 @@ public class MainSchedTabPane extends JTabbedPane {
         
         // first reflash the offine antenna and reflash the online antenna
     	middlePanel.setEnabled(java.lang.Boolean.FALSE);
+    	if(interactiveB.getBackground().equals(selectedButtonColor) ||
+    			queuedB.getBackground().equals(selectedButtonColor) ||
+    			dynamicB.getBackground().equals(selectedButtonColor) ||
+    			manualB.getBackground().equals(selectedButtonColor)) {
     	middlePanel.updateOnlineAntenna();
+    	}
     	
         
         }
@@ -143,23 +148,36 @@ public class MainSchedTabPane extends JTabbedPane {
         
         // first reflash the offine antenna and reflash the online antenna
     	middlePanel.setEnabled(java.lang.Boolean.FALSE);
-    	middlePanel.prepareCreateArray("interactive");
-        
+    	if(interactiveB.getBackground().equals(selectedButtonColor) ||
+    			queuedB.getBackground().equals(selectedButtonColor) ||
+    			dynamicB.getBackground().equals(selectedButtonColor) ||
+    			manualB.getBackground().equals(selectedButtonColor)) {
+    	middlePanel.updateOnlineAntenna();
+    	}
         }
     
     public void receive(DestroyedAutomaticArrayEvent event) {
         
         // first reflash the offine antenna and reflash the online antenna
     	middlePanel.setEnabled(java.lang.Boolean.FALSE);
-    	middlePanel.prepareCreateArray("interactive");
-        
+    	if(interactiveB.getBackground().equals(selectedButtonColor) ||
+    			queuedB.getBackground().equals(selectedButtonColor) ||
+    			dynamicB.getBackground().equals(selectedButtonColor) ||
+    			manualB.getBackground().equals(selectedButtonColor)) {
+    	middlePanel.updateOnlineAntenna();
+    	}
         }
 
     public void receive(DestroyedManualArrayEvent event) {
     
     // first reflash the offine antenna and reflash the online antenna
 	middlePanel.setEnabled(java.lang.Boolean.FALSE);
-	middlePanel.prepareCreateArray("interactive");
+	if(interactiveB.getBackground().equals(selectedButtonColor) ||
+			queuedB.getBackground().equals(selectedButtonColor) ||
+			dynamicB.getBackground().equals(selectedButtonColor) ||
+			manualB.getBackground().equals(selectedButtonColor)) {
+	middlePanel.updateOnlineAntenna();
+	}
     
     	}
 
