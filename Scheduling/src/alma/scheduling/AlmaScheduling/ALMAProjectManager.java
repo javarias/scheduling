@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.100 2007/11/05 21:18:40 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.101 2007/11/13 17:26:37 sslucero Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -483,15 +483,19 @@ public class ALMAProjectManager extends ProjectManager {
       */
     private synchronized boolean isSbInThisSet(String sb_id, ObsUnitSetStatusT set) {
         ObsUnitSetStatusTChoice c = set.getObsUnitSetStatusTChoice();
-        if (c.getSBStatusCount() == 0){
-            return false;
-        } else {
-            SBStatusT[] sbs = c.getSBStatus();
-            for(int i=0; i < sbs.length; i++){
-                if(sbs[i].getSchedBlockRef().getEntityId().equals(sb_id)){
-                    return true;
+        try {
+            if (c.getSBStatusCount() == 0){
+                return false;
+            } else {
+                SBStatusT[] sbs = c.getSBStatus();
+                for(int i=0; i < sbs.length; i++){
+                    if(sbs[i].getSchedBlockRef().getEntityId().equals(sb_id)){
+                        return true;
+                    }
                 }
             }
+        }catch(Exception e) {
+            return false;
         }
         return false;
     }
