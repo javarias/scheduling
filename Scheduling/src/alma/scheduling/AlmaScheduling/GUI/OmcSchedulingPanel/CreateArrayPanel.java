@@ -262,6 +262,18 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         Thread t = controller.getCS().getThreadFactory().newThread(ant);
         t.start();
     }
+    // add this method call by Create/Destory array event but can not get the mode
+    public void updateOnlineAntenna() {
+    	GetAntennaThread ant = new GetAntennaThread();
+        if(controller == null){
+            logger.fine("crappy controller == null");
+        }
+        if(controller.getCS() == null){
+            logger.fine("crappy CS== null");
+        }
+        Thread t = controller.getCS().getThreadFactory().newThread(ant);
+        t.start();
+    }
        
 
     private boolean createArray() {
