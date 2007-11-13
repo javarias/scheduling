@@ -36,9 +36,17 @@ import java.util.logging.Logger;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SBLite;
 import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.CreateArrayPanel.GetAntennaThread;
+import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.CreateArrayPanel.UpdateCB;
 import alma.exec.extension.subsystemplugin.*;
 
 import alma.acs.container.ContainerServices;
+import alma.Control.DestroyedManualArrayEvent;
+import alma.Control.CreatedManualArrayEvent;
+import alma.Control.DestroyedAutomaticArrayEvent;
+import alma.Control.CreatedAutomaticArrayEvent;
+import alma.acs.nc.Consumer;
+
 
 public class MainSchedTabPane extends JTabbedPane {
     private PluginContainerServices container;
@@ -62,6 +70,8 @@ public class MainSchedTabPane extends JTabbedPane {
     private Color selectedButtonColor;
     private Dimension maxSize;
     private JPanel parent;
+    private Consumer consumer;
+    
 
     /**
       * Constructor
@@ -74,6 +84,7 @@ public class MainSchedTabPane extends JTabbedPane {
         setMaximumSize(d);
         controller = new MainSchedTabPaneController (this);
         selectedButtonColor = Color.green;
+       
     }
         
     public void setup() {
@@ -103,7 +114,55 @@ public class MainSchedTabPane extends JTabbedPane {
         middlePanel.connectedSetup(cs);
         controller.checkOperationalState();
         logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
+        try {
+            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);
+            
+            consumer.addSubscription(alma.Control.CreatedManualArrayEvent.class, this);
+            consumer.addSubscription(alma.Control.CreatedAutomaticArrayEvent.class, this);
+            consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
+            consumer.addSubscription(alma.Control.DestroyedManualArrayEvent.class, this);
+         
+            consumer.consumerReady();
+            //consumer.disconnect();
+        } catch(Exception e){
+            e.printStackTrace();
+            logger.warning("SCHEDULING_PANEL: Problem getting NC consumer for control system channel, won't see existing arrays");
+        }
     }
+    
+    public void receive(CreatedAutomaticArrayEvent event) {
+        
+        // first reflash the offine antenna and reflash the online antenna
+    	middlePanel.setEnabled(java.lang.Boolean.FALSE);
+    	middlePanel.updateOnlineAntenna();
+    	
+        
+        }
+    
+    public void receive(CreatedManualArrayEvent event) {
+        
+        // first reflash the offine antenna and reflash the online antenna
+    	middlePanel.setEnabled(java.lang.Boolean.FALSE);
+    	middlePanel.prepareCreateArray("interactive");
+        
+        }
+    
+    public void receive(DestroyedAutomaticArrayEvent event) {
+        
+        // first reflash the offine antenna and reflash the online antenna
+    	middlePanel.setEnabled(java.lang.Boolean.FALSE);
+    	middlePanel.prepareCreateArray("interactive");
+        
+        }
+
+    public void receive(DestroyedManualArrayEvent event) {
+    
+    // first reflash the offine antenna and reflash the online antenna
+	middlePanel.setEnabled(java.lang.Boolean.FALSE);
+	middlePanel.prepareCreateArray("interactive");
+    
+    	}
+
 
     private void initializeChessboardsWithALMA(){
         middlePanel.initializeChessboards();
@@ -341,5 +400,5 @@ public class MainSchedTabPane extends JTabbedPane {
     }
     public void exit(){
     }
-
+    
 }
