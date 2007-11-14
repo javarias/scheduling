@@ -23,7 +23,7 @@ STARTALLOPEN = 0
 ICONPATH = ''
 
 
-foldersTree = gFld("<i>Project Summary and Status</i>", "../Project.html")
+foldersTree = gFld("<i>Project Summary and Status</i>", "../Project.jsp")
   foldersTree.treeID = "Frameset"
 
   aux1 = insFld(foldersTree, gFld("QuickLook Result", "../Quicklook.html"))

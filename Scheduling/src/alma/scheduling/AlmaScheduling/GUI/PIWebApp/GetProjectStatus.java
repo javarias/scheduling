@@ -33,7 +33,7 @@ import alma.entity.xmlbinding.projectstatus.*;
  * @web.servlet-init-param   name="A parameter"
  *                           value="A value"
  */
-public class GetProject extends HttpServlet {
+public class GetProjectStatus extends HttpServlet {
 
 	private ALMAArchive archive;
 	private ContainerServices cs;
@@ -51,8 +51,8 @@ public class GetProject extends HttpServlet {
 	
 		resp.setContentType("text/html");
 		java.io.PrintWriter out=resp.getWriter();
-		String targetURL = "/Project.jsp";
-		ArrayList tempinfo,allinfo;
+		String targetURL = "/ProjectStatus.jsp";
+		//ArrayList tempinfo,allinfo;
 		//String test="";
 		
 		try {
@@ -67,7 +67,7 @@ public class GetProject extends HttpServlet {
         	        Project[] p = archive.getAllProject();
             //out.println("<h2>Got "+p.length+" projects</h2>");
             		String uid1;
-            		tempinfo = new ArrayList();
+            		//tempinfo = new ArrayList();
             		
             		for (int i=0; i < 1 ;i++){
             			//i=p.length-1;
@@ -76,47 +76,47 @@ public class GetProject extends HttpServlet {
 	                //out.println(uid1);
         	        //String ProjectName=p[i].getProjectName();
                 	req.setAttribute("ProjectName",p[i].getProjectName());
-                	tempinfo.add(p[i].getProjectName());
+                	//tempinfo.add(p[i].getProjectName());
                 	//String PIName=p[i].getPI();
                 	req.setAttribute("PIName",p[i].getPI());
-                	tempinfo.add(p[i].getPI());
+                	//tempinfo.add(p[i].getPI());
                 	req.setAttribute("TimeOfUpdate", p[i].getTimeOfUpdate().toString());
-                	tempinfo.add(p[i].getTimeOfUpdate().toString());
+                	//tempinfo.add(p[i].getTimeOfUpdate().toString());
                 	req.setAttribute("ProjectStatus", p[i].getStatus().getStatus());
-                	tempinfo.add(p[i].getPI());
+                	//tempinfo.add(p[i].getPI());
                 	if(p[i].getStatus().getReadyTime()==null) {
                 		req.setAttribute("ReadyTime", "Not set");
-                		tempinfo.add(p[i].getPI());
+                		//tempinfo.add(p[i].getPI());
                 	}
                 	else {
                 		req.setAttribute("ReadyTime", p[i].getStatus().getReadyTime().toString());
-                		tempinfo.add(p[i].getPI());
+                		//tempinfo.add(p[i].getPI());
                 	}
                 	if(p[i].getStatus().getStartTime()==null) {
                 		req.setAttribute("StartTime", "Not set");
-                		tempinfo.add(p[i].getPI());
+                		//tempinfo.add(p[i].getPI());
                 	}
                 	else {
                 		req.setAttribute("StartTime", p[i].getStatus().getStartTime().toString());
-                		tempinfo.add(p[i].getPI());
+                		//tempinfo.add(p[i].getPI());
                 	}
                 	if(p[i].getStatus().getEndTime()==null) {
                 		req.setAttribute("EndTime", "Not set");
-                		tempinfo.add(p[i].getPI());
+                		//tempinfo.add(p[i].getPI());
                 	}
                 	else {
                 		req.setAttribute("EndTime", p[i].getStatus().getEndTime().toString());
-                		tempinfo.add(p[i].getPI());
+                		//tempinfo.add(p[i].getPI());
                 	}
                 
                 	req.setAttribute("TotalSB", Integer.toString(p[i].getTotalSBs()));
                 	req.setAttribute("NumberSBComplete", Integer.toString(p[i].getNumberSBsCompleted()));
                 	req.setAttribute("NumberSBFail", Integer.toString(p[i].getNumberSBsFailed()));
                 	// get ObsunitSet info from get Program
-                	req.setAttribute("TotalObsUnitSet", Integer.toString(p[i].getTotalPrograms()));
-                	req.setAttribute("NumbetObsUnitSetComplete",Integer.toString(p[i].getNumberProgramsCompleted()));
-                	req.setAttribute("NumbetObsUnitSetFail", Integer.toString(p[i].getNumberProgramsFailed()));
-                	SB[] AllSB=p[i].getAllSBs();
+                	//req.setAttribute("TotalObsUnitSet", Integer.toString(p[i].getTotalPrograms()));
+                	//req.setAttribute("NumbetObsUnitSetComplete",Integer.toString(p[i].getNumberProgramsCompleted()));
+                	//req.setAttribute("NumbetObsUnitSetFail", Integer.toString(p[i].getNumberProgramsFailed()));
+                	//SB[] AllSB=p[i].getAllSBs();
                 	//SB[] AllSB= archive.getAllSB();
                 	//out.print("SB length:");
                 	//out.println(AllSB.length);
@@ -128,8 +128,9 @@ public class GetProject extends HttpServlet {
                 	//	}
                 	//}
                 	
-                	req.setAttribute("SBTimeOfUpdate", AllSB[0].getTimeOfUpdate().toString());
-                	req.setAttribute("SBStatus", AllSB[0].getStatus().getStatus());
+                	//req.setAttribute("SBTimeOfUpdate", AllSB[0].getTimeOfUpdate().toString());
+                	//req.setAttribute("SBStatus", AllSB[0].getStatus().getStatus());
+                	/*
                 	if(AllSB[0].getStatus().getReadyTime()==null)
                 		req.setAttribute("SBReadyTime", "Not set");
                 	else 
@@ -147,13 +148,13 @@ public class GetProject extends HttpServlet {
                 	req.setAttribute("SBPercentage", 
                 			Float.toString(AllSB[0].getTotalUsedTimeInSeconds()/AllSB[0].getTotalRequiredTimeInSeconds()));
                 	ProjectStatus ps= archive.getProjectStatus(p[i]);
-                	
+                	*/
                 	//ps.getObsProgramStatus().getObsUnitSetRef()
                 	//SessionT st=ps.getObsProgramStatus().getObsUnitSetStatusTChoice().getObsUnitSetStatus(0).getSession(0);
                 	//out.print("<h2>Session t:"+st.getExecBlockRefCount()+"</h2>");
                 	//req.setAttribute("EBCount", Integer.toString(st.getExecBlockRefCount()));
                 	//SchedBlock AllSB[0].getSbStatusId().
-                	ExecBlock[] AllEB=AllSB[0].getExec();
+                	/*ExecBlock[] AllEB=AllSB[0].getExec();
                 	Source[] source=AllSB[0].getSource();
                 	
                 	//req.setAttribute("EBSource", source[0].getSourceName().toString());
@@ -164,13 +165,13 @@ public class GetProject extends HttpServlet {
                 	req.setAttribute("EBStatus", AllEB[0].getStatus().getStatus());
                 	req.setAttribute("EBNumberOfAntenna", Integer.toString(AllEB[0].getParent().getAntennaList().length));
                 	req.setAttribute("EBConfigName", AllEB[0].getArrayName().toString());
-                	}
+                	}*/
                 	//req.setAttribute(arg0, arg1);
                 	//req.setAttribute(arg0, arg1)
                 	
                 	//get info about obsunit set
                 	//req.setAttribute("ObsUnitSet", p[i].)
-                	req.setAttribute("array", tempinfo);
+                	//req.setAttribute("array", tempinfo);
                 	RequestDispatcher rd;
                 	rd=getServletContext().getRequestDispatcher(targetURL);
                 	rd.forward(req,resp);
