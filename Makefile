@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.7 2007/06/13 22:14:30 sslucero Exp $"
+# "@(#) $Id: Makefile,v 1.8 2007/11/14 16:25:57 wlin Exp $"
 #
 # Makefile of ........
 #
@@ -159,7 +159,7 @@ clean:
 all:	cli	
 	$(canned)
 cli:
-	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INSTALL_DIR}/lib
+	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INTROOT}/lib
 
 install:
 	$(canned)
