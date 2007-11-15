@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.8 2007/11/14 16:25:57 wlin Exp $"
+# "@(#) $Id: Makefile,v 1.9 2007/11/15 20:41:48 wlin Exp $"
 #
 # Makefile of ........
 #
@@ -26,11 +26,11 @@
 # Beta continas the moduels beta1, beta2 and beta3
 #
 # Modify as appropriate to your subsystem
-ifdef INTLIST
-       INSTALL_DIR := $(shell echo $(INTLIST) | awk -F: '{print $$1}')
-else
 ifdef INTROOT
    INSTALL_DIR=$(INTROOT)
+else
+ifdef INTLIST
+       INSTALL_DIR := $(shell echo $(INTLIST) | awk -F: '{print $$1}')
 else
    INSTALL_DIR=$(ACSROOT)
 endif
@@ -159,7 +159,7 @@ clean:
 all:	cli	
 	$(canned)
 cli:
-	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INTROOT}/lib
+	cp ./thirdPartyPackages/JavaServlet/servlet-api.jar ${INSTALL_DIR}/lib
 
 install:
 	$(canned)
