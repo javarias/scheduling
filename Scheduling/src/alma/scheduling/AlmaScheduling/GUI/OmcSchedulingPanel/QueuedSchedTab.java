@@ -247,17 +247,27 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                 abortQueue();
             }
         });
+	
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));
-        JPanel foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+	buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));
+        JPanel foo = new JPanel();
+        foo.setLayout(new BoxLayout(foo,BoxLayout.X_AXIS));
+	removeB.setSize(abortQB.getSize());
+	executeB.setSize(abortQB.getSize());
         foo.add(removeB);
         foo.add(executeB);
         buttonPanel.add(foo);
-        foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+        foo = new JPanel();
+        foo.setLayout(new BoxLayout(foo,BoxLayout.X_AXIS));
+	stopQB.setSize(abortQB.getSize());
+	stopB.setSize(abortQB.getSize());
         foo.add(stopQB);
         foo.add(stopB);
         buttonPanel.add(foo);
-        foo = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+        foo = new JPanel();
+        foo.setLayout(new BoxLayout(foo,BoxLayout.X_AXIS));
+	abortB.setSize(abortQB.getSize());
+	//iabortQB.setSize(abortQB.getSize());
         foo.add(abortB);
         foo.add(abortQB);
         buttonPanel.add(foo);
@@ -348,7 +358,16 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //get all ids from the queueSB table and send them to control
         currentExecutionRow =0;
         archivingRow=0;
+
+	if(queueSBs.getAllSBIds().length!=0){
         controller.runQueuedScheduling(queueSBs.getAllSBIds());
+        }
+        else {
+        	JOptionPane.showMessageDialog(null,
+        		    "there is no any SB in Queue. Queue Scheduling can not run anything", 
+        		    "Message",JOptionPane.PLAIN_MESSAGE);
+        };
+
         //setStopButtonsEnabled(true);
     }
     public void updateExecutionRow(){
