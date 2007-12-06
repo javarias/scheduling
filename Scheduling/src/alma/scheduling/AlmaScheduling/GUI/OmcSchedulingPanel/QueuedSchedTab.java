@@ -124,9 +124,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         createTopPanel();
         mainPanel.add(topPanel,BorderLayout.NORTH);
         mainPanel.add(createCenterPanel(),BorderLayout.CENTER);
+	//setVisible(Boolean.TRUE);
+	//mainPanel.setPreferredSize(new Dimension(180,250));
         Dimension d = getPreferredSize();
         mainPanel.setMaximumSize(d);
-        mainPanel.setMinimumSize(d);
+        mainPanel.setMinimumSize(new Dimension(480,600));
         add(mainPanel);
     }
     private void createTopPanel() {
