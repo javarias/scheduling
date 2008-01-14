@@ -46,6 +46,7 @@ import alma.scheduling.Define.*;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.io.StringWriter;
 
 /**
  * The ProjectUtil class is a collection of static methods that
@@ -78,7 +79,7 @@ import java.util.logging.Logger;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.63 2007/10/25 15:49:50 sslucero Exp $
+ * @version $Id: ProjectUtil.java,v 1.64 2008/01/14 18:43:05 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -421,7 +422,6 @@ public class ProjectUtil {
 		// Now, set all the partIds in the project status.
 		Program p = project.getProgram();
 		setProgramMember(p);
-		
 		project.setProgram(program);
 		
 		// Now, validate the project
@@ -439,7 +439,7 @@ public class ProjectUtil {
               //      project.getStatus().getEndTime().toString()) );
 		return project;
 	}
-	
+
 	static private void setProgramMember(Program p) {
 		ProgramMember[] m = p.getMember();
 		for (int i = 0; i < m.length; ++i) {
@@ -505,6 +505,7 @@ public class ProjectUtil {
         }
         program = new Program (set.getEntityPartId());
 		program.setProject(project);
+		//System.out.println("ProjectUtil:program"+ program.getTotalPrograms());
 		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
         try {
     		program.setTimeOfCreation(new DateTime(ous.getStatus().getReadyTime()));
@@ -596,7 +597,9 @@ public class ProjectUtil {
             String partId;
 			for (int i = 0; i < setMember.length; ++i) {
                 try {
+                	//System.out.println("check if this has been executed and setMember length is "+setMember.length);              	
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,status[i],now);
+				    //System.out.println("ProjectUtil:program"+ memberProgram.getTotalPrograms());
                 } catch(Exception e){
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,null,now);
                 }
@@ -604,6 +607,7 @@ public class ProjectUtil {
 				program.addMember(memberProgram);
 			}
 		} else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
+			//System.out.println("obsunitset schedblock "+ set.getObsUnitSetTChoice().getSchedBlockRefCount());
 			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
             ObsUnitSetStatusT[] foo=null;
             ObsUnitSetStatusTChoice choice = null;
@@ -654,6 +658,7 @@ public class ProjectUtil {
         }catch(Exception e){
         //if we get this exception its fine and means there were no sessions to add
         }
+        //System.out.println("ProjectUtil:program"+ program.getId()+" "+program.getAllSBs()[0].getId()+ " has " + program.getNumberSession()+ " session");
 		int maxTime = 0;
 		ProgramMember[] member = program.getMember();
 		for (int i = 0; i < member.length; ++i) {
@@ -1153,19 +1158,41 @@ public class ProjectUtil {
             }
 		
             // Initialize the obsProgram.
+    		
     		Program program = updateProgram(obs.getObsProgram().getObsPlan(), project.getProgram(), 
                     sched, schedUsed, project, null, now);
 	    	project.setProgram(program);
-		
+	    	/*
+	    	 try {
+	         	project.setReady(new DateTime(ps.getStatus().getReadyTime()));
+	         }catch (java.lang.IllegalArgumentException iae){
+	         	project.setReady(now);
+	         }catch (java.lang.NullPointerException npe){
+	         	project.setReady(now);
+	         } catch(Exception e){
+	             e.printStackTrace();
+	         }
+
+	         try {
+	             project.getStatus().setStarted(new DateTime(ps.getStatus().getStartTime()));
+	         } catch(Exception e) {}
+	         try {
+	             project.getStatus().setEnded(new DateTime(ps.getStatus().getStartTime()), 
+	                 getStatusMatch(ps.getStatus()));
+	         } catch(Exception e) {}
+	         */
+    		
             // Make sure that all the scheduling blocks in the sched array have been accounted for.
+    		
 		    for (int i = 0; i < schedUsed.length; ++i) {
 			    if (!schedUsed[i])
 				    throw new SchedulingException("SchedBlock with name " + 
 					    	sched[i].getName() + " and id " + 
 						    sched[i].getSchedBlockEntity().getEntityId() +
-    						" was not used in the initialization process.");
+    						" was not used in the update Project process.");
 	    	}
-		
+			
+    		
 		// Now, set all the partIds in the project status.
             Program p = project.getProgram();
             setProgramMember(p);
@@ -1505,6 +1532,21 @@ public class ProjectUtil {
 		pstatus.setBreakpointTime(project.getBreakpointTime() == null ? "" : project.getBreakpointTime().toString());
 		// The obsProgram status.
 		pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
+		/***********************************
+		 * test only need to move when bug fixed
+		 */
+		try {
+		String xml;
+        StringWriter writer = new StringWriter();
+        pstatus.marshal(writer);
+        xml = writer.toString();
+        System.out.println("ProjectUtil=>project Status:"+xml);
+		}
+		catch (Exception e) {
+			logger.severe("SCHEDULING: Error updating ProjectStatus.");
+            e.printStackTrace(System.out);
+		}
+        /******************************************/
 		
 		// Return the newly created project status.
 		return pstatus;
@@ -1939,8 +1981,11 @@ public class ProjectUtil {
         throws SchedulingException {
             
         SchedBlock sched = newSB;
+        
         SB sb = oldSB;
         try{
+        	sb.setSbStatusId(null);
+        	
             sb.setTimeOfUpdate(now);
             sb.setSBName(sched.getName());
             int tac = sched.getObsUnitControl().getTacPriority();
@@ -1953,6 +1998,14 @@ public class ProjectUtil {
                 pri = 1;
             }
             sb.setUserPriority(new Priority(pri));
+            //new add for verify*************** 
+            sb.setScienceGoal(null);
+            sb.setWeatherConstraint(null);
+            SBSetup initialSetup = new SBSetup();
+            sb.setRequiredInitialSetup(initialSetup);
+            sb.setImagingScript(null);
+            //***************************
+            
             sb.setObservingScript(sched.getObsProcedure().getObsProcScript());
             if (sched.hasStandardMode()){
                 sb.setStandardScript(sched.getStandardMode());

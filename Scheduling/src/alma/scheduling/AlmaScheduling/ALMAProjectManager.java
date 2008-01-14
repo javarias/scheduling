@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.101 2007/11/13 17:26:37 sslucero Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.102 2008/01/14 18:42:53 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -382,9 +382,18 @@ public class ALMAProjectManager extends ProjectManager {
                     set.setNumberSBsCompleted(x + 1);
                     p.setNumberSBsCompleted(x +1);
                     logger.fine("completed; x = "+ (x+1));
+                //add for testing not very sure I can do this    
+                } else if(eb.getStatus().getStatus().equals("complete")){
+                	int x = set.getNumberSBsCompleted();
+                    set.setNumberSBsCompleted(x + 1);
+                    p.setNumberSBsCompleted(x +1);
+                    // test only not complete.....
+                    p.getParent().setNumberSBsCompleted(x+1);
+                    logger.fine("completed; x = "+ (x+1));
+                // end of the adding    
                 } else {
                     logger.warning(
-                        "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid"+
+                        "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid:"+
                         eb.getStatus().getStatus());
                 }
             } else {
@@ -458,7 +467,7 @@ public class ALMAProjectManager extends ProjectManager {
                     }
                 } else {
                     logger.warning(
-                        "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid"+
+                        "SCHEDULING: ObsUnitSetSTatus not updated coz status field was invalid:"+
                         eb.getStatus().getStatus());
                 }
                 return;
@@ -483,19 +492,18 @@ public class ALMAProjectManager extends ProjectManager {
       */
     private synchronized boolean isSbInThisSet(String sb_id, ObsUnitSetStatusT set) {
         ObsUnitSetStatusTChoice c = set.getObsUnitSetStatusTChoice();
-        try {
-            if (c.getSBStatusCount() == 0){
-                return false;
-            } else {
-                SBStatusT[] sbs = c.getSBStatus();
-                for(int i=0; i < sbs.length; i++){
-                    if(sbs[i].getSchedBlockRef().getEntityId().equals(sb_id)){
-                        return true;
-                    }
+        logger.fine("check SB and obsunit set(sb count):"+c.getSBStatusCount());
+        logger.fine("check SB and obsunit set(sb id):"+sb_id);
+        if (c.getSBStatusCount() == 0){
+            return false;
+        } else {
+            SBStatusT[] sbs = c.getSBStatus();
+            for(int i=0; i < sbs.length; i++){
+		logger.fine("Obs sb:"+sbs[i].getSchedBlockRef().getEntityId());
+                if(sbs[i].getSchedBlockRef().getEntityId().equals(sb_id)){
+                    return true;
                 }
             }
-        }catch(Exception e) {
-            return false;
         }
         return false;
     }
@@ -685,6 +693,7 @@ public class ALMAProjectManager extends ProjectManager {
         session.setStartTime(new DateTime(System.currentTimeMillis()));
         session.addExec(eb);
         p.addObservedSession(session);
+        logger.fine("the program(SB) now has "+p.getAllSession().length + " sessions");
         
         //Project proj = pQueue.get(p.getProject().getId());
         Program prog =  addProgram(p);
@@ -698,7 +707,8 @@ public class ALMAProjectManager extends ProjectManager {
         ProjectStatus ps = psQueue.getStatusFromProjectId(proj.getId());
         try {
             logger.fine("SCHEDULING: updating project status with session "+session.getSessionId());
-            ps = ProjectUtil.updateProjectStatus(proj);
+            //need to remove this one, because the project info did not include any other session that had been add into
+            //ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
@@ -1249,7 +1259,9 @@ public class ALMAProjectManager extends ProjectManager {
         //for each project
         for(int i=0; i < projectIds.length; i++){
             //get all its sbs
+        	//logger.info("<manager total sb>"+((Project)pQueue.get(projectIds[i])).getTotalSBs());
             SB[] projectSBs = ((Project)pQueue.get(projectIds[i])).getAllSBs();
+
             //for each sb in that project
             for (int j=0; j < projectSBs.length; j++){
                 //if it matches one of the ones in the search we return it!
@@ -1370,6 +1382,7 @@ public class ALMAProjectManager extends ProjectManager {
                     logger.warning("Project status for project "+((Project)projects.get(i)).getId());
                 }
                 //check if proj04ect status is complete
+                //logger.fine("Program session number:"+ps.getObsProgramStatus().getSessionCount());
                 logger.finest("iteration "+i+" out of "+size);
                 logger.finest("PS ("+ps.getProjectStatusEntity().getEntityId()+") "+
                         "status = "+ps.getStatus().getState().toString());
@@ -1413,10 +1426,12 @@ public class ALMAProjectManager extends ProjectManager {
                
             for(int i=0; i < projects.size(); i++){
                 newProject = projects.get(i);
-                logger.finest("iteration "+i+", project = "+newProject.getId());
+                //logger.finest("iteration "+i+", project = "+newProject.getId());
+                //logger.finest("number of program in pollarchive:"+newProject.getAllSBs().length);
                 //does project exist in queue?
                 if(pQueue.isExists( newProject.getId() )){
                     oldProject = pQueue.get(newProject.getId());
+                    //logger.finest("(old project)number of program in pollarchive:"+oldProject.getAllSBs().length);
                     //yes it is so check if project needs to be updated, check if 
                     if(newProject.getTimeOfUpdate().compareTo(oldProject.getTimeOfUpdate()) == 1 ){
                         //needs updating
@@ -1430,9 +1445,13 @@ public class ALMAProjectManager extends ProjectManager {
                     }
                     //check if PS needs to be updated 
                     newPS = getPS(tmpPS, newProject.getId());
+                    newPS = ProjectUtil.updateProjectStatus(newProject);
                     oldPS = psQueue.get(newPS.getProjectStatusEntity().getEntityId());
                     if(newPS.getTimeOfUpdate().compareTo(oldPS.getTimeOfUpdate()) == 1 ){
                         //needs updating
+                    	logger.finest("Update project Status after update obsproject");
+                    	//XmlEntityStruct xml1 =entitySerializer.serializeEntity(newPS);
+                    	archive.updateProjectStatus(newPS);
                         psQueue.updateProjectStatus(newPS);
                     } else if(newPS.getTimeOfUpdate().compareTo(oldPS.getTimeOfUpdate()) == 0 ){
                         // DO NOTHING hasn't been updated
@@ -1454,6 +1473,10 @@ public class ALMAProjectManager extends ProjectManager {
                             if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 1) {
                                 logger.finest("Sb needs updating");
                                 sbQueue.replace(newSB);
+                                pQueue.replace(newProject);
+                                logger.finest("Update project Status after update SchedBlock");
+                                archive.updateProjectStatus(newPS);
+                                psQueue.updateProjectStatus(newPS);
                             }else if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 0) {
                                 // DO NOTHING, hasn't been updated
                             }else if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == -1) {
@@ -1465,6 +1488,10 @@ public class ALMAProjectManager extends ProjectManager {
                             //not in queue, so add it.
                             logger.finest("SB new, adding");
                             sbQueue.add(newSB);
+                            logger.finest("Update project Status after update SchedBlock");
+                            archive.updateProjectStatus(newPS);
+                            psQueue.updateProjectStatus(newPS);
+                            pQueue.replace(newProject);
                         }
                     }
                 } else {
@@ -1472,12 +1499,17 @@ public class ALMAProjectManager extends ProjectManager {
                     //no it isn't so add project to queue, 
                     pQueue.add(newProject);
                     //add its project status to project status queue
+                    //archive.updateProjectStatus(tmpPS);
                     psQueue.add( getPS( tmpPS, newProject.getId() ) );
                     //and sbs to sbqueue
                     sbQueue.add( getSBs(tmpSBs, newProject.getId() ) );
-                    
+                    Program p = ((SB)getSBs(tmpSBs, newProject.getId())[0] ).getParent();
+                    logger.finest("Program's session "+p.getId()+"has "+p.getNumberSession()+" session");
                 }
             }
+
+            //checkSBUpdates();
+            //checkPSUpdates();
         } catch(Exception e) {
             e.printStackTrace();
             throw new SchedulingException(e);
@@ -1497,22 +1529,36 @@ public class ALMAProjectManager extends ProjectManager {
     private void checkSBUpdates() throws SchedulingException {
         try {
             SchedBlock[] sbs = archive.queryRecentSBs();
+            //logger.fine("<check SBUpdates:>"+sbs.length);            
             for(int i=0; i < sbs.length; i++){
+            	//System.out.println("schedblock name:"+sbs[i].getName());
+            	//first make sure the SB is a new SB or modify SB 
                 SB sb = sbQueue.get(sbs[i].getSchedBlockEntity().getEntityId());
-                if(sb == null){
-                    throw new SchedulingException (
-                            "SCHEDULING: Trying to update a SB which isn't in the queue!");
+                //System.out.println("sb name:"+sb.getSBName());
+            	if( sb == null){
+            		
+            		logger.fine("This is a new SB");
+            		//sb=ProjectUtil.createSBfromSchedBlock(sbs[i],archive,pQueue);
+            		//if(sb!=null) {
+            		//	System.out.println("new sb added:"+sb.getId());
+            		//	sbQueue.add(sb);
+            		//}	
                 }
-                sb = ProjectUtil.updateSB(sb, sbs[i], clock.getDateTime());
-                sbQueue.replace(sb);
+            	else {
+          
+            		sb = ProjectUtil.updateSB(sb, sbs[i], clock.getDateTime());
+        			sbQueue.replace(sb);
+        			//logger.fine("<sb's name>"+sb.getSBName());
+        			//logger.fine("<sb's program:>"+sb.getParent().getId());
+        			//logger.fine("<sb program length>"+sb.getParent().getNumberMembers());
+            	}
             }
         } catch(SchedulingException e){
             logger.warning("SCHEDULING: Problem checking for SB updates");
             throw e;
         }
-    
-    }
-    
+
+    }    
     /**
       * Ask the archive for any updated ProjectStatus' since the last query time
       * update any new ones in the queue.
@@ -1521,7 +1567,9 @@ public class ALMAProjectManager extends ProjectManager {
     private void checkPSUpdates() throws SchedulingException {
         try {
             ProjectStatus[] ps = archive.queryRecentProjectStatus();
+            
             for(int i=0; i < ps.length; i++){
+            	
                 ProjectStatus p = psQueue.get(ps[i].getProjectStatusEntity().getEntityId());
                 if(p == null){
                     throw new SchedulingException (
@@ -1754,6 +1802,10 @@ public class ALMAProjectManager extends ProjectManager {
         //have to get PS to get this info
         ProjectStatus ps = getPSForProject(id);
         projectlite.isComplete = isProjectComplete(ps);
+        projectlite.completeSBs = String.valueOf(ps.getObsProgramStatus().getNumberSBsCompleted());
+        projectlite.failedSBs = String.valueOf(ps.getObsProgramStatus().getNumberSBsFailed());
+        //logger.fine("Total complete SBs:"+projectlite.completeSBs);
+        //logger.fine("Total failed SBs:"+projectlite.failedSBs);
         return projectlite;
     }
 
@@ -1789,17 +1841,9 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusT prog = ps.getObsProgramStatus();
         SBStatusT sb;
         if(isSbInThisSet(sb_id, prog)){
-            try {
-                sb = getSBStatus(prog, sb_id);
-            }catch(Exception e){
-                return false;
-            }
+            sb = getSBStatus(prog, sb_id);
         } else {
-            try {
-                sb = findSB(prog, sb_id);
-            }catch(Exception e){
-                return false;
-            }
+            sb = findSB(prog, sb_id);
         }
         try {
             if(sb.getStatus().getState().toString().equals("complete")
@@ -1819,19 +1863,7 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusTChoice c = o.getObsUnitSetStatusTChoice();
         ObsUnitSetStatusT[] sets;
         SBStatusT[] sbs;
-        int ous_count = 0;
-        try {
-            ous_count = c.getObsUnitSetStatusCount();
-        }catch(Exception e) {
-            logger.info("SCHEDULING:  c.getObsUnitSetStatusCount() gives error with sb ("+id+")");
-        }
-        int sbstatus_count =0; 
-        try {
-            sbstatus_count = c.getSBStatusCount();
-        }catch(Exception e) {
-            logger.info("SCHEDULING:  c.getSBStatusCount() gives error with sb ("+id+")");
-        }
-        if(ous_count > 0){
+        if(c.getObsUnitSetStatusCount() > 0){
             sets = c.getObsUnitSetStatus();
             for(int i=0; i < sets.length; i++){
                 if(isSbInThisSet(id, sets[i])){
@@ -1842,7 +1874,7 @@ public class ALMAProjectManager extends ProjectManager {
                     return findSB(sets[i], id);
                 }
             }
-        } else if (sbstatus_count > 0){
+        } else if (c.getSBStatusCount() > 0){
             if(isSbInThisSet(id, o)){
                 sbs = c.getSBStatus();
                 return getSBStatus(o, id);

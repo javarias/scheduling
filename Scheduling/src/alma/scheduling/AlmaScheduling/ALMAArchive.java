@@ -77,7 +77,7 @@ import alma.scheduling.Scheduler.DSA.SchedulerStats;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.86 2007/11/05 19:56:03 sslucero Exp $
+ * @version $Id: ALMAArchive.java,v 1.87 2008/01/14 18:41:31 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -218,21 +218,17 @@ public class ALMAArchive implements Archive {
         
             ObsProject[] obsProj = getAllObsProjects();
             //SchedBlock[] sbs1 = 
-            logger.fine("obsproject length = "+obsProj.length);
+            //logger.fine("obsproject length = "+obsProj.length);
             for(int i=0; i < obsProj.length; i++) {
                 ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
                 if(ps == null) { //no project status for this project. so create one
                      logger.warning("SCHEDULING: no ps for this project");
                 } else {
             //TODO should check project queue.. if project exists don't map a new one.
-                    try {
-                        SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
-                        Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
-                                new DateTime(System.currentTimeMillis()));
-                        tmp_projects.add(p);
-                    } catch(Exception e){
-                        e.printStackTrace();
-                    }
+                    SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
+                    Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
+                            new DateTime(System.currentTimeMillis()));
+                    tmp_projects.add(p);
                 }
             }
             projects = new Project[tmp_projects.size()];
@@ -493,7 +489,7 @@ public class ALMAArchive implements Archive {
     /**
       * Creates a 'dummy' ProjectStatus and stores it in the archive.
       */
-    private ProjectStatus createDummyProjectStatus(ObsProject p) throws SchedulingException {
+    protected ProjectStatus createDummyProjectStatus(ObsProject p) throws SchedulingException {
         logger.finest("SCHEDULING: creating a project status for a project");
         //project doesn't have a ProjectStatus, so create one for it now and archive it
         String proj_id = p.getObsProjectEntity().getEntityId();
@@ -534,9 +530,9 @@ public class ALMAArchive implements Archive {
     /**
       *
       */
-    private SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
+    public SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
-            logger.severe("SCHEDULING: no sb stuff available in project ("+p.getObsProjectEntity().getEntityId()+")");
+            logger.severe("SCHEDULING: no sbs stuff available in project");
             throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
@@ -559,7 +555,7 @@ public class ALMAArchive implements Archive {
     /**
       *
       */
-    private ObsProject getObsProject(String id) throws SchedulingException {
+    public ObsProject getObsProject(String id) throws SchedulingException {
         ObsProject proj;
         try {
             logger.fine("SCHEDULING: About to retrieve project with uid "+id);
@@ -623,7 +619,6 @@ public class ALMAArchive implements Archive {
         try {
             logger.fine("SCHEDULING: About to retrieve SB with uid "+id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
-            //System.out.println("SCHEDBLOCK: "+ xml.xmlString);
             sb = (SchedBlock) entityDeserializer.deserializeEntity(xml, SchedBlock.class);
                     //"alma.entity.xmlbinding.schedblock.SchedBlock"));
             
@@ -791,6 +786,7 @@ public class ALMAArchive implements Archive {
         try {
             if (lastSBQuery != null){
                 String[] ids = archOperationComp.queryRecent(schema, lastSBQuery.toString()+".000");
+		logger.info("<queryRecentSB> amount:"+ids.length);
                 if(ids.length > 0){
                     sbs = new SchedBlock[ids.length];
                     for(int i=0; i < ids.length; i++){
@@ -850,6 +846,7 @@ public class ALMAArchive implements Archive {
             sbs = new SB[size];
             for (int x=0; x < size; x++) {
                 sbs[x] = (SB)tmp_sbs.elementAt(x);
+		//logger.info("<ALL SB>SB names:"+sbs[x].getSBName());
             }
             cursor.close();
         }catch(ArchiveInternalError e) {
@@ -1142,9 +1139,6 @@ public class ALMAArchive implements Archive {
         try {
             SB sb = getSB(ce.getSBId());
             ExecBlock eb = new ExecBlock(ce.getEBId(), ce.getArrayName());
-            //sb.execEnd(eb, ce.getStartTime(), 5);
-            //sb.getStatus().setEnded(ce.getStartTime(), 5);
-            //SchedBlock schedblock = getSBfromArchive(ce.getSBId());
             SchedBlock schedblock = getSchedBlock(ce.getSBId());
             ObsUnitControlT ouc = schedblock.getObsUnitControl();
             if(ouc == null) {
@@ -1222,8 +1216,6 @@ public class ALMAArchive implements Archive {
             }
             while(cursor.hasNext()){
                 QueryResult res = cursor.next();
-                //logger.info(res.xml);
-                //logger.info(res.identifier);
                 res_tmp.add(res.identifier);
             }
             String[] res = new String[res_tmp.size()];
