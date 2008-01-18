@@ -1,39 +1,73 @@
 1 - Alarm test start initialize
 1 - FINER: Logging configuration has been initialized, but not from CDB settings.
+1 - ----------T--:--:--.--- DEBUG [SchedulingAlarmTestClient_2] Alarm system type: CERN
+1 - ----------T--:--:--.--- DEBUG [SchedulingAlarmTestClient_2] cmw-mom/acs-jms initialized
 1 - ----------T--:--:--.--- INFO [SchedulingAlarmTestClient] component 'SchedulingAlarmTestClient' requested AdvancedContainerServices
 1 - start send alarm
-1 - log4j:WARN No appenders could be found for logger (cern.laser.source.alarmsysteminterface.impl.AlarmSystemInterfaceProxy).
-1 - log4j:WARN Please initialize the log4j system properly.
+1 - 0    INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - 4    INFO  Configurator       - loading configuration...
+1 - 74   INFO  Configurator       - configuration loaded
+1 - ---.------------- INFO  MomConfig          - loading configuration...
+1 - ---.------------- WARN  MomConfig          - could not load configuration, using defaults
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedArrayConnAlarm,3&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedArchiveConnAlarm,1&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedControlConnAlarm,2&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedControlConnAlarm,2&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedControlConnAlarm,2&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedArrayConnAlarm,3&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedSBFailedAlarm,4&gt; ACTIVE
 1 - alarm had send
+1 - ---.------------- INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - ---.------------- INFO  Configurator       - loading configuration...
+1 - ---.------------- INFO  Configurator       - configuration loaded
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
+1 - ----------T--:--:--.--- SEVERE [SchedulingAlarmTestClient_2] Alarm sent: &lt;Scheduling,SchedInvalidOperationAlarm,5&gt; ACTIVE
 1 - alarm had send
 1 - end send alarm
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,3> Status: ACTIVE
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedArchiveConnAlarm,1> Status: ACTIVE
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedSBFailedAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,3> Status: ACTIVE
 1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedInvalidOperationAlarm,1> Status: ACTIVE
-1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,3> Status: ACTIVE
-1 - Receive the alarm event!
-1 - Alarm message received from source: <Scheduling,SchedArrayConnAlarm,1> Status: ACTIVE
+1 - Alarm message received from source: <Scheduling,SchedInvalidOperationAlarm,5> Status: ACTIVE
 1 - Receive the alarm event!
 1 - Alarm message received from source: <Scheduling,SchedControlConnAlarm,2> Status: ACTIVE
+1 - Receive the alarm event!
+1 - Alarm message received from source: <Scheduling,SchedSBFailedAlarm,4> Status: ACTIVE
