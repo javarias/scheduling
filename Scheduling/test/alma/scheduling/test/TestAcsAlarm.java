@@ -127,14 +127,14 @@ public class TestAcsAlarm {
 	
 	public void testsendAlarm() {
 		System.out.println("start send alarm");
-		sendAlarm("Scheduling","SchedArrayConnAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
 		sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
-		sendAlarm("Scheduling","SchedControlConnAlarm",1,ACSFaultState.ACTIVE);
 		sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
-		sendAlarm("Scheduling","SchedControlConnAlarm",3,ACSFaultState.ACTIVE);
-		sendAlarm("Scheduling","SchedArrayConnAlarm",1,ACSFaultState.ACTIVE);
-		sendAlarm("Scheduling","SchedSBFailedAlarm",1,ACSFaultState.ACTIVE);
-		sendAlarm("Scheduling","SchedInvalidOperationAlarm",1,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedSBFailedAlarm",4,ACSFaultState.ACTIVE);
+		sendAlarm("Scheduling","SchedInvalidOperationAlarm",5,ACSFaultState.ACTIVE);
 		System.out.println("end send alarm");
 	//	assertTrue(true);
 	}
