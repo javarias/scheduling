@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reduction-definitions xmlns="urn:schemas-cosylab-com:AcsAlarmSystem:1.0"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
+	<links-to-create> 
+
+		<reduction-link type="MULTIPLICITY">
+			<parent>
+				<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveConnAlarm" fault-code="1"/>
+			</parent>
+			<child>
+				<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveConnAlarm" fault-code="1"/>
+			</child>
+		</reduction-link>
+	</links-to-create>
+
+		<thresholds>
+		<threshold value="5">
+			<alarm-definition fault-family="Scheduling" fault-member="SchedArchiveConnAlarm" fault-code="1"/>
+		</threshold>
+	</thresholds>
+</reduction-definitions>
