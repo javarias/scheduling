@@ -4,9 +4,9 @@
 1 - ----------T--:--:--.--- DEBUG [SchedulingAlarmTestClient_2] cmw-mom/acs-jms initialized
 1 - ----------T--:--:--.--- INFO [SchedulingAlarmTestClient] component 'SchedulingAlarmTestClient' requested AdvancedContainerServices
 1 - start send alarm
-1 - 0    INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
-1 - 4    INFO  Configurator       - loading configuration...
-1 - 74   INFO  Configurator       - configuration loaded
+1 - -    INFO  AlarmSystemInterfaceProxy - instantiating the alarm system interface
+1 - -    INFO  Configurator       - loading configuration...
+1 - --   INFO  Configurator       - configuration loaded
 1 - ---.------------- INFO  MomConfig          - loading configuration...
 1 - ---.------------- WARN  MomConfig          - could not load configuration, using defaults
 1 - SynchroBuffer[minWindowSize=---.-------------maxWindowSize=---.-------------,windowGrowthFactor=---.-------------duplicatePolicy=DUPLICATE_OK]
