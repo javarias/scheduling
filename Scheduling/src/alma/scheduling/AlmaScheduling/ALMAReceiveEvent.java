@@ -69,7 +69,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.54 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.55 2008/01/29 20:24:32 wlin Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -138,7 +138,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     public void receive(ExecBlockEndedEvent e) {
         ProcessExecBlockEndedEvent p = new ProcessExecBlockEndedEvent(e);
         if(e.status.toString()!="ABORTED" && e.status.toString()!="SUCCESS")
-        	sendAlarm("Scheduling","SchedSBFailedAlarm",1,ACSFaultState.ACTIVE);
+        	sendAlarm("Scheduling","SchedSBFailedAlarm",4,ACSFaultState.ACTIVE);
         	
         Thread t = new Thread(p);
         t.start();

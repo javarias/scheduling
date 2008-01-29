@@ -87,7 +87,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.106 2007/11/07 21:57:02 sslucero Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.107 2008/01/29 20:24:14 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -486,12 +486,14 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
 //            destroyArray(arrayname);
         } catch(Exception e) {
+        	/*
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
-            }
+            }*/
+        	
         //    InvalidOperation e1 = new InvalidOperation("startScheduling", e.toString());
         //    AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
         //    throw e2.toInvalidOperationEx();
@@ -527,7 +529,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         } catch (Exception e) {
             logger.severe("SCHEDULING: Error starting DS Comp; "+e.toString());
             e.printStackTrace();
-        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	//sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             InvalidOperation e1 = new InvalidOperation(
                     "createDyanmicSchedulingComponent", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -614,12 +616,14 @@ public class ALMAMasterScheduler extends MasterScheduler
             }
             //destroyArray(arrayname);
         } catch (Exception e){
+        	/* not sure did we really need this alarm
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
+            */
             e.printStackTrace(System.out);
             InvalidOperation e1 = new InvalidOperation("startQueueScheduling", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -646,7 +650,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         } catch (Exception e) {
             logger.severe("SCHEDULING: Error starting QS Comp; "+e.toString());
             e.printStackTrace();
-        	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
+        	//sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
             InvalidOperation e1 = new InvalidOperation(
                     "createQueuedSchedulerComponent", e.toString());
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
@@ -713,12 +717,14 @@ public class ALMAMasterScheduler extends MasterScheduler
             /////
             return name;
         } catch(Exception e){
+        	/* not sure did we really need this alarm
         	sendAlarm("Scheduling","SchedSchedulerConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
+            */
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation(
                     "startInteractiveScheduling1", e.toString());
