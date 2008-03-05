@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.102 2008/01/14 18:42:53 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.103 2008/03/05 23:20:20 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -708,7 +708,7 @@ public class ALMAProjectManager extends ProjectManager {
         try {
             logger.fine("SCHEDULING: updating project status with session "+session.getSessionId());
             //need to remove this one, because the project info did not include any other session that had been add into
-            //ps = ProjectUtil.updateProjectStatus(proj);
+            ps = ProjectUtil.updateProjectStatus(proj);
             psQueue.updateProjectStatus(ps);
             archive.updateProjectStatus(ps);
         } catch(SchedulingException e) {
