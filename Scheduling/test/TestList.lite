@@ -1,7 +1,7 @@
 PROLOGUE prologue
 1 allTests allTests
 2 simTest runSim 
-3 pubTest testPublisher
+#3 pubTest testPublisher
 #4 queuedSchedTest testQueuedScheduling
 #4 specialSBTest testStoreSpecialSB
 #4 psTest testProjectStatus
