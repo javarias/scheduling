@@ -47,8 +47,11 @@ import alma.scheduling.Define.SchedulingException;
 import alma.Control.ResourceId;
 import alma.Control.ControlMaster;
 import alma.Control.ArrayMonitor;
+import alma.Control.ArrayCommand;
 import alma.Control.AutomaticArrayCommand;
 import alma.Control.AutomaticArrayMonitor;
+import alma.Control.AutomaticArray2;
+import alma.Control.AutomaticArray2Helper;
 import alma.Control.ManualArrayMonitor;
 
 import alma.ControlExceptions.*;
@@ -68,7 +71,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.73 2008/03/14 19:55:23 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.74 2008/03/15 17:54:46 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -186,24 +189,22 @@ public class ALMAControl implements Control {
         logger.fine("SCHEDULING: Sending BestSBs to Control!");
         logger.fine("SCHEDULING: Array being used has name = "+arrayName);
         
-        AutomaticArrayMonitor ctrl = getAutomaticArray(arrayName);
+        AutomaticArray2 ctrl = getAutomaticArray(arrayName);
         try{
             IDLEntityRef sbRef = new IDLEntityRef();
             sbRef.entityId = sbId;
             sbRef.partId = "";
             sbRef.entityTypeName = "SchedBlock";
             sbRef.instanceVersion = "1.0";
+            //test only ....must remove if check into CVS
+            ctrl.observe(sbRef, sessionRef, 0L); 
             //logger.fine("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
             if(ctrl !=null){
                 arraylogger.log(Level.INFO, "SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName,
                         OPERATOR.value, arrayName);
                 logger.fine("Session ("+sessionRef.partId+") has PS ("+sessionRef.entityId+") type "+
                         "is "+sessionRef.entityTypeName+" and version = "+sessionRef.instanceVersion);
-                AutomaticArrayCommand arraycommand = 
-                		alma.Control.AutomaticArrayCommandHelper.narrow(
-                            containerServices.getComponent(ctrl.getArrayName()));
-                arraycommand.observe(sbRef, sessionRef, 0L); 
-                
+                ctrl.observe(sbRef, sessionRef, 0L); 
             } else {
                 logger.severe("***************************************");
                 logger.severe("SCHEDULING: array controller == null in execSB!!");
@@ -223,19 +224,7 @@ public class ALMAControl implements Control {
             	e1.printStackTrace(System.out);
             }
             throw new SchedulingException(e2);
-        } catch (AcsJContainerServicesEx ce) {
-            control_system=null;
-            logger.severe("SCHEDULING: error getting ControlMaster Component.");
-            logger.severe("SCHEDULING: "+ce.toString());
-            sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
-            try {
-            	Thread.sleep(1000);
-            } catch (InterruptedException e1) {
-            	e1.printStackTrace(System.out);
-            }
-            throw new SchedulingException(ce.toString());
         }
-        
     }
 
 
@@ -257,17 +246,14 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public void stopSB(String name, String id) throws SchedulingException {
-        AutomaticArrayMonitor ctrl = getAutomaticArray(name);
+        AutomaticArray2 ctrl = getAutomaticArray(name);
         try{
             //logger.info("SCHEDULING: Stopping scheduling on array "+name);
             arraylogger.log(Level.INFO, 
                     "SCHEDULING: Stopping scheduling on array "+name, 
                     OPERATOR.value, name);
             //if(ctrl != null) {
-            AutomaticArrayCommand arraycommand = 
-        		alma.Control.AutomaticArrayCommandHelper.narrow(
-                    containerServices.getComponent(ctrl.getArrayName()));
-                arraycommand.stop(); 
+                ctrl.stop(); 
                 //removeAutomaticArray(false, name);
             //} else {
              //   logger.severe("***************************************");
@@ -297,31 +283,16 @@ public class ALMAControl implements Control {
             }
             throw new SchedulingException(e2);
         }
-        catch (AcsJContainerServicesEx ce) {
-            control_system=null;
-            logger.severe("SCHEDULING: error getting ControlMaster Component.");
-            logger.severe("SCHEDULING: "+ce.toString());
-            sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
-            try {
-            	Thread.sleep(1000);
-            } catch (InterruptedException e1) {
-            	e1.printStackTrace(System.out);
-            }
-            throw new SchedulingException(ce.toString());
-        }
     }
 
     public void stopSBNow(String name, String id) throws SchedulingException{
-         AutomaticArrayMonitor ctrl = getAutomaticArray(name);
+         AutomaticArray2 ctrl = getAutomaticArray(name);
         try{
             //logger.info("SCHEDULING: Stopping scheduling on array "+name);
            arraylogger.log(Level.INFO,"SCHEDULING: Stopping scheduling on array "+name,
                    OPERATOR.value, name);
             //if(ctrl != null) {
-           AutomaticArrayCommand arraycommand = 
-       		alma.Control.AutomaticArrayCommandHelper.narrow(
-                   containerServices.getComponent(ctrl.getArrayName()));
-                arraycommand.stopNow(); 
+                ctrl.stopNow(); 
         } catch (Exception e){
             logger.severe("SCHEDULING: could not abort SB "+id+"!");
             e.printStackTrace();
@@ -331,13 +302,10 @@ public class ALMAControl implements Control {
 
     public void stopAllScheduling() throws SchedulingException {
         try {
-            AutomaticArrayMonitor foo;
-            AutomaticArrayCommand arraycommand;
+            AutomaticArray2 foo;
             for(int i=0; i < auto_controllers.size(); i++){
-                foo = ((AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp());
-                arraycommand = alma.Control.AutomaticArrayCommandHelper.narrow(
-                           containerServices.getComponent(foo.getArrayName()));
-                arraycommand.stop();
+                foo = ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp());
+                foo.stop();
                 control_system.destroyArray(foo.getArrayComponentName());
                 containerServices.releaseComponent(foo.name());
             }
@@ -351,6 +319,7 @@ public class ALMAControl implements Control {
             throw new SchedulingException (e);
         }
     }
+    
 
     /**
      * Tells the control system to create a subarray with the given antennas.
@@ -388,9 +357,9 @@ public class ALMAControl implements Control {
                     OPERATOR.value);
                 throw new SchedulingException("SCHEDULING: Error getting new array name from control.");
             }
-            AutomaticArrayMonitor ctrl;
+            AutomaticArray2 ctrl;
             try {
-                ctrl = alma.Control.AutomaticArrayMonitorHelper.narrow(
+                ctrl = alma.Control.AutomaticArray2Helper.narrow(
                     containerServices.getComponent(arrayName));
             } catch(Exception e) {
                 ctrl = null;
@@ -470,7 +439,7 @@ public class ALMAControl implements Control {
     	    logger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
     	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
-	            if( ((AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+	            if( ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
 	          	    auto_controllers.removeElementAt(i);
                     found = true;
                 }
@@ -679,13 +648,15 @@ public class ALMAControl implements Control {
       * @return AutomaticArrayCommand
       * @throws SchedulingException
       */
-    private AutomaticArrayMonitor getAutomaticArray(String name) throws SchedulingException {
+    private AutomaticArray2 getAutomaticArray(String name) throws SchedulingException {
         logger.fine("SCHEDULING: looking for array with id = "+ name);
+        //logger.fine("auto_controllers size:"+auto_controllers.size());
         for(int i=0; i < auto_controllers.size(); i++){
-            if( ((AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
-                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
+        	    //logger.fine(((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
+            if( ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
                 
-                return (AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp();
+                return (AutomaticArray2)auto_controllers.elementAt(i).getArrayComp();
             }
         }
         return null;
@@ -694,7 +665,7 @@ public class ALMAControl implements Control {
     private ArrayModeEnum getArrayMode(String arrayname){
         String mode;
         for(int i=0 ; i< auto_controllers.size(); i++){
-            if(((AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(arrayname)){
+            if(((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(arrayname)){
                 mode = auto_controllers.elementAt(i).getMode();
                 if(mode.equals("dynamic")){
                     return ArrayModeEnum.DYNAMIC;
@@ -723,7 +694,7 @@ public class ALMAControl implements Control {
             return;
         }
         for(int i=0; i < auto_controllers.size() ;i++){
-            if( ((AutomaticArrayMonitor)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+            if( ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
                 auto_controllers.removeElementAt(i);
                 return;
             }
@@ -831,17 +802,17 @@ public class ALMAControl implements Control {
     }
 
     class ArrayModeInfo {
-        private AutomaticArrayMonitor arrayComp;
+        private AutomaticArray2 arrayComp;
         private String mode;
 
-        public ArrayModeInfo(AutomaticArrayMonitor a, String m){
+        public ArrayModeInfo(AutomaticArray2 a, String m){
             arrayComp = a;
             mode = m ;
         }
         public String getMode() {
             return mode;
         }
-        public AutomaticArrayMonitor getArrayComp() {
+        public AutomaticArray2 getArrayComp() {
             return arrayComp;
         }
 
