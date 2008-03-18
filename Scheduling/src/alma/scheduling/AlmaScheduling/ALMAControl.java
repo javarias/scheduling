@@ -50,8 +50,8 @@ import alma.Control.ArrayMonitor;
 import alma.Control.ArrayCommand;
 import alma.Control.AutomaticArrayCommand;
 import alma.Control.AutomaticArrayMonitor;
-import alma.Control.AutomaticArray2;
-import alma.Control.AutomaticArray2Helper;
+import alma.Control.AutomaticArray;
+import alma.Control.AutomaticArrayHelper;
 import alma.Control.ManualArrayMonitor;
 
 import alma.ControlExceptions.*;
@@ -71,7 +71,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.74 2008/03/15 17:54:46 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.75 2008/03/18 19:15:23 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -189,7 +189,7 @@ public class ALMAControl implements Control {
         logger.fine("SCHEDULING: Sending BestSBs to Control!");
         logger.fine("SCHEDULING: Array being used has name = "+arrayName);
         
-        AutomaticArray2 ctrl = getAutomaticArray(arrayName);
+        AutomaticArray ctrl = getAutomaticArray(arrayName);
         try{
             IDLEntityRef sbRef = new IDLEntityRef();
             sbRef.entityId = sbId;
@@ -246,7 +246,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public void stopSB(String name, String id) throws SchedulingException {
-        AutomaticArray2 ctrl = getAutomaticArray(name);
+        AutomaticArray ctrl = getAutomaticArray(name);
         try{
             //logger.info("SCHEDULING: Stopping scheduling on array "+name);
             arraylogger.log(Level.INFO, 
@@ -286,7 +286,7 @@ public class ALMAControl implements Control {
     }
 
     public void stopSBNow(String name, String id) throws SchedulingException{
-         AutomaticArray2 ctrl = getAutomaticArray(name);
+         AutomaticArray ctrl = getAutomaticArray(name);
         try{
             //logger.info("SCHEDULING: Stopping scheduling on array "+name);
            arraylogger.log(Level.INFO,"SCHEDULING: Stopping scheduling on array "+name,
@@ -302,9 +302,9 @@ public class ALMAControl implements Control {
 
     public void stopAllScheduling() throws SchedulingException {
         try {
-            AutomaticArray2 foo;
+            AutomaticArray foo;
             for(int i=0; i < auto_controllers.size(); i++){
-                foo = ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp());
+                foo = ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp());
                 foo.stop();
                 control_system.destroyArray(foo.getArrayComponentName());
                 containerServices.releaseComponent(foo.name());
@@ -357,9 +357,9 @@ public class ALMAControl implements Control {
                     OPERATOR.value);
                 throw new SchedulingException("SCHEDULING: Error getting new array name from control.");
             }
-            AutomaticArray2 ctrl;
+            AutomaticArray ctrl;
             try {
-                ctrl = alma.Control.AutomaticArray2Helper.narrow(
+                ctrl = alma.Control.AutomaticArrayHelper.narrow(
                     containerServices.getComponent(arrayName));
             } catch(Exception e) {
                 ctrl = null;
@@ -439,7 +439,7 @@ public class ALMAControl implements Control {
     	    logger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
     	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
-	            if( ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+	            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
 	          	    auto_controllers.removeElementAt(i);
                     found = true;
                 }
@@ -648,15 +648,15 @@ public class ALMAControl implements Control {
       * @return AutomaticArrayCommand
       * @throws SchedulingException
       */
-    private AutomaticArray2 getAutomaticArray(String name) throws SchedulingException {
+    private AutomaticArray getAutomaticArray(String name) throws SchedulingException {
         logger.fine("SCHEDULING: looking for array with id = "+ name);
         //logger.fine("auto_controllers size:"+auto_controllers.size());
         for(int i=0; i < auto_controllers.size(); i++){
         	    //logger.fine(((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
-            if( ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
-                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
+            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
                 
-                return (AutomaticArray2)auto_controllers.elementAt(i).getArrayComp();
+                return (AutomaticArray)auto_controllers.elementAt(i).getArrayComp();
             }
         }
         return null;
@@ -665,7 +665,7 @@ public class ALMAControl implements Control {
     private ArrayModeEnum getArrayMode(String arrayname){
         String mode;
         for(int i=0 ; i< auto_controllers.size(); i++){
-            if(((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(arrayname)){
+            if(((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(arrayname)){
                 mode = auto_controllers.elementAt(i).getMode();
                 if(mode.equals("dynamic")){
                     return ArrayModeEnum.DYNAMIC;
@@ -694,7 +694,7 @@ public class ALMAControl implements Control {
             return;
         }
         for(int i=0; i < auto_controllers.size() ;i++){
-            if( ((AutomaticArray2)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
                 auto_controllers.removeElementAt(i);
                 return;
             }
@@ -802,17 +802,17 @@ public class ALMAControl implements Control {
     }
 
     class ArrayModeInfo {
-        private AutomaticArray2 arrayComp;
+        private AutomaticArray arrayComp;
         private String mode;
 
-        public ArrayModeInfo(AutomaticArray2 a, String m){
+        public ArrayModeInfo(AutomaticArray a, String m){
             arrayComp = a;
             mode = m ;
         }
         public String getMode() {
             return mode;
         }
-        public AutomaticArray2 getArrayComp() {
+        public AutomaticArray getArrayComp() {
             return arrayComp;
         }
 
