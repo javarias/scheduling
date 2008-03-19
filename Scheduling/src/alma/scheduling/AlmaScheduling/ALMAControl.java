@@ -46,12 +46,8 @@ import alma.scheduling.Define.SchedulingException;
 
 import alma.Control.ResourceId;
 import alma.Control.ControlMaster;
-import alma.Control.ArrayMonitor;
-import alma.Control.ArrayCommand;
-import alma.Control.AutomaticArrayCommand;
-import alma.Control.AutomaticArrayMonitor;
 import alma.Control.AutomaticArray;
-import alma.Control.AutomaticArrayHelper;
+import alma.Control.ArrayMonitor;
 import alma.Control.ManualArrayMonitor;
 
 import alma.ControlExceptions.*;
@@ -71,7 +67,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.75 2008/03/18 19:15:23 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.76 2008/03/19 19:19:14 wlin Exp $
  */
 public class ALMAControl implements Control {
     
