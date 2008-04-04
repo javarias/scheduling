@@ -79,7 +79,7 @@ import java.io.StringWriter;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.64 2008/01/14 18:43:05 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.65 2008/04/04 19:40:12 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -389,6 +389,13 @@ public class ProjectUtil {
 		Program program = initialize(obs.getObsProgram().getObsPlan(), sched, 
 		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
+		if(program==null){
+			logger.info("return null value from initialize program");
+			return null;
+		}
+		
+		logger.info("after return null program info:"+program.getId());
+		
 		project.setProgram(program);
 		// Mark the project as ready.  (This also initializes the totals.)
         try {
@@ -578,6 +585,7 @@ public class ProjectUtil {
         boolean hasStatus = false;
 		// Assign the members of this set: either Program or SB objects.
 		if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
+			//logger.info("SCHEDULING:start to add ObsUnitSet into Program");
 			Program memberProgram = null;
             ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
             ObsUnitSetStatusTChoice choice=null;
@@ -603,10 +611,16 @@ public class ProjectUtil {
                 } catch(Exception e){
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,null,now);
                 }
+                
+                if(memberProgram==null) {
+		        	//logger.severe("SCHEDULING: can not initialize because lack of some information ");
+		        	return null;
+		        	}
 
 				program.addMember(memberProgram);
 			}
 		} else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
+			//logger.info("SCHEDULING:start to add SB into Program");
 			//System.out.println("obsunitset schedblock "+ set.getObsUnitSetTChoice().getSchedBlockRefCount());
 			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
             ObsUnitSetStatusT[] foo=null;
@@ -635,6 +649,12 @@ public class ProjectUtil {
                     sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
                     try {
         		        memberSB = initialize(setMember[i],sbStatus, sched,schedUsed,project,program,now);
+        		        //check the return value for memberSB 
+        		        if(memberSB==null) {
+        		        	//logger.severe("SCHEDULING: can not initialize because lack of some information ");
+        		        	return null;
+        		        	}
+        		        
                     }catch(Exception e){
                         e.printStackTrace();
                     }
@@ -642,13 +662,22 @@ public class ProjectUtil {
                 } else {
                     try {
         		        memberSB = initialize(setMember[i], null, sched,schedUsed,project,program,now);
+        		        
                     }catch(Exception e){
                         e.printStackTrace();
                     }
                 }
-				program.addMember(memberSB);
+			    if(memberSB!=null){
+			    	//logger.info("memberSB:"+memberSB.getId());
+				    program.addMember(memberSB);
+			    }
+			    else {
+			    	logger.info("SB not add into program");
+			    	return null;
+			    }
 			}
 		}
+		
         //check coz this level (already being an ObsUnitSetStatus) might have sessions 
         try {
             session = ous.getSession();
@@ -1013,8 +1042,10 @@ public class ProjectUtil {
                 if(fs != null){
                     coord = fs.getSourceCoordinates();
         	        if (coord == null){
-            	       	throw new SchedulingException(
-                                "There is no SkyCoordinatesT object in the scheduling block");
+        	        	logger.severe("There is no SkyCoordinatesT object in the scheduling block");
+        	        	return null;
+            	       	//throw new SchedulingException(
+                        //        "There is no SkyCoordinatesT object in the scheduling block");
                     }
                     LongitudeT lng = coord.getLongitude();
                     double ra = lng.getContent();
@@ -1022,7 +1053,9 @@ public class ProjectUtil {
                     double dec = lat.getContent();
         	        String coordType = coord.getSystem().toString(); // must be J2000
                     if (!coordType.equals("J2000")){
-                        throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                    	logger.severe("the Shy Coordination system is not J2000! skip this project");
+                    	return null;
+                        //throw new SchedulingException(coordType + " is not supported.  Must be J2000");
                     }  
                     eq[i] = new Equatorial((ra /24.0),dec);
                     source = new Source();
