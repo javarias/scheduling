@@ -38,6 +38,13 @@
     <consequence>may cause unexpected behavor</consequence>
     <problem-description>Scheduling get an error from MasterScheduler</problem-description>
   </fault-code>
+  <fault-code value="6">
+    <priority>1</priority>
+    <cause> Project Information is not accepted by Scheduling Subsystem</cause>
+    <action>chech Project input from ALMA-OT</action>
+    <consequence>Project skip the non well-defined project</consequence>
+    <problem-description>Project information input from ALMA-OT is not accepted by Scheduling</problem-description>
+  </fault-code>
 
   <fault-member name="SchedArchiveConnAlarm">
     <location>
@@ -76,6 +83,15 @@
     </location>
   </fault-member>
   <fault-member name="SchedInvalidOperationAlarm">
+    <location>
+      <building>building bumber</building>
+      <floor>floor bumner</floor>
+      <room>room number</room>
+      <mnemonic>mnemonic</mnemonic>
+      <position>Antenna position</position>
+    </location>
+  </fault-member>
+  <fault-member name="SchedInvalidProjectAlarm">
     <location>
       <building>building bumber</building>
       <floor>floor bumner</floor>
