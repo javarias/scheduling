@@ -79,7 +79,7 @@ import java.io.StringWriter;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.65 2008/04/04 19:40:12 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.66 2008/04/04 19:50:05 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -604,10 +604,8 @@ public class ProjectUtil {
             }
             String partId;
 			for (int i = 0; i < setMember.length; ++i) {
-                try {
-                	//System.out.println("check if this has been executed and setMember length is "+setMember.length);              	
+                try {              	
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,status[i],now);
-				    //System.out.println("ProjectUtil:program"+ memberProgram.getTotalPrograms());
                 } catch(Exception e){
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,null,now);
                 }
@@ -621,7 +619,6 @@ public class ProjectUtil {
 			}
 		} else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
 			//logger.info("SCHEDULING:start to add SB into Program");
-			//System.out.println("obsunitset schedblock "+ set.getObsUnitSetTChoice().getSchedBlockRefCount());
 			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
             ObsUnitSetStatusT[] foo=null;
             ObsUnitSetStatusTChoice choice = null;
@@ -687,7 +684,6 @@ public class ProjectUtil {
         }catch(Exception e){
         //if we get this exception its fine and means there were no sessions to add
         }
-        //System.out.println("ProjectUtil:program"+ program.getId()+" "+program.getAllSBs()[0].getId()+ " has " + program.getNumberSession()+ " session");
 		int maxTime = 0;
 		ProgramMember[] member = program.getMember();
 		for (int i = 0; i < member.length; ++i) {
@@ -725,9 +721,7 @@ public class ProjectUtil {
             }
             ProgramMember x=null;
             for(int i=0; i < setMember.length; i++){
-                //System.out.println("part id of ous = "+setMember[i].getEntityPartId());
                 x = p.getMember(setMember[i].getEntityPartId());
-                //System.out.println("id of program = "+x.getId());
                 try {
                     p = setStatusInformation ((Program)x, setMember[i], status[i], now);
                 } catch (Exception e) {
@@ -759,7 +753,6 @@ public class ProjectUtil {
                     sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
                     memberSB = (SB)p.getMember(sbrefid);
                     try {
-                        //System.out.println("Setting status info for SB");
                         sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
                         //only one!
                         memberSB = assignCompletionStatus(memberSB, sbStatus, now);
