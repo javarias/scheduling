@@ -79,7 +79,7 @@ import java.io.StringWriter;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.66 2008/04/04 19:50:05 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.67 2008/04/04 20:17:00 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -390,11 +390,11 @@ public class ProjectUtil {
 		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
 		if(program==null){
-			logger.info("return null value from initialize program");
+			//logger.info("return null value from initialize program");
 			return null;
 		}
 		
-		logger.info("after return null program info:"+program.getId());
+		//logger.info("after return null program info:"+program.getId());
 		
 		project.setProgram(program);
 		// Mark the project as ready.  (This also initializes the totals.)
