@@ -77,7 +77,7 @@ import alma.scheduling.Scheduler.DSA.SchedulerStats;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.87 2008/01/14 18:41:31 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.88 2008/04/04 19:57:04 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -129,14 +129,14 @@ public class ALMAArchive implements Archive {
 
     public void sendAlarm(String ff, String fm, int fc, String fs) {
         try {
-            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource("ALMAArchive");
+            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource(this.getClass().getName());
             ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
             state.setDescriptor(fs);
             state.setUserTimestamp(new Timestamp(clock.getDateTime().getMillisec()));
             Properties prop = new Properties();
             prop.setProperty(ACSFaultState.ASI_PREFIX_PROPERTY, "prefix");
 			prop.setProperty(ACSFaultState.ASI_SUFFIX_PROPERTY, "suffix");
-			prop.setProperty("ALMAMasterScheduling_PROPERTY", "ConnArchiveException");
+			prop.setProperty("ALMAMasterScheduling_PROPERTY", fm);
 			state.setUserProperties(prop);
             alarmSource.push(state);
         } catch(Exception e) {
@@ -228,7 +228,12 @@ public class ALMAArchive implements Archive {
                     SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
                     Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
                             new DateTime(System.currentTimeMillis()));
-                    tmp_projects.add(p);
+                    if(p!=null){
+                        tmp_projects.add(p);
+                    }
+                    else {
+                    	sendAlarm("Scheduling","SchedInvalidProjectAlarm",6,ACSFaultState.ACTIVE);
+                    }
                 }
             }
             projects = new Project[tmp_projects.size()];
