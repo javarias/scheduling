@@ -67,7 +67,7 @@ import java.sql.Timestamp;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.76 2008/03/19 19:19:14 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.77 2008/04/08 15:54:57 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -193,7 +193,7 @@ public class ALMAControl implements Control {
             sbRef.entityTypeName = "SchedBlock";
             sbRef.instanceVersion = "1.0";
             //test only ....must remove if check into CVS
-            ctrl.observe(sbRef, sessionRef, 0L); 
+            //ctrl.observe(sbRef, sessionRef, 0L); 
             //logger.fine("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
             if(ctrl !=null){
                 arraylogger.log(Level.INFO, "SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName,
