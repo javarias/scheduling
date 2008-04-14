@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.106 2008/04/14 21:50:24 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.107 2008/04/14 22:51:51 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -685,9 +685,21 @@ public class ALMAProjectManager extends ProjectManager {
       * Gets called from ALMAReceiveEvent
       */
     public synchronized void createObservedSession(ExecBlock eb) {
-	
-	// start to add some code into fro manual mode
-        String sbid = eb.getParent().getId();
+    	
+    	String sbid = eb.getParent().getId();
+    	// set sb and sb's parent status from ready to running 
+    	// this is specfic for manual mode array and IS/Queue/Dynamic will double set the status
+    	//will modify if scheduling receive the SessionEvent later
+    	//logger.fine("sb id:"+sbid);
+    	SB sb = sbQueue.get(sbid);
+    	//SB sb1 = sbQueue.get(0);
+    	//logger.fine("SB ready time:"+sb.getStatus().getStartTime());
+    	if((sb.getStatus().getStartTime() == null)){ 
+    		sb.setStartTime(clock.getDateTime());
+    		sb.setRunning();
+    	}
+    	//end of the sb status 
+
         Program p = ((SB)sbQueue.get(sbid)).getParent();
         ObservedSession session = new ObservedSession();
         session.setSessionId(eb.getSessionId());
