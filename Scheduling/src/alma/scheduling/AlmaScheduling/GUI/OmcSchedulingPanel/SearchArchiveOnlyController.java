@@ -74,7 +74,7 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
         }
     }
    
-    /*
+    
     public void checkOperationalState() {
         try {
             MasterComponent sched_mc= alma.ACS.MasterComponentHelper.
@@ -92,5 +92,5 @@ public class SearchArchiveOnlyController extends SchedulingPanelController{
             logger.warning("SP: Problem checking master component state, check that SCHEDULING system is connected");
             //e.printStackTrace();
         }
-    }*/
+    }
 }
