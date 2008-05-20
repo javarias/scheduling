@@ -72,7 +72,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.107 2008/04/14 22:51:51 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.108 2008/05/20 22:25:36 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -685,7 +685,8 @@ public class ALMAProjectManager extends ProjectManager {
       * Gets called from ALMAReceiveEvent
       */
     public synchronized void createObservedSession(ExecBlock eb) {
-    	
+
+
     	String sbid = eb.getParent().getId();
     	// set sb and sb's parent status from ready to running 
     	// this is specfic for manual mode array and IS/Queue/Dynamic will double set the status
@@ -1412,7 +1413,8 @@ public class ALMAProjectManager extends ProjectManager {
                     indicesToRemove.add(new Integer(i));
                 }
             }
-            for(int i=0;i < indicesToRemove.size(); i++){
+            //for(int i=0;i < indicesToRemove.size(); i++){
+            for(int i=(indicesToRemove.size()-1);i >=0 ; i--){
                 //project status says project is complete.
                 //take PS out of tmpPS
                 tmpPS = removePSElement(tmpPS, projects.get(indicesToRemove.elementAt(i).intValue()).getProjectStatusId());
