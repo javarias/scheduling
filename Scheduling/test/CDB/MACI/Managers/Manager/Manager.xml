@@ -11,6 +11,7 @@
     MaxCachePriority="31"
     CentralizedLogger="Log">
     <Startup>
+	<cdb:_ string="AlarmService"/>
     </Startup>
     <Execute>
 	<cdb:_ string=""/>
@@ -26,4 +27,7 @@
 	<cdb:_ string="ACSLogSvc"/>
 	<cdb:_ string="PDB"/>
     </ServiceComponents>
+	<LoggingConfig immediateDispatchLevel="99">
+                <log:_ Name="jacorb@Manager" minLogLevel="5" minLogLevelLocal="4"/>
+        </LoggingConfig>
 </Manager>
