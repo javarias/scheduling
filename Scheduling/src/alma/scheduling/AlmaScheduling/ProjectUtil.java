@@ -79,7 +79,7 @@ import java.io.StringWriter;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.67 2008/04/04 20:17:00 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.68 2008/06/04 22:18:45 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -703,6 +703,7 @@ public class ProjectUtil {
     private static Program setStatusInformation(Program p,
             ObsUnitSetT set, ObsUnitSetStatusT ous, DateTime now) {
         boolean hasStatus=false;
+        Program toplevelProgram =p;
         if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
             //Program memberProgram = p;
             ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
@@ -762,7 +763,8 @@ public class ProjectUtil {
                 }
             }
         }
-        return p;
+        //return p;
+        return toplevelProgram;
     }
     
     private static SBStatusT getSBStatusForSBRef(String id, SBStatusT[] stats)
