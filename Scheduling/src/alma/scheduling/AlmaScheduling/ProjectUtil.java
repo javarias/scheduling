@@ -79,7 +79,7 @@ import java.io.StringWriter;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.68 2008/06/04 22:18:45 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.69 2008/06/10 15:37:27 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -678,7 +678,7 @@ public class ProjectUtil {
         //check coz this level (already being an ObsUnitSetStatus) might have sessions 
         try {
             session = ous.getSession();
-            if(session != null || session.length > 0){
+            if(session != null && session.length > 0){
                 program  = assignSessionToProgram(program,set.getEntityPartId(),  session);
             }
         }catch(Exception e){
@@ -1359,19 +1359,20 @@ public class ProjectUtil {
         SB sb;
         if(existingSB == null) {
     		sb = new SB (schedRef.getEntityId());
-
-            if(existingSB.getSbStatusId() == null) {
-    		    sb.setSbStatusId(null); // This comes from ProjectStatus.
-            } else { 
-    		    sb.setSbStatusId(existingSB.getSbStatusId()); // This comes from ProjectStatus.
-            }
-	    	sb.setProject(project);
+    		sb.setProject(project);
 		    sb.setTimeOfCreation(now);
     		sb.setTimeOfUpdate(now);
 	    	sb.setParent(parent);
-        } else {
-            sb =existingSB;
-        }
+	    	sb.setSbStatusId(null);
+	    	
+            } else  if(existingSB != null && existingSB.getSbStatusId() == null){
+            	sb = existingSB;
+    		    sb.setSbStatusId(null); // This comes from ProjectStatus.
+            }
+	    	
+              else {
+            	  sb =existingSB;
+            }
 
 		// We need to use the entityId to get the SchedBlock from the sched array.
 		SchedBlock sched = null;
