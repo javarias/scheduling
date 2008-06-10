@@ -77,7 +77,7 @@ import alma.scheduling.Scheduler.DSA.SchedulerStats;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.88 2008/04/04 19:57:04 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.89 2008/06/10 17:25:31 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -293,7 +293,7 @@ public class ALMAArchive implements Archive {
         ProjectStatus ps = null;
         try {
             String ps_id = p.getProjectStatusRef().getEntityId();
-	    //logger.info("Retrieving project status "+ps_id);
+	        //logger.info("Retrieving project status:"+ps_id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(ps_id);
             if(!xml.entityTypeName.equals("ProjectStatus")){
                 logger.warning("SCHEDULING: Retrieved a "+xml.entityTypeName+" when we wanted a ProjectStatus");
@@ -307,6 +307,10 @@ public class ALMAArchive implements Archive {
             logger.warning("SCHEDULING: Project had no Project Status. Creating one.");
             ps = createDummyProjectStatus(p);
         } catch(Exception e) {
+        	logger.finest("Scheduling can not pull ObsProject from Archive");
+        	logger.finest("The ProjectStatus Id "+p.getProjectStatusRef().getEntityId()+
+        			"for ObsProject id:"+p.getObsProjectEntity().getEntityId()+"is not in the form uid://Xxx/Xxx/Xxx");
+        	//logger.finest("ProjectStatus entity id:"+ps_id);
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             try {
@@ -314,7 +318,8 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException(e);
+            // need to think about how to catch SchedulingException!!
+            //throw new SchedulingException(e);
         }
         return ps;
     }
