@@ -87,7 +87,7 @@ import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.107 2008/01/29 20:24:14 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.108 2008/06/11 14:14:42 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -966,9 +966,9 @@ public class ALMAMasterScheduler extends MasterScheduler
         throws UnidentifiedResponseEx {
 
         try {
-            if(logger == null) {
-                System.out.println("SCHEDULING: logger is null!");
-            }
+            //if(logger == null) {
+            //    System.out.println("SCHEDULING: logger is null!");
+            //}
             logger.fine("SCHEDULING: in MS. MessageID = "+messageId+" with Reply(SB)"+reply);
             //logger.fine("SCHEDULING: in MS. Reply (sb id) = "+reply);
             //logger.fine("SCHEDULING: in MS. messageQueue size = "+messageQueue.size());
