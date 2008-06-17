@@ -201,11 +201,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     public void receive(ExecBlockStartedEvent e) {
         String sbid = e.sbId.entityId;
         String exec_id = e.execId.entityId;
+        String arrayname = e.arrayName;
         logger.fine("got start event in IS for sb "+sbid);
-        if(!sbid.equals(currentSBId)){
+        if(!sbid.equals(currentSBId) || !arrayname.equals(arrayName)){
             return;
         }
-        if(scheduler.getCurrentSB().equals(sbid) ){
+        if(scheduler.getCurrentSB().equals(sbid) && scheduler.getArray().equals(arrayname)){
             scheduler.setCurrentEB(exec_id);
             //currentExecBlockId = exec_id;
             logger.finest("Got start event for "+sbid+", ctr = "+startC);
@@ -226,15 +227,16 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         parent.closeExecutionWaitingThing();
         logger.fine("got eb ended in IS");
         String exec_id = e.execId.entityId;
+        String arrayname = e.arrayName;
         String sbid = e.sbId.entityId;
         logger.fine("got ended event in IS for sb "+sbid);
-        if(!sbid.equals(currentSBId)){
+        if(!sbid.equals(currentSBId) || !arrayname.equals(arrayName)){
             return;
         }
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
-                !scheduler.getCurrentEB().equals(exec_id) ){
-            logger.warning("Problem! SB id and exec block id are not current.. this shouldnt happen!");
+                !scheduler.getCurrentEB().equals(exec_id) && scheduler.getArray().equals(arrayname)){
+            logger.warning("Problem! SB id and exec block id are not current.. this shouldn't happen!");
            // currentExecBlockId = exec_id;
         } else {
             logger.finest("got stop for sb "+sbid+", ctr = "+stopC);
@@ -273,7 +275,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         String completion = e.status;
         logger.fine("Current SB = "+currentSBId);
         //if(sbid.equals(currentSBId)){
-        if(waitingForArchivedSB.contains(sbid)){
+        if(waitingForArchivedSB.contains(sbid) && asdmId.equals(scheduler.getCurrentEB())){
             logger.fine("in list");
             if(completion.equals("complete")){
                 parent.setSBStatus(sbid, "ARCHIVED");
