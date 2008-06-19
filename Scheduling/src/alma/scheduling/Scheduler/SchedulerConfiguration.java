@@ -26,22 +26,21 @@
  
 package alma.scheduling.Scheduler;
 
-import java.util.logging.Logger;
 import java.util.Vector;
+import java.util.logging.Logger;
 
-import alma.scheduling.Define.TaskControl;
-import alma.scheduling.Define.NothingCanBeScheduled;
-import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.SB;
+import alma.acs.logging.AcsLogger;
 import alma.scheduling.Define.Clock;
-import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Control;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.NothingCanBeScheduled;
 import alma.scheduling.Define.Operator;
-import alma.scheduling.Define.Telescope;
-import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.Policy;
-import alma.scheduling.Define.SchedLogger;
-import alma.scheduling.Event.Publishers.PublishEvent;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.TaskControl;
+import alma.scheduling.Define.Telescope;
 
 /**
  * The SchedulerConfiguration is an extension of TaskControlInfo and
@@ -109,7 +108,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.17 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.18 2008/06/19 20:00:45 wlin Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -142,7 +141,7 @@ public class SchedulerConfiguration extends TaskControl {
 	// The scheduling policy.
 	private Policy policy;
 	// The logger.
-	private SchedLogger log;
+	private AcsLogger log;
     //The scheduling notification channel publisher
     //private PublishEvent publisher;
 
@@ -252,7 +251,7 @@ public class SchedulerConfiguration extends TaskControl {
                                   Telescope telescope, 
                                   ProjectManager projectManager,
                                   Policy policy, 
-                                  SchedLogger log) {
+                                  AcsLogger log) {
            
 
 		super(masterScheduler);
@@ -298,7 +297,7 @@ public class SchedulerConfiguration extends TaskControl {
                                   Telescope telescope, 
                                   ProjectManager projectManager,
                                   Policy policy, 
-                                  SchedLogger log){ 
+                                  AcsLogger log){ 
 
         super (masterScheduler);
         this.dynamic = dynamic;
@@ -563,7 +562,7 @@ public class SchedulerConfiguration extends TaskControl {
 	/**
 	 * @return
 	 */
-	public SchedLogger getLog() {
+	public AcsLogger getLog() {
 		return log;
 	}
 

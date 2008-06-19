@@ -27,13 +27,14 @@
 package alma.scheduling.Define;
 
 import java.io.PrintStream;
+import java.util.logging.Logger;
 
 
 /**
  * An Project is an observing project as viewed by the
  * scheduling subsystem. 
  * 
- * @version $Id: Project.java,v 1.9 2007/09/12 21:22:38 sslucero Exp $
+ * @version $Id: Project.java,v 1.10 2008/06/19 19:54:32 wlin Exp $
  * @author Allen Farris
  */
 public class Project implements ProjectMember {
@@ -63,16 +64,18 @@ public class Project implements ProjectMember {
 	protected DateTime breakpointTime;
     protected String projectVersion;
 
+    protected final Logger logger;
 	/**
 	 * Construct an Project.
 	 */
 	public Project(String obsProjectId, String proposalId, 
-            String projectName, String projectVersion, String PI) {
+            String projectName, String projectVersion, String PI, Logger logger) {
 
 		this.obsProjectId  = obsProjectId;
 		this.proposalId = proposalId;
 		this.projectName = projectName;
 		this.PI = PI;
+		this.logger = logger;
 		timeOfCreation = null;
 		timeOfUpdate = null;
 		status = new Status ();
@@ -270,6 +273,10 @@ public class Project implements ProjectMember {
 	 * @param program the UnitSet program that belongs to this Project.
 	 */
 	public void setProgram(Program program) {
+		if (program==null) {
+			// @TODO investigate!!
+			logger.warning("setProgram called with program==null!");
+		}
 		this.program = program;
 	}
 	
@@ -379,7 +386,13 @@ public class Project implements ProjectMember {
 	 * Return all Units that belong to this Project.
 	 */
 	public SB[] getAllSBs() {
-		return program.getAllSBs();
+		if (program != null) {
+			return program.getAllSBs();
+		}
+		else {
+			logger.warning("getAllSBs called while program==null; will return empty SB[] as hot fix. This must be investigated better!");
+			return new SB[0];
+		}
 	}
 		
 	/**

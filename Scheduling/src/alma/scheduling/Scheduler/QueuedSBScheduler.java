@@ -365,7 +365,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
                 Thread.sleep(30);
             }
             config.getProjectManager().publishNothingCanBeScheduled(NothingCanBeScheduledEnum.OTHER);
-            logger.log(Level.INFO, "QueuedScheduler: Queue complete", OPERATOR.value, config.getArrayName());
+            arrayLogger.log(Level.INFO, "QueuedScheduler: Queue complete", OPERATOR.value, config.getArrayName());
          //   config.getControl().destroyArray(config.getArrayName());
         } catch(Exception e){
             e.printStackTrace(System.out);

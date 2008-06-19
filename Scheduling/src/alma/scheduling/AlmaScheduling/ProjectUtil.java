@@ -25,31 +25,67 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import alma.entity.xmlbinding.projectstatus.*;
-import alma.entity.xmlbinding.projectstatus.types.*;
-import alma.entity.xmlbinding.obsproject.*;
-import alma.entity.xmlbinding.obsproposal.*;
-import alma.entity.xmlbinding.schedblock.*;
+import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import alma.acs.logging.ClientLogManager;
+import alma.entity.xmlbinding.obsproject.ObsProject;
+import alma.entity.xmlbinding.obsproject.ObsProjectRefT;
+import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
+import alma.entity.xmlbinding.obsproposal.ObsProposalRefT;
+import alma.entity.xmlbinding.projectstatus.BestSBItemT;
+import alma.entity.xmlbinding.projectstatus.BestSBT;
+import alma.entity.xmlbinding.projectstatus.ExecBlockRefT;
+import alma.entity.xmlbinding.projectstatus.ExecStatusT;
+import alma.entity.xmlbinding.projectstatus.ObsUnitSetStatusT;
+import alma.entity.xmlbinding.projectstatus.ObsUnitSetStatusTChoice;
+import alma.entity.xmlbinding.projectstatus.PipelineParameterT;
+import alma.entity.xmlbinding.projectstatus.PipelineProcessingRequestT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
+import alma.entity.xmlbinding.projectstatus.SBStatusT;
+import alma.entity.xmlbinding.projectstatus.SessionT;
+import alma.entity.xmlbinding.projectstatus.types.PipelineProcessingRequestTCompletionStatusType;
+import alma.entity.xmlbinding.projectstatus.types.PipelineProcessingRequestTRequestStatusType;
+import alma.entity.xmlbinding.schedblock.FieldSourceT;
+import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.entity.xmlbinding.schedblock.SchedBlockControlT;
+import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
+import alma.entity.xmlbinding.schedblock.SchedulingConstraintsT;
+import alma.entity.xmlbinding.schedblock.SourcePropertyT;
+import alma.entity.xmlbinding.schedblock.TargetT;
+import alma.entity.xmlbinding.valuetypes.DoubleWithUnitT;
+import alma.entity.xmlbinding.valuetypes.FrequencyT;
+import alma.entity.xmlbinding.valuetypes.LatitudeT;
+import alma.entity.xmlbinding.valuetypes.LongitudeT;
+import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
 import alma.entity.xmlbinding.valuetypes.StatusT;
 import alma.entity.xmlbinding.valuetypes.TimeT;
-import alma.entity.xmlbinding.valuetypes.SkyCoordinatesT;
-import alma.entity.xmlbinding.valuetypes.LongitudeT;
-import alma.entity.xmlbinding.valuetypes.LatitudeT;
 import alma.entity.xmlbinding.valuetypes.VelocityT;
-import alma.entity.xmlbinding.valuetypes.FrequencyT;
-import alma.entity.xmlbinding.valuetypes.DoubleWithUnitT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
-import alma.entity.xmlbinding.schedblock.FrequencySetupT;
-import alma.entities.commonentity.*;
-
-import alma.scheduling.Define.*;
-
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.io.StringWriter;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Equatorial;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.ObservedSession;
+import alma.scheduling.Define.Priority;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.ProgramMember;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBSetup;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.SciPipelineRequest;
+import alma.scheduling.Define.Session;
+import alma.scheduling.Define.Source;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.Target;
 
 /**
- * The ProjectUtil class is a collection of static methods that
+ * The ProjectUtil class is a collection of methods that
  * handle the following mappings.
  * <ul>
  * <li>Mappings
@@ -79,14 +115,19 @@ import java.io.StringWriter;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.69 2008/06/10 15:37:27 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.70 2008/06/19 19:51:10 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
 	
 	static private final String nullPartId = "X00000000";
-    static private SchedLogger logger = new SchedLogger(Logger.getLogger("Scheduling's ProjectUtil Logger"));
-
+	
+	private final Logger logger; 
+    
+	public ProjectUtil(Logger logger) {
+		this.logger = logger;
+	}
+	
 	/**
 	 * Check the specified project for internal consistency.
 	 * <p>
@@ -117,7 +158,7 @@ public class ProjectUtil {
 	 * @param project The Project to be checked.
 	 * @throws SchedulingException If any error is found in the specified project.
 	 */
-	static public void validate(Project project) throws SchedulingException {
+	public void validate(Project project) throws SchedulingException {
 		
 		//checkEntityId(project.getObsProjectId());
 		//checkEntityId(project.getProjectStatusId());
@@ -138,7 +179,7 @@ public class ProjectUtil {
 	 * @param value The value of the string.
 	 * @throws SchedulingException If the value is null or blank.
 	 */
-	static public void checkString(String name, String value) throws SchedulingException {
+	public void checkString(String name, String value) throws SchedulingException {
 		if (value == null || value.length() == 0 || value.trim().length() == 0)
 			throw new SchedulingException("The value for string " + name + " must have a value.");
 	}
@@ -152,7 +193,7 @@ public class ProjectUtil {
 	 * @throws SchedulingException If the time format is invalid or out of range.  (The 
 	 * range of reasonable values is from 2000-01-01 to 2050-01-01.
 	 */ 
-	static public void checkTime(DateTime t) throws SchedulingException {
+	public void checkTime(DateTime t) throws SchedulingException {
 		if (t == null || t.isNull())
 			return;
 		if (t.lt(minTime) || t.gt(maxTime)) {
@@ -165,7 +206,7 @@ public class ProjectUtil {
 	 * @param s The string to be checked.
 	 * @throws SchedulingException If the string has an invalid format.
 	 */ 
-	static public void checkEntityPartId(String s) throws SchedulingException {
+	public void checkEntityPartId(String s) throws SchedulingException {
 		if (s == null || s.length() == 0)
 			return;
 		if (s.length() != 9 || s.charAt(0) != 'X')
@@ -187,7 +228,7 @@ public class ProjectUtil {
 	 * @param status
 	 * @throws SchedulingException
 	 */
-	static private void validate(Status status) throws SchedulingException {
+	private void validate(Status status) throws SchedulingException {
 		checkTime(status.getReadyTime());
 		checkTime(status.getStartTime());
 		checkTime(status.getEndTime());
@@ -200,7 +241,7 @@ public class ProjectUtil {
 	 * @param parent
 	 * @throws SchedulingException
 	 */
-	static private void validate( Program program, Project project, Program parent) throws SchedulingException {
+	private void validate( Program program, Project project, Program parent) throws SchedulingException {
 		checkEntityPartId(program.getProgramId());
 		checkEntityPartId(program.getObsUnitSetStatusId());
 		if (program.getProject() != project)
@@ -257,7 +298,7 @@ public class ProjectUtil {
 	 * @param parent
 	 * @throws SchedulingException
 	 */
-	static private void validate(ObservedSession session, Project project, Program parent) throws SchedulingException {
+	private void validate(ObservedSession session, Project project, Program parent) throws SchedulingException {
 		// TODO
 	}
 	
@@ -268,7 +309,7 @@ public class ProjectUtil {
 	 * @param parent
 	 * @throws SchedulingException
 	 */
-	static private void validate(SciPipelineRequest req, Project project, Program parent) throws SchedulingException {
+	private void validate(SciPipelineRequest req, Project project, Program parent) throws SchedulingException {
 		// TODO
         System.out.println("Validating SciPipelineRequest..");
 	}
@@ -280,7 +321,7 @@ public class ProjectUtil {
 	 * @param parent
 	 * @throws SchedulingException
 	 */
-	static private void validate(SB sb, Project project, Program parent) throws SchedulingException {
+	private void validate(SB sb, Project project, Program parent) throws SchedulingException {
 		// TODO
 	}
 
@@ -291,7 +332,7 @@ public class ProjectUtil {
 	 * @param parent
 	 * @throws SchedulingException
 	 */
-	static private void validate(ExecBlock exec, Project project, SB parent) throws SchedulingException {
+	private void validate(ExecBlock exec, Project project, SB parent) throws SchedulingException {
 		//TODO
 	}
 	
@@ -310,7 +351,7 @@ public class ProjectUtil {
 	 * @return A Project object, held in memory, that corresponds to the ObsProject.
 	 * @throws SchedulingException If any error is found in the process of mapping.
 	 */
-	static public Project map(ObsProject p, SchedBlock[] b, ProjectStatus s, DateTime now) 
+	public Project map(ObsProject p, SchedBlock[] b, ProjectStatus s, DateTime now) 
 		throws SchedulingException {
 		// First, we get the project data as if the status is a dummy.
 		Project project = initialize(p,b,s,now);
@@ -347,7 +388,7 @@ public class ProjectUtil {
 	 * @return
 	 * @throws SchedulingException
 	 */
-	static private Project initialize(ObsProject obs, SchedBlock[] sched, 
+	private Project initialize(ObsProject obs, SchedBlock[] sched, 
 			                          ProjectStatus ps, DateTime now) 
                                       throws SchedulingException {
 
@@ -357,7 +398,8 @@ public class ProjectUtil {
 									   obs.getObsProposalRef().getEntityId(),
 									   obs.getProjectName(),
 									   obs.getVersion(),
-									   obs.getPI());
+									   obs.getPI(),
+									   logger);
 		project.setProjectStatusId(ps.getProjectStatusEntity().getEntityId());
         //TODO time of Creation needs to get put into ProjectStatus so we can get it there
         if(project.getTimeOfCreation() == null) {
@@ -389,13 +431,6 @@ public class ProjectUtil {
 		Program program = initialize(obs.getObsProgram().getObsPlan(), sched, 
 		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
-		if(program==null){
-			//logger.info("return null value from initialize program");
-			return null;
-		}
-		
-		//logger.info("after return null program info:"+program.getId());
-		
 		project.setProgram(program);
 		// Mark the project as ready.  (This also initializes the totals.)
         try {
@@ -447,7 +482,7 @@ public class ProjectUtil {
 		return project;
 	}
 
-	static private void setProgramMember(Program p) {
+	private void setProgramMember(Program p) {
 		ProgramMember[] m = p.getMember();
 		for (int i = 0; i < m.length; ++i) {
 			if (m[i] instanceof Program) {
@@ -463,7 +498,7 @@ public class ProjectUtil {
 			}
 		}
 	}
-	static private void setSBMember(SB sb) {
+	private void setSBMember(SB sb) {
 		ExecBlock[] x = sb.getExec();
 		for (int i = 0; i < x.length; ++i) {
             if(x[i].getExecStatusId() == null) {
@@ -474,7 +509,7 @@ public class ProjectUtil {
 	
 	static private int partIdCount = 0;
 	static private char[] digit = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-	static public String genPartId() {
+	public String genPartId() {
 		char[] s = new char [9];
 		s[0] = 'X';
 		for (int i = 1; i < s.length; ++i)
@@ -501,7 +536,7 @@ public class ProjectUtil {
 	 * @return
 	 * @throws SchedulingException
 	 */
-	static private Program initialize(ObsUnitSetT set, SchedBlock[] sched, 
+	private Program initialize(ObsUnitSetT set, SchedBlock[] sched, 
 			boolean[] schedUsed, Project project, Program parent,  
 			ObsUnitSetStatusT ous, DateTime now) throws SchedulingException {
 		
@@ -585,7 +620,6 @@ public class ProjectUtil {
         boolean hasStatus = false;
 		// Assign the members of this set: either Program or SB objects.
 		if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
-			//logger.info("SCHEDULING:start to add ObsUnitSet into Program");
 			Program memberProgram = null;
             ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
             ObsUnitSetStatusTChoice choice=null;
@@ -604,21 +638,18 @@ public class ProjectUtil {
             }
             String partId;
 			for (int i = 0; i < setMember.length; ++i) {
-                try {              	
+                try {
+                	//System.out.println("check if this has been executed and setMember length is "+setMember.length);              	
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,status[i],now);
+				    //System.out.println("ProjectUtil:program"+ memberProgram.getTotalPrograms());
                 } catch(Exception e){
 				    memberProgram = initialize(setMember[i],sched,schedUsed,project,program,null,now);
                 }
-                
-                if(memberProgram==null) {
-		        	//logger.severe("SCHEDULING: can not initialize because lack of some information ");
-		        	return null;
-		        	}
 
 				program.addMember(memberProgram);
 			}
 		} else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
-			//logger.info("SCHEDULING:start to add SB into Program");
+			//System.out.println("obsunitset schedblock "+ set.getObsUnitSetTChoice().getSchedBlockRefCount());
 			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
             ObsUnitSetStatusT[] foo=null;
             ObsUnitSetStatusTChoice choice = null;
@@ -646,12 +677,6 @@ public class ProjectUtil {
                     sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
                     try {
         		        memberSB = initialize(setMember[i],sbStatus, sched,schedUsed,project,program,now);
-        		        //check the return value for memberSB 
-        		        if(memberSB==null) {
-        		        	//logger.severe("SCHEDULING: can not initialize because lack of some information ");
-        		        	return null;
-        		        	}
-        		        
                     }catch(Exception e){
                         e.printStackTrace();
                     }
@@ -659,22 +684,13 @@ public class ProjectUtil {
                 } else {
                     try {
         		        memberSB = initialize(setMember[i], null, sched,schedUsed,project,program,now);
-        		        
                     }catch(Exception e){
                         e.printStackTrace();
                     }
                 }
-			    if(memberSB!=null){
-			    	//logger.info("memberSB:"+memberSB.getId());
-				    program.addMember(memberSB);
-			    }
-			    else {
-			    	logger.info("SB not add into program");
-			    	return null;
-			    }
+				program.addMember(memberSB);
 			}
 		}
-		
         //check coz this level (already being an ObsUnitSetStatus) might have sessions 
         try {
             session = ous.getSession();
@@ -684,6 +700,7 @@ public class ProjectUtil {
         }catch(Exception e){
         //if we get this exception its fine and means there were no sessions to add
         }
+        //System.out.println("ProjectUtil:program"+ program.getId()+" "+program.getAllSBs()[0].getId()+ " has " + program.getNumberSession()+ " session");
 		int maxTime = 0;
 		ProgramMember[] member = program.getMember();
 		for (int i = 0; i < member.length; ++i) {
@@ -700,7 +717,7 @@ public class ProjectUtil {
 	  return program;
 	}
 
-    private static Program setStatusInformation(Program p,
+    private Program setStatusInformation(Program p,
             ObsUnitSetT set, ObsUnitSetStatusT ous, DateTime now) {
         boolean hasStatus=false;
         Program toplevelProgram =p;
@@ -722,7 +739,9 @@ public class ProjectUtil {
             }
             ProgramMember x=null;
             for(int i=0; i < setMember.length; i++){
+                //System.out.println("part id of ous = "+setMember[i].getEntityPartId());
                 x = p.getMember(setMember[i].getEntityPartId());
+                //System.out.println("id of program = "+x.getId());
                 try {
                     p = setStatusInformation ((Program)x, setMember[i], status[i], now);
                 } catch (Exception e) {
@@ -754,6 +773,7 @@ public class ProjectUtil {
                     sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
                     memberSB = (SB)p.getMember(sbrefid);
                     try {
+                        //System.out.println("Setting status info for SB");
                         sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
                         //only one!
                         memberSB = assignCompletionStatus(memberSB, sbStatus, now);
@@ -767,7 +787,7 @@ public class ProjectUtil {
         return toplevelProgram;
     }
     
-    private static SBStatusT getSBStatusForSBRef(String id, SBStatusT[] stats)
+    private SBStatusT getSBStatusForSBRef(String id, SBStatusT[] stats)
         throws SchedulingException {
             for(int i=0; i< stats.length; i++){
                 if (stats[i].getSchedBlockRef().getEntityId().equals(id)){
@@ -782,7 +802,7 @@ public class ProjectUtil {
       * Given a StatusT out of the project status get its corresponding status value for the 
       * scheduling Define/Status.java class
       */
-    private static int getStatusMatch(StatusT stat) {
+    private int getStatusMatch(StatusT stat) {
         //int state;
         if(stat.getState().toString().equals("aborted")){
             return Status.ABORTED;
@@ -803,7 +823,7 @@ public class ProjectUtil {
         }
     }
 
-    private static SB assignCompletionStatus(SB sb, SBStatusT status, DateTime now)
+    private SB assignCompletionStatus(SB sb, SBStatusT status, DateTime now)
         throws SchedulingException{
 
         int state = getStatusMatch(status.getStatus());
@@ -842,7 +862,7 @@ public class ProjectUtil {
       * given part id. The session list is the sessions from the ObsUnitSetStatus'
       * that has the given part id.
       */
-    static private Program assignSessionToProgram(Program member, String currentId, SessionT[] sessions){
+    private Program assignSessionToProgram(Program member, String currentId, SessionT[] sessions){
         if(memberMatches((Program)member, currentId)){
             ObservedSession s;
             for (int j=0; j < sessions.length; j++){
@@ -870,7 +890,7 @@ public class ProjectUtil {
         return member;
     }
 
-    static private SB assignExecStatusToSB(SB sb, String sbid, ExecStatusT[] execs, SBStatusT status) {
+    private SB assignExecStatusToSB(SB sb, String sbid, ExecStatusT[] execs, SBStatusT status) {
         if(sbMatches(sb, sbid)){
             if(execs.length < 1){
                 return sb;
@@ -904,7 +924,7 @@ public class ProjectUtil {
         return sb;
     }
 
-    static private boolean sbMatches(SB sb, String id){
+    private boolean sbMatches(SB sb, String id){
         if(sb.getId().equals(id)){
             return true;
         }
@@ -914,7 +934,7 @@ public class ProjectUtil {
     /**
       * Match program's part id to the given id. True if they match,
       */
-    static private boolean memberMatches(Program m, String id){
+    private boolean memberMatches(Program m, String id){
         if(m.getProgramId().equals(id)) {
             return true;
         } else {
@@ -932,7 +952,7 @@ public class ProjectUtil {
 	 * @return
 	 * @throws SchedulingException
 	 */
-	static private SB initialize(SchedBlockRefT schedRef, SBStatusT sbStatus, SchedBlock[] schedArray, boolean[] schedUsed, Project project, Program parent, DateTime now) 
+	private SB initialize(SchedBlockRefT schedRef, SBStatusT sbStatus, SchedBlock[] schedArray, boolean[] schedUsed, Project project, Program parent, DateTime now) 
 		throws SchedulingException {
             
     	SB sb = new SB (schedRef.getEntityId());
@@ -1037,10 +1057,8 @@ public class ProjectUtil {
                 if(fs != null){
                     coord = fs.getSourceCoordinates();
         	        if (coord == null){
-        	        	logger.severe("There is no SkyCoordinatesT object in the scheduling block");
-        	        	return null;
-            	       	//throw new SchedulingException(
-                        //        "There is no SkyCoordinatesT object in the scheduling block");
+            	       	throw new SchedulingException(
+                                "There is no SkyCoordinatesT object in the scheduling block");
                     }
                     LongitudeT lng = coord.getLongitude();
                     double ra = lng.getContent();
@@ -1048,9 +1066,7 @@ public class ProjectUtil {
                     double dec = lat.getContent();
         	        String coordType = coord.getSystem().toString(); // must be J2000
                     if (!coordType.equals("J2000")){
-                    	logger.severe("the Shy Coordination system is not J2000! skip this project");
-                    	return null;
-                        //throw new SchedulingException(coordType + " is not supported.  Must be J2000");
+                        throw new SchedulingException(coordType + " is not supported.  Must be J2000");
                     }  
                     eq[i] = new Equatorial((ra /24.0),dec);
                     source = new Source();
@@ -1118,7 +1134,7 @@ public class ProjectUtil {
       * TODO double check!
       *
       */
-    private static FrequencyBand getFrequencyBand(FrequencyT f) {
+    FrequencyBand getFrequencyBand(FrequencyT f) {
         double content = f.getContent();
         if( content >= 31.3 && content <=45.0) {
             return new FrequencyBand(""+1, 31.3, 45.0);
@@ -1146,7 +1162,7 @@ public class ProjectUtil {
         
     }
     
-    private static FieldSourceT getFieldSourceFromList(FieldSourceT[] fs, String id){
+    FieldSourceT getFieldSourceFromList(FieldSourceT[] fs, String id){
         for(int i=0; i < fs.length; i++){
             if(fs[i].getEntityPartId().equals(id)){
                 return fs[i];
@@ -1162,7 +1178,7 @@ public class ProjectUtil {
 	 * @param now
 	 * @throws SchedulingException
 	 */
-	static private void update(Project project, ProjectStatus status, DateTime now) 
+	private void update(Project project, ProjectStatus status, DateTime now) 
 		throws SchedulingException {
 		//throw new SchedulingException("The ProjectUtil.update(Project project, ProjectStatus status, DateTime now) method is not implemented at the present time.");
             //System.out.println("UPDATING THE PROJECT BECAUSE IT HAS AN EXISTING PROJECT STATUS");
@@ -1173,7 +1189,7 @@ public class ProjectUtil {
 	}
     
     
-    static public Project updateProject(ObsProject obs, Project project, SchedBlock[] sched, DateTime now) 
+    public Project updateProject(ObsProject obs, Project project, SchedBlock[] sched, DateTime now) 
         throws SchedulingException {
         
             project.setTimeOfUpdate(now);
@@ -1238,7 +1254,7 @@ public class ProjectUtil {
 
     
     
-    static private Program updateProgram(ObsUnitSetT set, Program prog, SchedBlock[] sched, 
+    private Program updateProgram(ObsUnitSetT set, Program prog, SchedBlock[] sched, 
 			boolean[] schedUsed, Project project, Program parent,  
 			DateTime now) throws SchedulingException {
 
@@ -1352,7 +1368,7 @@ public class ProjectUtil {
     }
 
 
-    static private SB updateSchedBlock(SchedBlockRefT schedRef, SchedBlock[] schedArray,
+    private SB updateSchedBlock(SchedBlockRefT schedRef, SchedBlock[] schedArray,
             boolean[] schedUsed, Project project, Program parent, DateTime now, SB existingSB) 
         		throws SchedulingException {
 
@@ -1518,7 +1534,7 @@ public class ProjectUtil {
 	 * @return A ProjectStatus object that acurately reflects the current status of the specified Project.
 	 * @throws SchedulingException If any error is found in the process of mapping.
 	 */
-	static public ProjectStatus map(Project project, DateTime now) throws SchedulingException {
+	public ProjectStatus map(Project project, DateTime now) throws SchedulingException {
 		
 		// First, we validate the project.
 		validate(project);
@@ -1560,7 +1576,14 @@ public class ProjectUtil {
 		pstatus.setStatus(assignState(project.getStatus()));
 		pstatus.setBreakpointTime(project.getBreakpointTime() == null ? "" : project.getBreakpointTime().toString());
 		// The obsProgram status.
-		pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
+		try {			
+			// HSO 2008-06-05 hack: we are getting an NPE at the ATF and need more info
+			pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
+		} catch (RuntimeException ex) {
+			logger.log(Level.SEVERE, "Failed to set the ObsProgram status for project " + project.getObsProjectId(), ex);
+			throw ex; // for now we don't change the flow of control 
+		}
+			
 		/***********************************
 		 * test only need to move when bug fixed
 		 */
@@ -1590,9 +1613,9 @@ public class ProjectUtil {
       * current state.
       *
       */
-    static public ProjectStatus map(Project p, ProjectStatus ps, DateTime t) throws SchedulingException{
+    public ProjectStatus map(Project p, ProjectStatus ps, DateTime t) throws SchedulingException{
         if(ps.getTimeOfUpdate() == null || ps.getTimeOfUpdate() == ""){
-            return ProjectUtil.map(p, t);
+            return map(p, t);
         }   
         return ps;
     }
@@ -1602,9 +1625,9 @@ public class ProjectUtil {
       * Updates the project status.
       *
       */
-    static public ProjectStatus updateProjectStatus(Project p) throws SchedulingException{
+    public ProjectStatus updateProjectStatus(Project p) throws SchedulingException{
         try {
-            return ProjectUtil.map(p, new DateTime(System.currentTimeMillis()));
+            return map(p, new DateTime(System.currentTimeMillis()));
         } catch(Exception e){
             logger.severe("SCHEDULING: Error updating ProjectStatus.");
             e.printStackTrace(System.out);
@@ -1612,7 +1635,7 @@ public class ProjectUtil {
         }
     }
 
-    static public ProjectStatus updateProjectStatus(Project p, ProjectStatus pstat, DateTime t) throws SchedulingException{
+    public ProjectStatus updateProjectStatus(Project p, ProjectStatus pstat, DateTime t) throws SchedulingException{
         if(!p.getProjectStatusId().equals(pstat.getProjectStatusEntity().getEntityId())){
             throw new SchedulingException("ProjectStatus UID doesn't match Project's project status reference UID.");
         }
@@ -1625,13 +1648,13 @@ public class ProjectUtil {
         
     }
 
-    static public ProjectStatus updateProjectStatus(ProjectStatus oldPS, 
+    public ProjectStatus updateProjectStatus(ProjectStatus oldPS, 
                                                     ProjectStatus newPS, 
                                                     DateTime t){
         return oldPS;
     }
 
-    static private ObsUnitSetStatusT updateProgramStatus(Program prog, ObsUnitSetStatusT obs, DateTime t) 
+    private ObsUnitSetStatusT updateProgramStatus(Program prog, ObsUnitSetStatusT obs, DateTime t) 
         throws SchedulingException {
         
         return obs;
@@ -1642,7 +1665,7 @@ public class ProjectUtil {
 	// "map(Project project, DateTime now)" method.				//
 	//////////////////////////////////////////////////////////////
 	
-	static private StatusT assignState(Status source) {
+	private StatusT assignState(Status source) {
         //System.out.println("State="+source.getState().toString());
 		StatusT target = new StatusT ();
 		switch (source.getStatusAsInt()) {
@@ -1662,7 +1685,7 @@ public class ProjectUtil {
 		return target;
 	}
 	
-	static private ObsUnitSetStatusT assignObsProgramStatus(Program source, DateTime now) {
+	private ObsUnitSetStatusT assignObsProgramStatus(Program source, DateTime now) {
 		ObsUnitSetStatusT target = new ObsUnitSetStatusT ();
 		target.setEntityPartId(source.getId());
 		ObsProjectRefT obsUnitSetRef = new ObsProjectRefT ();
@@ -1717,7 +1740,7 @@ public class ProjectUtil {
 	
  
 
-	static private SessionT[] assignSession(ObservedSession[] session) {
+	private SessionT[] assignSession(ObservedSession[] session) {
 		SessionT[] list = new SessionT [session.length];
 		SessionT x = null; 
         try {
@@ -1759,11 +1782,11 @@ public class ProjectUtil {
 		return list;
 	}
     
-    static private Session[] addSession(ObservedSession session){
+    private Session[] addSession(ObservedSession session){
         return null;
     }
 	
-	static private PipelineProcessingRequestT assignPPR(SciPipelineRequest ppr) {
+	private PipelineProcessingRequestT assignPPR(SciPipelineRequest ppr) {
 		if (ppr == null){
 			return null;
         }
@@ -1859,7 +1882,7 @@ public class ProjectUtil {
 	}
 
 		
-	static private SBStatusT assignSBStatus(SB sb, DateTime now) {
+	private SBStatusT assignSBStatus(SB sb, DateTime now) {
 		SBStatusT target = new SBStatusT ();
 		
 		// Set the status part-id.
@@ -1888,7 +1911,7 @@ public class ProjectUtil {
 		return target;
 	}
 	
-	static private ExecStatusT[] assignExec(ExecBlock[] ex, DateTime now) {
+	private ExecStatusT[] assignExec(ExecBlock[] ex, DateTime now) {
 		ExecStatusT[] list = new ExecStatusT [ex.length];
 		ExecStatusT exStatus = null;
 		ExecBlockRefT execRef = null;
@@ -1922,7 +1945,7 @@ public class ProjectUtil {
 		return list;
 	}
 	
-	static BestSBT assignBestSB(BestSB best) {
+	BestSBT assignBestSB(BestSB best) {
 		BestSBT target = new BestSBT ();
 		
 		
@@ -1957,7 +1980,7 @@ public class ProjectUtil {
 	// "map(Project project, DateTime now)" method.				//
 	//////////////////////////////////////////////////////////////
 	
-    static public ObsProject addPartIds(ObsProject obs) throws SchedulingException {
+    public ObsProject addPartIds(ObsProject obs) throws SchedulingException {
         ObsUnitSetT set = obs.getObsProgram().getObsPlan();
         if(set.getEntityPartId() == null) {
             String id = genPartId();
@@ -1967,7 +1990,7 @@ public class ProjectUtil {
         return obs;
         
     }
-    static private void doObsUnitSetIds(ObsUnitSetT set) {
+    private void doObsUnitSetIds(ObsUnitSetT set) {
         if (set.getObsUnitSetTChoice().getObsUnitSetCount() > 0) {
 			ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
 			for (int i = 0; i < setMember.length; ++i) {
@@ -1985,7 +2008,7 @@ public class ProjectUtil {
       * Check if there is an ObsUnitSetStatus in the given choice with the given id.
       * @return the index of where it is in the current choice, otherwise -1 
       */
-    static private int obsUnitSetStatusExists(ObsUnitSetStatusTChoice choice, String id) {
+    private int obsUnitSetStatusExists(ObsUnitSetStatusTChoice choice, String id) {
         ObsUnitSetStatusT[] ous = choice.getObsUnitSetStatus();
         for(int i=0; i < ous.length; i++){
             if(ous[i].getEntityPartId().equals(id)){
@@ -1996,7 +2019,7 @@ public class ProjectUtil {
 
     }
     
-    static private int sbStatusExists(ObsUnitSetStatusTChoice choice, String id) {
+    private int sbStatusExists(ObsUnitSetStatusTChoice choice, String id) {
         SBStatusT[] sbs = choice.getSBStatus();
         for(int i=0; i < sbs.length; i++){
             if(sbs[i].getSchedBlockRef().getEntityId().equals(id)){
@@ -2006,7 +2029,7 @@ public class ProjectUtil {
         return -1;
     }
 
-    static public SB updateSB(SB oldSB, SchedBlock newSB, DateTime now) 
+    public SB updateSB(SB oldSB, SchedBlock newSB, DateTime now) 
         throws SchedulingException {
             
         SchedBlock sched = newSB;
