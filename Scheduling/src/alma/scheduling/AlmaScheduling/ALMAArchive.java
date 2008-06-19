@@ -27,49 +27,59 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Properties;
-import java.util.Vector;
 import java.io.StringReader;
 import java.sql.Timestamp;
-import alma.scheduling.Define.*;
+import java.util.Properties;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import alma.xmlentity.XmlEntityStruct;
-
-import alma.acs.container.ContainerServices;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityDeserializer;
-import alma.acs.entityutil.EntitySerializer;
 import alma.acs.entityutil.EntityException;
-
-import alma.log_audience.OPERATOR;
-import alma.acs.logging.AcsLogger;
-
-import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.acs.entityutil.EntitySerializer;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
-import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
-
-import alma.xmlstore.Operational;
-import alma.xmlstore.Identifier;
+import alma.entity.xmlbinding.obsproject.ObsProject;
+import alma.entity.xmlbinding.obsproject.ObsProjectEntityT;
+import alma.entity.xmlbinding.obsproject.ObsProjectRefT;
+import alma.entity.xmlbinding.obsproject.ObsUnitControlT;
+import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
+import alma.entity.xmlbinding.obsproject.ObsUnitSetTChoice;
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
+import alma.entity.xmlbinding.specialsb.SpecialSB;
+import alma.hla.runtime.DatamodelInstanceChecker;
+import alma.scheduling.Define.Archive;
+import alma.scheduling.Define.ControlEvent;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.SciPipelineRequest;
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
+import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.ArchiveConnection;
-import alma.xmlstore.ArchiveConnectionPackage.*;
-import alma.xmlstore.OperationalPackage.*;
 import alma.xmlstore.ArchiveInternalError;
 import alma.xmlstore.Cursor;
+import alma.xmlstore.Identifier;
+import alma.xmlstore.Operational;
+import alma.xmlstore.ArchiveConnectionPackage.ArchiveException;
+import alma.xmlstore.ArchiveConnectionPackage.PermissionException;
+import alma.xmlstore.ArchiveConnectionPackage.UserDoesNotExistException;
 import alma.xmlstore.CursorPackage.QueryResult;
-
-import alma.entity.xmlbinding.schedblock.*;
-import alma.entity.xmlbinding.projectstatus.*;
-import alma.entity.xmlbinding.obsproject.*;
-import alma.entity.xmlbinding.obsproject.types.*;            
-import alma.entity.xmlbinding.specialsb.*;
-import alma.entities.commonentity.*;
-
-import alma.hla.runtime.DatamodelInstanceChecker;
-
-import alma.scheduling.Scheduler.DSA.SchedulerStats;
+import alma.xmlstore.OperationalPackage.DirtyEntity;
+import alma.xmlstore.OperationalPackage.IllegalEntity;
+import alma.xmlstore.OperationalPackage.MalformedURI;
+import alma.xmlstore.OperationalPackage.NotFound;
+import alma.xmlstore.OperationalPackage.StatusStruct;
 
 /**
  * This class provides all the functionalitiy from the archvie which 
@@ -77,7 +87,7 @@ import alma.scheduling.Scheduler.DSA.SchedulerStats;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.89 2008/06/10 17:25:31 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.90 2008/06/19 18:41:08 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -89,7 +99,7 @@ public class ALMAArchive implements Archive {
     private Operational archOperationComp;
     //TODO should check project queue.. if project exists don't map a new one.
     //The logger
-    private ALMASchedLogger logger;
+    private Logger logger;
     //Entity deserializer - makes entities from the archive human readable
     private EntityDeserializer entityDeserializer;
     //Entity Serializer - prepares entites for the archive
@@ -105,15 +115,16 @@ public class ALMAArchive implements Archive {
 
     private String schemaVersion="";
     private DatamodelInstanceChecker dic=null;
+	private final ProjectUtil projectUtil;
 
     /**
       *
       */
     public ALMAArchive(ContainerServices cs, ALMAClock c){
         this.containerServices = cs;
-        this.logger = new ALMASchedLogger(cs.getLogger());
+        this.logger = cs.getLogger();
+        this.projectUtil = new ProjectUtil(logger);
         this.clock = c;
-        ACSJMSTopicConnectionImpl.containerServices=containerServices;
         getArchiveComponents();
         getSchemaVersion();
         getDatamodelInstanceChecker();
@@ -129,14 +140,14 @@ public class ALMAArchive implements Archive {
 
     public void sendAlarm(String ff, String fm, int fc, String fs) {
         try {
-            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource(this.getClass().getName());
+            ACSAlarmSystemInterface alarmSource = ACSAlarmSystemInterfaceFactory.createSource("ALMAArchive");
             ACSFaultState state = ACSAlarmSystemInterfaceFactory.createFaultState(ff, fm, fc);
             state.setDescriptor(fs);
             state.setUserTimestamp(new Timestamp(clock.getDateTime().getMillisec()));
             Properties prop = new Properties();
             prop.setProperty(ACSFaultState.ASI_PREFIX_PROPERTY, "prefix");
 			prop.setProperty(ACSFaultState.ASI_SUFFIX_PROPERTY, "suffix");
-			prop.setProperty("ALMAMasterScheduling_PROPERTY", fm);
+			prop.setProperty("ALMAMasterScheduling_PROPERTY", "ConnArchiveException");
 			state.setUserProperties(prop);
             alarmSource.push(state);
         } catch(Exception e) {
@@ -220,20 +231,26 @@ public class ALMAArchive implements Archive {
             //SchedBlock[] sbs1 = 
             //logger.fine("obsproject length = "+obsProj.length);
             for(int i=0; i < obsProj.length; i++) {
+            	
+            	if (logger.isLoggable(Level.FINE)) {
+	            	String prjForLog = (
+	            			(	obsProj[i] != null && 
+	            				obsProj[i].getObsProjectEntity() != null && 
+	            				obsProj[i].getObsProjectEntity().getEntityId() != null )
+	            			? obsProj[i].getObsProjectEntity().getEntityId() 
+	            			: entitySerializer.serializeEntity(obsProj[i]).xmlString );            		
+	                logger.fine("Will try to get ProjectStatus for ObsProject " + prjForLog);
+	            }
+                
                 ProjectStatus ps = getProjectStatusForObsProject(obsProj[i]);
                 if(ps == null) { //no project status for this project. so create one
                      logger.warning("SCHEDULING: no ps for this project");
                 } else {
             //TODO should check project queue.. if project exists don't map a new one.
                     SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
-                    Project p = ProjectUtil.map(obsProj[i], sbs, ps, 
+                    Project p = projectUtil.map(obsProj[i], sbs, ps, 
                             new DateTime(System.currentTimeMillis()));
-                    if(p!=null){
-                        tmp_projects.add(p);
-                    }
-                    else {
-                    	sendAlarm("Scheduling","SchedInvalidProjectAlarm",6,ACSFaultState.ACTIVE);
-                    }
+                    tmp_projects.add(p);
                 }
             }
             projects = new Project[tmp_projects.size()];
@@ -271,7 +288,7 @@ public class ALMAArchive implements Archive {
             String timeOfUpdate = ps.getTimeOfUpdate();
 	    	if (timeOfUpdate == null || timeOfUpdate.length() == 0) {
                 //Same as calling 'ProjectStatus ProjectUtil.map'
-                ps = ProjectUtil.updateProjectStatus(p);
+                ps = projectUtil.updateProjectStatus(p);
                 updateProjectStatus(ps);
 		    }
         } catch(Exception e) {
@@ -318,11 +335,10 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            // need to think about how to catch SchedulingException!!
+            // need to think about how to catch SchedulingException!! before throw
             //throw new SchedulingException(e);
         }
-        return ps;
-    }
+        return ps;    }
 
     /**
       * Querys the ProjectStatus for the project with the given proj_id.
@@ -681,7 +697,7 @@ public class ALMAArchive implements Archive {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
             ObsProject obsProj= (ObsProject)
                 entityDeserializer.deserializeEntity(xml, ObsProject.class);
-            project = ProjectUtil.map(obsProj, getSBsFromObsProject(obsProj), 
+            project = projectUtil.map(obsProj, getSBsFromObsProject(obsProj), 
                     getProjectStatusForObsProject(obsProj), clock.getDateTime());
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
