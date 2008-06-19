@@ -27,32 +27,20 @@
 
 package alma.scheduling.AlmaScheduling;
 
-import alma.scheduling.*;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Interactive_PI_to_SchedulingOperations;
-import alma.scheduling.ProjectLite;
-import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.SchedulingExceptions.InvalidObjectEx;
-import alma.SchedulingExceptions.UnidentifiedResponseEx;
-import alma.SchedulingExceptions.SBExistsEx;
-import alma.SchedulingExceptions.NoSuchSBEx;
-import alma.SchedulingExceptions.CannotRunCompleteSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidObjectEx;
-import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
-import alma.SchedulingExceptions.wrappers.AcsJNoSuchSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJSBExistsEx;
-
-import alma.scheduling.Define.*;
-import alma.scheduling.Scheduler.*;
-
 import alma.ACS.ComponentStates;
-import alma.acs.container.ContainerServices;
+import alma.SchedulingExceptions.CannotRunCompleteSBEx;
+import alma.SchedulingExceptions.InvalidObjectEx;
+import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
-import alma.xmlentity.XmlEntityStruct;
-
-import java.util.logging.Logger;
+import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger; 
+import alma.scheduling.Interactive_PI_to_SchedulingOperations;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.Scheduler.InteractiveScheduler;
 
 public class ALMAInteractiveScheduler extends InteractiveScheduler 
     implements Interactive_PI_to_SchedulingOperations, ComponentLifecycle  {
@@ -63,7 +51,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     private String currentEB;
     private ContainerServices container;
     private String arrayname;
-    private ALMASchedLogger logger;
+    private AcsLogger logger;
     private MasterSchedulerIF masterScheduler;
     
     public ALMAInteractiveScheduler() {
@@ -94,7 +82,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws ComponentLifecycleException {
 
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{
