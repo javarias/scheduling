@@ -26,15 +26,16 @@
 
 package alma.scheduling.AlmaScheduling;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import alma.scheduling.Define.SchedLogger;
-
-import alma.log_audience.OPERATOR;
 import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
+import alma.scheduling.Define.SchedLogger;
 
+/**
+ * @deprecated Scheduling should use normal Loggers, see COMP-2539
+ */
 public class ALMASchedLogger extends SchedLogger {
 
     private AcsLogger logger;

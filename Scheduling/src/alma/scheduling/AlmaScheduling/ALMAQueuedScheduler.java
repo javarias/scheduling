@@ -26,33 +26,21 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import alma.scheduling.*;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.ProjectLite;
-import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.SchedulingExceptions.InvalidObjectEx;
-import alma.SchedulingExceptions.UnidentifiedResponseEx;
-import alma.SchedulingExceptions.SBExistsEx;
-import alma.SchedulingExceptions.NoSuchSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidObjectEx;
-import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
-import alma.SchedulingExceptions.wrappers.AcsJNoSuchSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJSBExistsEx;
+import java.util.Vector;
+import java.util.logging.Level;
 
-import alma.scheduling.Define.*;
-import alma.scheduling.Scheduler.*;
-
-import alma.log_audience.OPERATOR;
 import alma.ACS.ComponentStates;
-import alma.acs.container.ContainerServices;
+import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
-import alma.xmlentity.XmlEntityStruct;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Vector;
+import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.ArrayContextLogger;
+import alma.log_audience.OPERATOR;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.Queued_Operator_to_SchedulingOperations;
 
 public class ALMAQueuedScheduler
     implements Queued_Operator_to_SchedulingOperations, ComponentLifecycle  {
@@ -64,7 +52,8 @@ public class ALMAQueuedScheduler
     private Vector<String> sbQueue;
     private ContainerServices container;
     private String arrayname;
-    private ALMASchedLogger logger;
+    private AcsLogger logger;
+    private ArrayContextLogger arrayLogger;
     private MasterSchedulerIF masterScheduler;
     private boolean execStarted;
     
@@ -100,7 +89,8 @@ public class ALMAQueuedScheduler
         throws ComponentLifecycleException {
 
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
+        arrayLogger = new ArrayContextLogger(logger);
         this.instanceName = container.getName();
     }
 
@@ -221,7 +211,7 @@ public class ALMAQueuedScheduler
                 //don't really need to pass sb, coz scheduler takes
                 //current running sb but not changing interfaces right now
                 masterScheduler.stopQueuedSB(sbid, schedulerId);
-                logger.log(Level.INFO,"Queued SB stopped", OPERATOR.value, arrayname);
+                arrayLogger.log(Level.INFO,"Queued SB stopped", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not stop SB "+sbid);
                 e.printStackTrace();
@@ -234,7 +224,7 @@ public class ALMAQueuedScheduler
         if(execStarted){
             try {
                 masterScheduler.stopQueue(schedulerId);
-                logger.log(Level.INFO,"SB Queue stopped", OPERATOR.value, arrayname);
+                arrayLogger.log(Level.INFO,"SB Queue stopped", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not stop queue");
                 e.printStackTrace();
@@ -247,7 +237,7 @@ public class ALMAQueuedScheduler
         if(execStarted){
             try {
                 masterScheduler.abortQueuedSB(schedulerId);
-                logger.log(Level.INFO,"Queued SB aborted", OPERATOR.value, arrayname);
+                arrayLogger.log(Level.INFO,"Queued SB aborted", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not abort queue");
                 e.printStackTrace();
@@ -260,7 +250,7 @@ public class ALMAQueuedScheduler
         if(execStarted){
             try {
                 masterScheduler.abortQueue(schedulerId);
-                logger.log(Level.INFO,"Aborted whole Queue", OPERATOR.value, arrayname);
+                arrayLogger.log(Level.INFO,"Aborted whole Queue", OPERATOR.value, arrayname);
             } catch(Exception e) {
                 logger.warning("QS: could not abort queue");
                 e.printStackTrace();

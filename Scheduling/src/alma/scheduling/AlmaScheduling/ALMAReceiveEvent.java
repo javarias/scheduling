@@ -69,7 +69,7 @@ import java.sql.Timestamp;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.55 2008/01/29 20:24:32 wlin Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.56 2008/06/19 19:31:40 wlin Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -92,13 +92,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
                             ALMAProjectManager m,
                             ALMAPublishEvent pub) {
         
-        this.containerServices = cs;    
-        this.logger = new ALMASchedLogger(cs.getLogger());
+        super(cs.getLogger());
+    	this.containerServices = cs;    
         this.arraylogger = new ArrayContextLogger(cs.getLogger());
         this.manager = m;
         this.publisher = pub;
         this.currentEB = new Vector();
-        this.clock = new ALMAClock();
+        this.clock = new ALMAClock(); 
     }
     
     public void sendAlarm(String ff, String fm, int fc, String fs) {

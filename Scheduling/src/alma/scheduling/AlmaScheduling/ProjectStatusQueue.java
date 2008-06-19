@@ -26,12 +26,13 @@
  
 package alma.scheduling.AlmaScheduling;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import alma.scheduling.Define.SchedLogger;
+import java.util.logging.Logger;
+
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.scheduling.Define.SchedulingException;
-import alma.entity.xmlbinding.projectstatus.*;
 
 /**
  * The ProjectStatusQueue class is a queue of project status', held in memory,
@@ -39,26 +40,26 @@ import alma.entity.xmlbinding.projectstatus.*;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.9 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.10 2008/06/19 19:34:53 wlin Exp $
  */
 public class ProjectStatusQueue {
 
-    private SchedLogger logger;
-	private ArrayList queue;
+    private final Logger logger; 
+	private final ArrayList queue;
 
 	/**
 	 * Create an enpty queue of ProjectStatus.
 	 */
-	public ProjectStatusQueue() {
-        logger = new SchedLogger(Logger.getLogger("Scheduling")); //Logger.getLogger("ProjectStatusQueue");
-		queue = new ArrayList ();
+	public ProjectStatusQueue(Logger logger) {
+        this.logger = logger; 
+		queue = new ArrayList();
 	}
 
 	/**
 	 * Create an queue of ProjectStatus from the specified array.
 	 */
-	public ProjectStatusQueue(ProjectStatus[] item) {
-		queue = new ArrayList (item.length);
+	public ProjectStatusQueue(ProjectStatus[] item, Logger logger) {
+		this(logger);
 		for (int i = 0; i < item.length; ++i)
 			queue.add(item[i]);
 	}
@@ -127,6 +128,21 @@ public class ProjectStatusQueue {
 			x = (ProjectStatus)queue.get(i);
           //  System.out.println("comparing to PS "+ x.getProjectStatusEntity().getEntityId());
 			//if (x.getId().equals(entityId)) {
+// debug
+			try {
+				if (x == null) {
+					logger.log(Level.WARNING, "ProjectStatus #" + i + " from the queue is null", "");
+				}
+				else if (x.getProjectStatusEntity() == null || x.getProjectStatusEntity().getEntityId() == null) {
+					StringWriter sw = new StringWriter();
+					x.marshal(sw);
+					logger.warning("ProjectStatus with null ID found: " + sw.toString());					
+				}
+			} catch (Throwable thr) {
+				// TODO Auto-generated catch block
+				thr.printStackTrace();
+			}
+// end debug		
 			if (x.getProjectStatusEntity().getEntityId().equals(entityId)) {
             //    System.out.println("returning ps "+entityId);
 				return x;
