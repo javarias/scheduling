@@ -79,7 +79,7 @@ import java.util.logging.Logger;
  * So, there is a good deal of thinking to be done on how to do this.
  * For now, the second method is not implemented.
  * 
- * @version $Id: DynamicSchedulingAlgorithm.java,v 1.9 2007/09/20 16:08:25 sslucero Exp $
+ * @version $Id: DynamicSchedulingAlgorithm.java,v 1.10 2008/06/19 20:46:02 wlin Exp $
  * @author Allen Farris
  */
 public class DynamicSchedulingAlgorithm {
@@ -92,7 +92,7 @@ public class DynamicSchedulingAlgorithm {
 	
 	public DynamicSchedulingAlgorithm(String arrayname, Policy policy, 
         SBQueue queue, Clock clock, Telescope telescope, 
-        ProjectManager projectManager, SchedLogger log, int bestNumber ) 
+        ProjectManager projectManager, Logger log, int bestNumber ) 
         throws SchedulingException {
 		
         if(policy.getName().equals("R1Policy")) {

@@ -26,17 +26,30 @@
 package alma.scheduling.Scheduler.DSA;
 
 
-import alma.scheduling.Define.*;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Vector;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Clock;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.LiteSB;
+import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.PolicyFactor;
+import alma.scheduling.Define.PreConditions;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.Subarray;
+import alma.scheduling.Define.Telescope;
 
 /**
  * This is one of the dynamic scheduling algorithms for R5.
  * 
- * @version $Id: R5Policy.java,v 1.4 2007/11/01 13:46:02 sslucero Exp $
+ * @version $Id: R5Policy.java,v 1.5 2008/06/19 20:46:30 wlin Exp $
  * @author Sohaila Lucero
  */
 class R5Policy extends PolicyType {
@@ -56,7 +69,7 @@ class R5Policy extends PolicyType {
     /**
       * the logger
       */
-	private SchedLogger log;
+	private Logger log;
     /**
       * The policy
       */
@@ -131,7 +144,7 @@ class R5Policy extends PolicyType {
 
 	public R5Policy (String arrayName, Policy policy, SBQueue queue, 
 			Clock clock, Telescope telescope, ProjectManager projectManager,
-			SchedLogger log, int bestNumber ) throws SchedulingException {
+			Logger log, int bestNumber ) throws SchedulingException {
 		// Save the parameters.
 		this.arrayName = arrayName;
 		this.policy = policy;
