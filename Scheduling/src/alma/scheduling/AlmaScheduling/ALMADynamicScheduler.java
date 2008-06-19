@@ -26,34 +26,21 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import alma.scheduling.*;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.ProjectLite;
-import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.SchedulingExceptions.InvalidObjectEx;
-import alma.SchedulingExceptions.UnidentifiedResponseEx;
-import alma.SchedulingExceptions.SBExistsEx;
-import alma.SchedulingExceptions.NoSuchSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidObjectEx;
-import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
-import alma.SchedulingExceptions.wrappers.AcsJNoSuchSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJSBExistsEx;
-
-import alma.scheduling.Define.*;
-import alma.scheduling.Scheduler.*;
-
 import alma.ACS.CBDescIn;
 import alma.ACS.CBstringSeq;
-import alma.acs.callbacks.ResponderUtil;
 import alma.ACS.ComponentStates;
-import alma.acs.container.ContainerServices;
+import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
+import alma.acs.callbacks.ResponderUtil;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
-import alma.xmlentity.XmlEntityStruct;
-
-import java.util.logging.Logger;
-import java.util.Vector;
+import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger;
+import alma.scheduling.Dynamic_Operator_to_SchedulingOperations;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.SBLite;
 
 public class ALMADynamicScheduler
     implements Dynamic_Operator_to_SchedulingOperations, ComponentLifecycle  {
@@ -62,7 +49,7 @@ public class ALMADynamicScheduler
     private ContainerServices container;
     private String arrayname;
     //private SBQueue queue;
-    private ALMASchedLogger logger;
+    private AcsLogger logger;
     private MasterSchedulerIF masterScheduler;
     private String schedulerId;
     private CBstringSeq allSB_cb;
@@ -97,7 +84,7 @@ public class ALMADynamicScheduler
         throws ComponentLifecycleException {
 
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
         this.instanceName = container.getName();
     }
     public void execute() throws ComponentLifecycleException{

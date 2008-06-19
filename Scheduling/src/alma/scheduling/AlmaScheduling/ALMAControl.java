@@ -25,49 +25,39 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Vector;
+import java.sql.Timestamp;
 import java.util.Properties;
+import java.util.Vector;
+import java.util.logging.Level;
 
-import alma.acs.container.ContainerServices;
+import alma.Control.AntennaMode;
+import alma.Control.ArrayMonitor;
+import alma.Control.AutomaticArray;
+import alma.Control.ControlMaster;
+import alma.Control.InaccessibleException;
+import alma.Control.InvalidRequest;
+import alma.Control.ManualArrayMonitor;
+import alma.Control.ResourceId;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-
+import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.ArrayContextLogger;
+import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.alarmsystem.source.ACSFaultState; 
 import alma.asdmIDLTypes.IDLEntityRef;
-
+import alma.log_audience.OPERATOR;
 import alma.scheduling.ArrayInfo;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArrayStateEnum;
-
-import alma.scheduling.Define.Control;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Control;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 
-import alma.Control.ResourceId;
-import alma.Control.ControlMaster;
-import alma.Control.AutomaticArray;
-import alma.Control.ArrayMonitor;
-import alma.Control.ManualArrayMonitor;
-
-import alma.ControlExceptions.*;
-import alma.Control.InvalidRequest;
-import alma.Control.InaccessibleException;
-import alma.Control.AntennaMode;
-
-//import alma.acscommon.OPERATOR;
-import alma.log_audience.OPERATOR;
-import alma.acs.logging.AcsLogger;
-import alma.acs.logging.domainspecific.ArrayContextLogger;
-import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
-import alma.alarmsystem.source.ACSAlarmSystemInterface;
-import alma.alarmsystem.source.ACSFaultState;
-import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
-import java.sql.Timestamp;
-
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.77 2008/04/08 15:54:57 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.78 2008/06/19 18:43:50 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -80,7 +70,7 @@ public class ALMAControl implements Control {
     //list of current manual array monitors.
     private Vector manualArrays;
     //logger
-    private ALMASchedLogger logger;
+    private final AcsLogger logger;
     private ArrayContextLogger arraylogger;
     //list of current observing sessions
     private Vector observedSessions;
@@ -89,9 +79,8 @@ public class ALMAControl implements Control {
 
     public ALMAControl(ContainerServices cs, ALMAProjectManager m) throws SchedulingException{
         this.containerServices = cs;
-        ACSJMSTopicConnectionImpl.containerServices=containerServices;
         this.manager = m;
-        this.logger = new ALMASchedLogger(cs.getLogger());
+        this.logger = cs.getLogger();
         this.arraylogger = new ArrayContextLogger(cs.getLogger());
         this.auto_controllers = new Vector<ArrayModeInfo>();
         manualArrays = new Vector();
