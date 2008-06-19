@@ -29,7 +29,6 @@ import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
 import alma.scheduling.PlanningModeSim.Define.ContainerServices;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
-import alma.scheduling.Define.SchedLogger;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.FrequencyBand;
 import alma.scheduling.Define.SiteCharacteristics;
@@ -82,7 +81,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	/**
 	 * The Java logger used in this simulation.
 	 */
-	private SchedLogger logger;
+	private Logger logger;
 	
 	/**
 	 * The input file.
@@ -785,7 +784,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			if (numberSets < 0)
 				error("Number of sets cannot be 0 in " + s);
 			// Create the project.
-			project[i] = new Project(name + "_project", name + "_proposal", name, "v01", pi);
+			project[i] = new Project(name + "_project", name + "_proposal", name, "v01", pi, logger);
 				
 			// Create the program and add it to the project.
 			Program program = new Program (name + "_set_program");
@@ -1160,7 +1159,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 	/**
 	 * @return
 	 */
-	public SchedLogger getLogger() {
+	public Logger getLogger() {
 		return logger;
 	}
 

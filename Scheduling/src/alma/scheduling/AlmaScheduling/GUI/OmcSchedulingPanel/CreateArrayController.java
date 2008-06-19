@@ -25,22 +25,17 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
-import java.util.logging.Logger;
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import alma.Control.ControlMaster;
-import alma.Control.AntennaStateEvent;
-import alma.scheduling.Define.*;
-import alma.scheduling.ArrayModeEnum;
+import java.util.Map;
 
-import alma.common.gui.chessboard.*;
-import alma.TMCDB.*;
-import alma.TMCDB.generated.*;
-import alma.TMCDB_IDL.*;
+import alma.Control.ControlMaster;
+import alma.TMCDB.TMCDBComponent;
+import alma.TMCDB.TMCDBComponentHelper;
+import alma.TMCDB_IDL.StartupAntennaIDL;
+import alma.common.gui.chessboard.ChessboardEntry;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.Define.SchedulingException;
 
 public class CreateArrayController extends SchedulingPanelController {
 

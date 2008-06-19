@@ -25,21 +25,28 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
-import javax.swing.table.*;
-import javax.swing.border.*;
-import java.util.logging.Logger;
-import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.border.TitledBorder;
+
+import alma.common.gui.chessboard.ChessboardEntry;
+import alma.common.gui.chessboard.ChessboardPanel;
+import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.common.gui.chessboard.*;
+import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
-    private ALMASchedLogger logger;
     private String[] availableAntennas;
     private Vector<String> allArrays;
     private int columnIndex = 0;

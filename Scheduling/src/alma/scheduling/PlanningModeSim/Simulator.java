@@ -26,18 +26,17 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
-import alma.scheduling.PlanningModeSim.Define.SimulationException;
-
-import alma.scheduling.Define.*;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.logging.FileHandler;
-import java.util.logging.SimpleFormatter;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.SimpleFormatter;
+
+import alma.acs.logging.AcsLogger;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.PreConditions;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;
 
 /**
  * The Simulator class gathers and verifies all input data to the simulation
@@ -51,7 +50,7 @@ public class Simulator implements Runnable {
 	/**
 	 * The logger used by the simulator.
 	 */
-	private SchedLogger logger;
+	private AcsLogger logger;
 	
 	/**
 	 * The container that controls the components.
@@ -106,7 +105,7 @@ public class Simulator implements Runnable {
 		// Create the logger and the log file.
 		FileHandler logText = null;
 		//this.logger = Logger.getLogger("Scheduling.Simulator");
-        this.logger = new SchedLogger(Logger.getLogger("Scheduling.Simulator"));
+        this.logger = AcsLogger.createUnconfiguredLogger("Scheduling.Simulator", null);
 		try {
 			logText = new FileHandler(logFile.getAbsolutePath());
 		} catch (IOException ioerr) {

@@ -21,8 +21,7 @@
  */
 package alma.scheduling.PlanningModeSim.Define;
 
-import java.util.logging.Logger;
-import alma.scheduling.Define.SchedLogger;
+import alma.acs.logging.AcsLogger;
 
 /**
  * The ContainerServices interface defines the basic services provided
@@ -37,7 +36,7 @@ public interface ContainerServices
 	 * Gets a Logger object that the component should use for logging.
 	 * @return Logger
 	 */
-	public SchedLogger getLogger();
+	public AcsLogger getLogger();
 		
 	/**
 	 * Gets the specified component as a Java Object.

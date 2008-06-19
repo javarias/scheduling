@@ -25,8 +25,7 @@
  */
 package alma.scheduling.Event.Receivers;
 
-import alma.scheduling.Define.*;
-import java.util.logging.Logger;
+import alma.acs.logging.AcsLogger;
 /**
  * The ReceiveEvent class contains basic methods of a generic nature to
  * handle receiving events.  It is an abstract class that forms the basis
@@ -36,13 +35,12 @@ import java.util.logging.Logger;
  * @author Allen Farris
  */
 abstract public class ReceiveEvent {
-    protected SchedLogger logger;
+    protected final AcsLogger logger;
 	/**
 	 * 
 	 */
-	public ReceiveEvent() {
-		super();
-		// TODO Auto-generated constructor stub
+	public ReceiveEvent(AcsLogger logger) {
+		this.logger = logger;
 	}
 
 }
