@@ -7,8 +7,8 @@
 	<classpathentry kind="var" path="ACSROOT/lib/jcont.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/jcontnc.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/systementities.jar"/>
-	<classpathentry sourcepath="ACSROOT/lib/xmlentity.jar" kind="var" path="ACSROOT/lib/xmlentity.jar"/>
-	<classpathentry sourcepath="ACSROOT/lib/xmljbind.jar" kind="var" path="ACSROOT/lib/xmljbind.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/xmlentity.jar" sourcepath="ACSROOT/lib/xmlentity.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/xmljbind.jar" sourcepath="ACSROOT/lib/xmljbind.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/SchedulingEntities.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/SchedulingInterfaces.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/acscomponent.jar"/>
@@ -19,12 +19,12 @@
 	<classpathentry kind="var" path="ACSROOT/lib/acsnc.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/baci.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/mastercomp_if.jar"/>
-	<classpathentry sourcepath="/ACSROOT/lib/mastercomp.jar" kind="var" path="ACSROOT/lib/mastercomp.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/mastercomp.jar" sourcepath="/ACSROOT/lib/mastercomp.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/jbaci.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/archive_xmlstore_if.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/ControlInterfaces.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/TelCalPublisher.jar"/>
-	<classpathentry sourcepath="ACSROOT/lib/junit.jar" kind="var" path="ACSROOT/lib/junit.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/junit.jar" sourcepath="ACSROOT/lib/junit.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/jACSUtil.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/acscodegen.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/ControlExceptions.jar"/>
@@ -33,5 +33,43 @@
 	<classpathentry kind="var" path="INTROOT/lib/SciPipeManager.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/SciPipeExceptions.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/ExecInterfaces.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/castor.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/JavaContainerError.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acscommon.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsASsources.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsContainerServices.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsErrTypeAlarmSourceFactory.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/asdmIDLTypes.jar"/>
+	<classpathentry kind="var" path="JACORB_HOME/lib/jacorb.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/maciErrType.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/UserRepositoryInternal.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/SchedulingExceptions.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/maci.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/AlarmSystem.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ExecExtensionFramework.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlMasterInterfaces.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlBasicInterfaces.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlAntennaInterfaces.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/chessboard.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TMCDBComponent.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TMCDB_IDL.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TmcdbErrType.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlArrayInterfaces.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/ControlDataInterfaces.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/DataCapture.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/QlDisplayPackages.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/alarmsysteminterface.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/QlDisplayExceptions.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/servlet-api.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/QlDisplayManager.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/ACSJMSMessageEntity.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsCallbacksSupport.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/DynamicSchedulingSubsystem.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TMCDB.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/maciSchemaBindings.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/cdbErrType.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/xalan_serializer.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/endorsed/xercesImpl.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/commons-logging.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
