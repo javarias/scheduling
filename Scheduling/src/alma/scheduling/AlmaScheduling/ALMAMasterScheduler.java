@@ -26,68 +26,73 @@
 
 package alma.scheduling.AlmaScheduling;
 
-import java.util.Vector;
-import java.util.Set;
-import java.util.Map;
+import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.sql.Timestamp;
 
-import alma.xmlentity.XmlEntityStruct;
-import alma.asdmIDLTypes.IDLEntityRef;
-import alma.acs.nc.*;
-import alma.log_audience.OPERATOR;
-import alma.acs.logging.AcsLogger;
-import alma.acs.logging.domainspecific.ArrayContextLogger;
-import alma.acs.container.ContainerServices;
+import alma.ACS.ComponentStates;
+import alma.SchedulingExceptions.CannotRunCompleteSBEx;
+import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.UnidentifiedResponseEx;
+import alma.SchedulingExceptions.wrappers.AcsJCannotRunCompleteSBEx;
+import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
+import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
 import alma.acs.component.ComponentQueryDescriptor;
-import alma.ACS.ComponentStates;
-import si.ijs.maci.ComponentSpec;
-
-
-import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.ArrayContextLogger;
+import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.CorbaReceiver;
+import alma.acs.nc.Receiver;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
-import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
-
-import alma.scheduling.*;
-import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.SchedulingExceptions.InvalidObjectEx;
-import alma.SchedulingExceptions.UnidentifiedResponseEx;
-import alma.SchedulingExceptions.SBExistsEx;
-import alma.SchedulingExceptions.NoSuchSBEx;
-import alma.SchedulingExceptions.CannotRunCompleteSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJCannotRunCompleteSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
-import alma.SchedulingExceptions.wrappers.AcsJInvalidObjectEx;
-import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
-import alma.SchedulingExceptions.wrappers.AcsJNoSuchSBEx;
-import alma.SchedulingExceptions.wrappers.AcsJSBExistsEx;
-
+import alma.asdmIDLTypes.IDLEntityRef;
+import alma.log_audience.OPERATOR;
+import alma.scheduling.ArrayInfo;
+import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.Dynamic_Operator_to_Scheduling;
+import alma.scheduling.Interactive_PI_to_Scheduling;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.MasterSchedulerIFOperations;
+import alma.scheduling.NoSuchSB;
+import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.Queued_Operator_to_Scheduling;
+import alma.scheduling.SBLite;
+import alma.scheduling.SchedulerInfo;
+import alma.scheduling.SchedulingInfo;
+import alma.scheduling.UnidentifiedResponse;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.PolicyFactor;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.Subarray;
-import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Subarray;
 import alma.scheduling.MasterScheduler.MasterScheduler;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
-import alma.scheduling.Scheduler.*;
-//import alma.scheduling.GUI.InteractiveSchedGUI.GUIController;
-//import alma.scheduling.GUI.InteractiveSchedGUI.ArchiveQueryWindowController;
 import alma.scheduling.ObsProjectManager.ProjectManagerTaskControl;
+import alma.scheduling.Scheduler.DynamicScheduler;
+import alma.scheduling.Scheduler.InteractiveScheduler;
+import alma.scheduling.Scheduler.QueuedSBScheduler;
+import alma.scheduling.Scheduler.Scheduler;
+import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.xmlentity.XmlEntityStruct;
 
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.108 2008/06/11 14:14:42 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.109 2008/06/19 19:00:23 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -142,16 +147,16 @@ public class ALMAMasterScheduler extends MasterScheduler
     private Vector arraysInUse;
     //Keeps track of the scheduler modes for each array
     private LinkedHashMap<String, ArrayModeEnum> schedModeForArray;
-    private ALMASchedLogger logger;
+    
     //private ArrayContextLogger arraylogger;
+    protected AcsLogger logger;
+    protected ArrayContextLogger arrayLogger;
     
     /** 
      * Constructor
      */
     public ALMAMasterScheduler() {
         super();
-        //SL: took this out coz its not needed anymore according to Alessandro
-        //ACSJMSTopicConnectionImpl.containerServices=containerServices;
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -166,6 +171,11 @@ public class ALMAMasterScheduler extends MasterScheduler
         throws ComponentLifecycleException {
     
         try {
+            this.containerServices = cs;
+            this.instanceName = containerServices.getName();
+            this.logger = containerServices.getLogger();
+            this.arrayLogger = new ArrayContextLogger(logger);
+
             //Start the MasterScheduler Thread! 
             this.msThread.start();
             this.interactiveComps = new Vector();
@@ -173,9 +183,6 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.dynamicComps = new Vector();
             allSchedulers = new LinkedHashMap<String, Scheduler>();
             schedModeForArray = new LinkedHashMap<String, ArrayModeEnum>();
-            this.containerServices = cs;
-            this.instanceName = containerServices.getName();
-            this.logger = new ALMASchedLogger(containerServices.getLogger());
             this.clock = new ALMAClock();
             this.archive = new ALMAArchive(containerServices, clock);
             this.sbQueue = new SBQueue();
@@ -432,10 +439,8 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     public void startScheduling1(XmlEntityStruct schedulingPolicy, String arrayname) {
             
-        logger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
+    	arrayLogger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
                 OPERATOR.value, arrayname);
-        //arraylogger.log(Level.INFO, "SCHEDULING: Starting dynamic scheduling",
-        //        OPERATOR.value, arrayname);
         try {
             manager.checkForProjectUpdates();
             logger.fine("SCHEDULING: got project updates");
@@ -554,9 +559,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     	throws InvalidOperationEx {
 
         try {    
-            //arraylogger.log(Level.INFO, "SCHEDULING: Starting queued scheduling",
-            logger.log(Level.INFO, "SCHEDULING: Starting queued scheduling",
-                    OPERATOR.value, arrayname);
+        	arrayLogger.log(Level.INFO, "SCHEDULING: Starting queued scheduling", OPERATOR.value, arrayname);
             manager.checkForProjectUpdates();
             //create a queue of sbs with these ids, 
             SBQueue sbs = manager.mapQueuedSBsToProjects(sbList);
@@ -689,8 +692,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 createSchedulerConfiguration(
                         false, new SBQueue(), false, true, 0, arrayname, s_policy);
 
-            //arraylogger.log(Level.INFO, 
-            logger.log(Level.INFO, 
+          arrayLogger.log(Level.INFO, 
                     "SCHEDULING: Starting interactive scheduling on array "+
                     arrayname, OPERATOR.value, arrayname);
             if(!isArrayInUse(arrayname)){

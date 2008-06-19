@@ -25,29 +25,18 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import alma.scheduling.SBLite;
 import alma.acs.container.ContainerServices;
-
-import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-import alma.scheduling.Define.Operator;
-import alma.scheduling.Define.LiteSB;
+import alma.acs.logging.AcsLogger;
+import alma.entities.commonentity.EntityT;
+import alma.scheduling.Dynamic_Operator_to_Scheduling;
+import alma.scheduling.SBLite;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.LiteSB;
 import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.Operator;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.MasterScheduler.MessageQueue;
-import alma.entities.commonentity.EntityT;
-
-import alma.exec.ReqType;
-import alma.exec.SubSystem;
-import alma.scheduling.Dynamic_Operator_to_Scheduling;
-
-import alma.log_audience.OPERATOR;
-import alma.acs.logging.AcsLogger;
-import alma.acs.logging.domainspecific.ArrayContextLogger;
 /**
  * @author Sohaila Lucero
  */
@@ -57,7 +46,7 @@ public class ALMAOperator implements Operator {
     // queue to hold all messages
     private MessageQueue messageQueue;
     //logger
-    private ALMASchedLogger logger;
+    private final AcsLogger logger; 
     //The Operator Component.
     private alma.exec.Scheduling_to_TelescopeOperator execSchedOperator;
     /**
@@ -65,7 +54,7 @@ public class ALMAOperator implements Operator {
       */
     public ALMAOperator(ContainerServices cs, MessageQueue queue) {
         this.containerServices = cs;
-        this.logger = new ALMASchedLogger(cs.getLogger());
+        this.logger = cs.getLogger();
         this.messageQueue = queue;
     }
 
