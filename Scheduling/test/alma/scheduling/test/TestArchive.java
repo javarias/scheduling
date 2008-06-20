@@ -13,6 +13,9 @@ import alma.xmlstore.ArchiveConnectionPackage.*;
 import alma.xmlstore.OperationalPackage.*;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.acs.logging.ClientLogManager;
+import alma.acs.component.client.AdvancedComponentClient;
+import alma.acs.component.client.ComponentClient;
 
 public class TestArchive extends ComponentClientTestCase {
 
@@ -25,9 +28,14 @@ public class TestArchive extends ComponentClientTestCase {
     private EntityDeserializer entityDeserializer;
     //Entity Serializer - prepares entites for the archive
     private EntitySerializer entitySerializer;
+    private Logger m_logger = null;
+    ContainerServices cs;
+    String manager;
+    ComponentClient m_componentClient = null;
 
     public TestArchive() throws Exception {
         super("Test Archive");
+	testQueryDirty();
     }
 
     protected void setup() throws Exception{
@@ -38,17 +46,21 @@ public class TestArchive extends ComponentClientTestCase {
     }
 
     private void getArchiveComponents() {
+	m_logger =ClientLogManager.getAcsLogManager().getLoggerForApplication("SchedulingAlarmTestClient",true);
         m_logger.info("about to get archive comps");
         System.out.println("getting comps");
+	manager = System.getProperty("ACS.manager");
         try {
+	    m_componentClient = new AdvancedComponentClient(m_logger,manager,"PIWebPage");
+	    cs = m_componentClient.getContainerServices();
             m_logger.info("SCHED_TEST: Getting archive components");
-            org.omg.CORBA.Object obj = getContainerServices().getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
+            org.omg.CORBA.Object obj = cs.getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
             this.archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(obj);
             
             this.archConnectionComp.getAdministrative("SCHED_TEST").init();
             this.archOperationComp = archConnectionComp.getOperational("SCHED_TEST");
             this.archIdentifierComp = alma.xmlstore.IdentifierHelper.narrow(
-                    getContainerServices().getDefaultComponent(
+                    cs.getDefaultComponent(
                         "IDL:alma/xmlstore/Identifier:1.0"));
         } catch(AcsJContainerServicesEx e) {
             m_logger.severe("SCHED_TEST: AcsJContainerServicesEx: "+e.toString());
@@ -85,11 +97,14 @@ public class TestArchive extends ComponentClientTestCase {
             archIdentifierComp = null;
             e.printStackTrace();
             System.exit(0);
-        }
+        } catch (Exception e) {
+	    e.printStackTrace();
+	    System.out.println("can not get the component client");
+	}
         entitySerializer = EntitySerializer.getEntitySerializer(
-            getContainerServices().getLogger());
+            cs.getLogger());
         entityDeserializer = EntityDeserializer.getEntityDeserializer(
-            getContainerServices().getLogger());
+            cs.getLogger());
         m_logger.fine("SCHED_TEST: The ALMAArchive has been constructed.");
     }
 
@@ -121,7 +136,9 @@ public class TestArchive extends ComponentClientTestCase {
 
     public static void main(String[] args) {
         try {
-            alma.acs.testsupport.tat.TATJUnitRunner.run(TestArchive.class);
+	    TestArchive testArchive = new TestArchive();
+            //alma.acs.testsupport.tat.TATJUnitRunner.run(TestArchive.class);
+	    //junit.textui.TestRunner.run(TestArchive.class);
         }catch(Exception e){
             e.printStackTrace();
         }
