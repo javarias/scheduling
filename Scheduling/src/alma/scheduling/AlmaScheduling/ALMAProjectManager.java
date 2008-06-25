@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.109 2008/06/19 19:26:52 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.110 2008/06/25 21:03:03 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1559,6 +1559,7 @@ public class ALMAProjectManager extends ProjectManager {
 	                pQueue.size()+" projects, "+ sbQueue.size()+" sbs and "+psQueue.size()+
 	                " project status'", OPERATOR.value);
     }
+}
       /* polls the archive for new/updated projects
       * then updates the queues (project queue, sb queue & project status queue)
       */
