@@ -108,7 +108,8 @@ public class TestProjectStatus extends ComponentClientTestCase {
 
         DateTime datetime = DateTime.currentSystemTime();
         //get orig project
-        Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
+
+        Project project1 = new ProjectUtil(logger).map(obsproject, sbs, ps, datetime);
         assertNotNull(project1);
         SB[] foos = project1.getAllSBs();
         /*
@@ -117,7 +118,7 @@ public class TestProjectStatus extends ComponentClientTestCase {
         }*/
 
         //get orig PS
-        ps = ProjectUtil.map(project1, datetime);
+        ps = new ProjectUtil(logger).map(project1, datetime);
         assertNotNull(ps);
         
         String psXmlString = createProjectStatusXml(ps);
@@ -132,7 +133,7 @@ public class TestProjectStatus extends ComponentClientTestCase {
         ObsProject obsproject = createObsProject("newxmldocs/HG/ObsProject.xml");
         SchedBlock sb = createSchedBlock("newxmldocs/HG/SchedBlock0.xml");
         sbs[0] = sb;
-        Project project1 = ProjectUtil.map(obsproject, sbs, ps, datetime);
+        Project project1 = new ProjectUtil(logger).map(obsproject, sbs, ps, datetime);
     }
 
     /*
