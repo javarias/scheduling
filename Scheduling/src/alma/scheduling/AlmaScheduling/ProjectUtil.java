@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.70 2008/06/19 19:51:10 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.71 2008/07/02 22:45:35 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -848,6 +848,26 @@ public class ProjectUtil {
                 //SB probably not ended yet
             //    e.printStackTrace();
             }
+	    
+ 	    //If the SB Numberof ExecBlock allow more than one
+            // the sb.setStartTime will be set after SB execute once and 
+            //the SB will become Running mode for next time the OMC bring up
+            // But in fact, there is not SB in running.
+            // the piece of code is the check for SB which can run more than one time.
+            // so we check the ExecBlock status to see if the SB is really in running or not
+            
+            ExecBlock[] eb=sb.getExec();
+        	int numberOfExecInRunning=0;
+        	for(int i=0;i<eb.length;i++) {
+        		logger.info("stat status:"+eb[i].getStatus().getState().toString().substring(0,6));
+        		if(eb[i].getStatus().getStatus().toString().substring(0,6)=="running")
+        			numberOfExecInRunning++;
+        		
+        		if(numberOfExecInRunning==0)
+            		sb.getStatus().setReady();
+        	}
+
+
             return sb;
         } catch(Exception e) {
             throw new SchedulingException(e);
