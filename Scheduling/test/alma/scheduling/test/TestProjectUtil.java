@@ -44,6 +44,8 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 
 import java.util.ArrayList;
 import java.io.*;
+import java.util.logging.Logger;
+
 
 /**
  * A test of the ProjectUtil class.
@@ -52,7 +54,8 @@ import java.io.*;
  * @author Allen Farris
  */
 public class TestProjectUtil {
-	
+	private Logger logger=null;
+		
 	private static void doTree(PrintStream out, Project prj, String message) {
 		System.out.println(message);
 		System.out.println("===================================================");
@@ -86,7 +89,7 @@ public class TestProjectUtil {
 	
 	public static Project createProject() {
 		
-		Project prj = new Project (genEntityId(),genEntityId(),"TestProject","v01","Allen Farris");
+		Project prj = new Project (genEntityId(),genEntityId(),"TestProject","v01","Allen Farris",Logger.getLogger("TestProjectUtil"));
 		prj.setProjectStatusId(genEntityId());
 		Program program = new Program (genPartId());
 		prj.setProgram(program);
@@ -197,7 +200,7 @@ public class TestProjectUtil {
 			err.printStackTrace();
 			System.exit(0);
 		}*/
-
+		//logger = Logger.getLogger("TestProjectUtil");
 		Project prj = createProject();
 		doTree(System.out, prj, "The initial version of the tree.");
 		
@@ -230,7 +233,7 @@ public class TestProjectUtil {
 			PrintWriter xmlOut = new PrintWriter(new BufferedWriter(
 					new FileWriter(new java.io.File ("xmlProjectStatus-1.xml"))));
 					//new FileWriter(new java.io.File (outDir,"xmlProjectStatus-1.xml"))));
-			ProjectStatus pStatus = ProjectUtil.map(prj,new DateTime(2004,4,6,12,0,0));
+						ProjectStatus pStatus = new ProjectUtil(Logger.getLogger("TestProjectUtil")).map(prj,new DateTime(2004,4,6,12,0,0));
 			//pStatus.marshal(xmlOut);
 			System.out.println("...complete");
 			
