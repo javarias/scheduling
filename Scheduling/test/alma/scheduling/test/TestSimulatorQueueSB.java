@@ -13,6 +13,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Queued_Operator_to_Scheduling;
+import alma.scheduling.SBLite;
 import alma.scheduling.AlmaScheduling.ALMAArchive;
 
 /**
@@ -62,11 +63,19 @@ public class TestSimulatorQueueSB {
             
 			System.out.println("SB queue length:"+ms.getSBLites().length);
 			String id= (ms.getSBLites())[0].schedBlockRef;
-			System.out.println("id="+id);
-		    String currentSBId = id;
-		    System.out.println("add sb uid into the the sbqueue");
-			qsComp.addSB(id);
-			System.out.println("start a session");
+			SBLite[] sbs = ms.getSBLites();
+	            String[] ids= new String[sbs.length];
+	            for(int i=0; i < sbs.length; i++){
+	                ids[i] = sbs[i].schedBlockRef;
+	                qsComp.addSB(ids[i]);
+	                m_logger.info("SB id = "+ids[i]);
+	            }
+	            
+			//System.out.println("id="+id);
+		    //String currentSBId = id;
+		    //System.out.println("add sb uid into the the sbqueue");
+			//qsComp.addSB(id);
+			//System.out.println("start a session");
 			//scheduler.startSession(project.piName,project.uid);
 			System.out.println("execute a Queue Scheduling");
 			qsComp.runQueue();
