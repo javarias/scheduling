@@ -30,9 +30,7 @@ import alma.scheduling.ProjectLite;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
-
-import alma.scheduling.AlmaScheduling.ALMASchedLogger;
-
+//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import alma.acs.nc.Consumer;
@@ -44,7 +42,8 @@ import alma.ACSErr.CompletionHolder;
 public class SchedulingPanelController {
     protected MasterSchedulerIF masterScheduler;
     protected PluginContainerServices container;
-    protected ALMASchedLogger logger;
+    //protected ALMASchedLogger logger;
+    protected Logger logger;
     protected Consumer consumer;
     protected boolean connected;
 
@@ -59,12 +58,13 @@ public class SchedulingPanelController {
     public SchedulingPanelController(PluginContainerServices cs) {
         this();
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
     }
 
     public void onlineSetup(PluginContainerServices cs) {
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        //logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
         logger.fine("SP: online setup of SchedulingPanelController");
         try {
             consumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, cs);

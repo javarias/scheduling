@@ -206,7 +206,13 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         if(!sbid.equals(currentSBId) || !arrayname.equals(arrayName)){
             return;
         }
-        if(scheduler.getCurrentSB().equals(sbid) && scheduler.getArray().equals(arrayname)){
+        
+        if(!e.arrayName.equals(arrayName)) {
+   	     System.out.println("exit the receive event!"+e.arrayName);
+               return;
+        }
+
+        if(scheduler.getCurrentSB().equals(sbid) ){
             scheduler.setCurrentEB(exec_id);
             //currentExecBlockId = exec_id;
             logger.finest("Got start event for "+sbid+", ctr = "+startC);
@@ -233,6 +239,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         if(!sbid.equals(currentSBId) || !arrayname.equals(arrayName)){
             return;
         }
+        
+        if(!e.arrayName.equals(arrayName)) {
+   	     //System.out.println("exit the receive event!"+e.arrayName);
+               return;
+   	}
+
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
                 !scheduler.getCurrentEB().equals(exec_id) && scheduler.getArray().equals(arrayname)){
@@ -275,7 +287,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         String completion = e.status;
         logger.fine("Current SB = "+currentSBId);
         //if(sbid.equals(currentSBId)){
-        if(waitingForArchivedSB.contains(sbid) && asdmId.equals(scheduler.getCurrentEB())){
+        if(waitingForArchivedSB.contains(sbid)&& scheduler.getCurrentEB().equals(asdmId)){
             logger.fine("in list");
             if(completion.equals("complete")){
                 parent.setSBStatus(sbid, "ARCHIVED");

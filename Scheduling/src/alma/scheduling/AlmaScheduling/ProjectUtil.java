@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.71 2008/07/02 22:45:35 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.72 2008/09/03 22:02:25 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -490,12 +490,15 @@ public class ProjectUtil {
 				    ((Program)m[i]).setObsUnitSetStatusId(genPartId());
                 }             
 				setProgramMember((Program)m[i]);
-			} else {
+			} else if (m[i] instanceof SB){
                 if(((SB)m[i]).getSbStatusId() == null) {
 				    ((SB)m[i]).setSbStatusId(genPartId());
                 }
 				setSBMember((SB)m[i]);
 			}
+			else {
+            	logger.severe("There is no Program or SB in the Science Goal! The Observation project is not complete!!");
+            }
 		}
 	}
 	private void setSBMember(SB sb) {
@@ -738,16 +741,20 @@ public class ProjectUtil {
                 hasStatus = false;
             }
             ProgramMember x=null;
+            Program childProgram=null ;
             for(int i=0; i < setMember.length; i++){
                 //System.out.println("part id of ous = "+setMember[i].getEntityPartId());
                 x = p.getMember(setMember[i].getEntityPartId());
-                //System.out.println("id of program = "+x.getId());
                 try {
-                    p = setStatusInformation ((Program)x, setMember[i], status[i], now);
+                    //p = setStatusInformation ((Program)x, setMember[i], status[i], now);
+                	childProgram = setStatusInformation ((Program)x, setMember[i], status[i], now);
+                	
                 } catch (Exception e) {
-                    p = setStatusInformation ((Program)x, setMember[i], null, now);
+                	logger.severe("setStatusInformaiton throw Exception!!"+e.toString());
+                	childProgram = setStatusInformation ((Program)x, setMember[i], null, now);
                 }
             }
+            //p.addMember(childProgram);
         } else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
             SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
             ObsUnitSetStatusT[] foo = null;
@@ -777,14 +784,15 @@ public class ProjectUtil {
                         sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
                         //only one!
                         memberSB = assignCompletionStatus(memberSB, sbStatus, now);
+                        //p.addMember(memberSB);
                     } catch(Exception e){
                         e.printStackTrace();
                     }
                 }
             }
         }
-        //return p;
-        return toplevelProgram;
+        return p;
+        //return toplevelProgram;
     }
     
     private SBStatusT getSBStatusForSBRef(String id, SBStatusT[] stats)
@@ -848,8 +856,8 @@ public class ProjectUtil {
                 //SB probably not ended yet
             //    e.printStackTrace();
             }
-	    
- 	    //If the SB Numberof ExecBlock allow more than one
+
+            //If the SB Numberof ExecBlock allow more than one
             // the sb.setStartTime will be set after SB execute once and 
             //the SB will become Running mode for next time the OMC bring up
             // But in fact, there is not SB in running.
@@ -859,14 +867,13 @@ public class ProjectUtil {
             ExecBlock[] eb=sb.getExec();
         	int numberOfExecInRunning=0;
         	for(int i=0;i<eb.length;i++) {
-        		logger.info("stat status:"+eb[i].getStatus().getState().toString().substring(0,6));
+        		//logger.info("stat status:"+eb[i].getStatus().getState().toString().substring(0,6));
         		if(eb[i].getStatus().getStatus().toString().substring(0,6)=="running")
         			numberOfExecInRunning++;
         		
-        		if(numberOfExecInRunning==0)
+        		if(numberOfExecInRunning==0 && sb.getStatus().getEndTime()==null)
             		sb.getStatus().setReady();
         	}
-
 
             return sb;
         } catch(Exception e) {
@@ -1598,6 +1605,7 @@ public class ProjectUtil {
 		// The obsProgram status.
 		try {			
 			// HSO 2008-06-05 hack: we are getting an NPE at the ATF and need more info
+			//maybe ObsProgram did not initialize properly
 			pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
 		} catch (RuntimeException ex) {
 			logger.log(Level.SEVERE, "Failed to set the ObsProgram status for project " + project.getObsProjectId(), ex);
@@ -1747,9 +1755,10 @@ public class ProjectUtil {
 		    		pgm = (Program)member[i];
 			    	set.addObsUnitSetStatus(assignObsProgramStatus(pgm,now));
     			}			
-	    	} else {
+	    	} else if (member[0] instanceof SB){
 		    	for (int i = 0; i < member.length; ++i) {
 			    	sb = (SB)member[i];
+			    	//logger.info("member SB:"+sb.getId());
 				    set.addSBStatus(assignSBStatus(sb,now));
 			    }
             }
