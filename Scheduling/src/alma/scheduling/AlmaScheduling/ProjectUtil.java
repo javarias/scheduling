@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.72 2008/09/03 22:02:25 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.73 2008/09/03 22:13:10 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1606,6 +1606,7 @@ public class ProjectUtil {
 		try {			
 			// HSO 2008-06-05 hack: we are getting an NPE at the ATF and need more info
 			//maybe ObsProgram did not initialize properly
+			logger.warning("Here we start to assign the ObsProgram Status");
 			pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
 		} catch (RuntimeException ex) {
 			logger.log(Level.SEVERE, "Failed to set the ObsProgram status for project " + project.getObsProjectId(), ex);
@@ -1742,6 +1743,7 @@ public class ProjectUtil {
 		target.setSession(list);
 		
 		// Set the PipelineProcessingRequest.
+		logger.warning("Here we assign the PPR ");
 		target.setPipelineProcessingRequest(assignPPR(source.getSciPipelineRequest()));
 		
 		// Set the members of this program.
@@ -1817,6 +1819,7 @@ public class ProjectUtil {
 	
 	private PipelineProcessingRequestT assignPPR(SciPipelineRequest ppr) {
 		if (ppr == null){
+			logger.warning("PPR paramater is null so far! need to investigate!!");
 			return null;
         }
 		PipelineProcessingRequestT target = new PipelineProcessingRequestT ();
@@ -1906,6 +1909,7 @@ public class ProjectUtil {
         } else {
             logger.warning("SCHEDULING: Pipeline Params = null!");
         }
+        logger.warning("PPR target:"+target.getPipelineParameter().toString());
 		// OK, we're done.
 		return target;
 	}
@@ -2187,3 +2191,4 @@ public class ProjectUtil {
         return sb;
     }
 }
+

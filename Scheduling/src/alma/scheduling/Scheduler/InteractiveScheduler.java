@@ -112,7 +112,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.28 2007/09/27 19:43:04 sslucero Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.29 2008/09/03 22:14:39 wlin Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -260,6 +260,8 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 		//operator.send(msg, config.getArrayName());
 		logger.fine(msg);
 		config.normalEnd(clock.getDateTime());
+		//add endExecSB to set currentSB="" 
+		config.endExecSB(config.getCurrentSBId());
 	//	sessionStarted = false;
 		PI = null;
 		projectId = null;

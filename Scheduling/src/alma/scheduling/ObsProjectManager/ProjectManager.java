@@ -38,7 +38,7 @@ import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
- * @version $Id: ProjectManager.java,v 1.15 2008/06/19 19:57:30 wlin Exp $
+ * @version $Id: ProjectManager.java,v 1.16 2008/09/03 22:14:39 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -55,7 +55,6 @@ public class ProjectManager implements Runnable,
     protected ProjectManagerTaskControl pmTaskControl;
 
     public ProjectManager(Logger logger) {
-        //System.out.println("SCHEDULING: PM created!");
         this.stopCommand = false;
         this.logger = logger;
         projectUtil = new ProjectUtil(logger);
