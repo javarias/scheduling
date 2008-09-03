@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.78 2008/06/19 18:43:50 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.79 2008/09/03 21:59:19 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -170,7 +170,7 @@ public class ALMAControl implements Control {
         throws SchedulingException {
 
         //send out start of session
-        IDLEntityRef sessionRef = manager.sendStartSessionEvent(sbId);
+        IDLEntityRef sessionRef = manager.sendStartSessionEvent(sbId,arrayName);
         logger.fine("SCHEDULING: Sending BestSBs to Control!");
         logger.fine("SCHEDULING: Array being used has name = "+arrayName);
         

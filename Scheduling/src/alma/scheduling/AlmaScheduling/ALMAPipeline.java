@@ -26,36 +26,28 @@
 
 package alma.scheduling.AlmaScheduling;
 
-import java.util.logging.Logger;
-
-import alma.xmlentity.XmlEntityStruct;
-import alma.entity.xmlbinding.projectstatus.*;
-//import alma.entity.xmlbinding.pipelineprocessingrequest.*;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-
 import alma.acs.container.ContainerServices;
-import alma.acs.entityutil.*;
-
+import alma.acs.entityutil.EntitySerializer;
+import alma.acs.logging.AcsLogger;
+import alma.asdmIDLTypes.IDLEntityRef;
+import alma.pipelineql.QlDisplayManager;
+import alma.pipelinescience.SciPipeManager;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.SciPipeline;
 import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.Status;
-import alma.scheduling.Define.SchedulingException;
-
-import alma.pipelinescience.SciPipeManager;
-import alma.pipelineql.QlDisplayManager;
-
-import alma.asdmIDLTypes.IDLEntityRef;
 
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.19 2007/09/06 17:59:03 sslucero Exp $
+ * @version $Id: ALMAPipeline.java,v 1.20 2008/09/03 22:01:07 wlin Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
     private ContainerServices containerServices;
     //logger
-    private ALMASchedLogger logger;
+    private final AcsLogger logger;
     //science pipeline component
     private SciPipeManager sci_pipelineComp;
     //quicklook display component
@@ -71,7 +63,7 @@ public class ALMAPipeline implements SciPipeline {
       */
     public ALMAPipeline(ContainerServices cs) {
         this.containerServices = cs;
-        this.logger = new ALMASchedLogger(cs.getLogger());
+        this.logger = cs.getLogger();
         getPipelineComponents();
         entitySerializer = EntitySerializer.getEntitySerializer(cs.getLogger());
     }
@@ -171,12 +163,14 @@ public class ALMAPipeline implements SciPipeline {
     //////////////////////////////////////////////
     // Quicklook operations
     //////////////////////////////////////////////
-
+    // this method will be replace by the underneath.
+    
     public void startQuickLookSession(IDLEntityRef sessionR,
                                       IDLEntityRef sbR,
                                       String title){
         try {
-            quicklookComp.startQlSession(sessionR, sbR, title);
+            //quicklookComp.startQlSession(sessionR, sbR, title);
+        	quicklookComp.startQlSession(sessionR, sbR, "arrayname",title);
             logger.fine("SCHEDULING: Told QL session is about to start");
             ql_startOk = true;
         }catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
@@ -184,6 +178,20 @@ public class ALMAPipeline implements SciPipeline {
             ql_startOk = false;
         }
     }
+    
+    public void startQuickLookSession(IDLEntityRef sessionR,
+            IDLEntityRef sbR, String arrayname,
+            String title){
+    	try {
+    		quicklookComp.startQlSession(sessionR, sbR, arrayname,title);
+    		logger.fine("SCHEDULING: Told QL session is about to start");
+    		ql_startOk = true;
+    	}catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
+    		logger.warning("SCHEDULING: Caught quicklook error when session starts, should keep going with sb session");
+    		ql_startOk = false;
+    	}
+    }
+    
     public void endQuickLookSession(IDLEntityRef sessionR, 
                                     IDLEntityRef sbR) {
         if(ql_startOk){

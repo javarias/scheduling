@@ -92,7 +92,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.109 2008/06/19 19:00:23 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.110 2008/09/03 22:00:42 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1475,9 +1475,9 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     ///// Method for manual mode
-    public IDLEntityRef[] startManualModeSession() throws InvalidOperationEx {
+    public IDLEntityRef[] startManualModeSession(String arrayName) throws InvalidOperationEx {
         try {
-            return manager.startManualModeSession();
+            return manager.startManualModeSession(arrayName);
         } catch(SchedulingException e) {
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("startManualModeSession",
