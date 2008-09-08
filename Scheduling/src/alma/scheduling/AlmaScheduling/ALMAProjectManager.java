@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.111 2008/09/03 22:01:58 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.112 2008/09/08 22:45:06 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1474,7 +1474,7 @@ public class ALMAProjectManager extends ProjectManager {
 	                //if project status is complete don't add
 	                ps = archive.getProjectStatus( projects.get(i) );
 	                if(ps == null){
-	                    logger.warning("Project status for project "+((Project)projects.get(i)).getId());
+	                    logger.warning("Project status for project "+((Project)projects.get(i)).getId()+"did not exist");
 	                }
 	                //check if proj04ect status is complete
 	                //logger.fine("Program session number:"+ps.getObsProgramStatus().getSessionCount());
@@ -1623,8 +1623,7 @@ public class ALMAProjectManager extends ProjectManager {
 	                pQueue.size()+" projects, "+ sbQueue.size()+" sbs and "+psQueue.size()+
 	                " project status'", OPERATOR.value);
     }
-}
-
+    }
     /**
       * Ask the archive for any updated SBs since the last query time
       * update any new ones in the queue.
@@ -1970,8 +1969,6 @@ public class ALMAProjectManager extends ProjectManager {
         ObsUnitSetStatusTChoice c = o.getObsUnitSetStatusTChoice();
         ObsUnitSetStatusT[] sets;
         SBStatusT[] sbs;
-        logger.warning("ObsUnitSetStatusT:"+o.getEntityPartId());
-        //logger.warning("count:"+c.getSBStatusCount());
         if(c.getObsUnitSetStatusCount() > 0){
             sets = c.getObsUnitSetStatus();
             for(int i=0; i < sets.length; i++){
@@ -1985,8 +1982,7 @@ public class ALMAProjectManager extends ProjectManager {
                 }
             }
         } else if (c.getSBStatusCount() > 0){
-        	logger.warning("ObsUnitSetStatusT:"+o.getEntityPartId());
-            logger.warning("SB id:"+id);
+
             if(isSbInThisSet(id, o)){
                 sbs = c.getSBStatus();
                 return getSBStatus(o, id);
