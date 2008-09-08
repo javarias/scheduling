@@ -87,7 +87,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.90 2008/06/19 18:41:08 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.91 2008/09/08 22:44:29 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -157,12 +157,15 @@ public class ALMAArchive implements Archive {
     }
     //
     public String getIdForScheduler() throws SchedulingException {
-        try {
-            String[] s = archIdentifierComp.getUIDs((short)1);
-            return s[0];
+    	 String[] s=null;
+    	try {
+            s = archIdentifierComp.getUIDs((short)1);
+            //return s[0];
         }catch(Exception e) {
-            throw new SchedulingException (e);
+        	logger.severe("SCHEDULING: "+e.toString());
+            //throw new SchedulingException (e);
         }
+        return s[0];
     }
     
     //Special SB stuff (TODO right now its temporary)
@@ -208,7 +211,9 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
+        } catch (SchedulingException e) {
+        	logger.severe("get errors in query Special SBs");
         }
         return sbs;
 
@@ -223,10 +228,11 @@ public class ALMAArchive implements Archive {
      * @throws SchedulingException
      */
 	public Project[] getAllProject() throws SchedulingException {
-        try {
-            Project[] projects = null;
+	//public Project[] getAllProject() {
+		
+		Project[] projects = null;
+        try {    
             Vector tmp_projects = new Vector();
-        
             ObsProject[] obsProj = getAllObsProjects();
             //SchedBlock[] sbs1 = 
             //logger.fine("obsproject length = "+obsProj.length);
@@ -248,9 +254,12 @@ public class ALMAArchive implements Archive {
                 } else {
             //TODO should check project queue.. if project exists don't map a new one.
                     SchedBlock[] sbs = getSBsFromObsProject(obsProj[i]);
-                    Project p = projectUtil.map(obsProj[i], sbs, ps, 
+                    //add here to check if the sbs get without problem
+                    if(sbs!=null){	
+                    	Project p = projectUtil.map(obsProj[i], sbs, ps, 
                             new DateTime(System.currentTimeMillis()));
-                    tmp_projects.add(p);
+                    	tmp_projects.add(p);
+                    }
                 }
             }
             projects = new Project[tmp_projects.size()];
@@ -259,16 +268,21 @@ public class ALMAArchive implements Archive {
             }
 	        logger.fine("SCHEDULING: Scheduling converted "+projects.length+
                     " Projects from ObsProject found archived.");
-            return projects;
-        } catch (Exception e) {
+            //return projects;
+        } catch (SchedulingException e1) {
+        	logger.severe("Scheduling encounter errors when get obsproject from archive");
+        }
+        catch (Exception e) {
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             try {
             	Thread.sleep(1000);
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException (e);
+            logger.severe("Scheduling encounter errors when get all projects from archive!!");
+            //throw new SchedulingException (e);
         }
+        return projects;
     }
 
     public Project checkProjectForUpdates(String id) throws SchedulingException {
@@ -301,7 +315,7 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
         }
         return ps;
     }
@@ -359,12 +373,14 @@ public class ALMAArchive implements Archive {
                     //System.out.println("PROJECT STATUS: "+xml.xmlString);
                     ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class);
                 } else {
+                	logger.severe("More than one PS for project.");
                     throw new SchedulingException("More than one PS for project.");
                 }
                 one = false;
             }
             cursor.close();
         } catch (Exception e) {
+        	logger.severe("Query ProjectStatus from Archive get errors....");
             e.printStackTrace(System.out);
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             try {
@@ -372,7 +388,7 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
         }
         return ps;
     }
@@ -506,7 +522,9 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
+        } catch (SchedulingException e) {
+        	logger.severe("Errors in getAllObsProjects");
         }
         return projects;
 
@@ -533,16 +551,18 @@ public class ALMAArchive implements Archive {
         try {
             containerServices.assignUniqueEntityId(newPS.getProjectStatusEntity());
         } catch(AcsJContainerServicesEx ce) {
-            throw new SchedulingException(
-                    "SCHEDULING: error assinging UID to new ProjectStatus entity");
+            //throw new SchedulingException(
+                    //"SCHEDULING: error assinging UID to new ProjectStatus entity");
+            logger.severe("SCHEDULING: error assinging UID to new ProjectStatus entity");
         }
         try {
             XmlEntityStruct ps_xml = entitySerializer.serializeEntity(
                 newPS, newPS.getProjectStatusEntity());
             archOperationComp.store(ps_xml);
         } catch(EntityException ee) {
-            throw new SchedulingException(
-                    "SCHEDULING: error serializing ProjectStatus entity.");
+            //throw new SchedulingException(
+            //       "SCHEDULING: error serializing ProjectStatus entity.");
+            logger.severe("SCHEDULING: error serializing ProjectStatus entity.");
         } catch(IllegalEntity e) {
             logger.severe("SCHEDULING: illegal entity error");
             e.printStackTrace(System.out);
@@ -557,32 +577,35 @@ public class ALMAArchive implements Archive {
       *
       */
     public SchedBlock[] getSBsFromObsProject(ObsProject p) throws SchedulingException {
+    	SchedBlock[] sbs=null;
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
             logger.severe("SCHEDULING: no sbs stuff available in project");
-            throw new SchedulingException("No SB info in ObsProject");
+            //throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
-            SchedBlock[] sbs = new SchedBlock[sbs_refs.length];
+            //SchedBlock[] sbs = new SchedBlock[sbs_refs.length];
+            sbs = new SchedBlock[sbs_refs.length];
             for(int i=0; i < sbs_refs.length; i++){
                 //get the sb
                 sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
-                
+                if(sbs[i]==null) //this means the xml deserializeEntity got problem and should ignored this objproject
+                	return null;
             }
             /*
             logger.info("SCHEDULING: Scheduling found that project "+
                     p.getObsProjectEntity().getEntityId() +" has "+
                     sbs.length+" sbs");
                     */
-            return sbs;
+            //return sbs;
         }
-
+        return sbs;
     }
 
     /**
       *
       */
     public ObsProject getObsProject(String id) throws SchedulingException {
-        ObsProject proj;
+        ObsProject proj=null;
         try {
             logger.fine("SCHEDULING: About to retrieve project with uid "+id);
             XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
@@ -594,7 +617,7 @@ public class ALMAArchive implements Archive {
             } catch (InterruptedException e1) {
             	e1.printStackTrace(System.out);
             }
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }
         return proj;
     }
@@ -613,7 +636,7 @@ public class ALMAArchive implements Archive {
     private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) throws SchedulingException {
         if(choice == null) {
             logger.severe("SCHEDULING: choice is null..");
-            throw new SchedulingException("ObsUnitSetTChoice == null");
+            //throw new SchedulingException("ObsUnitSetTChoice == null");
         }
         if(choice.getObsUnitSetCount() == 0) {
             return choice.getSchedBlockRef();
@@ -649,7 +672,10 @@ public class ALMAArchive implements Archive {
                     //"alma.entity.xmlbinding.schedblock.SchedBlock"));
             
         }catch(Exception e){
-            throw new SchedulingException (e);
+        	logger.severe("SchedBlock id:"+id);
+        	logger.severe("Trying to deserialize xml file to SchedBlock fail!! check if APDM update");
+            //throw new SchedulingException (e);
+        	return null;
         }
         return sb;
     }
@@ -671,7 +697,7 @@ public class ALMAArchive implements Archive {
         } catch(Exception e){
             logger.severe("SCHEDULING: error updating PS in archive, "+e.toString());
             e.printStackTrace(System.out);
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }
     }
     /**
@@ -784,23 +810,24 @@ public class ALMAArchive implements Archive {
                 ps = (ProjectStatus[])tmp.toArray(ps);
             }
             lastProjectStatusQuery = clock.getDateTime();
-            return ps;
+            //return ps;
         }catch(NotFound e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(MalformedURI e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(EntityException e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(DirtyEntity e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }
+        return ps;
     }
 
 	// SB
@@ -832,23 +859,24 @@ public class ALMAArchive implements Archive {
                 sbs = (SchedBlock[])tmp.toArray(sbs);
             }
             lastSBQuery = clock.getDateTime();
-            return sbs;
+            //return sbs;
         }catch(NotFound e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(MalformedURI e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(EntityException e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(DirtyEntity e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }
+        return sbs;
     }
 
     /** 
@@ -877,10 +905,11 @@ public class ALMAArchive implements Archive {
             cursor.close();
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         } catch(SchedulingException se) {
+        	logger.severe("Get error when add SchedBlock");
             logger.severe("SCHEDULING: "+se.toString());
-            throw new SchedulingException (se);
+            //throw new SchedulingException (se);
         }
         return sbs;
     }
@@ -1094,11 +1123,14 @@ public class ALMAArchive implements Archive {
             //System.out.println ("project's id! = "+proj_id);
             //sb.setProject(getProject(proj_id));
         } catch (MalformedURI e) { 
-            throw new Exception (e);
+        	e.printStackTrace(System.out);
+            //throw new Exception (e);
         } catch (ArchiveInternalError e) {
-            throw new Exception (e);
+        	e.printStackTrace(System.out);
+            //throw new Exception (e);
         } catch (NotFound e) {
-            throw new Exception (e);
+        	e.printStackTrace(System.out);
+            //throw new Exception (e);
         }
         return sb;
     }
@@ -1235,46 +1267,52 @@ public class ALMAArchive implements Archive {
       */
     public String[] query(String query, String schema) throws SchedulingException { 
         Vector res_tmp= new Vector();
+        String[] res = null;
         try {
             Cursor cursor = archOperationComp.queryDirty(query, schema);
             if(cursor == null) {
                 throw new SchedulingException ("SCHEDULING: Error querying archive");
             }
             while(cursor.hasNext()){
-                QueryResult res = cursor.next();
-                res_tmp.add(res.identifier);
+                QueryResult result = cursor.next();
+                res_tmp.add(result.identifier);
             }
-            String[] res = new String[res_tmp.size()];
+            res = new String[res_tmp.size()];
             for(int i=0; i < res_tmp.size(); i++){
                 res[i] = (String)res_tmp.elementAt(i);
             }
             cursor.close();
-            return res;
+            //return res;
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
+        } catch (SchedulingException e) {
+        	logger.severe("SCHEDULING: Error querying archive");
         }
+        return res;
     }
 
     public ObsProject retrieve(String uid) throws SchedulingException {
+    	  ObsProject obsProj = null;
         try {
             XmlEntityStruct xml = archOperationComp.retrieveDirty(uid);
-            ObsProject obsProj= (ObsProject)
+            obsProj= (ObsProject)
                 entityDeserializer.deserializeEntity(xml, ObsProject.class);
             return obsProj;
         } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
         } catch(NotFound e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
         } catch(MalformedURI e) {
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
         } catch(EntityException e){
             logger.severe("SCHEDULING: "+e.toString());
-            throw new SchedulingException(e);
+            //throw new SchedulingException(e);
         }
+        return obsProj;
     }
 
     protected void printProjectStatusFromObject(ProjectStatus ps){
@@ -1322,7 +1360,7 @@ public class ALMAArchive implements Archive {
             }
         } catch(Exception e) {
             logger.severe("SCHEDULING: Could not return manual mode project id");
-            throw new SchedulingException (e);
+            //throw new SchedulingException (e);
         }
         return null;
     }
