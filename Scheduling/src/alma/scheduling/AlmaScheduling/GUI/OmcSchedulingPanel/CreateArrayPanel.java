@@ -43,7 +43,7 @@ import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.ChessboardPanel;
 import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
@@ -76,7 +76,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
     public void connectedSetup(PluginContainerServices cs) {
         super.onlineSetup(cs);
-        logger = new ALMASchedLogger(cs.getLogger());
+        //logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
         logger.fine("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
         initializeChessboards();

@@ -31,11 +31,12 @@ import alma.exec.extension.subsystemplugin.*;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.ArrayModeEnum;
 import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
 public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlugin {
     protected PluginContainerServices container;
-    protected ALMASchedLogger logger;
+    //protected ALMASchedLogger logger;
+    protected Logger logger;
     protected String title;
     private MasterSchedulerIF ms;
     private String arrayname;
@@ -49,7 +50,8 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
     }
     public void onlineSetup(PluginContainerServices cs){
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        //logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
     }
     public String getTitle() {
         return title;
@@ -76,7 +78,8 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
 
     public void setServices(PluginContainerServices cs) {
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        //logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
     }
 
     public void start() throws Exception {

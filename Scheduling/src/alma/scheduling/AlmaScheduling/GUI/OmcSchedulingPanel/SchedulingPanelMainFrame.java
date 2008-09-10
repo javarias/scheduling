@@ -39,14 +39,15 @@ import java.util.logging.Logger;
 //exec plugin stuff
 import alma.exec.extension.subsystemplugin.*;
 
-import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
 public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin {
     private PluginContainerServices cs;
     private JPanel main;
     private JScrollPane pane;
     private MainSchedTabPane mainSchedPanel;
-    private ALMASchedLogger logger;
+    //private ALMASchedLogger logger;
+    private Logger logger;
     
     public SchedulingPanelMainFrame(){
         createMainSchedPanel();
@@ -64,7 +65,8 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
 
     public void setServices(PluginContainerServices ctrl) {
         cs = ctrl;
-        logger = new ALMASchedLogger(ctrl.getLogger());
+        //logger = new ALMASchedLogger(ctrl.getLogger());
+        logger = cs.getLogger();
         mainSchedPanel.secondSetup(cs);
         logger.fine("### setServices in CreateArray Plugin ###");
     }

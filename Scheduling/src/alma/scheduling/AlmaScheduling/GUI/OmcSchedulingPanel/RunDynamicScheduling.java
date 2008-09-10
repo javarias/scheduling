@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import alma.acs.container.ContainerServices;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
-import alma.scheduling.AlmaScheduling.ALMASchedLogger;
+//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
 import alma.scheduling.MasterSchedulerIF;
 import alma.xmlentity.XmlEntityStruct;
@@ -39,11 +39,13 @@ public class RunDynamicScheduling implements Runnable {
     private MasterSchedulerIF masterScheduler = null;
     private String[] sb_ids;
     private String arrayname;
-    private ALMASchedLogger logger;
+    //private ALMASchedLogger logger;
+    private Logger logger;
     
     public RunDynamicScheduling(PluginContainerServices cs ){
         container = cs;
-        logger = new ALMASchedLogger(cs.getLogger());
+        //logger = new ALMASchedLogger(cs.getLogger());
+        logger = cs.getLogger();
         getMSRef();
     }
     private void getMSRef(){
