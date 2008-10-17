@@ -48,7 +48,7 @@ public class ALMAOperator implements Operator {
     //logger
     private final AcsLogger logger; 
     //The Operator Component.
-    private alma.exec.Scheduling_to_TelescopeOperator execSchedOperator;
+    //private alma.exec.Scheduling_to_TelescopeOperator execSchedOperator;
     /**
       *
       */
