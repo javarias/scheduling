@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.73 2008/09/03 22:13:10 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.74 2008/11/17 21:39:51 rhiriart Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1077,7 +1077,7 @@ public class ProjectUtil {
             Equatorial[] eq = new Equatorial[targets.length];
             String[] op_params_list;
             for(int i=0; i < targets.length; i++){
-                fs_id = targets[i].getFieldSourceId();
+                fs_id = targets[i].getFieldSourceRef().getPartId();
                 fs = getFieldSourceFromList(fieldSources, fs_id);
 //////////////////
 // Can't do the following with out a field source..
@@ -1483,7 +1483,7 @@ public class ProjectUtil {
         Equatorial[] eq = new Equatorial[targets.length];
         String[] op_params_list;
         for(int i=0; i < targets.length; i++){
-            fs_id = targets[i].getFieldSourceId();
+            fs_id = targets[i].getFieldSourceRef().getPartId();
             fs = getFieldSourceFromList(fieldSources, fs_id);
 //////////////
 // Can't do the following with out a field source..
@@ -2124,7 +2124,7 @@ public class ProjectUtil {
                 Equatorial[] eq = new Equatorial[targets.length];
                 String[] op_params_list;
                 for(int i=0; i < targets.length; i++){
-                    fs_id = targets[i].getFieldSourceId();
+                    fs_id = targets[i].getFieldSourceRef().getPartId();
                     fs = getFieldSourceFromList(fieldSources, fs_id);
                     if(fs != null){
                         coord = fs.getSourceCoordinates();
