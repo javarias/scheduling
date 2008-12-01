@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.74 2008/11/17 21:39:51 rhiriart Exp $
+ * @version $Id: ProjectUtil.java,v 1.75 2008/12/01 18:04:22 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1066,6 +1066,7 @@ public class ProjectUtil {
             //TODO Changed this to not have -1, coz scheduler doesn't think this way yet.
     			sb.setMaximumNumberOfExecutions(execcount); 
                 sb.setIndefiniteRepeat(ctrl.getIndefiniteRepeat());
+                sb.setRunQuicklook(ctrl.getRunQuicklook());
     		}
             
             FieldSourceT[] fieldSources = sched.getFieldSource();
