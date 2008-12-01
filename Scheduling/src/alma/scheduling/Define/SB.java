@@ -33,7 +33,7 @@ import java.io.PrintStream;
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.28 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: SB.java,v 1.29 2008/12/01 18:04:59 wlin Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -78,6 +78,7 @@ public class SB implements ProgramMember {
 	private int maximumNumberOfExecutions;
 	private int maximumTimeInSeconds;
     private boolean indefiniteRepeat;
+    private boolean runQuicklook;
 	// The members of this set are ExecBlocks.
 	private ArrayList exec;
 		
@@ -812,6 +813,14 @@ public class SB implements ProgramMember {
      public PreConditions getPreConditions(){
          return precondition;
      }
+
+	public boolean isRunQuicklook() {
+		return runQuicklook;
+	}
+
+	public void setRunQuicklook(boolean runQuicklook) {
+		this.runQuicklook = runQuicklook;
+	}
 
 }
 
