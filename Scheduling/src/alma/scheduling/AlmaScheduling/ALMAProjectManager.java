@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.112 2008/09/08 22:45:06 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.113 2008/12/01 18:03:15 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -769,68 +769,6 @@ public class ALMAProjectManager extends ProjectManager {
         return prog;
     }
     
-    
-    /* Will be this way in future
-    public void sendStartSessionEvent(ObservedSession session) {
-    }
-    */
-    //public String sendStartSessionEvent(String sbid) {
-    // this method will be replace by sendStartSessionEvent(String sbid,String arrayname)
-    // will be remove later
-    public IDLEntityRef sendStartSessionEvent(String sbid) {
-        SB sb = sbQueue.get(sbid);
-        //in future will be done in scheduler.
-        //ObservedSession session = createObservedSession(sb.getParent(),eb);
-        //session.addExec(eb);
-        //the entity which contains the session is the project status
-        String sessionId = new String(projectUtil.genPartId());
-        sessionStart(sessionId, sbid);
-        IDLEntityRef sessionRef = new IDLEntityRef();
-        sessionRef.entityId = sb.getProject().getProjectStatusId();
-        logger.fine("Project status for sb ("+sb.getId()+") is "+sessionRef.entityId);
-        sessionRef.partId = sessionId;
-        sessionRef.entityTypeName = "ProjectStatus";
-        sessionRef.instanceVersion ="1.0";
-        IDLEntityRef sbRef = new IDLEntityRef();
-        sbRef.entityId = sbid;
-        sbRef.partId ="";
-        sbRef.entityTypeName = "SchedBlock";
-        sbRef.instanceVersion ="1.0";
-        //try and tell quicklook pipeline a session is about to start
-        String title="";
-        if(!sb.getProject().getProjectName().equals("")){
-            title = sb.getProject().getProjectName();
-        }else {
-            title = "undefined_project_name";
-        }
-        if(!sb.getSBName().equals("")){
-            title = title + sb.getSBName();
-        } else {
-            title = title +"undefined_sb_name";
-        }
-        logger.fine("SCHEDULING: title for quicklook = "+title);
-        try {
-            pipeline.startQuickLookSession(sessionRef, sbRef, title);
-        } catch (Exception e){
-            logger.warning("SCHEDULING: Quick look not available.");
-        }
-        try {
-            logger.fine("SCHEDULING: Session with id == "+sessionId+" (start event sent)");
-            long time = UTCUtility.utcJavaToOmg(System.currentTimeMillis());
-            StartSessionEvent start_event = new StartSessionEvent(
-                    UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-                    sessionRef,
-                    sbRef);
-                    
-            publisher.publish(start_event);
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: Failed to send start session event!");
-            e.printStackTrace();
-        }
-        //return sessionId;
-        return sessionRef;
-    }
-    
     /* Will be this way in future
     public void sendStartSessionEvent(ObservedSession session,String arrayName) {
     }
@@ -868,10 +806,12 @@ public class ALMAProjectManager extends ProjectManager {
             title = title +"undefined_sb_name";
         }
         logger.fine("SCHEDULING: title for quicklook = "+title);
-        try {
-            pipeline.startQuickLookSession(sessionRef, sbRef, ArrayName,title);
-        } catch (Exception e){
-            logger.warning("SCHEDULING: Quick look not available.");
+        if(sb.isRunQuicklook()){
+        	try {
+        		pipeline.startQuickLookSession(sessionRef, sbRef, ArrayName,title);
+        	} catch (Exception e){
+        		logger.warning("SCHEDULING: Quick look not available.");
+        	}
         }
         try {
             logger.fine("SCHEDULING: Session with id == "+sessionId+" (start event sent)");
@@ -928,7 +868,9 @@ public class ALMAProjectManager extends ProjectManager {
         sbRef.entityTypeName = "SchedBlock";
         sbRef.instanceVersion ="1.0";
         //try and tell quicklook pipeline a session is about to end
-        pipeline.endQuickLookSession(sessionRef, sbRef);
+        if(sb.isRunQuicklook()){
+        	pipeline.endQuickLookSession(sessionRef, sbRef);
+        }
         try {
             EndSessionEvent end_event = new EndSessionEvent(
                     UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
