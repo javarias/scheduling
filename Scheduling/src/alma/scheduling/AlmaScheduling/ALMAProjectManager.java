@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.113 2008/12/01 18:03:15 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.114 2008/12/01 21:32:45 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -810,7 +810,10 @@ public class ALMAProjectManager extends ProjectManager {
         	try {
         		pipeline.startQuickLookSession(sessionRef, sbRef, ArrayName,title);
         	} catch (Exception e){
+        		if(pipeline.getQlSessionState(sessionRef, sbRef)!=null) {
+        	    pipeline.shutdownQlSession(sessionRef, sbRef);
         		logger.warning("SCHEDULING: Quick look not available.");
+        		}
         	}
         }
         try {
@@ -868,7 +871,7 @@ public class ALMAProjectManager extends ProjectManager {
         sbRef.entityTypeName = "SchedBlock";
         sbRef.instanceVersion ="1.0";
         //try and tell quicklook pipeline a session is about to end
-        if(sb.isRunQuicklook()){
+        if(sb.isRunQuicklook() && (pipeline.getQlSessionState(sessionRef, sbRef)!=null)){
         	pipeline.endQuickLookSession(sessionRef, sbRef);
         }
         try {
