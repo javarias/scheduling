@@ -32,6 +32,7 @@ import alma.acs.entityutil.EntitySerializer;
 import alma.acs.logging.AcsLogger;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.pipelineql.QlDisplayManager;
+import alma.pipelineql.QlSessionState;
 import alma.pipelinescience.SciPipeManager;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.SciPipeline;
@@ -41,7 +42,7 @@ import alma.scheduling.Define.Status;
 /**
  * This class communicates with the Science Pipeline Subsystem
  * @author Sohaila Lucero
- * @version $Id: ALMAPipeline.java,v 1.20 2008/09/03 22:01:07 wlin Exp $
+ * @version $Id: ALMAPipeline.java,v 1.21 2008/12/01 21:33:54 wlin Exp $
  */
 public class ALMAPipeline implements SciPipeline {
     //container services
@@ -203,6 +204,34 @@ public class ALMAPipeline implements SciPipeline {
             }
         }
     }
+    
+    public void shutdownQlSession(IDLEntityRef sessionR, 
+    IDLEntityRef sbR) {
+    	try {
+    		quicklookComp.shutdownQlSession(sessionR, sbR);
+    		logger.fine("SCHEDULING: Told QL session is about to shutdown");
+    	}catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
+    		logger.warning("SCHEDULING: Caught quicklook error when session shutdown, should keep going with sb session");
+    	}
+    }
+    
+    public QlSessionState getQlSessionState (IDLEntityRef sessionR, 
+            IDLEntityRef sbR) {
+    	QlSessionState state=null;
+    	 if(ql_startOk){
+    		 try {
+                 state = quicklookComp.getQlSessionState(sessionR, sbR);
+                 return state;
+             }catch(alma.QlDisplayExceptions.InvalidStateErrorEx e) {
+                 logger.warning("SCHEDULING: Caught quicklook error when called getQlSessionState");
+                 return null;
+             }
+    	 }
+    	 else {
+    		 return state;
+    	 }
+    }
+
 }
 
 
