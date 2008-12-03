@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.79 2008/09/03 21:59:19 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.80 2008/12/03 21:52:52 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -337,7 +337,7 @@ public class ALMAControl implements Control {
                 arrayName = control_system.createAutomaticArray(antenna);
             }catch(Exception e) {
                 e.printStackTrace();
-                logger.log(Level.WARNING,
+                logger.logToAudience(Level.WARNING,
                     "SCHEDULING: Got error from control when trying to get new array name",
                     OPERATOR.value);
                 throw new SchedulingException("SCHEDULING: Error getting new array name from control.");
@@ -348,14 +348,14 @@ public class ALMAControl implements Control {
                     containerServices.getComponent(arrayName));
             } catch(Exception e) {
                 ctrl = null;
-                logger.log(Level.WARNING,
+                logger.logToAudience(Level.WARNING,
                     "SCHEDULING: Got error trying to get automatic array componnet.",
                     OPERATOR.value);
                 logger.severe("SCHEDULING: automatic array command is null");
                 throw new SchedulingException("SCHEDULING: Error with getting ArrayController!");
             }
             auto_controllers.add(new ArrayModeInfo(ctrl, mode));
-            logger.log(Level.INFO,
+            logger.logToAudience(Level.INFO,
                     "SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName(),
                     OPERATOR.value);
             logger.fine("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
@@ -421,7 +421,7 @@ public class ALMAControl implements Control {
         try {
             boolean found = false;
     	    //logger.info("SCHEDULING about to destroy array "+name);
-    	    logger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
+    	    logger.logToAudience(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
     	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
 	            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {

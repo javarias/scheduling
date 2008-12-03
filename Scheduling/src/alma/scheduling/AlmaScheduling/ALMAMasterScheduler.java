@@ -92,7 +92,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.110 2008/09/03 22:00:42 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.111 2008/12/03 21:49:01 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1035,7 +1035,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.log(Level.INFO, logMsg, OPERATOR.value);
+                logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
                 name = control.createArray(antennaIdList, "dynamic");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("dynamic");
@@ -1045,7 +1045,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.log(Level.INFO, logMsg, OPERATOR.value);
+                logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
                 name = control.createArray(antennaIdList, "queued");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("queued");
@@ -1055,7 +1055,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg = logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                logger.log(Level.INFO, logMsg, OPERATOR.value);
+                logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
                 name = control.createArray(antennaIdList, "interactive");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("interactive");
@@ -1063,16 +1063,16 @@ public class ALMAMasterScheduler extends MasterScheduler
             //telescope.addSubarray(a);
         } catch(SchedulingException e) {
             e.printStackTrace();
-            logger.log(Level.WARNING,
+            logger.logToAudience(Level.WARNING,
                     "SCHEDULING: Error creating array. First check Control System logs.",
                     OPERATOR.value);
             AcsJInvalidOperationEx e1 = new AcsJInvalidOperationEx(e);
             throw e1.toInvalidOperationEx();
         }
         if(!logMsg.equals("")){
-            logger.log(Level.INFO, logMsg, OPERATOR.value);
+            logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
         } else {
-            logger.log(Level.WARNING,
+            logger.logToAudience(Level.WARNING,
                     "SCHEDULING: Problem occured in createArray Method",
                     OPERATOR.value);
         }
@@ -1108,7 +1108,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       */
     public void destroyArray(String name) throws InvalidOperationEx {
         try {
-            logger.log(Level.INFO, 
+            logger.logToAudience(Level.INFO, 
                     "SCHEDULING: Destroying array "+name, OPERATOR.value);
             //arraylogger.log(Level.INFO, 
               //      "SCHEDULING: Destroying array "+name, 
