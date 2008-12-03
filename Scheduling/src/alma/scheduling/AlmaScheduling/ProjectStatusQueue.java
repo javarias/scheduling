@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import alma.acs.logging.AcsLogger;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.scheduling.Define.SchedulingException;
 
@@ -40,17 +41,17 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.10 2008/06/19 19:34:53 wlin Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.11 2008/12/03 21:34:23 wlin Exp $
  */
 public class ProjectStatusQueue {
 
-    private final Logger logger; 
+    private final AcsLogger logger; 
 	private final ArrayList queue;
 
 	/**
 	 * Create an enpty queue of ProjectStatus.
 	 */
-	public ProjectStatusQueue(Logger logger) {
+	public ProjectStatusQueue(AcsLogger logger) {
         this.logger = logger; 
 		queue = new ArrayList();
 	}
@@ -58,7 +59,7 @@ public class ProjectStatusQueue {
 	/**
 	 * Create an queue of ProjectStatus from the specified array.
 	 */
-	public ProjectStatusQueue(ProjectStatus[] item, Logger logger) {
+	public ProjectStatusQueue(ProjectStatus[] item, AcsLogger logger) {
 		this(logger);
 		for (int i = 0; i < item.length; ++i)
 			queue.add(item[i]);
@@ -131,7 +132,8 @@ public class ProjectStatusQueue {
 // debug
 			try {
 				if (x == null) {
-					logger.log(Level.WARNING, "ProjectStatus #" + i + " from the queue is null", "");
+					//logger.log(Level.WARNING, "ProjectStatus #" + i + " from the queue is null", "");
+					logger.log(Level.WARNING, "ProjectStatus #" + i + " from the queue is null");
 				}
 				else if (x.getProjectStatusEntity() == null || x.getProjectStatusEntity().getEntityId() == null) {
 					StringWriter sw = new StringWriter();

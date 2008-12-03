@@ -26,26 +26,28 @@
 
 package alma.scheduling.ObsProjectManager;
 
-import java.util.logging.Logger; 
+import java.util.logging.Logger;
+
+import alma.acs.logging.AcsLogger;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.AlmaScheduling.ProjectUtil;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.TaskControl;
+import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ProjectQueue;
-import alma.scheduling.Define.ObservedSession;
+import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
- * @version $Id: ProjectManager.java,v 1.16 2008/09/03 22:14:39 wlin Exp $
+ * @version $Id: ProjectManager.java,v 1.17 2008/12/03 21:34:42 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
     alma.scheduling.Define.ProjectManager {
 
     //The logger
-    protected final Logger logger;
+    protected final AcsLogger logger;
     
     protected final ProjectUtil projectUtil;
     
@@ -54,7 +56,7 @@ public class ProjectManager implements Runnable,
 
     protected ProjectManagerTaskControl pmTaskControl;
 
-    public ProjectManager(Logger logger) {
+    public ProjectManager(AcsLogger logger) {
         this.stopCommand = false;
         this.logger = logger;
         projectUtil = new ProjectUtil(logger);

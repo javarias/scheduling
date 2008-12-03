@@ -29,8 +29,8 @@ package alma.scheduling.AlmaScheduling;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import alma.acs.logging.AcsLogger;
 import alma.acs.container.ContainerServices;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.114 2008/12/01 21:32:45 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.115 2008/12/03 21:33:43 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1371,14 +1371,14 @@ public class ALMAProjectManager extends ProjectManager {
      */
     public static class ArchivePoller {
     	
-    	private final Logger logger;
+    	private final AcsLogger logger;
         private final ALMAArchive archive;
         private final SBQueue sbQueue;
         private final ProjectQueue pQueue;
         private final ProjectStatusQueue psQueue;
 		private final ProjectUtil projectUtil;
     	
-    	public ArchivePoller(ALMAArchive archive, SBQueue sbQueue, ProjectQueue pQueue, ProjectStatusQueue psQueue, ProjectUtil projectUtil, Logger logger) {
+    	public ArchivePoller(ALMAArchive archive, SBQueue sbQueue, ProjectQueue pQueue, ProjectStatusQueue psQueue, ProjectUtil projectUtil, AcsLogger logger) {
     		this.logger = logger;
     		this.projectUtil = projectUtil;
     		this.archive = archive;
@@ -1564,7 +1564,10 @@ public class ALMAProjectManager extends ProjectManager {
 	        logger.fine("Size of pQueue = "+pQueue.size());
 	        logger.fine("Size of psQueue = "+psQueue.size());
 	        logger.fine("Size of sbQueue = "+sbQueue.size());
-	        logger.log(Level.INFO, "The Scheduling Subsystem is currently managing "+
+	        //logger.log(Level.INFO, "The Scheduling Subsystem is currently managing "+
+	        //        pQueue.size()+" projects, "+ sbQueue.size()+" sbs and "+psQueue.size()+
+	        //        " project status'", OPERATOR.value);
+	        logger.logToAudience(Level.INFO, "The Scheduling Subsystem is currently managing "+
 	                pQueue.size()+" projects, "+ sbQueue.size()+" sbs and "+psQueue.size()+
 	                " project status'", OPERATOR.value);
     }
