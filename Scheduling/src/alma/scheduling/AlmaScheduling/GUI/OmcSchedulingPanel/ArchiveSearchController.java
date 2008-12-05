@@ -48,7 +48,7 @@ public class ArchiveSearchController extends SchedulingPanelController {
             String[] projs = masterScheduler.queryForProject(pName, piName, pType, aType);
             //do union now
             String[] unionSB = masterScheduler.getSBProjectUnion(sbs,projs);
-            SBLite[] unionSBLites = masterScheduler.getSBLite(unionSB);
+            SBLite[] unionSBLites = masterScheduler.getExistingSBLite(unionSB);
             String[] unionProj = masterScheduler.getProjectSBUnion(projs,sbs);
             ProjectLite[] unionProjectLites = masterScheduler.getProjectLites(unionProj);
             releaseMSRef();
