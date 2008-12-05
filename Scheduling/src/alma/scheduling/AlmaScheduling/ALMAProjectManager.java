@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.115 2008/12/03 21:33:43 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.116 2008/12/05 15:45:52 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1183,7 +1183,10 @@ public class ALMAProjectManager extends ProjectManager {
       */
     public String[] archiveQuery(String query, String schema) throws SchedulingException  {
         //only return the ones which the project manager knows so check for updates.
-        archivePoller.pollArchive();
+    	if(schema.equals("SchedBlock")) {
+    		archivePoller.pollArchive();
+    	}
+    	
         String[] tmp = archive.query(query, schema);
         Vector v_uids = new Vector();
         if(schema.equals("ObsProject")) {
@@ -1820,8 +1823,19 @@ public class ALMAProjectManager extends ProjectManager {
         return sblites;
     }
 
+    public SBLite[] getExistingSBLite(String[] ids) {
+       
+        SBLite[] sblites = new SBLite[ids.length];
+        SBLite sblite;
+        for(int i=0; i < ids.length; i++){
+            sblite = createSBLite(ids[i]);
+            sblites[i] = sblite;
+        }
+        return sblites;
+    }
+    
     public ProjectLite[] getProjectLites(String[] ids) {
-        getUpdates();
+        //getUpdates();
         logger.fine("SCHEDULING: Called getProjectLites(ids)");
         ProjectLite[] projectliteArray=new ProjectLite[ids.length];
         for(int i=0; i < ids.length; i++){
