@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.75 2008/12/01 18:04:22 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.76 2008/12/05 15:46:31 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -750,7 +750,7 @@ public class ProjectUtil {
                 	childProgram = setStatusInformation ((Program)x, setMember[i], status[i], now);
                 	
                 } catch (Exception e) {
-                	logger.severe("setStatusInformaiton throw Exception!!"+e.toString());
+                	//logger.severe("setStatusInformaiton throw Exception!!"+e.toString());
                 	childProgram = setStatusInformation ((Program)x, setMember[i], null, now);
                 }
             }
@@ -1607,7 +1607,7 @@ public class ProjectUtil {
 		try {			
 			// HSO 2008-06-05 hack: we are getting an NPE at the ATF and need more info
 			//maybe ObsProgram did not initialize properly
-			logger.warning("Here we start to assign the ObsProgram Status");
+			//logger.warning("Here we start to assign the ObsProgram Status");
 			pstatus.setObsProgramStatus(assignObsProgramStatus(project.getProgram(),now));
 		} catch (RuntimeException ex) {
 			logger.log(Level.SEVERE, "Failed to set the ObsProgram status for project " + project.getObsProjectId(), ex);
@@ -1744,7 +1744,7 @@ public class ProjectUtil {
 		target.setSession(list);
 		
 		// Set the PipelineProcessingRequest.
-		logger.warning("Here we assign the PPR ");
+		//logger.warning("Here we assign the PPR ");
 		target.setPipelineProcessingRequest(assignPPR(source.getSciPipelineRequest()));
 		
 		// Set the members of this program.
@@ -1820,7 +1820,7 @@ public class ProjectUtil {
 	
 	private PipelineProcessingRequestT assignPPR(SciPipelineRequest ppr) {
 		if (ppr == null){
-			logger.warning("PPR paramater is null so far! need to investigate!!");
+			//logger.warning("PPR paramater is null so far! need to investigate!!");
 			return null;
         }
 		PipelineProcessingRequestT target = new PipelineProcessingRequestT ();
