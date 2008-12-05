@@ -92,7 +92,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.111 2008/12/03 21:49:01 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.112 2008/12/05 15:45:04 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -854,6 +854,11 @@ public class ALMAMasterScheduler extends MasterScheduler
     public SBLite[] getSBLite(String[] ids){
         return manager.getSBLite(ids);
     }
+    
+    public SBLite[] getExistingSBLite(String[] ids){
+        return manager.getExistingSBLite(ids);
+    }
+    
     public ProjectLite[] getProjectLites(String[] ids) {
         return manager.getProjectLites(ids);
     }
@@ -1288,7 +1293,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
         String[] results = new String[0];    
         try {
-            System.out.println("Query: "+query);
+            //System.out.println("Query: "+query);
             results = manager.archiveQuery(query, schema);
         } catch(Exception e) {
             e.printStackTrace();
