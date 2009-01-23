@@ -47,7 +47,7 @@ import alma.acs.component.client.ComponentClient;
 /**
   *
   * @author Sohaila Lucero
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.32 2007/08/30 21:42:45 sslucero Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.33 2009/01/23 13:44:32 wlin Exp $
   */
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
     implements AlmaSubsystemActions {
@@ -93,6 +93,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                     m_containerServices.getDefaultComponent(
                         "IDL:alma/scheduling/MasterSchedulerIF:1.0"));
+                monitorComponent(masterScheduler);
             } else {
                 m_logger.warning("SCHEDULING MC: Trying to connect to MasterSchduler, found irrigular state. "+
                         "Possible instance with unknown state already exists. Continuing at your own risk");
@@ -104,12 +105,6 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
             m_logger.severe("SCHEDULING MC: error getting MasterScheduler component in pass2.");
             //set the ms to null just to be safe..
             masterScheduler = null;
-            e.printStackTrace();
-            try {
-                doErrorTransition();
-            }catch(AcsStateActionException ex){
-                throw new AcsStateActionException(ex);
-            }
             publishSchedulingStateEvent(SchedulingState.ERROR);
             throw new AcsStateActionException(e);
         }
@@ -120,20 +115,23 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       */
     public void reinitSubsystem() throws AcsStateActionException {
         m_logger.fine("SCHEDULING MC: reinitSubsystem() method called.");
-        try {
-            //AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
-            //adv.forceReleaseComponent(masterScheduler.name());
-            m_containerServices.releaseComponent(masterScheduler.name());
-            masterScheduler = null;
-        } catch(Exception ce){
-            m_logger.severe("SCHEDULING MC: Unable to shutdown master scheduler component.");
-            ce.printStackTrace();
-            try {
-                doErrorTransition();
-            }catch(AcsStateActionException ex){
-                throw new AcsStateActionException(ex);
-            }
+        if(masterScheduler != null){
+        	try {
+        		//AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
+        		//adv.forceReleaseComponent(masterScheduler.name());
+        		m_containerServices.releaseComponent(masterScheduler.name());
+        		masterScheduler = null;
+        	} catch(Exception ex){
+        		m_logger.severe("SCHEDULING MC: Unable to shutdown master scheduler component.");
+        		throw new AcsStateActionException(ex);
+        		//try {
+        		//    doErrorTransition();
+        		//}catch(AcsStateActionException ex){
+        		//    throw new AcsStateActionException(ex);
+        		//}
+        	}
         }
+        
         try {
             if(masterScheduler == null) {
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
@@ -144,16 +142,11 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
                 masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                     m_containerServices.getDefaultComponent("IDL:alma/scheduling/MasterSchedulerIF:1.0"));
             }
+            monitorComponent(masterScheduler);
         } catch (AcsJContainerServicesEx e) {
             m_logger.severe("SCHEDULING MC: error reinitializing Scheduling Subsystem...");
             //set the ms to null just to be safe..
             masterScheduler = null;
-            e.printStackTrace();
-            try {
-                doErrorTransition();
-            }catch(AcsStateActionException ex){
-                throw new AcsStateActionException(ex);
-            }
             publishSchedulingStateEvent(SchedulingState.ERROR);
             throw new AcsStateActionException(e);
         }
@@ -164,38 +157,25 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       */
     public void shutDownSubsysPass1() throws AcsStateActionException {
         m_logger.fine("SCHEDULING MC: shutDownSubsysPass1() method called");
+        stopMonitoringAllResources();
         try {
             if(masterScheduler != null) {
-            //    m_containerServices.releaseComponent(masterScheduler.name());
-
-                try { 
-                    //AdvancedContainerServices adv = m_containerServices.getAdvancedContainerServices();
-                    //adv.forceReleaseComponent(masterScheduler.name());
-                    m_containerServices.releaseComponent(masterScheduler.name());
-                    masterScheduler = null;
-                } catch(Exception ce){
-                    m_logger.severe("SCHEDULING MC: Unable to shutdown master scheduler component.");
-                    ce.printStackTrace();
-                    try {
-                        doErrorTransition();
-                    }catch(AcsStateActionException ex){
-                        throw new AcsStateActionException(ex);
-                    }
-                }
+                m_containerServices.releaseComponent(masterScheduler.name());
+                masterScheduler = null;    
+            }
+            if(nc !=null) {
+           	nc.disconnect(); 
+            	nc=null;
             }
         } catch(Exception e) {
             m_logger.severe("SCHEDULING MC: error releasing MasterScheduler component in Pass1.");
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
             publishSchedulingStateEvent(SchedulingState.ERROR);
-            try {
-                doErrorTransition();
-            }catch(AcsStateActionException ex){
-                throw new AcsStateActionException(ex);
-            }
             throw new AcsStateActionException(e);
         }
     }
 
+    // no need to call this method will remove it later....
     private void doErrorTransition() throws AcsStateActionException {
         try {
             doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
@@ -213,42 +193,37 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
       */
     public void shutDownSubsysPass2() throws AcsStateActionException {
         m_logger.fine("SCHEDULING MC: shutDownSubsysPass2() method called");
+        stopMonitoringAllResources();
+        
         try {
             if(masterScheduler != null) {
                 m_containerServices.releaseComponent("SCHEDULING_MASTERSCHEDULER");
-                //m_containerServices.releaseComponent(masterScheduler.name());
                 masterScheduler = null;
             }
+            
+           //if(nc !=null) {
+           //	m_containerServices.releaseComponent(nc.name());
+           // 	nc=null;
+           // }
+            
             publishSchedulingStateEvent(SchedulingState.OFFLINE);
         } catch(Exception e) {
             m_logger.severe("SCHEDULING MC: error releasing MasterScheduler component in Pass2.");
-            e.printStackTrace(System.out);
-            try {
-                doTransition(SubsystemStateEvent.SUBSYSEVENT_ERROR);
-                publishSchedulingStateEvent(SchedulingState.ERROR);
-            } catch(alma.ACSErrTypeCommon.IllegalStateEventEx ex) {
-                ex.printStackTrace();
-                publishSchedulingStateEvent(SchedulingState.ERROR);
-                throw new AcsStateActionException(ex);
-            }
+            //e.printStackTrace(System.out);
             publishSchedulingStateEvent(SchedulingState.ERROR);
             throw new AcsStateActionException(e);
         }
     }
+    
     private void getNC(){
         try {
             nc = new SimpleSupplier(
                 alma.scheduling.CHANNELNAME_SCHEDULING.value, m_containerServices);
             m_logger.fine("SchedulingStateEvent sent");
         }catch(Exception e){
+        	m_logger.severe("can not get the Scheduling notification");
             e.printStackTrace();
         }
-        /*
-        nc = AbstractNotificationChannel.createNotificationChannel(
-                AbstractNotificationChannel.CORBA, 
-                alma.scheduling.CHANNELNAME_SCHEDULING.value, 
-                    m_containerServices);
-*/
     }
 
     private void publishSchedulingStateEvent(SchedulingState x) {        
@@ -257,7 +232,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         try {
             nc.publishEvent(e);
         }catch(Exception ex){
-            ex.printStackTrace();
+            m_logger.severe("MasterScheduler can not publish the SchedulingStateEvent");
         }
     }
 
