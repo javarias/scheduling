@@ -36,7 +36,7 @@ import alma.scheduling.Event.Publishers.PublishEvent;
 import alma.scheduling.SchedulingStateEvent;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
-import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.CorbaNotificationChannel;
 
 import alma.acs.nc.*;
 
@@ -45,7 +45,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.15 2008/06/19 19:28:52 wlin Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.16 2009/01/30 21:25:58 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -63,10 +63,11 @@ public class ALMAPublishEvent extends PublishEvent {
     public ALMAPublishEvent(ContainerServices cs) throws AcsJException {
         super(cs.getLogger()); 
         this.container = cs;
-        this.sched_nc = AbstractNotificationChannel.createNotificationChannel(
-            AbstractNotificationChannel.CORBA, 
+        this.sched_nc = new CorbaNotificationChannel(
                 alma.scheduling.CHANNELNAME_SCHEDULING.value, 
                     container);
+        //this.sched_nc = CorbaNotificationChannel.
+        
     }
 
     /** 

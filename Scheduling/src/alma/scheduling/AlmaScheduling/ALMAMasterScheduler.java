@@ -49,7 +49,8 @@ import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
-import alma.acs.nc.AbstractNotificationChannel;
+//import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.CorbaNotificationChannel;
 import alma.acs.nc.CorbaReceiver;
 import alma.acs.nc.Receiver;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
@@ -92,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.112 2008/12/05 15:45:04 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.113 2009/01/30 21:25:27 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -215,19 +216,25 @@ public class ALMAMasterScheduler extends MasterScheduler
             // Connect to the Control NC
             eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
                                              (ALMAPublishEvent)publisher);
-            control_nc = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.CORBA, 
-                alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
-                    containerServices);
+            //control_nc = AbstractNotificationChannel.getReceiver(
+            //    AbstractNotificationChannel.CORBA, 
+            //    alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
+            //        containerServices);
+            control_nc = CorbaNotificationChannel.getCorbaReceiver(
+                    alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
+                        containerServices);
             control_nc.attach("alma.Control.ExecBlockStartedEvent", eventreceiver);
             control_nc.attach("alma.Control.ExecBlockEndedEvent", eventreceiver);
             control_nc.attach("alma.offline.ASDMArchivedEvent", eventreceiver);
             control_nc.begin();
             // Connect to the TelCal NC
-            telcal_nc = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.CORBA, 
-                alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
-                containerServices);
+            //telcal_nc = AbstractNotificationChannel.getReceiver(
+            //    AbstractNotificationChannel.CORBA, 
+            //    alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
+            //    containerServices);
+            telcal_nc = CorbaNotificationChannel.getCorbaReceiver(
+                    alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
+                    containerServices);
             telcal_nc.attach("alma.TelCalPublisher.AmpliCalReducedEvent", eventreceiver);
             telcal_nc.attach("alma.TelCalPublisher.AmpCurveReducedEvent", eventreceiver);
             telcal_nc.attach("alma.TelCalPublisher.AntennaPositionsReducedEvent", eventreceiver);
@@ -242,10 +249,13 @@ public class ALMAMasterScheduler extends MasterScheduler
             telcal_nc.begin();
         
             // Connect to the Pipeline NC
-            pipeline_nc = AbstractNotificationChannel.getReceiver(
-                AbstractNotificationChannel.CORBA, 
-                alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
-                    containerServices);
+            //pipeline_nc = AbstractNotificationChannel.getReceiver(
+            //    AbstractNotificationChannel.CORBA, 
+            //    alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
+            //        containerServices);
+            pipeline_nc = CorbaNotificationChannel.getCorbaReceiver(
+                    alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
+                        containerServices);
             pipeline_nc.attach("alma.pipelinescience.ScienceProcessingDoneEvent",eventreceiver);
             pipeline_nc.begin();
         
