@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.117 2009/02/09 17:01:03 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.118 2009/02/09 17:14:14 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -736,20 +736,29 @@ public class ALMAProjectManager extends ProjectManager {
     public synchronized void updateObservedSession(Project p, ProjectStatus ps, String sessionId, String endTime){
         logger.finest("SCHEDULING: updating session with end time.");
         try {
-            ObservedSession[] allSes = searchPrograms(p.getProgram(), sessionId).getAllSession();
-
-            ObservedSession ses=null;
-            for(int i=0; i < allSes.length; i++){
-                if(allSes[i].getSessionId().equals(sessionId)){
-                    ses = allSes[i];
-                    ses.setEndTime(new DateTime(endTime));
+        	Program program= searchPrograms(p.getProgram(), sessionId);
+        	
+        	if(program!=null) {
+        		ObservedSession[] allSes = program.getAllSession();
+        		ObservedSession ses=null;
+                for(int i=0; i < allSes.length; i++){
+                    if(allSes[i].getSessionId().equals(sessionId)){
+                        ses = allSes[i];
+                        ses.setEndTime(new DateTime(endTime));
+                    }
                 }
-            }
-            ps = projectUtil.updateProjectStatus(p);
-            psQueue.updateProjectStatus(ps);
-            archive.updateProjectStatus(ps);
+                ps = projectUtil.updateProjectStatus(p);
+                psQueue.updateProjectStatus(ps);
+                archive.updateProjectStatus(ps);
+        	}
+        	else {
+        		throw new Exception();
+        	}
+            
+            
         } catch(Exception e){
             logger.severe("SCHEDULING: error updating PS with session");
+            logger.severe("session "+sessionId + "can not find relative Obsunitset, check ProjectStatus");
             e.printStackTrace();
         }
     }
