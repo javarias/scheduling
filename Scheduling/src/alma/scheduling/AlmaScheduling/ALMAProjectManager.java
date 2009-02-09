@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.116 2008/12/05 15:45:52 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.117 2009/02/09 17:01:03 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -763,8 +763,11 @@ public class ALMAProjectManager extends ProjectManager {
         }
         Program[] allPrograms = p.getAllPrograms(); 
         Program prog = null;
+        
         for(int i=0;i<allPrograms.length; i++){
             prog = searchPrograms(allPrograms[i], sessionId);
+            if(prog!=null)
+            	return prog;
         }
         return prog;
     }
