@@ -80,6 +80,17 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         logger = cs.getLogger();
         logger.fine("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
+//      the controlMaster must be ready before we do the initializing
+        CheckControlReady controlComponent = new CheckControlReady();
+        Thread t = controller.getCS().getThreadFactory().newThread(controlComponent);
+        t.start();
+        try {
+            t.join();
+        } 
+        catch(InterruptedException e) { 
+            e.printStackTrace(); 
+        } 
+        //when process running this. the controlMaster and tmcdb must be ready.
         initializeChessboards();
         remove(chessboardPanel);
         createALMAAntennaChessboards();
@@ -345,5 +356,34 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             enableCreateArrayPanel();
         }
     }
+    
+    class CheckControlReady implements Runnable {
+    	
+    	public CheckControlReady() {		
+    	}
+    	
+    	public void run() {
+    		boolean isControlReady = false;
+    		while(!isControlReady) {
+    			try {
+    				Thread.sleep(3000);
+    			}
+    			catch (InterruptedException e) {
+    				e.printStackTrace();
+    			}
+    			isControlReady= controller.getControlRef();
+    			boolean isTMCDBReady = controller.getTMCDBComponent();
+    			if(isControlReady && isTMCDBReady) {
+    				isControlReady = true;
+    			} else {
+    				isControlReady = false;
+    			}
+    			
+    			//logger.severe("check control interface...");
+    		}
+    	}
+    	
+    }
+
 }
 

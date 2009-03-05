@@ -65,27 +65,38 @@ public class CreateArrayController extends SchedulingPanelController {
         createOfflineChessboards();
     }
 
-    private void getTMCDBComponent(){ 
+    public boolean getTMCDBComponent(){
+    	boolean isTMCDBReady = false;
        try {
            if(tmcdb == null){
                 tmcdb = TMCDBComponentHelper.narrow(container.getComponentNonSticky("TMCDB"));
            }
+           if(tmcdb !=null) {
+        	   isTMCDBReady = true;
+           }
+           
         } catch (Exception e) {
             //TODO do more here
             e.printStackTrace();
             tmcdb = null;
         }
+        return isTMCDBReady;
     }
     
-    private void getControlRef() {
+    public boolean getControlRef() {
+    	boolean isControlMasterReady =false;
         try {
             control = alma.Control.ControlMasterHelper.narrow(
                     container.getComponentNonSticky("CONTROL/MASTER"));
             logger.fine("SCHEDULING_PANEL: Got control system in array creator");
+            isControlMasterReady = true;
+            return isControlMasterReady;
         } catch(Exception e){
             e.printStackTrace();
             logger.severe("SCHEDULING_PANEL: Error getting components from array creator");
         }
+        
+        return isControlMasterReady;
     }
     
     private void releaseControlRef() {
