@@ -57,7 +57,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.80 2008/12/03 21:52:52 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.81 2009/03/18 21:33:39 dclarke Exp $
  */
 public class ALMAControl implements Control {
     
@@ -704,6 +704,9 @@ public class ALMAControl implements Control {
     }
     
     public void getWeatherStations() throws SchedulingException {
+/*
+ * David 18/MAR/2009 Commented out while control change the weather
+ *                   station interface
         try { 
             String[] weather = control_system.getWeatherStations();
             logger.fine("SCHEDULING: Current weather stations ");
@@ -719,6 +722,9 @@ public class ALMAControl implements Control {
             }
             throw new SchedulingException(e);
         }
+ * David 18/MAR/2009 END OF Commented out while control change the weather
+ *                   station interface
+ */
     }
 
     public void setAntennaOfflineNow(String antennaId) throws SchedulingException {
