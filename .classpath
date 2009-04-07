@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Scheduling/src"/>
+	<classpathentry kind="src" path="Scheduling/test"/>
+	<classpathentry kind="lib" path="Scheduling/lib/DynamicSchedulingSubsystem.jar"/>
+	<classpathentry kind="lib" path="Scheduling/lib/schedulingComp.jar"/>
+	<classpathentry kind="lib" path="thirdPartyPackages/JavaServlet/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/export/home/almads/wlin/introot/lib/ExecMaster.jar"/>
+	<classpathentry kind="lib" path="/export/home/almads/wlin/introot/lib/ExecExtensionFramework.jar"/>
+	<classpathentry kind="lib" path="/alma/ACS-8.0/ACSSW/lib/acsnc.jar"/>
+	<classpathentry kind="lib" path="/alma/ACS-8.0/ACSSW/lib/jcont.jar"/>
+	<classpathentry kind="lib" path="/alma/ACS-8.0/ACSSW/lib/jcontnc.jar"/>
+	<classpathentry kind="lib" path="/export/home/almads/wlin/introot/lib/ControlMasterInterfaces.jar"/>
+	<classpathentry kind="lib" path="/export/home/almads/wlin/introot/lib/SchedulingInterfaces.jar"/>
+	<classpathentry kind="lib" path="/export/home/almads/wlin/introot/lib/SchedulingEntities.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/Array.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/chessboard.jar"/>
+	<classpathentry kind="output" path="Scheduling/object/schedulingComp"/>
+</classpath>
