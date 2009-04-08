@@ -35,6 +35,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JFrame;
+import javax.swing.JProgressBar;
 import java.util.logging.Logger;
 //exec plugin stuff
 import alma.exec.extension.subsystemplugin.*;
@@ -46,29 +48,33 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
     private JPanel main;
     private JScrollPane pane;
     private MainSchedTabPane mainSchedPanel;
-    //private ALMASchedLogger logger;
+    private JProgressBar progressBar;
     private Logger logger;
-    
+ 
     public SchedulingPanelMainFrame(){
         createMainSchedPanel();
         main = new JPanel();
-        Dimension d = getPreferredSize();
-        main.setSize(d.width + 5, d.height + 5);
-        /*
-        pane = new JScrollPane(mainSchedPanel);
-        main.add(pane);
-        */
-        main.add(mainSchedPanel);
-        add(main);
-        setVisible(true);
+        
+        //Dimension d = getPreferredSize();
+        //main.setSize(d.width + 5, d.height + 5);
+	    runInitialProgressMonitor();
+	    main.add(progressBar);
+	  
+        this.add(main);
+        
     }
 
     public void setServices(PluginContainerServices ctrl) {
         cs = ctrl;
-        //logger = new ALMASchedLogger(ctrl.getLogger());
         logger = cs.getLogger();
         mainSchedPanel.secondSetup(cs);
         logger.fine("### setServices in CreateArray Plugin ###");
+        main.removeAll();
+        
+        main.add(mainSchedPanel);
+	    this.revalidate();
+	    this.repaint();
+        setVisible(true);
     }
 
     public void start() throws Exception {
@@ -88,5 +94,14 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
 
     private void createMainSchedPanel() {
         mainSchedPanel = new MainSchedTabPane(this);
+    }
+    
+    private void runInitialProgressMonitor() {
+	
+    progressBar = new JProgressBar();
+	progressBar.setIndeterminate(true);
+	progressBar.setVisible(true);
+	progressBar.setStringPainted(true);
+	progressBar.setString("Reading antennas information");
     }
 }
