@@ -40,12 +40,34 @@ public class ArchiveSearchController extends SchedulingPanelController {
 
 
     public Vector doQuery(String sbQuery, String pName, String piName, 
+            String pType, String aType,boolean manualMode) {
+        Vector tmp = new Vector();
+        try {
+            getMSRef();
+            String[] sbs = masterScheduler.queryArchive(sbQuery,"SchedBlock");
+            String[] projs = masterScheduler.queryForProject(pName, piName, pType, aType,manualMode);
+            //do union now
+            String[] unionSB = masterScheduler.getSBProjectUnion(sbs,projs);
+            SBLite[] unionSBLites = masterScheduler.getExistingSBLite(unionSB);
+            String[] unionProj = masterScheduler.getProjectSBUnion(projs,sbs);
+            ProjectLite[] unionProjectLites = masterScheduler.getProjectLites(unionProj);
+            releaseMSRef();
+            tmp.add(unionProjectLites);
+            tmp.add(unionSBLites);
+        }catch (Exception e) {
+            logger.severe("SP_ARCHIVE_CONTROLLER: Error doing query: "+e.toString()); 
+            e.printStackTrace();
+        }
+        return tmp;
+    }
+    
+    public Vector doQuery(String sbQuery, String pName, String piName, 
             String pType, String aType) {
         Vector tmp = new Vector();
         try {
             getMSRef();
             String[] sbs = masterScheduler.queryArchive(sbQuery,"SchedBlock");
-            String[] projs = masterScheduler.queryForProject(pName, piName, pType, aType);
+            String[] projs = masterScheduler.queryForAllProject(pName, piName, pType, aType);
             //do union now
             String[] unionSB = masterScheduler.getSBProjectUnion(sbs,projs);
             SBLite[] unionSBLites = masterScheduler.getExistingSBLite(unionSB);

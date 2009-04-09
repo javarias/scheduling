@@ -93,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.113 2009/01/30 21:25:27 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.114 2009/04/09 20:04:01 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1229,7 +1229,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       * Returns the uids of the projects that match the given search criteria
       */
     public String[] queryForProject(String projname, String piname, String type, 
-            String aType) throws InvalidOperationEx {
+            String aType, boolean manualMode) throws InvalidOperationEx {
 
         String[] results = new String[0];    
         String schema = new String("ObsProject");
@@ -1246,7 +1246,14 @@ public class ALMAMasterScheduler extends MasterScheduler
         } else {
             foo2 =new String( "prj:pI=\""+piname+"\"");
         }
-        query = query + "["+foo1+" and "+foo2+"]";
+        
+        if(manualMode){
+        	foo3 = new String("prj:manualMode=\"true\"");
+        }
+        else {
+        	foo3 = new String("prj:manualMode=\"false\"");
+        }
+        query = query + "["+foo1+" and "+foo2+" and " + foo3 + "]";
         boolean hasStart= false;
         boolean needEndBracket = false;
         if(!type.equals("All")){
@@ -1286,6 +1293,69 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         return results;
     }
+    
+    /**
+     * Returns the uids of the projects that match the given search criteria
+     */
+   public String[] queryForAllProject(String projname, String piname, String type, 
+           String aType) throws InvalidOperationEx {
+
+       String[] results = new String[0];    
+       String schema = new String("ObsProject");
+       String foo1, foo2, foo3;
+       String query =  new String("/prj:ObsProject");
+       if(projname.equals("") || projname.equals("*") || projname.contains("*")){
+           foo1=new String("prj:projectName=*");
+       } else {
+           foo1 =new String("prj:projectName=\""+projname+"\"");
+       }
+
+       if(piname.equals("") || piname.equals("*") || piname.contains("*")){
+           foo2=new String("prj:pI=*");
+       } else {
+           foo2 =new String( "prj:pI=\""+piname+"\"");
+       }
+       
+       query = query + "["+foo1+" and "+foo2+"]";
+       boolean hasStart= false;
+       boolean needEndBracket = false;
+       if(!type.equals("All")){
+           query = query + 
+               "/prj:ObsProgram/prj:ObsPlan[prj:ObsUnitSet[prj:DataProcessingParameters[@projectType=\""+type+"\"]]";
+           needEndBracket = true;
+           hasStart = true;
+       }
+       if(!aType.equals("All")){
+           if(hasStart){
+               query = query + 
+                   "[prj:ObsUnitControl[@arrayRequested=\""+aType+"\"]]";
+           } else {
+               query = query + 
+                   "/prj:ObsProgram/prj:ObsPlan[prj:ObsUnitSet[prj:ObsUnitControl[@arrayRequested=\""+aType+"\"]]";
+               needEndBracket = true;
+           }
+       }
+       if(needEndBracket){
+           query = query + "]";
+       }
+       logger.fine("Scheduling Query = "+ query);                
+       try {
+           System.out.println("ProjectQuery: "+query);
+           results = manager.archiveQuery(query, schema);
+       } catch(Exception e) {
+           e.printStackTrace();
+           results[0] = new String(e.toString());
+       }
+       if( !piname.equals("*") && piname.contains("*")){
+           //check to see if results match other part of piname
+           results = manager.getWildCardResults(results, piname, "pI");
+       }
+       if( !projname.equals("*") && projname.contains("*")){
+           //check to see if results match other part of projname
+           results = manager.getWildCardResults(results, projname, "projectName");
+       }
+       return results;
+   }
 
     public String[] getSBProjectUnion(String[] sbIds, String[] projectIds){
         return manager.getSBProjectUnion(sbIds, projectIds); 
