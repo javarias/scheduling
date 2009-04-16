@@ -34,6 +34,7 @@ import alma.Control.AntennaMode;
 import alma.Control.ArrayMonitor;
 import alma.Control.AutomaticArray;
 import alma.Control.ControlMaster;
+import alma.Control.ArrayIdentifier;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
 import alma.Control.ManualArrayMonitor;
@@ -57,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.81 2009/03/18 21:33:39 dclarke Exp $
+ * @version $Id: ALMAControl.java,v 1.82 2009/04/16 19:37:12 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -332,9 +333,13 @@ public class ALMAControl implements Control {
             for(int i=0;i < antenna.length; i++){
                 logger.fine("SCHEDULING: antenna name = "+antenna[i]);
             }
-            String arrayName="";
+            
+            //Control System will return two String from createAutomaticArray
+            // fist string is arrayName
+            // second string is arrayCompomentName
+            ArrayIdentifier arrayComb= null;
             try {
-                arrayName = control_system.createAutomaticArray(antenna);
+                arrayComb = control_system.createAutomaticArray(antenna);
             }catch(Exception e) {
                 e.printStackTrace();
                 logger.logToAudience(Level.WARNING,
@@ -345,7 +350,7 @@ public class ALMAControl implements Control {
             AutomaticArray ctrl;
             try {
                 ctrl = alma.Control.AutomaticArrayHelper.narrow(
-                    containerServices.getComponent(arrayName));
+                    containerServices.getComponent(arrayComb.arrayComponentName));
             } catch(Exception e) {
                 ctrl = null;
                 logger.logToAudience(Level.WARNING,
@@ -385,10 +390,16 @@ public class ALMAControl implements Control {
             for(int i=0; i <  antenna.length; i++){
                 logger.fine("ANTENNA: "+antenna[i]);
             }
-            String arrayName = control_system.createManualArray(antenna);
-            manualArrays.add(arrayName);
-            logger.fine("SCHEDULING: Array "+arrayName+" created with "+antenna.length+" antennas.");
-            return arrayName;
+            
+            // Control System will return two String from createManualArray
+            // fist string is arrayName
+            // second string is arrayCompomentName
+            ArrayIdentifier arrayComb= null;
+            
+            arrayComb = control_system.createManualArray(antenna);
+            manualArrays.add(arrayComb.arrayComponentName);
+            logger.fine("SCHEDULING: Array "+arrayComb.arrayComponentName+" created with "+antenna.length+" antennas.");
+            return arrayComb.arrayComponentName;
         } catch(InvalidRequest e1) {
             e1.printStackTrace();
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
