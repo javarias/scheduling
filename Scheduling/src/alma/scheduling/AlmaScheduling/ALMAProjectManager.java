@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.119 2009/04/27 16:19:59 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.120 2009/04/27 19:17:55 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1991,26 +1991,25 @@ public class ALMAProjectManager extends ProjectManager {
         return null;
     }
 
-    protected IDLEntityRef startManualModeSession(String arrayName,String sbId) throws SchedulingException {
-        IDLEntityRef refs = new IDLEntityRef();
+    protected IDLEntityRef[] startManualModeSession(String arrayName) throws SchedulingException {
+        IDLEntityRef[] refs = new IDLEntityRef[2];
         //query for uid of manual mode sb
-        //String manualArrayName = arrayName;
-        //String p_id = archive.queryForManualModeProject();
-        //Project p = pQueue.get(p_id);
-        //SB[] sbs = p.getAllSBs();
-        //if(sbs.length < 1 ){
-        //    throw new SchedulingException("SCHEDULING: Manual Mode project had not SB!");
-        //}
-        //String sbid = sbs[0].getId();
-        //refs[0] = new IDLEntityRef();
-        //refs[0].entityId = sbid;
-        //refs[0].partId = "";
-        //refs[0].entityTypeName="SchedBlock";
-        //refs[0].instanceVersion="1.0";
-        //send start session event
-        String sbid = sbId;
         String manualArrayName = arrayName;
-        refs = sendStartSessionEvent(sbid,manualArrayName);
+        String p_id = archive.queryForManualModeProject();
+        Project p = pQueue.get(p_id);
+        SB[] sbs = p.getAllSBs();
+        if(sbs.length < 1 ){
+            throw new SchedulingException("SCHEDULING: Manual Mode project had not SB!");
+        }
+        String sbid = sbs[0].getId();
+        refs[0] = new IDLEntityRef();
+        refs[0].entityId = sbid;
+        refs[0].partId = "";
+        refs[0].entityTypeName="SchedBlock";
+        refs[0].instanceVersion="1.0";
+        //send start session event
+        refs[1] = sendStartSessionEvent(sbid,manualArrayName);
+        //
         return refs;
     }
 }
