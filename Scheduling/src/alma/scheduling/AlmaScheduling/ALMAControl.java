@@ -38,7 +38,6 @@ import alma.Control.ArrayIdentifier;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
 import alma.Control.ManualArrayMonitor;
-import alma.Control.ManualArray;
 import alma.Control.ResourceId;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
@@ -59,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.83 2009/04/27 16:10:39 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.84 2009/04/27 17:44:19 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -702,31 +701,6 @@ public class ALMAControl implements Control {
     
     private ManualArrayMonitor getManualArray(String name) throws SchedulingException {
         return null;
-    }
-    
-    protected void setManualModeConfigure(String arrayName, String sbId) throws SchedulingException{
-    	ManualArray Control_ManualArray ;
-        try {
-        	Control_ManualArray = alma.Control.ManualArrayHelper.narrow(
-        			containerServices.getComponent(arrayName));
-        	
-        	IDLEntityRef sbRef = new IDLEntityRef();
-            sbRef.entityId = sbId;
-            sbRef.partId = "";
-            sbRef.entityTypeName = "SchedBlock";
-            sbRef.instanceVersion = "1.0";
-            //set the configure to Control.....
-            Control_ManualArray.configure(sbRef);
-            
-        } catch(Exception e) {
-        	Control_ManualArray = null;
-            logger.logToAudience(Level.WARNING,
-                "SCHEDULING: Got error trying to get manual array componnet.",
-                OPERATOR.value);
-            logger.severe("SCHEDULING: manual array command is null");
-            throw new SchedulingException("SCHEDULING: Error with getting ManualArrayController!");
-        }
-        
     }
     /** 
       * If you want to get an array with a given name and you don't know if its
