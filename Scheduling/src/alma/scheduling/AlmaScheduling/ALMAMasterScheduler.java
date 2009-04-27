@@ -93,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.115 2009/04/27 16:13:48 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.116 2009/04/27 18:10:15 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1560,9 +1560,9 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     ///// Method for manual mode
-    public IDLEntityRef startManualModeSession(String arrayName,String sbid) throws InvalidOperationEx {
+    public IDLEntityRef[] startManualModeSession(String arrayName) throws InvalidOperationEx {
         try {
-            return manager.startManualModeSession(arrayName,sbid);
+            return manager.startManualModeSession(arrayName);
         } catch(SchedulingException e) {
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("startManualModeSession",
@@ -1572,16 +1572,6 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         
     }
-    
-    public void setManualArrayConfigure(String arrayName,String sbid){
-    	try {
-    	control.setManualModeConfigure(arrayName,sbid);
-    	}
-    	catch (SchedulingException e) {
-    		e.printStackTrace();
-    	}
-    }
-
     ///// Methods for Commissioning_Scheduler_to_MasterScheduler Interface /////////
     public void executeCommissioningSB(String sbid, String schedulerid) 
         throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
