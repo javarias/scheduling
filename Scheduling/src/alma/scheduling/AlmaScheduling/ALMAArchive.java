@@ -50,6 +50,7 @@ import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
 import alma.entity.xmlbinding.obsproject.ObsUnitSetTChoice;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
 import alma.entity.xmlbinding.specialsb.SpecialSB;
@@ -87,7 +88,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.91 2008/09/08 22:44:29 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.92 2009/05/13 17:50:42 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -330,9 +331,8 @@ public class ALMAArchive implements Archive {
                 logger.warning("SCHEDULING: Retrieved a "+xml.entityTypeName+" when we wanted a ProjectStatus");
                 logger.warning("SCHEDULING: uid was "+ps_id+" and xml was:");
                 logger.warning(xml.xmlString);
-            } //else {
-                //logger.fine(xml.xmlString);
-            //}
+            } 
+            
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
         } catch(NullPointerException npe){
             logger.warning("SCHEDULING: Project had no Project Status. Creating one.");
@@ -503,7 +503,7 @@ public class ALMAArchive implements Archive {
                         }
                         logger.severe("SCHEDULING: "+e.toString());
                         e.printStackTrace(System.out);
-                        throw new SchedulingException (e);
+                        //throw new SchedulingException (e);
                     }
                 }
                 cursor.close();
@@ -523,9 +523,9 @@ public class ALMAArchive implements Archive {
             	e1.printStackTrace(System.out);
             }
             //throw new SchedulingException(e);
-        } catch (SchedulingException e) {
-        	logger.severe("Errors in getAllObsProjects");
-        }
+        } //catch (SchedulingException e) {
+        	//logger.severe("Errors in getAllObsProjects");
+        //}
         return projects;
 
     }
@@ -559,6 +559,17 @@ public class ALMAArchive implements Archive {
             XmlEntityStruct ps_xml = entitySerializer.serializeEntity(
                 newPS, newPS.getProjectStatusEntity());
             archOperationComp.store(ps_xml);
+            //set the ProjectStatus Ref to Obsproject
+            ProjectStatusRefT projectStatusRef = new ProjectStatusRefT();
+            projectStatusRef.setEntityTypeName("ProjectStatus");
+            projectStatusRef.setDocumentVersion("1");
+            ps_entity = newPS.getProjectStatusEntity();
+            projectStatusRef.setEntityId(ps_entity.getEntityId());
+            p.setProjectStatusRef(projectStatusRef);
+            XmlEntityStruct obsproject = entitySerializer.serializeEntity(
+            	p, p.getObsProjectEntity()	);
+            archOperationComp.store(obsproject);
+            
         } catch(EntityException ee) {
             //throw new SchedulingException(
             //       "SCHEDULING: error serializing ProjectStatus entity.");
