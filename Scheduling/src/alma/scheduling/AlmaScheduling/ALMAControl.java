@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.84 2009/04/27 17:44:19 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.85 2009/05/18 15:16:34 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -174,8 +174,8 @@ public class ALMAControl implements Control {
         IDLEntityRef sessionRef = manager.sendStartSessionEvent(sbId,arrayName);
         logger.fine("SCHEDULING: Sending BestSBs to Control!");
         logger.fine("SCHEDULING: Array being used has name = "+arrayName);
-        
-        AutomaticArray ctrl = getAutomaticArray(arrayName);
+        String arrayComponentName = "CONTROL/"+arrayName;
+        AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
             IDLEntityRef sbRef = new IDLEntityRef();
             sbRef.entityId = sbId;
@@ -232,7 +232,8 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public void stopSB(String name, String id) throws SchedulingException {
-        AutomaticArray ctrl = getAutomaticArray(name);
+    	String arrayComponentName = "CONTROL/"+name;
+        AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
             //logger.info("SCHEDULING: Stopping scheduling on array "+name);
             arraylogger.log(Level.INFO, 
@@ -272,7 +273,8 @@ public class ALMAControl implements Control {
     }
 
     public void stopSBNow(String name, String id) throws SchedulingException{
-         AutomaticArray ctrl = getAutomaticArray(name);
+    	 String arrayComponentName = "CONTROL/"+name;
+         AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
             //logger.info("SCHEDULING: Stopping scheduling on array "+name);
            arraylogger.log(Level.INFO,"SCHEDULING: Stopping scheduling on array "+name,
@@ -364,7 +366,8 @@ public class ALMAControl implements Control {
                     "SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName(),
                     OPERATOR.value);
             logger.fine("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
-            return ctrl.getArrayComponentName();
+            //return ctrl.getArrayComponentName();
+            return ctrl.getArrayName();  
         } catch (Exception e4) {
             e4.printStackTrace();
             throw new SchedulingException
@@ -399,7 +402,7 @@ public class ALMAControl implements Control {
             arrayComb = control_system.createManualArray(antenna);
             manualArrays.add(arrayComb.arrayComponentName);
             logger.fine("SCHEDULING: Array "+arrayComb.arrayComponentName+" created with "+antenna.length+" antennas.");
-            return arrayComb.arrayComponentName;
+            return arrayComb.arrayName;
         } catch(InvalidRequest e1) {
             e1.printStackTrace();
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
@@ -435,14 +438,14 @@ public class ALMAControl implements Control {
     	    logger.logToAudience(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
     	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
-	            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+	            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName().equals(name)) {
 	          	    auto_controllers.removeElementAt(i);
                     found = true;
                 }
 	        }
             if(!found){
                 for(int i=0; i < manualArrays.size(); i++){
-                    if(((String)manualArrays.elementAt(i)).equals(name)){
+                    if(((String)manualArrays.elementAt(i)).equals("CONTROL/"+name)){
                         manualArrays.removeElementAt(i);
                         found = true;
                         break;
@@ -569,7 +572,7 @@ public class ALMAControl implements Control {
             int x=0; //counter for adding to 'allInfo'
             for(int i=0; i < automaticArrays.length; i++){
                 allInfo[x] = new ArrayInfo();
-                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i].ComponentName).getArrayComponentName();
+                allInfo[x].arrayName = getAutomaticArray(automaticArrays[i].ComponentName).getArrayName();
                 //TODO need a way to see if its dynamic/interactive
                 allInfo[x].mode =  getArrayMode(allInfo[x].arrayName);//ArrayModeEnum.DYNAMIC;
                 if(getAutomaticArray(automaticArrays[i].ComponentName).isBusy()){
@@ -649,8 +652,8 @@ public class ALMAControl implements Control {
         //logger.fine("auto_controllers size:"+auto_controllers.size());
         for(int i=0; i < auto_controllers.size(); i++){
         	    //logger.fine(((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
-            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
-                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
+            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName().equals(name)) {
+                logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName());
                 
                 return (AutomaticArray)auto_controllers.elementAt(i).getArrayComp();
             }
@@ -661,7 +664,7 @@ public class ALMAControl implements Control {
     private ArrayModeEnum getArrayMode(String arrayname){
         String mode;
         for(int i=0 ; i< auto_controllers.size(); i++){
-            if(((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(arrayname)){
+            if(((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName().equals(arrayname)){
                 mode = auto_controllers.elementAt(i).getMode();
                 if(mode.equals("dynamic")){
                     return ArrayModeEnum.DYNAMIC;
@@ -690,7 +693,7 @@ public class ALMAControl implements Control {
             return;
         }
         for(int i=0; i < auto_controllers.size() ;i++){
-            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
+            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName().equals(name)) {
                 auto_controllers.removeElementAt(i);
                 return;
             }
