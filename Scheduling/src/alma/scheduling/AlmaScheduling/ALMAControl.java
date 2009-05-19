@@ -58,7 +58,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.85 2009/05/18 15:16:34 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.86 2009/05/19 17:58:32 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -651,8 +651,8 @@ public class ALMAControl implements Control {
         logger.fine("SCHEDULING: looking for array with id = "+ name);
         //logger.fine("auto_controllers size:"+auto_controllers.size());
         for(int i=0; i < auto_controllers.size(); i++){
-        	    //logger.fine(((AutomaticArrayCommand)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
-            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName().equals(name)) {
+        	    logger.fine(((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
+            if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
                 logger.fine("SCHEDULING: found array with id = "+ ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName());
                 
                 return (AutomaticArray)auto_controllers.elementAt(i).getArrayComp();
