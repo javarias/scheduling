@@ -427,6 +427,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         SBLite[] sbs = controller.getSBLites(selectedSBs);
         //pass these to queuedSBTable
         queueSBs.setRowInfo(sbs, true);
+        // add SBs into QueueSchedTabController deferred to execution
         controller.addSBs(selectedSBs);
     }
     private void removeSBsFromQueue(){
@@ -460,4 +461,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         }
         return false;
     }
+	public int getCurrentExecutionRow() {
+		return currentExecutionRow;
+	}
 }
