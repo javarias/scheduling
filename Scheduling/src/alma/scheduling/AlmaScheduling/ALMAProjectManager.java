@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.120 2009/04/27 19:17:55 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.121 2009/05/28 15:44:54 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1384,7 +1384,7 @@ public class ALMAProjectManager extends ProjectManager {
      * without starting everything up (see ATF problems in 5.0.3, 2008-06)
      * @author hsommer
      */
-    public static class ArchivePoller {
+    public class ArchivePoller {
     	
     	private final AcsLogger logger;
         private final ALMAArchive archive;
@@ -1419,8 +1419,13 @@ public class ALMAProjectManager extends ProjectManager {
 	    
 	        try {
 	            // Get all Projects, SBs and PS's from the archive
-	           // checkSBUpdates();
-	            //checkPSUpdates();
+	        	if(sbQueue.size()!=0){
+	        		checkSBUpdates();
+	        	}
+	            if(psQueue.size()!=0){
+	            checkPSUpdates();
+	            }
+	            
 	            projectList = archive.getAllProject();
 	            logger.finest("ProjectList size =  "+projectList.length);
 	            ArrayList<Project> projects = new ArrayList<Project>(projectList.length);
@@ -1525,6 +1530,7 @@ public class ALMAProjectManager extends ProjectManager {
 	                        if( sbQueue.isExists(newSB.getId()) ){
 	                            logger.finest("Sb not new");
 	                            oldSB = sbQueue.get(newSB.getId());
+	               
 	                            //check if it needs to be updated, if yes then update
 	                            if(newSB.getTimeOfUpdate().compareTo(oldSB.getTimeOfUpdate()) == 1) {
 	                                logger.finest("Sb needs updating");
@@ -1570,8 +1576,8 @@ public class ALMAProjectManager extends ProjectManager {
 	                }
 	            }
 	
-	            //checkSBUpdates();
-	            //checkPSUpdates();
+	            checkSBUpdates();
+	            checkPSUpdates();
 	        } catch(Exception e) {
 	            e.printStackTrace();
 	            throw new SchedulingException(e);
@@ -1591,7 +1597,7 @@ public class ALMAProjectManager extends ProjectManager {
       * Ask the archive for any updated SBs since the last query time
       * update any new ones in the queue.
       */
-    private void checkSBUpdates() throws SchedulingException {
+    public  void checkSBUpdates() throws SchedulingException {
         try {
             SchedBlock[] sbs = archive.queryRecentSBs();
             //logger.fine("<check SBUpdates:>"+sbs.length);            
@@ -1885,7 +1891,7 @@ public class ALMAProjectManager extends ProjectManager {
         return projectlite;
     }
 
-    protected SBQueue getSBQueue(){
+    public SBQueue getSBQueue(){
         return sbQueue;
     }
 
