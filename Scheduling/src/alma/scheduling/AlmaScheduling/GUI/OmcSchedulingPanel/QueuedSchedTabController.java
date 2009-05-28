@@ -333,6 +333,9 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             parent.setSBStatus(sbid, completion);
             //TODO: Set stop buttons to disabled if last SB in queue.
             parent.updateExecutionRow();
+            if(parent.getCurrentExecutionRow()==sbs_to_run.length){
+            	qsComp.setExecStarted(false);
+            }
             currentSB = "";
     }
     

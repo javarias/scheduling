@@ -204,6 +204,7 @@ public class ALMAQueuedScheduler
         }
     }
     
+    
     public void stopSB(String sbid){
         logger.fine("qsComp's stop sb called, execstarted = "+execStarted);
         if(execStarted){
@@ -293,5 +294,9 @@ public class ALMAQueuedScheduler
         }
 
     }  //end RunQueuedScheduling 
+
+	public void setExecStarted(boolean execStarted) {
+		this.execStarted = execStarted;
+	}
 
 }
