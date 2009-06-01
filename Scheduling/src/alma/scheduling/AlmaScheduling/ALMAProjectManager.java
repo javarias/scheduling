@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.121 2009/05/28 15:44:54 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.122 2009/06/01 22:38:43 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1419,12 +1419,12 @@ public class ALMAProjectManager extends ProjectManager {
 	    
 	        try {
 	            // Get all Projects, SBs and PS's from the archive
-	        	if(sbQueue.size()!=0){
-	        		checkSBUpdates();
-	        	}
-	            if(psQueue.size()!=0){
-	            checkPSUpdates();
-	            }
+	        	//if(sbQueue.size()!=0){
+	        	//	checkSBUpdates();
+	        	//}
+	            //if(psQueue.size()!=0){
+	            //checkPSUpdates();
+	            //}
 	            
 	            projectList = archive.getAllProject();
 	            logger.finest("ProjectList size =  "+projectList.length);
