@@ -115,7 +115,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.76 2008/12/05 15:46:31 wlin Exp $
+ * @version $Id: ProjectUtil.java,v 1.77 2009/07/02 17:30:13 wlin Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -431,7 +431,12 @@ public class ProjectUtil {
 		Program program = initialize(obs.getObsProgram().getObsPlan(), sched, 
 		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
-		project.setProgram(program);
+		if(program!=null){
+			project.setProgram(program);
+		}
+		else {
+			return null;
+		}
 		// Mark the project as ready.  (This also initializes the totals.)
         try {
         	project.setReady(new DateTime(ps.getStatus().getReadyTime()));
@@ -674,6 +679,7 @@ public class ProjectUtil {
             ExecStatusT[] execs;
             SBStatusT sbStatus=null;
             for (int i = 0; i < setMember.length; ++i) {
+            	memberSB = null;
 			    if(hasStatus){
                     execs = sbStats[i].getExecStatus();
                     sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
@@ -681,19 +687,33 @@ public class ProjectUtil {
                     try {
         		        memberSB = initialize(setMember[i],sbStatus, sched,schedUsed,project,program,now);
                     }catch(Exception e){
+                    	memberSB = null;
                         e.printStackTrace();
                     }
-                    memberSB = assignExecStatusToSB(memberSB, sbrefid, execs, sbStatus);
+                    
+                    if(memberSB!=null){
+                    	memberSB = assignExecStatusToSB(memberSB, sbrefid, execs, sbStatus);
+                    }
+                    
                 } else {
                     try {
         		        memberSB = initialize(setMember[i], null, sched,schedUsed,project,program,now);
                     }catch(Exception e){
+                    	memberSB = null;
                         e.printStackTrace();
                     }
                 }
-				program.addMember(memberSB);
+			    
+			    if(memberSB!=null){
+			    	program.addMember(memberSB);
+			    }
+			    else {
+			    	logger.warning("SCHEDULING:SB initialize Failed... ignored it... ");
+			    	return null;
+			    }
 			}
 		}
+		
         //check coz this level (already being an ObsUnitSetStatus) might have sessions 
         try {
             session = ous.getSession();
@@ -716,6 +736,7 @@ public class ProjectUtil {
 		
       } catch(Exception e) {
           e.printStackTrace();
+          return null;
       }
 	  return program;
 	}
@@ -1154,6 +1175,7 @@ public class ProjectUtil {
         }catch(Exception e){
             e.printStackTrace();    
             throw new SchedulingException(e.toString());
+            //return null;
         }
 		return sb;
 	}
@@ -1617,6 +1639,8 @@ public class ProjectUtil {
 		/***********************************
 		 * test only need to move when bug fixed
 		 */
+		
+		/* comment out in 06/16/2009 because I do not know why we need dump this out
 		try {
 		String xml;
         StringWriter writer = new StringWriter();
@@ -1628,8 +1652,8 @@ public class ProjectUtil {
 			logger.severe("SCHEDULING: Error updating ProjectStatus.");
             e.printStackTrace(System.out);
 		}
+		*/
         /******************************************/
-		
 		// Return the newly created project status.
 		return pstatus;
 		
