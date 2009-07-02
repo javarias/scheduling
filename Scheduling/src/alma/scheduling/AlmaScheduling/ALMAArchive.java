@@ -88,7 +88,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.93 2009/05/19 20:31:33 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.94 2009/07/02 17:15:47 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -259,7 +259,9 @@ public class ALMAArchive implements Archive {
                     if(sbs!=null){	
                     	Project p = projectUtil.map(obsProj[i], sbs, ps, 
                             new DateTime(System.currentTimeMillis()));
-                    	tmp_projects.add(p);
+                    	if(p!=null){
+                    		tmp_projects.add(p);
+                    	}
                     }
                 }
             }
