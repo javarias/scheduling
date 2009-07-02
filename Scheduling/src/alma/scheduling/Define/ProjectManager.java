@@ -31,7 +31,7 @@ import alma.scheduling.Scheduler.DSA.SchedulerStats;
  * The ProjectManager interface defines public methods needed by various
  * components, both real and simulated.
  * 
- * @version $Id: ProjectManager.java,v 1.10 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: ProjectManager.java,v 1.11 2009/07/02 17:31:33 wlin Exp $
  * @author Allen Farris
  */
 public interface ProjectManager {
@@ -68,7 +68,7 @@ public interface ProjectManager {
     public ProjectQueue getProjectQueue();
     public void getUpdates() throws SchedulingException;
     public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason);
-
+    public SBQueue getSBQueue();
     public void addSchedulerStatsToArchive(SchedulerStats s);
     public SchedulerStats[] getSchedulerStatsFromArchive();
 }
