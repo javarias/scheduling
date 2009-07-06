@@ -36,11 +36,12 @@ import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ProjectQueue;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
- * @version $Id: ProjectManager.java,v 1.17 2008/12/03 21:34:42 wlin Exp $
+ * @version $Id: ProjectManager.java,v 1.18 2009/07/06 18:54:35 wlin Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -139,6 +140,11 @@ public class ProjectManager implements Runnable,
     }
     public void archiveReleaseComponents()  throws SchedulingException {
     }
+
+    public SBQueue getSBQueue() {
+	return null;
+    }
+
     public SB[] getSBsForProject(String projId) throws SchedulingException {
         return null;
     }

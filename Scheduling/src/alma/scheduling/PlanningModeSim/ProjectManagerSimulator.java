@@ -27,6 +27,7 @@
 package alma.scheduling.PlanningModeSim;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.ExecBlock;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.DateTime;
@@ -175,6 +176,11 @@ public class ProjectManagerSimulator
     public Object archiveRetrieve(String uid) throws SchedulingException{
         return null;
     }
+
+    public SBQueue getSBQueue() {
+	return null;
+    }
+
     public void archiveReleaseComponents() throws SchedulingException {
     }
     public SB[] getSBsForProject(String projId) throws SchedulingException{
