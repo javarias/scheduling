@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.122 2009/06/01 22:38:43 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.123 2009/07/20 21:20:54 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1643,14 +1643,16 @@ public class ALMAProjectManager extends ProjectManager {
             	
                 ProjectStatus p = psQueue.get(ps[i].getProjectStatusEntity().getEntityId());
                 if(p == null){
-                    throw new SchedulingException (
-                            "SCHEDULING: Trying to update a ProjectStatus which isn't in the queue!");
+                	logger.warning("SCHEDULING: Problem checking for ProjectStatus updates");
+                	logger.warning("new projectStatus UID:"+ps[i].getProjectStatusEntity().getEntityId());
+                    //throw new SchedulingException (
+                    //        "SCHEDULING: Trying to update a ProjectStatus which isn't in the queue!");
                 }
                 psQueue.replace(p);
             }
         } catch(SchedulingException e){
             logger.warning("SCHEDULING: Problem checking for ProjectStatus updates");
-            throw e;
+            //throw e;
         }
     }
 
