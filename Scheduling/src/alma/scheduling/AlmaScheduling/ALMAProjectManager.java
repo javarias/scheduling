@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.123 2009/07/20 21:20:54 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.124 2009/07/21 14:59:28 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -1576,8 +1576,8 @@ public class ALMAProjectManager extends ProjectManager {
 	                }
 	            }
 	
-	            checkSBUpdates();
-	            checkPSUpdates();
+	            //checkSBUpdates();
+	            //checkPSUpdates();
 	        } catch(Exception e) {
 	            e.printStackTrace();
 	            throw new SchedulingException(e);
