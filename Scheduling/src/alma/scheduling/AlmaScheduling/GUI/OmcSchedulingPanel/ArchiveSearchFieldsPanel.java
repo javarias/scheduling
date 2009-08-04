@@ -53,7 +53,9 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     private JPanel parent;
     private ArchiveSearchController controller;
     private boolean searchingOnProject;
-    private JPanel northPanel; 
+    private JPanel northPanel;
+    private String mode;
+    private boolean manualMode;
     
     public ArchiveSearchFieldsPanel(){
         setLayout(new BorderLayout());
@@ -65,6 +67,30 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         controller = null;
         connectedToALMA= false;
         searchingOnProject=true;
+        mode = "searchMode";
+    }
+    
+    public ArchiveSearchFieldsPanel(String arrayMode,boolean manualMode){
+        setLayout(new BorderLayout());
+        northPanel = new JPanel(new BorderLayout());
+        createTextFields();
+        createCheckBoxes();//need to do this 2nd coz other fields will be null when used
+        createArrayChoice();
+        add(northPanel, BorderLayout.NORTH);
+        controller = null;
+        connectedToALMA= false;
+        searchingOnProject=true;
+        mode = arrayMode;
+        this.manualMode =  manualMode;
+    }
+    /**
+     * design for manual mode Scheduling
+     * @param projectNamePrefix The prefix of the projectName for the purpose of search archive 
+     * @return String projNameTF.getText() the prefix string of the porjectname 
+     */
+    public String setProjectNamePrefix(String projectNamePrefix) {
+    	projNameTF.setText(projectNamePrefix);
+    	return projNameTF.getText();
     }
 
     public void setCS(PluginContainerServices cs) {
@@ -84,6 +110,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             ((InteractiveSchedTab)parent).setSearchMode(m);
         } else if(parent.getClass().getName().contains("QueuedSchedTab")){
             ((QueuedSchedTab)parent).setSearchMode(m);
+        } else if(parent.getClass().getName().contains("ManualArrayTab")){
+            ((ManualArrayTab)parent).setSearchMode(m);
         }
     }
 
@@ -232,7 +260,13 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                     return;     
                 }
                 doClearPreviousSearch();
-                doSearch();
+                
+                if(mode.equals("searchMode")) {
+                	doSearch();
+                }
+                else if(mode.equals("arrayMode")) {
+                	doSearch(manualMode);
+                }
             }
         });
         searchB.setToolTipText("Click here to search archive.");
@@ -290,6 +324,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             ((InteractiveSchedTab)parent).clearTables();
         } else if(name.contains("QueuedSchedTab")){
             ((QueuedSchedTab)parent).clearTables();
+        } else if(name.contains("ManualArrayTab")){
+            ((ManualArrayTab)parent).clearTables();
         }
     }
 
@@ -330,6 +366,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             ((InteractiveSchedTab)parent).updateSBView(results);
         } else if(name.contains("QueuedSchedTab")){
             ((QueuedSchedTab)parent).updateSBView(results);
+        } else if(name.contains("ManualArrayTab")){
+            ((ManualArrayTab)parent).updateSBView(results);
         }
     }
     
@@ -345,7 +383,15 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             ((InteractiveSchedTab)parent).updateProjectView(results);
         } else if(name.contains("QueuedSchedTab")){
             ((QueuedSchedTab)parent).updateProjectView(results);
+        } else if(name.contains("ManualArrayTab")){
+            ((ManualArrayTab)parent).updateProjectView(results);
         }
+    }
+
+    public void doSearch(boolean manualMode) {
+        SPSearchArchiveThread foo = new SPSearchArchiveThread(manualMode);
+        Thread t = controller.getCS().getThreadFactory().newThread(foo);
+        t.start();
     }
 
     public void doSearch() {
@@ -358,8 +404,16 @@ public class ArchiveSearchFieldsPanel extends JPanel {
     // Search Thread
     //////////////////////////////////////
     class SPSearchArchiveThread implements Runnable {
-        public SPSearchArchiveThread (){
+    	boolean manualMode;
+    	boolean searchAllProject = false;
+        public SPSearchArchiveThread (boolean manualModeProject){
+        	this.manualMode = manualModeProject;
         }
+        
+        public SPSearchArchiveThread (){
+        	this.searchAllProject =true;
+        }
+        
         public void run(){
             String pi = piNameTF.getText();
             String pName = projNameTF.getText();
@@ -369,8 +423,14 @@ public class ArchiveSearchFieldsPanel extends JPanel {
             String sbquery = makeSBQuery();
             //returns a vector, first item will be matching projects
             //second item will be matching sbs.
-            Vector res = controller.doQuery(sbquery, pName, pi, type, array);
-            javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
+            if(searchAllProject){
+            	Vector res = controller.doQuery(sbquery, pName, pi, type, array);
+            	javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
+            } else {
+            	Vector res = controller.doQuery(sbquery, pName, pi, type, array,manualMode);
+            	javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
+            }
+            
             
         }
     }
