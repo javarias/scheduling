@@ -213,7 +213,7 @@ public class CreateArrayController extends SchedulingPanelController {
             getControlRef();
             antennas= control.getAvailableAntennas();
             logger.fine("Got antennas from CONTROL:");
-            releaseControlRef();
+            //releaseControlRef();
             String tmpName;
             //for now create an array of 'offline' entries
             //get online ones and update the array.
