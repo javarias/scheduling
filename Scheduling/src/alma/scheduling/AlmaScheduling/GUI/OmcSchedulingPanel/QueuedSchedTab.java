@@ -63,7 +63,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton stopQB;
     private JButton abortQB;
     private JButton abortB;
-    private int currentExecutionRow;
+    private int currentExecutionRow=-1;
     private int archivingRow;
     
     
@@ -90,7 +90,9 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         doInitialSearch();
     }
     private void doInitialSearch(){
-        archiveSearchPanel.doSearch();
+    	boolean manualMode = false;
+        archiveSearchPanel.doSearch(manualMode);
+
     }
     public void selectFirstResult(){
         projects.showFirstProject();
@@ -154,7 +156,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 
     private void createArchivePanel() {
-        archiveSearchPanel = new ArchiveSearchFieldsPanel();
+        archiveSearchPanel = new ArchiveSearchFieldsPanel("arrayMode",false);
         archiveSearchPanel.setOwner(this);
         archiveSearchPanel.connected(true);
     }
@@ -454,14 +456,17 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
       */
     private boolean isSelectedSBRunning(){
         String[] ids = queueSBs.getSelectedSBs();
+        int[] indices = queueSBs.getIndicesOfSBsToRemove();
         for(int i=0;i < ids.length;i++){
-            if(ids[i].equals(controller.getCurrentSB())){
+            if(ids[i].equals(controller.getCurrentSB()) && (indices[i]==currentExecutionRow)  ){
                 return true;
             }
         }
         return false;
     }
+
 	public int getCurrentExecutionRow() {
 		return currentExecutionRow;
 	}
+
 }
