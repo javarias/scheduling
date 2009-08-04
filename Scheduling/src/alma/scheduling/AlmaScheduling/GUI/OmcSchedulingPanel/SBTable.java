@@ -680,7 +680,9 @@ public class SBTable extends JTable {
                 ((InteractiveSchedTab)parent).updateProjectView(p);
             } else if(par.contains("QueuedSchedTab")){
                 ((QueuedSchedTab)parent).updateProjectView(p);
-            }
+            } else if(par.contains("ManualArrayTab")){
+                ((ManualArrayTab)parent).updateProjectView(p);
+            } 
         }
     }
     class UpdateSBRows implements Runnable {

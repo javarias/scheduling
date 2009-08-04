@@ -88,7 +88,8 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     
     protected void doArchiveSearch() {
-        archiveSearchPanel.doSearch();
+    	boolean manualMode = false;
+        archiveSearchPanel.doSearch(manualMode);
     }
     protected void selectFirstResult(){
         projects.showFirstProject();
@@ -165,7 +166,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
       * search by project or by sb.
       */
     private void createArchivePanel() {
-        archiveSearchPanel = new ArchiveSearchFieldsPanel();
+        archiveSearchPanel = new ArchiveSearchFieldsPanel("arrayMode",false);
         archiveSearchPanel.setOwner(this);
         archiveSearchPanel.connected(true);
     }

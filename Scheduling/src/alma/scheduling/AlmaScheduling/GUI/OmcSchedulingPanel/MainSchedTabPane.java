@@ -106,7 +106,7 @@ public class MainSchedTabPane extends JTabbedPane {
         });
     }
     
-    public void secondSetup(PluginContainerServices cs){
+    public Boolean secondSetup(PluginContainerServices cs){
         container = cs;
         controller.setup(cs);
         //logger = new ALMASchedLogger(cs.getLogger());
@@ -130,6 +130,8 @@ public class MainSchedTabPane extends JTabbedPane {
             e.printStackTrace();
             logger.warning("SCHEDULING_PANEL: Problem getting NC consumer for control system channel, won't see existing arrays");
         }
+        
+        return true;
     }
     
     public void receive(CreatedAutomaticArrayEvent event) {

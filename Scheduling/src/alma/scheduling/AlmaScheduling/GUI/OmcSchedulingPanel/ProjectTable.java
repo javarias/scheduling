@@ -222,6 +222,8 @@ public class ProjectTable extends JTable {
             ((InteractiveSchedTab)parent).updateSBView(sbs);
         } else if(par.contains("QueuedSchedTab")){
             ((QueuedSchedTab)parent).updateSBView(sbs);
+        }  else if(par.contains("ManualArrayTab")){
+            ((ManualArrayTab)parent).updateSBView(sbs);
         }
     }
 

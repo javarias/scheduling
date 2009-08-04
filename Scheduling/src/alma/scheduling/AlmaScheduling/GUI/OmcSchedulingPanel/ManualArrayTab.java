@@ -24,17 +24,25 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.TitledBorder;
+
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
+
 
 public class ManualArrayTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
     //private String schedulerName;
@@ -45,13 +53,18 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     private JPanel mainPanel;
     private JPanel topPanel;
     private JPanel middlePanel;
-    private JButton createConsoleB;
+    private JButton setupManualArrayB;
     private JButton destroyArrayB;
     private JLabel arrayStatusDisplay;
+    private ArchiveSearchFieldsPanel archiveSearchPanel;
+    private SBTable sbs;
+    private ProjectTable projects; 
+    private boolean searchingOnProject; 
 
     public ManualArrayTab(PluginContainerServices cs, String aName){
         super();
         super.onlineSetup(cs);
+        searchingOnProject=true;
         arrayName = aName;
         controller = new ManualArrayTabController(cs, arrayName, this);
         controller.setArrayInUse(aName);
@@ -59,7 +72,22 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
         title = arrayName+" (Manual)";
         setTitle(title);
         createLayout();
+        archiveSearchPanel.setCS(container);
+        projects.setCS(container);
+        sbs.setCS(container);
         setEnable(true);
+        doArchiveSearch();
+    }
+    
+    protected void doArchiveSearch() {
+    	//archiveSearchPanel.setProjectNamePrefix("*");
+    	boolean manualMode = true;
+        archiveSearchPanel.doSearch(manualMode);
+    }
+    
+    protected void selectFirstResult(){
+        projects.showFirstProject();
+      
     }
     
     private void createLayout(){
@@ -80,35 +108,86 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     }
 
     private void createTopPanel(){
-        topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        topPanel = new JPanel(new BorderLayout());
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JLabel arrayStatusL = new JLabel("Array Status =");
         arrayStatusDisplay = new JLabel(controller.getArrayStatus());
-        topPanel.add(arrayStatusL);
-        topPanel.add(arrayStatusDisplay);
+        createArchivePanel();
+        p.add(arrayStatusL);
+        p.add(arrayStatusDisplay);
+        topPanel.add(p,BorderLayout.NORTH);
+        topPanel.add(archiveSearchPanel,BorderLayout.CENTER);
     }
+    
+    /**
+     * Top panel contains check boxes for determining if we
+     * search by project or by sb.
+     */
+   private void createArchivePanel() {
+       archiveSearchPanel = new ArchiveSearchFieldsPanel("arrayMode",true);
+       //archiveSearchPanel.setProjectNamePrefix(ProjectNamePrefix_);
+       archiveSearchPanel.setOwner(this);
+       archiveSearchPanel.connected(true);
+       
+   }
+   
     /**
       * Middle panel contains he search text boxes and the buttons.
       */
     private void createMiddlePanel() {
-        middlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        createConsoleB = new JButton("Create CCL Console");
-        createConsoleB.addActionListener(new ActionListener() {
+        middlePanel = new JPanel(new GridLayout(2,2));
+        projects = new ProjectTable(new Dimension(150,75));
+        projects.setOwner(this);
+        JScrollPane projectPane = new JScrollPane(projects,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        projectPane.setBorder(new TitledBorder("Projects Found"));
+        middlePanel.add(projectPane);
+
+        //first row: right hand side cell: sb table & buttons
+        JPanel sbPanel = new JPanel(new BorderLayout());
+        sbs = new SBTable(true, new Dimension(150,60));
+        sbs.setOwner(this);
+        JScrollPane sbPane = new JScrollPane(sbs,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        sbPane.setBorder(new TitledBorder("SBs Found"));
+        sbPanel.add(sbPane,BorderLayout.CENTER);
+        
+        setupManualArrayB = new JButton("Setup Manual Mode");
+        setupManualArrayB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
-                    doCreateConsoleButton();
+                    //doCreateConsoleButton();
+                    doSetupManualModeButton();
                 }
         });
+        
         destroyArrayB = new JButton("Destroy Array");
         destroyArrayB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
                     doDestroyButton();
                 }
         });
-        middlePanel.add(createConsoleB);
-        middlePanel.add(destroyArrayB);
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));   
+        buttons.add(setupManualArrayB);
+        buttons.add(destroyArrayB);
+        sbPanel.add(buttons, BorderLayout.SOUTH);
+        middlePanel.add(sbPanel);
+        
+        middlePanel.add(projects.getProjectInfoView());
+
+        //second row: right hand cell = sb info textarea
+         middlePanel.add(sbs.getSBInfoView());
     }
 
     private void doCreateConsoleButton(){
         CreateCCLConsoleThread c = new CreateCCLConsoleThread();
+        Thread t  = container.getThreadFactory().newThread(c);
+        t.start();
+    }
+    
+    private void doSetupManualModeButton() {
+    	SetupManualModeThread c = new SetupManualModeThread();
         Thread t  = container.getThreadFactory().newThread(c);
         t.start();
     }
@@ -124,12 +203,41 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
       */
     public void setEnable(boolean b) {
         destroyArrayB.setEnabled(b);
-        createConsoleB.setEnabled(b);
+        setupManualArrayB.setEnabled(b);
+        archiveSearchPanel.setPanelEnabled(b);
         repaint();
     }
+    
+    /**
+    *
+    */
+    protected void setSearchMode(boolean b) {
+    	searchingOnProject = b;
+    	projects.setSearchMode(b);
+    	sbs.setSearchMode(b);
+    }
+    
+    protected void updateSBView(SBLite[] sblites){
+        sbs.setRowInfo(sblites, false);
+        sbs.selectFirstSB();
+    }
+    
+    protected void updateSBInfo(String id) {
+        sbs.showSelectedSBDetails(id);
+    }
 
+    
+    protected void clearTables() {
+        sbs.clear();
+        projects.clear();
+    }
+  
+    /**
+     * need to check later ....
+     */
     public String getSchedulerName(){
         return "No scheduler";
+        //return controller.getSchedulerName();
     }
     
     public String getArrayName() {
@@ -142,6 +250,21 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
     
     public void exit(){
     }
+    
+    public void closeExecutionWaitingThing(){
+
+        Component[] comps1 = middlePanel.getComponents();
+        //sbPanel
+        Component[] comps2 = ((JPanel)comps1[1]).getComponents();
+        JPanel buttons = (JPanel)comps2[1];
+        buttons.removeAll();
+        buttons.add(setupManualArrayB);
+        buttons.add(destroyArrayB);
+        setEnabled(false);
+        buttons.revalidate();
+        validate();
+
+}
   
     protected void updateArrayStatus() {
         String stat = controller.getArrayStatus();
@@ -152,11 +275,48 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
         arrayStatusDisplay.validate();
         revalidate();
     }
+    
+    protected void updateProjectView(ProjectLite[] projectLites) {
+    	/*
+    	Vector<ProjectLite> tempProjectLiteVector = new Vector<ProjectLite>();
+    	ProjectLite[] tempProjectLite;
+    	ProjectLite temprow;
+    	for(int i=0;i<projectLites.length;i++){
+    		temprow = projectLites[i];
+    		if(temprow.projectName.startsWith(ProjectNamePrefix_)){
+    			tempProjectLiteVector.add(temprow);
+    		}
+    	}
+    	tempProjectLite = new ProjectLite[tempProjectLiteVector.size()];
+    	tempProjectLite = tempProjectLiteVector.toArray(tempProjectLite);
+        //projects.setRowInfo(projectLites);
+    	projects.setRowInfo(tempProjectLite);
+    	archiveSearchPanel.setProjectNamePrefix(ProjectNamePrefix_);
+    	*/
+    	projects.setRowInfo(projectLites);
+    }
+    
+    
+////////////////////////////////////
+    public void start() throws Exception {
+     //   super.start();
+        validate();
+    }
         
     public void stop() throws Exception {
         super.stop();
         exit();
     }
+    
+    protected void setSBStatus(String sb, String status){
+        sbs.setSBExecStatus(sb, status);
+        if(status.equals("RUNNING")){
+            setEnable(false);
+        } else {
+            setEnable(true);
+        }
+    }
+    
 
     class CreateCCLConsoleThread implements Runnable {
         public CreateCCLConsoleThread (){
@@ -168,6 +328,32 @@ public class ManualArrayTab extends SchedulingPanelGeneralPanel implements Sched
             } else {
                 //inform error happened
             }
+        }
+    }
+    
+    class SetupManualModeThread implements Runnable {
+        public SetupManualModeThread (){
+        }
+        public void run() {
+        	 try {
+                 String sbId =sbs.returnSelectedSBId();
+                 if(sbId.equals("You can only execute one at a time")){
+                     showErrorPopup(sbId, "executeSB");
+                     return;
+                 } else if (sbId.equals( "You must selected one SB!")){
+                     showErrorPopup(sbId, "executeSB");
+                     return;
+                 }
+
+                 controller.setupManualArrayConfigure(sbId);
+                 //check if a sb has been selected.
+        	 }catch(Exception e){
+                 e.printStackTrace();
+                 logger.severe("SCHEDULING_PANEL: Error starting a SB");
+                 showErrorPopup(e.toString()+", "+e.getMessage(), "executeSB");
+                 
+             }
+		
         }
     }
     
