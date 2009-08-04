@@ -38,6 +38,7 @@ import alma.Control.ArrayIdentifier;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
 import alma.Control.ManualArrayMonitor;
+import alma.Control.ManualArray;
 import alma.Control.ResourceId;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
@@ -58,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.86 2009/05/19 17:58:32 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.87 2009/08/04 20:33:25 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -366,8 +367,8 @@ public class ALMAControl implements Control {
                     "SCHEDULING: Scheduling created automatic array = "+ ctrl.getArrayComponentName(),
                     OPERATOR.value);
             logger.fine("SCHEDULING: "+ctrl.getArrayComponentName()+" has "+antenna.length+" antennas");
-            //return ctrl.getArrayComponentName();
             return ctrl.getArrayName();  
+
         } catch (Exception e4) {
             e4.printStackTrace();
             throw new SchedulingException
@@ -403,6 +404,7 @@ public class ALMAControl implements Control {
             manualArrays.add(arrayComb.arrayComponentName);
             logger.fine("SCHEDULING: Array "+arrayComb.arrayComponentName+" created with "+antenna.length+" antennas.");
             return arrayComb.arrayName;
+
         } catch(InvalidRequest e1) {
             e1.printStackTrace();
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
@@ -624,7 +626,7 @@ public class ALMAControl implements Control {
             return tmp;
             */
             return control_system.getAvailableAntennas();
-        } catch(InaccessibleException e1) {
+        }  catch (InaccessibleException e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
@@ -787,6 +789,33 @@ public class ALMAControl implements Control {
             throw new SchedulingException(e2);
         }
     }
+    
+    protected void setManualModeConfigure(String arrayName, String sbId) throws SchedulingException{
+    	ManualArray Control_ManualArray ;
+        try {
+        	Control_ManualArray = alma.Control.ManualArrayHelper.narrow(
+        			containerServices.getComponent(arrayName));
+        	
+        	IDLEntityRef sbRef = new IDLEntityRef();
+            sbRef.entityId = sbId;
+            sbRef.partId = "";
+            sbRef.entityTypeName = "SchedBlock";
+            sbRef.instanceVersion = "1.0";
+            //set the configure to Control.....
+            Control_ManualArray.configure(sbRef);
+            
+        } catch(Exception e) {
+        	Control_ManualArray = null;
+            logger.logToAudience(Level.WARNING,
+                "SCHEDULING: Got error trying to get manual array componnet.",
+                OPERATOR.value);
+            logger.severe("SCHEDULING: manual array command is null");
+            throw new SchedulingException("SCHEDULING: Error with getting ManualArrayController!");
+        }
+        
+    }
+    
+    
 
     /**
       * release control comp

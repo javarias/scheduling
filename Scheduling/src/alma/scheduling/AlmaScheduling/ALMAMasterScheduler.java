@@ -93,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.116 2009/04/27 18:10:15 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.117 2009/08/04 20:33:08 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1042,6 +1042,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 name = control.createManualArray(antennaIdList);
+                logger.logToAudience(Level.INFO, "create manual array with name:"+name, OPERATOR.value);
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("manual");
             } else if(schedulingMode == ArrayModeEnum.DYNAMIC){
@@ -1092,6 +1093,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     OPERATOR.value);
         }
         schedModeForArray.put(name, schedulingMode);
+        
         return name;
     }
 
@@ -1560,9 +1562,9 @@ public class ALMAMasterScheduler extends MasterScheduler
     }
 
     ///// Method for manual mode
-    public IDLEntityRef[] startManualModeSession(String arrayName) throws InvalidOperationEx {
+    public IDLEntityRef startManualModeSession(String arrayName,String sbid) throws InvalidOperationEx {
         try {
-            return manager.startManualModeSession(arrayName);
+            return manager.startManualModeSession(arrayName,sbid);
         } catch(SchedulingException e) {
             e.printStackTrace();
             InvalidOperation e1 = new InvalidOperation("startManualModeSession",
@@ -1572,6 +1574,16 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         
     }
+    
+    public void setManualArrayConfigure(String arrayName,String sbid){
+    	try {
+    	control.setManualModeConfigure(arrayName,sbid);
+    	}
+    	catch (SchedulingException e) {
+    		e.printStackTrace();
+    	}
+    }
+    
     ///// Methods for Commissioning_Scheduler_to_MasterScheduler Interface /////////
     public void executeCommissioningSB(String sbid, String schedulerid) 
         throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
@@ -1599,6 +1611,16 @@ public class ALMAMasterScheduler extends MasterScheduler
     public ArrayModeEnum getSchedulerModeForArray(String arrayname) 
         throws InvalidOperationEx {
         // TODO check to see if array exists, if not throw exception
+    	logger.info("ALMAMasteScheduler.getSchedulerModeForArray.arrayname:"+arrayname);
+    	logger.info("array has map is "+schedModeForArray.size()+" array");
+    	Set keys = schedModeForArray.keySet();
+    	Iterator keyIter = keys.iterator();
+    	while(keyIter.hasNext()) {
+    		String keyName = (String)keyIter.next();
+    		ArrayModeEnum arrayMode = schedModeForArray.get(keyName);
+    		logger.info("arrayname:"+keyName+ "for mode "+arrayMode.toString());
+    	}
+    	
         return (ArrayModeEnum)schedModeForArray.get(arrayname);
     }
     
