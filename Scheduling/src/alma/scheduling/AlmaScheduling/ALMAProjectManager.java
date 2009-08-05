@@ -70,7 +70,7 @@ import alma.scheduling.ObsProjectManager.ProjectManager;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.125 2009/08/04 20:52:16 wlin Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.126 2009/08/05 00:24:07 wlin Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
     //The container services
@@ -2000,7 +2000,7 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     protected IDLEntityRef startManualModeSession(String arrayName,String sbId) throws SchedulingException {
-        IDLEntityRef[] refs = new IDLEntityRef[2];
+        IDLEntityRef refs = new IDLEntityRef();
         //query for uid of manual mode sb
         //String manualArrayName = arrayName;
         //String p_id = archive.queryForManualModeProject();
