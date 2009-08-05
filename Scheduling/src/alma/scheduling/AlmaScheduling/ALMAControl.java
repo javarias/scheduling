@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.87 2009/08/04 20:33:25 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.88 2009/08/05 20:03:50 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -340,9 +340,16 @@ public class ALMAControl implements Control {
             //Control System will return two String from createAutomaticArray
             // fist string is arrayName
             // second string is arrayCompomentName
+            
             ArrayIdentifier arrayComb= null;
             try {
-                arrayComb = control_system.createAutomaticArray(antenna);
+            	
+            	// here I put a dummy code here waiting GUI ready...
+                String[] photonicResourceNameSeq = control_system.getAvailablePhotonicReferences();
+                photonicResourceNameSeq = new String[0];
+                // End of dummpy code
+                
+                arrayComb = control_system.createAutomaticArray(antenna,photonicResourceNameSeq);
             }catch(Exception e) {
                 e.printStackTrace();
                 logger.logToAudience(Level.WARNING,
@@ -400,7 +407,12 @@ public class ALMAControl implements Control {
             // second string is arrayCompomentName
             ArrayIdentifier arrayComb= null;
             
-            arrayComb = control_system.createManualArray(antenna);
+            // here I put a dummy code here waiting GUI ready...
+            String[] photonicResourceNameSeq = control_system.getAvailablePhotonicReferences();
+            photonicResourceNameSeq = new String[0];
+            // End of dummpy code
+            
+            arrayComb = control_system.createManualArray(antenna,photonicResourceNameSeq);
             manualArrays.add(arrayComb.arrayComponentName);
             logger.fine("SCHEDULING: Array "+arrayComb.arrayComponentName+" created with "+antenna.length+" antennas.");
             return arrayComb.arrayName;
@@ -416,7 +428,6 @@ public class ALMAControl implements Control {
             throw new SchedulingException
                 ("SCHEDULING: Control error: "+ e1.toString());
         } catch(InaccessibleException e2) {
-        	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
