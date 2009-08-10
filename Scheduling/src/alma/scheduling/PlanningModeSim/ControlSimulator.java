@@ -26,24 +26,22 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.scheduling.PlanningModeSim.Define.SimulationException;
-
-import alma.scheduling.Define.Date;
-import alma.scheduling.Define.Time;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.LiteSB;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.ExecBlock;
-import alma.scheduling.Define.Control;
-import alma.scheduling.Define.Status;
-import alma.scheduling.Define.SchedulingException;
+import java.util.logging.Level;
 
 import alma.scheduling.Define.Antenna;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Control;
+import alma.scheduling.Define.Date;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.LiteSB;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Subarray;
-
-import java.util.logging.Level;
+import alma.scheduling.Define.Time;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 /**
  * Description 
@@ -78,6 +76,10 @@ public class ControlSimulator extends BasicComponent implements Control {
 	private void error(String message) throws SchedulingException {
 		logger.severe("Control.error " + message);
 		throw new SchedulingException("ControlSimulator " + Level.SEVERE + " " + message);
+	}
+	
+	public String[] getAvailablePhotonicReferences() throws SchedulingException {
+		throw new SchedulingException("can not get the availablePhotonics " + Level.SEVERE + " ");
 	}
 
 	public void initialize() throws SimulationException {
@@ -120,7 +122,7 @@ public class ControlSimulator extends BasicComponent implements Control {
 		return null;
 	}
 
-	public String createArray(String[] antenna, String mode) throws SchedulingException {
+	public String createArray(String[] antenna, String[] photonics,String mode) throws SchedulingException {
 		Antenna x = null;
 		for (int i = 0; i < antenna.length; ++i) {
 			x = getAntenna(antenna[i]);

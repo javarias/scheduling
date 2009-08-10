@@ -93,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.117 2009/08/04 20:33:08 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.118 2009/08/10 21:17:16 wlin Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1027,7 +1027,7 @@ public class ALMAMasterScheduler extends MasterScheduler
       * @return String
       * @throws InvalidOperation
       */
-    public String createArray(String[] antennaIdList, ArrayModeEnum schedulingMode)
+    public String createArray(String[] antennaIdList, String[] phothnicsChoice,ArrayModeEnum schedulingMode)
         throws InvalidOperationEx {
             
         Subarray a =null;
@@ -1041,7 +1041,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg =logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                name = control.createManualArray(antennaIdList);
+                name = control.createManualArray(antennaIdList,phothnicsChoice);
                 logger.logToAudience(Level.INFO, "create manual array with name:"+name, OPERATOR.value);
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("manual");
@@ -1052,7 +1052,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
-                name = control.createArray(antennaIdList, "dynamic");
+                name = control.createArray(antennaIdList, phothnicsChoice,"dynamic");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("dynamic");
             } else if(schedulingMode == ArrayModeEnum.QUEUED){
@@ -1062,7 +1062,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
-                name = control.createArray(antennaIdList, "queued");
+                name = control.createArray(antennaIdList, phothnicsChoice,"queued");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("queued");
             } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
@@ -1072,7 +1072,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
-                name = control.createArray(antennaIdList, "interactive");
+                name = control.createArray(antennaIdList, phothnicsChoice,"interactive");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("interactive");
             }

@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.88 2009/08/05 20:03:50 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.89 2009/08/10 21:16:57 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -317,7 +317,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException If antenna is null or contains nothing an 
      *                             exception is thrown.
      */
-    public String createArray(String[] antenna, String mode)
+    public String createArray(String[] antenna, String[] phothnicsChoice,String mode)
         throws SchedulingException {
 
         if(antenna == null || antenna.length == 0) {
@@ -384,7 +384,7 @@ public class ALMAControl implements Control {
         }
     }
 
-    public String createManualArray(String[] antenna) throws SchedulingException {
+    public String createManualArray(String[] antenna,String[] phothnicsChoice) throws SchedulingException {
         if(antenna == null || antenna.length==0){
             throw new SchedulingException
                 ("SCHEDULING: Cannot create an array with out any antennas!");
