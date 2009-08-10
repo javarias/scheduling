@@ -29,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import alma.Control.ControlMaster;
+import alma.Control.InaccessibleException;
 import alma.TMCDB.TMCDBComponent;
 import alma.TMCDB.TMCDBComponentHelper;
 import alma.TMCDB_IDL.StartupAntennaIDL;
@@ -197,9 +198,21 @@ public class CreateArrayController extends SchedulingPanelController {
         allEntries[2] = entriesTP;
         return allEntries;
     }
+    
     public ChessboardEntry[][] getAntennasForOfflineChessboards(){
         createOfflineChessboards();
         return allEntries;
+    }
+    
+    public String[] getAvailableCLOPhotonics() {
+    	String[] availablePhotonics=null;
+    	try {
+    		availablePhotonics = control.getAvailablePhotonicReferences();
+    	}
+    	catch (InaccessibleException e) {
+    		
+    	}
+    	return availablePhotonics;
     }
 
     public void resetChessboardToOffline() {
@@ -229,7 +242,7 @@ public class CreateArrayController extends SchedulingPanelController {
         return cbeNames;
     }
     
-    public String createArray(String arrayMode, ChessboardEntry[] cbEntries) 
+    public String createArray(String arrayMode, ChessboardEntry[] cbEntries,String[] phothnicsChoice) 
         throws SchedulingException 
     {
         String[] antennas = new String[cbEntries.length];
@@ -256,16 +269,16 @@ public class CreateArrayController extends SchedulingPanelController {
         try {
             if(arrayMode.toLowerCase().equals("dynamic")){
                 arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.DYNAMIC);
+                        antennas,phothnicsChoice,ArrayModeEnum.DYNAMIC);
             } else if(arrayMode.toLowerCase().equals("interactive")){
                 arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.INTERACTIVE);
+                        antennas,phothnicsChoice,ArrayModeEnum.INTERACTIVE);
             } else if(arrayMode.toLowerCase().equals("queued")) {
                 arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.QUEUED);
+                        antennas,phothnicsChoice,ArrayModeEnum.QUEUED);
             } else if(arrayMode.toLowerCase().equals("manual")){
                 arrayName = masterScheduler.createArray(
-                        antennas,ArrayModeEnum.MANUAL);
+                        antennas,phothnicsChoice,ArrayModeEnum.MANUAL);
             }
         } catch(Exception e) {
             releaseMSRef();
