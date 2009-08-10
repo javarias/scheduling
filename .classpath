@@ -28,5 +28,8 @@
 	<classpathentry kind="var" path="INTROOT/lib/asdm.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/DataCapture.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/archive_xmlstore_if.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TMCDBComponent.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TMCDBComponentImpl.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/TMCDB_IDL.jar"/>
 	<classpathentry kind="output" path="Scheduling/object/schedulingComp"/>
 </classpath>
