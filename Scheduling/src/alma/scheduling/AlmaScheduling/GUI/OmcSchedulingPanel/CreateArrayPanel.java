@@ -213,9 +213,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	group = new ButtonGroup();
     	availablePhotonics = new JRadioButton[6];
     	LOActionListener radioButtonEvent = new LOActionListener();
-    	for(int i=1;i<=availablePhotonics.length;i++){
-    		availablePhotonics[i] = new JRadioButton("PhotonicReference"+i);
-    		availablePhotonics[i].setActionCommand("PhotonicReference"+i);
+    	for(int i=0;i<availablePhotonics.length;i++){
+    		availablePhotonics[i] = new JRadioButton("PhotonicReference"+(i+1));
+    		availablePhotonics[i].setActionCommand("PhotonicReference"+(i+1));
     		availablePhotonics[i].addActionListener(radioButtonEvent);
     		availablePhotonics[i].setSelected(false);
     		p.add(availablePhotonics[i]);
