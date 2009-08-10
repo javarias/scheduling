@@ -217,63 +217,13 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		availablePhotonics[i] = new JRadioButton("PhotonicReference"+(i+1));
     		availablePhotonics[i].setActionCommand("PhotonicReference"+(i+1));
     		availablePhotonics[i].addActionListener(radioButtonEvent);
-    		availablePhotonics[i].setSelected(false);
+    		availablePhotonics[i].setEnabled(false);
     		p.add(availablePhotonics[i]);
         	group.add(availablePhotonics[i]);
     	}
     	return p;
     }
     
-    /*
-    private JPanel createCentralLOComponent(String[] availablePhotonics){
-    	JPanel p= new JPanel();
-    	p.setBorder(new TitledBorder("Central Local Oscillator Photonics"));
-    	p.setLayout(new GridLayout(3,2));
-    	JRadioButton photonic0JRadioButton = new JRadioButton("photonic0");
-    	photonic0JRadioButton.setActionCommand("photonic0");
-    	JRadioButton photonic1JRadioButton = new JRadioButton("photonic1");
-    	photonic0JRadioButton.setActionCommand("photonic1");
-    	JRadioButton photonic2JRadioButton = new JRadioButton("photonic2");
-    	photonic0JRadioButton.setActionCommand("photonic2");
-    	JRadioButton photonic3JRadioButton = new JRadioButton("photonic3");
-    	photonic0JRadioButton.setActionCommand("photonic3");
-    	JRadioButton photonic2JRadioButton = new JRadioButton("photonic4");
-    	photonic0JRadioButton.setActionCommand("photonic4");
-    	JRadioButton photonic3JRadioButton = new JRadioButton("photonic5");
-    	photonic0JRadioButton.setActionCommand("photonic5");
-    	group = new ButtonGroup();
-    	//group.
-    	p.add(photonic0JRadioButton);
-    	group.add(photonic0JRadioButton);
-    	p.add(photonic1JRadioButton);
-    	group.add(photonic1JRadioButton);
-    	p.add(photonic2JRadioButton);
-    	group.add(photonic2JRadioButton);
-    	p.add(photonic3JRadioButton);
-    	group.add(photonic3JRadioButton);
-    	p.add(photonic4JRadioButton);
-    	group.add(photonic4JRadioButton);
-    	p.add(photonic5JRadioButton);
-    	group.add(photonic5JRadioButton);
-    	LOActionListener radioButtonEvent = new LOActionListener();
-    	photonic0JRadioButton.addActionListener(radioButtonEvent);
-    	photonic1JRadioButton.addActionListener(radioButtonEvent);
-    	photonic2JRadioButton.addActionListener(radioButtonEvent);
-    	photonic3JRadioButton.addActionListener(radioButtonEvent);
-    	photonic4JRadioButton.addActionListener(radioButtonEvent);
-    	photonic5JRadioButton.addActionListener(radioButtonEvent);
-    	//set all these to disable....
-    	photonic0JRadioButton.setSelected(false);
-    	photonic1JRadioButton.setSelected(false);
-    	photonic2JRadioButton.setSelected(false);
-    	photonic3JRadioButton.setSelected(false);
-    	photonic4JRadioButton.setSelected(false);
-    	photonic5JRadioButton.setSelected(false);
-    	
-    	
-    	return p;
-    }
-    */
     
     private JPanel createSouthPanel() {
         JPanel p = new JPanel();
@@ -327,10 +277,14 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
     private void updateAvailablePhotonics(String[] Photonics) {
+    	for(int i=0;i<availablePhotonics.length;i++){
+    		availablePhotonics[i].setEnabled(false);
+    	}
+    	
     	for (int i=0;i<Photonics.length;i++){
     		for(int j=0;j<availablePhotonics.length;j++){
     			if(Photonics[i].equalsIgnoreCase(availablePhotonics[j].getText())) {
-    				availablePhotonics[j].setSelected(true);
+    				availablePhotonics[j].setEnabled(true);
     			}
     		}
     	}
@@ -399,7 +353,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //get select LO photonic
         //String selectPhotonic= selectRadioButton.getText();
         String[] choice = getSelectedLOPhotonics();
-        
+        logger.info("the selected photonics is:"+choice[0]);
         String arrayName;
         disableCreateArrayPanel();
         try {
