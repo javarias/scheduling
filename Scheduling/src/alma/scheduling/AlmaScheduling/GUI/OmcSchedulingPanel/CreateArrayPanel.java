@@ -87,6 +87,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //the controlMaster must be ready before we do the initializing
         CheckControlReady controlComponent = new CheckControlReady();
         Thread t = controller.getCS().getThreadFactory().newThread(controlComponent);
+        t.setDaemon(true);
         t.start();
         try {
             t.join();
@@ -209,8 +210,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private JPanel createCentralLOComponent(){
     	JPanel p= new JPanel();
     	p.setBorder(new TitledBorder("Central Local Oscillator Photonics"));
-    	p.setLayout(new GridLayout(3,2));
+    	p.setLayout(new GridLayout(4,2));
     	group = new ButtonGroup();
+    	JButton resetButton = new JButton("reset");
+    	
     	availablePhotonics = new JRadioButton[6];
     	LOActionListener radioButtonEvent = new LOActionListener();
     	for(int i=0;i<availablePhotonics.length;i++){
@@ -221,6 +224,17 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		p.add(availablePhotonics[i]);
         	group.add(availablePhotonics[i]);
     	}
+    	
+    	resetButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+            	for(int i=0;i<availablePhotonics.length;i++){
+            		availablePhotonics[i].setSelected(false);
+            	}
+            }
+        });
+    	
+    	p.add(resetButton);
+    	
     	return p;
     }
     
@@ -279,12 +293,14 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private void updateAvailablePhotonics(String[] Photonics) {
     	for(int i=0;i<availablePhotonics.length;i++){
     		availablePhotonics[i].setEnabled(false);
+    		availablePhotonics[i].setSelected(false);
     	}
     	
     	for (int i=0;i<Photonics.length;i++){
     		for(int j=0;j<availablePhotonics.length;j++){
     			if(Photonics[i].equalsIgnoreCase(availablePhotonics[j].getText())) {
     				availablePhotonics[j].setEnabled(true);
+    				//availablePhotonics[j].setSelected(true);
     			}
     		}
     	}
@@ -373,11 +389,16 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private String[] getSelectedLOPhotonics() {
     	 
     	 String[] selectCentralLO = {""};
+    	 
     	 for (Enumeration<AbstractButton> selectedLO = group.getElements(); selectedLO.hasMoreElements();) {
     		 JRadioButton radiobutton= (JRadioButton)selectedLO.nextElement();
     		 if(radiobutton.isSelected()){
     			 selectCentralLO[0] = radiobutton.getText();
     		 }	 
+    	 }
+    	 
+    	 if(selectCentralLO[0].length()<1){
+    		 selectCentralLO=new String[0];
     	 }
     	 return selectCentralLO;
     }
