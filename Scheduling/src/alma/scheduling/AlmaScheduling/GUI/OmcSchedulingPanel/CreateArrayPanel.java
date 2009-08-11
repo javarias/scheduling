@@ -372,7 +372,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     
     private String[] getSelectedLOPhotonics() {
     	 
-    	 String[] selectCentralLO = {"","","",""};
+    	 String[] selectCentralLO = {""};
     	 for (Enumeration<AbstractButton> selectedLO = group.getElements(); selectedLO.hasMoreElements();) {
     		 JRadioButton radiobutton= (JRadioButton)selectedLO.nextElement();
     		 if(radiobutton.isSelected()){
