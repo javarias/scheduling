@@ -50,7 +50,8 @@ public class TestALMAControl extends ComponentClientTestCase {
         m_logger.info("Test2");
         control = new ALMAControl(getContainerServices(),null);
         String[] antennas = {"1","2","3","4","5","6","7"};
-        String subarray = control.createArray(antennas,"Dynamic");
+	String[] selectPhotonics = new String[0];
+        String subarray = control.createArray(antennas,selectPhotonics,"Dynamic");
         assertNotNull(subarray);
     }
 

@@ -55,7 +55,8 @@ public class TestSimulatorQueueSB {
 		    // create a array
 		    String[] antenna = {"DV01","DA41"};
 		    String arrayName = "Control/Array001";
-		    ms.createArray(antenna,ArrayModeEnum.QUEUED);
+		    String[] selectPhotonics = new String[0];
+		    ms.createArray(antenna,selectPhotonics,ArrayModeEnum.QUEUED);
 		    String schedulerName = ms.createQueuedSchedulingComponent(arrayName);
 		    qsComp = alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
 		    		m_containerservices.getComponent(schedulerName));

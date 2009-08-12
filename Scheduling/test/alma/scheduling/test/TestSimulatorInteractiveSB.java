@@ -79,7 +79,8 @@ public class TestSimulatorInteractiveSB {
 		    String[] antenna = {"DV01","DA41"};
 		    String[] array01 = {"DV01"};
 		    String[] array02 = {"DA41"};
-		    ms.createArray(antenna,ArrayModeEnum.INTERACTIVE);
+		    String[] selectPhotonics = new String[0];
+		    ms.createArray(antenna,selectPhotonics,ArrayModeEnum.INTERACTIVE);
 		    //ms.createArray(array02,ArrayModeEnum.INTERACTIVE);
 		    String schedulername = ms.startInteractiveScheduling1("Control/Array001");
 		    //String schedulername1 = ms.startInteractiveScheduling1("Control/Array002");
