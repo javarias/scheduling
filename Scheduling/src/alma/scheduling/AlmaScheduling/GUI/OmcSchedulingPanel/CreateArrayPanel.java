@@ -212,7 +212,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	p.setBorder(new TitledBorder("Central Local Oscillator Photonics"));
     	p.setLayout(new GridLayout(4,2));
     	group = new ButtonGroup();
-    	JButton resetButton = new JButton("reset");
+    	JButton resetButton = new JButton("Deselect");
     	
     	availablePhotonics = new JRadioButton[6];
     	LOActionListener radioButtonEvent = new LOActionListener();
@@ -227,9 +227,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	
     	resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-            	for(int i=0;i<availablePhotonics.length;i++){
-            		availablePhotonics[i].setSelected(false);
-            	}
+            		group.clearSelection();
             }
         });
     	
@@ -293,8 +291,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private void updateAvailablePhotonics(String[] Photonics) {
     	for(int i=0;i<availablePhotonics.length;i++){
     		availablePhotonics[i].setEnabled(false);
-    		availablePhotonics[i].setSelected(false);
     	}
+    	group.clearSelection();
     	
     	for (int i=0;i<Photonics.length;i++){
     		for(int j=0;j<availablePhotonics.length;j++){
@@ -369,7 +367,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //get select LO photonic
         //String selectPhotonic= selectRadioButton.getText();
         String[] choice = getSelectedLOPhotonics();
-        logger.info("the selected photonics is:"+choice[0]);
+        if(choice.length>0){
+        	logger.info("the selected photonics is:"+choice[0]);
+        }
+        else {
+        	logger.info("None of the photonics is selected in CreateArray stage");
+        }
         String arrayName;
         disableCreateArrayPanel();
         try {
@@ -452,6 +455,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     class LOActionListener implements ActionListener {
         public void actionPerformed(ActionEvent ev) {
           String choice = group.getSelection().getActionCommand();
+          group.getSelection().setSelected(false);
           System.out.println("ACTION Choice Selected: " + choice);
         }
       }
