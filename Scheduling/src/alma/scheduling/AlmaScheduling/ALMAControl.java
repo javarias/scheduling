@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.90 2009/08/10 23:34:01 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.91 2009/08/14 23:04:06 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -805,7 +805,7 @@ public class ALMAControl implements Control {
     	ManualArray Control_ManualArray ;
         try {
         	Control_ManualArray = alma.Control.ManualArrayHelper.narrow(
-        			containerServices.getComponent(arrayName));
+        			containerServices.getComponent("CONTROL/"+arrayName));
         	
         	IDLEntityRef sbRef = new IDLEntityRef();
             sbRef.entityId = sbId;
