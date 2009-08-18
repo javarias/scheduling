@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.91 2009/08/14 23:04:06 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.92 2009/08/18 21:02:41 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -409,7 +409,10 @@ public class ALMAControl implements Control {
             
             // here I put a dummy code here waiting GUI ready...
             String[] photonicResourceNameSeq = phothnicsChoice;
-            logger.info("the selected photonics is:"+photonicResourceNameSeq[0]);
+            
+            if( photonicResourceNameSeq.length >0 ) {
+                logger.info("the selected photonics is:"+photonicResourceNameSeq[0]);
+                }
             // End of dummpy code
             
             arrayComb = control_system.createManualArray(antenna,photonicResourceNameSeq);
