@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.92 2009/08/18 21:02:41 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.93 2009/09/01 19:38:27 wlin Exp $
  */
 public class ALMAControl implements Control {
     
@@ -183,9 +183,7 @@ public class ALMAControl implements Control {
             sbRef.partId = "";
             sbRef.entityTypeName = "SchedBlock";
             sbRef.instanceVersion = "1.0";
-            //test only ....must remove if check into CVS
-            //ctrl.observe(sbRef, sessionRef, 0L); 
-            //logger.fine("SCHEDULING: session id "+sessionRef.entityId+":"+sessionRef.partId);
+
             if(ctrl !=null){
                 arraylogger.log(Level.INFO, "SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName,
                         OPERATOR.value, arrayName);
@@ -236,7 +234,6 @@ public class ALMAControl implements Control {
     	String arrayComponentName = "CONTROL/"+name;
         AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
-            //logger.info("SCHEDULING: Stopping scheduling on array "+name);
             arraylogger.log(Level.INFO, 
                     "SCHEDULING: Stopping scheduling on array "+name, 
                     OPERATOR.value, name);
@@ -277,7 +274,6 @@ public class ALMAControl implements Control {
     	 String arrayComponentName = "CONTROL/"+name;
          AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
-            //logger.info("SCHEDULING: Stopping scheduling on array "+name);
            arraylogger.log(Level.INFO,"SCHEDULING: Stopping scheduling on array "+name,
                    OPERATOR.value, name);
             //if(ctrl != null) {
@@ -343,13 +339,10 @@ public class ALMAControl implements Control {
             
             ArrayIdentifier arrayComb= null;
             try {
-            	
-            	// here I put a dummy code here waiting GUI ready...
+
                 String[] photonicResourceNameSeq = phothnicsChoice;
-                //photonicResourceNameSeq = new String[0];
-                // End of dummpy code
-                
                 arrayComb = control_system.createAutomaticArray(antenna,photonicResourceNameSeq);
+                
             }catch(Exception e) {
                 e.printStackTrace();
                 logger.logToAudience(Level.WARNING,
@@ -361,6 +354,7 @@ public class ALMAControl implements Control {
             try {
                 ctrl = alma.Control.AutomaticArrayHelper.narrow(
                     containerServices.getComponent(arrayComb.arrayComponentName));
+                
             } catch(Exception e) {
                 ctrl = null;
                 logger.logToAudience(Level.WARNING,
@@ -406,15 +400,13 @@ public class ALMAControl implements Control {
             // fist string is arrayName
             // second string is arrayCompomentName
             ArrayIdentifier arrayComb= null;
-            
-            // here I put a dummy code here waiting GUI ready...
+
             String[] photonicResourceNameSeq = phothnicsChoice;
             
             if( photonicResourceNameSeq.length >0 ) {
                 logger.info("the selected photonics is:"+photonicResourceNameSeq[0]);
                 }
-            // End of dummpy code
-            
+
             arrayComb = control_system.createManualArray(antenna,photonicResourceNameSeq);
             manualArrays.add(arrayComb.arrayComponentName);
             logger.fine("SCHEDULING: Array "+arrayComb.arrayComponentName+" created with "+antenna.length+" antennas.");
@@ -450,7 +442,6 @@ public class ALMAControl implements Control {
     public void destroyArray(String name) throws SchedulingException {
         try {
             boolean found = false;
-    	    //logger.info("SCHEDULING about to destroy array "+name);
     	    logger.logToAudience(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
     	    arraylogger.log(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value, name);
             for(int i=0; i < auto_controllers.size(); i++){
@@ -468,8 +459,9 @@ public class ALMAControl implements Control {
                     }
                 }
             }
-            containerServices.releaseComponent(name);
+            containerServices.releaseComponent("CONTROL/"+name);
             control_system.destroyArray(name);
+            
         } catch(InvalidRequest e1) {
         	sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	try {
@@ -479,7 +471,6 @@ public class ALMAControl implements Control {
             }
             throw new SchedulingException(e1); 
         } catch(InaccessibleException e2){
-        	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
@@ -515,7 +506,6 @@ public class ALMAControl implements Control {
             }
             return allArrays;
         } catch(InaccessibleException e) {
-        	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
@@ -561,7 +551,6 @@ public class ALMAControl implements Control {
             }
             return tmp;
         } catch(InaccessibleException e) {
-        	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
         	try {
             	Thread.sleep(1000);
@@ -610,7 +599,6 @@ public class ALMAControl implements Control {
             return allInfo;
         }catch(InaccessibleException e){
             //TODO do something better here eventually
-        	//sendAlarm("Scheduling","SchedControlConnAlarm",2,ACSFaultState.ACTIVE);
         	sendAlarm("Scheduling","SchedArrayConnAlarm",3,ACSFaultState.ACTIVE);
             e.printStackTrace(System.out);
             return null;
@@ -665,7 +653,6 @@ public class ALMAControl implements Control {
       */
     private AutomaticArray getAutomaticArray(String name) throws SchedulingException {
         logger.fine("SCHEDULING: looking for array with id = "+ name);
-        //logger.fine("auto_controllers size:"+auto_controllers.size());
         for(int i=0; i < auto_controllers.size(); i++){
         	    logger.fine(((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName());
             if( ((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayComponentName().equals(name)) {
