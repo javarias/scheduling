@@ -144,13 +144,20 @@ public class CreateArrayController extends SchedulingPanelController {
             map7 = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(12);
             mapTP = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(4);
             String[] twelve = new String[map12.size()];
-            twelve = (String[])map12.values().toArray(twelve);
+            //int[] twelveLocation = (String[])map12.values().toArray(twelve);
+            twelve = (String[])map12.keySet().toArray(twelve);
             String[] twelve_real = new String[map12.size()];
             twelve_real = (String[])map12.keySet().toArray(twelve_real);
+            //for(int i=0; i < 50; i++){
+            //    entries12[i] = null;
+            //    entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
+            //}
+            
             for(int i=0; i < 50; i++){
-                entries12[i] = null;
-                entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
+                entries12[startupInfo[i].uiDisplayOrder-1] = null;
+                entries12[startupInfo[i].uiDisplayOrder-1] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
             }
+            
             String[] seven = new String[map7.size()];
             seven = (String[])map7.values().toArray(seven);
             for(int i=0; i < 12; i++){
@@ -234,12 +241,14 @@ public class CreateArrayController extends SchedulingPanelController {
             cbeNames = new String[antennas.length];
             for(int i=0; i < antennas.length; i++){
                 //Eventaully will have to go get details of antenna from TMCDB
+            	logger.fine("antennas name"+i+antennas[i]);
                 cbeNames[i] = (String)map12.get(antennas[i]);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
-        return cbeNames;
+        //return cbeNames;
+        return antennas;
     }
     
     public String createArray(String arrayMode, ChessboardEntry[] cbEntries,String[] phothnicsChoice) 
@@ -249,18 +258,28 @@ public class CreateArrayController extends SchedulingPanelController {
         String[] keys = new String[map12.size()];
         keys = (String[])((LinkedHashMap)map12).keySet().toArray(keys);
         String[] values = new String[map12.size()];
-        values = (String[])map12.values().toArray(values);
+        //values = (String[])map12.values().toArray(values);
+        values = (String[])map12.keySet().toArray(values);
         for(int i=0; i < cbEntries.length; i++){
         //    antennas[i] = (cbEntries[i].getDisplayName());
             
             //get index of cbEntries display name in values and then get the key
             //of that index coz its the real antenna name
+        	/*
             for(int x=0; x < values.length; x++){
                 if(values[x].equals(cbEntries[i].getDisplayName()) ){
                     antennas[i] = keys[x];
                     break;
                 }
             }
+            */
+            for(int x=0; x < values.length; x++){
+                if(values[x].equals(cbEntries[i].getDisplayName()) ){
+                    antennas[i] = keys[x];
+                    break;
+                }
+            }
+            
             logger.fine("AntennaName = "+antennas[i]);
         }
         logger.fine("Antennas to create array with = "+antennas.length);
