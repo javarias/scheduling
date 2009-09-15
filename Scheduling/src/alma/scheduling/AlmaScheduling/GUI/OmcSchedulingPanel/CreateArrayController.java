@@ -49,6 +49,9 @@ public class CreateArrayController extends SchedulingPanelController {
     private Map map12;
     private Map map7;
     private Map mapTP;
+    private final static int NUMBER_OF_ACS_ANTENNAS = 50;
+    private final static int NUMBER_OF_ACA_ANTENNAS = 12;
+    private final static int NUMBER_OF_TP_ANTENNAS = 4;
 
     public CreateArrayController(){//PluginContainerServices cs){
         super();
@@ -135,39 +138,63 @@ public class CreateArrayController extends SchedulingPanelController {
         try {
             startupInfo = tmcdb.getStartupAntennasInfo(); 
         
-            String[] antennaNames = new String[startupInfo.length];
-            for(int i=0; i < startupInfo.length; i++){
-                antennaNames[i] = startupInfo[i].antennaName;
-                logger.fine("Antenna name from CTRL: "+ antennaNames[i]);
+            String[] antennaNames = new String[NUMBER_OF_ACS_ANTENNAS];
+            String[] ACAAntennaNames = new String[NUMBER_OF_ACA_ANTENNAS];
+            String[] TPAntennaNames = new String[NUMBER_OF_TP_ANTENNAS];
+            
+            for(int i=0;i<NUMBER_OF_ACS_ANTENNAS;i++) {
+            	antennaNames[i]= String.valueOf(i) ;
             }
+            
+            for(int i=0;i<NUMBER_OF_ACA_ANTENNAS;i++) {
+            	ACAAntennaNames[i]= String.valueOf(i) ;
+            }
+            
+            for(int i=0;i<NUMBER_OF_TP_ANTENNAS;i++) {
+            	TPAntennaNames[i]= String.valueOf(i) ;
+            }
+            
+            
+            for(int i=0;i<startupInfo.length;i++){
+            	if(startupInfo[i].uiDisplayOrder > 0 && startupInfo[i].uiDisplayOrder <= 50) {
+                    antennaNames[startupInfo[i].uiDisplayOrder-1] = startupInfo[i].antennaName;
+                    logger.fine("ACS Antenna name from CTRL: "+ startupInfo[i].antennaName);
+            	} else if(startupInfo[i].uiDisplayOrder >= 51 && startupInfo[i].uiDisplayOrder <= 62) {
+                    ACAAntennaNames[startupInfo[i].uiDisplayOrder-1-50]=startupInfo[i].antennaName;
+            	} else if(startupInfo[i].uiDisplayOrder >= 63 && startupInfo[i].uiDisplayOrder <= 66) {
+                    TPAntennaNames[startupInfo[i].uiDisplayOrder-62-1]= startupInfo[i].antennaName;
+                    logger.fine("TP Antenna name from CTRL: "+ startupInfo[i].antennaName);
+            	}
+            }
+                    
             map12 = alma.common.gui.chessboard.internals.MapToNumber.createMapping(antennaNames,"twelveMeter");
-            map7 = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(12);
-            mapTP = alma.common.gui.chessboard.internals.MapToNumber.createEmptyMap(4);
+            map7 = alma.common.gui.chessboard.internals.MapToNumber.createMapping(ACAAntennaNames,"sevenMeter");
+            mapTP = alma.common.gui.chessboard.internals.MapToNumber.createMapping(TPAntennaNames,"totalPower");
             String[] twelve = new String[map12.size()];
             //int[] twelveLocation = (String[])map12.values().toArray(twelve);
             twelve = (String[])map12.keySet().toArray(twelve);
-            String[] twelve_real = new String[map12.size()];
-            twelve_real = (String[])map12.keySet().toArray(twelve_real);
-            //for(int i=0; i < 50; i++){
-            //    entries12[i] = null;
-            //    entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
-            //}
-            
+            //String[] twelve_real = new String[map12.size()];
+            //twelve_real = (String[])map12.keySet().toArray(twelve_real);
             for(int i=0; i < 50; i++){
-                entries12[startupInfo[i].uiDisplayOrder-1] = null;
-                entries12[startupInfo[i].uiDisplayOrder-1] = new ChessboardEntry(SPAntennaStatus.OFFLINE, twelve[i], twelve_real[i]); 
+                entries12[i] = null;
+                entries12[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, antennaNames[i], antennaNames[i]); 
             }
             
             String[] seven = new String[map7.size()];
             seven = (String[])map7.values().toArray(seven);
+            
             for(int i=0; i < 12; i++){
-                entries7[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, seven[i], "foo"); 
+                entries7[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, ACAAntennaNames[i], ACAAntennaNames[i]); 
             }
             String[] tp = new String[mapTP.size()];
             tp = (String[])mapTP.values().toArray(tp);
+            
+            //TODO need to redesign after more antenna add into ALMA....
+            
             for(int i=0; i < 4; i++){
-                entriesTP[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, tp[i]); 
+            		entriesTP[i] = new ChessboardEntry(SPAntennaStatus.OFFLINE, TPAntennaNames[i],TPAntennaNames[i]);
             }
+
             allEntries = new ChessboardEntry[3][];
             allEntries[0] = entries12;
             allEntries[1] = entries7;
@@ -255,33 +282,46 @@ public class CreateArrayController extends SchedulingPanelController {
         throws SchedulingException 
     {
         String[] antennas = new String[cbEntries.length];
+        
         String[] keys = new String[map12.size()];
         keys = (String[])((LinkedHashMap)map12).keySet().toArray(keys);
         String[] values = new String[map12.size()];
         //values = (String[])map12.values().toArray(values);
         values = (String[])map12.keySet().toArray(values);
+        
+        //map total power antennas
+        String[] TPkeys = new String[mapTP.size()];
+        TPkeys = (String[])((LinkedHashMap)mapTP).keySet().toArray(TPkeys);
+        String[] TPvalues = new String[mapTP.size()];
+        TPvalues = (String[])mapTP.keySet().toArray(TPvalues);
+        //logger.info("Number of Antennas be selected:"+cbEntries.length);
         for(int i=0; i < cbEntries.length; i++){
-        //    antennas[i] = (cbEntries[i].getDisplayName());
-            
+            //antennas[i] = (cbEntries[i].getDisplayName());
             //get index of cbEntries display name in values and then get the key
             //of that index coz its the real antenna name
-        	/*
+        	//logger.info("index "+i +" : "+cbEntries[i].getDisplayName());
             for(int x=0; x < values.length; x++){
+            	//logger.info("value :"+values[x]);
                 if(values[x].equals(cbEntries[i].getDisplayName()) ){
                     antennas[i] = keys[x];
-                    break;
-                }
-            }
-            */
-            for(int x=0; x < values.length; x++){
-                if(values[x].equals(cbEntries[i].getDisplayName()) ){
-                    antennas[i] = keys[x];
+                    logger.fine("AntennaName = "+antennas[i]);
                     break;
                 }
             }
             
-            logger.fine("AntennaName = "+antennas[i]);
+           
+            for(int x=0; x < TPvalues.length; x++){
+                if(TPvalues[x].equals(cbEntries[i].getDisplayName()) ){
+                    antennas[i] = TPkeys[x];
+                    logger.fine("AntennaName = "+antennas[i]);
+                    break;
+                }
+            }
+            
         }
+
+     
+        
         logger.fine("Antennas to create array with = "+antennas.length);
         String arrayName = null;
         getMSRef();
@@ -300,11 +340,11 @@ public class CreateArrayController extends SchedulingPanelController {
                         antennas,phothnicsChoice,ArrayModeEnum.MANUAL);
             }
         } catch(Exception e) {
-            releaseMSRef();
+            //releaseMSRef();
             e.printStackTrace();
             throw new SchedulingException (e);
         }
-        releaseMSRef();
+        //releaseMSRef();
         return arrayName;
 
     }
