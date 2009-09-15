@@ -281,10 +281,15 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //call chessboard.processStatusChange(..) with new ChessboardStatusEvent
         //will need cb entry's name
         //String cbeName;
+    	//logger.info("updateChessboard: Number of active's antennas:"+antNames.length);
         ChessboardStatusEvent event=null;
         for (int i=0; i < antNames.length; i++){
+        	//logger.info("updateChessboard active antenna name:"+antNames[i]);
             event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE);//, null);
+            if(!antNames[i].equals("PM03"))
             twelveMeterChessboard.processStatusChange(event);
+            else 
+            	tpChessboard.processStatusChange(event);
         }
     }
     
@@ -317,6 +322,11 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             for(int i=0; i < all[0].length; i++){
                 event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
                 twelveMeterChessboard.processStatusChange(event);
+            }
+            
+            for(int i=0; i < all[2].length; i++){
+                event = new ChessboardStatusEvent(all[2][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
+                tpChessboard.processStatusChange(event);
             }
         }
     }
@@ -351,42 +361,79 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
        
 
     private boolean createArray() {
-        //get selected antenns from chessboard
-        ChessboardEntry[] selected = twelveMeterChessboard.getSelectedEntries();
-        //check the ones selected have online status
-        //temporary: change so that can't select ones not online
-        for(int i=0; i <selected.length; i++){
-            if(selected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
-                JOptionPane.showMessageDialog(this, 
-                        "Selected Antenna not available",
-                        "Antenna "+selected[i].getDisplayName()+" is not available "+
-                        "to be included in an array", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        }
-        //get select LO photonic
-        //String selectPhotonic= selectRadioButton.getText();
-        String[] choice = getSelectedLOPhotonics();
-        if(choice.length>0){
-        	logger.info("the selected photonics is:"+choice[0]);
-        }
-        else {
-        	logger.info("None of the photonics is selected in CreateArray stage");
-        }
-        String arrayName;
-        disableCreateArrayPanel();
-        try {
-            arrayName = controller.createArray(arrayMode, selected,choice);
-            allArrays.add(arrayName);
-        } catch(Exception e) {
-            JOptionPane.showMessageDialog(this, e.toString()+
-                    "\nMake sure these antennas are really available to "+
-                    "create this array. Also check state of Control "+
-                    "System and its logs.", 
-                    "Error creating array", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
+    	//get selected antenns from chessboard
+    	ChessboardEntry[] ACSselected = twelveMeterChessboard.getSelectedEntries();
+    	int NumberOfantennaSelected=0 ;
+    	//check the ones selected have online status
+    	//temporary: change so that can't select ones not online
+    	if(ACSselected!=null) {
+    		for(int i=0; i <ACSselected.length; i++){
+    			if(ACSselected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+    				JOptionPane.showMessageDialog(this, 
+    						"Selected Antenna not available",
+    						"Antenna "+ACSselected[i].getDisplayName()+" is not available "+
+    						"to be included in an array", JOptionPane.ERROR_MESSAGE);
+    				return false;
+    			}
+    		}
+    		NumberOfantennaSelected = ACSselected.length;
+    	}
+
+    	ChessboardEntry[] TPSelected = tpChessboard.getSelectedEntries();
+    	if(TPSelected!=null) {
+    		for(int i=0; i <TPSelected.length; i++){
+    			if(TPSelected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+    				JOptionPane.showMessageDialog(this, 
+    						"Selected Antenna not available",
+    						"Antenna "+TPSelected[i].getDisplayName()+" is not available "+
+    						"to be included in an array", JOptionPane.ERROR_MESSAGE);
+    				return false;
+    			}
+    		}
+    		NumberOfantennaSelected = NumberOfantennaSelected+TPSelected.length;
+    	}
+
+    	ChessboardEntry[] selected = new ChessboardEntry[NumberOfantennaSelected];
+    	if(ACSselected!=null && TPSelected==null){
+    		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
+    	} else if(ACSselected==null && TPSelected!=null) {
+    		System.arraycopy(TPSelected, 0, selected, 0, TPSelected.length);
+    	} else if(ACSselected!=null && TPSelected!=null) {
+    		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
+    		System.arraycopy(TPSelected, 0, selected, ACSselected.length, TPSelected.length);
+    	}  else if(ACSselected==null && TPSelected==null) {
+    		JOptionPane.showMessageDialog(this, 
+    				"None Antenna Selected",
+					"Please select at least one antenna to create array",JOptionPane.ERROR_MESSAGE);
+    	}
+    	
+    	//for(int i=0;i<selected.length;i++) {
+    	//	logger.info("index "+i+" : "+selected[i].getDisplayName());
+    	//}
+    	//get select LO photonic
+    	//String selectPhotonic= selectRadioButton.getText();
+    	String[] choice = getSelectedLOPhotonics();
+    	if(choice.length>0){
+    		logger.info("the selected photonics is:"+choice[0]);
+    	}
+    	else {
+    		logger.info("None of the photonics is selected in CreateArray stage");
+    	}
+    	String arrayName;
+    	disableCreateArrayPanel();
+    	try {
+    		arrayName = controller.createArray(arrayMode,selected,choice);
+    		allArrays.add(arrayName);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		JOptionPane.showMessageDialog(this, e.toString()+
+    				"\nMake sure these antennas are really available to "+
+    				"create this array. Also check state of Control "+
+    				"System and its logs.", 
+    				"Error creating array", JOptionPane.ERROR_MESSAGE);
+    		return false;
+    	}
+    	return true;
     }
     
     private String[] getSelectedLOPhotonics() {
@@ -412,6 +459,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
             vals = v;
         }
         public void run() {
+        	//logger.info("method updateCB: available antennea"+vals.length);
             updateChessboard(vals);
         }
     }
@@ -431,6 +479,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         public GetAntennaThread(){}
         public void run(){ 
             String[] onlineAntennasForChessboard = controller.getAntennasForActiveChessboards();
+            //logger.info("GetAntennaThread:available antennas"+onlineAntennasForChessboard.length);
             javax.swing.SwingUtilities.invokeLater(new UpdateCB(onlineAntennasForChessboard));
             String[] available = controller.getAvailableCLOPhotonics();
             javax.swing.SwingUtilities.invokeLater(new UpdateLOPhotonics(available));
