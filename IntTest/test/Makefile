@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.1 2009/09/09 17:46:43 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.2 2009/09/22 22:40:17 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -203,5 +203,9 @@ man   : do_man
 install : install_all
 	@echo " . . . installation done"
 
+test : all
+	./scripts/testEnv start
+	./scripts/runCreateArrayPluginTest
+	./scripts/testEnv stop
 
 #___oOo___

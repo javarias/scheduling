@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# We require the config/testenv file.
+[ -f config/testEnv ] || exit $?
+
+# Source test configuration file. 
+. config/testEnv
+
+if test -a $ACSROOT/lib/hsqldb.jar; then
+    HSQLDB_JAR=$ACSROOT/lib/hsqldb.jar
+elif test -a $INTROOT/lib/hsqldb.jar; then
+    HSQLDB_JAR=$INTROOT/lib/hsqldb.jar
+fi
+
+java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" "$DBNAME"
+

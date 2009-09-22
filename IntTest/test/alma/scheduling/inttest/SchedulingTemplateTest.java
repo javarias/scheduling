@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingTemplateTest.java,v 1.1 2009/09/09 17:19:30 rhiriart Exp $
+ * $Id: SchedulingTemplateTest.java,v 1.2 2009/09/22 22:40:17 rhiriart Exp $
  */
 
 package alma.scheduling.inttest;
@@ -68,6 +68,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
 	private ContainerServices container;
     private Logger logger;
     private Simulator simulator;
+    private Utils utils;
 
     private ArchiveConnection archConnectionComp;
     private Operational archOperational;
@@ -88,6 +89,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
 
         container = getContainerServices();
         logger = container.getLogger();
+        utils = new Utils(container, logger);
 
         archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(
                 container.getComponent("ARCHIVE_CONNECTION"));
@@ -128,12 +130,12 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
     }
 
     public void testSomething() throws Exception {
-        ProjectInfo pinfo = storeProject("projects/SchedTest.aot");
+        ProjectInfo pinfo = storeProject("projects/01SBin1OUS.aot");
     	
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
         String arrayName = masterScheduler.createArray(new String[] {"DV01"},
-        		new String[] {"PhotonicReference1"}, ArrayModeEnum.INTERACTIVE);
+        		ArrayModeEnum.INTERACTIVE);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");
@@ -273,6 +275,10 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
         prp.getObsProjectRef().setEntityId(prj.getObsProjectEntity().getEntityId());
         sbl.getSchedBlockEntity().setDocumentVersion("1.0");
         
+        logger.fine("\n\n\n\n");
+        logger.fine(utils.printProjectHierarchy(prj, prp, sbl));
+        logger.fine("\n\n\n\n");
+//        Map<String, StatusBaseT> statuses = utils.makeStatusHierarchy(prj, prp, sbl);
         
         EntitySerializer serializer = EntitySerializer.getEntitySerializer(logger);
         XmlEntityStruct sblent = serializer.serializeEntity(sbl, sbl.getSchedBlockEntity());
@@ -421,5 +427,122 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
         
         return new String(xmlDoc);
     }
+//    
+//    /**
+//     * Populate an entity reference such that it becomes a reference to
+//     * the supplied entity.
+//     * 
+//     * @param ent The entity to which we wish to refer
+//     * @param ref The reference to populate
+//     */
+//    private void populateReference(EntityT ent, EntityRefT ref) {
+//    	populateReference(ent, ref, null);
+// 	}
+//	
+//    /**
+//     * Populate an entity reference such that it becomes a reference to
+//     * the a given part within the supplied entity.
+//     * 
+//     * @param ent The entity to which we wish to refer
+//     * @param ref The reference to populate
+//     * @param partId The id of the entity part we wish to reference
+//     */
+//    private void populateReference(EntityT ent, EntityRefT ref, String partId) {
+//		ref.setDocumentVersion(ent.getDocumentVersion());
+//		ref.setEntityId(ent.getEntityId());
+//		ref.setEntityTypeName(ent.getEntityTypeName());
+//		ref.setPartId(partId);
+// 	}
+//    
+//    /**
+//     * Make a new StatusT object which is set to our default initial
+//     * state (currently PHASE2SUBMITTED)
+//     * 
+//     * @return The created StatusT
+//     */
+//    private StatusT makeStatus() {
+//    	final StatusT result = new StatusT();
+//    	result.setState(StatusTStateType.PHASE2SUBMITTED);
+//    	return result;
+//    }
+//    
+//    /**
+//     * Make a ProjectStatus entity for the given ObsProject. Assigns an
+//     * entityId to the status object and links it to the domain object.
+//     * It does not, though, wire the new status object to the existing
+//     * tree of status objects.
+//     *  
+//     * @param prj - the ObsProject for which to create a status
+//     * @return the resultant status entity
+//     * @throws AcsJContainerServicesEx
+//     */
+//    private ProjectStatus makeProjectStatus(ObsProject prj) throws AcsJContainerServicesEx {
+//    	final ProjectStatus        result = new ProjectStatus();
+//    	final ProjectStatusEntityT ent    = result.getProjectStatusEntity();
+//    	final ObsProjectRefT       ref    = new ObsProjectRefT();
+//    	
+//    	getContainerServices().assignUniqueEntityId(ent);
+//    	populateReference(ent, ref);
+//    	result.setObsProjectRef(ref);
+//    	result.setStatus(makeStatus());
+//    	
+//    	result.setName(prj.getProjectName());
+//    	result.setPI(prj.getPI());
+//    	
+//    	return result;
+//    }
+//    
+//    
+//    /**
+//     * Make an OUSStatus entity for the given ObsUnitSetT. Assigns an
+//     * entityId to the status object and links it to the domain object.
+//     * It does not, though, wire the new status object to the existing
+//     * tree of status objects.
+//     *  
+//     * @param prj - the ObsUnitSetT for which to create a status
+//     * @return the resultant status entity
+//     * @throws AcsJContainerServicesEx
+//     */
+//    private OUSStatus makeOUSStatus(ObsUnitSetT ous) throws AcsJContainerServicesEx {
+//    	final OUSStatus        result = new OUSStatus();
+//    	final OUSStatusEntityT ent    = result.getOUSStatusEntity();
+//    	final ObsProjectRefT   ref    = new ObsProjectRefT();
+//    	
+//    	getContainerServices().assignUniqueEntityId(ent);
+//    	populateReference(ent, ref, ous.getEntityPartId());
+//    	result.setObsUnitSetRef(ref);
+//    	result.setStatus(makeStatus());
+//   	
+//    	result.setNumberObsUnitSetsCompleted(0);
+//    	result.setNumberObsUnitSetsFailed(0);
+//    	result.setNumberSBsCompleted(0);
+//    	result.setNumberSBsFailed(0);
+//    	
+//    	return result;
+//    }
+//    
+//    
+//    /**
+//     * Make an SBStatus entity for the given SchedBlock. Assigns an
+//     * entityId to the status object and links it to the domain object.
+//     * It does not, though, wire the new status object to the existing
+//     * tree of status objects.
+//     *  
+//     * @param prj - the SchedBlock for which to create a status
+//     * @return the resultant status entity
+//     * @throws AcsJContainerServicesEx
+//     */
+//    private SBStatus makeSBStatus(SchedBlock sb) throws AcsJContainerServicesEx {
+//    	final SBStatus        result = new SBStatus();
+//    	final SBStatusEntityT ent    = result.getSBStatusEntity();
+//    	final SchedBlockRefT  ref    = new SchedBlockRefT();
+//    	
+//    	getContainerServices().assignUniqueEntityId(ent);
+//    	populateReference(ent, ref);
+//    	result.setSchedBlockRef(ref);
+//    	result.setStatus(makeStatus());
+//   	
+//    	return result;
+//    }
 }
 

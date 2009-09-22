@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if test $# -ge 1; then
+    DBDIR=$1/hsqldb
+    if ! test -d $DBDIR; then
+        DBDIR=$ACS_CDB/hsqldb
+    fi
+else
+    DBDIR=$ACS_CDB/hsqldb
+fi
+
+if test $# -ge 2; then
+    DBNAME=$2
+else
+    DBNAME=default
+fi
+
+if test $# -ge 3; then
+    DBPORT=$3
+else
+    DBPORT=8090
+fi
+
+acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT"

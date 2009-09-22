@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd projects
+ALMA-OT -batch ../scripts/bulk-import-saveasnew-retrieve.py *.aot
+
