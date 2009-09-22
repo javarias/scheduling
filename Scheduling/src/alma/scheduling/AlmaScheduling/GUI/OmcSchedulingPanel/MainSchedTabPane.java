@@ -81,8 +81,6 @@ public class MainSchedTabPane extends JTabbedPane {
         super(JTabbedPane.TOP);
         setup();
         parent = p;
-        Dimension d = getPreferredSize();
-        setMaximumSize(d);
         controller = new MainSchedTabPaneController (this);
         selectedButtonColor = Color.green;
        
@@ -91,12 +89,15 @@ public class MainSchedTabPane extends JTabbedPane {
     public void setup() {
         allSchedulers = new Vector<SchedulerTab>();
         createMainTab();
-        maxSize = getSize();
-        setMaximumSize(maxSize);
+        //maxSize = getSize();
+        //setMaximumSize(maxSize);
   //      createSearchArchiveOnlyTab();
         createExistingArrayTab();
+
         addTab("Main",mainPanel);
         addTab("Existing Arrays", arraysTab);
+        this.revalidate();
+        this.repaint();
         super.setUI(new SchedTabUI());
         addCloseTabListener(new CloseTabListener(){
             public void closeOperation(MouseEvent e) {
@@ -109,7 +110,6 @@ public class MainSchedTabPane extends JTabbedPane {
     public Boolean secondSetup(PluginContainerServices cs){
         container = cs;
         controller.setup(cs);
-        //logger = new ALMASchedLogger(cs.getLogger());
         logger = cs.getLogger();
         arraysTab.connectedSetup(cs);
         //archiveTab.connectedSetup(cs);
@@ -117,15 +117,12 @@ public class MainSchedTabPane extends JTabbedPane {
         controller.checkOperationalState();
         logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
         try {
-            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);
-            
+            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);            
             consumer.addSubscription(alma.Control.CreatedManualArrayEvent.class, this);
             consumer.addSubscription(alma.Control.CreatedAutomaticArrayEvent.class, this);
             consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
             consumer.addSubscription(alma.Control.DestroyedManualArrayEvent.class, this);
-         
             consumer.consumerReady();
-            //consumer.disconnect();
         } catch(Exception e){
             e.printStackTrace();
             logger.warning("SCHEDULING_PANEL: Problem getting NC consumer for control system channel, won't see existing arrays");
@@ -212,7 +209,7 @@ public class MainSchedTabPane extends JTabbedPane {
     
     private void createExistingArrayTab() {
         arraysTab = new ExistingArraysTab();
-        arraysTab.setMaxSize(maxSize);
+        //arraysTab.setMaxSize(maxSize);
     }
     
  /*   private void createSearchArchiveOnlyTab() {
@@ -227,6 +224,7 @@ public class MainSchedTabPane extends JTabbedPane {
             createMiddlePanel(); //createArrayPanel
             mainPanel.add(topPanel, BorderLayout.NORTH);
             mainPanel.add(middlePanel, BorderLayout.CENTER);
+            
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -297,7 +295,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
     public void createTopPanel(){
         topPanel = new JPanel(new GridLayout(1,2));
-        topPanel.setBorder(new TitledBorder("Start New Scheduler"));
+        topPanel.setBorder(new TitledBorder("Start New Observing Scheduler"));
         JPanel buttons = new JPanel(new GridLayout(1,4));
         interactiveB = new JButton("Interactive");
         queuedB = new JButton("Queued");

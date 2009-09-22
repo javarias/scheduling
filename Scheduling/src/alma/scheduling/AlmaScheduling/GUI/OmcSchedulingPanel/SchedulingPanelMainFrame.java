@@ -25,21 +25,18 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 //java stuff
-import java.awt.event.*;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.BorderLayout;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JFrame;
-import javax.swing.JProgressBar;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.logging.Logger;
-//exec plugin stuff
-import alma.exec.extension.subsystemplugin.*;
+
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 
 //import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
@@ -54,12 +51,14 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
     public SchedulingPanelMainFrame(){
         createMainSchedPanel();
         main = new JPanel();
-        
-        //Dimension d = getPreferredSize();
-        //main.setSize(d.width + 5, d.height + 5);
+        GridBagConstraints gridBagConstraints= new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
 	    runInitialProgressMonitor();
+	    main.setLayout(new GridBagLayout());
 	    main.add(progressBar);
-	  
+	    this.setLayout(new GridBagLayout());
         this.add(main);
         
     }
@@ -70,8 +69,14 @@ public class SchedulingPanelMainFrame extends JPanel implements SubsystemPlugin 
         mainSchedPanel.secondSetup(cs);
         logger.fine("### setServices in CreateArray Plugin ###");
         main.removeAll();
-        
-        main.add(mainSchedPanel);
+        this.removeAll();
+        GridBagConstraints gridBagConstraints= new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        main.add(mainSchedPanel,gridBagConstraints);
+        this.add(main,gridBagConstraints);
 	    this.revalidate();
 	    this.repaint();
         setVisible(true);

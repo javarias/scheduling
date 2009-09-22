@@ -27,7 +27,9 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
@@ -69,10 +71,11 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         super();
         super.setBorder(new TitledBorder("Create Array"));
         allArrays = new Vector<String>();
-        //setSize(400,300);
+        //setSize(600,300);
         controller= new CreateArrayController();
         createGenericAntennaChessboards();
-        add(chessboardPanel, BorderLayout.CENTER);
+        this.setLayout(new GridLayout(1,1));
+        add(chessboardPanel);
     }
 
     public void setOwner(JTabbedPane p){
@@ -145,18 +148,35 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         chessboardPanel.removeAll();
         remove(chessboardPanel);
         chessboardPanel = new JPanel(new BorderLayout());
-        JPanel cbPanel = new JPanel(new GridLayout(4,1));
-        cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
+        
+        //JPanel cbPanel = new JPanel(new GridLayout(4,1));
+        JPanel cbPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gridBagConstraints= new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 0.6;
+        gridBagConstraints.gridheight = 6;
+        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.gridwidth=gridBagConstraints.REMAINDER;
+        //cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
         ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
         //all[0] is antennas for TwelveMeterChessboard
-        cbPanel.add(createTwelveMeterChessboard(all[0]));
+        cbPanel.add(createTwelveMeterChessboard(all[0]),gridBagConstraints);
         //all[1] is antennas for SevenMeterChessboard
-        cbPanel.add(createSevenMeterChessboard(all[1]));
+        //gridBagConstraints.fill = GridBagConstraints.NONE;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.weighty = 0.2;
+        cbPanel.add(createSevenMeterChessboard(all[1]),gridBagConstraints);
         //all[2] is antennas for TP Chessboard
-        cbPanel.add(createTPChessboard(all[2]));
+        gridBagConstraints.gridheight = 1;
+        gridBagConstraints.weighty = 0.1;
+        cbPanel.add(createTPChessboard(all[2]),gridBagConstraints);
         //String[] availablePhotonics = controller.getAvailableCLOPhotonics();
-        cbPanel.add(createCentralLOComponent());
-        chessboardPanel.add(cbPanel, BorderLayout.CENTER);
+        gridBagConstraints.gridheight = 1;
+        gridBagConstraints.weighty = 0.1;
+        cbPanel.add(createCentralLOComponent(),gridBagConstraints);
+        
+        chessboardPanel.add(cbPanel,BorderLayout.CENTER);
         chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
         validate();
     }
@@ -169,11 +189,16 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                 entries[i][j] = foo[ctr++];
             }
         }
-        JPanel p = new JPanel();
+        JPanel p = new JPanel(new GridBagLayout());
+        GridBagConstraints gridBagConstraints= new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         p.setBorder(new TitledBorder("Twelve Meter Antennas"));
         twelveMeterChessboard = new ChessboardPanel(entries, true, null, null);
         twelveMeterChessboard.setDetailsDisplayEnabled(false);
-        p.add(twelveMeterChessboard);
+        p.add(twelveMeterChessboard,gridBagConstraints);
         return p;
     }
     
@@ -185,11 +210,16 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
                 entries[i][j] = foo[ctr++];
             }
         }
-        JPanel p = new JPanel();
+        JPanel p = new JPanel(new GridBagLayout());
+        GridBagConstraints gridBagConstraints= new GridBagConstraints();
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         p.setBorder(new TitledBorder("Seven Meter Antennas"));
         sevenMeterChessboard = new ChessboardPanel(entries, true, null, null);
         sevenMeterChessboard.setDetailsDisplayEnabled(false);
-        p.add(sevenMeterChessboard);
+        p.add(sevenMeterChessboard,gridBagConstraints);
         return p;
     }
 
@@ -199,11 +229,16 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
          for(int j=0; j < 4; j++){
             entries[0][j] = foo[ctr++];
         }
-        JPanel p = new JPanel();
+         JPanel p = new JPanel(new GridBagLayout());
+         GridBagConstraints gridBagConstraints= new GridBagConstraints();
+         gridBagConstraints.fill = GridBagConstraints.BOTH;
+         gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+         gridBagConstraints.weightx = 1.0;
+         gridBagConstraints.weighty = 1.0;
         p.setBorder(new TitledBorder("Total Power Antennas"));
         tpChessboard = new ChessboardPanel(entries, true, null, null);
         tpChessboard.setDetailsDisplayEnabled(false);
-        p.add(tpChessboard);
+        p.add(tpChessboard,gridBagConstraints);
         return p;
     }
     
@@ -505,7 +540,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         public void actionPerformed(ActionEvent ev) {
           String choice = group.getSelection().getActionCommand();
           group.getSelection().setSelected(false);
-          System.out.println("ACTION Choice Selected: " + choice);
+          //System.out.println("ACTION Choice Selected: " + choice);
         }
       }
     
