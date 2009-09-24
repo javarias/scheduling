@@ -213,8 +213,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         JPanel p = new JPanel(new GridBagLayout());
         GridBagConstraints gridBagConstraints= new GridBagConstraints();
         gridBagConstraints.fill = GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 1.0;
+        //gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.weightx = 0.6;
         gridBagConstraints.weighty = 1.0;
         p.setBorder(new TitledBorder("Seven Meter Antennas"));
         sevenMeterChessboard = new ChessboardPanel(entries, true, null, null);
@@ -232,8 +232,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
          JPanel p = new JPanel(new GridBagLayout());
          GridBagConstraints gridBagConstraints= new GridBagConstraints();
          gridBagConstraints.fill = GridBagConstraints.BOTH;
-         gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-         gridBagConstraints.weightx = 1.0;
+         //gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+         gridBagConstraints.weightx = 0.4;
          gridBagConstraints.weighty = 1.0;
         p.setBorder(new TitledBorder("Total Power Antennas"));
         tpChessboard = new ChessboardPanel(entries, true, null, null);

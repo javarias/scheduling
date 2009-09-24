@@ -69,7 +69,7 @@ public class ProjectTable extends JTable {
         projRowInfo = new Object[0][infoSize];
         createTableModel();
         setModel(projTableModel);
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         //setMaximumSize(size);
         setPreferredScrollableViewportSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

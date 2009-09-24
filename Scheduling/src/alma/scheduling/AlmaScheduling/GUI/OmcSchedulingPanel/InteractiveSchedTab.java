@@ -125,17 +125,30 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     ////////////////////////////////////
     
     private void createLayout(){
-        mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setMaximumSize(new Dimension(300,500));
-        mainPanel.setBorder(new TitledBorder("Interactive Scheduling"));
+    	mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        
+        mainPanel.setBorder(new TitledBorder("Interactive Array"));
         createTopPanel();
         createMiddlePanel();
-        mainPanel.add(topPanel,BorderLayout.NORTH);
-        mainPanel.add(middlePanel,BorderLayout.CENTER);
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.weighty = 0.2;
+        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(topPanel,gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(middlePanel,gridBagConstraints);
         Dimension d = mainPanel.getPreferredSize();
-        mainPanel.setMaximumSize(d);
+        //mainPanel.setMaximumSize(d);
         mainPanel.setMinimumSize(d);
-        add(mainPanel);
+        this.setLayout(new GridBagLayout());
+        add(mainPanel,gridBagConstraints);
     }
 
     private void createTopPanel() {

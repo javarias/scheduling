@@ -92,9 +92,9 @@ public class SBTable extends JTable {
         uidLoc = infoSize-1;
         createTableModel();
         setModel(sbTableModel);
-        //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        //setPreferredSize(size);
-        setPreferredScrollableViewportSize(size);
+        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        setPreferredSize(size);
+        //setPreferredScrollableViewportSize(size);
         //setMaximumSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
@@ -482,11 +482,11 @@ public class SBTable extends JTable {
         p.setBorder(new TitledBorder("SB Details"));
         if(withExec){
             Dimension d = new Dimension(size.width, size.height + 25);
-            p.setPreferredSize(d);
+            //p.setPreferredSize(d);
             //p.setMaximumSize(d);
         }else{
             //p.setMaximumSize(size);
-            p.setPreferredSize(size);
+            //p.setPreferredSize(size);
         }
         return p;
     }

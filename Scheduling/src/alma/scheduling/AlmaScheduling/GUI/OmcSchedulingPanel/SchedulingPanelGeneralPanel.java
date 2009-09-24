@@ -26,16 +26,16 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import javax.swing.*;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.logging.Logger;
 import alma.exec.extension.subsystemplugin.*;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.ArrayModeEnum;
 import alma.SchedulingExceptions.InvalidOperationEx;
-//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 
 public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlugin {
     protected PluginContainerServices container;
-    //protected ALMASchedLogger logger;
     protected Logger logger;
     protected String title;
     private MasterSchedulerIF ms;
@@ -50,7 +50,6 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
     }
     public void onlineSetup(PluginContainerServices cs){
         container = cs;
-        //logger = new ALMASchedLogger(cs.getLogger());
         logger = cs.getLogger();
     }
     public String getTitle() {
@@ -61,7 +60,7 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
     }
 
     public void setMaxSize(Dimension d){ 
-        setMaximumSize(d);
+        //setMaximumSize(d);
     }
 
     public void showErrorPopup(String error,String method) {
@@ -78,7 +77,6 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
 
     public void setServices(PluginContainerServices cs) {
         container = cs;
-        //logger = new ALMASchedLogger(cs.getLogger());
         logger = cs.getLogger();
     }
 
@@ -176,7 +174,13 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
     private void addSchedulerToView(SchedulerTab s){
         try {
             removeAll();
-            add((JPanel)s);
+            this.setLayout(new GridBagLayout());
+            GridBagConstraints gridBagConstraints = new GridBagConstraints();
+            gridBagConstraints.fill = GridBagConstraints.BOTH;
+            gridBagConstraints.weightx = 1.0;
+            gridBagConstraints.weighty = 1.0;
+            gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+            add((JPanel)s,gridBagConstraints);
             validate();
         }catch (Exception e){
             logger.severe("SP: Error changing view to scheduler mode "+mode.toString());

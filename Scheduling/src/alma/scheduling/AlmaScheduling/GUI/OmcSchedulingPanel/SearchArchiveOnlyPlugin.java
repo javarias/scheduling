@@ -87,16 +87,29 @@ public class SearchArchiveOnlyPlugin extends SchedulingPanelGeneralPanel {
     }
 
     private void createLayout(){
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new JPanel(new GridBagLayout());
+        //mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(new TitledBorder("Search Archive"));
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
         createTopPanel();
         createMiddlePanel();
-        mainPanel.add(archiveSearchPanel,BorderLayout.NORTH);
-        mainPanel.add(middlePanel,BorderLayout.CENTER);
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.weighty = 0.2;
+        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+       
+        mainPanel.add(archiveSearchPanel,gridBagConstraints );
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(middlePanel,gridBagConstraints );
         Dimension d = mainPanel.getPreferredSize();
-        mainPanel.setMaximumSize(d);
+        //mainPanel.setMaximumSize(d);
+        this.setLayout(new GridBagLayout());
         mainPanel.setMinimumSize(d);
-        add(mainPanel, BorderLayout.CENTER);
+        add(mainPanel, gridBagConstraints);
     }
     /**
       * Top panel contains check boxes for determining if we

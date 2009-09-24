@@ -120,18 +120,31 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     }
 ///////////////////////////////
     private void createLayout(){
-        mainPanel = new JPanel();
+    	mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        
+        
         mainPanel.setBorder(new TitledBorder("Queued Scheduling"));
-        mainPanel.setLayout(new BorderLayout());
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.weighty = 0.2;
+        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.LINE_START;
         createTopPanel();
-        mainPanel.add(topPanel,BorderLayout.NORTH);
-        mainPanel.add(createCenterPanel(),BorderLayout.CENTER);
-	//setVisible(Boolean.TRUE);
-	//mainPanel.setPreferredSize(new Dimension(180,250));
+        mainPanel.add(topPanel,gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(createCenterPanel(),gridBagConstraints);
+        //setVisible(Boolean.TRUE);
+        //mainPanel.setPreferredSize(new Dimension(180,250));
         Dimension d = getPreferredSize();
-        mainPanel.setMaximumSize(d);
-        mainPanel.setMinimumSize(new Dimension(480,600));
-        add(mainPanel);
+        //mainPanel.setMaximumSize(d);
+        //mainPanel.setMinimumSize(new Dimension(480,600));
+        this.setLayout(new GridBagLayout());
+        add(mainPanel,gridBagConstraints);
     }
     private void createTopPanel() {
         createArchivePanel();
