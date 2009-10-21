@@ -154,8 +154,6 @@ public class GetObsUnitSet extends HttpServlet {
             m_logger.fine("SCHEDULING: Getting archive components");
             org.omg.CORBA.Object obj = cs.getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
             this.archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(obj);
-            
-            this.archConnectionComp.getAdministrative("SCHEDULING").init();
             this.archOperationComp = archConnectionComp.getOperational("SCHEDULING");
             this.archIdentifierComp = alma.xmlstore.IdentifierHelper.narrow(
                     cs.getDefaultComponent(

@@ -88,7 +88,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.94 2009/07/02 17:15:47 wlin Exp $
+ * @version $Id: ALMAArchive.java,v 1.95 2009/10/21 23:04:47 rhiriart Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1038,8 +1038,6 @@ public class ALMAArchive implements Archive {
             logger.fine("SCHEDULING: Getting archive components");
             org.omg.CORBA.Object obj = containerServices.getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
             this.archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(obj);
-            
-            this.archConnectionComp.getAdministrative("SCHEDULING").init();
             this.archOperationComp = archConnectionComp.getOperational("SCHEDULING");
             this.archIdentifierComp = alma.xmlstore.IdentifierHelper.narrow(
                     containerServices.getDefaultComponent(
@@ -1063,12 +1061,6 @@ public class ALMAArchive implements Archive {
             archOperationComp =null;
             archIdentifierComp = null;
         } catch (PermissionException e) {
-            logger.severe("SCHEDULING: Archive error: "+e.toString());
-            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
-            archConnectionComp =null;
-            archOperationComp =null;
-            archIdentifierComp = null;
-        } catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: Archive error: "+e.toString());
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             archConnectionComp =null;
