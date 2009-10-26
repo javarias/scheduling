@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- Example Schema for the Weather Data collected from the WeatherStations -->
+    <xs:element name="WeatherParameters">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="WeatherStation" type="WeatherStationT" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="WeatherStationT">
+        <xs:sequence>
+            <xs:element name="Location">
+                <!-- The distance, in meters, from the centre of the earth. These
+                     are in the ITRF reference frame. -->
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="X" type="xs:double"/>
+                        <xs:element name="Y" type="xs:double"/>
+                        <xs:element name="Z" type="xs:double"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WeatherData" type="WeatherDataT" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="WeatherDataT">
+        <xs:sequence>
+            <xs:element name="Value" type="WeatherValueT" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="type">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="Pressure"/>
+                    <xs:enumeration value="WindSpeed"/>
+                    <xs:enumeration value="WindDirection"/>
+                    <xs:enumeration value="Temperature"/>
+                    <xs:enumeration value="DewPoint"/>
+                    <xs:enumeration value="Humidity"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="WeatherValueT">
+        <!-- A generic value element, aggregating a timestamp in ACS Time units,
+             and a value which unit depends on its type in the following way:
+             
+             Pressure - Pascals (1 hPa = 100Pa)
+             WinSpeed - meters per second
+             WinDirection - radians. 0 is north, and pi/2 east
+             Temperature - degrees C
+             DewPoint - degrees C
+             Humidity - relative humidity, between 0 and 1 -->
+        <xs:attribute name="timestamp" type="xs:long"/>
+        <xs:attribute name="value" type="xs:double"/>
+    </xs:complexType>
+</xs:schema>
