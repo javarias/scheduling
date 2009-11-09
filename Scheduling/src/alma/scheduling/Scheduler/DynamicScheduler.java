@@ -26,18 +26,13 @@
 package alma.scheduling.Scheduler;
 
 
-import alma.scheduling.Define.SB;
 import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.MasterScheduler.Message;
-import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
-
-import java.util.logging.Logger;
 
 /**
  * DynamicScheduler.java
@@ -46,7 +41,7 @@ import java.util.logging.Logger;
  * scheduler package.  See Scheduling Subsystem Design document, 
  * section 3.2.3.
  * 
- * @version $Id: DynamicScheduler.java,v 1.23 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: DynamicScheduler.java,v 1.24 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  *
  */

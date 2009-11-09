@@ -26,36 +26,31 @@
 
 package alma.scheduling.GUI.PlanningModeSimGUI;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
 import java.awt.Component;
-import java.lang.Integer;
-import java.util.Vector;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.PrintStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.BufferedReader;
 import java.io.FileReader;
-import java.awt.image.BufferedImage;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JRootPane;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.JTextArea;
-import javax.swing.JLayeredPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 
-import alma.scheduling.PlanningModeSim.Tag;
 import alma.scheduling.PlanningModeSim.Simulator;
+import alma.scheduling.PlanningModeSim.Tag;
 
 /**
  * This class has all the functionality that is required by the PlanningModeSimGUI. It

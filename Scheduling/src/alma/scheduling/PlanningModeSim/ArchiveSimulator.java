@@ -26,22 +26,23 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.Scheduler.DSA.SchedulerStats;
-import alma.scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.logging.Level;
+
+import alma.scheduling.Define.Archive;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.SB;
-import alma.scheduling.Define.Program;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.Session;
-import alma.scheduling.Define.Policy;
-import alma.scheduling.Define.ExecBlock;
-import alma.scheduling.Define.Archive;
-import alma.scheduling.Define.SciPipelineRequest;
 import alma.scheduling.Define.SchedulingException;
-
-import java.util.ArrayList;
-import java.util.logging.Level;
+import alma.scheduling.Define.SciPipelineRequest;
+import alma.scheduling.Define.Session;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Scheduler.DSA.SchedulerStats;
 
 /**
  * The ArchiveSimulator stores the relevant entities needed for the
@@ -151,6 +152,11 @@ public class ArchiveSimulator extends BasicComponent implements Archive {
 		return this.project;
 	}
 
+	public Project[] getProjects(Set<String> projectIds) throws SchedulingException {
+		// TODO: make this return the given projects not all of them.
+		return this.project;
+	}
+	
 	public Project[] getNewProject(DateTime t) throws SchedulingException {
 		return new Project [0];
 	}

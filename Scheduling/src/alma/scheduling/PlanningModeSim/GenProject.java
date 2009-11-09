@@ -25,11 +25,15 @@
  */
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.Define.FrequencyBand;
-
-import java.io.*;
-import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.text.NumberFormat;
+import java.util.Properties;
+
+import alma.scheduling.Define.FrequencyBand;
 
 public class GenProject extends Properties {
 	

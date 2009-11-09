@@ -1,28 +1,18 @@
 package alma.scheduling.test;
 
+import java.util.logging.Logger;
+
 import alma.ACS.MasterComponent;
 import alma.ACS.ROstringSeq;
-import alma.ACS.SUBSYSSTATE_AVAILABLE;
-import alma.ACS.SUBSYSSTATE_INITIALIZING_PASS1;
-import alma.ACS.SUBSYSSTATE_INITIALIZING_PASS2;
-import alma.ACS.SUBSYSSTATE_OFFLINE;
-import alma.ACS.SUBSYSSTATE_ONLINE;
-import alma.ACS.SUBSYSSTATE_PREINITIALIZED;
-import alma.ACS.SUBSYSSTATE_OPERATIONAL;
-import alma.ACS.SUBSYSSTATE_PRESHUTDOWN;
-import alma.ACS.SUBSYSSTATE_SHUTDOWN;
-import alma.ACS.MasterComponentPackage.SubsystemStateEvent;
-import alma.ACS.MasterComponentImpl.StateChangeSemaphore;
 import alma.ACS.MasterComponentImpl.StateChangeListener;
-import alma.acs.container.ContainerServices;
+import alma.ACS.MasterComponentImpl.StateChangeSemaphore;
+import alma.ACS.MasterComponentPackage.SubsystemStateEvent;
 import alma.acs.component.client.ComponentClient;
+import alma.acs.container.ContainerServices;
 import alma.acs.nc.Consumer;
-import alma.scheduling.NothingCanBeScheduledEvent;
-import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.AlmaScheduling.ALMAMasterScheduler;
-
-import java.util.logging.Logger;
+import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.NothingCanBeScheduledEvent;
 
 public class TestScheduling {
     private boolean exitFlag = false;

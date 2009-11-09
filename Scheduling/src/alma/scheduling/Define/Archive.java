@@ -26,21 +26,27 @@
  
 package alma.scheduling.Define;
 
+import java.util.Set;
+
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
  * The Archive interface defines the interface to the archive needed
  * by the scheduling subsystem. 
  * 
- * @version $Id: Archive.java,v 1.10 2007/10/24 18:06:47 sslucero Exp $
+ * @version $Id: Archive.java,v 1.11 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public interface Archive {
 	
 	// Project
     /**
-      * @throws SchedulingException
-      */
+     * @throws SchedulingException
+     */
 	public Project[] getAllProject() throws SchedulingException;
+//    /**
+//     * @throws SchedulingException
+//     */
+//	public Project[] getProjects(Set<String> projectIds) throws SchedulingException;
     /**
       * @throws SchedulingException
       */

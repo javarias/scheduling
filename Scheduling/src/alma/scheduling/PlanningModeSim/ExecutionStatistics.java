@@ -26,8 +26,8 @@
 
 package alma.scheduling.PlanningModeSim;
 import alma.scheduling.Define.Date;
-import alma.scheduling.Define.Time;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Time;
 public class ExecutionStatistics {
 
     private String proj_name;

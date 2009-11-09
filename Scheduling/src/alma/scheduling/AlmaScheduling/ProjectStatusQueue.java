@@ -23,337 +23,233 @@
  *
  * File ProjectStatusQueue.java
  */
- 
+
 package alma.scheduling.AlmaScheduling;
 
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import alma.acs.logging.AcsLogger;
-import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
+import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.Define.SchedulingException;
 
 /**
- * The ProjectStatusQueue class is a queue of project status', held in memory,
+ * The ProjectStatusQueue class is a queue of Project statuses, held in memory,
  * that can be accessed and updated by multiple threads, viz., the 
  * MasterScheduler and Scheduler objects.
  * 
- * @author Sohaila Lucero
- * @version $Id: ProjectStatusQueue.java,v 1.11 2008/12/03 21:34:23 wlin Exp $
+ * @author David Clarke
+ * @version $Id: ProjectStatusQueue.java,v 1.12 2009/11/09 22:58:45 rhiriart Exp $
  */
 public class ProjectStatusQueue {
 
-    private final AcsLogger logger; 
-	private final ArrayList queue;
+	private final AcsLogger logger;
+
+	/** A map from the status */
+	private final Map<String, ProjectStatusI> statusQueue;
 
 	/**
-	 * Create an enpty queue of ProjectStatus.
+	 * Create an empty queue of ProjectStatuses.
 	 */
 	public ProjectStatusQueue(AcsLogger logger) {
-        this.logger = logger; 
-		queue = new ArrayList();
+		this.logger = logger;
+		
+		// We use a LinkedHashMap to preserve the insertion order of
+		// the elements. This may or may not prove to be important, but
+		// somehow calling a class a something-Queue and not
+		// maintaining order seems wrong.
+		statusQueue = new LinkedHashMap<String, ProjectStatusI>();
 	}
 
 	/**
-	 * Create an queue of ProjectStatus from the specified array.
+	 * Create a queue of ProjectStatusI from the specified array.
 	 */
-	public ProjectStatusQueue(ProjectStatus[] item, AcsLogger logger) {
+	public ProjectStatusQueue(ProjectStatusI[] statuses, AcsLogger logger) {
 		this(logger);
-		for (int i = 0; i < item.length; ++i)
-			queue.add(item[i]);
+		for (ProjectStatusI ps : statuses) {
+			addUnsynchronised(ps);
+		}
 	}
 
 	/**
-	 * Add a ProjectStatus to this queue.
-	 * @param item The ProjectStatus to be added.
+	 * Add an ProjectStatusI to this queue.
+	 * NOTE: THIS METHOD IS NOT SYNCHRONISED
+	 * @param ps The ProjectStatusI to be added.
 	 */
-	public synchronized void add(ProjectStatus item) {
-        //System.out.println("adding "+ item.getProjectStatusEntity().getEntityId());
-		queue.add(item);
+	private void addUnsynchronised(ProjectStatusI ps) {
+		if (ps == null) {
+			logger.warning("Trying to add a null ProjectStatusI to the ProjectStatusQueue - not added");
+			return;
+		} 
+		if (ps.getProjectStatusEntity() == null) {
+			logger.warning("Trying to add an ProjectStatusI with no Entity object to the ProjectStatusQueue - not added");
+			return;
+		} 
+		final String key = ps.getProjectStatusEntity().getEntityId();
+		if (key == null) {
+			logger.warning("Trying to add an ProjectStatusI with no EntityId to the ProjectStatusQueue - not added");
+			return;
+		} 
+		statusQueue.put(key, ps);
 	}
 
 	/**
-	 * Add an array of ProjectStatus to this queue.
-	 * @param item The array to be added.
+	 * Add an ProjectStatusI to this queue.
+	 * @param ps The ProjectStatusI to be added.
 	 */
-	public synchronized void add(ProjectStatus[] item) {
-		for (int i = 0; i < item.length; ++i){
-            //if(!isExists(item[i].getId())){
-            if(!isExists(item[i].getProjectStatusEntity().getEntityId())){
-			    queue.add(item[i]);
-            }
-        }
+	public synchronized void add(ProjectStatusI ps) {
+		addUnsynchronised(ps);
+	}
+
+	/**
+	 * Add an array of ProjectStatusI to this queue.
+	 * @param statuses The array to be added.
+	 */
+	public synchronized void add(ProjectStatusI[] statuses) {
+		for (ProjectStatusI ps : statuses) {
+			addUnsynchronised(ps);
+		}
+	}
+
+	/**
+	 * Remove the ProjectStatusI with the specified entity-id from the list.
+	 * This operation does not destroy the ProjectStatusI. 
+	 * @param entityId The entity-id of the ProjectStatusI to be removed.
+	 */
+	public synchronized void remove(String entityId) {
+		statusQueue.remove(entityId);
+	}
+
+	/**
+	 * Clear all ProjectStatusI from the queue.
+	 */
+	public synchronized void clear() {
+		statusQueue.clear();
+	}
+
+	/**
+	 * Update the queue to match <code>that</code>.
+	 */
+	public synchronized void updateWith(ProjectStatusQueue that) {
+		// 1. Remove things from this which aren't in that
+		final Collection<String> idsToRemove = new HashSet<String>();
+		for (final String thisId : this.getAllIds()) {
+			if (!that.isExists(thisId)) {
+				// thisId is not in that, so mark for removal from this
+				idsToRemove.add(thisId);
+			}
+		}
+		for (final String thisId : idsToRemove) {
+			this.remove(thisId);
+		}
+		
+		// 2. Add things from that which aren't already in this
+		for (final String thatId : that.getAllIds()) {
+			if (!this.isExists(thatId)) {
+				// thatId is not in this, so add it
+				this.add(that.get(thatId));
+			}
+		}
+	}
+
+	/**
+	 * Get the ProjectStatusI with the specified entity-id.
+	 * @param entityId The entity-id of the ProjectStatusI to be returned.
+	 * @return The ProjectStatusI with the specified entity-id or null
+	 * if there is no such entity.
+	 */
+	public synchronized ProjectStatusI get(String entityId) {
+		//System.out.println("getting ps "+entityId);
+		//System.out.println("get in ProjectSQueue: queue size = "+queue.size());
+		return statusQueue.get(entityId);
+	}
+
+	/**
+	 * @param ref A reference to the desired ProjectStatusI
+	 * @return The ProjectStatusI referred to or null if there is no such entity.
+	 */
+	public synchronized ProjectStatusI get(ProjectStatusRefT ref) {
+		return statusQueue.get(ref.getEntityId());
 	}
 	
 	/**
-	 * Remove the ProjectStatus with the specified entity-id from the list.
-	 * This operation does not destroy the ProjectStatus. 
-	 * @param entityId The entity-id of the ProjectStatus to be removed.
+	 * @param refs References to the desired ProjectStatusIs
+	 * @return The ProjectStatusIs referred to.
 	 */
-	public synchronized void remove(String entityId) {
-		ProjectStatus x = null;
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			//if (x.getId().equals(entityId)) {
-			if (x.getProjectStatusEntity().getEntityId().equals(entityId)) {
-				queue.remove(i);
-				break;
-			}
+	public synchronized ProjectStatusI[] get(ProjectStatusRefT[] refs) {
+		final ProjectStatusI[] result = new ProjectStatusI[refs.length];
+		for (int i = 0; i < refs.length; i++) {
+			result[i] = statusQueue.get(refs[i].getEntityId());
 		}
+		return result;
+	}
+	
+	/**
+	 * Get all ProjectStatusI in the queue.
+	 * @return All ProjectStatusI in the queue in the form of an array.
+	 */
+	public synchronized ProjectStatusI[] getAll() {
+		//      System.out.println("getAll in ProjectSQueue: queue size = "+queue.size());
+		ProjectStatusI[] x = new ProjectStatusI[statusQueue.size()];
+		return statusQueue.values().toArray(x);
 	}
 
 	/**
-	 * Clear all ProjectStatus from the queue.
+	 * Get the entity-ids of all ProjectStatusI in the queue.
+	 * @return All entity-ids in the queue in the form of a Set of strings.
 	 */
-	public synchronized void clear() {
-		queue.clear();
+	public synchronized Set<String> getAllIds() {
+		return statusQueue.keySet();
 	}
 
 	/**
-	 * Get the ProjectStatus with the specified entity-id.
-	 * @param entityId The entity-id of the ProjectStatus to be returned.
-	 * @return The ProjectStatus with the specified entity-id or null
-	 * if there is no such entity.
+	 * Return true if and only if there is a ProjectStatusI in the queue
+	 * with the specified entity-id.
+	 * @param entityId The entity-id of the ProjectStatusI to be found.
+	 * @return True if and only if there is an ProjectStatusI in the queue
+	 * with the specified entity-id.
 	 */
-	public synchronized ProjectStatus get(String entityId) {
-        //System.out.println("getting ps "+entityId);
-        //System.out.println("get in PSQueue: queue size = "+queue.size());
-		ProjectStatus x = null;
-		//for (int i = 0; i < queue.size(); i++) {
-		//	x = (ProjectStatus)queue.get(i);
-        //   System.out.println(x.getProjectStatusEntity().getEntityId());
-        //}
-		for (int i = 0; i < queue.size(); i++) {
-			x = (ProjectStatus)queue.get(i);
-          //  System.out.println("comparing to PS "+ x.getProjectStatusEntity().getEntityId());
-			//if (x.getId().equals(entityId)) {
-// debug
-			try {
-				if (x == null) {
-					//logger.log(Level.WARNING, "ProjectStatus #" + i + " from the queue is null", "");
-					logger.log(Level.WARNING, "ProjectStatus #" + i + " from the queue is null");
-				}
-				else if (x.getProjectStatusEntity() == null || x.getProjectStatusEntity().getEntityId() == null) {
-					StringWriter sw = new StringWriter();
-					x.marshal(sw);
-					logger.warning("ProjectStatus with null ID found: " + sw.toString());					
-				}
-			} catch (Throwable thr) {
-				// TODO Auto-generated catch block
-				thr.printStackTrace();
-			}
-// end debug		
-			if (x.getProjectStatusEntity().getEntityId().equals(entityId)) {
-            //    System.out.println("returning ps "+entityId);
-				return x;
+	public synchronized boolean isExists(String entityId) {
+		return statusQueue.containsKey(entityId);
+	}
+
+	public synchronized ProjectStatusI getStatusFromProjectId(String opId) {
+		for (ProjectStatusI ps : statusQueue.values()) {
+			if (ps.getObsProjectRef().getEntityId().equals(opId)) {
+				return ps;
 			}
 		}
-//        System.out.println("returning null");
 		return null;
 	}
 
 	/**
-	 * Get all ProjectStatus in the queue.
-	 * @return All ProjectStatus in the queue in the form of an array.
-	 */
-	public synchronized ProjectStatus[] getAll() {
-  //      System.out.println("getAll in PSQueue: queue size = "+queue.size());
-		ProjectStatus[] x = new ProjectStatus [queue.size()];
-        for(int i=0; i<queue.size(); i++){
-            x[i] = (ProjectStatus)queue.get(i);
-        }
-		//x = (ProjectStatus[])queue.toArray(x);
-		return x;
-	}
-
-	/**
-	 * Get the entity-ids of all ProjectStatus in the queue.
-	 * @return All entity-ids in the queue in the form of an array of strings.
-	 */
-	public synchronized String[] getAllIds() {
-		String[] x = new String [queue.size()];
-		for (int i = 0; i < x.length; ++i)
-			//x[i] = ((ProjectStatus)queue.get(i)).getId();
-			x[i] = ((ProjectStatus)queue.get(i)).getProjectStatusEntity().getEntityId();
-		return x;
-	}
-
-	/**
-	 * Get all ProjectStatus in the queue whose status is READY.
-	 * @return All ProjectStatus in the queue whose status is READY as an array.
-	public synchronized ProjectStatus[] getReady() {
-		ProjectStatus x = null;
-		ArrayList y = new ArrayList ();
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (x.getStatus().isReady()) {
-				y.add(x);
-			}
-		}
-		ProjectStatus[] z = new ProjectStatus [y.size()];
-		z = (ProjectStatus[])y.toArray(z);
-		return z;
-	}
-	 */
-
-	/**
-	 * Get all ProjectStatus in the queue whose status is WAITING.
-	 * @return All ProjectStatus in the queue whose status is WAITING as an array.
-	public synchronized ProjectStatus[] getWaiting() {
-		ProjectStatus x = null;
-		ArrayList y = new ArrayList ();
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (x.getStatus().isWaiting()) {
-				y.add(x);
-			}
-		}
-		ProjectStatus[] z = new ProjectStatus [y.size()];
-		z = (ProjectStatus[])y.toArray(z);
-		return z;
-	}
-	 */
-
-	/**
-	 * Get all ProjectStatus in the queue whose status is RUNNING.
-	 * @return All ProjectStatus in the queue whose status is RUNNING as an array.
-	public synchronized ProjectStatus[] getRunning() {
-		ProjectStatus x = null;
-		ArrayList y = new ArrayList ();
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (x.getStatus().isRunning()) {
-				y.add(x);
-			}
-		}
-		ProjectStatus[] z = new ProjectStatus [y.size()];
-		z = (ProjectStatus[])y.toArray(z);
-		return z;
-	}
-	 */
-
-	/**
-	 * Get all ProjectStatus in the queue whose status is COMPLETE.
-	 * @return All ProjectStatus in the queue whose status is COMPLETE as an array.
-	public synchronized ProjectStatus[] getComplete() {
-		ProjectStatus x = null;
-		ArrayList y = new ArrayList ();
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (x.getStatus().isComplete()) {
-				y.add(x);
-			}
-		}
-		ProjectStatus[] z = new ProjectStatus [y.size()];
-		z = (ProjectStatus[])y.toArray(z);
-		return z;
-	}
-	 */
-
-	/**
-	 * Get all ProjectStatus in the queue whose status is ABORTED.
-	 * @return All ProjectStatus in the queue whose status is ABORTED as an array.
-	public synchronized ProjectStatus[] getAborted() {
-		ProjectStatus x = null;
-		ArrayList y = new ArrayList ();
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (x.getStatus().isAborted()) {
-				y.add(x);
-			}
-		}
-		ProjectStatus[] z = new ProjectStatus [y.size()];
-		z = (ProjectStatus[])y.toArray(z);
-		return z;
-	}
-	 */
-
-	/**
-	 * Get all ProjectStatus in the queue whose status is not defined.
-	 * @return All ProjectStatus in the queue whose status is not defined as an array.
-	public synchronized ProjectStatus[] getNotDefined() {
-		ProjectStatus x = null;
-		ArrayList y = new ArrayList ();
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (!x.getStatus().isDefined()) {
-				y.add(x);
-			}
-		}
-		ProjectStatus[] z = new ProjectStatus [y.size()];
-		z = (ProjectStatus[])y.toArray(z);
-		return z;
-	}
-	 */
-
-	/**
-	 * Return true if and only if there is a ProjectStatus in the queue
-	 * with the specified entity-id.
-	 * @param entityId The entity-id of the ProjectStatus to be found.
-	 * @return True if and only if there is an ProjectStatus in the queue
-	 * with the specified entity-id.
-	 */
-	public synchronized boolean isExists(String entityId) {
-		ProjectStatus x = null;
-		for (int i = 0; i < queue.size(); ++i) {
-			x = (ProjectStatus)queue.get(i);
-			if (x.getProjectStatusEntity().getEntityId().equals(entityId)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-    public synchronized ProjectStatus getStatusFromProjectId(String projectId) {
-        ProjectStatus x=null;
-        for(int i=0; i < queue.size(); i++){
-            x = (ProjectStatus)queue.get(i);
-            if(x.getObsProjectRef().getEntityId().equals(projectId)) {
-                return x;
-            }
-        }
-        return null;
-    }
-
-
-
-	/**
 	 * Get the number of items in the queue.
-	 * @return The number of ProjectStatus in this queue.
+	 * @return The number of ProjectStatusI in this queue.
 	 */
 	public synchronized int size() {
-		return queue.size();
+		return statusQueue.size();
 	}
 
-    /**
-      * Updates the project status in the queue.
-      * @param ps The ProjectStatus to update.
-      */
-    public synchronized void updateProjectStatus(ProjectStatus ps) throws SchedulingException {
-        String ps_id = ps.getProjectStatusEntity().getEntityId();
-        if(!isExists(ps_id)) {
-            throw new SchedulingException(
-                    "SCHEDULING: Cannot update ProjectStatus coz it doesn't exist in the queue. Try adding it.");
-        }
-        ProjectStatus x;
-        logger.finest("PS id passed in = "+ps_id);
-        for(int i = 0; i< queue.size(); i++) {
-            x = (ProjectStatus)queue.get(i);
-            logger.finest("PS id queue = "+x.getProjectStatusEntity().getEntityId());
-            if( ps_id.equals(x.getProjectStatusEntity().getEntityId()) ){
-                queue.set(i, ps);
-            }
-        }
+	/**
+	 * Updates the Project status in the queue.
+	 * @param ps The ProjectStatusI to update.
+	 */
+	public synchronized void updateProjectStatus(ProjectStatusI ps)
+			throws SchedulingException {
+		String ps_id = ps.getProjectStatusEntity().getEntityId();
+		if (!isExists(ps_id)) {
+			throw new SchedulingException(
+					"SCHEDULING: Cannot update ProjectStatusI because it doesn't exist in the queue. Try adding it.");
+		}
+		addUnsynchronised(ps);
+	}
+	
+    public synchronized void replace (ProjectStatusI ps) {
+    	addUnsynchronised(ps);
     }
 
-    public synchronized void replace (ProjectStatus ps) {
-        for(int i=0; i < queue.size(); i++){
-            if(ps.getProjectStatusEntity().getEntityId().equals( 
-                        ((ProjectStatus)queue.get(i)).getProjectStatusEntity().getEntityId() ) ){
-                queue.set(i, ps);
-            }
-        }
-    }
 }

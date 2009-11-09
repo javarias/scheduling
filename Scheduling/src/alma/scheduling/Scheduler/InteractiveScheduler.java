@@ -25,27 +25,21 @@
  */
 package alma.scheduling.Scheduler;
 
-import alma.log_audience.OPERATOR;
-
 import java.util.logging.Level;
 
-import alma.scheduling.Define.InteractiveSession;
+import alma.log_audience.OPERATOR;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Control;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.InteractiveSession;
+import alma.scheduling.Define.Operator;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.SciPipelineRequest;
-
-import alma.scheduling.Define.Control;
-import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.Telescope;
-import alma.scheduling.Define.ProjectManager;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.Project;
-import alma.scheduling.Define.Status;
-
-import alma.scheduling.MasterScheduler.Message;
-//import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 
 /**
  * The InteractiveScheduler class implements the concept of a scheduler
@@ -112,7 +106,7 @@ import alma.scheduling.MasterScheduler.Message;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.29 2008/09/03 22:14:39 wlin Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.30 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {

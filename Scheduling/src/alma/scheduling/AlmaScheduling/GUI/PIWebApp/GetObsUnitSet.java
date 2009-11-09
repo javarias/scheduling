@@ -1,42 +1,33 @@
 package alma.scheduling.AlmaScheduling.GUI.PIWebApp;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.logging.Logger;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import alma.scheduling.AlmaScheduling.ALMAArchive;
-import alma.scheduling.AlmaScheduling.ALMAClock;
-import alma.scheduling.Define.*;
-import alma.acs.container.ContainerServices;
-import alma.acs.component.client.ComponentClient;
+
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.client.AdvancedComponentClient;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.*;
-
-import alma.entity.xmlbinding.schedblock.*;
-import alma.entity.xmlbinding.obsproject.*;
-import alma.entity.xmlbinding.obsproject.types.*; 
-import alma.entity.xmlbinding.schedblock.types.*;
-import alma.entity.xmlbinding.projectstatus.*;
-import alma.entity.xmlbinding.projectstatus.types.*;
-import alma.xmlentity.XmlEntityStruct;
-
+import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntitySerializer;
-import alma.acs.entityutil.EntityException;
-
-import alma.xmlstore.Operational;
-import alma.xmlstore.Identifier;
+import alma.entity.xmlbinding.obsproject.ObsProject;
+import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
+import alma.entity.xmlbinding.ousstatus.OUSStatus;
+import alma.entity.xmlbinding.ousstatus.PipelineProcessingRequestT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.scheduling.AlmaScheduling.ALMAArchive;
+import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.ArchiveConnection;
-import alma.xmlstore.ArchiveConnectionPackage.*;
-import alma.xmlstore.OperationalPackage.*;
 import alma.xmlstore.ArchiveInternalError;
-import alma.xmlstore.Cursor;
-import alma.xmlstore.CursorPackage.QueryResult;
-import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.xmlstore.Identifier;
+import alma.xmlstore.Operational;
+import alma.xmlstore.ArchiveConnectionPackage.ArchiveException;
+import alma.xmlstore.ArchiveConnectionPackage.PermissionException;
+import alma.xmlstore.ArchiveConnectionPackage.UserDoesNotExistException;
 
 
 
@@ -87,6 +78,7 @@ public class GetObsUnitSet extends HttpServlet {
 			
 			ObsProject proj;
 			ProjectStatus ps = null;
+            OUSStatus outT;
 	       
 	        XmlEntityStruct xml = archOperationComp.retrieveDirty(uid);
 	        proj = (ObsProject) entityDeserializer.deserializeEntity(xml, ObsProject.class);
@@ -97,7 +89,8 @@ public class GetObsUnitSet extends HttpServlet {
        
             xml = archOperationComp.retrieveDirty(proj.getProjectStatusRef().getEntityId());
             ps = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class);
-            ObsUnitSetStatusT outT= ps.getObsProgramStatus();
+            xml = archOperationComp.retrieveDirty(ps.getObsProgramStatusRef().getEntityId());
+            outT = (OUSStatus)entityDeserializer.deserializeEntity(xml, OUSStatus.class);
             req.setAttribute("StartTime",outT.getStatus().getStartTime().toString());
             req.setAttribute("EndTime",outT.getStatus().getEndTime().toString());
             req.setAttribute("NumberSB",Integer.toString(outT.getTotalSBs()));

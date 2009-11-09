@@ -1,7 +1,8 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.Color;
-import alma.common.gui.chessboard.*;
+
+import alma.common.gui.chessboard.ChessboardStatus;
 
 public class SPAntennaStatus implements ChessboardStatus {
 	private static final String ONLINE_STRING = "ANT_ONLINE";

@@ -26,11 +26,10 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.Vector;
-import java.util.logging.Logger;
+
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.SBLite;
 
 public class ArchiveSearchController extends SchedulingPanelController {
     
@@ -66,13 +65,16 @@ public class ArchiveSearchController extends SchedulingPanelController {
         Vector tmp = new Vector();
         try {
             getMSRef();
-            String[] sbs = masterScheduler.queryArchive(sbQuery,"SchedBlock");
-            String[] projs = masterScheduler.queryForAllProject(pName, piName, pType, aType);
-            //do union now
-            String[] unionSB = masterScheduler.getSBProjectUnion(sbs,projs);
-            SBLite[] unionSBLites = masterScheduler.getExistingSBLite(unionSB);
-            String[] unionProj = masterScheduler.getProjectSBUnion(projs,sbs);
-            ProjectLite[] unionProjectLites = masterScheduler.getProjectLites(unionProj);
+//            String[] sbs = masterScheduler.queryArchive(sbQuery,"SchedBlock");
+//            String[] projs = masterScheduler.queryForAllProject(pName, piName, pType, aType);
+//            //do union now
+//            String[] unionSB = masterScheduler.getSBProjectUnion(sbs,projs);
+//            SBLite[] unionSBLites = masterScheduler.getExistingSBLite(unionSB);
+//            String[] unionProj = masterScheduler.getProjectSBUnion(projs,sbs);
+//            ProjectLite[] unionProjectLites = masterScheduler.getProjectLites(unionProj);            
+            SBLite[] unionSBLites = masterScheduler.getSBLites();
+            ProjectLite[] unionProjectLites =
+            	masterScheduler.getFilteredProjectLites(pName, piName, pType, aType);
             releaseMSRef();
             tmp.add(unionProjectLites);
             tmp.add(unionSBLites);

@@ -26,13 +26,13 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Define.ArrayTime;
 import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.ClockAlarmListener;
 import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.ArrayTime;
 import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 
 /**

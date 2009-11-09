@@ -25,31 +25,34 @@
  */
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
-import alma.scheduling.PlanningModeSim.Define.ContainerServices;
-import alma.scheduling.PlanningModeSim.Define.SimulationException;
-
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.FrequencyBand;
-import alma.scheduling.Define.SiteCharacteristics;
-import alma.scheduling.Define.Project;
-import alma.scheduling.Define.Program;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.Policy;
-import alma.scheduling.Define.PolicyFactor;
-import alma.scheduling.Define.Priority;
-import alma.scheduling.Define.WeatherCondition;
-import alma.scheduling.Define.Target;
-import alma.scheduling.Define.Equatorial;
-import alma.scheduling.Define.Antenna;
-import alma.scheduling.Define.PreConditions;
-
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import alma.scheduling.Define.Antenna;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Equatorial;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.PolicyFactor;
+import alma.scheduling.Define.PreConditions;
+import alma.scheduling.Define.Priority;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.Target;
+import alma.scheduling.Define.WeatherCondition;
+import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
+import alma.scheduling.PlanningModeSim.Define.ContainerServices;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 /**
  * The SimulationInput class is a component that is an extension of 
@@ -784,10 +787,10 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			if (numberSets < 0)
 				error("Number of sets cannot be 0 in " + s);
 			// Create the project.
-			project[i] = new Project(name + "_project", name + "_proposal", name, "v01", pi, logger);
+			project[i] = new Project(name + "_project", name + "_proposal", name, "v01", pi, "", "", logger);
 				
 			// Create the program and add it to the project.
-			Program program = new Program (name + "_set_program");
+			Program program = new Program (name + "_set_program", name + "_set_program_status");
 			setList.add(program);
 			project[i].setProgram(program);
 			// Set the priority of the program.
@@ -856,7 +859,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			if (numberTargets < 0)
 				error("Number of targets cannot be 0 in " + value[i]);
 			
-			set = new Program (setName + "_set_" + i);
+			set = new Program (setName + "_set_" + i, setName + "_set_" + i + "_status");
 			// Set the scientific priority.
 			set.setScientificPriority(program.getScientificPriority());
 			// Set the frequency and frequency band.

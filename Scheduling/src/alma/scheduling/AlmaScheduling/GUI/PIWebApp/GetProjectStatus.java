@@ -1,24 +1,19 @@
 package alma.scheduling.AlmaScheduling.GUI.PIWebApp;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletConfig;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.logging.Logger;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import alma.acs.component.client.AdvancedComponentClient;
+import alma.acs.container.ContainerServices;
 import alma.scheduling.AlmaScheduling.ALMAArchive;
 import alma.scheduling.AlmaScheduling.ALMAClock;
-import alma.scheduling.Define.*;
-import alma.acs.container.ContainerServices;
-import alma.acs.component.client.ComponentClient;
-import alma.acs.component.client.AdvancedComponentClient;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.*;
-import alma.entity.xmlbinding.schedblock.*;
-import alma.entity.xmlbinding.projectstatus.*;
+import alma.scheduling.Define.Project;
 
 
 //ALMA library

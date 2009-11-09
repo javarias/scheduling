@@ -27,20 +27,20 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
-import alma.acs.nc.*;
-import alma.acs.util.UTCUtility;
-import alma.acs.container.ContainerServices;
-import alma.acs.component.client.ComponentClient;
-
-import alma.scheduling.EndSessionEvent;
-import alma.scheduling.StartSessionEvent;
-import alma.scheduling.NothingCanBeScheduledEvent;
-import alma.scheduling.NothingCanBeScheduledEnum;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.AlmaScheduling.ALMAPublishEvent;
 import alma.Control.ControlSystemChangeOfStateEvent;
-
+import alma.acs.component.client.ComponentClient;
+import alma.acs.container.ContainerServices;
+import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.Receiver;
+import alma.acs.nc.SimpleSupplier;
+import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
+import alma.scheduling.EndSessionEvent;
+import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.StartSessionEvent;
+import alma.scheduling.AlmaScheduling.ALMAPublishEvent;
+import alma.scheduling.Define.DateTime;
 
 public class TestALMAPublishEvent {
     private ContainerServices container;

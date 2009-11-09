@@ -26,31 +26,35 @@
 
 package alma.scheduling.AlmaScheduling.GUI.Plugins;
 
-import java.util.logging.Logger;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.BorderLayout;
-import java.awt.event.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JLabel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.logging.Logger;
+
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.table.TableModel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
-import alma.exec.extension.subsystemplugin.*;
-
-import alma.scheduling.SBLite;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.SBLite;
 
 /**
   * Plugin GUI for Exec 
   *
-  * @version $Id: DisplaySBPlugin.java,v 1.5 2007/06/13 22:17:31 sslucero Exp $
+  * @version $Id: DisplaySBPlugin.java,v 1.6 2009/11/09 22:58:45 rhiriart Exp $
   */
 public class DisplaySBPlugin extends JPanel implements SubsystemPlugin {
 

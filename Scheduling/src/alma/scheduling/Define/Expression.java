@@ -26,8 +26,12 @@
  
 package alma.scheduling.Define;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.NoSuchElementException;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 /**
  * The Expression class accepts a logical expression in the form of a 
@@ -68,7 +72,7 @@ import java.util.*;
  * of any function.  Java reflection is used to execute the functions
  * that correspond to the names.
  * 
- * @version $Id: Expression.java,v 1.12 2006/10/20 15:38:45 sslucero Exp $
+ * @version $Id: Expression.java,v 1.13 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class Expression {

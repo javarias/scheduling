@@ -26,8 +26,8 @@
  
 package alma.scheduling.test;
 
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class AllTests {//extends TestSuite{
     /*

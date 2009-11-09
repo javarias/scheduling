@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  * An Project is an observing project as viewed by the
  * scheduling subsystem. 
  * 
- * @version $Id: Project.java,v 1.10 2008/06/19 19:54:32 wlin Exp $
+ * @version $Id: Project.java,v 1.11 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class Project implements ProjectMember {
@@ -55,6 +55,12 @@ public class Project implements ProjectMember {
 	protected DateTime timeOfUpdate;
 	// The status of this project component.
 	protected Status status;
+
+	/** The observing mode of the project as defined in the DataProcessingParameters */
+	protected String projectType;
+	
+	/** The array type required by the project */
+	protected String arrayType;
 	
 	// A reference to the obsProgram that belongs to this Project.
 	protected Program program;
@@ -69,7 +75,8 @@ public class Project implements ProjectMember {
 	 * Construct an Project.
 	 */
 	public Project(String obsProjectId, String proposalId, 
-            String projectName, String projectVersion, String PI, Logger logger) {
+            String projectName, String projectVersion, String PI,
+            String projectType, String arrayType, Logger logger) {
 
 		this.obsProjectId  = obsProjectId;
 		this.proposalId = proposalId;
@@ -415,5 +422,21 @@ public class Project implements ProjectMember {
     public void setProjectStatusId(String projectStatusId) {
         this.projectStatusId = projectStatusId;
     }
+
+	public String getArrayType() {
+		return arrayType;
+	}
+
+	public void setArrayType(String arrayType) {
+		this.arrayType = arrayType;
+	}
+
+	public String getProjectType() {
+		return projectType;
+	}
+
+	public void setProjectType(String projectType) {
+		this.projectType = projectType;
+	}
 
 }

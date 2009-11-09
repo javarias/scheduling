@@ -26,12 +26,9 @@
  
 package alma.scheduling.test;
 
-import alma.acs.component.client.ComponentClientTestCase;
-//import junit.framework.TestSuite;
 import junit.framework.TestCase;
-
-import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Date;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.Time;
 
 /**

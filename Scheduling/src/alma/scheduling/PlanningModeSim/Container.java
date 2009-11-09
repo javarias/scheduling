@@ -26,8 +26,6 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import java.util.logging.Logger;
-
 import alma.acs.logging.AcsLogger;
 import alma.scheduling.PlanningModeSim.Define.ContainerServices;
 import alma.scheduling.PlanningModeSim.MasterScheduler.MasterScheduler;

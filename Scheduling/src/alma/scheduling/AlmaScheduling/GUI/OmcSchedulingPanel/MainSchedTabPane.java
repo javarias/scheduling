@@ -24,28 +24,29 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.EventListener;
 import java.util.Vector;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
 import java.util.logging.Logger;
 
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.SBLite;
-//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
-import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.CreateArrayPanel.GetAntennaThread;
-import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.CreateArrayPanel.UpdateCB;
-import alma.exec.extension.subsystemplugin.*;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.border.TitledBorder;
 
-import alma.acs.container.ContainerServices;
-import alma.Control.DestroyedManualArrayEvent;
+import alma.Control.CreatedAutomaticArrayEvent;
 import alma.Control.CreatedManualArrayEvent;
 import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.Control.CreatedAutomaticArrayEvent;
+import alma.Control.DestroyedManualArrayEvent;
 import alma.acs.nc.Consumer;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 
 public class MainSchedTabPane extends JTabbedPane {

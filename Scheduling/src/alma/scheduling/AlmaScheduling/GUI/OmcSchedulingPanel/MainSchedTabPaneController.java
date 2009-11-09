@@ -24,18 +24,12 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.util.logging.Logger;
 import alma.Control.ControlMaster;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.SchedulerInfo;
-import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
-import alma.exec.extension.subsystemplugin.*;
-import alma.acs.nc.Consumer;
-
-import alma.ACS.MasterComponent;
-import alma.ACS.ROstringSeq;
-import alma.ACSErr.CompletionHolder;
 
 public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control=null;

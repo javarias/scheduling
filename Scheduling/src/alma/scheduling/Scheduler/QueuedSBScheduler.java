@@ -29,23 +29,16 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import alma.log_audience.OPERATOR;
-
+import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Control;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Operator;
+import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.Define.SciPipelineRequest;
-
-import alma.scheduling.Define.Control;
-import alma.scheduling.Define.Operator;
 import alma.scheduling.Define.Telescope;
-import alma.scheduling.Define.ProjectManager;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.Project;
-
-import alma.scheduling.MasterScheduler.Message;
-
-import alma.scheduling.NothingCanBeScheduledEnum;
 /**
  */
 public class QueuedSBScheduler extends Scheduler implements Runnable {

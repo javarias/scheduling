@@ -1,17 +1,19 @@
 package alma.scheduling.PlanningModeSim;
 
-import java.util.*; 
-import java.io.File;
-import java.io.FileReader;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import alma.scheduling.Define.Clock;
-import alma.scheduling.Define.Time;
 import alma.scheduling.Define.Date;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Time;
 
 public class RealWeatherModel {
     private DateTime initializedTime;

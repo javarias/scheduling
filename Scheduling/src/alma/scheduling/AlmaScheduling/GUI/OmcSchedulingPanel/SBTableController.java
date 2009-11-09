@@ -25,10 +25,8 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import java.util.logging.Logger;
+import alma.scheduling.SBLite;
 
 public class SBTableController extends SchedulingPanelController {
 

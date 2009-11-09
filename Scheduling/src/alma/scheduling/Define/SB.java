@@ -26,14 +26,14 @@
  
 package alma.scheduling.Define;
 
-import java.util.ArrayList;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 /**
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.29 2008/12/01 18:04:59 wlin Exp $
+ * @version $Id: SB.java,v 1.30 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -76,7 +76,7 @@ public class SB implements ProgramMember {
 	//			maximumTimeInSeconds * (maximumNumberOfExecutions + 1)
 	
 	private int maximumNumberOfExecutions;
-	private int maximumTimeInSeconds;
+	private int maximumTimeInSeconds; // per execution
     private boolean indefiniteRepeat;
     private boolean runQuicklook;
 	// The members of this set are ExecBlocks.
@@ -101,6 +101,14 @@ public class SB implements ProgramMember {
 	private double lstBegin;
 	private double lstEnd;
     private PreConditions precondition;
+
+
+	/** The mode name of the SB */
+	protected String modeName;
+	
+	/** The mode type of the SB */
+	protected String modeType;
+
 	/**
 	 * Create an SB object.
 	 * @param id The archive-id of the scheduling block that this SB represents.
@@ -807,19 +815,47 @@ public class SB implements ProgramMember {
 	}
     
     public void setPreconditions(PreConditions p){
-         precondition = p;
-     }
+    	precondition = p;
+    }
 
-     public PreConditions getPreConditions(){
-         return precondition;
-     }
+    public PreConditions getPreConditions(){
+    	return precondition;
+    }
 
-	public boolean isRunQuicklook() {
-		return runQuicklook;
+    public boolean isRunQuicklook() {
+    	return runQuicklook;
+    }
+
+    public void setRunQuicklook(boolean runQuicklook) {
+    	this.runQuicklook = runQuicklook;
+    }
+
+	/**
+	 * @return the modeName
+	 */
+	public String getModeName() {
+		return modeName;
 	}
 
-	public void setRunQuicklook(boolean runQuicklook) {
-		this.runQuicklook = runQuicklook;
+	/**
+	 * @param modeName the modeName to set
+	 */
+	public void setModeName(String modeName) {
+		this.modeName = modeName;
+	}
+
+	/**
+	 * @return the modetype
+	 */
+	public String getModeType() {
+		return modeType;
+	}
+
+	/**
+	 * @param modeType the modetype to set
+	 */
+	public void setModeType(String modeType) {
+		this.modeType = modeType;
 	}
 
 }

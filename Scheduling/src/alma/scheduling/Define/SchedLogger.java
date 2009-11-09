@@ -26,9 +26,9 @@
 
 package alma.scheduling.Define;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public class SchedLogger implements SchedLoggerIF {
     private Logger logger;
     protected String mode;

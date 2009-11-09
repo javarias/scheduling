@@ -25,17 +25,26 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
-import java.util.EventListener;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.util.logging.Logger;
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import alma.entity.xmlbinding.obsproject.types.ControlBlockTArrayRequestedType;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
 
 public class ArchiveSearchFieldsPanel extends JPanel {
     private JButton searchB;

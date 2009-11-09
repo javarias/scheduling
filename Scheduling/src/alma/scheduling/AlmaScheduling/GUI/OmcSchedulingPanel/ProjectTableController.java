@@ -25,10 +25,8 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
 import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import java.util.logging.Logger;
+import alma.scheduling.SBLite;
 
 
 public class ProjectTableController extends SchedulingPanelController {
@@ -52,6 +50,14 @@ public class ProjectTableController extends SchedulingPanelController {
         releaseMSRef();
         return p[0];
     }
+    
+    public ProjectLite getProjectLiteforSB(String uid) {
+    	getMSRef();
+    	ProjectLite p =  masterScheduler.getProjectLiteForSB(uid);
+    	releaseMSRef();
+        return p;
+    }
+    
     public SBLite[] getSBLites(String[] uids){
         getMSRef();
         SBLite[] sbs = masterScheduler.getSBLite(uids);

@@ -26,11 +26,8 @@
 
 package alma.scheduling.ObsProjectManager;
 
-import java.util.logging.Logger;
-
 import alma.acs.logging.AcsLogger;
 import alma.scheduling.NothingCanBeScheduledEnum;
-import alma.scheduling.AlmaScheduling.ProjectUtil;
 import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
@@ -41,7 +38,7 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
- * @version $Id: ProjectManager.java,v 1.18 2009/07/06 18:54:35 wlin Exp $
+ * @version $Id: ProjectManager.java,v 1.19 2009/11/09 22:58:45 rhiriart Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -49,8 +46,6 @@ public class ProjectManager implements Runnable,
 
     //The logger
     protected final AcsLogger logger;
-    
-    protected final ProjectUtil projectUtil;
     
     // True if the scheduling subsystem has been stopped
     protected boolean stopCommand;
@@ -60,7 +55,6 @@ public class ProjectManager implements Runnable,
     public ProjectManager(AcsLogger logger) {
         this.stopCommand = false;
         this.logger = logger;
-        projectUtil = new ProjectUtil(logger);
     }
     
     /**

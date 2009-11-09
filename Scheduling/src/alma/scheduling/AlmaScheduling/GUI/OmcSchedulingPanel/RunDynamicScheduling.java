@@ -25,11 +25,8 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.logging.Logger;
-import alma.acs.container.ContainerServices;
+
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-
-//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
-
 import alma.scheduling.MasterSchedulerIF;
 import alma.xmlentity.XmlEntityStruct;
 

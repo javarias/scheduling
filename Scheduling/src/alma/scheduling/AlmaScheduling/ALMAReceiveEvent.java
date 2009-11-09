@@ -25,51 +25,46 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.sql.Timestamp;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import alma.xmlentity.XmlEntityStruct;
-import alma.entities.commonentity.EntityT;
-import alma.entities.commonentity.EntityRefT;
-import alma.entity.xmlbinding.projectstatus.*;
-
-import alma.acs.container.ContainerServices;
-import alma.acs.util.UTCUtility;
-//import alma.acs.util.UTCUtility;
-
-import alma.Control.ExecBlockStartedEvent;
 import alma.Control.ExecBlockEndedEvent;
-//import alma.Control.ControlSystemStatusEvent;
-import alma.TelCalPublisher.*;
-import alma.pipelinescience.ScienceProcessingDoneEvent;
-import alma.offline.ASDMArchivedEvent;
-
-import alma.scheduling.StartSessionEvent;
-import alma.scheduling.EndSessionEvent;
-import alma.scheduling.Event.Receivers.*;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.ArrayTime;
-import alma.scheduling.Define.Status;
-import alma.scheduling.Define.ExecBlock;
-import alma.scheduling.Define.ControlEvent;
-import alma.scheduling.Define.SciPipelineRequest;
-import alma.scheduling.Define.SchedulingException;
-
-import alma.log_audience.OPERATOR;
-import alma.acs.logging.AcsLogger;
+import alma.Control.ExecBlockStartedEvent;
+import alma.TelCalPublisher.AmpCurveReducedEvent;
+import alma.TelCalPublisher.AmpliCalReducedEvent;
+import alma.TelCalPublisher.AntennaPositionsReducedEvent;
+import alma.TelCalPublisher.AtmosphereReducedEvent;
+import alma.TelCalPublisher.DelayReducedEvent;
+import alma.TelCalPublisher.FocusReducedEvent;
+import alma.TelCalPublisher.PhaseCalReducedEvent;
+import alma.TelCalPublisher.PhaseCurveReducedEvent;
+import alma.TelCalPublisher.PointingModelReducedEvent;
+import alma.TelCalPublisher.PointingReducedEvent;
+import alma.TelCalPublisher.SkydipReducedEvent;
+import alma.acs.container.ContainerServices;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
-import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.acs.util.UTCUtility;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
-import java.sql.Timestamp;
+import alma.log_audience.OPERATOR;
+import alma.offline.ASDMArchivedEvent;
+import alma.pipelinescience.ScienceProcessingDoneEvent;
+import alma.scheduling.Define.ControlEvent;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SciPipelineRequest;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Event.Receivers.ReceiveEvent;
+import alma.scheduling.Scheduler.Scheduler;
 
 
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.56 2008/06/19 19:31:40 wlin Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.57 2009/11/09 22:58:45 rhiriart Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -79,7 +74,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     //publish event class
     private ALMAPublishEvent publisher;
     //a list of the ExecBlock that are currently started but not finished.
-    private Vector currentEB; 
+    private Vector<ExecBlock> currentEB; 
     
     private ALMAClock clock;
     private ArrayContextLogger arraylogger;
@@ -97,7 +92,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.arraylogger = new ArrayContextLogger(cs.getLogger());
         this.manager = m;
         this.publisher = pub;
-        this.currentEB = new Vector();
+        this.currentEB = new Vector<ExecBlock>();
         this.clock = new ALMAClock(); 
     }
     
@@ -333,7 +328,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       */
     private void sbCompleted(ExecBlock eb){
         logger.fine("SCHEDULING: setting SB to complete.");
-        manager.setSBComplete(eb);
+        manager.endExecutionBlock(eb);
     }
     
 
@@ -344,16 +339,18 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       * @return ExecBlock The exec block with the given id. Returns null if not in the queue.
       */
     private ExecBlock retrieveExecBlock(String ebId) {
-        logger.fine("SCHEDULING: Retrieving EB "+ebId+" from list");
-        ExecBlock eb = null;
-        for(int i=0; i < currentEB.size(); i++) {
-            if( ((ExecBlock)currentEB.elementAt(i)).getId().equals(ebId) ){
-                eb = (ExecBlock)currentEB.elementAt(i);
-                logger.fine("SCHEDULING: Found eb "+eb.getExecId()+" in list");
-                break;
-            }
+        logger.fine(String.format(
+        		"SCHEDULING: Retrieving EB %s from list", ebId));
+        for (final ExecBlock eb : currentEB) {
+        	if (eb.getId().equals(ebId)) {
+                logger.fine(String.format(
+                		"SCHEDULING: Found eb %s in list", eb.getExecId()));
+        		return eb;
+        	}
         }
-        return eb;
+        logger.fine(String.format(
+        		"SCHEDULING: Cannot find EB %s in list", ebId));
+        return null;
     }
 
     /**
@@ -362,7 +359,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       */
     private void deleteFinishedEB(ExecBlock eb) {
         for(int i=0; i < currentEB.size(); i++) {
-            ExecBlock tmpEB = (ExecBlock)currentEB.elementAt(i);
+            ExecBlock tmpEB = currentEB.elementAt(i);
             if( tmpEB.getId().equals(eb.getId()) ){
                 currentEB.removeElementAt(i);
                 break;
@@ -399,6 +396,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.fine("SCHEDULING: Recording start time for: "+e.execId.entityId);
             logger.fine("SCHEDULING: start time is : "+startEb.toString());
             logger.fine("********************************");
+            manager.setSBRunning(e.sbId.entityId);
             eb.setStartTime(startEb);
             eb.setTimeOfCreation(startEb);
             eb.setTimeOfUpdate(startEb);
@@ -427,7 +425,10 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             processExecBlockEndedEvent(event);
         }
     }
+    
     private void processExecBlockEndedEvent(ExecBlockEndedEvent e) {
+//    	boolean succeeded = false;
+//    	boolean repsT
         try{
             logger.fine("SCHEDULING: Event reason = end");
             logger.fine("SCHEDULING: Received sb end event from control.");
@@ -449,19 +450,28 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.fine("SCHEDULING: end time is "+ endEb.toString());
             logger.fine("********************************");
             logger.fine("SCHEDULING: SB ("+e.sbId.entityId+") ended at "+endEb.toString()+" with ASDM/ExecBlock = "+e.execId.entityId);
+            
             //TODO change this when we start getting exec block end events for all reasons
             if(eb == null){
                 logger.severe("SCHEDULNG: EB in sched's list was null. Implies Sched did not receive EB start event. Setting SB as aborted");
                 //get sb and set it to not running
                 SB sb = manager.getSBQueue().get(e.sbId.entityId);
                 sb.setAborted(endEb);
+                manager.setSBSuspended(sb);
                 return;
             }
+            
             if(e.status == alma.Control.Completion.SUCCESS) {
                 eb.setEndTime(endEb, Status.COMPLETE);
                 arraylogger.log(Level.INFO, 
                         "SCHEDULING: SB("+eb.getParent().getId()+") completed successfuly on array "+
                         eb.getArrayName(), OPERATOR.value, eb.getArrayName());
+            } else if (e.status == alma.Control.Completion.FAIL) {
+                eb.setEndTime(endEb, Status.FAILED);
+                arraylogger.log(Level.WARNING, 
+                        "SCHEDULING: SB("+eb.getParent().getId()+") failed on array "+
+                        eb.getArrayName(), OPERATOR.value, eb.getArrayName());
+                //NOTE: SB Aborted Alarm sent prior to this method being run
             } else {
                 eb.setEndTime(endEb, Status.ABORTED);// need to make a failed thing in Status
                 arraylogger.log(Level.WARNING, 

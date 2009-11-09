@@ -24,12 +24,18 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.logging.Logger;
-import alma.exec.extension.subsystemplugin.*;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin;
+import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.ArrayModeEnum;
 import alma.SchedulingExceptions.InvalidOperationEx;

@@ -26,43 +26,32 @@
 
 package alma.scheduling.GUI.PlanningModeSimGUI;
 
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.Dimension;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.GridBagLayout; 
-import java.awt.GridBagConstraints; 
-
-import java.util.Hashtable;
-import java.lang.Integer;
 import java.io.File;
+import java.util.Hashtable;
 
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JButton;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.ImageIcon;
-import javax.swing.JTabbedPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTabbedPane;
+import javax.swing.filechooser.FileFilter;
 
 public class PlanningModeSimGUI extends JFrame {
     private PlanningModeSimGUIController controller; 

@@ -24,29 +24,19 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.util.logging.Logger;
-import java.util.Vector; 
-
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.InvalidOperation;
+import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.scheduling.Define.*;
-import alma.scheduling.Dynamic_Operator_to_Scheduling;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
-
-import alma.xmlentity.XmlEntityStruct;
 import alma.acs.callbacks.RequesterUtil;
 import alma.acs.callbacks.ResponseReceiver;
-import alma.acs.nc.Consumer;
 import alma.acs.container.ContainerServices;
-import alma.Control.ExecBlockStartedEvent;
-import alma.Control.ExecBlockEndedEvent;
-import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.offline.ASDMArchivedEvent;
-import alma.xmlstore.XmlStoreNotificationEvent;
+import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.Dynamic_Operator_to_Scheduling;
+import alma.scheduling.InvalidOperation;
+import alma.scheduling.SBLite;
+import alma.xmlentity.XmlEntityStruct;
+import alma.xmlstore.XmlStoreNotificationEvent;
 
 public class DynamicSchedTabController extends SchedulingPanelController {
     private String schedulername;

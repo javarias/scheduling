@@ -198,6 +198,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         p.setBorder(new TitledBorder("Twelve Meter Antennas"));
         twelveMeterChessboard = new ChessboardPanel(entries, true, null, null);
         twelveMeterChessboard.setDetailsDisplayEnabled(false);
+        p.setName("TwelveMeterAntennas");
         p.add(twelveMeterChessboard,gridBagConstraints);
         return p;
     }

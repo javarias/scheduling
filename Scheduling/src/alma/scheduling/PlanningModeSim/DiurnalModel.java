@@ -27,6 +27,7 @@
 package alma.scheduling.PlanningModeSim;
 
 import java.io.PrintStream;
+
 import alma.scheduling.Define.Clock;
 
 /**

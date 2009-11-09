@@ -49,7 +49,6 @@ import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
-//import alma.acs.nc.AbstractNotificationChannel;
 import alma.acs.nc.CorbaNotificationChannel;
 import alma.acs.nc.CorbaReceiver;
 import alma.acs.nc.Receiver;
@@ -88,12 +87,13 @@ import alma.scheduling.Scheduler.InteractiveScheduler;
 import alma.scheduling.Scheduler.QueuedSBScheduler;
 import alma.scheduling.Scheduler.Scheduler;
 import alma.scheduling.Scheduler.SchedulerConfiguration;
+import alma.scheduling.Scheduler.SchedulerConfiguration.RunMode;
 import alma.xmlentity.XmlEntityStruct;
 
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.118 2009/08/10 21:17:16 wlin Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.119 2009/11/09 22:58:45 rhiriart Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -415,8 +415,10 @@ public class ALMAMasterScheduler extends MasterScheduler
                                                                int sleepTime,
                                                                String arrayName,
                                                                Policy policy) {
+    	
+    	SchedulerConfiguration result;
         if(special){
-            return new SchedulerConfiguration(
+            result = new SchedulerConfiguration(
                     Thread.currentThread(), dynamic,// manager.getSpecialSBs(),
                     manager.getSpecialSBs(),arrayName, clock, control, operator, 
                     telescope, manager, policy, logger);
@@ -424,13 +426,16 @@ public class ALMAMasterScheduler extends MasterScheduler
         } else {
             logger.fine("SCHEDULING: creating scheduler configuration with "+((SBQueue)sbs).size()+" sbs");
      
-            return new SchedulerConfiguration(
+            result = new SchedulerConfiguration(
                     Thread.currentThread(), dynamic, //synchronous, (SBQueue)sbs, 
                     synchronous, (SBQueue)sbs, ((SBQueue)sbs).size(), sleepTime, 
                     arrayName, clock, control, operator, telescope, manager, 
                     policy, logger);
                     //ALMASchedulingUtility.getMasterSchedulerThread(), dynamic, 
+//            result.setRunMode(RunMode.FullAuto); // For testing porpoises
         }
+        
+        return result;
     }
     
 ///// START of Executive_to_Scheduling interface implementation
@@ -472,6 +477,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             scheduler.setType("dynamic");
             //add to Map
             allSchedulers.put(id, scheduler);
+            manager.rememberSchedulerForArray(arrayname, scheduler);
             Thread schedulerThread = containerServices.getThreadFactory().newThread(scheduler);
             schedulerThread.start();
             //get component and set its ID
@@ -592,6 +598,8 @@ public class ALMAMasterScheduler extends MasterScheduler
             SchedulerConfiguration config = 
                 createSchedulerConfiguration(
                         false, sbs, true, true, 5, arrayname, s_policy);
+            
+//            config.setRunMode(RunMode.FullAuto);
                 
             //a scheduler and go from there!
             try {
@@ -611,6 +619,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             scheduler.setType("queued");
             //add to Map
             allSchedulers.put(qsComp.getSchedulerId(), scheduler);
+            manager.rememberSchedulerForArray(arrayname, scheduler);
             containerServices.releaseComponent(qsComp.name());
             
             Thread scheduler_thread = containerServices.getThreadFactory().newThread(scheduler);
@@ -719,6 +728,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             String name = schedComp.name();
             //add to Map
             allSchedulers.put(id, scheduler);
+            manager.rememberSchedulerForArray(arrayname, scheduler);
             
             /////
         //    Policy s_policy = createPolicy();
@@ -760,8 +770,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                 containerServices.releaseComponent(comp.name());
                 id= comp.getSchedulerId();
                 InteractiveScheduler scheduler = (InteractiveScheduler)allSchedulers.get(id);
-                scheduler = null;
+                manager.forgetSchedulerForArray(scheduler.getArrayName());
                 allSchedulers.remove(id);
+                scheduler = null;
             }
         }
     }
@@ -775,8 +786,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                 logger.fine("SCHEDULING: Stopping queued scheduler "+comp.name());
                 id= comp.getSchedulerId();
                 QueuedSBScheduler scheduler = (QueuedSBScheduler)allSchedulers.get(id);
-                scheduler = null;
+                manager.forgetSchedulerForArray(scheduler.getArrayName());
                 allSchedulers.remove(id);
+                scheduler = null;
                 containerServices.releaseComponent(comp.name());
                 queuedComps.removeElementAt(i);
             }
@@ -792,8 +804,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                 logger.fine("SCHEDULING: Stopping dynamic scheduler "+comp.name());
                 id= comp.getSchedulerId();
                 DynamicScheduler scheduler = (DynamicScheduler)allSchedulers.get(id);
-                scheduler = null;
+                manager.forgetSchedulerForArray(scheduler.getArrayName());
                 allSchedulers.remove(id);
+                scheduler = null;
                 containerServices.releaseComponent(comp.name());
                 dynamicComps.removeElementAt(i);
             }
@@ -861,6 +874,11 @@ public class ALMAMasterScheduler extends MasterScheduler
         return manager.getSBLites();
     }
 
+    public SBLite[] getSBLite(String sbMode,
+                              String sbType){
+        return manager.getSBLites(sbMode, sbType);
+    }
+
     public SBLite[] getSBLite(String[] ids){
         return manager.getSBLite(ids);
     }
@@ -869,6 +887,22 @@ public class ALMAMasterScheduler extends MasterScheduler
         return manager.getExistingSBLite(ids);
     }
     
+    public ProjectLite[] getFilteredProjectLites(String projectName,
+                                                 String piName, 
+                                                 String projectType,
+                                                 String arrayType)
+    	throws InvalidOperationEx {
+    	ProjectLite[] projects = new ProjectLite[0];
+        try {
+			projects = manager.getProjectLites(projectName, piName, projectType, arrayType);
+		} catch (SchedulingException ex) {
+			AcsJInvalidOperationEx ex2 = new AcsJInvalidOperationEx();
+			ex2.setProperty("Details", ex.getMessage());
+			throw ex2.toInvalidOperationEx();
+		}
+		return projects;
+    }
+        
     public ProjectLite[] getProjectLites(String[] ids) {
         return manager.getProjectLites(ids);
     }
@@ -1605,6 +1639,26 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void stopCommissioningQueuedSB(String sbid, String schedulerId) 
         throws InvalidOperationEx, NoSuchSBEx {
     }
+
+    /**
+     * Scheduling can run in two modes: FullAuto mode, where if a SchedBlock has
+     * repeat count > 1 transition immediately to the Ready state when it finishes the
+     * execution; and SemiAuto mode, where it transition to Suspended. This method
+     * sets the run mode in a Scheduler.
+     * 
+     * @param fullAutoRunMode
+     *      If true, the run mode is set to FullAuto mode, if false it
+     * 		is set to SemiAuto mode.
+     * @param schedulerId Scheduler identifier
+     */
+    public void setFullAutoRunMode(boolean fullAutoRunMode, String schedulerId) {
+    	logger.info("Setting run mode for Scheduler " + schedulerId + ": " + fullAutoRunMode);
+    	Scheduler scheduler = getScheduler(schedulerId);
+    	if (fullAutoRunMode)
+        	scheduler.setRunMode(RunMode.FullAuto);
+    	else
+        	scheduler.setRunMode(RunMode.SemiAuto);
+    }
     
     ////////////// Methods to set/get scheduler modes for a given array ///////////
 
@@ -1623,7 +1677,6 @@ public class ALMAMasterScheduler extends MasterScheduler
     	
         return (ArrayModeEnum)schedModeForArray.get(arrayname);
     }
-    
     ////////////////////////////////////////////////////////////////
 
     private void checkSchedulerType(String type, String shouldbe) throws InvalidOperationEx {

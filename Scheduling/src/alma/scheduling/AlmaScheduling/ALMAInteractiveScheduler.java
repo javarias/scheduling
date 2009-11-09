@@ -115,6 +115,9 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
         throws InvalidOperationEx, InvalidObjectEx {
             
         try {
+        	logger.fine(String.format(
+        			"Starting session for project %s for PI %s",
+        			projectId, piId));
             //System.out.println("pi id = "+piId);
             //System.out.println("project id = "+projectId);
             //System.out.println("scheduler id = "+schedulerId);
@@ -243,4 +246,8 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
             throw e2.toInvalidOperationEx();
         }
     }
+    
+	public void setRunMode(boolean mode) {
+		masterScheduler.setFullAutoRunMode(mode, schedulerId);
+	}
 }

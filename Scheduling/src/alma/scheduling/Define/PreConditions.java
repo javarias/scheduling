@@ -1,6 +1,6 @@
 package alma.scheduling.Define;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
 public class PreConditions {
 

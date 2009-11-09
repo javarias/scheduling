@@ -25,26 +25,26 @@
  */
 package alma.scheduling.test;
 
-import alma.scheduling.Define.Project;
-import alma.scheduling.Define.Program;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.ExecBlock;
-import alma.scheduling.Define.ObservedSession;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.Priority;
-import alma.scheduling.Define.Equatorial;
-import alma.scheduling.Define.Target;
-import alma.scheduling.Define.Status;
-import alma.scheduling.Define.SchedulingException;
-
-import alma.scheduling.AlmaScheduling.ProjectUtil;
-import alma.entity.xmlbinding.projectstatus.ProjectStatus;
-//import alma.entity.xmlbinding.session.Session;
-
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.io.*;
 import java.util.logging.Logger;
+
+import alma.acs.logging.AcsLogger;
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.scheduling.AlmaScheduling.ProjectUtil;
+import alma.scheduling.AlmaScheduling.StatusEntityQueueBundle;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Equatorial;
+import alma.scheduling.Define.Priority;
+import alma.scheduling.Define.Program;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Target;
 
 
 /**
@@ -89,13 +89,13 @@ public class TestProjectUtil {
 	
 	public static Project createProject() {
 		
-		Project prj = new Project (genEntityId(),genEntityId(),"TestProject","v01","Allen Farris",Logger.getLogger("TestProjectUtil"));
+		Project prj = new Project (genEntityId(),genEntityId(),"TestProject","v01","Allen Farris", "Continuum", "TWELVE-M", Logger.getLogger("TestProjectUtil"));
 		prj.setProjectStatusId(genEntityId());
-		Program program = new Program (genPartId());
+		Program program = new Program (genPartId(), genEntityId());
 		prj.setProgram(program);
 		program.setScientificPriority(Priority.HIGH);
 		program.setUserPriority(Priority.HIGH);
-		program.setObsUnitSetStatusId(genPartId());
+		program.setOUSStatusId(genPartId());
 		
 		// Use the VLA as the default clock.
 		DateTime.setClockCoordinates(107.6177275,34.0787491666667,-6);
@@ -103,17 +103,17 @@ public class TestProjectUtil {
 		ArrayList sbList = new ArrayList ();
 		Program[] set = new Program [3];
 		for (int i = 0; i < set.length; ++i) {
-			set[i] = new Program (genPartId());
+			set[i] = new Program (genPartId(), genEntityId());
 			set[i].setProject(prj);
 			set[i].setParent(program);
-			set[i].setObsUnitSetStatusId(genPartId());
+			set[i].setOUSStatusId(genPartId());
 			program.addMember(set[i]);
 			Program[] subset = new Program [2];
 			for (int j = 0; j < subset.length; ++j) {
-				subset[j] = new Program (genPartId());
+				subset[j] = new Program (genPartId(), genEntityId());
 				subset[j].setProject(prj);
 				subset[j].setParent(set[i]);
-				subset[j].setObsUnitSetStatusId(genPartId());
+				subset[j].setOUSStatusId(genPartId());
 				set[i].addMember(subset[j]);
 				SB[] unit = new SB [3];
 				for (int k = 0; k < unit.length; ++k) {
@@ -190,107 +190,109 @@ public class TestProjectUtil {
     */
 	
 	public static void main(String[] arg) {
-		System.out.println("Test of Project");
-        /*
-		PrintStream out = null;
-		try {
-			//out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File (outDir,"out.txt")));
-			out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File ("out.txt")));
-		} catch (Exception err) {
-			err.printStackTrace();
-			System.exit(0);
-		}*/
-		//logger = Logger.getLogger("TestProjectUtil");
-		Project prj = createProject();
-		doTree(System.out, prj, "The initial version of the tree.");
-		
-		/*
-		try {
-			System.out.println("Creating ProjectStatus ...");
-			PrintWriter xmlOut = new PrintWriter(new BufferedWriter(
-					new FileWriter(new java.io.File (outDir,"xmlOut1.xml"))));
-			ProjectStatus pStatus = ProjectUtil.map(prj,new DateTime(2004,4,6,12,0,0));
-			pStatus.marshal(xmlOut);
-			System.out.println("...complete");
-		} catch (SchedulingException err) {
-			err.printStackTrace();
-			return;
-		} catch (IOException err) {
-			err.printStackTrace();
-			return;
-		} catch (Exception err) {
-			err.printStackTrace();
-			return;
-		}
-		*/
-		
-		// Now simulate the execution of one SB.
-		//Session session = executeSB(prj);
-		doTree(System.out,prj,"The version after ending a SB.");
-		
-		try {
-			System.out.println("Creating ProjectStatus ...");
-			PrintWriter xmlOut = new PrintWriter(new BufferedWriter(
-					new FileWriter(new java.io.File ("xmlProjectStatus-1.xml"))));
-					//new FileWriter(new java.io.File (outDir,"xmlProjectStatus-1.xml"))));
-						ProjectStatus pStatus = new ProjectUtil(Logger.getLogger("TestProjectUtil")).map(prj,new DateTime(2004,4,6,12,0,0));
-			//pStatus.marshal(xmlOut);
-			System.out.println("...complete");
-			
-			//System.out.println("Creating Session ...");
-            /*
-			xmlOut = new PrintWriter(new BufferedWriter(
-					new FileWriter(new java.io.File ("xmlSession-1.xml"))));
-					//new FileWriter(new java.io.File (outDir,"xmlSession-1.xml"))));
-			//session.marshal(xmlOut);
-			System.out.println("...complete");
-			*/
-		} catch (SchedulingException err) {
-			err.printStackTrace();
-			return;
-		} catch (IOException err) {
-			err.printStackTrace();
-			return;
-		} catch (Exception err) {
-			err.printStackTrace();
-			return;
-		}
-
-		/*<---
-		// "Start" an SB.	
-		SB[] sbList = prj.getAllSBs();
-		SB x = sbList[0];
-		DateTime now = new DateTime(2004,4,6,15,0,0);
-		x.setStartTime(now);
-		ExecBlock ex = new ExecBlock ("001",1);
-		ex.setParent(x);
-		ex.setStartTime(now);
-		doTree(out,prj,"The version after starting a SB.");
-
-		now.add(1800);
-		ex.setEndTime(now,Status.COMPLETE);
-		x.execEnd(ex,now,Status.COMPLETE);
-		doTree(out,prj,"The version after ending a SB.");
-
-		// Now, mark all the SBs complete.
-		for (int i = 1; i < sbList.length; ++i) {
-			now.add(60);
-			x = (SB)sbList[i];
-			x.setStartTime(now);
-			ex = new ExecBlock ("00" + Integer.toString(i + 1),1);
-			ex.setParent(x);
-			ex.setStartTime(now);
-			doLiteTree(out,prj,"Starting SB.");
-			now.add(1800);
-			ex.setEndTime(now,Status.COMPLETE);
-			x.execEnd(ex,now,Status.COMPLETE);
-			doLiteTree(out,prj,"Ending SB.");
-		}
-		doTree(out,prj,"The version after all SBs are complete.");
-		--->*/
-		
-		System.out.println("End test of Project");	
-				
+//		System.out.println("Test of Project");
+//        /*
+//		PrintStream out = null;
+//		try {
+//			//out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File (outDir,"out.txt")));
+//			out = new java.io.PrintStream (new java.io.FileOutputStream (new java.io.File ("out.txt")));
+//		} catch (Exception err) {
+//			err.printStackTrace();
+//			System.exit(0);
+//		}*/
+//		//logger = Logger.getLogger("TestProjectUtil");
+//		Project prj = createProject();
+//		doTree(System.out, prj, "The initial version of the tree.");
+//		
+//		/*
+//		try {
+//			System.out.println("Creating ProjectStatus ...");
+//			PrintWriter xmlOut = new PrintWriter(new BufferedWriter(
+//					new FileWriter(new java.io.File (outDir,"xmlOut1.xml"))));
+//			ProjectStatus pStatus = ProjectUtil.map(prj,new DateTime(2004,4,6,12,0,0));
+//			pStatus.marshal(xmlOut);
+//			System.out.println("...complete");
+//		} catch (SchedulingException err) {
+//			err.printStackTrace();
+//			return;
+//		} catch (IOException err) {
+//			err.printStackTrace();
+//			return;
+//		} catch (Exception err) {
+//			err.printStackTrace();
+//			return;
+//		}
+//		*/
+//		
+//		// Now simulate the execution of one SB.
+//		//Session session = executeSB(prj);
+//		doTree(System.out,prj,"The version after ending a SB.");
+//		
+//		try {
+//			System.out.println("Creating ProjectStatus ...");
+//			Logger logger = Logger.getLogger("TestProjectUtil");
+//			AcsLogger aLogger = null;
+//			PrintWriter xmlOut = new PrintWriter(new BufferedWriter(
+//					new FileWriter(new java.io.File ("xmlProjectStatus-1.xml"))));
+//					//new FileWriter(new java.io.File (outDir,"xmlProjectStatus-1.xml"))));
+//			ProjectStatus pStatus = new ProjectUtil(logger, new StatusEntityQueueBundle(aLogger)).map(prj,new DateTime(2004,4,6,12,0,0));
+//			//pStatus.marshal(xmlOut);
+//			System.out.println("...complete");
+//			
+//			//System.out.println("Creating Session ...");
+//            /*
+//			xmlOut = new PrintWriter(new BufferedWriter(
+//					new FileWriter(new java.io.File ("xmlSession-1.xml"))));
+//					//new FileWriter(new java.io.File (outDir,"xmlSession-1.xml"))));
+//			//session.marshal(xmlOut);
+//			System.out.println("...complete");
+//			*/
+//		} catch (SchedulingException err) {
+//			err.printStackTrace();
+//			return;
+//		} catch (IOException err) {
+//			err.printStackTrace();
+//			return;
+//		} catch (Exception err) {
+//			err.printStackTrace();
+//			return;
+//		}
+//
+//		/*<---
+//		// "Start" an SB.	
+//		SB[] sbList = prj.getAllSBs();
+//		SB x = sbList[0];
+//		DateTime now = new DateTime(2004,4,6,15,0,0);
+//		x.setStartTime(now);
+//		ExecBlock ex = new ExecBlock ("001",1);
+//		ex.setParent(x);
+//		ex.setStartTime(now);
+//		doTree(out,prj,"The version after starting a SB.");
+//
+//		now.add(1800);
+//		ex.setEndTime(now,Status.COMPLETE);
+//		x.execEnd(ex,now,Status.COMPLETE);
+//		doTree(out,prj,"The version after ending a SB.");
+//
+//		// Now, mark all the SBs complete.
+//		for (int i = 1; i < sbList.length; ++i) {
+//			now.add(60);
+//			x = (SB)sbList[i];
+//			x.setStartTime(now);
+//			ex = new ExecBlock ("00" + Integer.toString(i + 1),1);
+//			ex.setParent(x);
+//			ex.setStartTime(now);
+//			doLiteTree(out,prj,"Starting SB.");
+//			now.add(1800);
+//			ex.setEndTime(now,Status.COMPLETE);
+//			x.execEnd(ex,now,Status.COMPLETE);
+//			doLiteTree(out,prj,"Ending SB.");
+//		}
+//		doTree(out,prj,"The version after all SBs are complete.");
+//		--->*/
+//		
+//		System.out.println("End test of Project");	
+//				
 	}
 
 	

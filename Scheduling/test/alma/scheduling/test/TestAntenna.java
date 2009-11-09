@@ -26,10 +26,7 @@
 
 package alma.scheduling.test;
 
-import alma.acs.component.client.ComponentClientTestCase;
-//import junit.framework.TestSuite;
 import junit.framework.TestCase;
-
 import alma.scheduling.Define.Antenna;
 
 //public class TestAntenna extends ComponentClientTestCase {

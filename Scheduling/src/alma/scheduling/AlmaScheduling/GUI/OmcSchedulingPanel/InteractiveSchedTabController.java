@@ -24,21 +24,20 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.util.logging.Logger;
 import java.util.ArrayList;
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Interactive_PI_to_Scheduling;
-import alma.scheduling.Define.*;
+
+import alma.Control.DestroyedAutomaticArrayEvent;
+import alma.Control.ExecBlockEndedEvent;
+import alma.Control.ExecBlockStartedEvent;
 import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.acs.nc.Consumer;
-import alma.Control.ExecBlockStartedEvent;
-import alma.Control.ExecBlockEndedEvent;
-import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.offline.ASDMArchivedEvent;
-import alma.xmlstore.XmlStoreNotificationEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.offline.ASDMArchivedEvent;
+import alma.scheduling.Interactive_PI_to_Scheduling;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
+import alma.scheduling.Define.SchedulingException;
+import alma.xmlstore.XmlStoreNotificationEvent;
 
 public class InteractiveSchedTabController extends SchedulingPanelController {
     private Interactive_PI_to_Scheduling scheduler;
@@ -106,6 +105,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             masterScheduler.stopInteractiveScheduler(schedulername);
             releaseMSRef();
             if(consumer != null) {
+            	logger.info("Disconnecting Notification Channel Consumer");
                 consumer.disconnect();
                 consumer = null;
             }
@@ -130,6 +130,15 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+    
+    public void setRunMode(Boolean fullAuto) {
+    	if(fullAuto){
+    		scheduler.setRunMode(true);
+    	}
+    	else {
+    		scheduler.setRunMode(false);
+    	}
     }
 
     public void setArrayInUse(String arrayName){
@@ -161,8 +170,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             getMSRef();
             ProjectLite project = masterScheduler.getProjectLiteForSB(id);
             scheduler.startSession(project.piName, project.uid);
-            scheduler.executeSB(id);
             scheduler.setCurrentSB(id);
+            scheduler.executeSB(id);
         }catch(CannotRunCompleteSBEx e){
             throw e;
         }catch( Exception e){
@@ -203,14 +212,23 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         String exec_id = e.execId.entityId;
         logger.fine("got start event in IS for sb "+sbid);
         if(!sbid.equals(currentSBId)){
+        	System.out.println("Event SchedBlock UID doesn't match current SBID");
+        	System.out.println("Event SB UID: " + sbid);
+        	System.out.println("Current SB UID: " + currentSBId);
             return;
         }
         
         if(!e.arrayName.equals(arrayName)) {
    	     //System.out.println("exit the receive event!"+e.arrayName);
-               return;
+        	System.out.println("Event array name doesn't match current array name");
+        	System.out.println("Event array name: " + e.arrayName);
+        	System.out.println("Current array name: " + arrayName);
+            return;
         }
 
+        
+        System.out.println("Scheduler current SB UID: " + scheduler.getCurrentSB());
+        System.out.println("Event SB UID: " + sbid);
         if(scheduler.getCurrentSB().equals(sbid) ){
             scheduler.setCurrentEB(exec_id);
             //currentExecBlockId = exec_id;
@@ -226,20 +244,17 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         // TODO do something like the search but don't want to reset selected 
         // things to first project..
         //parent.doArchiveSearch();
+        parent.updateSBInfo(sbid);
+        parent.updateProjectInfo(sbid);
     }
 
     public void receive(ExecBlockEndedEvent e){
         parent.closeExecutionWaitingThing();
         String exec_id = e.execId.entityId;
         String sbid = e.sbId.entityId;
-        if(!sbid.equals(currentSBId)){
-            return;
-        }
+        if(!sbid.equals(currentSBId)) return;
         
-        if(!e.arrayName.equals(arrayName)) {
-   	     //System.out.println("exit the receive event!"+e.arrayName);
-               return;
-   	}
+        if(!e.arrayName.equals(arrayName)) return;
 
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
@@ -266,6 +281,16 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             ex.printStackTrace();
         }
         currentSBId = "";
+        
+        SBLite[] sblite = masterScheduler.getSBLite(new String[] {e.sbId.entityId});
+        try {
+			Thread.sleep(500);
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();
+		}
+        
+        parent.updateSBInfo(sbid);
+        parent.updateProjectInfo(sbid);
     }
 
     public void receive(DestroyedAutomaticArrayEvent event) {
@@ -282,6 +307,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
         logger.fine("Current SB = "+currentSBId);
+        
         //if(sbid.equals(currentSBId)){
         if(waitingForArchivedSB.contains(sbid)&& scheduler.getCurrentEB().equals(asdmId)){
             logger.fine("in list");
@@ -291,6 +317,8 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }else{
             logger.fine("not in list");
         }
+        parent.updateSBInfo(sbid);
+        parent.updateProjectInfo(sbid);
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {

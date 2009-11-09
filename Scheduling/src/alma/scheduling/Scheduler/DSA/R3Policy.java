@@ -26,30 +26,28 @@
 package alma.scheduling.Scheduler.DSA;
 
 
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.LiteSB;
+import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Clock;
-import alma.scheduling.Define.Telescope;
-import alma.scheduling.Define.ProjectManager;
-import alma.scheduling.Define.SiteCharacteristics;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.FrequencyBand;
+import alma.scheduling.Define.LiteSB;
+import alma.scheduling.Define.NothingCanBeScheduled;
 import alma.scheduling.Define.Policy;
 import alma.scheduling.Define.PolicyFactor;
-import alma.scheduling.Define.Subarray;
-import alma.scheduling.Define.FrequencyBand;
-import alma.scheduling.Define.WeatherCondition;
-import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedLogger;
-
-import java.util.logging.Logger;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.SiteCharacteristics;
+import alma.scheduling.Define.Subarray;
+import alma.scheduling.Define.Telescope;
+import alma.scheduling.Define.WeatherCondition;
 
 /**
  * This is one of the dynamic scheduling algorithms for R3.
  * 
- * @version $Id: R3Policy.java,v 1.18 2007/09/27 19:43:04 sslucero Exp $
+ * @version $Id: R3Policy.java,v 1.19 2009/11/09 22:58:45 rhiriart Exp $
  * @author Sohaila Lucero
  */
 class R3Policy extends PolicyType {

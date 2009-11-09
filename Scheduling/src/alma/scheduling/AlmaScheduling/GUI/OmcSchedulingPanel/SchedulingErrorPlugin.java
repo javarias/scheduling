@@ -2,9 +2,12 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 //import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 import java.util.logging.Logger;
-import alma.exec.extension.subsystemplugin.*;
-import javax.swing.JPanel;
+
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 
 /**
   * A very simple plugin which is launched from the invisible scheduler

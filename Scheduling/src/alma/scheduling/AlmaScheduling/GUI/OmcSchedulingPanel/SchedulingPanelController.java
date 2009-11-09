@@ -24,20 +24,18 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.SchedulingState;
-import alma.scheduling.SchedulingStateEvent;
-//import alma.scheduling.AlmaScheduling.ALMASchedLogger;
 import java.util.logging.Logger;
-import java.util.logging.Level;
-import alma.acs.nc.Consumer;
 
 import alma.ACS.MasterComponent;
 import alma.ACS.ROstringSeq;
 import alma.ACSErr.CompletionHolder;
+import alma.Control.ControlMaster;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.acs.nc.Consumer;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.SchedulingState;
+import alma.scheduling.SchedulingStateEvent;
 
 public class SchedulingPanelController {
     protected MasterSchedulerIF masterScheduler;
@@ -46,6 +44,7 @@ public class SchedulingPanelController {
     protected Logger logger;
     protected Consumer consumer;
     protected boolean connected;
+    protected boolean controlConnected;
 
     public SchedulingPanelController(){
         masterScheduler=null;
@@ -153,10 +152,29 @@ public class SchedulingPanelController {
             e.printStackTrace();
         }
     }
+
+    protected void checkControlConnection() {
+        try {
+			ControlMaster control_mc =
+				alma.Control.ControlMasterHelper.narrow(getCS().getComponentNonSticky("CONTROL/MASTER"));
+	        if (control_mc.getMasterState() == 
+                alma.Control.SystemState.OPERATIONAL) {
+	        	logger.info("CONTROL is OPERATIONAL");
+            	controlConnected = true;
+	        } else {
+	        	logger.info("CONTROL is not OPERATIONAL");
+	        	controlConnected = false;
+	        }
+		} catch (AcsJContainerServicesEx e) {
+			controlConnected = false;
+		}
+
+    }
     
     protected boolean areWeConnected() {
         checkOperationalState();
-        return connected;
+        checkControlConnection();
+        return connected && controlConnected;
     }
     
 

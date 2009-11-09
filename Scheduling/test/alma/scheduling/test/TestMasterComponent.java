@@ -26,27 +26,21 @@
  
 package alma.scheduling.test;
 
+import alma.ACS.MasterComponent;
 import alma.ACS.ROstringSeq;
 import alma.ACS.SUBSYSSTATE_AVAILABLE;
-import alma.ACS.SUBSYSSTATE_INITIALIZING_PASS1;
-import alma.ACS.SUBSYSSTATE_INITIALIZING_PASS2;
 import alma.ACS.SUBSYSSTATE_OFFLINE;
 import alma.ACS.SUBSYSSTATE_ONLINE;
 import alma.ACS.SUBSYSSTATE_PREINITIALIZED;
-import alma.ACS.SUBSYSSTATE_OPERATIONAL;
-import alma.ACS.SUBSYSSTATE_PRESHUTDOWN;
 import alma.ACS.SUBSYSSTATE_SHUTDOWN;
+import alma.ACS.MasterComponentImpl.StateChangeListener;
+import alma.ACS.MasterComponentImpl.StateChangeSemaphore;
+import alma.ACS.MasterComponentPackage.SubsystemStateEvent;
 import alma.ACSErr.ACSErrTypeOK;
 import alma.ACSErr.CompletionHolder;
-import alma.ACSErrTypeCommon.IllegalStateEventEx;
 import alma.ACSErrTypeOK.ACSErrOK;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.exceptions.AcsJCompletion;
-import alma.ACS.MasterComponentImpl.*;
-import alma.ACS.MasterComponentImpl.StateChangeSemaphore;
-import alma.ACS.MasterComponent;
-import alma.ACS.MasterComponentPackage.SubsystemStateEvent;
-import alma.scheduling.AlmaScheduling.SchedulingMasterComponentHelper;
 /**
   * Tests the Scheduling Master Component. Test is written using the 
   * MasterComponentTest from acs as an example.

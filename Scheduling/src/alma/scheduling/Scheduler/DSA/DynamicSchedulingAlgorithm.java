@@ -25,24 +25,15 @@
  */
 package alma.scheduling.Scheduler.DSA;
 
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.Clock;
-import alma.scheduling.Define.Telescope;
-import alma.scheduling.Define.ProjectManager;
-import alma.scheduling.Define.SiteCharacteristics;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.Policy;
-import alma.scheduling.Define.PolicyFactor;
-import alma.scheduling.Define.Subarray;
-import alma.scheduling.Define.FrequencyBand;
-import alma.scheduling.Define.WeatherCondition;
-import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.Define.BestSB;
-import alma.scheduling.Define.SchedLogger;
-import alma.scheduling.Define.NothingCanBeScheduled;
-
 import java.util.logging.Logger;
+
+import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Clock;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.ProjectManager;
+import alma.scheduling.Define.SBQueue;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Telescope;
 
 /**
  * This is the dynamic scheduling algorithm for R1.
@@ -79,7 +70,7 @@ import java.util.logging.Logger;
  * So, there is a good deal of thinking to be done on how to do this.
  * For now, the second method is not implemented.
  * 
- * @version $Id: DynamicSchedulingAlgorithm.java,v 1.10 2008/06/19 20:46:02 wlin Exp $
+ * @version $Id: DynamicSchedulingAlgorithm.java,v 1.11 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class DynamicSchedulingAlgorithm {

@@ -25,9 +25,9 @@
  */
 package alma.scheduling.test;
 
-import alma.scheduling.Define.Status;
-import alma.scheduling.Define.DateTime;
 import junit.framework.TestCase;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.Status;
 
 /**
  * Test the Status Class from the Define package

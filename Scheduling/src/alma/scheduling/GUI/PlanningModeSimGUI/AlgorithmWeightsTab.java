@@ -26,19 +26,14 @@
 
 package alma.scheduling.GUI.PlanningModeSimGUI;
 
-import java.util.Vector;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.GridBagLayout;
+import java.util.Vector;
 
-import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 /**
  * This class creates a JScrollPane which contains all the required gui fields to

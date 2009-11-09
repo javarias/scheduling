@@ -26,21 +26,21 @@
  
 package alma.scheduling.Define;
 
-import java.util.ArrayList;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 /**
  * A Program is a hierarchical tree whose leaves are SB objects. 
  * It is an ObsProgram as viewed by the scheduling subsystem.
  * 
- * @version $Id: Program.java,v 1.12 2007/09/20 17:35:22 sslucero Exp $
+ * @version $Id: Program.java,v 1.13 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class Program implements ProgramMember {
 	// The unique id of this entity -- which is the ObsUnitSet part-id.
 	private String programId;
 	// The statusId assoiciated with this Program.
-	private String obsUnitSetStatusId;
+	private String ousStatusId;
 	// The project to which this Program belongs.
 	private Project project;
 	// The time this Program was created. 
@@ -96,9 +96,9 @@ public class Program implements ProgramMember {
 	/**
 	 * Create an Program object.
 	 */
-	public Program(String id) {
-		programId = id;
-        obsUnitSetStatusId = id;
+	public Program(String domainId, String statusId) {
+		programId = domainId;
+		ousStatusId = statusId;
 		project = null;
 		timeOfCreation = null;
 		timeOfUpdate = null;
@@ -910,6 +910,13 @@ public class Program implements ProgramMember {
 	}
 
 	/**
+	 * @return Returns the id of theproject.
+	 */
+	public String getProjectId() {
+		return project.getId();
+	}
+
+	/**
 	 * @return Returns the project.
 	 */
 	public Project getProject() {
@@ -1000,17 +1007,17 @@ public class Program implements ProgramMember {
 	}
 
 	/**
-	 * @return Returns the obsUnitSetStatusId.
+	 * @return Returns the ousStatusId.
 	 */
-	public String getObsUnitSetStatusId() {
-		return obsUnitSetStatusId;
+	public String getOUSStatusId() {
+		return ousStatusId;
 	}
 
 	/**
-	 * @param obsUnitSetStatusId The obsUnitSetStatusId to set.
+	 * @param ousStatusId The ousStatusId to set.
 	 */
-	public void setObsUnitSetStatusId(String obsUnitSetStatusId) {
-		this.obsUnitSetStatusId = obsUnitSetStatusId;
+	public void setOUSStatusId(String ousStatusId) {
+		this.ousStatusId = ousStatusId;
 	}
 
 }

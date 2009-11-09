@@ -25,14 +25,13 @@
  
 package alma.scheduling.Define;
 
-import alma.scheduling.Define.DateTime;
 
 /**
  * The ClockAlarmListener is an interface that is called
  * by the Clock class whenever an alarm expires.  The object
  * implementing this interface must be provided when setting an alarm.
  * 
- * @version $Id: ClockAlarmListener.java,v 1.4 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: ClockAlarmListener.java,v 1.5 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public interface ClockAlarmListener {

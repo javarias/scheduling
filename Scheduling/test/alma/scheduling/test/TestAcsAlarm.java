@@ -1,45 +1,26 @@
 package alma.scheduling.test;
 
-import junit.framework.TestCase;
-import junit.*;
-import alma.acs.component.client.ComponentClientTestCase;
-import alma.scheduling.AlmaScheduling.ALMAArchive;
-import alma.scheduling.AlmaScheduling.ALMAPublishEvent;
-import alma.scheduling.AlmaScheduling.ALMAClock;
-import alma.scheduling.AlmaScheduling.ALMAOperator;
-import alma.scheduling.AlmaScheduling.ALMAProjectManager;
-import alma.scheduling.AlmaScheduling.ALMATelescope;
-import alma.scheduling.AlmaScheduling.ALMAControl;
-import alma.scheduling.Define.*;
-import alma.acs.component.ComponentQueryDescriptor;
-import alma.acs.component.client.ComponentClient;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.client.AdvancedComponentClient;
 import alma.acs.container.ContainerServices;
-import alma.alarmsystem.AlarmService;
-import alma.alarmsystem.source.ACSFaultState;
-
-import java.sql.Timestamp;
-import java.util.logging.Logger;
 import alma.acs.logging.ClientLogManager;
-import alma.scheduling.Define.SBQueue;
-import alma.scheduling.MasterScheduler.MessageQueue;
-import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-
-import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
-import alma.alarmsystem.source.ACSAlarmSystemInterface;
-import alma.alarmsystem.source.ACSFaultState;
-import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
-
-import java.util.Properties;
-import java.util.Vector;
 import alma.acs.nc.Consumer;
+import alma.alarmsystem.AlarmService;
+import alma.alarmsystem.source.ACSAlarmSystemInterface;
+import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
+import alma.alarmsystem.source.ACSFaultState;
+import alma.scheduling.MasterScheduler.MessageQueue;
+import cern.cmw.mom.pubsub.impl.ACSJMSTopicConnectionImpl;
+import cern.laser.source.alarmsysteminterface.impl.ASIMessageHelper;
 import cern.laser.source.alarmsysteminterface.impl.FaultStateImpl;
 import cern.laser.source.alarmsysteminterface.impl.XMLMessageHelper;
-import cern.laser.source.alarmsysteminterface.impl.ASIMessageHelper;
 import cern.laser.source.alarmsysteminterface.impl.message.ASIMessage;
-import java.util.Collection;
-import alma.acs.logging.ClientLogManager;
-import java.util.Iterator;
 
 public class TestAcsAlarm {
     //private ALMAArchive archive;

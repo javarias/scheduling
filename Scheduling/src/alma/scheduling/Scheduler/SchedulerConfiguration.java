@@ -27,7 +27,6 @@
 package alma.scheduling.Scheduler;
 
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import alma.acs.logging.AcsLogger;
 import alma.scheduling.Define.Clock;
@@ -108,11 +107,13 @@ import alma.scheduling.Define.Telescope;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.18 2008/06/19 20:00:45 wlin Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.19 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
-
+	
+	
+	
 	// TODO Add a method to add a number of scheduling units to the queue.
 	// TODO Should there also be a method to delete scheduling units?
 	
@@ -232,6 +233,7 @@ public class SchedulerConfiguration extends TaskControl {
     ////////////////////////	
     public SchedulerConfiguration(Thread masterScheduler) {
         super(masterScheduler);
+    	setRunMode(defaultRunMode);
     }
     ////////////////////////
 	
@@ -254,7 +256,7 @@ public class SchedulerConfiguration extends TaskControl {
                                   AcsLogger log) {
            
 
-		super(masterScheduler);
+		this(masterScheduler);
 		this.dynamic = dynamic;
 		this.synchronous = synchronous;
 		if (queue == null){
@@ -299,7 +301,7 @@ public class SchedulerConfiguration extends TaskControl {
                                   Policy policy, 
                                   AcsLogger log){ 
 
-        super (masterScheduler);
+        this(masterScheduler);
         this.dynamic = dynamic;
 		if (specialSBs == null){
 			this.specialSBs = new Vector();
@@ -660,5 +662,34 @@ public class SchedulerConfiguration extends TaskControl {
     public String getPreviousSBId() {
         return previousSB;
     }
+
+
+
+	/*
+	 * ================================================================
+	 * Run mode support
+	 * ================================================================
+	 */
+	public enum RunMode { SemiAuto, FullAuto };
+	
+	private final static RunMode defaultRunMode = RunMode.SemiAuto;
+
+	// Which RunMode are we in?
+	private RunMode runMode;
+	
+	synchronized public boolean isSemiAuto() {
+		return runMode == RunMode.SemiAuto;
+	}
+	
+	synchronized public boolean isFullAuto() {
+		return runMode == RunMode.FullAuto;
+	}
+	
+	synchronized public void setRunMode(final RunMode mode) {
+		System.out.println("Run Mode is now " + mode.toString());
+		this.runMode = mode;
+	}
+	/* End of Run mode support
+	 * ============================================================= */
 
 }

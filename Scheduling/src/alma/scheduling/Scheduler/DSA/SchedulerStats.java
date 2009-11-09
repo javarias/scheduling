@@ -25,8 +25,9 @@
  */
 package alma.scheduling.Scheduler.DSA;
 
-import alma.scheduling.Define.DateTime;
 import java.util.ArrayList;
+
+import alma.scheduling.Define.DateTime;
 
 public class SchedulerStats {
 

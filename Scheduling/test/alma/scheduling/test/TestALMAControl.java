@@ -26,9 +26,8 @@
  
 package alma.scheduling.test;
 
-import alma.Control.AutomaticArrayCommand;
-import alma.scheduling.AlmaScheduling.ALMAControl;
 import alma.acs.component.client.ComponentClientTestCase;
+import alma.scheduling.AlmaScheduling.ALMAControl;
 
 public class TestALMAControl extends ComponentClientTestCase {
     private ALMAControl control = null; 

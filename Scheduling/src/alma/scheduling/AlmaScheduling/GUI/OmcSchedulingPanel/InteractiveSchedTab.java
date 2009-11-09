@@ -24,19 +24,39 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
-import javax.swing.JProgressBar;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import alma.SchedulingExceptions.CannotRunCompleteSBEx;
+import alma.acs.logging.AcsLogLevel;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
 
 public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
     //private String schedulerName;
@@ -74,6 +94,7 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     protected void doSetup(String aName){
         searchingOnProject=true;
         //arrayName = aName;
+    	logger.log(AcsLogLevel.DEBUG, "Creating an InteractiveSchedTabController");
         controller = new InteractiveSchedTabController(container, aName, this);
         controller.setArrayInUse(aName);
         controller.getISRef();
@@ -153,6 +174,22 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
 
     private void createTopPanel() {
         createArchivePanel();
+        
+        final JCheckBox RunModeButton = new JCheckBox("Full Automatic Mode");
+        RunModeButton.setSelected(false);
+        controller.setRunMode(false);
+        RunModeButton.addItemListener(new ItemListener(){
+        	public void itemStateChanged(ItemEvent e) {
+        		if(RunModeButton.isSelected()) {
+        			controller.setRunMode(true);
+        		}
+        		else {
+        			controller.setRunMode(false);
+        		}
+        	}
+        });
+        
+
         JLabel arrayStatusL = new JLabel("Array Status =");
         arrayStatusDisplay = new JLabel(controller.getArrayStatus());
         destroyArrayB = new JButton("Destroy Array");
@@ -166,12 +203,17 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     execB.setEnabled(false);
                 }
         });
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        p.add(arrayStatusL);
-        p.add(arrayStatusDisplay);
-        p.add(destroyArrayB);
+
+        Box box = Box.createHorizontalBox();
+        box.add(RunModeButton);
+        box.add(Box.createHorizontalStrut(30));
+        box.add(arrayStatusL);
+        box.add(arrayStatusDisplay);
+        box.add(Box.createHorizontalStrut(30));
+        box.add(destroyArrayB);
+
         topPanel = new JPanel(new BorderLayout());
-        topPanel.add(p, BorderLayout.NORTH);
+        topPanel.add(box, BorderLayout.NORTH);
         topPanel.add(archiveSearchPanel, BorderLayout.CENTER);
     }
     /**
@@ -203,6 +245,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
         JPanel sbPanel = new JPanel(new BorderLayout());
         sbs = new SBTable(true, new Dimension(150,60));
         sbs.setOwner(this);
+        setupSBTableRowSelection();
+        
+        
         JScrollPane sbPane = new JScrollPane(sbs,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -243,6 +288,34 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
        //second row: right hand cell = sb info textarea
         middlePanel.add(sbs.getSBInfoView());
     }
+    
+    public void setupSBTableRowSelection() {
+    	boolean ALLOW_ROW_SELECTION = true;
+    	if (ALLOW_ROW_SELECTION) { // true by default
+            ListSelectionModel rowSM = sbs.getSelectionModel();
+            rowSM.addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    //Ignore extra messages.
+                    if (e.getValueIsAdjusting()) return;
+
+                    ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+                    if (lsm.isSelectionEmpty()) {
+                        System.out.println("No rows are selected.");
+                    } else {
+                        int selectedRow = lsm.getMinSelectionIndex();
+                        
+                        if(sbs.getSBStatus(sbs.getSelectedSBId())) {
+                        	execB.setEnabled(false);
+                        }
+                        else 
+                        	execB.setEnabled(true);
+                    }
+                }
+            });
+        } else {
+        		//do nothing
+        }
+    }
 
     /**
       * If true then search fields & execute button are enabled and stop disabled
@@ -269,6 +342,10 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     }
     protected void updateSBInfo(String id) {
         sbs.showSelectedSBDetails(id);
+    }
+    
+    protected void updateProjectInfo(String id) {
+    	projects.showSelectedProjectDetail(id);
     }
 
     protected void updateProjectView(ProjectLite[] projectLites) {
@@ -371,6 +448,9 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     showErrorPopup(sbId, "executeSB");
                     return;
                 }
+                
+                //SBLite sb = sbs
+                
                 if(!sbId.equals("")){
                     javax.swing.SwingUtilities.invokeLater(new Runnable() {
                             public void run() {

@@ -25,24 +25,23 @@
  */
 package alma.scheduling.Scheduler;
 
-import java.util.logging.Logger;
-
 import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
 import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Scheduler.DSA.DynamicSchedulingAlgorithm;
+import alma.scheduling.Scheduler.SchedulerConfiguration.RunMode;
 
 /**
  * The Scheduler class is an abstract class that forms the basis for
  * the DynamicScheduler and InteractiveScheduler classes.
  * 
- * @version $Id: Scheduler.java,v 1.19 2008/06/19 20:40:59 wlin Exp $
+ * @version $Id: Scheduler.java,v 1.20 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  *
  */
 abstract public class Scheduler {
-	
+
     protected SchedulerConfiguration config;// = null;
     protected String arrayName = null;
     protected AcsLogger logger;
@@ -55,8 +54,10 @@ abstract public class Scheduler {
     public Scheduler(){}
     
     public Scheduler(SchedulerConfiguration config) {
+    	this();
         setConfiguration(config);
     }
+    
     public void setConfiguration(SchedulerConfiguration c) {
     	this.config = c;
         if(config == null){
@@ -115,6 +116,25 @@ abstract public class Scheduler {
     public void setId(String i) {
         id = i;
     }
+	
+	
+	/*
+	 * ================================================================
+	 * Run Mode
+	 * ================================================================
+	 */
+	synchronized public boolean isSemiAuto() {
+		return config.isSemiAuto();
+	}
+	
+	synchronized public boolean isFullAuto() {
+		return config.isFullAuto();
+	}
+	
+	synchronized public void setRunMode(RunMode mode) {
+		config.setRunMode(mode);
+	}
 
-    
+	/* End of Run Mode
+	 * ============================================================= */
 }

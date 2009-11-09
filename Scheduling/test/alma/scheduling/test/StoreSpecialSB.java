@@ -1,17 +1,14 @@
 package alma.scheduling.test;
 
-import alma.acs.container.ContainerServices;
 import alma.acs.component.client.ComponentClient;
-
-import alma.xmlstore.Operational;
-import alma.xmlstore.ArchiveConnection;
-
-import alma.entity.xmlbinding.specialsb.*;
-import alma.entity.xmlbinding.specialsb.types.*;
-
-import alma.xmlentity.XmlEntityStruct;
-
+import alma.acs.container.ContainerServices;
+import alma.entity.xmlbinding.specialsb.SpecialSB;
+import alma.entity.xmlbinding.specialsb.SpecialSBEntityT;
+import alma.entity.xmlbinding.specialsb.types.ReasonT;
 import alma.scheduling.Define.DateTime;
+import alma.xmlentity.XmlEntityStruct;
+import alma.xmlstore.ArchiveConnection;
+import alma.xmlstore.Operational;
 
 public class StoreSpecialSB {
 

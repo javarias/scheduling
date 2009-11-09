@@ -25,12 +25,12 @@
  */
 package alma.scheduling.PlanningModeSim;
 
+import java.util.logging.Logger;
+
 import alma.scheduling.Define.Telescope;
 import alma.scheduling.PlanningModeSim.Define.ComponentLifecycle;
 import alma.scheduling.PlanningModeSim.Define.ContainerServices;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
-
-import java.util.logging.Logger;
 
 /**
  * The TelescopeSimulator class is a component thaqt is an extension

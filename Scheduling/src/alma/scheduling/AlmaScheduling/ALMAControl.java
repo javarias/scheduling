@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.93 2009/09/01 19:38:27 wlin Exp $
+ * @version $Id: ALMAControl.java,v 1.94 2009/11/09 22:58:45 rhiriart Exp $
  */
 public class ALMAControl implements Control {
     
@@ -187,7 +187,7 @@ public class ALMAControl implements Control {
             if(ctrl !=null){
                 arraylogger.log(Level.INFO, "SCHEDULING: Sending SB ("+sbId+") to control on array "+arrayName,
                         OPERATOR.value, arrayName);
-                logger.fine("Session ("+sessionRef.partId+") has PS ("+sessionRef.entityId+") type "+
+                logger.fine("Session ("+sessionRef.partId+") has OUSStatus ("+sessionRef.entityId+") type "+
                         "is "+sessionRef.entityTypeName+" and version = "+sessionRef.instanceVersion);
                 ctrl.observe(sbRef, sessionRef, 0L); 
             } else {
@@ -209,6 +209,10 @@ public class ALMAControl implements Control {
             	e1.printStackTrace(System.out);
             }
             throw new SchedulingException(e2);
+        } catch (NullPointerException e) {
+        	logger.severe(String.format(
+        			"SCHEDULING: could not create session to observe ScheckBlock %s on array %s",
+        			sbId, arrayName));
         }
     }
 

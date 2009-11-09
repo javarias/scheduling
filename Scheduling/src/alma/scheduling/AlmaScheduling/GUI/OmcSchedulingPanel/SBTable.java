@@ -25,24 +25,53 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.SBLite;
-import alma.exec.extension.subsystemplugin.PluginContainerServices;
-// Imports for copy/paste
-import java.io.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.XMLException;
+
+import alma.COUNTER.statusBlockEvent;
+import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
 
 public class SBTable extends JTable {
     private final String[] sbColumnInfo = {"SB Name","Project"};
@@ -137,7 +166,7 @@ public class SBTable extends JTable {
     }
 
     
-    private String getSelectedSBId() {
+    protected String getSelectedSBId() {
         int[] rows = getSelectedRows();
         if(rows.length > 1) {
             //not good!
@@ -157,6 +186,7 @@ public class SBTable extends JTable {
         GetSBLite x = new GetSBLite(id);
         Thread t = controller.getCS().getThreadFactory().newThread(x);
         t.start();
+        
     }
     
     private void updateRightClickMenu(String uid){
@@ -501,14 +531,32 @@ public class SBTable extends JTable {
         }
         sbInfo.append("Max. execution count : "+sb.maxExec+"\n");
         sbInfo.append("Priority: "+sb.priority+"\n");
-        //sbInfo.append("RA: "+sb.ra+"\n");
-        //sbInfo.append("DEC: "+sb.dec+"\n");
-        //sbInfo.append("Frequency: "+sb.freq+"\n");
-        //sbInfo.append("Score: "+sb.score+"\n");
-        //sbInfo.append("Success: "+sb.success+"\n");
-        //sbInfo.append("Rank: "+sb.rank+"\n");
+        sbInfo.append("Status: " + sb.status + "\n");
+        
+        if (sb.statusXML.length() > 0) {
+	        StringReader reader = new StringReader(sb.statusXML);
+	        try {
+				SBStatus status = SBStatus.unmarshalSBStatus(reader);
+				sbInfo.append("Number of ExecStatus: " + status.getExecStatusCount() + "\n");
+				for (int i = 0; i < status.getExecStatusCount(); i++) {
+					sbInfo.append("ExecStatus #" + i + ": " +
+							status.getExecStatus(i).getStatus().getState().toString() + "\n");
+				}
+			} catch (XMLException e) {
+				e.printStackTrace();
+			}
+        }
+        
         sbInfo.repaint();
         sbInfo.validate();
+    }
+    
+    protected boolean getSBStatus(String id) {
+    	SBLite sb = controller.getSBLite(id);
+    	if(sb.isComplete == true)
+    		return true;
+    	else 
+    		return false;
     }
     
 

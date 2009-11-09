@@ -26,8 +26,6 @@
  
 package alma.scheduling.Define;
 
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.ArrayTime;
 
 /**
  * The Clock interface provides the current time, the precise geographical
@@ -36,7 +34,7 @@ import alma.scheduling.Define.ArrayTime;
  * setting alarms, i.e. methods that provide for a notification at a particular 
  * time.
  * 
- * @version $Id: Clock.java,v 1.3 2004/11/23 20:41:21 sslucero Exp $
+ * @version $Id: Clock.java,v 1.4 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public interface Clock {

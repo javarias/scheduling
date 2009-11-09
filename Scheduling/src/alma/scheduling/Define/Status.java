@@ -54,7 +54,7 @@ package alma.scheduling.Define;
  * the "ready", "waiting", or "running" state.  If the unit's end time
  * has been set the state is either "complete" or "aborted".  
  * 
- * @version $Id: Status.java,v 1.9 2007/08/30 21:42:45 sslucero Exp $
+ * @version $Id: Status.java,v 1.10 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 public class Status {
@@ -67,6 +67,7 @@ public class Status {
 	static public final int OBSERVED	= 6;
 	static public final int PROCESSED	= 7;
 	static public final int CANCELED	= 8;
+	static public final int FAILED		= 9;
 	
 	private int status;
 	private DateTime readyTime;
@@ -166,7 +167,7 @@ public class Status {
 		if (startTime == null || startTime.gt(time)) 
 			throw new UnsupportedOperationException("Cannot set 'ended' before setting 'started'.");
 		//if (!(status == COMPLETE || status == ABORTED ))
-		if (!(status == OBSERVED || status == ABORTED || status ==COMPLETE ))
+		if (!(status == OBSERVED || status == ABORTED || status == COMPLETE || status == FAILED))
 			throw new UnsupportedOperationException("If component has ended, status must be either OBSERVED or ABORTED.");
 		this.status = status;
 		this.endTime = new DateTime (time);
@@ -177,16 +178,17 @@ public class Status {
 	 */
 	public String getStatus() {
 		switch (status) {
-			case 0: return "notdefined";
-			case 1: return "waiting";
-			case 2: return "ready";
-			case 3: return "running";
-			case 4: return "aborted";
-			case 5: return "complete";
-			case 6: return "observed";
-			case 7: return "processed";
-			case 8: return "canceled";
-			default: return "***";
+			case NOTDEFINED: return "notdefined";
+			case WAITING:    return "waiting";
+			case READY:      return "ready";
+			case RUNNING:    return "running";
+			case ABORTED:    return "aborted";
+			case COMPLETE:   return "complete";
+			case OBSERVED:   return "observed";
+			case PROCESSED:  return "processed";
+			case CANCELED:   return "canceled";
+			case FAILED:     return "failed";
+			default:         return "***";
 		}
 	}
 	
@@ -256,6 +258,14 @@ public class Status {
 		return status == PROCESSED;
 	}
 	
+	/**
+	 * return true if the status is failed
+	 * @return true if the status is failed
+	 */
+	public boolean isFailed() {
+		return status == FAILED;
+	}
+
 	/**
 	 * Return true if and only if started is true.
 	 * @return true if and only if started is true.

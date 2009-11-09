@@ -25,31 +25,29 @@
  */
 package alma.scheduling.PlanningModeSim.MasterScheduler;
 
-import alma.scheduling.Scheduler.*;
+import java.util.logging.Level;
 
-import alma.scheduling.Define.SchedLogger;
-import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.Policy;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.Project;
-import alma.scheduling.Define.NothingCanBeScheduled;
-import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.NothingCanBeScheduled;
+import alma.scheduling.Define.Policy;
+import alma.scheduling.Define.Project;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
-
-import alma.scheduling.PlanningModeSim.TelescopeSimulator;
-import alma.scheduling.PlanningModeSim.OperatorSimulator;
-import alma.scheduling.PlanningModeSim.Define.BasicComponent;
-import alma.scheduling.PlanningModeSim.Define.SimulationException;
-import alma.scheduling.PlanningModeSim.Container;
+import alma.scheduling.Define.TaskControl;
 import alma.scheduling.PlanningModeSim.ArchiveSimulator;
+import alma.scheduling.PlanningModeSim.ClockSimulator;
+import alma.scheduling.PlanningModeSim.Container;
 import alma.scheduling.PlanningModeSim.ControlSimulator;
+import alma.scheduling.PlanningModeSim.OperatorSimulator;
 import alma.scheduling.PlanningModeSim.ProjectManagerSimulator;
 import alma.scheduling.PlanningModeSim.Reporter;
-import alma.scheduling.PlanningModeSim.ClockSimulator;
 import alma.scheduling.PlanningModeSim.SimulationInput;
-
-import java.util.logging.Level;
+import alma.scheduling.PlanningModeSim.TelescopeSimulator;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
+import alma.scheduling.Scheduler.DynamicScheduler;
+import alma.scheduling.Scheduler.SchedulerConfiguration;
 
 /**
  * The MasterScheduler class is the major controlling class in the Scheduling

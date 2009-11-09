@@ -24,18 +24,23 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.SBLite;
 
 public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
     private String arrayName;

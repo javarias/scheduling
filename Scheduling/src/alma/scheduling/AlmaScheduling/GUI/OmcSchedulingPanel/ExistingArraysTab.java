@@ -24,17 +24,15 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.SchedulingExceptions.InvalidOperationEx;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.TitledBorder;
+
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
 public class ExistingArraysTab extends SchedulingPanelGeneralPanel {

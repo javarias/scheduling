@@ -25,19 +25,17 @@
  */
 package alma.scheduling.Scheduler.DSA;
 
-import alma.scheduling.Define.Equatorial;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.LiteSB;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.SiteCharacteristics;
-
-
 import java.text.NumberFormat;
+
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.LiteSB;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SiteCharacteristics;
 
 /**
  * The R3Unit class is used by the R3Policy class.
  * 
- * @version $Id: R3Unit.java,v 1.11 2006/09/28 21:16:22 sslucero Exp $
+ * @version $Id: R3Unit.java,v 1.12 2009/11/09 22:58:45 rhiriart Exp $
  * @author Allen Farris
  */
 class R3Unit extends SchedulingUnit {

@@ -25,7 +25,6 @@
  */
 
 package alma.scheduling.PlanningModeSim;
-import alma.scheduling.PlanningModeSim.Simulator;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 
 /**

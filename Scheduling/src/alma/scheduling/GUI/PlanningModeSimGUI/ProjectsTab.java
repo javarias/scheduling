@@ -24,29 +24,25 @@
  */
 package alma.scheduling.GUI.PlanningModeSimGUI;
 
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-
-import java.util.Vector;
+import java.awt.event.MouseListener;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
-import javax.swing.JTextField;
-import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.JViewport;
-import javax.swing.BoxLayout;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 
 /**
  * This class extends the JScrollPane and includes everything required for the

@@ -27,13 +27,12 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
-import alma.acs.nc.*;
-import alma.acs.container.ContainerServices;
 import alma.acs.component.client.ComponentClient;
-
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.acs.container.ContainerServices;
+import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.Receiver;
 import alma.pipelinescience.ScienceProcessingDoneEvent;
+import alma.scheduling.MasterSchedulerIF;
 import alma.xmlentity.XmlEntityStruct;
 
 /**

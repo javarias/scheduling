@@ -24,17 +24,20 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import java.awt.*;
-import java.util.EventListener;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
-import java.util.logging.Logger;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.TitledBorder;
+
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
 
 public class SearchArchiveOnlyPlugin extends SchedulingPanelGeneralPanel {
     private JPanel mainPanel;

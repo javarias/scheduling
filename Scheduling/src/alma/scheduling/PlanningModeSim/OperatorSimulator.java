@@ -26,9 +26,10 @@
  
 package alma.scheduling.PlanningModeSim;
 import java.util.ArrayList;
-import alma.scheduling.Define.Operator;
+
 import alma.scheduling.Define.Antenna;
 import alma.scheduling.Define.BestSB;
+import alma.scheduling.Define.Operator;
 import alma.scheduling.MasterScheduler.Message;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;

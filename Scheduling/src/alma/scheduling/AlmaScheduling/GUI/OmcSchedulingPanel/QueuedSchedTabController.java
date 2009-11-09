@@ -25,20 +25,15 @@
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
-import alma.scheduling.SBLite;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.Queued_Operator_to_Scheduling;
-import alma.scheduling.Define.*;
-import alma.acs.nc.Consumer;
 
-import alma.Control.ExecBlockStartedEvent;
-import alma.Control.ExecBlockEndedEvent;
 import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.offline.ASDMArchivedEvent;
-import alma.xmlstore.XmlStoreNotificationEvent;
+import alma.Control.ExecBlockEndedEvent;
+import alma.Control.ExecBlockStartedEvent;
+import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.offline.ASDMArchivedEvent;
+import alma.scheduling.Queued_Operator_to_Scheduling;
+import alma.scheduling.SBLite;
 
 public class QueuedSchedTabController extends SchedulingPanelController {
     private QueuedSchedTab parent;

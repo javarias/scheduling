@@ -25,12 +25,10 @@
 
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
-import alma.Control.DestroyedManualArrayEvent;
+import alma.Control.CreatedAutomaticArrayEvent;
 import alma.Control.CreatedManualArrayEvent;
 import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.Control.CreatedAutomaticArrayEvent;
-import alma.Control.ExecBlockStartedEvent;
-import alma.Control.ExecBlockEndedEvent;
+import alma.Control.DestroyedManualArrayEvent;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 

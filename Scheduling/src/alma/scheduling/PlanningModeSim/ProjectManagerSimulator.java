@@ -25,24 +25,23 @@
  */
  
 package alma.scheduling.PlanningModeSim;
+import java.util.logging.Level;
+
 import alma.scheduling.NothingCanBeScheduledEnum;
-import alma.scheduling.Define.SB;
-import alma.scheduling.Define.SBQueue;
-import alma.scheduling.Define.ExecBlock;
-import alma.scheduling.Define.Project;
 import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.Status;
+import alma.scheduling.Define.ExecBlock;
+import alma.scheduling.Define.ObservedSession;
 import alma.scheduling.Define.Program;
 import alma.scheduling.Define.Project;
 import alma.scheduling.Define.ProjectQueue;
-import alma.scheduling.Define.ObservedSession;
-import alma.scheduling.Define.TaskControl;
+import alma.scheduling.Define.SB;
+import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Status;
+import alma.scheduling.Define.TaskControl;
 import alma.scheduling.PlanningModeSim.Define.BasicComponent;
 import alma.scheduling.PlanningModeSim.Define.SimulationException;
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
-
-import java.util.logging.Level;
 
 /**
  * Description 

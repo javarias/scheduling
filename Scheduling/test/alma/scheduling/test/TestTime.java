@@ -27,7 +27,6 @@
 package alma.scheduling.test;
 
 import junit.framework.TestCase;
-
 import alma.scheduling.Define.Time;
 
 public class TestTime extends TestCase {

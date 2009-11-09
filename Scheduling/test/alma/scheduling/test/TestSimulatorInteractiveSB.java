@@ -5,25 +5,15 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
-import alma.scheduling.*;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.AlmaScheduling.ALMAClock;
-import alma.scheduling.AlmaScheduling.*;
-import alma.scheduling.AlmaScheduling.ALMAMasterScheduler;
-import alma.scheduling.ProjectLite;
-import alma.scheduling.Interactive_PI_to_Scheduling;
-import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.*;
-
-import alma.acs.component.client.ComponentClientTestCase;
-import alma.acs.component.client.ComponentClient;
-import alma.acs.container.ContainerServices;
 import alma.acs.component.client.AdvancedComponentClient;
+import alma.acs.container.ContainerServices;
 import alma.acs.logging.ClientLogManager;
-import alma.ACS.MasterComponentPackage.SubsystemStateEvent;
-
-import alma.exec.extension.subsystemplugin.*;
-import alma.archive.ArchiveSubsystemMasterIF;
-import alma.pipelineql.QlDisplayMaster;
+import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.Interactive_PI_to_Scheduling;
+import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.AlmaScheduling.ALMAArchive;
 /**
  * @author wlin
  *

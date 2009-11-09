@@ -26,10 +26,11 @@
  
 package alma.scheduling.PlanningModeSim;
 
-import alma.scheduling.PlanningModeSim.Define.BasicComponent;
-
 import java.util.ArrayList;
+
 import alma.scheduling.Define.DateTime;
+import alma.scheduling.PlanningModeSim.Define.BasicComponent;
+import alma.scheduling.PlanningModeSim.Define.SimulationException;
 /**
  * Description 
  * 
