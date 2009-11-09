@@ -1,4 +1,4 @@
-# $Id: bulk-import-saveasnew-retrieve.py,v 1.2 2009/09/22 22:40:17 rhiriart Exp $
+# $Id: bulk-import-saveasnew-retrieve.py,v 1.3 2009/11/09 23:13:27 rhiriart Exp $
 #
 # script to load each of the .aot files given as parameters,
 # store the project it contains to the archive and finally
@@ -13,6 +13,7 @@ dirPending = 0
 sep = '/'
 dir = '.' + sep
 files = []
+uids  = []
 
 for arg in sys.argv:
 	if dirPending:
@@ -47,13 +48,17 @@ for filename in files:
 		else:
 			outFilename = "out_" + filename;
 			print "Retrieved project has EntityID ", fromArchive.getEntityID(), ", exporting to ", outFilename
+			uids.append(fromArchive.getEntityID())
 			good = good + 1
 			exportprj(fromArchive, outFilename);
 
 if good != 1:
-	print good, 'projects imported, stored and retrieved'
+	print good, 'projects imported, stored and retrieved. UIDs are:'
 else:
-	print '1 project imported, stored and retrieved'
+	print '1 project imported, stored and retrieved. UID is:'
+
+for uid in uids:
+	print '	' + uid
 	
 if bad > 1:
 	print bad, 'projects failed'

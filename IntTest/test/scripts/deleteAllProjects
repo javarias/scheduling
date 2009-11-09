@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import os
+from Acspy.Clients.SimpleClient import PySimpleClient
+
+client = PySimpleClient()
+
+arch = client.getComponent('ARCHIVE_CONNECTION')
+op = arch.getOperational("deleteAllProjects")
+
+qstr = '/prj:ObsProject'
+cursor = op.query(qstr, 'ObsProject')
+while cursor.hasNext():
+   prj = cursor.next()
+   print 'Deleting ObsProject', prj.identifier
+   op.delete(prj.identifier)
+cursor.close()
+
+qstr = "/sbl:SchedBlock"
+cursor = op.query(qstr, "SchedBlock")
+while cursor.hasNext():
+   sbl = cursor.next()
+   print 'Deleting SchedBlock', sbl.identifier
+   op.delete(sbl.identifier)
+cursor.close()
+
+qstr = "/prp:ObsProposal"
+cursor = op.query(qstr, "ObsProposal")
+while cursor.hasNext():
+   prp = cursor.next()
+   print 'Deleting ObsProposal', prp.identifier
+   op.delete(prp.identifier)
+cursor.close()
+
+print 'Deleting all records in table OBS_PROJECT_STATUS in StateArchive'
+os.system("./scripts/sqltool 'DELETE FROM OBS_PROJECT_STATUS; COMMIT;'")
+print 'Deleting all records in table OBS_UNIT_SET_STATUS in StateArchive'
+os.system("./scripts/sqltool 'DELETE FROM OBS_UNIT_SET_STATUS; COMMIT;'")
+print 'Deleting all records in table SCHED_BLOCK_STATUS in StateArchive'
+os.system("./scripts/sqltool 'DELETE FROM SCHED_BLOCK_STATUS; COMMIT;'")
+print 'Deleting all records in table STATE_CHANGES in StateArchive'
+os.system("./scripts/sqltool 'DELETE FROM STATE_CHANGES; COMMIT;'")
+
+client.releaseComponent('ARCHIVE_CONNECTION')
+client.disconnect()
+

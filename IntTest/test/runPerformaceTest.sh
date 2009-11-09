@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA 02111-1307  USA
 #
-# $Id: runSchedulingPluginsTest,v 1.3 2009/11/09 23:13:27 rhiriart Exp $
+# $Id: runProxyTest.sh,v 1.1.2.1 2009/10/12 22:21:33 dclarke Exp $
 #
 
 # Documentation about the test goes here.
@@ -41,20 +41,18 @@ if test "$INTROOT" ; then
 fi
 export CLASSPATH
 
-declare TEST_CLASS=alma.scheduling.inttest.SchedulingPluginsTest
+declare TEST_CLASS=alma.scheduling.inttest.PerformanceTest
 declare TEST_SUITE=""
 declare TEST_LOG=/dev/stdout
 
-if test $# -ge 1; then
-  TEST_SUITE=$1
-  if test $# -eq 2; then
-    TEST_LOG=$2
-  fi
-fi
+# if test $# -gt 1; then
+#   TEST_SUITE=$1
+#   if test $# -eq 2; then
+#     TEST_LOG=$2
+#   fi
+# fi
 
-printf "Test suite is %s\n" $TEST_SUITE
-
-acsStartJava -endorsed -Dsuite="$TEST_SUITE" junit.textui.TestRunner "$TEST_CLASS" &> "$TEST_LOG"
+acsStartJava -endorsed junit.textui.TestRunner "$TEST_CLASS" &> "$TEST_LOG"
 
 RESULT=$?
 if [ "$RESULT" = "0" ]; then

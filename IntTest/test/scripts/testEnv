@@ -10,17 +10,55 @@
 export ACS_INSTANCE
 export ACS_TMP
 export ACS_CDB
+export RUNLOCATION
 
 RETVAL=0
 
-start() {
-    printf "Starting test\n"
+createLock() {
     # To be sure, delete all temporary and the recovery files before starting
     if [ -e "$ACS_TMP" ]; then
+        if [ -e "$ACS_LOCK" ]; then
+           printf "*** Lock file %s already exists, exiting\n" "$ACS_LOCK"
+           exit 0
+        fi
         rm -rf "$ACS_TMP" &> /dev/null
     fi
     mkdir "$ACS_TMP"
+    date > "$ACS_LOCK"
+}
+
+clearLock() {
+    rm -f "$ACS_LOCK" &> /dev/null
+}
+
+checkInstances() {
+    instanceFile="${ACS_TMP}/acs_instance"
+    if [ -e ${instanceFile} ]; then
+        fileInstance=`cat ${instanceFile}`
+        if [ ${fileInstance} != $ACS_INSTANCE ]; then
+            printf "*** Discrepancy in ACS instance\n"
+            printf "    env:   ACS_INSTANCE = %s\n" $ACS_INSTANCE
+            printf "    file:  ACS_INSTANCE = %s\n" $fileInstance
+        fi
+    else
+        printf "*** Missing ACS instance file ${instanceFile}"
+    fi
+    rm -f "$ACS_LOCK" &> /dev/null
+}
+
+start() {
+    printf "Starting test\n"
     startHSQLDB
+    startACS
+}
+
+suspend() {
+    printf "Suspending test\n"
+    stopACS
+}
+
+restart() {
+    printf "Restarting test\n"
     startACS
 }
 
@@ -134,13 +172,25 @@ stopACS() {
 
 case "$1" in
     start)
+        createLock
         start
+        checkInstances
+        ;;
+    suspend)
+        suspend
+        clearLock
+        ;;
+    restart)
+        createLock
+        restart
+        checkInstances
         ;;
     stop)
         stop
+        clearLock
         ;;
     *)
-        printf "Usage: $0 {start|stop}\n"
+        printf "Usage: $0 {start|stop|suspend|restart}\n"
         exit 1
 esac
 

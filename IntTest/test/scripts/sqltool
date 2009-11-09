@@ -12,5 +12,13 @@ elif test -a $INTROOT/lib/hsqldb.jar; then
     HSQLDB_JAR=$INTROOT/lib/hsqldb.jar
 fi
 
-java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" "$DBNAME"
+if test $# -ge 1; then
+   SQL_COMMAND=$@
+fi
+
+if test -n "$SQL_COMMAND"; then
+    java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "$SQL_COMMAND" "$DBNAME"
+else
+    java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" "$DBNAME"
+fi
 

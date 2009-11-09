@@ -1,0 +1,28 @@
+#! /bin/bash
+
+if [[ $# == 0 ]]
+then # No arguments, update everything
+   dirs=(*)
+   warnNotDir="no"
+else # Arguments, assumed to be a list of directories to pack
+   dirs=($@)
+   warnNotDir="yes"
+fi
+
+for d in ${dirs[@]}
+do
+   if [[ -d ${d} ]]
+   then
+      if [[ -e ${d}/ObsProject.xml ]]
+      then
+         zip -Drj ${d}.aot ${d}
+      elif [ ${warnNotDir} = "yes" ]
+      then
+         echo "${d} does not contain an ObsProject.xml - skipping"
+      fi
+   elif [ ${warnNotDir} = "yes" ]
+   then
+      echo "${d} is not a directory - skipping"
+   fi
+done
+

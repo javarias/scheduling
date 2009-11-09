@@ -695,4 +695,30 @@ public class Utils {
     }
     /* end Status Hierarchy Creation
      * ============================================================= */
+
+    public String showProjectStatus(ProjectStatus ps) {
+    	String result;
+    	final StatusT status = ps.getStatus();
+    	
+    	result = String.format("<ProjectStatus status=%s psid=%16s opref=%16s/>",
+    			(status != null)? status.getState(): "null",
+    					ps.getProjectStatusEntity().getEntityId(),
+    					ps.getObsProjectRef().getEntityId());
+
+			return result;
+    }
+
+    public String showSBStatus(SBStatus sbs) {
+    	String result;
+    	final StatusT status = sbs.getStatus();
+    	
+    	result = String.format("<SBStatus status=%s sbsid=%16s sbref=%16s remaining=%d/>",
+    			(status != null)? status.getState(): "null",
+    					sbs.getSBStatusEntity().getEntityId(),
+    					sbs.getSchedBlockRef().getEntityId(),
+    					sbs.getExecutionsRemaining());
+
+		return result;
+    }
+    
 }

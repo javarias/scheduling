@@ -1,5 +1,13 @@
 #!/bin/bash
 
-cd projects
-ALMA-OT -batch ../scripts/bulk-import-saveasnew-retrieve.py *.aot
+# Use any arguments as the projects to load. If there are no 
+# arguments load them all
+if [[ $# == 0 ]]
+then
+   subsystems=(projects/*.aot)
+else
+   subsystems=($@)
+fi
+
+ALMA-OT -batch scripts/bulk-import-saveasnew-retrieve.py ${subsystems[@]}
 

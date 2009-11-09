@@ -76,8 +76,8 @@ public class PluginStarter extends JFrame {
          */
         @Override
 		public void windowClosing( WindowEvent e ) {
-        	controlDlg.setVisible(false);
-        	controlDlg.dispose();
+//        	controlDlg.setVisible(false);
+//        	controlDlg.dispose();
         	logger.log(Level.INFO,"Shutting down the plugin");
             try {
             	plugin.stop();
@@ -118,7 +118,7 @@ public class PluginStarter extends JFrame {
     private Logger logger;
     
     // The dialog to control the life cycle of the plugin
-    private PluginControlDlg controlDlg;
+//    private PluginControlDlg controlDlg;
     
     /**
      * ACS container services
@@ -190,8 +190,8 @@ public class PluginStarter extends JFrame {
 		launchPlugin(plugin);
 		
 		// Show the control dialog
-		Rectangle p = getBounds();
-		controlDlg=new PluginControlDlg(plugin,logger,p);
+//		Rectangle p = getBounds();
+//		controlDlg=new PluginControlDlg(plugin,logger,p);
     }
     
     /**
