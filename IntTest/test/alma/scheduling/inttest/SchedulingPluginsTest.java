@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingPluginsTest.java,v 1.3 2009/11/09 23:13:27 rhiriart Exp $
+ * $Id: SchedulingPluginsTest.java,v 1.4 2009/11/09 23:40:10 rhiriart Exp $
  */
 
 package alma.scheduling.inttest;
@@ -190,7 +190,8 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testInteractiveSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, ArrayModeEnum.INTERACTIVE);
+        String arrayName = masterScheduler.createArray(new String[] {"DV01"},
+                new String[] {"PhotonicReference1"}, ArrayModeEnum.INTERACTIVE);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");
@@ -251,7 +252,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testQueuedSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, ArrayModeEnum.QUEUED);
+        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, new String[] {"PhotonicReference1"}, ArrayModeEnum.QUEUED);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");
@@ -264,7 +265,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testManualSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, ArrayModeEnum.MANUAL);
+        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, new String[] {"PhotonicReference1"}, ArrayModeEnum.MANUAL);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");

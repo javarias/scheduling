@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingTemplateTest.java,v 1.2 2009/09/22 22:40:17 rhiriart Exp $
+ * $Id: SchedulingTemplateTest.java,v 1.3 2009/11/09 23:40:10 rhiriart Exp $
  */
 
 package alma.scheduling.inttest;
@@ -135,7 +135,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
         String arrayName = masterScheduler.createArray(new String[] {"DV01"},
-        		ArrayModeEnum.INTERACTIVE);
+                new String[] {"PhotonicReference1"}, ArrayModeEnum.INTERACTIVE);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");

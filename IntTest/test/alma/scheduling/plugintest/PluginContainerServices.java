@@ -59,19 +59,7 @@ public class PluginContainerServices implements
 		for (String n : props.stringPropertyNames())
 			properties.setProperty(n, props.getProperty(n));
 	}
-	
-	
-	public abeans.models.acs.baci.Component getAbeanComponent (String componentUrl, Class<?> abeanClass) 
-	throws PluginContainerException {
-		throw new PluginContainerException("Unsupported getAbeanComponent");
-	}
-	
-	public void releaseAbeanComponent (abeans.models.acs.baci.Component abean)  {
-		if (abean==null) {
-			throw new IllegalArgumentException("abean component is null!");
-		}
-	}
-	
+		
 	public Logger getExecLogger () {
 		return getLogger();
 	}
