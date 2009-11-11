@@ -343,9 +343,17 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
     protected void updateSBInfo(String id) {
         sbs.showSelectedSBDetails(id);
     }
-    
+
+    protected void updateSBInfo(String id, SBLite sbLite) {
+        sbs.showSelectedSBDetails(id, sbLite);
+    }
+
     protected void updateProjectInfo(String id) {
     	projects.showSelectedProjectDetail(id);
+    }
+
+    protected void updateProjectInfo(String id, ProjectLite prjLite) {
+        projects.showSelectedProjectDetail(id, prjLite);
     }
 
     protected void updateProjectView(ProjectLite[] projectLites) {

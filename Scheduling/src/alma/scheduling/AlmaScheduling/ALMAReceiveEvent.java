@@ -51,6 +51,10 @@ import alma.alarmsystem.source.ACSFaultState;
 import alma.log_audience.OPERATOR;
 import alma.offline.ASDMArchivedEvent;
 import alma.pipelinescience.ScienceProcessingDoneEvent;
+import alma.scheduling.GUIExecBlockEndedEvent;
+import alma.scheduling.GUIExecBlockStartedEvent;
+import alma.scheduling.ProjectLite;
+import alma.scheduling.SBLite;
 import alma.scheduling.Define.ControlEvent;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.ExecBlock;
@@ -64,7 +68,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.57 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.58 2009/11/11 02:15:24 rhiriart Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -408,6 +412,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             //manager.createProjectWebpage(projectUid);
             //send out a start session event.
             //startSession(eb);
+
+            SBLite sbLite = manager.createSBLite(e.sbId.entityId);
+            ProjectLite prjLite = manager.createProjectLite(sbLite.projectRef);
+            GUIExecBlockStartedEvent event =
+                new GUIExecBlockStartedEvent(e.sbId.entityId, eb.getExecId(), sbLite, prjLite);
+            publisher.publish(event);
+
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
             ex.printStackTrace(System.out);
@@ -485,6 +496,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             sbCompleted(eb);
             //startPipeline(ce);
             deleteFinishedEB(eb);
+            
+            SBLite sbLite = manager.createSBLite(e.sbId.entityId);
+            ProjectLite prjLite = manager.createProjectLite(sbLite.projectRef);
+            GUIExecBlockEndedEvent event =
+                new GUIExecBlockEndedEvent(e.sbId.entityId, eb.getExecId(), e.status.toString(), sbLite, prjLite);
+            publisher.publish(event);
+            
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace(System.out);

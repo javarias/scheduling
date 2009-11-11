@@ -89,9 +89,9 @@ public class ProjectTable extends JTable {
         projRowInfo = new Object[0][infoSize];
         createTableModel();
         setModel(projTableModel);
-        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         //setMaximumSize(size);
-        setPreferredScrollableViewportSize(size);
+        //setPreferredScrollableViewportSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ((DefaultTableCellRenderer)getTableHeader().getDefaultRenderer()).
             setHorizontalAlignment(SwingConstants.LEFT);
@@ -238,6 +238,12 @@ public class ProjectTable extends JTable {
          t.start();
     }
 
+    protected void showSelectedProjectDetail(String sbid, ProjectLite prjLite) {
+        GetProjectLite x = new GetProjectLite(sbid, prjLite);
+        Thread t = controller.getCS().getThreadFactory().newThread(x);
+        t.start();
+   }
+    
     private void showProjectSBs(ProjectLite p) {
         String[] ids = p.allSBIds;
         SBLite[] sbs = controller.getSBLites(ids);
@@ -269,7 +275,7 @@ public class ProjectTable extends JTable {
                 setHorizontalAlignment(SwingConstants.CENTER);
             return;
         }
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        // setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel columns = getColumnModel();
         TableColumn column = null;
         TableCellRenderer r= null;
@@ -328,13 +334,19 @@ public class ProjectTable extends JTable {
     
     class GetProjectLite implements Runnable {
         private String id;
-        public GetProjectLite(String i){
-            id = i;
+        private ProjectLite prjLite;
+        public GetProjectLite(String i) {
+            this(i, null);
+        }
+        public GetProjectLite(String i, ProjectLite prjLite){
+            this.id = i;
+            this.prjLite = prjLite;
         }
         public void run() {
-            ProjectLite project = controller.getProjectLiteforSB(id);
+            if (prjLite == null)
+                prjLite = controller.getProjectLiteforSB(id);
             updateRightClickMenu(id);
-            javax.swing.SwingUtilities.invokeLater(new ShowProjectDetails(project));
+            javax.swing.SwingUtilities.invokeLater(new ShowProjectDetails(prjLite));
         }
     }
     class ShowProjectDetails implements Runnable {

@@ -33,6 +33,8 @@ import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.offline.ASDMArchivedEvent;
+import alma.scheduling.GUIExecBlockEndedEvent;
+import alma.scheduling.GUIExecBlockStartedEvent;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
@@ -43,33 +45,31 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     private Interactive_PI_to_Scheduling scheduler;
     private String schedulername;
     private Consumer consumer;
+    private Consumer schedChannelConsumer;
     private String currentSBId;
     private ArrayList<String> waitingForArchivedSB;
-    //private String currentExecBlockId;
     private String arrayName;
     private String arrayStatus;
     private InteractiveSchedTab parent;
-    
-    //private PluginContainerServices foo;
 
     public InteractiveSchedTabController(PluginContainerServices cs, String a, InteractiveSchedTab p){
         super(cs);
         parent = p;
-        //foo=cs;
         arrayName = a;
         arrayStatus = "Active";
         currentSBId = "";
         waitingForArchivedSB = new ArrayList<String>();
         try{
-            //consumer = new Consumer(alma.xmlstore.CHANNELNAME.value,cs);
-            //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
-            //consumer.consumerReady();
             consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
             consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
-            consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
             consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
             consumer.consumerReady();
+            
+            schedChannelConsumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, container);
+            schedChannelConsumer.addSubscription(alma.scheduling.GUIExecBlockStartedEvent.class, this);
+            schedChannelConsumer.addSubscription(alma.scheduling.GUIExecBlockEndedEvent.class, this);
+            schedChannelConsumer.consumerReady();
+            
         }catch(Exception e){
             e.printStackTrace();
             logger.severe("SP: Error getting consumers for IS");
@@ -108,6 +108,11 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             	logger.info("Disconnecting Notification Channel Consumer");
                 consumer.disconnect();
                 consumer = null;
+            }
+            if(schedChannelConsumer != null) {
+                logger.info("Disconnecting Scheduling Notification Channel Consumer");
+                schedChannelConsumer.disconnect();
+                schedChannelConsumer = null;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -207,54 +212,37 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     int startC =0;
     int stopC =0;
 
-    public void receive(ExecBlockStartedEvent e) {
-        String sbid = e.sbId.entityId;
-        String exec_id = e.execId.entityId;
-        logger.fine("got start event in IS for sb "+sbid);
-        if(!sbid.equals(currentSBId)){
-        	System.out.println("Event SchedBlock UID doesn't match current SBID");
-        	System.out.println("Event SB UID: " + sbid);
-        	System.out.println("Current SB UID: " + currentSBId);
+    public void receive(GUIExecBlockStartedEvent event) {
+        logger.fine("Received GUIExecBlockStartedEvent for SchedBlock " + event.schedBlockUID);
+        if(!event.schedBlockUID.equals(currentSBId)){
+            System.out.println("Event SchedBlock UID doesn't match current SBID");
+            System.out.println("Event SB UID: " + event.schedBlockUID);
+            System.out.println("Current SB UID: " + currentSBId);
             return;
         }
-        
-        if(!e.arrayName.equals(arrayName)) {
-   	     //System.out.println("exit the receive event!"+e.arrayName);
-        	System.out.println("Event array name doesn't match current array name");
-        	System.out.println("Event array name: " + e.arrayName);
-        	System.out.println("Current array name: " + arrayName);
-            return;
-        }
-
         
         System.out.println("Scheduler current SB UID: " + scheduler.getCurrentSB());
-        System.out.println("Event SB UID: " + sbid);
-        if(scheduler.getCurrentSB().equals(sbid) ){
-            scheduler.setCurrentEB(exec_id);
+        System.out.println("Event SB UID: " + event.schedBlockUID);
+        if(scheduler.getCurrentSB().equals(event.schedBlockUID) ){
+            scheduler.setCurrentEB(event.execBlockUID);
             //currentExecBlockId = exec_id;
-            logger.finest("Got start event for "+sbid+", ctr = "+startC);
+            logger.finest("Got start event for "+event.schedBlockUID+", ctr = "+startC);
             startC++;
             
         }
-        waitingForArchivedSB.add(sbid);
-        parent.setSBStatus(sbid, "RUNNING");
+        waitingForArchivedSB.add(event.schedBlockUID);
+        parent.setSBStatus(event.schedBlockUID, "RUNNING");
         parent.closeExecutionWaitingThing();
-       // parent.setEnabled(false);
-        //parent.updateSBInfo(sbid);
-        // TODO do something like the search but don't want to reset selected 
-        // things to first project..
-        //parent.doArchiveSearch();
-        parent.updateSBInfo(sbid);
-        parent.updateProjectInfo(sbid);
+        parent.updateSBInfo(event.schedBlockUID, event.schedBlock);
+        parent.updateProjectInfo(event.schedBlockUID, event.project);
     }
-
-    public void receive(ExecBlockEndedEvent e){
+    
+    public void receive(GUIExecBlockEndedEvent event) {
+        logger.fine("Received GUIExecBlockEndedEvent for SchedBlock " + event.schedBlockUID);
         parent.closeExecutionWaitingThing();
-        String exec_id = e.execId.entityId;
-        String sbid = e.sbId.entityId;
+        String exec_id = event.execBlockUID;
+        String sbid = event.schedBlockUID;
         if(!sbid.equals(currentSBId)) return;
-        
-        if(!e.arrayName.equals(arrayName)) return;
 
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
         if(!scheduler.getCurrentSB().equals(sbid) && 
@@ -265,14 +253,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             logger.finest("got stop for sb "+sbid+", ctr = "+stopC);
             stopC++;
         }
-        String completion;
-        logger.fine("Completion value from control: "+e.status.value()+" : "+e.status.toString());
-        completion = e.status.toString();//completions[e.status.value()];
-        parent.setSBStatus(sbid, completion);
-        if(scheduler.getCurrentEB().equals(exec_id)){
-            //ok to re-enable the search area now..
-           // parent.setEnable(true);
-        }
+        logger.fine("Completion value from control: "+event.status);
+        // Change the status only if the SB hasn't been archived yet.
+        // This protects agains the possibility that the GUIExecBlockEndedEvent arrives
+        // *after* the ASDMArchivedEvent (unlikely, but seen in tests).
+        if (waitingForArchivedSB.contains(sbid))
+            parent.setSBStatus(sbid, event.status);
         try {
             scheduler.endSession();
             logger.fine("SP: Stopped IS session");
@@ -281,18 +267,11 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             ex.printStackTrace();
         }
         currentSBId = "";
-        
-        SBLite[] sblite = masterScheduler.getSBLite(new String[] {e.sbId.entityId});
-        try {
-			Thread.sleep(500);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
-		}
-        
-        parent.updateSBInfo(sbid);
-        parent.updateProjectInfo(sbid);
+                
+        parent.updateSBInfo(event.schedBlockUID, event.schedBlock);
+        parent.updateProjectInfo(event.schedBlockUID, event.project);
     }
-
+    
     public void receive(DestroyedAutomaticArrayEvent event) {
         String name = event.arrayName;
         logger.fine("SP: Received destroy array event for "+name+" in IS");
@@ -301,24 +280,22 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
     
-    public void receive(ASDMArchivedEvent e){
+    public void receive(ASDMArchivedEvent e) {
         String sbid = e.workingDCId.schedBlock.entityId;
         logger.fine("SCHEDULING_PANEL: Got asdm archived event for SB("+sbid+")'s ASDM("+e.asdmId.entityId+").");
         String asdmId = e.asdmId.entityId;
         String completion = e.status;
-        logger.fine("Current SB = "+currentSBId);
+        logger.fine("Current SB = " + currentSBId);
         
-        //if(sbid.equals(currentSBId)){
-        if(waitingForArchivedSB.contains(sbid)&& scheduler.getCurrentEB().equals(asdmId)){
+        if( waitingForArchivedSB.contains(sbid) && scheduler.getCurrentEB().equals(asdmId) ) {
             logger.fine("in list");
-            if(completion.equals("complete")){
+            if(completion.equals("complete")) {
                 parent.setSBStatus(sbid, "ARCHIVED");
+                waitingForArchivedSB.remove(sbid);
             }
-        }else{
+        } else {
             logger.fine("not in list");
         }
-        parent.updateSBInfo(sbid);
-        parent.updateProjectInfo(sbid);
     }
 
     public void processXmlStoreNotificationEvent(XmlStoreNotificationEvent e) {

@@ -121,8 +121,8 @@ public class SBTable extends JTable {
         uidLoc = infoSize-1;
         createTableModel();
         setModel(sbTableModel);
-        setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        setPreferredSize(size);
+        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setPreferredSize(size);
         //setPreferredScrollableViewportSize(size);
         //setMaximumSize(size);
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -186,7 +186,12 @@ public class SBTable extends JTable {
         GetSBLite x = new GetSBLite(id);
         Thread t = controller.getCS().getThreadFactory().newThread(x);
         t.start();
-        
+    }
+    
+    protected void showSelectedSBDetails(String id, SBLite sbLite){
+        GetSBLite x = new GetSBLite(id, sbLite);
+        Thread t = controller.getCS().getThreadFactory().newThread(x);
+        t.start();
     }
     
     private void updateRightClickMenu(String uid){
@@ -455,7 +460,7 @@ public class SBTable extends JTable {
                 setHorizontalAlignment(SwingConstants.CENTER);
             return;
         }
-        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        //setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel columns = getColumnModel();
         TableColumn column = null;
         TableCellRenderer r= null;
@@ -693,13 +698,19 @@ public class SBTable extends JTable {
 
     class GetSBLite implements Runnable {
         private String id;
-        public GetSBLite(String i){
-            id = i;
+        private SBLite sbLite;
+        public GetSBLite(String i) {
+            this(i, null);
+        }
+        public GetSBLite(String i, SBLite sbLite){
+            this.id = i;
+            this.sbLite = sbLite;
         }
         public void run() {
-            SBLite sb = controller.getSBLite(id);
+            if (sbLite == null)
+                sbLite = controller.getSBLite(id);
             updateRightClickMenu(id);
-            javax.swing.SwingUtilities.invokeLater(new ShowSBDetails(sb));
+            javax.swing.SwingUtilities.invokeLater(new ShowSBDetails(sbLite));
         }
     }
     class ShowSBDetails implements Runnable {

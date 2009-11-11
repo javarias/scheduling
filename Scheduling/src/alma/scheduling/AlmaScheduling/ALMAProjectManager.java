@@ -87,7 +87,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.127 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.128 2009/11/11 02:15:24 rhiriart Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
 	
@@ -2594,7 +2594,7 @@ public class ALMAProjectManager extends ProjectManager {
         return sbs;
     }
 
-    private SBLite createSBLite(String id) {
+    protected SBLite createSBLite(String id) {
         String sid,pid,sname,pname,pi,pri;
         double ra,dec,freq,score,success,rank;
         long maxT;
@@ -2684,7 +2684,7 @@ public class ALMAProjectManager extends ProjectManager {
         	StringWriter writer = new StringWriter();
 		    try {
 		    	sbs.marshal(writer);
-				logger.info("SB Status XML:\n" + writer.toString());
+//				logger.info("SB Status XML:\n" + writer.toString());
 				sblite.statusXML = writer.toString();
 			} catch (MarshalException ex) {
 				ex.printStackTrace();
@@ -2866,11 +2866,11 @@ public class ALMAProjectManager extends ProjectManager {
 	}
 
 	public SBLite[] getSBLite(String[] ids) {
-        try {
-            archivePoller.pollArchive();
-        } catch(Exception e) {
-            return null;
-        }
+//        try {
+//            archivePoller.pollArchive();
+//        } catch(Exception e) {
+//            return null;
+//        }
         List<SBLite> sblites = new ArrayList<SBLite>();
         for(int i=0; i < ids.length; i++){
             SBLite sblite;
@@ -2903,7 +2903,7 @@ public class ALMAProjectManager extends ProjectManager {
         return projectliteArray;
     }
 
-    private ProjectLite createProjectLite(String id) {
+    protected ProjectLite createProjectLite(String id) {
         Project p = projectQueue.get(id);;
         ProjectLite projectlite= new ProjectLite();
         projectlite.uid = p.getId();
@@ -2950,7 +2950,7 @@ public class ALMAProjectManager extends ProjectManager {
         	StringWriter writer = new StringWriter();
         	try{
         		ps.marshal(writer);
-        		logger.info("PS XML: " + writer.toString());
+        		// logger.info("PS XML: " + writer.toString());
         		projectlite.statusXML = writer.toString();
         	}catch(MarshalException ex){
         		ex.printStackTrace();
@@ -2958,24 +2958,12 @@ public class ALMAProjectManager extends ProjectManager {
         	catch(ValidationException ex){
         		ex.printStackTrace();
         	}
-        }
-        else {
+        } else {
         	projectlite.statusXML = "";
         }
 		
         projectlite.status = ps.getStatus().getState().toString();
         logger.fine("Project Status: " + projectlite.status);
-
-        StringWriter writer = new StringWriter();
-        try {
-			ps.marshal(writer);
-			logger.info("ProjectStatus XML:\n" + writer.toString());
-		} catch (MarshalException ex) {
-			ex.printStackTrace();
-		} catch (ValidationException ex) {
-			ex.printStackTrace();
-		}
-        
         
         return projectlite;
     }

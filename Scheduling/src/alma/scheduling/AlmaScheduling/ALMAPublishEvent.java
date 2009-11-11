@@ -27,6 +27,8 @@ package alma.scheduling.AlmaScheduling;
 
 import java.util.logging.Logger;
 
+import alma.scheduling.GUIExecBlockEndedEvent;
+import alma.scheduling.GUIExecBlockStartedEvent;
 import alma.scheduling.StartSessionEvent;
 import alma.scheduling.EndSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEvent;
@@ -45,7 +47,7 @@ import alma.acs.nc.*;
  * over the acs notification channel when there is nothing
  * that can be scheduled.
  *
- * @version $Id: ALMAPublishEvent.java,v 1.16 2009/01/30 21:25:58 wlin Exp $
+ * @version $Id: ALMAPublishEvent.java,v 1.17 2009/11/11 02:15:24 rhiriart Exp $
  * @author Sohaila Lucero
  */
 public class ALMAPublishEvent extends PublishEvent {
@@ -158,6 +160,14 @@ public class ALMAPublishEvent extends PublishEvent {
                 logger.fine("SCHEDULING: about to publish nothing can be scheduled event");
                 sched_nc.publish((NothingCanBeScheduledEvent)event);
                 logger.finest("SCHEDULING: published nothing can be scheduled event");
+            } else if (event instanceof GUIExecBlockStartedEvent) {
+                logger.fine("SCHEDULING: about to publish GUI ExecBlock Started event");
+                sched_nc.publish((GUIExecBlockStartedEvent) event);
+                logger.finest("SCHEDULING: published GUI ExecBlock Started event");                
+            } else if (event instanceof GUIExecBlockEndedEvent) {
+                logger.fine("SCHEDULING: about to publish GUI ExecBlock Ended event");
+                sched_nc.publish((GUIExecBlockEndedEvent) event);
+                logger.finest("SCHEDULING: published GUI ExecBlock Ended event");                
             }
         }catch(Exception e) {
             e.printStackTrace(System.out);
