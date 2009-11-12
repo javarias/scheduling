@@ -37,8 +37,8 @@ import alma.Control.ControlMaster;
 import alma.Control.ArrayIdentifier;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
+import alma.Control.ManualArrayCommand;
 import alma.Control.ManualArrayMonitor;
-import alma.Control.ManualArray;
 import alma.Control.ResourceId;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.94 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: ALMAControl.java,v 1.95 2009/11/12 18:06:20 rhiriart Exp $
  */
 public class ALMAControl implements Control {
     
@@ -796,9 +796,9 @@ public class ALMAControl implements Control {
     }
     
     protected void setManualModeConfigure(String arrayName, String sbId) throws SchedulingException{
-    	ManualArray Control_ManualArray ;
+    	ManualArrayCommand Control_ManualArray ;
         try {
-        	Control_ManualArray = alma.Control.ManualArrayHelper.narrow(
+        	Control_ManualArray = alma.Control.ManualArrayCommandHelper.narrow(
         			containerServices.getComponent("CONTROL/"+arrayName));
         	
         	IDLEntityRef sbRef = new IDLEntityRef();
