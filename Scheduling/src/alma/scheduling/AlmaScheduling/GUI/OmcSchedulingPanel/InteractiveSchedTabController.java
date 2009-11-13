@@ -92,7 +92,6 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
         }
     }
     protected void destroyArray(){
-        destroyArray(arrayName);
         StopIS stopIs = new StopIS();
         Thread t = container.getThreadFactory().newThread(stopIs);
         t.start();
@@ -316,6 +315,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     class StopIS implements Runnable {
         public StopIS(){ }
         public void run(){
+            destroyArray(arrayName);
             stopInteractiveScheduling();
         }
     }
