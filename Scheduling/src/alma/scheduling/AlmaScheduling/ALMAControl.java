@@ -59,7 +59,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.95 2009/11/12 18:06:20 rhiriart Exp $
+ * @version $Id: ALMAControl.java,v 1.96 2009/11/14 00:35:43 rhiriart Exp $
  */
 public class ALMAControl implements Control {
     
@@ -67,6 +67,7 @@ public class ALMAControl implements Control {
     private ContainerServices containerServices;
     // control system component
     private ControlMaster control_system;
+    private boolean isControlOperational;
     //list of current automatic array auto_controllers
     private Vector<ArrayModeInfo> auto_controllers;
     //list of current manual array monitors.
@@ -94,10 +95,6 @@ public class ALMAControl implements Control {
                     "CONTROL/MASTER");
             control_system = alma.Control.ControlMasterHelper.narrow(obj);
             logger.fine("SCHEDULING: Got ControlMasterComponent");
-            if(control_system.getMasterState() != 
-                alma.Control.SystemState.OPERATIONAL){
-                    throw new SchedulingException("SCHEDULING: control not operational yet");
-            }
         } catch (AcsJContainerServicesEx ce) {
             control_system=null;
             logger.severe("SCHEDULING: error getting ControlMaster Component.");
@@ -112,14 +109,28 @@ public class ALMAControl implements Control {
         }
     }
 
-    /*
-    public boolean isControlOperational() {
-        if(control_system.getMasterState() != 
-                alma.Control.SystemState.OPERATIONAL){
-            return false;
+    /**
+     * Checks if the CONTROL subsystem is in the operational state.
+     * This function keeps the result of the last call in the isControlOperational member
+     * variable. If a previous call has detected that CONTROL is operational, then the
+     * function returns true without querying the CONTROL subsystem again. This is done
+     * to minimize overhead, although the drawback is that a sudden change in CONTROL's state
+     * won't get detected. It will be necessary to monitor CONTROL subsystem state, but this
+     * can be done using ACS provided mechanisms.
+     * 
+     * @throws SchedulingException If CONTROL is not operational.
+     */
+    public void checkControlIsOperational() throws SchedulingException {
+    	if (isControlOperational)
+    		return;
+        if (control_system.getMasterState() == 
+                alma.Control.SystemState.OPERATIONAL) {
+            isControlOperational = true;
+        } else {
+        	isControlOperational = false;
+        	throw new SchedulingException("SCHEDULING: control not operational yet");
         }
-        return true;
-    }*/
+    }
     
     /**
      *
@@ -171,6 +182,8 @@ public class ALMAControl implements Control {
     public void execSB(String arrayName, String sbId) 
         throws SchedulingException {
 
+    	checkControlIsOperational();
+    	
         //send out start of session
         IDLEntityRef sessionRef = manager.sendStartSessionEvent(sbId,arrayName);
         logger.fine("SCHEDULING: Sending BestSBs to Control!");
@@ -235,6 +248,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public void stopSB(String name, String id) throws SchedulingException {
+    	checkControlIsOperational();
     	String arrayComponentName = "CONTROL/"+name;
         AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
@@ -275,8 +289,9 @@ public class ALMAControl implements Control {
     }
 
     public void stopSBNow(String name, String id) throws SchedulingException{
-    	 String arrayComponentName = "CONTROL/"+name;
-         AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
+     	checkControlIsOperational();
+    	String arrayComponentName = "CONTROL/"+name;
+        AutomaticArray ctrl = getAutomaticArray(arrayComponentName);
         try{
            arraylogger.log(Level.INFO,"SCHEDULING: Stopping scheduling on array "+name,
                    OPERATOR.value, name);
@@ -290,6 +305,7 @@ public class ALMAControl implements Control {
     }
 
     public void stopAllScheduling() throws SchedulingException {
+    	checkControlIsOperational();
         try {
             AutomaticArray foo;
             for(int i=0; i < auto_controllers.size(); i++){
@@ -319,7 +335,7 @@ public class ALMAControl implements Control {
      */
     public String createArray(String[] antenna, String[] phothnicsChoice,String mode)
         throws SchedulingException {
-
+    	checkControlIsOperational();
         if(antenna == null || antenna.length == 0) {
             throw new SchedulingException
                 ("SCHEDULING: Cannot create an array with out any antennas!");
@@ -383,6 +399,7 @@ public class ALMAControl implements Control {
     }
 
     public String createManualArray(String[] antenna,String[] phothnicsChoice) throws SchedulingException {
+        checkControlIsOperational();
         if(antenna == null || antenna.length==0){
             throw new SchedulingException
                 ("SCHEDULING: Cannot create an array with out any antennas!");
@@ -444,6 +461,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public void destroyArray(String name) throws SchedulingException {
+    	checkControlIsOperational();
         try {
             boolean found = false;
     	    logger.logToAudience(Level.INFO, "SCHEDULING about to destroy array "+name, OPERATOR.value);
@@ -492,6 +510,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public String[] getActiveArray() throws SchedulingException {
+    	checkControlIsOperational();
         try {
             ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
             ResourceId[] mas = control_system.getManualArrayComponents();
@@ -521,6 +540,7 @@ public class ALMAControl implements Control {
     }
 
     public String[] getAllAutomaticArrays() throws SchedulingException{
+    	checkControlIsOperational();
         try {
             ResourceId[] auto_arrays = control_system.getAutomaticArrayComponents();
             String[] tmp = new String[auto_arrays.length];
@@ -540,13 +560,16 @@ public class ALMAControl implements Control {
     }
 
     public String[] getActiveAutomaticArrays()throws Exception {
+    	checkControlIsOperational();
         return control_system.getAutomaticArrays();
     }
     public String[] getActiveManualArrays() throws Exception{
+    	checkControlIsOperational();
         return control_system.getManualArrays();
     }
 
     public String[] getAllManualArrays() throws SchedulingException{
+    	checkControlIsOperational();
         try {
             ResourceId[] man_arrays = control_system.getManualArrayComponents();
             String[] tmp = new String[man_arrays.length];
@@ -569,7 +592,8 @@ public class ALMAControl implements Control {
       * Returns information about ALL arrays which are active (manual and automatic).
       * @return ArrayInfo[]
       */
-    public ArrayInfo[] getAllArraysInfo() {
+    public ArrayInfo[] getAllArraysInfo() throws SchedulingException {
+    	checkControlIsOperational();
         try {
             ResourceId[] automaticArrays = control_system.getAutomaticArrayComponents();
             for(int i=0;i < automaticArrays.length; i++){
@@ -621,6 +645,7 @@ public class ALMAControl implements Control {
      * @throws SchedulingException
      */
     public String[] getIdleAntennas() throws SchedulingException {
+    	checkControlIsOperational();
         try{
             /*
             ResourceId[] antennas = control_system.getAvailableAntennaComponents();
@@ -749,6 +774,7 @@ public class ALMAControl implements Control {
     }
 
     public void setAntennaOfflineNow(String antennaId) throws SchedulingException {
+    	checkControlIsOperational();
         try {
             control_system.setAntennaMode(antennaId, AntennaMode.ANTENNA_OFFLINE, true);
         } catch(InvalidRequest e1) {
@@ -772,6 +798,7 @@ public class ALMAControl implements Control {
         }
     }
     public void setAntennaOnlineNow(String antennaId) throws SchedulingException {
+    	checkControlIsOperational();
         try {
             control_system.setAntennaMode(antennaId, AntennaMode.ANTENNA_ONLINE, true);
         } catch(InvalidRequest e1) {
