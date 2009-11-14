@@ -93,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.119 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.120 2009/11/14 00:48:47 rhiriart Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -861,7 +861,12 @@ public class ALMAMasterScheduler extends MasterScheduler
         String comment = "Information about the scheduling system.";
         String currentTime = clock.getDateTime().toString();
         String timeZone = String.valueOf(telescope.getSite().getTimeZone());
-        ArrayInfo[] arrayInfo = control.getAllArraysInfo();
+        ArrayInfo[] arrayInfo;
+		try {
+			arrayInfo = control.getAllArraysInfo();
+		} catch (SchedulingException ex) {
+			arrayInfo = new ArrayInfo[0];
+		}
         SchedulingInfo schedInfo =
             new SchedulingInfo(comment, currentTime, timeZone, arrayInfo);
         return schedInfo;
@@ -1049,7 +1054,12 @@ public class ALMAMasterScheduler extends MasterScheduler
         String comment = "Information about the current arrays.";
         String currentTime = clock.getDateTime().toString();
         String timeZone = String.valueOf(telescope.getSite().getTimeZone());
-        ArrayInfo[] arrayInfo = control.getAllArraysInfo();
+        ArrayInfo[] arrayInfo;
+		try {
+			arrayInfo = control.getAllArraysInfo();
+		} catch (SchedulingException ex) {
+			arrayInfo = new ArrayInfo[0];
+		}
         SchedulingInfo schedInfo =
             new SchedulingInfo(comment, currentTime, timeZone, arrayInfo);
         return schedInfo;
