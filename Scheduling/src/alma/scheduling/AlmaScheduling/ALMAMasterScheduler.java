@@ -93,7 +93,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.120 2009/11/14 00:48:47 rhiriart Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.121 2009/11/16 18:23:22 javarias Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1215,7 +1215,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                 e.printStackTrace();
             }
         } else if(type.equals("queued")){
+        	//TODO: Implement this for Queued Scheduling
         }else if(type.equals("dynamic")){
+        	//TODO: Implement this for Dynamic Scheduling
         }
 
         //logger.finest ("SCHEDULING: executing SB "+sbId+" on array "

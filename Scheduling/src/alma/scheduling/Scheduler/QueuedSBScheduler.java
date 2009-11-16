@@ -38,6 +38,7 @@ import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Telescope;
 /**
  */
@@ -209,6 +210,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             return true;
         }
 		control.execSB(config.getArrayName(),best);
+		sb.getStatus().setEnded(DateTime.currentSystemTime(), Status.OBSERVED);
         takeIdFromSBsNotDone(sb.getId());
         logger.fine("SCHEDULING: Queued scheduler execute # "+execCount);
         execCount++;
