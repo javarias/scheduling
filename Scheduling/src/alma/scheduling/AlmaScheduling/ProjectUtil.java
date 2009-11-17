@@ -112,7 +112,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.79 2009/11/16 18:23:22 javarias Exp $
+ * @version $Id: ProjectUtil.java,v 1.80 2009/11/17 23:13:49 javarias Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -881,8 +881,6 @@ public class ProjectUtil {
                 sb.setReady(now);
             }*/
            
-/* We don't need to put the SBs in running mode when they are initializated
- * TODO: Check this
             try {
             	final String time = status.getStatus().getStartTime();
             	if (time == null) {
@@ -905,7 +903,6 @@ public class ProjectUtil {
                 //SB probably not ended yet
             //    e.printStackTrace();
             }
-*/
             //If the SB Numberof ExecBlock allow more than one
             // the sb.setStartTime will be set after SB execute once and 
             //the SB will become Running mode for next time the OMC bring up
