@@ -217,6 +217,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             System.out.println("Event SchedBlock UID doesn't match current SBID");
             System.out.println("Event SB UID: " + event.schedBlockUID);
             System.out.println("Current SB UID: " + currentSBId);
+            parent.closeExecutionWaitingThing();
             return;
         }
         
