@@ -112,7 +112,7 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.81 2009/11/19 21:27:56 javarias Exp $
+ * @version $Id: ProjectUtil.java,v 1.82 2009/11/23 23:16:02 javarias Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -884,7 +884,8 @@ public class ProjectUtil {
             try {
             	final String time = status.getStatus().getStartTime();
             	if (time == null) {
-                    //sb.setStartTime(DateTime.currentSystemTime());
+                    sb.setStartTime(DateTime.currentSystemTime());
+            		sb.getStatus().setReady();
             	} else {
                     sb.setStartTime(new DateTime(time));
             	}
