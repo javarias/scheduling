@@ -25,6 +25,7 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.beans.PropertyChangeSupport;
 import java.sql.Timestamp;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -68,7 +69,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.58 2009/11/11 02:15:24 rhiriart Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.59 2009/11/23 18:44:14 javarias Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -82,6 +83,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
     
     private ALMAClock clock;
     private ArrayContextLogger arraylogger;
+    
+    /* Used to check if the received EB started event is received
+     * For a weird reason sometimes (when the the SB is broken)
+     * EB Start Ev arrives later than EB Ended Ev
+     */
+    private boolean receivedEBStartEvent;
+    //used to notify to the Queued Scheduler if changes occurs in the Sbs
+	private PropertyChangeSupport pcs;
 
     
     /**
@@ -89,7 +98,7 @@ public class ALMAReceiveEvent extends ReceiveEvent {
       */
     public ALMAReceiveEvent(ContainerServices cs, 
                             ALMAProjectManager m,
-                            ALMAPublishEvent pub) {
+                            ALMAPublishEvent pub, PropertyChangeSupport pcs) {
         
         super(cs.getLogger());
     	this.containerServices = cs;    
@@ -97,7 +106,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.manager = m;
         this.publisher = pub;
         this.currentEB = new Vector<ExecBlock>();
-        this.clock = new ALMAClock(); 
+        this.clock = new ALMAClock();
+        this.pcs = pcs;
+        receivedEBStartEvent = false;
     }
     
     public void sendAlarm(String ff, String fm, int fc, String fs) {
@@ -423,6 +434,9 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockStartedEvent.");
             ex.printStackTrace(System.out);
         }
+        finally{
+        	receivedEBStartEvent = true;
+        }
     }
 
 
@@ -441,6 +455,12 @@ public class ALMAReceiveEvent extends ReceiveEvent {
 //    	boolean succeeded = false;
 //    	boolean repsT
         try{
+        	/* HACK: Wait 10 second only one time to receive and process EB started 
+        	 * event*/
+        	while(!receivedEBStartEvent){
+        		logger.fine("Waiting 10 second to recive the EB started event");
+        		Thread.sleep(10000);
+        	}
             logger.fine("SCHEDULING: Event reason = end");
             logger.fine("SCHEDULING: Received sb end event from control.");
             DateTime endEb = new DateTime(UTCUtility.utcOmgToJava(e.endTime));
@@ -502,10 +522,14 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             GUIExecBlockEndedEvent event =
                 new GUIExecBlockEndedEvent(e.sbId.entityId, eb.getExecId(), e.status.toString(), sbLite, prjLite);
             publisher.publish(event);
-            
+            //Notify to Scheduler that a SB has been suspended
+            this.pcs.firePropertyChange(e.sbId.entityId, null, sbLite.status);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace(System.out);
+        }
+        finally{
+        	receivedEBStartEvent = false;
         }
     }
 

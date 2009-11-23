@@ -25,9 +25,12 @@
  */
 package alma.scheduling.Scheduler;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import alma.acs.nc.Consumer;
 import alma.log_audience.OPERATOR;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.Define.BestSB;
@@ -42,7 +45,7 @@ import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Telescope;
 /**
  */
-public class QueuedSBScheduler extends Scheduler implements Runnable {
+public class QueuedSBScheduler extends Scheduler implements Runnable, PropertyChangeListener {
 
 	// The components we need from the configuration.
 	private Control control;
@@ -150,7 +153,6 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
 		}
         */
         if(config.getQueue().getRunning().length > 0) {
-
             return false;
         }
 
@@ -210,7 +212,6 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             return true;
         }
 		control.execSB(config.getArrayName(),best);
-		sb.getStatus().setEnded(DateTime.currentSystemTime(), Status.OBSERVED);
         takeIdFromSBsNotDone(sb.getId());
         logger.fine("SCHEDULING: Queued scheduler execute # "+execCount);
         execCount++;
@@ -366,5 +367,12 @@ public class QueuedSBScheduler extends Scheduler implements Runnable {
             e.printStackTrace(System.out);
         }
     }
+    
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		SB sb = getSBWithIdFromList(queue.getAll(), event.getPropertyName());
+		if (sb !=null)
+			sb.getStatus().setEnded(DateTime.currentSystemTime(), Status.OBSERVED);
+	}
 
 }
