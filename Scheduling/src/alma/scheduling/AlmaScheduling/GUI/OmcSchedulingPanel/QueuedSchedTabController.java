@@ -27,23 +27,22 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 import java.util.ArrayList;
 
 import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.Control.ExecBlockEndedEvent;
-import alma.Control.ExecBlockStartedEvent;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.offline.ASDMArchivedEvent;
+import alma.scheduling.GUIExecBlockEndedEvent;
+import alma.scheduling.GUIExecBlockStartedEvent;
 import alma.scheduling.Queued_Operator_to_Scheduling;
 import alma.scheduling.SBLite;
 
 public class QueuedSchedTabController extends SchedulingPanelController {
     private QueuedSchedTab parent;
     private String arrayName;
-    private Thread thread;
     private String[] sbs_to_run;
     private String currentSB;
     private String currentEB;
-    private Consumer consumer = null;
     private Consumer ctrl_consumer = null;
+    private Consumer schedChannelConsumer;
     private String schedulerName;
     private String arrayStatus;
     private Queued_Operator_to_Scheduling qsComp;
@@ -61,11 +60,14 @@ public class QueuedSchedTabController extends SchedulingPanelController {
             //consumer.addSubscription(XmlStoreNotificationEvent.class, this);
             //consumer.consumerReady();
             ctrl_consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, container);
-            ctrl_consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
-            ctrl_consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
             ctrl_consumer.addSubscription(alma.offline.ASDMArchivedEvent.class, this);
             ctrl_consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
             ctrl_consumer.consumerReady();
+            
+            schedChannelConsumer = new Consumer(alma.scheduling.CHANNELNAME_SCHEDULING.value, container);
+            schedChannelConsumer.addSubscription(alma.scheduling.GUIExecBlockStartedEvent.class, this);
+            schedChannelConsumer.addSubscription(alma.scheduling.GUIExecBlockEndedEvent.class, this);
+            schedChannelConsumer.consumerReady();
             
             getMSRef();
             schedulerName = masterScheduler.createQueuedSchedulingComponent(arrayName);
@@ -267,10 +269,10 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         }
     }
     
-    public void receive(ExecBlockStartedEvent e){
+    public void receive(GUIExecBlockStartedEvent e){
         logger.fine("EXEC started event");
-        String exec_id = e.execId.entityId;
-        String sbid = e.sbId.entityId;
+        String exec_id = e.execBlockUID;
+        String sbid = e.schedBlockUID;
         currentSB = sbid;
         currentEB = exec_id;
         boolean belongs = doesSbBelong(sbid);
@@ -291,47 +293,31 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         }
     }
             
-    public void receive(ExecBlockEndedEvent e){
+    public void receive(GUIExecBlockEndedEvent e){
         logger.fine("EXEC ended event");
-        String exec_id = e.execId.entityId;
-        String sbid = e.sbId.entityId;
+        String exec_id = e.execBlockUID;
+        String sbid = e.schedBlockUID;
         if(!doesSbBelong(sbid)){
             //no match so return
             return;
         }
         SBLite sb = getSBLite(sbid);
         logger.fine("SCHEDULING_PANEL: SB("+sbid+")'s exec block("+exec_id+") ended");
-        String completion;
-        switch(e.status.value()) {
-            case 0:
-                completion ="FAILED";
-                break;
-            case 1:
-                completion ="SUCCESS";
-                break;
-            case 2:
-                completion ="PARTIAL";
-                break;
-            case 3:
-                completion ="TIMEOUT";
-                break;
-            default:
-                completion ="ERROR";
-                break;
-            }
-            parent.updateExecutionInfo("Execution ended for SB: "+sb.sbName+".\n");
-            if(!aborted) {
-                parent.updateExecutionInfo("Waiting for it to be Archived.\n");
-            } else {
-                parent.updateExecutionInfo("Aborted: nothing will be archived.\n");
-            }
-            parent.setSBStatus(sbid, completion);
-            //TODO: Set stop buttons to disabled if last SB in queue.
-            parent.updateExecutionRow();
-            if(parent.getCurrentExecutionRow()==sbs_to_run.length){
-            	qsComp.setExecStarted(false);
-            }
-            currentSB = "";
+        String completion = e.status;
+        parent.updateExecutionInfo("Execution ended for SB: "+sb.sbName+".\n");
+        if(!aborted) {
+        	parent.updateExecutionInfo("Waiting for it to be Archived.\n");
+        } else {
+        	parent.updateExecutionInfo("Aborted: nothing will be archived.\n");
+        }
+        System.out.println(completion);
+        parent.setSBStatus(sbid, completion);
+        //TODO: Set stop buttons to disabled if last SB in queue.
+        parent.updateExecutionRow();
+        if(parent.getCurrentExecutionRow()==sbs_to_run.length){
+        	qsComp.setExecStarted(false);
+        }
+        currentSB = "";
     }
     
     public void receive(ASDMArchivedEvent e){
