@@ -6,7 +6,199 @@ From:
    Sohaila Lucero
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.21 2006/10/26 19:41:08 sslucero Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.22 2009/11/24 17:22:30 rhiriart Exp $"
+
+********************************************************************
+
+Release 7.0
+===========
+
+Development Notes
+~~~~~~~~~~~~~~~~~
+
+The principal changes for R7 are associated with the Lifecycle FBT.
+The states relevant to Scheduling are:
+
+ * for SchedBlocks: Ready, Running and Suspended;
+
+ * for Projects: Phase2Submitted, Ready, PartiallyObserved and
+                 FullyObserved.
+
+See the User Notes for the effects of all this.
+
+
+User Notes
+~~~~~~~~~~
+
+1. Scheduling Panel Changes
+
+1.1 The tables in each Scheduling Panel now resize with the panel,
+    allowing more information to be shown. (COMP-3044, COMP-3544)
+
+1.2 An extra flag has been added to each Scheduling Panel, controlling
+    whether the Scheduler associated with the panel will operate in
+    fully automatic or semi-automatic modes. See the description of
+    the SchedBlock Lifecycle changes for details.
+
+1.3 The Interactive Scheduling Panel now shows more information about
+    the status of the selected SchedBlock and ObsProject, including a
+    summary of the execution history of the SchedBlock.
+
+1.4 Wildcard searching for Projects has been improved. For example, a
+    search key of "D*" will find all Projects with a PI beginning with
+    "D", while a search key of "*d" will find all projects with a PI
+    ending with "d".
+
+1.5 Errors in the updating of the Status column of the SBs Table have
+    been corrected (COMP-2725).
+    
+1.6 The Scheduler Panels no longer come up blank, as they did in some
+    circumstances (COMP-3330).
+
+1.7 The antenna chessboards shown on the Scheduling Panels now use the
+    correct positions for antennas (COMP-3103).
+
+
+2. SchedBlock Lifecycle
+
+2.1 Introduction
+
+The principal change for R7.0 is the introduction of a project
+lifecycle which is used throughout the ALMA software to help both
+observatory staff and investigators to manage observing
+projects. Schedulers now take note of the statuses of SchedBlocks and
+the status of their enclosing Projects when searching the Project
+Repository. Only SchedBlocks which are in one of the states Ready or
+Running and which are within an ObsProject which is in one of the two
+states Ready or PartiallyObserved will be found and shown as available
+for execution.
+
+Currently, SchedBlocks which have their Indefinite Repeat flag set are
+considered to be AIV SchedBlocks. Future releases will refine this
+definition.
+
+To set the Indefinite Repeat flag for a SchedBlock, use the ALMA
+Observing Tool (ALMA-OT): retrieve the containing ObsProject from the
+archive, select the SchedBlock in the Project Structure pane, and
+check the Indefinite Repeat checkbox in the SchedBlock section on the
+Forms tab of the Editors pane, then write the project back to the
+archive.
+
+2.2 States of SchedBlocks
+
+Once execution of a SchedBlock is started, its state is changed to
+Running. When the execution ends, the state to which the SchedBlock is
+moved depends on several factors. The main factor determining this is
+whether the SchedBlock is considered to be an AIV SchedBlock or not:
+
+2.2.1 Normal Usage (SchedBlock has a definite Execution Count)
+
+      Once a SchedBlock execution ends, the SchedBlock will be marked
+      as Suspended unless the execution ended normally AND there are
+      more executions of the SchedBlock required (based on comparing
+      the number of normally completed executions with the Execution
+      Count specified for the SchedBlock) AND the Scheduler is running
+      in FullAuto mode. If all of these conditions are met, then the
+      SchedBlock will be marked as Ready. The semantics of the
+      Suspended state for a SchedBlock are essentially "a human
+      should look at the latest output of this SchedBlock". Use the
+      ProjectTracker to move a SchedBlock on from the Suspended state
+      - see the OBOBS documentation for what options are available and
+      how to do this.
+
+2.2.2 AIV Usage (SchedBlock is marked for Indefinite Repetition)
+
+      Regardless of the completion state of a SchedBlock's execution,
+      the SchedBlock's status will be set to Ready when an execution
+      of that SchedBlock ends.
+
+2.3 Execution Status
+
+The Scheduling subsystem records the completion status for each
+execution of a SchedBlock. The states used in the records of this are
+as follows:
+
+    SB completed normally          -> execution recorded as FullyObserved
+    SB aborted                     -> execution recorded as PartiallyObserved
+    otherwise, including SB failed -> execution recorded as Broken
+
+Only executions recorded as FullyObserved are counted against the
+Execution Count of the SchedBlock (as specified through the ALMA
+Observing Tool).
+
+These execution records are displayed in the Interactive Scheduling
+Panel, and also in the Project Tracker (q.v.).
+
+2.4 Book-keeping Information
+
+The Scheduling subsystem now keeps track of the time spent observing
+each SchedBlock, and of each ObsUnitSet. This information is tallied,
+but time limits are not currently used to determine if a SchedBlock or
+ObsUnitSet has finished. Such consideration will be added in future
+releases.
+
+2.5 ObsUnitSet and ObsProject Status
+
+The status of an ObsUnitSet is related to the statuses of its
+constituent SchedBlocks or ObsUnitSets (depending on which it has)
+Also, the status of an ObsProject is related to the statuses of its
+constituent ObsUnitSets. These relationships are quite complicated,
+and users are referred to the OBOBS documentation for full
+details. However, it should be noted that as SchedBlocks progress
+through their lifecycle, the state of their containing ObsUnitSets and
+ObsProject will be automatically updated accordingly.
+
+2.6 A Little Bit Of Magic
+
+When a Phase 2 Observing Project is submitted to the Archive via the
+Observing Tool, its state is set to Phase2Submitted. In due course,
+such projects will be reviewed by ALMA operations staff and marked by
+them as Ready. However, this process is not currently in place. So, as
+an interim measure, the Scheduling subsystem will search for Projects
+which are Phase2Submitted and move them to Ready. This will be done
+whenever Scheduling searches the Archive.
+
+3. Manual Mode
+
+Significant changes have been made to how manual mode projects are
+defined and handled.
+
+3.1 Manual Mode Projects
+
+The ALMA software now supports multiple manual mode projects. Rather
+than supporting a single project with its project name and PI name both
+being "manual mode", any project can be marked as a manual mode
+project.
+
+To mark an ObsProject as manual mode, use the ALMA Observing Tool
+(ALMA-OT): retrieve the ObsProject from the archive, select the
+ObsProject in the Project Structure pane and open the Advanced Options
+section on the Forms tab of the Editors pane, then check the Manual
+Mode checkbox. Finally, write the project back to the archive.
+
+3.2 Manual Scheduling
+
+The Manual Scheduling Panel will display only Projects which are marked
+as Manual Mode. Select the Project and SchedBlock you wish to execute
+and proceed as normal. Any ASDM created as a result of this execution
+will be associated with the selected SchedBlock.
+
+4. Photonic References
+
+The Create Array panel now shows a list of Central LO Photonic
+References. Each array which is created may have 0 or 1 Photonic
+Reference associated with it, this association is set when the array is
+created. To do this, select the desired Photonic Reference on the
+Create Array panel before pressing the Create button. This is analogous
+to selecting the antennas for an array.
+
+5. Miscellany
+
+5.1 Inconsistencies in the display of array names have been removed
+    (COMP-3428).
+
+5.2 Handling of Projects with coordinates in non-supported coordinate
+    systems has been made much more graceful (COMP-3260).
 
 ********************************************************************
 Added to R4's branch:
