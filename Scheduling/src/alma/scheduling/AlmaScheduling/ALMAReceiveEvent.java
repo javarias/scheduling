@@ -69,7 +69,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.59 2009/11/23 18:44:14 javarias Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.60 2009/11/30 20:46:28 javarias Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
@@ -89,16 +89,13 @@ public class ALMAReceiveEvent extends ReceiveEvent {
      * EB Start Ev arrives later than EB Ended Ev
      */
     private boolean receivedEBStartEvent;
-    //used to notify to the Queued Scheduler if changes occurs in the Sbs
-	private PropertyChangeSupport pcs;
-
     
     /**
       *
       */
     public ALMAReceiveEvent(ContainerServices cs, 
                             ALMAProjectManager m,
-                            ALMAPublishEvent pub, PropertyChangeSupport pcs) {
+                            ALMAPublishEvent pub) {
         
         super(cs.getLogger());
     	this.containerServices = cs;    
@@ -107,7 +104,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
         this.publisher = pub;
         this.currentEB = new Vector<ExecBlock>();
         this.clock = new ALMAClock();
-        this.pcs = pcs;
         receivedEBStartEvent = false;
     }
     
@@ -522,8 +518,6 @@ public class ALMAReceiveEvent extends ReceiveEvent {
             GUIExecBlockEndedEvent event =
                 new GUIExecBlockEndedEvent(e.sbId.entityId, eb.getExecId(), e.status.toString(), sbLite, prjLite);
             publisher.publish(event);
-            //Notify to Scheduler that a SB has been suspended
-            this.pcs.firePropertyChange(e.sbId.entityId, null, sbLite.status);
         } catch(Exception ex) {
             logger.severe("SCHEDULING: Error receiving and processing ExecBlockEndedEvent.");
             ex.printStackTrace(System.out);

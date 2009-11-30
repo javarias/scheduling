@@ -94,7 +94,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.122 2009/11/23 18:44:14 javarias Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.123 2009/11/30 20:46:28 javarias Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -154,9 +154,6 @@ public class ALMAMasterScheduler extends MasterScheduler
     protected AcsLogger logger;
     protected ArrayContextLogger arrayLogger;
     
-    //This object is used to notify to the Queued Scheduler if changes occurs in the Sbs
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
     /** 
      * Constructor
      */
@@ -219,7 +216,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
             // Connect to the Control NC
             eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
-                                             (ALMAPublishEvent)publisher, pcs);
+                                             (ALMAPublishEvent)publisher);
             //control_nc = AbstractNotificationChannel.getReceiver(
             //    AbstractNotificationChannel.CORBA, 
             //    alma.Control.CHANNELNAME_CONTROLSYSTEM.value,
@@ -615,7 +612,6 @@ public class ALMAMasterScheduler extends MasterScheduler
                 setArrayInUse(arrayname);
             }
             QueuedSBScheduler scheduler = new QueuedSBScheduler(config);
-            pcs.addPropertyChangeListener(scheduler);
             //get QS Comp and get id to map to scheduler
             Queued_Operator_to_Scheduling qsComp =
                 alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(

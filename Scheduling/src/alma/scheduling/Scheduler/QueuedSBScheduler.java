@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import alma.acs.nc.Consumer;
 import alma.log_audience.OPERATOR;
 import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Control;
 import alma.scheduling.Define.DateTime;
@@ -45,7 +46,7 @@ import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Telescope;
 /**
  */
-public class QueuedSBScheduler extends Scheduler implements Runnable, PropertyChangeListener {
+public class QueuedSBScheduler extends Scheduler implements Runnable{
 
 	// The components we need from the configuration.
 	private Control control;
@@ -64,6 +65,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable, PropertyCh
 	// The interactive queue.
 	private SBQueue queue;
     private String[] sbsNotDone;
+    private SB currentSB;
 
     private int execCount=1;
 	
@@ -213,6 +215,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable, PropertyCh
         }
 		control.execSB(config.getArrayName(),best);
         takeIdFromSBsNotDone(sb.getId());
+        currentSB = sb;
         logger.fine("SCHEDULING: Queued scheduler execute # "+execCount);
         execCount++;
         logger.fine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
@@ -367,12 +370,5 @@ public class QueuedSBScheduler extends Scheduler implements Runnable, PropertyCh
             e.printStackTrace(System.out);
         }
     }
-    
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		SB sb = getSBWithIdFromList(queue.getAll(), event.getPropertyName());
-		if (sb !=null)
-			sb.getStatus().setEnded(DateTime.currentSystemTime(), Status.OBSERVED);
-	}
 
 }

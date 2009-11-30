@@ -87,7 +87,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.128 2009/11/11 02:15:24 rhiriart Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.129 2009/11/30 20:46:28 javarias Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
 	
@@ -3057,19 +3057,22 @@ public class ALMAProjectManager extends ProjectManager {
 
 	public void setSBReady(SB sb) {
 		setSBState(sb.getSbStatusId(), StatusTStateType.READY);
+		sb.getStatus().setReady();
 	}
 
 	public void setSBFullyObserved(SB sb) {
 		final SBStatusI sbs = statusQs.getSBStatusQueue().get(sb.getSbStatusId());
 		if (sbs.getStatus().getState().equals(StatusTStateType.RUNNING)) {
 			setSBState(sb.getSbStatusId(), StatusTStateType.SUSPENDED);
+			sb.getStatus().setEnded(DateTime.currentSystemTime(), Status.COMPLETE);
 		}
 		setSBState(sb.getSbStatusId(), StatusTStateType.FULLYOBSERVED);
 	}
 
 	public void setSBSuspended(SB sb) {
 		setSBState(sb.getSbStatusId(), StatusTStateType.SUSPENDED);
-	}
+		sb.getStatus().setEnded(DateTime.currentSystemTime(), Status.COMPLETE);
+	}	
 	
 	public void setSBRunning(String sbId) {
 		final SB sb = sbQueue.get(sbId);
