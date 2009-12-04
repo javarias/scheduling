@@ -29,9 +29,13 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -98,8 +102,27 @@ public class DynamicSchedTab extends SchedulingPanelGeneralPanel implements Sche
     private void createTopPanel(){
         topPanel = new JPanel();
         JLabel l = new JLabel("Dynamic Scheduling on Array "+arrayName);
-        topPanel.add(l);
+        
+        final JCheckBox RunModeButton = new JCheckBox("Full Automatic Mode");
+        RunModeButton.setSelected(false);
+        controller.setRunMode(false);
+        RunModeButton.addItemListener(new ItemListener(){
+        	public void itemStateChanged(ItemEvent e) {
+        		if(RunModeButton.isSelected()) {
+        			controller.setRunMode(true);
+        		}
+        		else {
+        			controller.setRunMode(false);
+        		}
+        	}
+        });
+
+
+        topPanel = new JPanel(new BorderLayout());
+        topPanel.add(RunModeButton, BorderLayout.WEST);
+        topPanel.add(l, BorderLayout.NORTH);
     }
+    
     private void createCenterPanel(){
         centerPanel = new JPanel();
         sbs = new SBTable(true, new Dimension(400,200));

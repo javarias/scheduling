@@ -77,6 +77,15 @@ public class DynamicSchedTabController extends SchedulingPanelController {
     protected String getArrayStatus() {
         return arrayStatus;
     }
+
+    public void setRunMode(Boolean fullAuto) {
+    	if(fullAuto){
+    		dsComp.setRunMode(true);
+    	}
+    	else {
+    		dsComp.setRunMode(false);
+    	}
+    }
     
     private void setArrayStatus(String stat){
         arrayStatus = stat;

@@ -33,9 +33,13 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -48,6 +52,8 @@ import javax.swing.text.Document;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
+import alma.scheduling.utils.Bag;
+import alma.scheduling.utils.HashBag;
 
 public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
 
@@ -64,6 +70,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private boolean searchingOnProject;
     private SBTable sbs;
     private SBTable queueSBs;
+    private QueuedSchedQueueManager sbHelper;
     private ProjectTable projects;
     private JTextArea executionInfo;
     private JButton destroyArrayB;
@@ -74,6 +81,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
     private JButton stopQB;
     private JButton abortQB;
     private JButton abortB;
+    private JCheckBox fullAutoButton;
     private int currentExecutionRow=-1;
     private int archivingRow;
     
@@ -156,9 +164,25 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         //mainPanel.setMinimumSize(new Dimension(480,600));
         this.setLayout(new GridBagLayout());
         add(mainPanel,gridBagConstraints);
+        
+        setButtons();
     }
     private void createTopPanel() {
         createArchivePanel();
+        
+        fullAutoButton = new JCheckBox("Full Automatic Mode");
+        fullAutoButton.setSelected(false);
+        fullAutoButton.addItemListener(new ItemListener(){
+        	public void itemStateChanged(ItemEvent e) {
+        		if(fullAutoButton.isSelected()) {
+        			controller.setRunMode(true);
+        		} else {
+        			controller.setRunMode(false);
+        		}
+        		setButtons();
+        	}
+        });
+
         destroyArrayB = new JButton("Destroy Array");
         JLabel arrayStatusL = new JLabel("Array Status =");
         arrayStatusDisplay = new JLabel(controller.getArrayStatus());
@@ -170,12 +194,17 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
                     setEnable(false);
                 }
         });
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        p.add(arrayStatusL);
-        p.add(arrayStatusDisplay);
-        p.add(destroyArrayB);
+
+        Box box = Box.createHorizontalBox();
+        box.add(fullAutoButton);
+        box.add(Box.createHorizontalStrut(30));
+        box.add(arrayStatusL);
+        box.add(arrayStatusDisplay);
+        box.add(Box.createHorizontalStrut(30));
+        box.add(destroyArrayB);
+
         topPanel = new JPanel(new BorderLayout());
-        topPanel.add(p, BorderLayout.NORTH);
+        topPanel.add(box, BorderLayout.NORTH);
         topPanel.add(archiveSearchPanel, BorderLayout.CENTER);
     }
 
@@ -222,6 +251,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         JPanel queuePanel = new JPanel(new BorderLayout());
         queueSBs = new SBTable(true, new Dimension(150,75));
         queueSBs.setOwner(this);
+        sbHelper = new QueuedSchedQueueManager();
         JScrollPane queueSbPane = new JScrollPane(queueSBs,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -239,7 +269,7 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 
         executeB = new JButton("Run Queue");
         //executeB = new JButton("Run");
-        executeB.setToolTipText("Will execute all SBs in the queue.");
+        // The tooltip for executeB is set in setButtons(), not here
         executeB.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 executeSBs();
@@ -455,6 +485,8 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         queueSBs.setRowInfo(sbs, true);
         // add SBs into QueueSchedTabController deferred to execution
         controller.addSBs(selectedSBs);
+        sbHelper.addAll(selectedSBs);
+        setButtons();
     }
     private void removeSBsFromQueue(){
         // this might cause problems if one sb is finished and we're waiting for the next
@@ -471,10 +503,11 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
         controller.removeSBs(selectedSBs, indices);
         queueSBs.removeRowsFromQueue();
         //and update view/scheduler/etc
-
+        sbHelper.removeAll(selectedSBs);
+        setButtons();
     }
-
-    /**
+    
+	/**
       * returns true if one of the selected sbs is currently the running one.
       * doesn't say which, just does a general check
       */
@@ -493,4 +526,45 @@ public class QueuedSchedTab extends SchedulingPanelGeneralPanel implements Sched
 		return currentExecutionRow;
 	}
 
+	/*
+	 * ================================================================
+	 * Setting of controls
+	 * ================================================================
+	 */
+    private void setExecuteButton() {
+    	// Assume runnable unless proven otherwise
+    	boolean enabled = true;
+    	String tooltip = "Will execute all SBs in the queue.";
+
+    	
+    	if (sbHelper.hasElements()) {
+    		if (!fullAutoButton.isSelected()) {
+    			// Semi-auto, no duplicates allowed
+    			if (sbHelper.hasMultiples()) {
+    				enabled = false;
+    				tooltip = "The queue cannot contain multiple instances of<br>" + 
+    				          "the same SB except in Full Automatic Mode.<br>" +
+    				          "Either set Full Automatic Mode or remove duplicate<br>" +
+    				          "SBs from the queue.";
+    			}
+    		}
+    	} else {
+    		// No elements
+			enabled = false;
+			tooltip = "Cannot run an empty queue. Please add SBs<br>" +
+			          "in order to run the queue.";
+    	}
+    	
+    	executeB.setEnabled(enabled);
+    	executeB.setToolTipText(String.format(
+    			"<html>%s</html>", tooltip));
+	}
+
+    private void setButtons() {
+    	setExecuteButton();
+	}
+	/*
+	 * End of Setting of controls
+	 * ----------------------------------------------------------------
+	 */
 }

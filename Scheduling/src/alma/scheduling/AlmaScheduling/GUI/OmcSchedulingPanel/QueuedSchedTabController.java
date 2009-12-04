@@ -215,6 +215,15 @@ public class QueuedSchedTabController extends SchedulingPanelController {
         parent.updateArrayStatus();
     }
 
+    public void setRunMode(Boolean fullAuto) {
+    	if(fullAuto){
+    		qsComp.setRunMode(true);
+    	}
+    	else {
+    		qsComp.setRunMode(false);
+    	}
+    }
+    
     private boolean stopFlag=false;
     public void stopSB() throws Exception {
         try {
