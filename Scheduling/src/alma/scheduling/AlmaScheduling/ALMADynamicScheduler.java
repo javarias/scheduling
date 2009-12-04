@@ -182,4 +182,9 @@ public class ALMADynamicScheduler
         topSB_cb = cb;
         topSB_cbDesc = descIn;
     }
+    
+	public void setRunMode(boolean mode) {
+		masterScheduler.setFullAutoRunMode(mode, schedulerId);
+	}
+
 }

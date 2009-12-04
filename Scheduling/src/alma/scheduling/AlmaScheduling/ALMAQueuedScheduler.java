@@ -56,6 +56,7 @@ public class ALMAQueuedScheduler
     private ArrayContextLogger arrayLogger;
     private MasterSchedulerIF masterScheduler;
     private boolean execStarted;
+    private boolean runFullAuto;
     
     public ALMAQueuedScheduler() {
         sbQueue = new Vector<String>();
@@ -65,6 +66,7 @@ public class ALMAQueuedScheduler
         currentEB=null;
         masterScheduler = null;
         execStarted = false;
+        runFullAuto = false;
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -285,7 +287,7 @@ public class ALMAQueuedScheduler
                 return;
             }
             try {
-                masterScheduler.startQueuedScheduling(ids, arrayname);
+                masterScheduler.startQueuedScheduling(ids, arrayname, runFullAuto);
             } catch(Exception e) {
                 releaseMSRef();
                 //e.printStackTrace();
@@ -297,6 +299,12 @@ public class ALMAQueuedScheduler
 
 	public void setExecStarted(boolean execStarted) {
 		this.execStarted = execStarted;
+	}
+
+    
+	public void setRunMode(boolean runFullAuto) {
+		this.runFullAuto = runFullAuto;
+		masterScheduler.setFullAutoRunMode(runFullAuto, schedulerId);
 	}
 
 }

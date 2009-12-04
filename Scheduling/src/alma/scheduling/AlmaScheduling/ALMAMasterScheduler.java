@@ -26,8 +26,8 @@
 
 package alma.scheduling.AlmaScheduling;
 
-import java.beans.PropertyChangeSupport;
 import java.sql.Timestamp;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -94,7 +94,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.123 2009/11/30 20:46:28 javarias Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.124 2009/12/04 23:00:20 dclarke Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -561,18 +561,17 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     /**
      * Starts scheduling using a specific list of scheduling block Ids.
-     * @param sbList
+     * 
+     * @param sbList - a list of SB id to execute
+     * @param arrayname - the array on which to execute them
+     * @param runFullAuto - whether to run in Full-Auto or Semi-Auto
+     *                      mode (<code>true</code> or
+     *                      <code>false</code>, respectively).
      * @throws InvalidOperationEx
-     * @deprecated Use startQueuedScheduling(String[] sbList, String arrayname)
      */
-    public void startQueueScheduling(String[] sbList)
-    	throws InvalidOperationEx {
-
-            logger.warning("SCHEDULING: This method does nothing!!");
-            logger.warning("SCHEDULING: Use startQueuedScheduling(sbList, arrayName)");
-	}
-    
-    public void startQueuedScheduling(String[] sbList, String arrayname)
+    public void startQueuedScheduling(String[] sbList,
+    		                          String arrayname,
+    		                          boolean runFullAuto)
     	throws InvalidOperationEx {
 
         try {    
@@ -600,7 +599,8 @@ public class ALMAMasterScheduler extends MasterScheduler
                 createSchedulerConfiguration(
                         false, sbs, true, true, 5, arrayname, s_policy);
             
-//            config.setRunMode(RunMode.FullAuto);
+            config.setRunMode(runFullAuto? RunMode.FullAuto:
+            			                   RunMode.SemiAuto);
                 
             //a scheduler and go from there!
             try {
@@ -1667,10 +1667,28 @@ public class ALMAMasterScheduler extends MasterScheduler
     public void setFullAutoRunMode(boolean fullAutoRunMode, String schedulerId) {
     	logger.info("Setting run mode for Scheduler " + schedulerId + ": " + fullAutoRunMode);
     	Scheduler scheduler = getScheduler(schedulerId);
-    	if (fullAutoRunMode)
-        	scheduler.setRunMode(RunMode.FullAuto);
-    	else
-        	scheduler.setRunMode(RunMode.SemiAuto);
+    	try {
+    		if (fullAutoRunMode) {
+    			scheduler.setRunMode(RunMode.FullAuto);
+    		} else {
+    			scheduler.setRunMode(RunMode.SemiAuto);
+    		}
+    	} catch (NullPointerException e) {
+    		final StringBuilder b = new StringBuilder();
+    		final Formatter     f = new Formatter(b);
+    		
+    		f.format("Cannot find scheduler %s, known schedulers are:%n", schedulerId);
+    		for (final String s : allSchedulers.keySet()) {
+    			final Scheduler sc = allSchedulers.get(s);
+    			f.format("\t%s -> %s, %s, %s",
+    					s,
+    					sc.getId(),
+    					sc.getType(),
+    					sc.getArrayName());
+    		}
+    		
+    		logger.warning(b.toString());
+    	}
     }
     
     ////////////// Methods to set/get scheduler modes for a given array ///////////
