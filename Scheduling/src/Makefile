@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-# "@(#) $Id: Makefile,v 1.24 2007/03/29 19:42:35 sslucero Exp $ "
+# "@(#) $Id: Makefile,v 1.25 2009/12/04 23:02:42 dclarke Exp $ "
 #
 # Makefile of Scheduling Module
 #
@@ -27,7 +27,7 @@ PY_SCRIPTS = ALMASched_lst_vs_day ALMASchedSim_antennaLocation
 #
 
 JARFILES = DynamicSchedulingSubsystem  schedulingComp 
-schedulingComp_DIRS =  alma/scheduling/AlmaScheduling 
+schedulingComp_DIRS =  alma/scheduling/AlmaScheduling alma/scheduling/utils
 DynamicSchedulingSubsystem_DIRS = alma/scheduling/Scheduler alma/scheduling/Define alma/scheduling/Event alma/scheduling/GUI alma/scheduling/MasterScheduler alma/scheduling/ObsProjectManager alma/scheduling/PlanningModeSim 
 DynamicSchedulingSubsystem_EXTRAS = alma/scheduling/Image/*.jpg
 #PMSimulator_EXTRAS = alma/scheduling/Image/*.jpg
