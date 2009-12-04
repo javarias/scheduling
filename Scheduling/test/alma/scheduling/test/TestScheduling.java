@@ -34,6 +34,7 @@ public class TestScheduling {
         return exitFlag;
     }
     public static void main(String[] args){
+    	final String arrayName = "Charles";
         ContainerServices cs=null;
         try{
         //get container services
@@ -66,7 +67,6 @@ public class TestScheduling {
             alma.xmlstore.ArchiveConnection conn = 
                 alma.xmlstore.ArchiveConnectionHelper.narrow(
                         cs.getComponent("ARCHIVE_CONNECTION"));
-            conn.getAdministrative("SCHEDULING").init();
             alma.xmlstore.Operational archive = conn.getOperational("SCHEDULING");
             alma.xmlstore.Cursor cursor = archive.queryDirty(query,schema);
             alma.xmlstore.CursorPackage.QueryResult res;
@@ -91,7 +91,7 @@ public class TestScheduling {
             test_consumer.addSubscription(NothingCanBeScheduledEvent.class, test);
             test_consumer.consumerReady();
         // call startQueueScheduling    
-            ms.startQueueScheduling(ids);
+            ms.startQueuedScheduling(ids, arrayName, true);
         // now wait for the nothing can be scheduled event so we know everything is done before we exit.
             try {
                 while(true) {

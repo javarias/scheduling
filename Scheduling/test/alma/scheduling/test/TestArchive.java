@@ -61,8 +61,6 @@ public class TestArchive extends ComponentClientTestCase {
             m_logger.info("SCHED_TEST: Getting archive components");
             org.omg.CORBA.Object obj = cs.getDefaultComponent("IDL:alma/xmlstore/ArchiveConnection:1.0");
             this.archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(obj);
-            
-            this.archConnectionComp.getAdministrative("SCHED_TEST").init();
             this.archOperationComp = archConnectionComp.getOperational("SCHED_TEST");
             this.archIdentifierComp = alma.xmlstore.IdentifierHelper.narrow(
                     cs.getDefaultComponent(

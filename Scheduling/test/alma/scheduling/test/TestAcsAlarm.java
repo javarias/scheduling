@@ -161,7 +161,6 @@ public class TestAcsAlarm {
 			ACSJMSTopicConnectionImpl.containerServices=m_containerservices;
 			AlarmManager=alma.alarmsystem.AlarmServiceHelper.narrow(
 		        m_containerservices.getDefaultComponent("IDL:alma/alarmsystem/AlarmService:1.0"));
-			String m_compName = AlarmManager.name();
 		} catch(Exception e) {
 			System.out.println("QLSessionManager:initialize"+e.toString());
 			m_containerservices = null;

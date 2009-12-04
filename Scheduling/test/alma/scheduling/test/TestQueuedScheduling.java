@@ -64,6 +64,7 @@ public class TestQueuedScheduling extends ComponentClientTestCase {
     }
         
     public void testTestQueuedScheduling() throws Exception {
+    	final String arrayName = "Winstone";
         try{
         //get control master component
             MasterComponent ctrl_mc = alma.ACS.MasterComponentHelper.narrow(
@@ -105,7 +106,7 @@ public class TestQueuedScheduling extends ComponentClientTestCase {
             }
             assertTrue(ids.length > 0);
         // call startQueueScheduling    
-            ms.startQueueScheduling(ids);
+            ms.startQueuedScheduling(ids, arrayName, true);
         // now wait for the nothing can be scheduled event so we know everything is done before we exit.
             try {
                 while(true) {

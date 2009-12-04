@@ -49,6 +49,7 @@ public class EndToEndTest extends ComponentClientTestCase {
     }
         
     public void testEndToEnd() throws Exception {
+    	final String arrayName = "Bradbury";
         try{
         //get control master component
             MasterComponent ctrl_mc = alma.ACS.MasterComponentHelper.narrow(
@@ -85,7 +86,7 @@ public class EndToEndTest extends ComponentClientTestCase {
             }
             assertTrue(ids.length > 0);
         // call startQueueScheduling    
-            ms.startQueueScheduling(ids);
+            ms.startQueuedScheduling(ids, arrayName, true);
         // now wait for the nothing can be scheduled event so we know everything is done before we exit.
             try {
                 while(true) {
