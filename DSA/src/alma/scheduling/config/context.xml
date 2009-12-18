@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+    default-lazy-init="true"
+    default-autowire="byName" >
+
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName"><value>org.hsqldb.jdbcDriver</value></property>
+        <property name="url"><value>jdbc:hsqldb:hsql://localhost:8090</value></property>
+        <property name="username"><value>sa</value></property>
+        <property name="password"><value></value></property>
+    </bean>
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>alma/scheduling/domain/Entity.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+        <props>
+            <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+            <prop key="show_sql">true</prop>
+            <prop key="format_sql">true</prop>
+            <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+            <prop key="hibernate.connection.autocommit">false</prop>
+            <prop key="hibernate.hbm2ddl.auto">false</prop>
+            <prop key="cache.use_query_cache">false</prop>
+            <prop key="cache.use_second_level_cache">false</prop>
+            <prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+            <prop key="transaction.flush_before_completion">true</prop>
+            <prop key="transaction.auto_close_session">true</prop>
+        </props>
+        </property>
+    </bean>
+
+<!-- DAO Beans -->
+    <bean id="entityDao" class="alma.scheduling.datamodel.dao.EntityDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+<!-- The transaction manager -->
+    <bean id="transactionManager" 
+    	class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+<!-- My Test Algorithm Beans -->
+	<bean id="param1" class="alma.scheduling.algorithm.Param1">
+		<property name="random" value="true" />
+	</bean>
+
+	<bean id="param2" class="alma.scheduling.algorithm.Param2">
+		<property name="random" value="true" />
+	</bean>
+
+	<bean id="myAlgorithm" class="alma.scheduling.algorithm.MyLittleScoreAlg">
+		<property name="parameters">
+		<set>
+			<ref bean="param1" />
+			<ref bean="param2" />
+		</set>
+		</property>
+	</bean> 
+   
+</beans>
