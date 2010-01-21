@@ -25,7 +25,6 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import java.beans.PropertyChangeSupport;
 import java.sql.Timestamp;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -69,7 +68,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.60 2009/11/30 20:46:28 javarias Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.61 2010/01/21 18:33:52 javarias Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services
