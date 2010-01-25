@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="ObservingSeason" type="ObservingSeason"/>
+	<xs:complexType name="ObservingSeason">
+		<xs:sequence>
+			<xs:element name="endDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="startDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Executive" type="Executive"/>
+	<xs:complexType name="Executive">
+		<xs:sequence>
+			<xs:element name="defaultPercentage" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="SchedBlockExecutivePercentage" type="SchedBlockExecutivePercentage" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ExecutiveTimeSpent" type="ExecutiveTimeSpent"/>
+	<xs:complexType name="ExecutiveTimeSpent">
+		<xs:sequence>
+			<xs:element name="season" type="ObservingSeason" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="timeSpent" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ObservingSeason" type="ObservingSeason" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Executive" type="Executive" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ExecutivePercentage" type="ExecutivePercentage"/>
+	<xs:complexType name="ExecutivePercentage">
+		<xs:sequence>
+			<xs:element name="percentage" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="totalObsTimeForSeason" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="ObservingSeason" type="ObservingSeason" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Executive" type="Executive" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="PI" type="PI"/>
+	<xs:complexType name="PI">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="PIMembership" type="PIMembership" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="PIMembership" type="PIMembership"/>
+	<xs:complexType name="PIMembership">
+		<xs:sequence>
+			<xs:element name="membershipPercentage" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="Executive" type="Executive" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SchedBlockExecutivePercentage" type="SchedBlockExecutivePercentage"/>
+	<xs:complexType name="SchedBlockExecutivePercentage">
+		<xs:sequence>
+			<xs:element name="percentage" type="xs:float" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="sbid" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="time" type="xs:float" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
