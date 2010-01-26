@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2010/01/26 00:02:12 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.3 2010/01/26 17:01:41 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -191,7 +191,7 @@ endif
 all: gen do_all
 	@echo " . . . 'all' done" 
 
-clean : clean_all 
+clean : clean_gen clean_all 
 	@echo " . . . clean done"
 
 clean_dist : clean_all clean_dist_all 
@@ -205,4 +205,7 @@ install : install_all
 
 gen:
 	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -i ../config/executive.xsd  -package alma.scheduling.input.executive.generated
+
+clean_gen:
+	@rm -rf alma/scheduling/input/executive/generated
 #___oOo___
