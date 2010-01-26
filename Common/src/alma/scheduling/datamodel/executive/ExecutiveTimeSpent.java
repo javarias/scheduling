@@ -9,8 +9,8 @@ public class ExecutiveTimeSpent {
 
 	private ObservingSeason season;
 	private float timeSpent;
-	public Executive m_Executive;
-	public ObservingSeason m_ObservingSeason;
+	private Executive m_Executive;
+	private ObservingSeason m_ObservingSeason;
 
 	public ExecutiveTimeSpent(){
 
@@ -30,6 +30,22 @@ public class ExecutiveTimeSpent {
 
     public void setTimeSpent(float timeSpent) {
         this.timeSpent = timeSpent;
+    }
+    
+    public Executive getM_Executive() {
+        return m_Executive;
+    }
+
+    public void setM_Executive(Executive mExecutive) {
+        m_Executive = mExecutive;
+    }
+
+    public ObservingSeason getM_ObservingSeason() {
+        return m_ObservingSeason;
+    }
+
+    public void setM_ObservingSeason(ObservingSeason mObservingSeason) {
+        m_ObservingSeason = mObservingSeason;
     }
 
     public void finalize() throws Throwable {

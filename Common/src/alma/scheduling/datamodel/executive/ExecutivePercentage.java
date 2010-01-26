@@ -32,6 +32,22 @@ public class ExecutivePercentage {
         m_ObservingSeason = mObservingSeason;
     }
 
+    public float getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(float percentage) {
+        this.percentage = percentage;
+    }
+
+    public float getTotalObsTimeForSeason() {
+        return totalObsTimeForSeason;
+    }
+
+    public void setTotalObsTimeForSeason(float totalObsTimeForSeason) {
+        this.totalObsTimeForSeason = totalObsTimeForSeason;
+    }
+
     public void finalize() throws Throwable {
 
 	}

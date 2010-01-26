@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.3 2010/01/26 17:01:41 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.4 2010/01/26 22:10:46 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -118,9 +118,9 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES= schedulingCommon
-schedulingCommon_DIRS= alma
-schedulingCommon_EXTRAS= 
+JARFILES=schedulingCommon
+schedulingCommon_DIRS=alma
+schedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml
 #
 # java sources in Jarfile on/off
 DEBUG= 
@@ -204,7 +204,7 @@ install : install_all
 	@echo " . . . installation done"
 
 gen:
-	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -i ../config/executive.xsd  -package alma.scheduling.input.executive.generated
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/executive.xsd -package alma.scheduling.input.executive.generated
 
 clean_gen:
 	@rm -rf alma/scheduling/input/executive/generated

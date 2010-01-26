@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.executive">
+
+    <class name="Executive" table="EXECUTIVE">
+        <id name="name" column="NAME" type="string">
+        	<generator class="assigned"/>
+        </id>
+        
+        <property name="defaultPercentage" column="DEFAULT_PERCENTAGE" type="float"/>
+        
+		<set name="m_ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
+			<key column="EXECUTIVE_NAME" />
+			<one-to-many class="ExecutivePercentage" />
+		</set>
+		
+		<set name="m_SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
+			<key column="EXECUTIVE_NAME" />
+			<one-to-many class="SchedBlockExecutivePercentage" />
+		</set>
+	</class>
+	
+	<class name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		
+		<property name="percentage" type="float" column="PERCENTAGE"/>
+		<property name="totalObsTimeForSeason" type="float" column="TOTAL_OBS_TIME_FOR_SEASON" />
+	</class>
+	
+	<class name="ObservingSeason" table="OBSERVING_SEASON">
+		<id name="startDate" column="START_DATE" type="date">
+			<generator class="assigned"/>
+		</id>
+		
+		<property name="name" type="string" column="NAME"/>
+		<property name="endDate" type="date" column="END_DATE"/>
+		<set name="m_ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
+			<key column="START_DATE" />
+			<one-to-many class="ExecutivePercentage" />
+		</set>
+	</class>
+	
+	<class name="ExecutiveTimeSpent" table="EXECUTIVE_TIME_SPENT">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		
+		<property name="timeSpent" type="float" column="TIME_SPENT" />
+		<many-to-one name="m_ObservingSeason" column="OBS_SEASON_ID" 
+        	unique="true" not-null="true" class="ObservingSeason"/>
+        <many-to-one name="m_Executive" column="EXECUTIVE_NAME" 
+        	unique="true" not-null="true" class="Executive"/>
+	</class>
+	
+	<class name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		<property name="percentage" type="float" column="PERCENTAGE"/>
+		<property name="sbid" type="string" column="SBID"/>
+		<property name="executionTime" type="long" column="EXEC_TIME"/>
+	</class>
+	
+	<class name="PI" table="PI">
+		<id name="name" column="NAME" type="string">
+			<generator class="assigned"/>
+		</id>
+		<set name="m_PIMembership" table="PI_MEMBERSHIP" cascade="save-update,lock, delete, delete-orphan">
+			<key column="PI_NAME" />
+			<one-to-many class="PIMembership" />
+		</set>
+	</class>
+	
+	<class name="PIMembership" table=PI_MEMBERSHIP" >
+		<id	column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		<property name="membershipPercentage" type="float" column="PERCENTAGE" />
+		<many-to-one name="m_Executive" column="EXECUTIVE_NAME" 
+        	unique="true" not-null="true" class="Executive"/>
+	</class>
+	
+</hibernate-mapping>    

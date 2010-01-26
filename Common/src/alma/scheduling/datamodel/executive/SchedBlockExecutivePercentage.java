@@ -9,7 +9,7 @@ public class SchedBlockExecutivePercentage {
 
 	private float percentage;
 	private String sbid;
-	private float time;
+	private long executionTime;
 
 	public SchedBlockExecutivePercentage(){
 
@@ -30,13 +30,13 @@ public class SchedBlockExecutivePercentage {
     public void setSbid(String sbid) {
         this.sbid = sbid;
     }
-
-    public float getTime() {
-        return time;
+    
+    public long getExecutionTime() {
+        return executionTime;
     }
 
-    public void setTime(float time) {
-        this.time = time;
+    public void setExecutionTime(long executionTime) {
+        this.executionTime = executionTime;
     }
 
     public void finalize() throws Throwable {

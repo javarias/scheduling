@@ -1,5 +1,7 @@
 package alma.scheduling.datamodel.executive;
 
+import java.util.HashSet;
+
 /**
  * @author rhiriart
  * @version 1.0
@@ -8,7 +10,7 @@ package alma.scheduling.datamodel.executive;
 public class PI {
 
 	private String name;
-	public PIMembership m_PIMembership;
+	private HashSet<PIMembership> m_PIMembership;
 
 	public PI(){
 
@@ -20,6 +22,14 @@ public class PI {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public HashSet<PIMembership> getM_PIMembership() {
+        return m_PIMembership;
+    }
+
+    public void setM_PIMembership(HashSet<PIMembership> mPIMembership) {
+        m_PIMembership = mPIMembership;
     }
 
     public void finalize() throws Throwable {

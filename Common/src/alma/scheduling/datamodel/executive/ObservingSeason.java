@@ -1,6 +1,7 @@
 package alma.scheduling.datamodel.executive;
 
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * @author rhiriart
@@ -12,7 +13,8 @@ public class ObservingSeason {
 	private Date endDate;
 	private String name;
 	private Date startDate;
-
+	private HashSet<ExecutivePercentage> m_ExecutivePercentage;
+	
 	public ObservingSeason(){
 
 	}
@@ -39,6 +41,15 @@ public class ObservingSeason {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public HashSet<ExecutivePercentage> getM_ExecutivePercentage() {
+        return m_ExecutivePercentage;
+    }
+
+    public void setM_ExecutivePercentage(
+            HashSet<ExecutivePercentage> mExecutivePercentage) {
+        m_ExecutivePercentage = mExecutivePercentage;
     }
 
     public void finalize() throws Throwable {
