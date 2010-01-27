@@ -75,7 +75,7 @@
 		</set>
 	</class>
 	
-	<class name="PIMembership" table=PI_MEMBERSHIP" >
+	<class name="PIMembership" table="PI_MEMBERSHIP" >
 		<id	column="ID" type="long">
 			<generator class="native"/>
 		</id>

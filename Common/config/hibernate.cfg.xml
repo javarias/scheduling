@@ -8,7 +8,7 @@
             org.hsqldb.jdbcDriver
         </property>
         <property name="hibernate.connection.url">
-            jdbc:hsqldb:hsql://localhost:8090
+            jdbc:hsqldb:hsql://localhost:8090/default
         </property>
         <property name="hibernate.connection.username">
             sa
@@ -17,7 +17,7 @@
         <property name="hibernate.dialect">
             org.hibernate.dialect.HSQLDialect         
         </property>
-        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
         
         <!-- Use the C3P0 connection pool provider -->
         <property name="hibernate.c3p0.min_size">5</property>
