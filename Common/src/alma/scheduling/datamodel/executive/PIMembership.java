@@ -8,7 +8,7 @@ package alma.scheduling.datamodel.executive;
 public class PIMembership {
 
 	private float membershipPercentage;
-	private Executive m_Executive;
+	private Executive Executive;
 
 	public PIMembership(){
 
@@ -23,11 +23,11 @@ public class PIMembership {
     }
 
     public Executive getM_Executive() {
-        return m_Executive;
+        return Executive;
     }
 
     public void setM_Executive(Executive mExecutive) {
-        m_Executive = mExecutive;
+        Executive = mExecutive;
     }
 
     public void finalize() throws Throwable {

@@ -11,8 +11,8 @@ public class Executive {
 
 	private float defaultPercentage;
 	private String name;
-	private HashSet<SchedBlockExecutivePercentage> m_SchedBlockExecutivePercentage;
-	private HashSet<ExecutivePercentage> m_ExecutivePercentage;
+	private HashSet<SchedBlockExecutivePercentage> SchedBlockExecutivePercentage;
+	private HashSet<ExecutivePercentage> ExecutivePercentage;
 
 	
     public Executive(){
@@ -35,22 +35,22 @@ public class Executive {
         this.name = name;
     }
 
-	public HashSet<SchedBlockExecutivePercentage> getM_SchedBlockExecutivePercentage() {
-        return m_SchedBlockExecutivePercentage;
+	public HashSet<SchedBlockExecutivePercentage> getSchedBlockExecutivePercentage() {
+        return SchedBlockExecutivePercentage;
     }
 
     public void setM_SchedBlockExecutivePercentage(
             HashSet<SchedBlockExecutivePercentage> mSchedBlockExecutivePercentage) {
-        m_SchedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
+        SchedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
     }
 
-    public HashSet<ExecutivePercentage> getM_ExecutivePercentage() {
-        return m_ExecutivePercentage;
+    public HashSet<ExecutivePercentage> getExecutivePercentage() {
+        return ExecutivePercentage;
     }
 
     public void setM_ExecutivePercentage(
             HashSet<ExecutivePercentage> mExecutivePercentage) {
-        m_ExecutivePercentage = mExecutivePercentage;
+        ExecutivePercentage = mExecutivePercentage;
     }
 
     public void finalize() throws Throwable {

@@ -9,27 +9,27 @@ public class ExecutivePercentage {
 
 	private float percentage;
 	private float totalObsTimeForSeason;
-	public Executive m_Executive;
-	public ObservingSeason m_ObservingSeason;
+	public Executive Executive;
+	public ObservingSeason ObservingSeason;
 
 	public ExecutivePercentage(){
 
 	}
 	
-	public Executive getM_Executive() {
-        return m_Executive;
+	public Executive getExecutive() {
+        return Executive;
 	}
 
-    public void setM_Executive(Executive mExecutive) {
-        m_Executive = mExecutive;
+    public void setExecutive(Executive mExecutive) {
+        Executive = mExecutive;
     }
 
-    public ObservingSeason getM_ObservingSeason() {
-        return m_ObservingSeason;
+    public ObservingSeason getObservingSeason() {
+        return ObservingSeason;
     }
 
     public void setM_ObservingSeason(ObservingSeason mObservingSeason) {
-        m_ObservingSeason = mObservingSeason;
+        ObservingSeason = mObservingSeason;
     }
 
     public float getPercentage() {

@@ -10,7 +10,7 @@ import java.util.HashSet;
 public class PI {
 
 	private String name;
-	private HashSet<PIMembership> m_PIMembership;
+	private HashSet<PIMembership> PIMembership;
 
 	public PI(){
 
@@ -25,11 +25,11 @@ public class PI {
     }
 
     public HashSet<PIMembership> getM_PIMembership() {
-        return m_PIMembership;
+        return PIMembership;
     }
 
     public void setM_PIMembership(HashSet<PIMembership> mPIMembership) {
-        m_PIMembership = mPIMembership;
+        PIMembership = mPIMembership;
     }
 
     public void finalize() throws Throwable {

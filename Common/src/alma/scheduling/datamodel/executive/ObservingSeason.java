@@ -13,7 +13,7 @@ public class ObservingSeason {
 	private Date endDate;
 	private String name;
 	private Date startDate;
-	private HashSet<ExecutivePercentage> m_ExecutivePercentage;
+	private HashSet<ExecutivePercentage> ExecutivePercentage;
 	
 	public ObservingSeason(){
 
@@ -43,13 +43,13 @@ public class ObservingSeason {
         this.startDate = startDate;
     }
 
-    public HashSet<ExecutivePercentage> getM_ExecutivePercentage() {
-        return m_ExecutivePercentage;
+    public HashSet<ExecutivePercentage> getExecutivePercentage() {
+        return ExecutivePercentage;
     }
 
     public void setM_ExecutivePercentage(
             HashSet<ExecutivePercentage> mExecutivePercentage) {
-        m_ExecutivePercentage = mExecutivePercentage;
+        ExecutivePercentage = mExecutivePercentage;
     }
 
     public void finalize() throws Throwable {
