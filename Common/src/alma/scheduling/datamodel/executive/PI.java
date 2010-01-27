@@ -24,11 +24,11 @@ public class PI {
         this.name = name;
     }
 
-    public HashSet<PIMembership> getM_PIMembership() {
+    public HashSet<PIMembership> getPIMembership() {
         return PIMembership;
     }
 
-    public void setM_PIMembership(HashSet<PIMembership> mPIMembership) {
+    public void setPIMembership(HashSet<PIMembership> mPIMembership) {
         PIMembership = mPIMembership;
     }
 

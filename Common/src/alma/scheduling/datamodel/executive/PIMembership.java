@@ -22,11 +22,11 @@ public class PIMembership {
         this.membershipPercentage = membershipPercentage;
     }
 
-    public Executive getM_Executive() {
+    public Executive getExecutive() {
         return Executive;
     }
 
-    public void setM_Executive(Executive mExecutive) {
+    public void setExecutive(Executive mExecutive) {
         Executive = mExecutive;
     }
 

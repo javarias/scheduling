@@ -44,7 +44,7 @@ public class ExecutiveTimeSpent {
         return ObservingSeason;
     }
 
-    public void setM_ObservingSeason(ObservingSeason mObservingSeason) {
+    public void setObservingSeason(ObservingSeason mObservingSeason) {
         ObservingSeason = mObservingSeason;
     }
 

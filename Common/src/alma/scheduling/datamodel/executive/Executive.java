@@ -39,7 +39,7 @@ public class Executive {
         return SchedBlockExecutivePercentage;
     }
 
-    public void setM_SchedBlockExecutivePercentage(
+    public void setSchedBlockExecutivePercentage(
             HashSet<SchedBlockExecutivePercentage> mSchedBlockExecutivePercentage) {
         SchedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
     }
@@ -48,11 +48,11 @@ public class Executive {
         return ExecutivePercentage;
     }
 
-    public void setM_ExecutivePercentage(
+    public void setExecutivePercentage(
             HashSet<ExecutivePercentage> mExecutivePercentage) {
         ExecutivePercentage = mExecutivePercentage;
     }
-
+    
     public void finalize() throws Throwable {
 
 	}

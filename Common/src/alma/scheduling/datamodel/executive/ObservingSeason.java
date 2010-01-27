@@ -47,7 +47,7 @@ public class ObservingSeason {
         return ExecutivePercentage;
     }
 
-    public void setM_ExecutivePercentage(
+    public void setExecutivePercentage(
             HashSet<ExecutivePercentage> mExecutivePercentage) {
         ExecutivePercentage = mExecutivePercentage;
     }
