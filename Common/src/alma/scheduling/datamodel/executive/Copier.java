@@ -20,9 +20,11 @@ public class Copier {
      * @param etsOut the List to store the converted ExecutiveTimeSpent
      * @throws NullPointerException when any of the Lists is null
      */
-    public static void copyFromXMLGenerated(ExecutiveData data,
+    public static void copyExecutiveFromXMLGenerated(ExecutiveData data,
             List<Executive> execOut, List<PI> piOut, List<ExecutivePercentage> epOut,
             List<ObservingSeason> osOut, List<ExecutiveTimeSpent> etsOut){
+        if (data == null)
+            throw new NullPointerException("Executive data input cannot be null");
         if (execOut == null)
             throw new NullPointerException("execOut cannot be null");
         if (piOut == null)
@@ -82,7 +84,6 @@ public class Copier {
         execOut.addAll(exec.values());
         epOut.addAll(ep.values());
         osOut.addAll(os.values());
-        
         
     }
 }

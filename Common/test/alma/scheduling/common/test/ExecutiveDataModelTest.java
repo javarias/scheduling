@@ -15,6 +15,7 @@ import javax.xml.validation.Validator;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.xml.sax.InputSource;
@@ -45,11 +46,13 @@ public class ExecutiveDataModelTest {
      * @param args
      */
     public static void main(String[] args) {
-        //Configuration cfg = new Configuration().configure();
-        //SchemaExport schemaExport = new SchemaExport(cfg);
-        //schemaExport.create(false, true);
+        Configuration cfg = new Configuration().configure();
+        SchemaExport schemaExport = new SchemaExport(cfg);
+        schemaExport.create(false, true);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        
         try {
-            validateData("./config/executive.xsd", "test/test0.xml");
+            validateData("./config/executive.xsd", "test/projects/test0/executive/executive.xml");
         } catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -61,7 +64,7 @@ public class ExecutiveDataModelTest {
         ExecutiveData execData = null;
         try {
             execData = ExecutiveData.unmarshalExecutiveData(
-                    new FileReader("test/test0.xml"));
+                    new FileReader("test/projects/test0/executive/executive.xml"));
         } catch (MarshalException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -81,12 +84,28 @@ public class ExecutiveDataModelTest {
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
         ArrayList<ExecutiveTimeSpent> etsOut = new ArrayList<ExecutiveTimeSpent>();
         
-        Copier.copyFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
+        Copier.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
         System.out.println(execOut);
         
-       // Session session = HibernateUtil.getSessionFactory().openSession();
-       // session.close();
-       // HibernateUtil.shutdown();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            for(ObservingSeason tmp: osOut)
+                session.save(tmp);
+            for(Executive tmp: execOut)
+                session.save(tmp);
+            for(ExecutiveTimeSpent tmp: etsOut)
+                session.save(tmp);
+            for(PI tmp: piOut)
+                session.save(tmp);
+            tx.commit();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            tx.rollback();
+        }
+        
+        session.close();
+        HibernateUtil.shutdown();
     }
 
 }

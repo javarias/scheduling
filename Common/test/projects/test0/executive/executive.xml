@@ -29,9 +29,9 @@
 	</ExecutiveTimeSpent>
 
 	<ObservingSeason id="season1">
-		<endDate>2010-01-01</endDate>
+		<endDate>2010-07-01</endDate>
 		<name>season1</name>
-		<startDate>2010-07-01</startDate>
+		<startDate>2010-01-01</startDate>
 		<ExecutivePercentageRef idRef="ep0" />
 	</ObservingSeason>
 	

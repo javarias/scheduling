@@ -7,22 +7,13 @@ package alma.scheduling.datamodel.executive;
  */
 public class ExecutiveTimeSpent {
 
-	private ObservingSeason season;
 	private float timeSpent;
 	private Executive Executive;
-	private ObservingSeason ObservingSeason;
+	private ObservingSeason observingSeason;
 
 	public ExecutiveTimeSpent(){
 
 	}
-
-	public ObservingSeason getSeason() {
-        return season;
-    }
-
-    public void setSeason(ObservingSeason season) {
-        this.season = season;
-    }
 
     public float getTimeSpent() {
         return timeSpent;
@@ -41,11 +32,11 @@ public class ExecutiveTimeSpent {
     }
 
     public ObservingSeason getObservingSeason() {
-        return ObservingSeason;
+        return observingSeason;
     }
 
     public void setObservingSeason(ObservingSeason mObservingSeason) {
-        ObservingSeason = mObservingSeason;
+        observingSeason = mObservingSeason;
     }
 
     static ExecutiveTimeSpent copy(alma.scheduling.input.executive.generated.ExecutiveTimeSpent in){

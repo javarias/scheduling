@@ -31,7 +31,7 @@
         <property name="format_sql">true</property>
         
         <!-- List of XML mapping files -->
-        <!--<mapping resource="alma/scheduling/datamodel/executive/Executive.hbm.xml"/>-->   
+        <mapping resource="alma/scheduling/datamodel/executive/Executive.hbm.xml"/>  
         <mapping resource="alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml"/>   
         
     </session-factory>

@@ -38,7 +38,7 @@
 		
 		<property name="name" type="string" column="NAME"/>
 		<property name="endDate" type="date" column="END_DATE"/>
-		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
+		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE">
 			<key column="START_DATE" />
 			<one-to-many class="ExecutivePercentage" />
 		</set>
@@ -50,10 +50,10 @@
 		</id>
 		
 		<property name="timeSpent" type="float" column="TIME_SPENT" />
-		<many-to-one name="ObservingSeason" column="OBS_SEASON_ID" 
-        	unique="true" not-null="true" class="ObservingSeason"/>
+		<many-to-one name="observingSeason" column="OBS_SEASON_ID" 
+        	 not-null="true" class="ObservingSeason"/>
         <many-to-one name="Executive" column="EXECUTIVE_NAME" 
-        	unique="true" not-null="true" class="Executive"/>
+        	 not-null="true" class="Executive"/>
 	</class>
 	
 	<class name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE">
@@ -81,7 +81,7 @@
 		</id>
 		<property name="membershipPercentage" type="float" column="PERCENTAGE" />
 		<many-to-one name="Executive" column="EXECUTIVE_NAME" 
-        	unique="true" not-null="true" class="Executive"/>
+        	not-null="true" class="Executive"/>
 	</class>
 	
 </hibernate-mapping>    

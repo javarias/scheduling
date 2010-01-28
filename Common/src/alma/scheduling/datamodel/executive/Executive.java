@@ -1,6 +1,7 @@
 package alma.scheduling.datamodel.executive;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author rhiriart
@@ -11,8 +12,8 @@ public class Executive {
 
 	private float defaultPercentage;
 	private String name;
-	private HashSet<SchedBlockExecutivePercentage> schedBlockExecutivePercentage;
-	private HashSet<ExecutivePercentage> executivePercentage;
+	private Set<SchedBlockExecutivePercentage> schedBlockExecutivePercentage;
+	private Set<ExecutivePercentage> executivePercentage;
 
 	
     public Executive(){
@@ -35,21 +36,21 @@ public class Executive {
         this.name = name;
     }
 
-	public HashSet<SchedBlockExecutivePercentage> getSchedBlockExecutivePercentage() {
+	public Set<SchedBlockExecutivePercentage> getSchedBlockExecutivePercentage() {
         return schedBlockExecutivePercentage;
     }
 
     public void setSchedBlockExecutivePercentage(
-            HashSet<SchedBlockExecutivePercentage> mSchedBlockExecutivePercentage) {
+            Set<SchedBlockExecutivePercentage> mSchedBlockExecutivePercentage) {
         schedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
     }
 
-    public HashSet<ExecutivePercentage> getExecutivePercentage() {
+    public Set<ExecutivePercentage> getExecutivePercentage() {
         return executivePercentage;
     }
 
     public void setExecutivePercentage(
-            HashSet<ExecutivePercentage> mExecutivePercentage) {
+            Set<ExecutivePercentage> mExecutivePercentage) {
         executivePercentage = mExecutivePercentage;
     }
     
