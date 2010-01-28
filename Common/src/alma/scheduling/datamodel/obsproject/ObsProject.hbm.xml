@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.obsproject">
+    
+    <class name="ObsProject" table="OBSPROJECT">
+        
+        <id name="id" column="OBSPROJECTID">            
+            <generator class="native"/>
+        </id>
+        
+        <property name="principalInvestigator" column="PI"/>
+        <property name="assignedPriority" column="ASSIGNED_PRIORITY"/>
+        <property name="status" column="STATUS"/>
+        
+    </class>
+    
+</hibernate-mapping>

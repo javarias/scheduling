@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.1 2010/01/27 16:14:47 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.2 2010/01/28 18:37:15 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -118,9 +118,9 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES=schedulingCommonTest
-schedulingCommonTest_DIRS=alma
-schedulingCommonTest_EXTRAS=
+JARFILES=SchedulingCommonTest
+SchedulingCommonTest_DIRS=alma
+SchedulingCommonTest_EXTRAS=
 #
 # java sources in Jarfile on/off
 DEBUG=on
@@ -188,7 +188,7 @@ endif
 #
 # TARGETS
 # -------
-all: prep do_all
+all: do_all
 	@echo " . . . 'all' done" 
 
 clean: clean_all 
@@ -202,7 +202,8 @@ man   : do_man
 
 install : install_all
 	@echo " . . . installation done"
+	
+test:   all
+	./scripts/allTests.sh
 
-prep:
-	@cp ../config/hibernate.cfg.xml .
 #___oOo___

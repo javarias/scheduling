@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.4 2010/01/26 22:10:46 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.5 2010/01/28 18:37:15 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -118,9 +118,11 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES=schedulingCommon
-schedulingCommon_DIRS=alma
-schedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml
+JARFILES=SchedulingCommon
+SchedulingCommon_DIRS=alma
+SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
+                        alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml \
+                        ../config/hibernate.cfg.xml
 #
 # java sources in Jarfile on/off
 DEBUG= 
