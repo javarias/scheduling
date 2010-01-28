@@ -4,5 +4,5 @@ printf "###############################################\n"
 # ./scripts/runOtherTest; let "RETURN&=$?"
 printf "###############################################\n"
 ./scripts/testEnv stop
-rm *.gclog
+rm -f *.gclog
 exit "$RETURN"
