@@ -97,7 +97,7 @@
 				minOccurs="1" maxOccurs="1" />
 			<xs:element name="name" type="xs:NCName" minOccurs="1"
 				maxOccurs="1" />
-			<xs:element name="ExecutivePercentageRef" minOccurs="0" maxOccurs="1">
+			<xs:element name="ExecutivePercentageRef" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:attribute name="idRef" type="xs:NCName" use="required"/>
 				</xs:complexType>

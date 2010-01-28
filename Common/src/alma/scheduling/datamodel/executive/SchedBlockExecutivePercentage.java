@@ -39,6 +39,14 @@ public class SchedBlockExecutivePercentage {
         this.executionTime = executionTime;
     }
 
+    static SchedBlockExecutivePercentage copy(alma.scheduling.input.executive.generated.SchedBlockExecutivePercentage in){
+        SchedBlockExecutivePercentage sbexecp = new SchedBlockExecutivePercentage();
+        sbexecp.setExecutionTime(in.getExecutionTime());
+        sbexecp.setPercentage(in.getPercentage());
+        sbexecp.setSbid(in.getSbid());
+        return sbexecp;
+    }
+    
     public void finalize() throws Throwable {
 
 	}

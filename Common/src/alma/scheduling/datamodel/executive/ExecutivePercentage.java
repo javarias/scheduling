@@ -9,27 +9,27 @@ public class ExecutivePercentage {
 
 	private float percentage;
 	private float totalObsTimeForSeason;
-	public Executive Executive;
-	public ObservingSeason ObservingSeason;
+	private Executive executive;
+	private ObservingSeason observingSeason;
 
 	public ExecutivePercentage(){
 
 	}
 	
 	public Executive getExecutive() {
-        return Executive;
+        return executive;
 	}
 
     public void setExecutive(Executive mExecutive) {
-        Executive = mExecutive;
+        executive = mExecutive;
     }
 
     public ObservingSeason getObservingSeason() {
-        return ObservingSeason;
+        return observingSeason;
     }
 
     public void setObservingSeason(ObservingSeason mObservingSeason) {
-        ObservingSeason = mObservingSeason;
+        observingSeason = mObservingSeason;
     }
 
     public float getPercentage() {
@@ -48,6 +48,13 @@ public class ExecutivePercentage {
         this.totalObsTimeForSeason = totalObsTimeForSeason;
     }
 
+    static ExecutivePercentage copy(alma.scheduling.input.executive.generated.ExecutivePercentage in){
+        ExecutivePercentage execp = new ExecutivePercentage();
+        execp.setPercentage(in.getPercentage());
+        execp.setTotalObsTimeForSeason(in.getTotalObsTimeForSeason());
+        return execp;
+    }
+    
     public void finalize() throws Throwable {
 
 	}

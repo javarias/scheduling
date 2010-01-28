@@ -30,6 +30,12 @@ public class PIMembership {
         Executive = mExecutive;
     }
 
+    static PIMembership copy(alma.scheduling.input.executive.generated.PIMembership in){
+        PIMembership pim = new PIMembership();
+        pim.setMembershipPercentage(pim.getMembershipPercentage());
+        return pim;
+    }
+    
     public void finalize() throws Throwable {
 
 	}

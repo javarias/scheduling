@@ -52,8 +52,17 @@ public class ObservingSeason {
         ExecutivePercentage = mExecutivePercentage;
     }
 
+    static ObservingSeason copy(alma.scheduling.input.executive.generated.ObservingSeason in){
+        ObservingSeason os = new ObservingSeason();
+        os.setEndDate(in.getEndDate().toDate());
+        os.setName(in.getName());
+        os.setStartDate(in.getStartDate().toDate());
+        if (os.getExecutivePercentage() == null)
+            os.setExecutivePercentage(new HashSet<ExecutivePercentage>());
+        return os;
+    }
+    
     public void finalize() throws Throwable {
-
 	}
 
 }

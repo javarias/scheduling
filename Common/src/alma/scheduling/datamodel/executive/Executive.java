@@ -11,8 +11,8 @@ public class Executive {
 
 	private float defaultPercentage;
 	private String name;
-	private HashSet<SchedBlockExecutivePercentage> SchedBlockExecutivePercentage;
-	private HashSet<ExecutivePercentage> ExecutivePercentage;
+	private HashSet<SchedBlockExecutivePercentage> schedBlockExecutivePercentage;
+	private HashSet<ExecutivePercentage> executivePercentage;
 
 	
     public Executive(){
@@ -36,21 +36,38 @@ public class Executive {
     }
 
 	public HashSet<SchedBlockExecutivePercentage> getSchedBlockExecutivePercentage() {
-        return SchedBlockExecutivePercentage;
+        return schedBlockExecutivePercentage;
     }
 
     public void setSchedBlockExecutivePercentage(
             HashSet<SchedBlockExecutivePercentage> mSchedBlockExecutivePercentage) {
-        SchedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
+        schedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
     }
 
     public HashSet<ExecutivePercentage> getExecutivePercentage() {
-        return ExecutivePercentage;
+        return executivePercentage;
     }
 
     public void setExecutivePercentage(
             HashSet<ExecutivePercentage> mExecutivePercentage) {
-        ExecutivePercentage = mExecutivePercentage;
+        executivePercentage = mExecutivePercentage;
+    }
+    
+    static Executive copy(alma.scheduling.input.executive.generated.Executive in){
+        Executive exec = new Executive();
+        exec.setName(in.getName());
+        exec.setDefaultPercentage(in.getDefaultPercentage());
+        if(exec.getSchedBlockExecutivePercentage() == null){
+            exec.setSchedBlockExecutivePercentage(
+                    new HashSet<SchedBlockExecutivePercentage>());
+        }
+        for (int i = 0; i < in.getSchedBlockExecutivePercentageCount() ; i++)
+            exec.getSchedBlockExecutivePercentage().add(
+                    SchedBlockExecutivePercentage.copy(in
+                            .getSchedBlockExecutivePercentage(i)));
+        if(exec.getExecutivePercentage() == null)
+            exec.setExecutivePercentage(new HashSet<ExecutivePercentage>());
+        return exec;
     }
     
     public void finalize() throws Throwable {

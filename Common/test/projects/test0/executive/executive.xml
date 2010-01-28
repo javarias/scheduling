@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExecutiveData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../config/executive.xsd">
+	<Executive>
+		<defaultPercentage>0.0</defaultPercentage>
+		<name>example</name>
+		<ExecutivePercentageRef idRef="ep0" />
+		<SchedBlockExecutivePercentage>
+			<executionTime>10</executionTime>
+			<percentage>0.5</percentage>
+			<sbid>uid://lala/sb</sbid>
+		</SchedBlockExecutivePercentage>
+		<SchedBlockExecutivePercentage>
+			<executionTime>5</executionTime>
+			<percentage>0.7</percentage>
+			<sbid>uid://lala2/sb</sbid>
+		</SchedBlockExecutivePercentage>
+	</Executive>
+	
+	<ExecutiveTimeSpent>
+		<timeSpent>0.2</timeSpent>
+		<ObservingSeasonRef idRef="season1" />
+		<ExecutiveRef nameRef="example" />
+	</ExecutiveTimeSpent>
+	
+	<ExecutiveTimeSpent>
+		<timeSpent>0.3</timeSpent>
+		<ObservingSeasonRef idRef="season1" />
+		<ExecutiveRef nameRef="example" />
+	</ExecutiveTimeSpent>
+
+	<ObservingSeason id="season1">
+		<endDate>2010-01-01</endDate>
+		<name>season1</name>
+		<startDate>2010-07-01</startDate>
+		<ExecutivePercentageRef idRef="ep0" />
+	</ObservingSeason>
+	
+	<ExecutivePercentage id="ep0">
+		<percentage>0.10</percentage>
+		<totalObsTimeForSeason>10</totalObsTimeForSeason>
+	</ExecutivePercentage>
+
+	<PI>
+		<name>name</name>
+		<PIMembership>
+			<membershipPercentage>0.5</membershipPercentage>
+			<ExecutiveRef nameRef="example" />
+		</PIMembership>
+		<PIMembership>
+			<membershipPercentage>0.3</membershipPercentage>
+			<ExecutiveRef nameRef="example" />
+		</PIMembership>
+	</PI>
+
+
+
+</ExecutiveData>

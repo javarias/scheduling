@@ -48,6 +48,11 @@ public class ExecutiveTimeSpent {
         ObservingSeason = mObservingSeason;
     }
 
+    static ExecutiveTimeSpent copy(alma.scheduling.input.executive.generated.ExecutiveTimeSpent in){
+        ExecutiveTimeSpent exects = new ExecutiveTimeSpent();
+        exects.setTimeSpent(in.getTimeSpent());
+        return exects;
+    }
     public void finalize() throws Throwable {
 
 	}
