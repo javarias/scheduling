@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.obsproject">
+    <class name="Target" table="TARGET">        
+        <id name="id" column="ID">            
+            <generator class="native"/>
+        </id>
+        <many-to-one name="source" column="SOURCE" class="FieldSource"/>        
+        <many-to-one name="observingParameters" column="OBS_PARAMS" class="ObservingParameters"/>        
+    </class>
+</hibernate-mapping>

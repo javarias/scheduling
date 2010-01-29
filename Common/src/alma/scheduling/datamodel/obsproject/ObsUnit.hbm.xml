@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.obsproject">
+    
+    <class name="ObsUnit" table="OBSUNIT">
+        
+        <id name="id" column="OBSUNITID">            
+            <generator class="native"/>
+        </id>
+        <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
+        
+        <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
+            <key column="SCHEDBLOCKID"/>
+            <property name="piName" column="PINAME"/>
+            <component name="weatherConstraints" class="WeatherConstraints">
+                <property name="maxWindVelocity" type="double" column="MAX_WIND_VELOCITY"/>
+                <property name="maxOpacity" type="double" column="MAX_OPACITY"/>
+                <property name="minPhaseStability" type="double" column="MIN_PHASE_STABILITY"/>
+                <property name="maxSeeing" type="double" column="MAX_SEEING"/>
+            </component>
+            <component name="preConditions" class="Preconditions">
+                <property name="maxAllowedHourAngle" type="double" column="MAX_ALLOWED_HA"/>
+                <property name="minAllowedHourAngle" type="double" column="MIN_ALLOWED_HA"/>
+            </component>
+            <component name="schedulingConstraints" class="SchedulingConstraints">
+                <property name="maxAngularResolution" type="double" column="MAX_ANG_RESOLUTION"/>
+                <property name="representativeFrequency" type="double" column="REPR_FREQ"/>
+            </component>
+            <set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
+                <key column="SCHEDBLOCKID"/>
+                <one-to-many class="ObservingParameters"/>
+            </set>
+            <set name="targets" cascade="save-update, lock, delete, delete-orphan">
+                <key column="SCHEDBLOCKID"/>
+                <one-to-many class="Target"/>
+            </set>
+        </joined-subclass>
+
+        <joined-subclass name="ObsUnitSet" table="OBSUNITSET">
+            <key column="OBSUNITSETID"/>
+            <set name="obsUnits" inverse="true" cascade="save-update, lock, delete, delete-orphan">
+                <key column="PARENTID"/>
+                <one-to-many class="ObsUnit"/>
+            </set>
+        </joined-subclass>
+        
+    </class>
+    
+</hibernate-mapping>

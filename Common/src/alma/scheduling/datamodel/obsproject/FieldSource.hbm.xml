@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.obsproject">
+    
+    <class name="FieldSource" table="SOURCE">
+        
+        <id name="id" column="ID">            
+            <generator class="native"/>
+        </id>
+        
+        <property name="name" column="NAME"/>
+        <property name="pmRA" column="PMRA"/>
+        <property name="pmDec" column="PMDEC"/>
+        <property name="ephemeris" column="EPHEMERIS"/>
+        <component name="coordinates" class="SkyCoordinates">
+            <property name="RA" type="double" column="RA"/>
+            <property name="Dec" type="double" column="DEC"/>
+        </component>
+        <component name="observability" class="FieldSourceObservability">
+            <property name="visible" type="boolean" column="IS_VISIBLE"/>
+            <property name="lastUpdate" type="date" column="LAST_UPDATE"/>
+            <property name="validUntil" type="date" column="VALID_UNTIL"/>
+        </component>
+        
+    </class>
+    
+</hibernate-mapping>

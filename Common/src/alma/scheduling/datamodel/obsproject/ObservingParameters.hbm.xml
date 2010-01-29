@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.obsproject">
+    
+    <class name="ObservingParameters" table="OBSERVING_PARAMETERS">
+        
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        
+        <joined-subclass name="ScienceParameters" table="SCIENCE_PARAMETERS">
+            <key column="ID"/>
+            <property name="integrationTime" column="INTEGRATION_TIME"/>
+            <property name="representativeBandwidth" column="REPR_BANDWIDTH"/>
+            <property name="representativeFrequency" column="REPR_FREQUENCY"/>
+            <property name="sensitivityGoal" column="SENSITIVITY_GOAL"/>
+        </joined-subclass>
+
+    </class>
+    
+</hibernate-mapping>

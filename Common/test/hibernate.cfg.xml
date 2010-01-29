@@ -33,6 +33,10 @@
         <!-- List of XML mapping files -->
         <mapping resource="alma/scheduling/datamodel/executive/Executive.hbm.xml"/>  
         <mapping resource="alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml"/>   
+        <mapping resource="alma/scheduling/datamodel/obsproject/ObsUnit.hbm.xml"/>   
+        <mapping resource="alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml"/>   
+        <mapping resource="alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml"/>
+        <mapping resource="alma/scheduling/datamodel/obsproject/Target.hbm.xml"/>
         
     </session-factory>
 </hibernate-configuration>

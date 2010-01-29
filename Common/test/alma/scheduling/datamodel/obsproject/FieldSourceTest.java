@@ -9,12 +9,12 @@ import alma.scheduling.persistence.HibernateUtil;
 
 import junit.framework.TestCase;
 
-public class ObsProjectTest extends TestCase {
+public class FieldSourceTest extends TestCase {
 
-    private static Logger logger = LoggerFactory.getLogger(ObsProjectTest.class);
+    private static Logger logger = LoggerFactory.getLogger(FieldSourceTest.class);
     private Session session;
     
-    public ObsProjectTest(String name) {
+    public FieldSourceTest(String name) {
         super(name);
     }
 
@@ -29,15 +29,12 @@ public class ObsProjectTest extends TestCase {
         super.tearDown();
     }
  
-    public void testObsProject() throws Exception {
+    public void testSimpleFieldSourceCreation() throws Exception {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            ObsProject prj = new ObsProject();
-            prj.setAssignedPriority(1);
-            prj.setPrincipalInvestigator("me");
-            prj.setStatus("ready");
-            session.save(prj);
+            FieldSource src = new FieldSource("0000+000", new SkyCoordinates(0.0, 0.0), 0.0, 0.0);
+            session.save(src);
             tx.commit();
         } catch(Exception ex) {
             tx.rollback();
