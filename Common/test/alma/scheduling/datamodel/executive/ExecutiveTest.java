@@ -39,7 +39,7 @@ public class ExecutiveTest extends TestCase {
         super.tearDown();
     }
     
-    public void testExecutiveTest() throws Exception{
+    public void testExecutive() throws Exception{
         ExecutiveData execData = null;
         try {
             XmlUtil.validateData("../config/executive.xsd", "./projects/test0/executive/executive.xml");
@@ -65,7 +65,7 @@ public class ExecutiveTest extends TestCase {
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
         ArrayList<ExecutiveTimeSpent> etsOut = new ArrayList<ExecutiveTimeSpent>();
         
-        Copier.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
+        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
         
         Transaction tx = null;
         try {
