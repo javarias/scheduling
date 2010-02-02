@@ -30,7 +30,7 @@ public class ExecutivePercentage {
         this.totalObsTimeForSeason = totalObsTimeForSeason;
     }
 
-    static ExecutivePercentage copy(alma.scheduling.input.executive.generated.ExecutivePercentage in){
+    public static ExecutivePercentage copy(alma.scheduling.input.executive.generated.ExecutivePercentage in){
         ExecutivePercentage execp = new ExecutivePercentage();
         execp.setPercentage(in.getPercentage());
         execp.setTotalObsTimeForSeason(in.getTotalObsTimeForSeason());

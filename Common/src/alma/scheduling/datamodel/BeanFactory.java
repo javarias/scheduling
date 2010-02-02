@@ -1,8 +1,12 @@
-package alma.scheduling.datamodel.executive;
+package alma.scheduling.datamodel;
 
 import java.util.HashMap;
 import java.util.List;
 
+import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.ExecutivePercentage;
+import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 
 public class BeanFactory {

@@ -34,7 +34,7 @@ public class PI {
         pIMembership = mPIMembership;
     }
 
-    static PI copy(alma.scheduling.input.executive.generated.PI in, HashMap<String, Executive> execs){
+    public static PI copy(alma.scheduling.input.executive.generated.PI in, HashMap<String, Executive> execs){
         PI pi = new PI();
         pi.setName(in.getName());
         if(pi.getPIMembership() == null)

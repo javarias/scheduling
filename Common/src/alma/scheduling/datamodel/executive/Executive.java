@@ -54,7 +54,7 @@ public class Executive {
         executivePercentage = mExecutivePercentage;
     }
     
-    static Executive copy(alma.scheduling.input.executive.generated.Executive in){
+    public static Executive copy(alma.scheduling.input.executive.generated.Executive in){
         Executive exec = new Executive();
         exec.setName(in.getName());
         exec.setDefaultPercentage(in.getDefaultPercentage());
