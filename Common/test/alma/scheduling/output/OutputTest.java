@@ -19,6 +19,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import alma.scheduling.output.generated.Results;
+import alma.scheduling.output.generated.types.ExecutionStatus;
 import alma.scheduling.persistence.XmlUtil;
 
 
@@ -51,7 +52,7 @@ public class OutputTest extends TestCase  {
     public void testExecutiveInputModel() throws Exception{
        
         try {
-            XmlUtil.validateData("../config/output.xsc", "./projects/outputTest01/output/output.xml");
+            XmlUtil.validateData("../config/output.xsd", "./projects/outputTest01/output/output.xml");
         } catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -65,15 +66,20 @@ public class OutputTest extends TestCase  {
         	results = Results.unmarshalResults(
                     new FileReader("./projects/outputTest01/output/output.xml"));
         } catch (MarshalException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw e;
         } catch (ValidationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw e;
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw e;
         }
+        
+        assertEquals( results.getArrayCount(), 2);
+        assertEquals( results.getArray(0).getArrayID(), "NCName1" );
+        assertEquals( results.getObservationProject(0).getStatus(), ExecutionStatus.COMPLETE );
+        assertEquals( results.getObservationProject(0).getSchedBlock(0).getArrayRef().getArrayRef() , results.getArray(1).getArrayID() );
         
     }
 
