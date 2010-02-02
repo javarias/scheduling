@@ -22,7 +22,7 @@ public class BeanFactory {
      */
     public static void copyExecutiveFromXMLGenerated(ExecutiveData data,
             List<Executive> execOut, List<PI> piOut, List<ExecutivePercentage> epOut,
-            List<ObservingSeason> osOut, List<ExecutiveTimeSpent> etsOut){
+            List<ObservingSeason> osOut){
         if (data == null)
             throw new NullPointerException("Executive data input cannot be null");
         if (execOut == null)
@@ -33,8 +33,6 @@ public class BeanFactory {
             throw new NullPointerException("epOut cannot be null");
         if (osOut == null)
             throw new NullPointerException("osOut cannot be null");
-        if (etsOut == null)
-            throw new NullPointerException("etsOut cannot be null");
         
         HashMap<String, Executive> exec =  new HashMap<String, Executive>();
         HashMap<String, ExecutivePercentage> ep = new HashMap<String, ExecutivePercentage>();
@@ -62,18 +60,6 @@ public class BeanFactory {
                     ep.get(data.getExecutive(i).getExecutivePercentageRef(j).getIdRef());
                 tmp.getExecutivePercentage().add(epTmp);
             }
-        }
-        
-        
-        for(int i = 0; i < data.getExecutiveTimeSpentCount(); i++){
-            ObservingSeason o;
-            Executive e;
-            o = os.get(data.getExecutiveTimeSpent(i).getObservingSeasonRef().getIdRef());
-            e = exec.get(data.getExecutiveTimeSpent(i).getExecutiveRef().getNameRef());
-            ExecutiveTimeSpent tmp = ExecutiveTimeSpent.copy(data.getExecutiveTimeSpent(i));
-            tmp.setExecutive(e);
-            tmp.setObservingSeason(o);
-            etsOut.add(tmp);
         }
         
         for (int i = 0; i < data.getPICount(); i++){

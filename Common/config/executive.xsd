@@ -23,10 +23,6 @@
 			<xs:selector xpath="./ObservingSeason/ExecutivePercentageRef" />
 			<xs:field xpath="@idRef" />
 		</xs:keyref>
-		<xs:keyref name="ExecutiveRef_ExecutiveTimeSpent" refer="ExecutiveKey">
-			<xs:selector xpath="./ExecutiveTimeSpent/ExecutiveRef" />
-			<xs:field xpath="@nameRef" />
-		</xs:keyref>
 		<xs:keyref name="ExecutiveRef_PIMembership" refer="ExecutiveKey">
 			<xs:selector xpath="./PIMembership/ExecutiveRef" />
 			<xs:field xpath="@nameRef" />
@@ -40,28 +36,9 @@
 	<xs:complexType name="ExecutiveData">
 		<xs:sequence>
 			<xs:element name="Executive" type="Executive" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="ExecutiveTimeSpent" type="ExecutiveTimeSpent" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="ObservingSeason" type="ObservingSeason" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="ExecutivePercentage" type="ExecutivePercentage" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="PI" type="PI" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="ExecutiveTimeSpent">
-		<xs:sequence>
-			<xs:element name="timeSpent" type="xs:float" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="ObservingSeasonRef" minOccurs="1" maxOccurs="1" >
-				<xs:complexType>
-					<xs:attribute name="idRef" type="xs:NCName" use="required"/>
-				</xs:complexType>
-			</xs:element>
-			<!-- Reference to Executive -->
-			<xs:element name="ExecutiveRef" minOccurs="1" maxOccurs="1" >
-				<xs:complexType>
-					<xs:attribute name="nameRef" type="xs:NCName" use="required"/>
-				</xs:complexType>
-			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 
@@ -102,9 +79,6 @@
 					<xs:attribute name="idRef" type="xs:NCName" use="required"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="SchedBlockExecutivePercentage"
-				type="SchedBlockExecutivePercentage" minOccurs="0"
-				maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -128,17 +102,6 @@
 					<xs:attribute name="nameRef" type="xs:NCName" use="required"/>
 				</xs:complexType>
 			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="SchedBlockExecutivePercentage">
-		<xs:sequence>
-			<xs:element name="executionTime" type="xs:long" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="percentage" type="xs:float" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="sbid" type="xs:string" minOccurs="1"
-				maxOccurs="1" />
 		</xs:sequence>
 	</xs:complexType>
 

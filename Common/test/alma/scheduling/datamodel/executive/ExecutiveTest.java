@@ -63,9 +63,8 @@ public class ExecutiveTest extends TestCase {
         ArrayList<PI> piOut =  new ArrayList<PI>();
         ArrayList<ExecutivePercentage> epOut =  new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
-        ArrayList<ExecutiveTimeSpent> etsOut = new ArrayList<ExecutiveTimeSpent>();
         
-        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
+        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         
         Transaction tx = null;
         try {
@@ -73,8 +72,6 @@ public class ExecutiveTest extends TestCase {
             for(ObservingSeason tmp: osOut)
                 session.save(tmp);
             for(Executive tmp: execOut)
-                session.save(tmp);
-            for(ExecutiveTimeSpent tmp: etsOut)
                 session.save(tmp);
             for(PI tmp: piOut)
                 session.save(tmp);

@@ -82,9 +82,8 @@ public class ExecutiveDataModelTest {
         ArrayList<PI> piOut =  new ArrayList<PI>();
         ArrayList<ExecutivePercentage> epOut =  new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
-        ArrayList<ExecutiveTimeSpent> etsOut = new ArrayList<ExecutiveTimeSpent>();
         
-        Copier.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
+        Copier.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         System.out.println(execOut);
         
         Transaction tx = null;
@@ -93,8 +92,6 @@ public class ExecutiveDataModelTest {
             for(ObservingSeason tmp: osOut)
                 session.save(tmp);
             for(Executive tmp: execOut)
-                session.save(tmp);
-            for(ExecutiveTimeSpent tmp: etsOut)
                 session.save(tmp);
             for(PI tmp: piOut)
                 session.save(tmp);

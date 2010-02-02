@@ -62,10 +62,6 @@ public class Executive {
             exec.setSchedBlockExecutivePercentage(
                     new HashSet<SchedBlockExecutivePercentage>());
         }
-        for (int i = 0; i < in.getSchedBlockExecutivePercentageCount() ; i++)
-            exec.getSchedBlockExecutivePercentage().add(
-                    SchedBlockExecutivePercentage.copy(in
-                            .getSchedBlockExecutivePercentage(i)));
         if(exec.getExecutivePercentage() == null)
             exec.setExecutivePercentage(new HashSet<ExecutivePercentage>());
         return exec;
