@@ -1,0 +1,29 @@
+TO ANYONE CREATING A NEW SCHEDULING PROJECT:
+
+The project defition for the Planning Mode Simulation is composed of a plan tree of directories and files. Please use allways the following structure:
+
+/<projectName>
+ +-configuration.properties
+ +-/executive
+ |         +---<executiveData>.xml
+ +-/obsproject
+ |         +---<obsProjects>.xml
+ +-/observatory
+ |         +---<observatory>.xml
+ +-/weather
+ |         +---<weatherGood>.xml
+ +-/output
+           +---<resultsData>.xml
+
+NAME HANDLING:
+==============
+The name of the <projectName> is at your disposal, also as the files containing the data. The configuration.properties file have the name of each of the executive, obsproject, observatory, weather and output related to the project. It is possible to have several in the project file, but the actual configuration.properties will only reference one of each.
+
+VALIDATE YOUR DATA:
+===================
+Please notice that the you can only put in each directory the corresponding file to each Schema. Also, please validate the data. Programs also do this, but it will help you also to ensure correctness of inputs.
+
+OUTPUT ONLY REQUIRED FOR RESULTS:
+=================================
+If the project has been ran, then the project will have an output directory. If not, this will no exists. So, you can specifiy a whole project and leave it with no output.
+  
