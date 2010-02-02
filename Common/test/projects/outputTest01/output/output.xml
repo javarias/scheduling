@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="output.xsd">
+  <availableTime>0.0</availableTime>
+  <maintenanceTime>0.0</maintenanceTime>
+  <operationTime>0.0</operationTime>
+  <scientificTime>0.0</scientificTime>
+  <Array arrayID="NCName1">
+    <availablelTime>2001-01-01</availablelTime>
+    <baseline>0.0</baseline>
+    <creationDate>2001-01-01</creationDate>
+    <deletionDate>2001-01-01</deletionDate>
+    <maintenanceTime>0.0</maintenanceTime>
+    <scientificTime>0.0</scientificTime>
+  </Array>
+    <Array arrayID="NCName2">
+    <availablelTime>2001-01-01</availablelTime>
+    <baseline>0.0</baseline>
+    <creationDate>2001-01-01</creationDate>
+    <deletionDate>2001-01-01</deletionDate>
+    <maintenanceTime>0.0</maintenanceTime>
+    <scientificTime>0.0</scientificTime>
+  </Array>
+  <ObservationProject>
+    <executionTime>2001-01-01</executionTime>
+    <scienceRating>0</scienceRating>
+    <status>COMPLETE</status>
+    <SchedBlock>
+      <endDate>2001-01-01</endDate>
+      <executionTime>0.0</executionTime>
+      <mode>mode</mode>
+      <startDate>2001-01-01</startDate>
+      <status>COMPLETE</status>
+      <type>type</type>
+      <ArrayRef arrayRef="NCName2"/>
+    </SchedBlock>
+    <Affiliation>
+      <executive>executive</executive>
+      <percentage>0</percentage>
+    </Affiliation>
+  </ObservationProject>
+</Results>

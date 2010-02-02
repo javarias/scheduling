@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Results" type="Results">
+		<xs:key name="ArrayKey">
+			<xs:selector xpath=".//Array" />
+			<xs:field xpath="@arrayID" />
+		</xs:key>
+		<xs:keyref name="SchedBlockRef_Array" refer="ArrayKey">
+			<xs:selector xpath=".//SchedBlock/ArrayRef" />
+			<xs:field xpath="@arrayRef" />
+		</xs:keyref>
+	</xs:element>
+	
+	<xs:complexType name="Results">
+		<xs:sequence>
+			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="operationTime" type="xs:double" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="Array" type="Array" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="ObservationProject" type="ObservationProject" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="Array">
+		<xs:sequence>
+			<xs:element name="availablelTime" type="xs:date" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="baseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="creationDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="deletionDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1">
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="arrayID" type="xs:NCName" use="required"/>		
+	</xs:complexType>
+	
+	<xs:complexType name="ObservationProject">
+		<xs:sequence>
+			<xs:element name="executionTime" type="xs:date" minOccurs="1" maxOccurs="1">
+			</xs:element>
+			<xs:element name="scienceRating" type="xs:int" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="SchedBlock" type="SchedBlock" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="Affiliation" type="Affiliation" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="Affiliation">
+		<xs:sequence>
+			<xs:element name="executive" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="percentage" type="xs:int" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SchedBlock">
+		<xs:sequence>
+			<xs:element name="endDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="mode" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="startDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<!-- Reference to Array -->
+			<xs:element name="ArrayRef" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="arrayRef" type="xs:NCName" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+
+	<xs:simpleType name="ExecutionStatus">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="COMPLETE"/>
+			<xs:enumeration value="INCOMPLETE"/>
+			<xs:enumeration value="NOT_STARTED"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

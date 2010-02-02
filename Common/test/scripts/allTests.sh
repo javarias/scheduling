@@ -5,6 +5,7 @@ printf "###############################################\n"
 ./scripts/runFieldSourceTest.sh; let "RETURN&=$?"
 ./scripts/runExecutiveInputModelTest.sh; let "RETURN&=$?"
 ./scripts/runExecutiveTest.sh; let "RETURN&=$?"
+./scripts/runOutputTest.sh; let "RETURN&=$?"
 printf "###############################################\n"
 ./scripts/testEnv stop
 rm -f *.gclog
