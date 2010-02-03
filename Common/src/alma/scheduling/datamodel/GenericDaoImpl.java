@@ -1,7 +1,9 @@
 package alma.scheduling.datamodel;
 
 import java.io.Serializable;
+import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -31,6 +33,18 @@ public class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
     @Override
     public <T, PK extends Serializable> T findById(Class<T> obj, PK key) {
         return (T) template.load(obj, key);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> executeNamedQuery(String queryName, Object[] queryArgs) {
+        Query namedQuery = session.getNamedQuery(queryName);
+        String[] params = namedQuery.getNamedParameters();
+        for(int i = 0; i< params.length; i++){
+            Object arg = queryArgs[i];
+            namedQuery.setParameter(i, arg);
+        }
+        return (List<T>)namedQuery.list();
     }
 
 }

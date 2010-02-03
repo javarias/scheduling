@@ -1,6 +1,7 @@
 package alma.scheduling.datamodel;
 
 import java.io.Serializable;
+import java.util.List;
 
 public interface GenericDao {
 
@@ -10,4 +11,5 @@ public interface GenericDao {
     
     public <T, PK extends Serializable> T findById(Class<T> obj, PK key);
     
+    public <T> List<T> executeNamedQuery(String queryName, final Object[] queryArgs);
 }
