@@ -51,9 +51,9 @@
 		
 		<property name="timeSpent" type="float" column="TIME_SPENT" />
 		<many-to-one name="observingSeason" column="OBS_SEASON_ID" 
-        	 not-null="true" class="observingSeason"/>
+        	 not-null="true" class="ObservingSeason"/>
         <many-to-one name="Executive" column="EXECUTIVE_NAME" 
-        	 not-null="true" class="executive"/>
+        	 not-null="true" class="Executive"/>
 	</class>
 	
 	<class name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE">
