@@ -8,7 +8,7 @@ package alma.scheduling.datamodel.executive;
 public class PIMembership {
 
 	private float membershipPercentage;
-	private Executive Executive;
+	private Executive executive;
 
 	public PIMembership(){
 
@@ -23,11 +23,11 @@ public class PIMembership {
     }
 
     public Executive getExecutive() {
-        return Executive;
+        return executive;
     }
 
     public void setExecutive(Executive mExecutive) {
-        Executive = mExecutive;
+        executive = mExecutive;
     }
 
     static PIMembership copy(alma.scheduling.input.executive.generated.PIMembership in){

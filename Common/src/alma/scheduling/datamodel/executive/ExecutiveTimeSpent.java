@@ -8,7 +8,7 @@ package alma.scheduling.datamodel.executive;
 public class ExecutiveTimeSpent {
 
 	private float timeSpent;
-	private Executive Executive;
+	private Executive executive;
 	private ObservingSeason observingSeason;
 
 	public ExecutiveTimeSpent(){
@@ -24,11 +24,11 @@ public class ExecutiveTimeSpent {
     }
     
     public Executive getExecutive() {
-        return Executive;
+        return executive;
     }
 
     public void setExecutive(Executive mExecutive) {
-        Executive = mExecutive;
+        executive = mExecutive;
     }
 
     public ObservingSeason getObservingSeason() {
