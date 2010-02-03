@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import alma.scheduling.datamodel.BeanFactory;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 import alma.scheduling.persistence.HibernateUtil;
 import alma.scheduling.persistence.XmlUtil;

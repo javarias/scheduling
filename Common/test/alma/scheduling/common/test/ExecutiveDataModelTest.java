@@ -21,7 +21,7 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import alma.scheduling.datamodel.executive.BeanFactory;
+import alma.scheduling.datamodel.BeanFactory;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
@@ -83,7 +83,7 @@ public class ExecutiveDataModelTest {
         ArrayList<ExecutivePercentage> epOut =  new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
         
-        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut, etsOut);
+        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         System.out.println(execOut);
         
         Transaction tx = null;
