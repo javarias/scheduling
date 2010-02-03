@@ -8,6 +8,12 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+/**
+ * Implementation of {@link GenericDao}
+ * 
+ * @author javarias
+ *
+ */
 public class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
 
     protected HibernateTemplate template;
@@ -35,6 +41,7 @@ public class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
         return (T) template.load(obj, key);
     }
 
+    
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> executeNamedQuery(String queryName, Object[] queryArgs) {
