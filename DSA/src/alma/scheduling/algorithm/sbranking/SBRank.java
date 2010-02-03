@@ -7,7 +7,7 @@ package alma.scheduling.algorithm.sbranking;
  * @author javarias
  * @see SchedBlockRanker
  */
-public class SBRank {
+public class SBRank implements Comparable<SBRank>{
 
     /**
      * ID of SBRank
@@ -59,6 +59,11 @@ public class SBRank {
     @Override
     public String toString() {
         return "SBRank [id=" + id + ", rank=" + rank + ", uid=" + uid + "]";
+    }
+
+    @Override
+    public int compareTo(SBRank o) {
+        return this.getRank() - o.getRank();
     }
     
 }
