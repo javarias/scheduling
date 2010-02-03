@@ -86,7 +86,7 @@
 	
 	<query name="ExecutiveTimeSpent.findBySeasonAndExecutive">
 		<![CDATA[
-			select ets from ExecutiveTimeSpent ets 
+			from ExecutiveTimeSpent ets 
 			where ets.season = ? and ets.executive = ? 
 		]]>
 	</query>
