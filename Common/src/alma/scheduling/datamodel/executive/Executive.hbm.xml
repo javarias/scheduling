@@ -91,4 +91,11 @@
 		]]>
 	</query>
 	
+	<sql-query name="ExecutivePercentage.findBySeasonAndExecutive">
+	<return alias="ep" class="ExecutivePercentage" />
+		SELECT * FROM EXECUTIVE_PERCENTAGE AS {ep.*} WHERE
+		  EXECUITVE_PERCENTAGE.START_DATE = ? AND
+		  EXECUITVE_PERCENTAGE.EXECUTIVE_NAME = ?
+	</sql-query>
+	
 </hibernate-mapping>    

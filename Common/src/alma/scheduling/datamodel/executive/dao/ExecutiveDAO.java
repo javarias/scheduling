@@ -2,7 +2,6 @@ package alma.scheduling.datamodel.executive.dao;
 
 import java.util.List;
 
-import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;

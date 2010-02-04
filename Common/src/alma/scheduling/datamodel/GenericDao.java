@@ -32,6 +32,16 @@ public interface GenericDao {
      */
     public <T> void delete(T obj);
     
+    
+    /**
+     * The implementation must retrieve all the object of the type given 
+     * 
+     * @param <T> the type of the objects to be retrieved
+     * @param obj the class of the objects to be retrieved 
+     * @return a List of the objects found
+     */
+    public <T> List<T> findAll(Class<T> obj);
+    
     /**
      * The implementation must return an object with the given key value
      * 
@@ -49,7 +59,7 @@ public interface GenericDao {
      * 
      * @param <T> The Type of elements to be returned
      * @param queryName the string of the named query defined in the mapping xml or in the annotations
-     * @param queryArgs the parameters for the query, it can be null
+     * @param queryArgs the parameters for the query.
      * @return a list of the resulted object after execute the query
      * @throws HibernateException
      */
