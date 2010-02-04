@@ -3,7 +3,7 @@ package alma.scheduling.planning_mode_sim.gui.simpreparation;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 
-import alma.acs.gui.standards;
+import alma.acs.gui.standards.*;
 
 public class SimulationProjectViewer extends JPanel{
 
