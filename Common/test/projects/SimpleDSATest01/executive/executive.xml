@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExecutiveData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../config/executive.xsd">
+<!--
+This use case uses the fictional countries of Salsasia and Conservia.
+Both of them has one astromer.
+The time are equally divided. It only serves the porpuses to test the Executive Ranker of the DSA
+-->
+	<Executive>
+		<defaultPercentage>50.0</defaultPercentage>
+		<name>Salsasia</name>
+		<ExecutivePercentageRef idRef="SalsaciaPercentage" />
+	</Executive>
+	<Executive>
+		<defaultPercentage>50.0</defaultPercentage>
+		<name>Conservia</name>
+		<ExecutivePercentageRef idRef="ConverviaPercentage" />
+	</Executive>
+	<ObservingSeason id="OS">
+		<endDate>2011-01-01</endDate>
+		<name>name</name>
+		<startDate>2011-01-02</startDate>
+		<ExecutivePercentageRef idRef="SalsaciaPercentage" />
+		<ExecutivePercentageRef idRef="ConverviaPercentage" />		
+	</ObservingSeason>
+	<ExecutivePercentage id="SalsaciaPercentage">
+		<percentage>50.0</percentage>
+		<totalObsTimeForSeason>0.0</totalObsTimeForSeason>
+	</ExecutivePercentage>
+	<ExecutivePercentage id="ConverviaPercentage">
+		<percentage>50.0</percentage>
+		<totalObsTimeForSeason>0.0</totalObsTimeForSeason>
+	</ExecutivePercentage>
+	<PI>
+		<name>Astronomer from Salsasia</name>
+		<PIMembership>
+			<membershipPercentage>100.0</membershipPercentage>
+			<ExecutiveRef nameRef="Salsasia" />
+		</PIMembership>
+	</PI>
+	<PI>
+		<name>Astronomer from Conservia</name>
+		<PIMembership>
+			<membershipPercentage>100.0</membershipPercentage>
+			<ExecutiveRef nameRef="Conservia" />
+		</PIMembership>
+	</PI>
+
+</ExecutiveData>
