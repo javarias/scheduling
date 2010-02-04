@@ -1,0 +1,26 @@
+# CDB location
+# Comment this line if the CDB being used shouldn't be decompressed
+# from a tar file.
+# CDB_PACKED_FILE=./config/CDB.tar.gz
+# ACS_CDB=`pwd`/tmp
+# ACS_CDB=`pwd`/config
+ACS_TMP=`pwd`/tmp
+ACS_LOCK=${ACS_TMP}/.running
+# ACS_INSTANCE=0
+# ACS_CONTAINERS="CONTROL/ACC/javaContainer"
+# IDL_FILES_TO_LOAD=TMCDBComponent.idl
+ACS_LOG_STDOUT=2
+
+# Hibernate database configuration
+DBDIR=$ACS_TMP/hsqldb
+DBNAME=data_model
+DBPORT=8090
+SQLTOOL_RC_FILE=./config/sqltool.rc
+
+### Test specific configurations ####
+
+# If 'true' then the TMCDBStandaloneComponent won't use an in-memory
+# database, but a disk based one, which can be accessed by script/sqltool.
+# TMCDB_STANDALONE_DEBUG=true
+
+# unset DISPLAY

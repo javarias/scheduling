@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2010/02/04 21:28:09 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.3 2010/02/04 22:52:14 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -202,6 +202,9 @@ man   : do_man
 
 install : install_all
 	@echo " . . . installation done"
+
+test: all
+	./scripts/allTests.sh
 
 
 #___oOo___
