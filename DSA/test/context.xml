@@ -14,7 +14,7 @@
 
 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName"><value>org.hsqldb.jdbcDriver</value></property>
-        <property name="url"><value>jdbc:hsqldb:hsql://localhost:8090</value></property>
+        <property name="url"><value>jdbc:hsqldb:hsql://localhost:8090/data_model</value></property>
         <property name="username"><value>sa</value></property>
         <property name="password"><value></value></property>
     </bean>
@@ -24,7 +24,12 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="mappingResources">
             <list>
-                <value>alma/scheduling/datamodel/Entity.hbm.xml</value>
+                <value>alma/scheduling/datamodel/executive/Executive.hbm.xml</value>
+                <value>alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml</value>   
+        		<value>alma/scheduling/datamodel/obsproject/ObsUnit.hbm.xml</value>   
+        		<value>alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml</value>  
+        		<value>alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml</value>
+        		<value>alma/scheduling/datamodel/obsproject/Target.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -34,18 +39,27 @@
             <prop key="format_sql">true</prop>
             <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
             <prop key="hibernate.connection.autocommit">false</prop>
-            <prop key="hibernate.hbm2ddl.auto">false</prop>
+            <prop key="hibernate.hbm2ddl.auto">update</prop>
             <prop key="cache.use_query_cache">false</prop>
             <prop key="cache.use_second_level_cache">false</prop>
             <prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
             <prop key="transaction.flush_before_completion">true</prop>
             <prop key="transaction.auto_close_session">true</prop>
+            <!-- Use the C3P0 connection pool provider -->
+        	<prop key="hibernate.c3p0.min_size">5</prop>
+        	<prop key="hibernate.c3p0.max_size">20</prop>
+        	<prop key="hibernate.c3p0.timeout">300</prop>
+        	<prop key="hibernate.c3p0.max_statements">50</prop>
+        	<prop key="hibernate.c3p0.idle_test_period">3000</prop>
         </props>
         </property>
     </bean>
 
 <!-- DAO Beans -->
-    <bean id="entityDao" class="alma.scheduling.datamodel.dao.EntityDao">
+    <bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="sbDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
     
@@ -56,19 +70,19 @@
     </bean>
     
 <!-- My Test Algorithm Beans -->
-	<bean id="param1" class="alma.scheduling.algorithm.Param1">
-		<property name="random" value="true" />
+	<bean id="sciRanker" class="alma.scheduling.algorithm.sbranking.ScienceGradeRanker">
 	</bean>
 
-	<bean id="param2" class="alma.scheduling.algorithm.Param2">
-		<property name="random" value="true" />
+	<bean id="execSelector" class="alma.scheduling.algorithm.sbselection.ExecutiveSelector">
+		<property name="execDao" ref="execDao"/>
+		<property name="sbDao" ref="sbDao"/>
 	</bean>
 
-	<bean id="myAlgorithm" class="alma.scheduling.algorithm.MyLittleScoreAlg">
-		<property name="parameters">
+	<bean id="dsa" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithm">
+	<property name="ranker" ref="sciRanker"/>
+		<property name="selectors">
 		<set>
-			<ref bean="param1" />
-			<ref bean="param2" />
+			<ref bean="execSelector" />
 		</set>
 		</property>
 	</bean> 

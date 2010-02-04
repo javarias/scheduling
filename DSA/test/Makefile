@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.1 2009/12/18 00:53:47 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.2 2010/02/04 21:28:09 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -118,9 +118,9 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES= SCHEDULING_DSA_TEST
-SCHEDULING_DSA_TEST_DIRS= alma
-SCHEDULING_DSA_TEST_EXTRAS= context.xml
+JARFILES= SchedulingDSATest
+SchedulingDSATest_DIRS= alma
+SchedulingDSATest_EXTRAS= context.xml
 #
 # java sources in Jarfile on/off
 DEBUG= 
