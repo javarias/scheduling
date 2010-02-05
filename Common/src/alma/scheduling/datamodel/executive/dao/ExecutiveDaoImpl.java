@@ -2,6 +2,8 @@ package alma.scheduling.datamodel.executive.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
+
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
@@ -18,9 +20,11 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
     @SuppressWarnings("unchecked")
     @Override
     public ObservingSeason getCurrentSeason() {
-        List<ObservingSeason> os = (List<ObservingSeason>)
-        getHibernateTemplate().find("select top 1 os from ObservingSeason as os " +
-                "order by os.date desc");
+        List<ObservingSeason> os;
+        Query query = getSession().createQuery("from ObservingSeason as os " +
+                "order by os.startDate desc");
+        query.setMaxResults(1);
+        os = query.list();
         return os.get(0);
     }
 
@@ -34,8 +38,8 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
     public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex,
             ObservingSeason os) {
         Object[] args= new Object[2];
-        args[0] = os;
-        args[1] = ex;
+        args[0] = os.getStartDate();
+        args[1] = ex.getName();
         return this.executeNamedQuery(
                 "ExecutiveTimeSpent.findBySeasonAndExecutive",args);
     }
@@ -43,10 +47,10 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
     public ExecutivePercentage getExecutivePercentage(Executive ex,
             ObservingSeason os) {
         Object[] args= new Object[2];
-        args[0] = os.getStartDate().toString();
+        args[0] =os.getStartDate();
         args[1] = ex.getName();
         return (ExecutivePercentage) this.executeNamedQuery(
-                "ExecutiveTimeSpent.findBySeasonAndExecutive",args).get(0);
+                "ExecutivePercentage.findBySeasonAndExecutive",args).get(0);
     }
 
 }

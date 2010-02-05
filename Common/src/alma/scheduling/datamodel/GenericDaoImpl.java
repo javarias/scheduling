@@ -36,8 +36,7 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     @Override
     public <T> List<T> executeNamedQuery(String queryName, Object[] queryArgs) {
         Query namedQuery = getSession().getNamedQuery(queryName);
-        String[] params = namedQuery.getNamedParameters();
-        for(int i = 0; i< params.length; i++){
+        for(int i = 0; i< queryArgs.length; i++){
             Object arg = queryArgs[i];
             namedQuery.setParameter(i, arg);
         }
