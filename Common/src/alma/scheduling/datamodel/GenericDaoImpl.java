@@ -1,6 +1,7 @@
 package alma.scheduling.datamodel;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -22,9 +23,13 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     @Override
     public <T> void saveOrUpdate(T obj) {
         getHibernateTemplate().saveOrUpdate(obj);
-
     }
 
+    @Override
+    public <T> void saveOrUpdate(Collection<T> objs) {
+        getHibernateTemplate().saveOrUpdateAll(objs);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public <T, PK extends Serializable> T findById(Class<T> obj, PK key) {

@@ -1,6 +1,7 @@
 package alma.scheduling.datamodel;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -23,6 +24,14 @@ public interface GenericDao {
      * @param obj the object to be stored or updated
      */
     public <T> void saveOrUpdate(T obj);
+    
+    /**
+     * he implementation must save an entire list of objects
+     * 
+     * @param <T>
+     * @param objs
+     */
+    public <T> void saveOrUpdate(Collection<T> objs);
     
     /**
      * The implementation must delete the given object
@@ -64,4 +73,5 @@ public interface GenericDao {
      * @throws HibernateException
      */
     public <T> List<T> executeNamedQuery(String queryName, final Object[] queryArgs);
+
 }
