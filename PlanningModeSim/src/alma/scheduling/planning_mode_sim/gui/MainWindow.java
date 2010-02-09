@@ -16,6 +16,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 
 import alma.acs.gui.standards.*;
 import alma.scheduling.planning_mode_sim.controller.Controler;
@@ -51,7 +53,7 @@ public class MainWindow extends JFrame implements WindowListener{
 	 */
 	public MainWindow() {
 		super();
-		GuiStandards.enforce();
+		//GuiStandards.enforce();
 		initialize();
 	}
 
@@ -60,10 +62,27 @@ public class MainWindow extends JFrame implements WindowListener{
 	 * 
 	 */
 	private void initialize() {
-        this.setSize(new Dimension(344, 227));
+        this.setUIFont(new FontUIResource("Sans", 0, 10));
+        this.setMinimumSize(new Dimension(350, 400));
         this.setJMenuBar(getJJMenuBar());
         this.setTitle("Planning Mode Simulator");
-			
+        this.pack();			
+	}
+	
+	public static void setUIFont(javax.swing.plaf.FontUIResource f) {
+		//
+		// sets the default font for all Swing components.
+		// ex.
+		// setUIFont (new javax.swing.plaf.FontUIResource
+		// ("Serif",Font.ITALIC,12));
+		//
+		java.util.Enumeration keys = UIManager.getDefaults().keys();
+		while (keys.hasMoreElements()) {
+			Object key = keys.nextElement();
+			Object value = UIManager.get(key);
+			if (value instanceof javax.swing.plaf.FontUIResource)
+				UIManager.put(key, f);
+		}
 	}
 
 	/**
@@ -154,6 +173,7 @@ public class MainWindow extends JFrame implements WindowListener{
 					//TODO: Implement "Are you sure..."
 					Controler.getControler().createNew();
 					Controler.getControler().getParentWindow().setContentPane(new SimulationProjectViewer());
+					Controler.getControler().getParentWindow().pack();	
 				}
 			});
 		}
