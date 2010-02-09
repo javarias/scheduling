@@ -15,12 +15,12 @@ import alma.scheduling.persistence.HibernateUtil;
 
 import junit.framework.TestCase;
 
-public class TemperatureHistRecordTest extends TestCase {
+public class WeatherHistRecordTest extends TestCase {
 
-    private static Logger logger = LoggerFactory.getLogger(TemperatureHistRecordTest.class);
+    private static Logger logger = LoggerFactory.getLogger(WeatherHistRecordTest.class);
     private Session session;
     
-    public TemperatureHistRecordTest(String name) {
+    public WeatherHistRecordTest(String name) {
         super(name);
     }
 
@@ -35,12 +35,23 @@ public class TemperatureHistRecordTest extends TestCase {
         super.tearDown();
     }
  
-    public void testSimpleTempRecordCreation() throws Exception {
+    public void testSimpleRecordCreation() throws Exception {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            TemperatureHistRecord record = new TemperatureHistRecord(1.0, 0.0, 0.0, 0.0);
-            session.save(record);
+            TemperatureHistRecord record1 = new TemperatureHistRecord(1.0, 0.0, 0.0, 0.0);
+            TemperatureHistRecord record2 = new TemperatureHistRecord(1.1, 0.0, 0.0, 0.0);
+            TemperatureHistRecord record3 = new TemperatureHistRecord(1.2, 0.0, 0.0, 0.0);
+            session.save(record1);
+            session.save(record2);
+            session.save(record3);
+            HumidityHistRecord record4 = new HumidityHistRecord(1.0, 0.0, 0.0, 0.0);
+            HumidityHistRecord record5 = new HumidityHistRecord(1.1, 0.0, 0.0, 0.0);
+            HumidityHistRecord record6 = new HumidityHistRecord(1.2, 0.0, 0.0, 0.0);
+            session.save(record4);
+            session.save(record5);
+            session.save(record6);
+            // ...
             tx.commit();
         } catch(Exception ex) {
             tx.rollback();
@@ -49,6 +60,7 @@ public class TemperatureHistRecordTest extends TestCase {
         try {
             tx = session.beginTransaction();
             session.createQuery("DELETE FROM TemperatureHistRecord").executeUpdate();
+            session.createQuery("DELETE FROM HumidityHistRecord").executeUpdate();
             tx.commit();            
         } catch(Exception ex) {
             tx.rollback();
@@ -70,7 +82,7 @@ public class TemperatureHistRecordTest extends TestCase {
                 Double temp = scanner.nextDouble();
                 Double rms = scanner.nextDouble();
                 Double slope = scanner.nextDouble();
-                TemperatureHistRecord record = new TemperatureHistRecord(time, temp, rms, slope);
+                WeatherHistRecord record = new TemperatureHistRecord(time, temp, rms, slope);
                 session.save(record);
             }
             tx.commit();
@@ -80,7 +92,7 @@ public class TemperatureHistRecordTest extends TestCase {
         }
     }
     
-    public void testLotsOfRecords2() throws Exception {
+    public void noPleasetestLotsOfRecords2() throws Exception {
         Transaction tx = null;        
         try {
             tx = session.beginTransaction();
@@ -102,7 +114,7 @@ public class TemperatureHistRecordTest extends TestCase {
                 Double temp = Double.valueOf(tokens[1]);
                 Double rms = Double.valueOf(tokens[2]);
                 Double slope = Double.valueOf(tokens[3]);            
-                TemperatureHistRecord record = new TemperatureHistRecord(time, temp, rms, slope);
+                WeatherHistRecord record = new TemperatureHistRecord(time, temp, rms, slope);
                 session.save(record);
             }
             tx.commit();

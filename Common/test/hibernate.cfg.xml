@@ -27,7 +27,7 @@
         <property name="hibernate.c3p0.idle_test_period">3000</property>
         
         <!-- Show and print nice SQL on stdout -->
-        <property name="show_sql">false</property>
+        <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         
         <!-- List of XML mapping files -->
@@ -37,7 +37,7 @@
         <mapping resource="alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml"/>   
         <mapping resource="alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml"/>
         <mapping resource="alma/scheduling/datamodel/obsproject/Target.hbm.xml"/>
-        <mapping resource="alma/scheduling/datamodel/weather/TemperatureHistRecord.hbm.xml"/>
+        <mapping resource="alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml"/>
         
     </session-factory>
 </hibernate-configuration>

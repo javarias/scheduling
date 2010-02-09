@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.weather">
+    
+    <class name="TemperatureHistRecord" table="HIST_TEMPERATURE">
+        
+        <id name="time">
+            <column name="TIME"/>
+        </id>
+        
+        <property name="value" column="VALUE"/>
+        <property name="rms" column="RMS"/>
+        <property name="slope" column="SLOPE"/>
+        
+    </class>
+
+    <class name="HumidityHistRecord" table="HIST_HUMIDITY">
+        
+        <id name="time">
+            <column name="TIME"/>
+        </id>
+        
+        <property name="value" column="VALUE"/>
+        <property name="rms" column="RMS"/>
+        <property name="slope" column="SLOPE"/>
+        
+    </class>
+
+    <class name="OpacityHistRecord" table="HIST_OPACITY">
+        
+        <id name="time">
+            <column name="TIME"/>
+        </id>
+        
+        <property name="value" column="VALUE"/>
+        <property name="rms" column="RMS"/>
+        <property name="slope" column="SLOPE"/>
+        
+    </class>
+
+    <class name="WindSpeedHistRecord" table="HIST_WINDSPEED">
+        
+        <id name="time">
+            <column name="TIME"/>
+        </id>
+        
+        <property name="value" column="VALUE"/>
+        <property name="rms" column="RMS"/>
+        <property name="slope" column="SLOPE"/>
+        
+    </class>
+    
+</hibernate-mapping>
