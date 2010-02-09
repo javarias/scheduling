@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import java.awt.Dimension;
 
 import alma.acs.gui.standards.*;
+import alma.scheduling.planning_mode_sim.controller.Controler;
+import alma.scheduling.planning_mode_sim.gui.SimulationProgress;
 
 import javax.swing.BoxLayout;
 import javax.swing.JInternalFrame;
@@ -24,8 +26,11 @@ import javax.swing.JButton;
 import java.awt.GridLayout;
 import java.awt.CardLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JTextField;
+
+import cl.utfsm.samplingSystemUI.DataPrinter;
 
 public class SimulationProjectViewer extends JPanel{
 
@@ -66,7 +71,7 @@ public class SimulationProjectViewer extends JPanel{
         
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(0,10,0,10);
+        c.insets = new Insets(5,5,5,5);
         c.fill = GridBagConstraints.NONE;
         c.weightx = 1; c.weighty = 1;
         
@@ -156,7 +161,10 @@ public class SimulationProjectViewer extends JPanel{
 		c.gridx = 0; c.gridy = 12;
 		this.add(getObsprojectConf1JLabel(), c);
 		
-		this.updateUI();
+		c.anchor = GridBagConstraints.LINE_END;
+		c.gridwidth = 1;
+		c.gridx = 1; c.gridy = 13;
+		this.add(getStartSimulationJButton(), c);
 	}
 	
 	public JLabel getSimulationJLabel(){
@@ -314,6 +322,11 @@ public class SimulationProjectViewer extends JPanel{
 	public JButton getStartSimulationJButton(){
 		if( startSimulationJButton == null){
 			startSimulationJButton = new JButton("Start Simulation", StandardIcons.ACTION_START.icon);
+			startSimulationJButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					Controler.getControler().getParentWindow().startSimulation();
+				}
+			});
 		}
 		return startSimulationJButton;
 	}

@@ -2,8 +2,13 @@ package alma.scheduling.planning_mode_sim.gui;
 
 import javax.swing.JFrame;
 import java.awt.Dimension;
+import java.awt.Font;
+
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -17,6 +22,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
 import alma.acs.gui.standards.*;
@@ -29,6 +35,8 @@ public class MainWindow extends JFrame implements WindowListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 6277902498253584548L;
+	
+	//GUI Components
 	private JMenuBar jJMenuBar = null;
 	private JMenu jMenu = null;
 	private JMenu jMenu1 = null;
@@ -41,7 +49,13 @@ public class MainWindow extends JFrame implements WindowListener{
 	private JMenuItem jMenuItem4 = null;
 	private JMenu jMenu4 = null;
 	
+	//Dialogs
 	public JFileChooser jFileChooser = null;
+	
+	//Panels
+	public StatusBar statusBar = null;
+	public SimulationProjectViewer spv = null;
+	public SimulationProgress sp = null;
 	
 	//TODO: Missing "Close Window" listener to handle exit.
 	
@@ -53,7 +67,6 @@ public class MainWindow extends JFrame implements WindowListener{
 	 */
 	public MainWindow() {
 		super();
-		//GuiStandards.enforce();
 		initialize();
 	}
 
@@ -62,20 +75,34 @@ public class MainWindow extends JFrame implements WindowListener{
 	 * 
 	 */
 	private void initialize() {
-        this.setUIFont(new FontUIResource("Sans", 0, 10));
+        //this.setUIFont(new FontUIResource(Font.SANS_SERIF, Font.PLAIN, 10));
+        try {
+			UIManager.setLookAndFeel(
+			        UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		GuiStandards.enforce();
         this.setMinimumSize(new Dimension(350, 400));
         this.setJMenuBar(getJJMenuBar());
         this.setTitle("Planning Mode Simulator");
-        this.pack();			
+        this.statusBar = new StatusBar();
+        this.add(statusBar, BorderLayout.SOUTH);
+        this.pack();
 	}
-	
+
+	//TODO: When done developing, delete this method. Only used for graphicall comodity.
 	public static void setUIFont(javax.swing.plaf.FontUIResource f) {
-		//
-		// sets the default font for all Swing components.
-		// ex.
-		// setUIFont (new javax.swing.plaf.FontUIResource
-		// ("Serif",Font.ITALIC,12));
-		//
 		java.util.Enumeration keys = UIManager.getDefaults().keys();
 		while (keys.hasMoreElements()) {
 			Object key = keys.nextElement();
@@ -111,6 +138,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenu == null) {
 			jMenu = new JMenu();
 			jMenu.setText("File");
+			jMenu.setMnemonic(KeyEvent.VK_F);
 			jMenu.add(getJMenuItem());
 			jMenu.add(getJMenuItem1());
 			jMenu.add(getJMenuItem2());
@@ -129,6 +157,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenu1 == null) {
 			jMenu1 = new JMenu();
 			jMenu1.setText("Edit");
+			jMenu1.setMnemonic(KeyEvent.VK_E);
 		}
 		return jMenu1;
 	}
@@ -142,6 +171,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenu2 == null) {
 			jMenu2 = new JMenu();
 			jMenu2.setText("View");
+			jMenu2.setMnemonic(KeyEvent.VK_V);
 		}
 		return jMenu2;
 	}
@@ -155,6 +185,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenu3 == null) {
 			jMenu3 = new JMenu();
 			jMenu3.setText("Simulation");
+			jMenu3.setMnemonic(KeyEvent.VK_S);
 		}
 		return jMenu3;
 	}
@@ -168,12 +199,14 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenuItem == null) {
 			jMenuItem = new JMenuItem();
 			jMenuItem.setText("New");
+			jMenuItem.setMnemonic(KeyEvent.VK_N);
 			jMenuItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//TODO: Implement "Are you sure..."
 					Controler.getControler().createNew();
-					Controler.getControler().getParentWindow().setContentPane(new SimulationProjectViewer());
-					Controler.getControler().getParentWindow().pack();	
+					spv = new SimulationProjectViewer();
+					Controler.getControler().getParentWindow().add( spv, BorderLayout.CENTER);
+					Controler.getControler().getParentWindow().pack();
 				}
 			});
 		}
@@ -189,6 +222,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenuItem1 == null) {
 			jMenuItem1 = new JMenuItem();
 			jMenuItem1.setText("Open");
+			jMenuItem1.setMnemonic(KeyEvent.VK_O);
 			jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					// Obtain the FileChooser dialog
@@ -221,6 +255,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenuItem2 == null) {
 			jMenuItem2 = new JMenuItem();
 			jMenuItem2.setText("Save");
+			jMenuItem2.setMnemonic(KeyEvent.VK_S);
 			jMenuItem2.setIcon(StandardIcons.ACTION_SAVE.icon);
 			jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -257,6 +292,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenuItem3 == null) {
 			jMenuItem3 = new JMenuItem();
 			jMenuItem3.setText("Save as...");
+			jMenuItem3.setMnemonic(KeyEvent.VK_A);
 			jMenuItem3.setIcon(StandardIcons.ACTION_SAVE.icon);
 			jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -288,6 +324,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenuItem4 == null) {
 			jMenuItem4 = new JMenuItem();
 			jMenuItem4.setText("Exit");
+			jMenuItem4.setMnemonic(KeyEvent.VK_X);
 			jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					Controler.getControler().exit();
@@ -306,6 +343,7 @@ public class MainWindow extends JFrame implements WindowListener{
 		if (jMenu4 == null) {
 			jMenu4 = new JMenu();
 			jMenu4.setText("Help");
+			jMenu4.setMnemonic(KeyEvent.VK_H);
 		}
 		return jMenu4;
 	}
@@ -315,47 +353,52 @@ public class MainWindow extends JFrame implements WindowListener{
 			this.jFileChooser = new JFileChooser();
 		return this.jFileChooser;
 	}
+	
+	public void startSimulation(){
+		this.remove(spv);
+		this.sp = new SimulationProgress();
+		this.add( sp, BorderLayout.CENTER);
+		this.statusBar.notifySimStart();
+		this.pack();
+	}
 
 	@Override
-	public void windowActivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowActivated(WindowEvent arg0) {}
 
 	@Override
 	public void windowClosed(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void windowClosing(WindowEvent arg0) {
-		// TODO Auto-generated method stub
+		System.out.println("WindowListener method called: windowClosed.");
 		Controler.getControler().exit();
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void windowClosing(WindowEvent arg0) {
+		System.out.println("WindowListener method called: windowClosing.");
+	    //A pause so user can see the message before
+	    //the window actually closes.
+	    ActionListener task = new ActionListener() {
+	        boolean alreadyDisposed = false;
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+	            if (((MainWindow)arg0.getSource()).isDisplayable()) {
+	                alreadyDisposed = true;
+	                ((MainWindow)arg0.getSource()).dispose();
+	            }				
+			}
+	    };
 	}
 
 	@Override
-	public void windowDeiconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeactivated(WindowEvent arg0) {}
 
 	@Override
-	public void windowIconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeiconified(WindowEvent arg0) {}
 
 	@Override
-	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowIconified(WindowEvent arg0) {}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {}
 	
 	
 
