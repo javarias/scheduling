@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.7 2010/02/02 20:49:50 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.8 2010/02/09 00:53:24 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -126,6 +126,7 @@ SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
                         alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml \
                         alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml \
                         alma/scheduling/datamodel/obsproject/Target.hbm.xml \
+                        alma/scheduling/datamodel/weather/TemperatureHistRecord.hbm.xml \
                         ../config/hibernate.cfg.xml
 #
 # java sources in Jarfile on/off
