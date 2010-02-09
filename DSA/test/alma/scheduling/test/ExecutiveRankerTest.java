@@ -18,8 +18,13 @@ import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl;
+import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.WeatherConstraints;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 import alma.scheduling.persistence.HibernateUtil;
 import alma.scheduling.persistence.XmlUtil;
@@ -32,7 +37,6 @@ import org.xml.sax.SAXException;
 public class ExecutiveRankerTest extends TestCase {
 
     private static Logger logger = LoggerFactory.getLogger(ExecutiveRankerTest.class);
-    private Session session;
     
     public ExecutiveRankerTest(String name) {
         super(name);
@@ -40,38 +44,42 @@ public class ExecutiveRankerTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        session = HibernateUtil.getSessionFactory().openSession();
     }
 
     protected void tearDown() throws Exception {
-        session.close();
-        HibernateUtil.shutdown();        
-        super.tearDown();
+        
     }
  
     public void testExecutiveRanker() throws Exception {
     	
-    	//Loading SchedBlocks
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            // a simple SchedBlock
-            SchedBlock sb1 = new SchedBlock();
-            sb1.setPiName("Astronomer from Salsacia");
-            sb1.setWeatherConstraints(new WeatherConstraints(0.0, 0.0, 0.0, 0.0));
-            session.save(sb1);
-            // a ObsUnitSet containing several SchedBlock
-            // children are saved by cascading
-            SchedBlock sb2 = new SchedBlock();
-            sb2.setPiName("Astronomer from Conservia");
-            sb2.setWeatherConstraints(new WeatherConstraints(1.0, 1.0, 1.0, 1.0));
-            session.save(sb2);
-            tx.commit();
-        } catch(Exception ex) {
-            tx.rollback();
-            throw ex;
-        }
+        // Loading SchedBlocks
+        ApplicationContext ctx = new ClassPathXmlApplicationContext(
+                "context.xml");
+        ExecutiveDaoImpl execDao = (ExecutiveDaoImpl) ctx.getBean("execDao");
+        SchedBlockDaoImpl sbDao = (SchedBlockDaoImpl) ctx.getBean("sbDao");
+
+        ObsProject prj = new ObsProject();
+        prj.setAssignedPriority(1);
+        prj.setPrincipalInvestigator("me");
+        prj.setStatus("ready");
         
+        sbDao.saveOrUpdate(prj);
+        
+        // a simple SchedBlock
+        ObsUnitSet ous = new ObsUnitSet();
+        SchedBlock sb1 = new SchedBlock();
+        sb1.setPiName("Astronomer from Salsacia");
+        sb1.setWeatherConstraints(new WeatherConstraints(0.0, 0.0, 0.0, 0.0));
+        // a ObsUnitSet containing several SchedBlock
+        // children are saved by cascading
+        SchedBlock sb2 = new SchedBlock();
+        sb2.setPiName("Astronomer from Conservia");
+        sb2.setWeatherConstraints(new WeatherConstraints(1.0, 1.0, 1.0, 1.0));
+        sbDao.saveOrUpdate(sb1);
+        sbDao.saveOrUpdate(sb2);
+        ous.addObsUnit(sb1);
+        ous.addObsUnit(sb2);
+        sbDao.saveOrUpdate(ous);
         //Loading Executive data from XML
         ExecutiveData execData = null;
         try {
@@ -93,23 +101,9 @@ public class ExecutiveRankerTest extends TestCase {
         
         BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         
-        try {
-            tx = session.beginTransaction();
-            for(ObservingSeason tmp: osOut)
-                session.save(tmp);
-            for(Executive tmp: execOut)
-                session.save(tmp);
-            for(PI tmp: piOut)
-                session.save(tmp);
-            tx.commit();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            tx.rollback();
-            throw ex;
-        }
-        
-        //Starting DSA
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("context.xml");
+        execDao.saveOrUpdate(osOut);
+        execDao.saveOrUpdate(execOut);
+        execDao.saveOrUpdate(piOut);
 		
 		DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean("dsa");
 		dsa.selectCandidateSB();

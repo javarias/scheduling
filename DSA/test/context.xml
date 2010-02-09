@@ -38,13 +38,13 @@
             <prop key="show_sql">true</prop>
             <prop key="format_sql">true</prop>
             <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
-            <prop key="hibernate.connection.autocommit">false</prop>
+            <prop key="hibernate.connection.autocommit">true</prop>
             <prop key="hibernate.hbm2ddl.auto">update</prop>
-            <prop key="cache.use_query_cache">false</prop>
-            <prop key="cache.use_second_level_cache">false</prop>
+            <prop key="cache.use_query_cache">true</prop>
+            <prop key="cache.use_second_level_cache">true</prop>
             <prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
             <prop key="transaction.flush_before_completion">true</prop>
-            <prop key="transaction.auto_close_session">true</prop>
+            <prop key="transaction.auto_close_session">false</prop>
             <!-- Use the C3P0 connection pool provider -->
         	<prop key="hibernate.c3p0.min_size">5</prop>
         	<prop key="hibernate.c3p0.max_size">20</prop>
