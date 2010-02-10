@@ -18,6 +18,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import alma.acs.gui.standards.*;
 import alma.scheduling.planning_mode_sim.controller.Controler;
+import alma.scheduling.planning_mode_sim.gui.simpreparation.SPDataSources;
 import alma.scheduling.planning_mode_sim.gui.simpreparation.SimulationProjectViewer;
 
 public class MainWindow extends JFrame{
@@ -47,6 +48,7 @@ public class MainWindow extends JFrame{
 	public StatusBar statusBar = null;
 	public SimulationProjectViewer spv = null;
 	public SimulationProgress sp = null;
+	public SPDataSources SPds = null;
 	
 	//TODO: Missing "Close Window" listener to handle exit.
 	
@@ -67,22 +69,22 @@ public class MainWindow extends JFrame{
 	 */
 	private void initialize() {
         //this.setUIFont(new FontUIResource(Font.SANS_SERIF, Font.PLAIN, 10));
-        try {
-			UIManager.setLookAndFeel(
-			        UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//        try {
+//			UIManager.setLookAndFeel(
+//			        UIManager.getSystemLookAndFeelClassName());
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InstantiationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (UnsupportedLookAndFeelException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		GuiStandards.enforce();
         this.setMinimumSize(new Dimension(350, 400));
         this.setJMenuBar(getJJMenuBar());
@@ -142,8 +144,10 @@ public class MainWindow extends JFrame{
 			jMenu.setMnemonic(KeyEvent.VK_F);
 			jMenu.add(getJMenuItem());
 			jMenu.add(getJMenuItem1());
+			jMenu.addSeparator();
 			jMenu.add(getJMenuItem2());
 			jMenu.add(getJMenuItem3());
+			jMenu.addSeparator();
 			jMenu.add(getJMenuItem4());
 		}
 		return jMenu;
@@ -205,8 +209,9 @@ public class MainWindow extends JFrame{
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//TODO: Implement "Are you sure..."
 					Controler.getControler().createNew();
-					spv = new SimulationProjectViewer();
-					Controler.getControler().getParentWindow().add( spv, BorderLayout.CENTER);
+					//spv = new SimulationProjectViewer();
+					SPds = new SPDataSources();
+					Controler.getControler().getParentWindow().add( SPds, BorderLayout.CENTER);
 					Controler.getControler().getParentWindow().pack();
 				}
 			});

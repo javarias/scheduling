@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.4 2010/02/04 21:17:28 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.5 2010/02/10 23:22:32 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -66,8 +66,8 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         =
-SCRIPTS_L       =
+SCRIPTS         = PlanningModeSimulator
+#SCRIPTS_L       =
 
 #
 # TCL scripts (public and local)
@@ -162,7 +162,7 @@ ASCII_TO_MIF =
 #
 # other files to be installed
 #----------------------------
-INSTALL_FILES =
+INSTALL_FILES = ../lib/jcalendar-1.3.3.jar ../lib/looks-2.0.1.jar
 
 #
 # list of all possible C-sources (used to create automatic dependencies)
