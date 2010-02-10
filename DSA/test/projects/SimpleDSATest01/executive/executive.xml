@@ -31,14 +31,14 @@ The time are equally divided. It only serves the porpuses to test the Executive 
 		<totalObsTimeForSeason>0.0</totalObsTimeForSeason>
 	</ExecutivePercentage>
 	<PI>
-		<name>Astronomer from Salsasia</name>
+		<name>1</name>
 		<PIMembership>
 			<membershipPercentage>100.0</membershipPercentage>
 			<ExecutiveRef nameRef="Salsasia" />
 		</PIMembership>
 	</PI>
 	<PI>
-		<name>Astronomer from Conservia</name>
+		<name>2</name>
 		<PIMembership>
 			<membershipPercentage>100.0</membershipPercentage>
 			<ExecutiveRef nameRef="Conservia" />

@@ -11,12 +11,12 @@
         
         <property name="defaultPercentage" column="DEFAULT_PERCENTAGE" type="float"/>
         
-		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
+		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" lazy="false" cascade="save-update,lock, delete, delete-orphan">
 			<key column="EXECUTIVE_NAME" />
 			<one-to-many class="ExecutivePercentage" />
 		</set>
 		
-		<set name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
+		<set name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE" lazy="false" cascade="save-update,lock, delete, delete-orphan">
 			<key column="EXECUTIVE_NAME" />
 			<one-to-many class="SchedBlockExecutivePercentage" />
 		</set>
@@ -38,7 +38,7 @@
 		
 		<property name="name" type="string" column="NAME"/>
 		<property name="endDate" type="timestamp" column="END_DATE"/>
-		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE">
+		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" lazy="false" cascade="save-update,lock, delete, delete-orphan">
 			<key column="START_DATE" />
 			<one-to-many class="ExecutivePercentage" />
 		</set>
@@ -69,7 +69,7 @@
 		<id name="name" column="NAME" type="string">
 			<generator class="assigned"/>
 		</id>
-		<set name="PIMembership" table="PI_MEMBERSHIP" cascade="save-update,lock, delete, delete-orphan">
+		<set name="PIMembership" table="PI_MEMBERSHIP" cascade="save-update,lock, delete, delete-orphan" lazy="false" >
 			<key column="PI_NAME" />
 			<one-to-many class="PIMembership" />
 		</set>
@@ -81,7 +81,7 @@
 		</id>
 		<property name="membershipPercentage" type="float" column="PERCENTAGE" />
 		<many-to-one name="executive" column="EXECUTIVE_NAME" 
-        	not-null="true" class="Executive"/>
+        	not-null="true" class="Executive" lazy="false"/>
 	</class>
 	
   	<query name="ExecutiveTimeSpent.findBySeasonAndExecutive">

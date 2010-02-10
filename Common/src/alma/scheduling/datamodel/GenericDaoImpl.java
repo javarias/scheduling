@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link GenericDao}
@@ -13,19 +14,23 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  * @author javarias
  *
  */
+@Transactional
 public abstract class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
 
     @Override
+    @Transactional
     public <T> void delete(T obj) {
         getHibernateTemplate().delete(obj);
     }
 
     @Override
+    @Transactional
     public <T> void saveOrUpdate(T obj) {
         getHibernateTemplate().saveOrUpdate(obj);
     }
 
     @Override
+    @Transactional
     public <T> void saveOrUpdate(Collection<T> objs) {
         getHibernateTemplate().saveOrUpdateAll(objs);
     }
@@ -33,7 +38,7 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     @SuppressWarnings("unchecked")
     @Override
     public <T, PK extends Serializable> T findById(Class<T> obj, PK key) {
-        return (T) getHibernateTemplate().load(obj, key);
+        return (T) getHibernateTemplate().get(obj, key);
     }
 
     

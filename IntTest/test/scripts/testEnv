@@ -10,6 +10,7 @@
 export ACS_INSTANCE
 export ACS_TMP
 export ACS_CDB
+export ACS_LOG_STDOUT=2
 export RUNLOCATION
 
 RETVAL=0

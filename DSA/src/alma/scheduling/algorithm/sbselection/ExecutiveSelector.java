@@ -6,35 +6,37 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.PIMembership;
-import alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
 public class ExecutiveSelector implements SchedBlockSelector {
 
-    private ExecutiveDaoImpl execDao;
-    private SchedBlockDaoImpl sbDao;
+    private ExecutiveDAO execDao;
+    private SchedBlockDao sbDao;
     private HashMap<String, Double> availableTime;
     
-    public ExecutiveDaoImpl getExecDao() {
+    public ExecutiveDAO getExecDao() {
         return execDao;
     }
 
-    public void setExecDao(ExecutiveDaoImpl execDao) {
+    public void setExecDao(ExecutiveDAO execDao) {
         this.execDao = execDao;
     }
 
-    public SchedBlockDaoImpl getSbDao() {
+    public SchedBlockDao getSbDao() {
         return sbDao;
     }
 
-    public void setSbDao(SchedBlockDaoImpl sbDao) {
+    public void setSbDao(SchedBlockDao sbDao) {
         this.sbDao = sbDao;
     }
     

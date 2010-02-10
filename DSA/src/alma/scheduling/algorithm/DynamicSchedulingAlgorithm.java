@@ -49,30 +49,30 @@ public class DynamicSchedulingAlgorithm {
 	 /**
      * Clean the current candidate SBs and run again the selectors
      */
-	@SuppressWarnings("unchecked")
-    public void selectCandidateSB(){
+	public void selectCandidateSB(){
 	    sbs.clear();
-	    HashMap<Long, SchedBlock>[] selectedSbs =
-	        new HashMap[selectors.size()];
+	    ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
+	        new ArrayList<HashMap<Long,SchedBlock>>();
 	    int i = 0;
         for(SchedBlockSelector s: selectors){
+            selectedSbs.add(new HashMap<Long, SchedBlock>());
             for(SchedBlock sb: s.select())
-                selectedSbs[i].put(sb.getId(), sb);
+                selectedSbs.get(i).put(sb.getId(), sb);
             i++;
         }
-        HashMap<Long, SchedBlock> smallestSet = selectedSbs[0]; 
-        for(i = 1; i<selectedSbs.length; i++){
-            if (smallestSet.size() > selectedSbs[i].size())
-                smallestSet = selectedSbs[i];
+        HashMap<Long, SchedBlock> smallestSet = selectedSbs.get(0); 
+        for(i = 1; i<selectedSbs.size(); i++){
+            if (smallestSet.size() > selectedSbs.get(i).size())
+                smallestSet = selectedSbs.get(i);
         }
         // Check if the SchedBlock was selected by the others selectors
         for(SchedBlock sb: smallestSet.values()){
             boolean verified = true;
-            for(i = 0; i < selectedSbs.length; i++){
+            for(i = 0; i < selectedSbs.size(); i++){
                 verified = true;
-                if (selectedSbs[i] == smallestSet)
+                if (selectedSbs.get(i) == smallestSet)
                     continue;
-                if(selectedSbs[i].get(sb.getId()) == null){
+                if(selectedSbs.get(i).get(sb.getId()) == null){
                     verified = false;
                     break;
                 }

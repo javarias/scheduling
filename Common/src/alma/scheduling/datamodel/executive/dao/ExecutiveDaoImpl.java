@@ -1,14 +1,18 @@
 package alma.scheduling.datamodel.executive.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.executive.PI;
 
 public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
 
@@ -52,5 +56,17 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
         return (ExecutivePercentage) this.executeNamedQuery(
                 "ExecutivePercentage.findBySeasonAndExecutive",args).get(0);
     }
+
+    @Transactional
+    @Override
+    public void PopulateDB(Collection<PI> pi, Collection<Executive> exec,
+            Collection<ObservingSeason> os) {
+        ArrayList<Object> objs = new ArrayList<Object>();
+        objs.addAll(exec);
+        objs.addAll(os);
+        objs.addAll(pi);
+        getHibernateTemplate().saveOrUpdateAll(objs);
+    }
+    
 
 }
