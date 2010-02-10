@@ -98,6 +98,9 @@ public class ExecutiveRankerTest extends TestCase {
 		
 		DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean("dsa");
 		dsa.selectCandidateSB();
+		dsa.rankSchedBlocks();
+		SchedBlock sb = dsa.getSelectedSchedBlock();
+		System.out.println(sb);
     }
     
 
