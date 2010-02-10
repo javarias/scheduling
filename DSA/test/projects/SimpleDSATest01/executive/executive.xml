@@ -24,11 +24,11 @@ The time are equally divided. It only serves the porpuses to test the Executive 
 	</ObservingSeason>
 	<ExecutivePercentage id="SalsaciaPercentage">
 		<percentage>50.0</percentage>
-		<totalObsTimeForSeason>0.0</totalObsTimeForSeason>
+		<totalObsTimeForSeason>12.0</totalObsTimeForSeason>
 	</ExecutivePercentage>
 	<ExecutivePercentage id="ConverviaPercentage">
 		<percentage>50.0</percentage>
-		<totalObsTimeForSeason>0.0</totalObsTimeForSeason>
+		<totalObsTimeForSeason>10.0</totalObsTimeForSeason>
 	</ExecutivePercentage>
 	<PI>
 		<name>1</name>
