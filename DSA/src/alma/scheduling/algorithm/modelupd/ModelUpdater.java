@@ -1,5 +1,10 @@
 package alma.scheduling.algorithm.modelupd;
 
-public interface ModelUpdater {
+import java.util.Date;
 
+public interface ModelUpdater {
+    
+    public boolean needsToUpdate(Date date);
+    
+    public void update();
 }

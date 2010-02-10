@@ -6,5 +6,5 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockSelector {
 
-    public Collection<SchedBlock> select() throws NoSbSelectedExecption;
+    public Collection<SchedBlock> select() throws NoSbSelectedException;
 }

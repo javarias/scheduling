@@ -44,7 +44,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
      * @see alma.scheduling.algorithm.sbselection.SchedBlockSelector#select()
      */
     @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedExecption{
+    public Collection<SchedBlock> select() throws NoSbSelectedException{
         calculateRemainingTime();
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
         List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
@@ -58,7 +58,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
         }
         if(acceptedSbs.size() == 0){
             String strCause = "Cannot get any SB valid to be ranked using " + this.toString();
-            throw new NoSbSelectedExecption(strCause);
+            throw new NoSbSelectedException(strCause);
         }
         return acceptedSbs;
     }
