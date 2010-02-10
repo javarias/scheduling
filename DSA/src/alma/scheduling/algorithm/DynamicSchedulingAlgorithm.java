@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedExecption;
@@ -12,6 +16,8 @@ import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class DynamicSchedulingAlgorithm {
+    
+    private static Logger logger = LoggerFactory.getLogger(DynamicSchedulingAlgorithm.class);
 
     private SchedBlockRanker ranker;
     private Collection<SchedBlockSelector> selectors;
@@ -66,7 +72,7 @@ public class DynamicSchedulingAlgorithm {
                 for(SchedBlock sb: s.select())
                     selectedSbs.get(i).put(sb.getId(), sb);
             } catch (NoSbSelectedExecption e) {
-                //log: DSA cannot continue if a selector cannot get SBs
+                logger.warn("DSA cannot continue if a selector cannot get SBs");
                 throw new NoSbSelectedExecption(e.getMessage());
             }
             i++;
@@ -93,12 +99,14 @@ public class DynamicSchedulingAlgorithm {
                 sbs.put(sb.getId(), sb);
         }
         if (sbs.isEmpty()){
+            logger.warn("DSA cannot continue if it doesn't have SB to rank");
             String strCause = "Cannot get any SB valid to be ranked using ";
             for(SchedBlockSelector s: selectors)
                 strCause += s.toString() + " ";
             throw new NoSbSelectedExecption(strCause);
         }
 	}
+	
 	
 	public void updateModel(){
 	    
