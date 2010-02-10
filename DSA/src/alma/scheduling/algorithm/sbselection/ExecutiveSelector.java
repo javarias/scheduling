@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
@@ -46,7 +44,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
      * @see alma.scheduling.algorithm.sbselection.SchedBlockSelector#select()
      */
     @Override
-    public Collection<SchedBlock> select() {
+    public Collection<SchedBlock> select() throws NoSbSelectedExecption{
         calculateRemainingTime();
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
         List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
@@ -55,8 +53,12 @@ public class ExecutiveSelector implements SchedBlockSelector {
             Iterator<PIMembership> it = pi.getPIMembership().iterator();
             Double avTime = availableTime.get(
                     it.next().getExecutive().getName());
-            if (avTime.doubleValue() >= 1);
+            if (avTime.doubleValue() >= 1)
                 acceptedSbs.add(sb);
+        }
+        if(acceptedSbs.size() == 0){
+            String strCause = "Cannot get any SB valid to be ranked using " + this.toString();
+            throw new NoSbSelectedExecption(strCause);
         }
         return acceptedSbs;
     }
@@ -81,4 +83,10 @@ public class ExecutiveSelector implements SchedBlockSelector {
         
     }
 
+    @Override
+    public String toString() {
+        return "ExecutiveSelector";
+    }
+
+    
 }

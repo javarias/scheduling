@@ -3,8 +3,11 @@ package alma.scheduling.algorithm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
+import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
+import alma.scheduling.algorithm.sbselection.NoSbSelectedExecption;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
@@ -16,6 +19,7 @@ public class DynamicSchedulingAlgorithm {
      * Stores the current SBs selected from selectors
      */
     private HashMap<Long, SchedBlock> sbs;
+    private List<SBRank> ranks;
     
     public DynamicSchedulingAlgorithm(){
         sbs =  new HashMap<Long, SchedBlock>();
@@ -39,25 +43,32 @@ public class DynamicSchedulingAlgorithm {
     }
 
     public SchedBlock getSelectedSchedBlock(){
-	    return null;
+	    return ranker.getBestSB(ranks);
 	}
 	
 	public void rankSchedBlocks(){
-	    ranker.rank(new ArrayList<SchedBlock>(sbs.values()));
+	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()));
 	}
 	
 	 /**
      * Clean the current candidate SBs and run again the selectors
+	 * @throws NoSbSelectedExecption if a selector cannot get SBs or if this method
+	 * cannot intersect a common group between al SBs returned by the selectors used
      */
-	public void selectCandidateSB(){
+	public void selectCandidateSB() throws NoSbSelectedExecption{
 	    sbs.clear();
 	    ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
 	        new ArrayList<HashMap<Long,SchedBlock>>();
 	    int i = 0;
         for(SchedBlockSelector s: selectors){
             selectedSbs.add(new HashMap<Long, SchedBlock>());
-            for(SchedBlock sb: s.select())
-                selectedSbs.get(i).put(sb.getId(), sb);
+            try {
+                for(SchedBlock sb: s.select())
+                    selectedSbs.get(i).put(sb.getId(), sb);
+            } catch (NoSbSelectedExecption e) {
+                //log: DSA cannot continue if a selector cannot get SBs
+                throw new NoSbSelectedExecption(e.getMessage());
+            }
             i++;
         }
         HashMap<Long, SchedBlock> smallestSet = selectedSbs.get(0); 
@@ -80,6 +91,12 @@ public class DynamicSchedulingAlgorithm {
             // Add to the selected sb if that sb was selected by all the others selectors
             if(verified)
                 sbs.put(sb.getId(), sb);
+        }
+        if (sbs.isEmpty()){
+            String strCause = "Cannot get any SB valid to be ranked using ";
+            for(SchedBlockSelector s: selectors)
+                strCause += s.toString() + " ";
+            throw new NoSbSelectedExecption(strCause);
         }
 	}
 	
