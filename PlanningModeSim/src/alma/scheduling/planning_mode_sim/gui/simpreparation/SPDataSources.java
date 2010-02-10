@@ -128,7 +128,10 @@ public class SPDataSources extends JPanel{
         SimEndDateJLabel = new JLabel("Stop Date");
         fileNameJTextField = new JTextField();
         fileNameJTextField.setEnabled(false);
-        commentJTextArea = new JTextArea();        
+        commentJTextArea = new JTextArea();
+        commentJTextArea.setLineWrap(true);
+        commentJTextArea.setWrapStyleWord(true);
+
         simStartJDateChooser = new JDateChooser();
         simStopJDateChooser = new JDateChooser();
         
