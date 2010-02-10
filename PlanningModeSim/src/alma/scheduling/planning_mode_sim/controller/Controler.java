@@ -69,7 +69,6 @@ public class Controler {
 			return;
 		}
 		//TODO: Check for unsaved changes.
-		parent.dispose();
 		System.out.println("Exiting...");
 		System.exit(0);
 	}

@@ -14,6 +14,13 @@ import alma.acs.gui.standards.StandardIcons;
 
 public class StatusBar extends JPanel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7315565234555246295L;
+	/**
+	 * 
+	 */
 	private JLabel onlineIconJLabel = null;
 	private JLabel onlineTextJLabel = null;
 	private JLabel simIconJLabel = null;

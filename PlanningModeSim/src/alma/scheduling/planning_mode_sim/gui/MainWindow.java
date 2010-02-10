@@ -2,34 +2,25 @@ package alma.scheduling.planning_mode_sim.gui;
 
 import javax.swing.JFrame;
 import java.awt.Dimension;
-import java.awt.Font;
 
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFileChooser;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.JWindow;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.FontUIResource;
 
 import alma.acs.gui.standards.*;
 import alma.scheduling.planning_mode_sim.controller.Controler;
 import alma.scheduling.planning_mode_sim.gui.simpreparation.SimulationProjectViewer;
 
-public class MainWindow extends JFrame implements WindowListener{
+public class MainWindow extends JFrame{
 
 	/**
 	 * 
@@ -99,6 +90,16 @@ public class MainWindow extends JFrame implements WindowListener{
         this.statusBar = new StatusBar();
         this.add(statusBar, BorderLayout.SOUTH);
         this.pack();
+        
+        this.addWindowListener(new WindowAdapter() {
+        	public void windowClosing(WindowEvent we) {
+        		((MainWindow)we.getSource()).dispose();
+        	}
+        	public void windowClosed(WindowEvent we) {
+        		Controler.getControler().exit();
+        	}
+        });
+
 	}
 
 	//TODO: When done developing, delete this method. Only used for graphicall comodity.
@@ -361,45 +362,5 @@ public class MainWindow extends JFrame implements WindowListener{
 		this.statusBar.notifySimStart();
 		this.pack();
 	}
-
-	@Override
-	public void windowActivated(WindowEvent arg0) {}
-
-	@Override
-	public void windowClosed(WindowEvent arg0) {
-		System.out.println("WindowListener method called: windowClosed.");
-		Controler.getControler().exit();
-	}
-
-	@Override
-	public void windowClosing(WindowEvent arg0) {
-		System.out.println("WindowListener method called: windowClosing.");
-	    //A pause so user can see the message before
-	    //the window actually closes.
-	    ActionListener task = new ActionListener() {
-	        boolean alreadyDisposed = false;
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-	            if (((MainWindow)arg0.getSource()).isDisplayable()) {
-	                alreadyDisposed = true;
-	                ((MainWindow)arg0.getSource()).dispose();
-	            }				
-			}
-	    };
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent arg0) {}
-
-	@Override
-	public void windowDeiconified(WindowEvent arg0) {}
-
-	@Override
-	public void windowIconified(WindowEvent arg0) {}
-
-	@Override
-	public void windowOpened(WindowEvent arg0) {}
-	
-	
 
 }  //  @jve:decl-index=0:visual-constraint="97,119"

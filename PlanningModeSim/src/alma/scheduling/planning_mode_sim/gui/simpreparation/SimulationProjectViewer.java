@@ -1,39 +1,37 @@
 package alma.scheduling.planning_mode_sim.gui.simpreparation;
 
-import javax.swing.JPanel;
-import java.awt.Dimension;
+import alma.scheduling.planning_mode_sim.controller.Controler;
 
 import alma.acs.gui.standards.*;
-import alma.scheduling.planning_mode_sim.controller.Controler;
-import alma.scheduling.planning_mode_sim.gui.SimulationProgress;
 
-import javax.swing.BoxLayout;
-import javax.swing.JInternalFrame;
-import java.awt.BorderLayout;
-import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
-import javax.swing.JTextArea;
-import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import javax.swing.BorderFactory;
-import javax.swing.border.BevelBorder;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+
+import javax.swing.Box;
 import javax.swing.JComboBox;
-import javax.swing.SwingConstants;
-import java.awt.FlowLayout;
 import javax.swing.JButton;
-import java.awt.GridLayout;
-import java.awt.CardLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
 
-import javax.swing.JTextField;
+import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
+import javax.swing.Box.Filler;
+import javax.swing.border.TitledBorder;
+import javax.swing.SwingConstants;
 
-import cl.utfsm.samplingSystemUI.DataPrinter;
 
 public class SimulationProjectViewer extends JPanel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3958217885611268216L;
 	private JLabel simulationJLabel;
 	private JComboBox simulationJComboBox;
 	private JLabel simulationConf1JLabel;
@@ -53,6 +51,11 @@ public class SimulationProjectViewer extends JPanel{
 	private JComboBox obsprojectJComboBox;
 	private JLabel obsprojectConf1JLabel;
 	private JButton startSimulationJButton;
+	private JPanel jPanel = null;
+	private JPanel jPanel1 = null;
+	private JPanel jPanel2 = null;
+	private JPanel jPanel3 = null;
+	private JPanel jPanel4 = null;
 
 	/**
 	 * This method initializes 
@@ -69,102 +72,23 @@ public class SimulationProjectViewer extends JPanel{
 	 */
 	private void initialize() {
         
-		this.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(5,5,5,5);
-        c.fill = GridBagConstraints.NONE;
-        c.weightx = 1; c.weighty = 1;
-        
-        // Simulation configs
-        c.gridwidth = 1; c.gridheight = 1;
-        c.anchor = GridBagConstraints.LINE_END;
-        c.gridx = 0; c.gridy = 0;
-        this.add(getSimulationJLabel(), c);
-		
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = 1;
-		c.gridx = 1; c.gridy = 0;
-		this.add(getSimulationJComboBox(), c);
-		
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 1;
-		this.add(getSimulationConf1JLabel(), c);
-		
-		// Observatory Configs
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 1;
-		c.gridx = 0; c.gridy = 2;
-		this.add(getObservatoryJLabel(), c);
-		
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = 1;
-		c.gridx = 1; c.gridy = 2;
-		this.add(getObservatoryJComboBox(), c);
-		
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 3;
-		this.add(getObservatoryConf1JLabel(), c);
-		c.gridx = 0; c.gridy = 4;
-		this.add(getObservatoryConf2JLabel(), c);
-		c.gridx = 0; c.gridy = 5;
-		this.add(getObservatoryConf3JLabel(), c);
-		c.gridx = 0; c.gridy = 6;
-		this.add(getObservatoryConf4JLabel(), c);
-		
-		// Dsa Configs
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 1;
-		c.gridx = 0; c.gridy = 7;
-		this.add(getDsaJLabel(), c);
-		
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = 1;
-		c.gridx = 1; c.gridy = 7;
-		this.add(getDsaJComboBox(), c);
-		
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 8;
-		this.add(getDsaConf1JLabel(), c);
-		
-		// Weather Configs
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 1;
-		c.gridx = 0; c.gridy = 9;
-		this.add(getWeatherJLabel(), c);
-		
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = 1;
-		c.gridx = 1; c.gridy = 9;
-		this.add(getWeatherJComboBox(), c);
-		
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 10;
-		this.add(getWeatherConf1JLabel(), c);
-		
-		// Obsproject Configs
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 1;
-		c.gridx = 0; c.gridy = 11;
-		this.add(getObsprojectJLabel(), c);
-		
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridwidth = 1;
-		c.gridx = 1; c.gridy = 11;
-		this.add(getObsprojectJComboBox(), c);
-		
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 2;
-		c.gridx = 0; c.gridy = 12;
-		this.add(getObsprojectConf1JLabel(), c);
-		
-		c.anchor = GridBagConstraints.LINE_END;
-		c.gridwidth = 1;
-		c.gridx = 1; c.gridy = 13;
-		this.add(getStartSimulationJButton(), c);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(getJPanel(), null);
+        Dimension minSize = new Dimension(10, 10);
+		Dimension prefSize = new Dimension(10, 10);
+		Dimension maxSize = new Dimension(10, 10);
+		this.add(new Box.Filler(minSize, prefSize, maxSize));
+        this.add(getJPanel1(), null);
+        this.add(new Box.Filler(minSize, prefSize, maxSize));
+        this.add(getJPanel2(), null);
+        this.add(new Box.Filler(minSize, prefSize, maxSize));
+        this.add(getJPanel3(), null);
+        this.add(new Box.Filler(minSize, prefSize, maxSize));
+        this.add(getJPanel4(), null);
+        this.add(new Box.Filler(minSize, prefSize, maxSize));
+        this.add(getStartSimulationJButton(), null);
+        this.add(getJPanel4(), null);
+
 	}
 	
 	public JLabel getSimulationJLabel(){
@@ -186,7 +110,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getSimulationConf1JLabel(){
 		if( simulationConf1JLabel == null){
-			simulationConf1JLabel = new JLabel("Basic configuration...");
+			simulationConf1JLabel = new JLabel("<html><font color='blue'><u>Basic configuration...</u></font></html></html>");
 			simulationConf1JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return simulationConf1JLabel;
@@ -213,7 +137,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getObservatoryConf1JLabel(){
 		if( observatoryConf1JLabel == null){
-			observatoryConf1JLabel = new JLabel("Antennas capabilities...");
+			observatoryConf1JLabel = new JLabel("<html><font color='blue'><u>Antennas capabilities...</u></font></html>");
 			observatoryConf1JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return observatoryConf1JLabel;
@@ -221,7 +145,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getObservatoryConf2JLabel(){
 		if( observatoryConf2JLabel == null){
-			observatoryConf2JLabel = new JLabel("Array configurations...");
+			observatoryConf2JLabel = new JLabel("<html><font color='blue'><u>Array configurations...</u></font></html>");
 			observatoryConf2JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return observatoryConf2JLabel;
@@ -229,7 +153,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getObservatoryConf3JLabel(){
 		if( observatoryConf3JLabel == null){
-			observatoryConf3JLabel = new JLabel("Antenna to pad mapping...");
+			observatoryConf3JLabel = new JLabel("<html><font color='blue'><u>Antenna to pad mapping...</u></font></html>");
 			observatoryConf3JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return observatoryConf3JLabel;
@@ -237,7 +161,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getObservatoryConf4JLabel(){
 		if( observatoryConf4JLabel == null){
-			observatoryConf4JLabel = new JLabel("Basic configuration...");
+			observatoryConf4JLabel = new JLabel("<html><font color='blue'><u>Basic configuration...</u></font></html>");
 			observatoryConf4JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return observatoryConf4JLabel;
@@ -262,7 +186,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getDsaConf1JLabel(){
 		if( dsaConf1JLabel == null){
-			dsaConf1JLabel = new JLabel("Configure DSA...");
+			dsaConf1JLabel = new JLabel("<html><font color='blue'><u>Configure DSA...</u></font></html>");
 			dsaConf1JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return dsaConf1JLabel;
@@ -288,7 +212,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getWeatherConf1JLabel(){
 		if( weatherConf1JLabel == null){
-			weatherConf1JLabel = new JLabel("Configure simulation model and randomization...");
+			weatherConf1JLabel = new JLabel("<html><font color='blue'><u>Configure simulation model and randomization...</u></font></html>");
 			weatherConf1JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return weatherConf1JLabel;
@@ -313,7 +237,7 @@ public class SimulationProjectViewer extends JPanel{
 	
 	public JLabel getObsprojectConf1JLabel(){
 		if( obsprojectConf1JLabel == null){
-			obsprojectConf1JLabel = new JLabel("Change science rating...");
+			obsprojectConf1JLabel = new JLabel("<html><font color='blue'><u>Change science rating...</u></font></html>");
 			obsprojectConf1JLabel.setHorizontalAlignment(JLabel.RIGHT);
 		}
 		return obsprojectConf1JLabel;
@@ -322,6 +246,7 @@ public class SimulationProjectViewer extends JPanel{
 	public JButton getStartSimulationJButton(){
 		if( startSimulationJButton == null){
 			startSimulationJButton = new JButton("Start Simulation", StandardIcons.ACTION_START.icon);
+			startSimulationJButton.setHorizontalAlignment(SwingConstants.RIGHT);
 			startSimulationJButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					Controler.getControler().getParentWindow().startSimulation();
@@ -329,6 +254,147 @@ public class SimulationProjectViewer extends JPanel{
 			});
 		}
 		return startSimulationJButton;
+	}
+
+	/**
+	 * This method initializes jPanel	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel() {
+		if (jPanel == null) {
+			jPanel = new JPanel();
+			GridBagConstraints c = new GridBagConstraints();
+			c.insets = new Insets(4, 4, 4, 4);
+			jPanel.setLayout(new GridBagLayout());
+			jPanel.setBorder(BorderFactory.createTitledBorder(null, "Simulation configurations", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+			c.gridx = 0; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel.add(getSimulationJLabel(), c);
+			c.gridx = 1; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			jPanel.add(getSimulationJComboBox(), c);
+			c.gridwidth = 2;
+			c.gridx = 0; c.gridy = 1;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel.add(getSimulationConf1JLabel(), c);
+		}
+		return jPanel;
+	}
+
+	/**
+	 * This method initializes jPanel1	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel1() {
+		if (jPanel1 == null) {
+			jPanel1 = new JPanel();
+			GridBagConstraints c = new GridBagConstraints();
+			c.insets = new Insets(4, 4, 4, 4);
+			jPanel1.setLayout(new GridBagLayout());
+			jPanel1.setBorder(BorderFactory.createTitledBorder(null, "Observatory characteristics configurations", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+			c.gridx = 0; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel1.add(getObservatoryJLabel(), c);
+			c.gridx = 1; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			jPanel1.add(getObservatoryJComboBox(), c);
+			c.gridwidth = 2;
+			c.gridx = 0; c.gridy = 1;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel1.add(getObservatoryConf1JLabel(), c);
+			c.gridx = 0; c.gridy = 2;
+			jPanel1.add(getObservatoryConf2JLabel(), c);
+			c.gridx = 0; c.gridy = 3;
+			jPanel1.add(getObservatoryConf3JLabel(), c);
+			c.gridx = 0; c.gridy = 4;
+			jPanel1.add(getObservatoryConf4JLabel(), c);
+		}
+		return jPanel1;
+	}
+
+	/**
+	 * This method initializes jPanel2	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel2() {
+		if (jPanel2 == null) {
+			GridBagConstraints c = new GridBagConstraints();
+			c.insets = new Insets(4, 4, 4, 4);
+			jPanel2 = new JPanel();
+			jPanel2.setLayout(new GridBagLayout());
+			jPanel2.setBorder(BorderFactory.createTitledBorder(null, "DSA configurations", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+			c.gridx = 0; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel2.add(getDsaJLabel(), c);
+			c.gridx = 1; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			jPanel2.add(getDsaJComboBox(), c);
+			c.gridx = 0; c.gridy = 1;
+			c.gridwidth = 2;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel2.add(getDsaConf1JLabel(), c);
+		}
+		return jPanel2;
+	}
+
+	/**
+	 * This method initializes jPanel3	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel3() {
+		if (jPanel3 == null) {
+			GridBagConstraints c = new GridBagConstraints();
+			c.insets = new Insets(4, 4, 4, 4);
+			jPanel3 = new JPanel();
+			jPanel3.setLayout(new GridBagLayout());
+			jPanel3.setBorder(BorderFactory.createTitledBorder(null, "Weather configurations", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+			c.gridx = 0; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel3.add(getWeatherJLabel(), c);
+			c.gridx = 1; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			jPanel3.add(getWeatherJComboBox(), c);
+			c.gridx = 0; c.gridy = 1;
+			c.gridwidth = 2;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel3.add(getWeatherConf1JLabel(), c);
+		}
+		return jPanel3;
+	}
+
+	/**
+	 * This method initializes jPanel4	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel4() {
+		if (jPanel4 == null) {
+			GridBagConstraints c = new GridBagConstraints();
+			c.insets = new Insets(4, 4, 4, 4);
+			jPanel4 = new JPanel();
+			jPanel4.setLayout(new GridBagLayout());
+			jPanel4.setBorder(BorderFactory.createTitledBorder(null, "Observation projects configurations", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+			c.gridx = 0; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel4.add(getObsprojectJLabel(), c) ;
+			c.gridx = 1; c.gridy = 0;
+			c.anchor = GridBagConstraints.LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			jPanel4.add(getObsprojectJComboBox(), c);
+			c.gridx = 0; c.gridy = 1;
+			c.gridwidth = 2;
+			c.anchor = GridBagConstraints.LINE_END;
+			jPanel4.add(getObsprojectConf1JLabel(), c);
+		}
+		return jPanel4;
 	}
 
 

@@ -2,13 +2,17 @@ package alma.scheduling.planning_mode_sim.gui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.Timer;
 
 import alma.acs.gui.standards.StandardIcons;
 
@@ -64,6 +68,18 @@ public class SimulationProgress extends JPanel{
 		prefSize = new Dimension(1, 5);
 		maxSize = new Dimension(10, Short.MAX_VALUE);
 		this.add(new Box.Filler(minSize, prefSize, maxSize));
+		
+		ActionListener taskPerformer = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				getProgressJProgressBar().setValue(
+						getProgressJProgressBar().getValue() + 10
+						);
+				if(getProgressJProgressBar().getValue() >= 100)
+					((Timer)evt.getSource()).stop();
+		    }
+		};
+		new Timer(1000, taskPerformer).start();
 	}
 	
 	private JButton getStopJButton(){
@@ -98,6 +114,6 @@ public class SimulationProgress extends JPanel{
 			progressJProgressBar.setAlignmentX(Component.CENTER_ALIGNMENT);
 		}
 		return progressJProgressBar;
-	}	
+	}
 
 }  //  @jve:decl-index=0:visual-constraint="65,166"
