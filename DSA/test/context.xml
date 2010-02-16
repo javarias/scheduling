@@ -86,7 +86,7 @@
 		<property name="sbDao" ref="sbDao"/>
 	</bean>
 
-	<bean id="dsa" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithm">
+	<bean id="dsa" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl">
 	<property name="ranker" ref="sciRanker"/>
 		<property name="selectors">
 		<set>

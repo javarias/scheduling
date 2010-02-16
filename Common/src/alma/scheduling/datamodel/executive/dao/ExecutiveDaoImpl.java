@@ -17,12 +17,14 @@ import alma.scheduling.datamodel.executive.PI;
 public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
 
     @Override
+    @Transactional(readOnly=true)
     public List<Executive> getAllExecutive() {
         return this.findAll(Executive.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
+    @Transactional(readOnly=true)
     public ObservingSeason getCurrentSeason() {
         List<ObservingSeason> os;
         Query query = getSession().createQuery("from ObservingSeason as os " +
@@ -33,12 +35,14 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
     }
 
     @Override
+    @Transactional(readOnly=true)
     public Executive getExecutive(String piName) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Transactional(readOnly=true)
     public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex,
             ObservingSeason os) {
         Object[] args= new Object[2];
@@ -48,6 +52,8 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
                 "ExecutiveTimeSpent.findBySeasonAndExecutive",args);
     }
     
+    @Override
+    @Transactional(readOnly=true)
     public ExecutivePercentage getExecutivePercentage(Executive ex,
             ObservingSeason os) {
         Object[] args= new Object[2];
@@ -65,7 +71,7 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
         objs.addAll(exec);
         objs.addAll(os);
         objs.addAll(pi);
-        getHibernateTemplate().saveOrUpdateAll(objs);
+        this.saveOrUpdate(objs);
     }
     
 

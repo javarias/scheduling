@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
@@ -44,6 +46,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
      * @see alma.scheduling.algorithm.sbselection.SchedBlockSelector#select()
      */
     @Override
+    @Transactional(readOnly=true)
     public Collection<SchedBlock> select() throws NoSbSelectedException{
         calculateRemainingTime();
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();

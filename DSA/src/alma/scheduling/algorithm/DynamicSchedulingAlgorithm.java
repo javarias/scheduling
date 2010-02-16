@@ -10,6 +10,7 @@ public interface DynamicSchedulingAlgorithm {
 
     /**
      * Clean the current candidate SBs and run again the selectors
+     * 
      * @throws NoSbSelectedException if a selector cannot get SBs or if this method
      * cannot intersect a common group between al SBs returned by the selectors used
      */
