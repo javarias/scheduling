@@ -4,25 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import alma.scheduling.dataload.WeatherDataReader.WeatherData;
-import alma.scheduling.datamodel.weather.TemperatureHistRecord;
+import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 
-public class TemperatureDataLoader extends WeatherParameterDataLoader {
+public class WindSpeedDataLoader extends WeatherParameterDataLoader {
 
-    public TemperatureDataLoader() {
+    public WindSpeedDataLoader() {
         super();
     }
 
     @Override
     public void load() {
         try {
-            List<TemperatureHistRecord> records = new ArrayList<TemperatureHistRecord>();
+            List<WindSpeedHistRecord> records = new ArrayList<WindSpeedHistRecord>();
             WeatherData wd;
             while ((wd = getNextWeatherDatum()) != null) {
-                TemperatureHistRecord record = new TemperatureHistRecord(wd.getTime(),
+                WindSpeedHistRecord record = new WindSpeedHistRecord(wd.getTime(),
                         wd.getValue(), wd.getRms(), wd.getSlope());
                 records.add(record);
             }
-            dao.loadTemperatureHistory(records);
+            dao.loadWindSpeedHistory(records);
         } catch(Exception ex) {
             ex.printStackTrace();
         }

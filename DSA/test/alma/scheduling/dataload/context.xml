@@ -30,7 +30,8 @@
         		<value>alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml</value>  
         		<value>alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml</value>
         		<value>alma/scheduling/datamodel/obsproject/Target.hbm.xml</value>
-                <value>alma/scheduling/datamodel/weather/TemperatureHistRecord.hbm.xml</value>
+                <value>alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml</value>
+                <value>alma/scheduling/datamodel/weather/AtmParameters.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -60,6 +61,9 @@
     <bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.WeatherHistoryDAOImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+    <bean id="atmDao" class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
     
     <!-- The transaction manager -->
     <bean id="transactionManager" 
@@ -67,7 +71,7 @@
     	<property name="sessionFactory" ref="sessionFactory"/>
     </bean>
     
-    <!-- My Test Algorithm Beans -->
+    <!-- Weather Algorithm Beans -->
 	<bean id="weatherDataLoader" class="alma.scheduling.dataload.WeatherDataLoader">
 	    <property name="loaders">
 	        <list>
@@ -76,8 +80,58 @@
 	                <property name="dao" ref="weatherDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	            </bean>
+	            <bean class="alma.scheduling.dataload.WindSpeedDataLoader">
+	                <property name="file" value="data/WindSpeed_average_15min_all.dat"/>
+	                <property name="dao" ref="weatherDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0001.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="0.4722"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0002.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="0.658"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0003.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="0.9134"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0004.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="1.262"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0005.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="1.796"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0006.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="2.748"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0007.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="5.186"/>
+	            </bean>
 	        </list>
 	    </property>
 	</bean>
 
+	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.WeatherUpdater">
+		<property name="dao" ref="atmDao"/>		
+	</bean>
 </beans>

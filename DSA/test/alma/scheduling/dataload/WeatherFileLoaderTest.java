@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFileLoaderTest.java,v 1.1 2010/02/09 00:50:04 rhiriart Exp $"
+ * "@(#) $Id: WeatherFileLoaderTest.java,v 1.2 2010/02/17 21:46:06 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -31,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import alma.scheduling.algorithm.weather.WeatherUpdater;
 
 public class WeatherFileLoaderTest extends TestCase {
 
@@ -52,5 +54,7 @@ public class WeatherFileLoaderTest extends TestCase {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("alma/scheduling/dataload/context.xml");
         DataLoader loader = (DataLoader) ctx.getBean("weatherDataLoader");
         loader.load();
+        WeatherUpdater updater = (WeatherUpdater) ctx.getBean("weatherUpdater");
+        updater.update();
     }
 }
