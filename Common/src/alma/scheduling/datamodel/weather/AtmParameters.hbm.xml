@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.weather">
+    
+    <class name="AtmParameters" table="ATM">
+        
+        <id name="id" column="ID">            
+            <generator class="native"/>
+        </id>
+        
+        <property name="PWV" column="PWV"/>
+        <property name="freq" column="FREQ"/>
+        <property name="opacity" column="OPACITY"/>
+        <property name="atmBrightnessTemp" column="T_EBB"/>
+        
+    </class>
+
+    <query name="AtmParameters.getPwvIntervalLowerBound">
+        <![CDATA[
+        select max(atm.PWV) from AtmParameters atm where atm.PWV <= ?
+        ]]>
+    </query>
+    
+    <query name="AtmParameters.getPwvIntervalUpperBound">
+        <![CDATA[
+        select min(atm.PWV) from AtmParameters atm where atm.PWV > ?
+        ]]>
+    </query>
+    
+    <query name="AtmParameters.getIntervalLowerBound">
+        <![CDATA[
+        from AtmParameters atm where atm.freq <= ? and atm.PWV = ? order by atm.freq desc
+        ]]>        
+    </query>
+    
+    <query name="AtmParameters.getIntervalUpperBound">
+        <![CDATA[
+        from AtmParameters atm where atm.freq > ? and atm.PWV = ? order by atm.freq asc
+        ]]>        
+    </query>
+    
+</hibernate-mapping>

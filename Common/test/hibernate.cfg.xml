@@ -38,6 +38,7 @@
         <mapping resource="alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml"/>
         <mapping resource="alma/scheduling/datamodel/obsproject/Target.hbm.xml"/>
         <mapping resource="alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml"/>
+        <mapping resource="alma/scheduling/datamodel/weather/AtmParameters.hbm.xml"/>
         
     </session-factory>
 </hibernate-configuration>

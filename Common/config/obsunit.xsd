@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="ObsProject">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="PrincipalInvestigator" type="xs:string"/>
+                <xs:element name="AssignedPriority" type="xs:int"/>
+                <xs:element name="ObsUnitSet" type="ObsUnitSetT"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:key name="FieldSourceId">
+            <xs:selector xpath="./ObsUnitSet/SchedBlock/FieldSource"/>
+            <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref refer="FieldSourceId" name="FieldSourceIdRef">
+            <xs:selector xpath="./ObsUnitSet/SchedBlock/Target"/>
+            <xs:field xpath="@sourceIdRef"/>
+        </xs:keyref>
+        <xs:key name="InstrumentSpecId">
+            <xs:selector xpath="./ObsUnitSet/SchedBlock/InstrumentSpec"/>
+            <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref refer="InstrumentSpecId" name="InstrumentSpecIdRef">
+            <xs:selector xpath="./ObsUnitSet/SchedBlock/Target"/>
+            <xs:field xpath="@instrumentSpecIdRef"/>
+        </xs:keyref>
+    </xs:element>
+    <xs:complexType name="ObsUnitT" abstract="true">
+    </xs:complexType>
+    <xs:complexType name="ObsUnitSetT">
+        <xs:complexContent>
+            <xs:extension base="ObsUnitT">
+                <xs:sequence>
+                    <xs:element name="SchedBlock" type="SchedBlockT" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="ObsUnitSet" type="ObsUnitSetT" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="SchedBlockT">
+        <xs:complexContent>
+            <xs:extension base="ObsUnitT">
+                <xs:sequence>
+                    <xs:element name="WeatherConstraints" type="WeatherConstraintsT"/>
+                    <xs:element name="SchedulingConstraints" type="SchedulingConstraintsT"/>
+                    <xs:element name="Preconditions" type="PreconditionsT"/>
+                    <xs:element name="InstrumentSpec" type="InstrumentSpecT" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="Target" type="TargetT" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="FieldSource" type="FieldSourceT" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="WeatherConstraintsT">
+        <xs:attribute name="maxWindVelocity" type="xs:double"/>
+        <xs:attribute name="maxOpacity" type="xs:double"/>
+        <xs:attribute name="minPhaseStability" type="xs:double"/>
+        <xs:attribute name="maxSeeing" type="xs:double"/>
+    </xs:complexType>
+    <xs:complexType name="SchedulingConstraintsT">
+        <xs:attribute name="maxAngularResolution" type="xs:double"/>
+        <xs:attribute name="representativeFrequency" type="xs:double"/>
+    </xs:complexType>
+    <xs:complexType name="PreconditionsT">
+        <xs:attribute name="maxAllowedHA" type="xs:double"/>
+        <xs:attribute name="minAllowedHA" type="xs:double"/>
+    </xs:complexType>
+    <xs:complexType name="TargetT">
+        <xs:attribute name="sourceIdRef" type="xs:NCName" use="required"/>
+        <xs:attribute name="instrumentSpecIdRef" type="xs:NCName" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="FieldSourceT">
+        <xs:attribute name="id" type="xs:NCName" use="required"/>
+        <xs:attribute name="name" type="xs:string"/>
+        <xs:attribute name="RA" type="xs:double"/>
+        <xs:attribute name="Dec" type="xs:double"/>
+        <xs:attribute name="ephemeris" type="xs:string"/>
+        <xs:attribute name="pmRA" type="xs:double"/>
+        <xs:attribute name="pmDec" type="xs:double"/>
+    </xs:complexType>
+    <xs:complexType name="InstrumentSpecT">
+        <xs:choice minOccurs="1" maxOccurs="1">
+            <xs:element name="SpectralSpec" type="SpectralSpecT"/>
+            <xs:element name="OpticalCameraSpec" type="OpticalCameraSpecT"/>
+        </xs:choice>
+        <xs:attribute name="id" type="xs:NCName" use="required"/>        
+    </xs:complexType>
+    <xs:complexType name="SpectralSpecT">
+    </xs:complexType>
+    <xs:complexType name="OpticalCameraSpecT">
+    </xs:complexType>
+</xs:schema>

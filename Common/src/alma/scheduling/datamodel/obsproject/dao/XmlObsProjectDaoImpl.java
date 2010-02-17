@@ -21,25 +21,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherHistoryDAO.java,v 1.2 2010/02/17 21:39:01 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.1 2010/02/17 21:39:01 rhiriart Exp $"
  */
-package alma.scheduling.datamodel.weather.dao;
+package alma.scheduling.datamodel.obsproject.dao;
 
+import java.io.File;
 import java.util.List;
 
-import alma.scheduling.datamodel.weather.HumidityHistRecord;
-import alma.scheduling.datamodel.weather.OpacityHistRecord;
-import alma.scheduling.datamodel.weather.TemperatureHistRecord;
-import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
+import alma.scheduling.datamodel.obsproject.ObsProject;
 
-public interface WeatherHistoryDAO {
+/**
+ * A DAO for ObsProject XML files.
+ *
+ */
+public class XmlObsProjectDaoImpl implements ObsProjectDao {
 
-    public void loadTemperatureHistory(List<TemperatureHistRecord> records);
+    /** Input file or directory */
+    private File input;
     
-    public void loadHumidityHistory(List<HumidityHistRecord> records);
+    public XmlObsProjectDaoImpl() { }
     
-    public void loadOpacityHistory(List<OpacityHistRecord> records);
-    
-    public void loadWindSpeedHistory(List<WindSpeedHistRecord> records);
-    
+    @Override
+    public List<ObsProject> getAllObsProjects() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

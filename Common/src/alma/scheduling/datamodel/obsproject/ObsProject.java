@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.1 2010/01/28 18:37:15 rhiriart Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.2 2010/02/17 21:39:01 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -34,6 +34,8 @@ public class ObsProject {
     private Integer assignedPriority;
     
     private String status;
+    
+    private ObsUnit obsUnit;
 
     public Long getId() {
         return Id;
@@ -65,5 +67,13 @@ public class ObsProject {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public ObsUnit getObsUnit() {
+        return obsUnit;
+    }
+
+    public void setObsUnit(ObsUnit obsUnit) {
+        this.obsUnit = obsUnit;
     }
 }

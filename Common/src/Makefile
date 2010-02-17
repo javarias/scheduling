@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.9 2010/02/09 21:50:57 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.10 2010/02/17 21:39:01 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -127,6 +127,7 @@ SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
                         alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml \
                         alma/scheduling/datamodel/obsproject/Target.hbm.xml \
                         alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml \
+                        alma/scheduling/datamodel/weather/AtmParameters.hbm.xml \
                         ../config/hibernate.cfg.xml
 #
 # java sources in Jarfile on/off
@@ -213,6 +214,7 @@ install : install_all
 gen:
 	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/executive.xsd -package alma.scheduling.input.executive.generated
 	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/output.xsd -package alma.scheduling.output.generated
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/obsunit.xsd -package alma.scheduling.input.obsproject.generated
 
 clean_gen:
 	@rm -rf alma/scheduling/input/executive/generated

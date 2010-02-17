@@ -29,7 +29,7 @@ public class ObsProjectTest extends TestCase {
         super.tearDown();
     }
  
-    public void testObsProject() throws Exception {
+    public void testSimpleObsProject() throws Exception {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
@@ -44,5 +44,25 @@ public class ObsProjectTest extends TestCase {
             throw ex;
         }
     }
-    
+
+    public void testObsProjectWithObsUnit() throws Exception {
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            ObsProject prj = new ObsProject();
+            prj.setAssignedPriority(1);
+            prj.setPrincipalInvestigator("me");
+            prj.setStatus("ready");
+            SchedBlock sb = new SchedBlock();
+            sb.setPiName("me");
+            sb.setWeatherConstraints(new WeatherConstraints(0.0, 0.0, 0.0, 0.0));
+            prj.setObsUnit(sb);
+            session.save(prj);
+            tx.commit();
+        } catch(Exception ex) {
+            tx.rollback();
+            throw ex;
+        }
+    }
+
 }

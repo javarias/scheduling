@@ -14,6 +14,8 @@
         <property name="assignedPriority" column="ASSIGNED_PRIORITY"/>
         <property name="status" column="STATUS"/>
         
+        <many-to-one name="obsUnit" class="ObsUnit" column="OBSUNITID"
+            cascade="save-update" unique="true" not-null="false"/>
     </class>
     
 </hibernate-mapping>

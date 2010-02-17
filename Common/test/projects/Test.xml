@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ObsProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../config/obsunit.xsd">
+    <PrincipalInvestigator>rhiriart</PrincipalInvestigator>
+    <AssignedPriority>1</AssignedPriority>
+    <ObsUnitSet>
+        <SchedBlock>
+            <WeatherConstraints maxWindVelocity="0.0" maxOpacity="0.0" minPhaseStability="0.0"
+                maxSeeing="0.0"/>
+            <SchedulingConstraints maxAngularResolution="0.0" representativeFrequency="0.0"/>
+            <Preconditions maxAllowedHA="0.0" minAllowedHA="0.0"/>
+            <InstrumentSpec id="SS1">
+                <SpectralSpec/>                
+            </InstrumentSpec>
+            <InstrumentSpec id="SS4">
+                <OpticalCameraSpec/>                
+            </InstrumentSpec>
+            <Target sourceIdRef="S1" instrumentSpecIdRef="SS1"/>
+            <Target sourceIdRef="S4" instrumentSpecIdRef="SS4"/>
+            <FieldSource id="S1" name="NGC1234" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
+            <FieldSource id="S2" name="NGC1235" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
+            <FieldSource id="S3" name="NGC1236" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
+            <FieldSource id="S4" name="NGC1237" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
+        </SchedBlock>
+        <SchedBlock>
+            <WeatherConstraints maxWindVelocity="0.0" maxOpacity="0.0" minPhaseStability="0.0"
+                maxSeeing="0.0"/>
+            <SchedulingConstraints maxAngularResolution="0.0" representativeFrequency="0.0"/>
+            <Preconditions maxAllowedHA="0.0" minAllowedHA="0.0"/>
+        </SchedBlock>
+        <ObsUnitSet>
+            <SchedBlock>
+                <WeatherConstraints maxWindVelocity="0.0" maxOpacity="0.0" minPhaseStability="0.0"
+                    maxSeeing="0.0"/>
+                <SchedulingConstraints maxAngularResolution="0.0" representativeFrequency="0.0"/>
+                <Preconditions maxAllowedHA="0.0" minAllowedHA="0.0"/>
+            </SchedBlock>
+        </ObsUnitSet>
+    </ObsUnitSet>
+</ObsProject>
