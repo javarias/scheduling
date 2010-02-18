@@ -19,8 +19,7 @@ SQLTOOL_RC_FILE=./config/sqltool.rc
 
 ### Test specific configurations ####
 
-# If 'true' then the TMCDBStandaloneComponent won't use an in-memory
-# database, but a disk based one, which can be accessed by script/sqltool.
-# TMCDB_STANDALONE_DEBUG=true
+APRC_WORK_PACKED_FILE=./config/APRC_WORK_DIR.tar.gz
+APRC_WORK_DIR=$ACS_TMP/APRC_WORK_DIR
 
 # unset DISPLAY

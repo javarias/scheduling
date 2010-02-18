@@ -21,14 +21,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.1 2010/02/17 21:39:01 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.2 2010/02/18 18:50:05 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
-import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.config.dao.ConfigurationDaoTest;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.WeatherConstraints;
 
 /**
  * A DAO for ObsProject XML files.
@@ -36,15 +49,77 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
  */
 public class XmlObsProjectDaoImpl implements ObsProjectDao {
 
-    /** Input file or directory */
-    private File input;
+    private static Logger logger = LoggerFactory.getLogger(ConfigurationDaoTest.class);
+    
+    private ConfigurationDao configurationDao;
     
     public XmlObsProjectDaoImpl() { }
     
+    public void setConfigurationDao(ConfigurationDao configurationDao) {
+        this.configurationDao = configurationDao;
+    }
+
+    /**
+     * Get all ObsProjects.
+     */
     @Override
     public List<ObsProject> getAllObsProjects() {
-        // TODO Auto-generated method stub
-        return null;
+        List<ObsProject> retVal = new ArrayList<ObsProject>();
+        List<String> prjFiles = configurationDao.getConfiguration().getProjectFiles();
+        for (Iterator<String> iter = prjFiles.iterator(); iter.hasNext();) {
+            String prjFile = iter.next();
+            try {
+                alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
+                    alma.scheduling.input.obsproject.generated.ObsProject.unmarshalObsProject(new FileReader(prjFile));
+                ObsProject prj = new ObsProject();
+                prj.setAssignedPriority(xmlPrj.getAssignedPriority());
+                prj.setPrincipalInvestigator(xmlPrj.getPrincipalInvestigator());
+                prj.setStatus("ready");
+                alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
+                    xmlPrj.getObsUnitSet();
+                ObsUnitSet obsUnitSet = createObsUnitSet(xmlObsUnitSet);
+                prj.setObsUnit(obsUnitSet);
+                retVal.add(prj);
+            } catch (MarshalException e) {
+                e.printStackTrace();
+            } catch (ValidationException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return retVal;
+    }
+
+    /**
+     * Transforms the XML Castor representation of the ObsUnitSet in the Hibernate
+     * POJO.
+     * This function is recursive.
+     * @param xmlObsUnitSet ObsUnitSet Castor generated class
+     * @return ObsUnitSet data model object
+     */
+    private ObsUnitSet createObsUnitSet(alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet) {
+        ObsUnitSet obsUnitSet = new ObsUnitSet();
+        alma.scheduling.input.obsproject.generated.SchedBlockT[] xmlSchedBlocks = 
+            xmlObsUnitSet.getSchedBlock();
+        for (alma.scheduling.input.obsproject.generated.SchedBlockT xmlSchedBlock : xmlSchedBlocks) {
+            SchedBlock schedBlock = new SchedBlock();
+            schedBlock.setPiName("");
+            WeatherConstraints wc = new WeatherConstraints(xmlSchedBlock.getWeatherConstraints().getMaxWindVelocity(),
+                    xmlSchedBlock.getWeatherConstraints().getMaxOpacity(),
+                    xmlSchedBlock.getWeatherConstraints().getMinPhaseStability(),
+                    xmlSchedBlock.getWeatherConstraints().getMaxSeeing());
+            schedBlock.setWeatherConstraints(wc);
+            // ... complete this ...
+            obsUnitSet.addObsUnit(schedBlock);
+        }
+        alma.scheduling.input.obsproject.generated.ObsUnitSetT[] xmlObsUnitSets =
+            xmlObsUnitSet.getObsUnitSet();
+        for (alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlOUS : xmlObsUnitSets) {
+            ObsUnitSet ous = createObsUnitSet(xmlOUS);
+            obsUnitSet.addObsUnit(ous);
+        }
+        return obsUnitSet;
     }
 
 }

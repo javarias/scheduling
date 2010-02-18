@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.10 2010/02/17 21:39:01 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.11 2010/02/18 18:50:05 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -215,6 +215,7 @@ gen:
 	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/executive.xsd -package alma.scheduling.input.executive.generated
 	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/output.xsd -package alma.scheduling.output.generated
 	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/obsunit.xsd -package alma.scheduling.input.obsproject.generated
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/config.xsd -package alma.scheduling.input.config.generated
 
 clean_gen:
 	@rm -rf alma/scheduling/input/executive/generated

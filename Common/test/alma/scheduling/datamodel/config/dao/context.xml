@@ -68,16 +68,7 @@
     </bean>
 
     <!-- DAO Beans -->
-    
     <bean id="configDao" class="alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl"/>    
-    
-    <bean id="obsUnitDao" class="alma.scheduling.datamodel.obsproject.dao.ObsUnitDaoImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDaoImpl">
-        <property name="configurationDao" ref="configDao"/>
-    </bean>
     
     <!-- My Beans -->
 
