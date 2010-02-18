@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.2 2010/02/18 18:50:05 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.3 2010/02/18 19:37:30 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -47,7 +47,7 @@ import alma.scheduling.datamodel.obsproject.WeatherConstraints;
  * A DAO for ObsProject XML files.
  *
  */
-public class XmlObsProjectDaoImpl implements ObsProjectDao {
+public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
 
     private static Logger logger = LoggerFactory.getLogger(ConfigurationDaoTest.class);
     

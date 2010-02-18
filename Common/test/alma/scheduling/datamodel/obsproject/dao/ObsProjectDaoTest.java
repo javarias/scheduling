@@ -35,8 +35,9 @@ public class ObsProjectDaoTest extends TestCase {
     public void testXmlObsProjectDao() throws Exception {
         ApplicationContext ctx =
             new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
+        XmlObsProjectDao xmlDao = (XmlObsProjectDao) ctx.getBean("xmlObsProjectDao");
         ObsProjectDao dao = (ObsProjectDao) ctx.getBean("obsProjectDao");
-        List<ObsProject> projects = dao.getAllObsProjects();
+        List<ObsProject> projects = xmlDao.getAllObsProjects();
         assertNotNull(projects);
         assertEquals(1, projects.size());
         ObsProject obsProject = projects.get(0);
@@ -51,6 +52,7 @@ public class ObsProjectDaoTest extends TestCase {
                 logger.info("ObsUnit is a ObsUnitSet");
             }
         }
+        dao.saveOrUpdate(obsProject);
     }
     
 }

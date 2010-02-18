@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.5.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
 	<classpathentry kind="output" path="bin"/>

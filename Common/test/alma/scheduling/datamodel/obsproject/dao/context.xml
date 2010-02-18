@@ -75,10 +75,15 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDaoImpl">
+    <bean id="xmlObsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDaoImpl">
         <property name="configurationDao" ref="configDao"/>
     </bean>
+
+    <bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
     
+
     <!-- My Beans -->
 
 </beans>
