@@ -5,6 +5,7 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
+import alma.Control.CorrelatorType;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.client.AdvancedComponentClient;
 import alma.acs.container.ContainerServices;
@@ -56,7 +57,10 @@ public class TestSimulatorQueueSB {
 		    String[] antenna = {"DV01","DA41"};
 		    String arrayName = "Control/Array001";
 		    String[] selectPhotonics = new String[0];
-		    ms.createArray(antenna,selectPhotonics,ArrayModeEnum.QUEUED);
+		    ms.createArray(antenna,
+		    		       selectPhotonics,
+		    		       CorrelatorType.BL,
+		    		       ArrayModeEnum.QUEUED);
 		    String schedulerName = ms.createQueuedSchedulingComponent(arrayName);
 		    qsComp = alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
 		    		m_containerservices.getComponent(schedulerName));

@@ -35,8 +35,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
+import alma.Control.CorrelatorType;
 import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingExceptions.NoSuchSBEx;
@@ -94,7 +96,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.125 2010/01/21 18:33:52 javarias Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.126 2010/02/19 23:25:07 rhiriart Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1066,15 +1068,41 @@ public class ALMAMasterScheduler extends MasterScheduler
         return schedInfo;
     }
 
+	private void logArray(Logger logger, String label, String[] choices) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(label);
+		sb.append(String.format("[%2d] = [", choices.length));
+		
+		String sep = "";
+		for (String choice : choices) {
+			sb.append(sep);
+			sb.append(choice);
+			sep = ", ";
+		}
+		sb.append("]");
+		
+		logger.fine(sb.toString());
+	}
+
     /**
       * @param short[]
       * @param String
       * @return String
       * @throws InvalidOperation
       */
-    public String createArray(String[] antennaIdList, String[] phothnicsChoice,ArrayModeEnum schedulingMode)
+    public String createArray(String[] antennaIdList,
+    		                  String[] photonicsChoice,
+    		                  CorrelatorType correlatorType,
+    		                  ArrayModeEnum  schedulingMode)
         throws InvalidOperationEx {
-            
+
+    	logger.fine("ALMAMasterScheduler.createArray(...)");
+        logArray(logger, "Antennas to create array with   ", antennaIdList);
+        logArray(logger, "Photonics to create array with  ", photonicsChoice);
+        logger.fine("Correlator to create array with = "+correlatorType);
+        logger.fine("Scheduling mode                 = "+schedulingMode.toString());
+
         Subarray a =null;
         String mode="n/a";
         String name="";
@@ -1086,7 +1114,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                     logMsg =logMsg + antennaIdList[i] +", ";
                 }
                 logMsg = logMsg + "]";
-                name = control.createManualArray(antennaIdList,phothnicsChoice);
+                name = control.createManualArray(antennaIdList,photonicsChoice, correlatorType);
                 logger.logToAudience(Level.INFO, "create manual array with name:"+name, OPERATOR.value);
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("manual");
@@ -1097,7 +1125,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
-                name = control.createArray(antennaIdList, phothnicsChoice,"dynamic");
+                name = control.createArray(antennaIdList, photonicsChoice, correlatorType, "dynamic");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("dynamic");
             } else if(schedulingMode == ArrayModeEnum.QUEUED){
@@ -1107,7 +1135,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
-                name = control.createArray(antennaIdList, phothnicsChoice,"queued");
+                name = control.createArray(antennaIdList, photonicsChoice, correlatorType,"queued");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("queued");
             } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
@@ -1117,7 +1145,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 }
                 logMsg = logMsg + "]";
                 logger.logToAudience(Level.INFO, logMsg, OPERATOR.value);
-                name = control.createArray(antennaIdList, phothnicsChoice,"interactive");
+                name = control.createArray(antennaIdList, photonicsChoice, correlatorType,"interactive");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("interactive");
             }

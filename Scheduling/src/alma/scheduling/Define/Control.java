@@ -26,12 +26,14 @@
  
 package alma.scheduling.Define;
 
+import alma.Control.CorrelatorType;
+
 /**
  * The Control interface specifies those methods needed by Scheduling
  * from the Control system.  The methods are implemented by the ALMAControl
  * and by the ControlSimulator. 
  * 
- * @version $Id: Control.java,v 1.13 2009/08/10 21:19:07 wlin Exp $
+ * @version $Id: Control.java,v 1.14 2010/02/19 23:25:07 rhiriart Exp $
  * @author Allen Farris
  */
 public interface Control {
@@ -87,7 +89,10 @@ public interface Control {
 	 * @param antenna The list of antennas that are to make up the sub-array.
 	 * @return The id of the newly created sub-array. 
 	 */
-	public String createArray(String[] antenna, String[] photonis,String mode)
+	public String createArray(String[]       antenna,
+			                  String[]       photonics,
+			                  CorrelatorType correlatorType,
+			                  String         mode)
 		throws SchedulingException;
 	
 	/**

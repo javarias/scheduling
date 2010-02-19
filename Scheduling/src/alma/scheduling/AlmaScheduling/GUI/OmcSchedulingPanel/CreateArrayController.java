@@ -25,10 +25,13 @@
  */
 package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
+import java.util.Formatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import alma.Control.ControlMaster;
+import alma.Control.CorrelatorType;
 import alma.Control.InaccessibleException;
 import alma.TMCDB.TMCDBComponent;
 import alma.TMCDB.TMCDBComponentHelper;
@@ -278,7 +281,10 @@ public class CreateArrayController extends SchedulingPanelController {
         return antennas;
     }
     
-    public String createArray(String arrayMode, ChessboardEntry[] cbEntries,String[] phothnicsChoice) 
+    public String createArray(ArrayModeEnum arrayMode,
+    						  ChessboardEntry[] cbEntries,
+    						  String[] photonicsChoice,
+    						  CorrelatorType correlator) 
         throws SchedulingException 
     {
         String[] antennas = new String[cbEntries.length];
@@ -321,24 +327,18 @@ public class CreateArrayController extends SchedulingPanelController {
         }
 
      
-        
-        logger.fine("Antennas to create array with = "+antennas.length);
+        logArray(logger, "Antennas to create array with   ", antennas);
+        logArray(logger, "Photonics to create array with  ", photonicsChoice);
+//        logger.fine("Antennas to create array with   = "+antennas.length);
+        logger.fine("Correlator to create array with = "+correlator);
         String arrayName = null;
         getMSRef();
         try {
-            if(arrayMode.toLowerCase().equals("dynamic")){
-                arrayName = masterScheduler.createArray(
-                        antennas,phothnicsChoice,ArrayModeEnum.DYNAMIC);
-            } else if(arrayMode.toLowerCase().equals("interactive")){
-                arrayName = masterScheduler.createArray(
-                        antennas,phothnicsChoice,ArrayModeEnum.INTERACTIVE);
-            } else if(arrayMode.toLowerCase().equals("queued")) {
-                arrayName = masterScheduler.createArray(
-                        antennas,phothnicsChoice,ArrayModeEnum.QUEUED);
-            } else if(arrayMode.toLowerCase().equals("manual")){
-                arrayName = masterScheduler.createArray(
-                        antennas,phothnicsChoice,ArrayModeEnum.MANUAL);
-            }
+            arrayName = masterScheduler.createArray(
+                        	antennas,
+                        	photonicsChoice,
+                        	correlator,
+                        	arrayMode);
         } catch(Exception e) {
             //releaseMSRef();
             e.printStackTrace();
@@ -348,5 +348,21 @@ public class CreateArrayController extends SchedulingPanelController {
         return arrayName;
 
     }
+	private void logArray(Logger logger, String label, String[] choices) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(label);
+		sb.append(String.format("[%2d] = [", choices.length));
+		
+		String sep = "";
+		for (String choice : choices) {
+			sb.append(sep);
+			sb.append(choice);
+			sep = ", ";
+		}
+		sb.append("]");
+		
+		logger.fine(sb.toString());
+	}
 
 }

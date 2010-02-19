@@ -27,11 +27,12 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -39,16 +40,20 @@ import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
+import alma.Control.CorrelatorType;
 import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.ChessboardPanel;
 import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ArrayModeEnum;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
@@ -57,7 +62,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private int columnIndex = 0;
     private JButton createArrayB;
     private JButton cancelB;
-    private String arrayMode;
+    private ArrayModeEnum arrayMode;
     private CreateArrayController controller;
     private JTabbedPane parent;
     private ChessboardPanel twelveMeterChessboard;
@@ -65,7 +70,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private ChessboardPanel tpChessboard;
     private JRadioButton[] availablePhotonics;
     private JPanel chessboardPanel;
-    private ButtonGroup group;
+    private ButtonGroup photonicsGroup;
+    private JComboBox correlatorType;
 
     public CreateArrayPanel() {
         super();
@@ -140,6 +146,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //all[2] is antennas for TP Chessboard
         cbPanel.add(createTPChessboard(all[2]));
         cbPanel.add(createCentralLOComponent());
+        cbPanel.add(createCorrelatorTypeComponent());
         chessboardPanel.add(cbPanel, BorderLayout.CENTER);
         chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
     }
@@ -174,7 +181,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         //String[] availablePhotonics = controller.getAvailableCLOPhotonics();
         gridBagConstraints.gridheight = 1;
         gridBagConstraints.weighty = 0.1;
-        cbPanel.add(createCentralLOComponent(),gridBagConstraints);
+        cbPanel.add(createCentralLOComponent(), gridBagConstraints);
+        cbPanel.add(createCorrelatorTypeComponent(), gridBagConstraints);
         
         chessboardPanel.add(cbPanel,BorderLayout.CENTER);
         chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
@@ -247,7 +255,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	JPanel p= new JPanel();
     	p.setBorder(new TitledBorder("Central Local Oscillator Photonics"));
     	p.setLayout(new GridLayout(4,2));
-    	group = new ButtonGroup();
+    	photonicsGroup = new ButtonGroup();
     	JButton resetButton = new JButton("Deselect");
     	
     	availablePhotonics = new JRadioButton[6];
@@ -258,18 +266,52 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		availablePhotonics[i].addActionListener(radioButtonEvent);
     		availablePhotonics[i].setEnabled(false);
     		p.add(availablePhotonics[i]);
-        	group.add(availablePhotonics[i]);
+        	photonicsGroup.add(availablePhotonics[i]);
     	}
     	
     	resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-            		group.clearSelection();
+            		photonicsGroup.clearSelection();
             }
         });
     	
     	p.add(resetButton);
     	
     	return p;
+    }
+    
+    private JPanel createCorrelatorTypeComponent() {
+//    	final ArrayList<String> labels = new ArrayList<String>();
+    	final ArrayList<CorrelatorType> correlatorTypes = new ArrayList<CorrelatorType>();
+    	
+    	// Start by getting all the correlator types. Do this by first
+    	// getting the one with index 0, then the one with index 1 and
+    	// so on until we run out of them (at which point from_int()
+    	// will throw an exception.
+    	int index = 0;
+    	boolean finished = false;
+    	while (!finished) {
+    		try {
+    			final CorrelatorType c = CorrelatorType.from_int(index);
+    			correlatorTypes.add(c);
+//    			labels.add(c.toString());
+    			index ++;
+    		} catch (org.omg.CORBA.BAD_PARAM e) {
+    			finished = true;
+    		}
+    	}
+
+    	final CorrelatorType options[] = correlatorTypes.toArray(
+    			new CorrelatorType[correlatorTypes.size()]);
+    	
+    	correlatorType = new JComboBox(options);
+    	final JLabel    label = new JLabel("Correlator");
+    	
+    	JPanel result = new JPanel();
+    	result.add(label);
+    	result.add(correlatorType);
+    	
+    	return result;
     }
     
     
@@ -333,7 +375,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	for(int i=0;i<availablePhotonics.length;i++){
     		availablePhotonics[i].setEnabled(false);
     	}
-    	group.clearSelection();
+    	photonicsGroup.clearSelection();
     	
     	for (int i=0;i<Photonics.length;i++){
     		for(int j=0;j<availablePhotonics.length;j++){
@@ -368,7 +410,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
 
-    public void prepareCreateArray(String mode){
+    public void prepareCreateArray(ArrayModeEnum mode){
         arrayMode = mode;
         GetAntennaThread ant = new GetAntennaThread();
         if(controller == null){
@@ -448,17 +490,23 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	//}
     	//get select LO photonic
     	//String selectPhotonic= selectRadioButton.getText();
-    	String[] choice = getSelectedLOPhotonics();
-    	if(choice.length>0){
-    		logger.info("the selected photonics is:"+choice[0]);
+    	String[] photonicsChoice = getSelectedLOPhotonics();
+    	if(photonicsChoice.length>0){
+    		logger.info("the selected photonics is:"+photonicsChoice[0]);
     	}
     	else {
     		logger.info("None of the photonics is selected in CreateArray stage");
     	}
+    	CorrelatorType correlator = getCorrelatorType();
+    	logger.info("The selected correlator is:" + correlator);
+
     	String arrayName;
     	disableCreateArrayPanel();
     	try {
-    		arrayName = controller.createArray(arrayMode,selected,choice);
+    		arrayName = controller.createArray(arrayMode,
+    				selected,
+    				photonicsChoice,
+    				correlator);
     		allArrays.add(arrayName);
     	} catch(Exception e) {
     		e.printStackTrace();
@@ -476,7 +524,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	 
     	 String[] selectCentralLO = {""};
     	 
-    	 for (Enumeration<AbstractButton> selectedLO = group.getElements(); selectedLO.hasMoreElements();) {
+    	 for (Enumeration<AbstractButton> selectedLO = photonicsGroup.getElements(); selectedLO.hasMoreElements();) {
     		 JRadioButton radiobutton= (JRadioButton)selectedLO.nextElement();
     		 if(radiobutton.isSelected()){
     			 selectCentralLO[0] = radiobutton.getText();
@@ -487,6 +535,16 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		 selectCentralLO=new String[0];
     	 }
     	 return selectCentralLO;
+    }
+    
+    private CorrelatorType getCorrelatorType() {
+    	final CorrelatorType result =
+    		(CorrelatorType)correlatorType.getSelectedItem();
+    	logger.fine(String.format(
+    			"Correlator Type is %s (index = %d)",
+    			result, result.value()
+    	));
+    	return result;
     }
 
     class UpdateCB implements Runnable {
@@ -539,8 +597,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     
     class LOActionListener implements ActionListener {
         public void actionPerformed(ActionEvent ev) {
-          String choice = group.getSelection().getActionCommand();
-          group.getSelection().setSelected(false);
+          String choice = photonicsGroup.getSelection().getActionCommand();
+          photonicsGroup.getSelection().setSelected(false);
           //System.out.println("ACTION Choice Selected: " + choice);
         }
       }

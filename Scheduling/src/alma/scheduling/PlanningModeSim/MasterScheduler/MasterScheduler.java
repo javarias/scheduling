@@ -27,6 +27,7 @@ package alma.scheduling.PlanningModeSim.MasterScheduler;
 
 import java.util.logging.Level;
 
+import alma.Control.CorrelatorType;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.NothingCanBeScheduled;
 import alma.scheduling.Define.Policy;
@@ -132,7 +133,7 @@ public class MasterScheduler extends BasicComponent {
 			// Create an array.
 			String[] ant = control.getIdleAntennas();
 			String[] photonics = control.getAvailablePhotonicReferences();
-			String arrayName = control.createArray(ant, photonics,"dynamic");
+			String arrayName = control.createArray(ant, photonics, CorrelatorType.BL, "dynamic");
 			
 			// Create a scheduler configuration.
 			SBQueue queue = new SBQueue ();

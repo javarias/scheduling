@@ -5,6 +5,7 @@ package alma.scheduling.test;
 
 import java.util.logging.Logger;
 
+import alma.Control.CorrelatorType;
 import alma.acs.component.client.AdvancedComponentClient;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.ClientLogManager;
@@ -70,7 +71,10 @@ public class TestSimulatorInteractiveSB {
 		    String[] array01 = {"DV01"};
 		    String[] array02 = {"DA41"};
 		    String[] selectPhotonics = new String[0];
-		    ms.createArray(antenna,selectPhotonics,ArrayModeEnum.INTERACTIVE);
+		    ms.createArray(antenna,
+		    		       selectPhotonics,
+		    		       CorrelatorType.BL,
+		    		       ArrayModeEnum.INTERACTIVE);
 		    //ms.createArray(array02,ArrayModeEnum.INTERACTIVE);
 		    String schedulername = ms.startInteractiveScheduling1("Control/Array001");
 		    //String schedulername1 = ms.startInteractiveScheduling1("Control/Array002");

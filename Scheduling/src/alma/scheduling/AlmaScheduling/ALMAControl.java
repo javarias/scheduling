@@ -29,12 +29,14 @@ import java.sql.Timestamp;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import alma.Control.AntennaMode;
+import alma.Control.ArrayIdentifier;
 import alma.Control.ArrayMonitor;
 import alma.Control.AutomaticArray;
 import alma.Control.ControlMaster;
-import alma.Control.ArrayIdentifier;
+import alma.Control.CorrelatorType;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
 import alma.Control.ManualArrayCommand;
@@ -46,7 +48,7 @@ import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
-import alma.alarmsystem.source.ACSFaultState; 
+import alma.alarmsystem.source.ACSFaultState;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.log_audience.OPERATOR;
 import alma.scheduling.ArrayInfo;
@@ -59,7 +61,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.96 2009/11/14 00:35:43 rhiriart Exp $
+ * @version $Id: ALMAControl.java,v 1.97 2010/02/19 23:25:07 rhiriart Exp $
  */
 public class ALMAControl implements Control {
     
@@ -326,6 +328,23 @@ public class ALMAControl implements Control {
     }
     
 
+	private void logArray(Logger logger, String label, String[] choices) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(label);
+		sb.append(String.format("[%2d] = [", choices.length));
+		
+		String sep = "";
+		for (String choice : choices) {
+			sb.append(sep);
+			sb.append(choice);
+			sep = ", ";
+		}
+		sb.append("]");
+		
+		logger.fine(sb.toString());
+	}
+
     /**
      * Tells the control system to create a subarray with the given antennas.
      * @param antenna an array of the antennas which will make up the subarray
@@ -333,12 +352,22 @@ public class ALMAControl implements Control {
      * @throws SchedulingException If antenna is null or contains nothing an 
      *                             exception is thrown.
      */
-    public String createArray(String[] antenna, String[] phothnicsChoice,String mode)
+    public String createArray(String[]       antenna,
+    		                  String[]       photonicsChoice,
+    		                  CorrelatorType correlatorType,
+    		                  String         mode)
         throws SchedulingException {
-    	checkControlIsOperational();
+
+    	logger.fine("ALMAControl.createArray(...)");
+        logArray(logger, "Antennas to create array with   ", antenna);
+        logArray(logger, "Photonics to create array with  ", photonicsChoice);
+        logger.fine("Correlator to create array with = "+correlatorType);
+        logger.fine("Scheduling mode                 = "+mode);
+
+        checkControlIsOperational();
         if(antenna == null || antenna.length == 0) {
             throw new SchedulingException
-                ("SCHEDULING: Cannot create an array with out any antennas!");
+                ("SCHEDULING: Cannot create an array without any antennas!");
         }
         try {
             if(control_system == null) {
@@ -360,8 +389,10 @@ public class ALMAControl implements Control {
             ArrayIdentifier arrayComb= null;
             try {
 
-                String[] photonicResourceNameSeq = phothnicsChoice;
-                arrayComb = control_system.createAutomaticArray(antenna,photonicResourceNameSeq);
+                String[] photonicResourceNameSeq = photonicsChoice;
+                arrayComb = control_system.createAutomaticArray(antenna,
+                		                                        photonicResourceNameSeq,
+                		                                        correlatorType);
                 
             }catch(Exception e) {
                 e.printStackTrace();
@@ -398,7 +429,10 @@ public class ALMAControl implements Control {
         }
     }
 
-    public String createManualArray(String[] antenna,String[] phothnicsChoice) throws SchedulingException {
+    public String createManualArray(String[]       antenna,
+    		                        String[]       photonicsChoice,
+    		                        CorrelatorType correlatorType)
+    	throws SchedulingException {
         checkControlIsOperational();
         if(antenna == null || antenna.length==0){
             throw new SchedulingException
@@ -422,13 +456,13 @@ public class ALMAControl implements Control {
             // second string is arrayCompomentName
             ArrayIdentifier arrayComb= null;
 
-            String[] photonicResourceNameSeq = phothnicsChoice;
+            String[] photonicResourceNameSeq = photonicsChoice;
             
             if( photonicResourceNameSeq.length >0 ) {
                 logger.info("the selected photonics is:"+photonicResourceNameSeq[0]);
                 }
 
-            arrayComb = control_system.createManualArray(antenna,photonicResourceNameSeq);
+            arrayComb = control_system.createManualArray(antenna,photonicResourceNameSeq, correlatorType);
             manualArrays.add(arrayComb.arrayComponentName);
             logger.fine("SCHEDULING: Array "+arrayComb.arrayComponentName+" created with "+antenna.length+" antennas.");
             return arrayComb.arrayName;

@@ -47,6 +47,7 @@ import alma.Control.DestroyedAutomaticArrayEvent;
 import alma.Control.DestroyedManualArrayEvent;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ArrayModeEnum;
 
 
 public class MainSchedTabPane extends JTabbedPane {
@@ -237,7 +238,7 @@ public class MainSchedTabPane extends JTabbedPane {
         interactiveB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
-        middlePanel.prepareCreateArray("interactive");
+        middlePanel.prepareCreateArray(ArrayModeEnum.INTERACTIVE);
     }
 
     private void doQueuedButton() {
@@ -247,7 +248,7 @@ public class MainSchedTabPane extends JTabbedPane {
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
        // middlePanel.setArrayMode("queued");
-        middlePanel.prepareCreateArray("queued");
+        middlePanel.prepareCreateArray(ArrayModeEnum.QUEUED);
         //createArray with mode 'queued'
     }
 
@@ -260,7 +261,7 @@ public class MainSchedTabPane extends JTabbedPane {
         dynamicB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
-        middlePanel.prepareCreateArray("dynamic");
+        middlePanel.prepareCreateArray(ArrayModeEnum.DYNAMIC);
         //createArray with mode 'dynamic'
     
     }
@@ -271,7 +272,7 @@ public class MainSchedTabPane extends JTabbedPane {
         manualB.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
-        middlePanel.prepareCreateArray("manual");
+        middlePanel.prepareCreateArray(ArrayModeEnum.MANUAL);
     }
 
     public void resetMainViewButtons(){

@@ -26,6 +26,7 @@
  
 package alma.scheduling.test;
 
+import alma.Control.CorrelatorType;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.scheduling.AlmaScheduling.ALMAControl;
 
@@ -50,7 +51,10 @@ public class TestALMAControl extends ComponentClientTestCase {
         control = new ALMAControl(getContainerServices(),null);
         String[] antennas = {"1","2","3","4","5","6","7"};
 	String[] selectPhotonics = new String[0];
-        String subarray = control.createArray(antennas,selectPhotonics,"Dynamic");
+        String subarray = control.createArray(antennas,
+        								      selectPhotonics,
+        								      CorrelatorType.BL,
+        								      "Dynamic");
         assertNotNull(subarray);
     }
 

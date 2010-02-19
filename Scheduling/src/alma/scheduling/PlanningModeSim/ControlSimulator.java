@@ -28,6 +28,7 @@ package alma.scheduling.PlanningModeSim;
 
 import java.util.logging.Level;
 
+import alma.Control.CorrelatorType;
 import alma.scheduling.Define.Antenna;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Control;
@@ -122,7 +123,11 @@ public class ControlSimulator extends BasicComponent implements Control {
 		return null;
 	}
 
-	public String createArray(String[] antenna, String[] photonics,String mode) throws SchedulingException {
+	public String createArray(String[]       antenna,
+			                  String[]       photonics,
+			                  CorrelatorType correlatorType,
+			                  String         mode)
+		throws SchedulingException {
 		Antenna x = null;
 		for (int i = 0; i < antenna.length; ++i) {
 			x = getAntenna(antenna[i]);
