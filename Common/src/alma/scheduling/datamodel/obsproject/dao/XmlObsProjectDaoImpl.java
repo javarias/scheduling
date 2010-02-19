@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.4 2010/02/18 19:55:55 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.5 2010/02/19 00:23:53 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -37,10 +37,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.ScienceParameters;
+import alma.scheduling.datamodel.obsproject.SkyCoordinates;
+import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.WeatherConstraints;
+import alma.scheduling.input.obsproject.generated.FieldSourceT;
+import alma.scheduling.input.obsproject.generated.ObsUnitSetT;
+import alma.scheduling.input.obsproject.generated.SchedBlockT;
+import alma.scheduling.input.obsproject.generated.TargetT;
 
 /**
  * A DAO for ObsProject XML files.
@@ -101,24 +109,67 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         ObsUnitSet obsUnitSet = new ObsUnitSet();
         alma.scheduling.input.obsproject.generated.SchedBlockT[] xmlSchedBlocks = 
             xmlObsUnitSet.getSchedBlock();
-        for (alma.scheduling.input.obsproject.generated.SchedBlockT xmlSchedBlock : xmlSchedBlocks) {
+        for (SchedBlockT xmlSchedBlock : xmlSchedBlocks) {
             SchedBlock schedBlock = new SchedBlock();
             schedBlock.setPiName("");
-            WeatherConstraints wc = new WeatherConstraints(xmlSchedBlock.getWeatherConstraints().getMaxWindVelocity(),
+            WeatherConstraints wc = new WeatherConstraints(
+                    xmlSchedBlock.getWeatherConstraints().getMaxWindVelocity(),
                     xmlSchedBlock.getWeatherConstraints().getMaxOpacity(),
                     xmlSchedBlock.getWeatherConstraints().getMinPhaseStability(),
                     xmlSchedBlock.getWeatherConstraints().getMaxSeeing());
             schedBlock.setWeatherConstraints(wc);
-            // ... complete this ...
+            Target[] targets = extractTargets(xmlSchedBlock);
+            for (Target t : targets) {
+                schedBlock.addTarget(t);
+            }
             obsUnitSet.addObsUnit(schedBlock);
         }
-        alma.scheduling.input.obsproject.generated.ObsUnitSetT[] xmlObsUnitSets =
-            xmlObsUnitSet.getObsUnitSet();
-        for (alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlOUS : xmlObsUnitSets) {
+        ObsUnitSetT[] xmlObsUnitSets = xmlObsUnitSet.getObsUnitSet();
+        for (ObsUnitSetT xmlOUS : xmlObsUnitSets) {
             ObsUnitSet ous = createObsUnitSet(xmlOUS);
             obsUnitSet.addObsUnit(ous);
         }
         return obsUnitSet;
     }
 
+    /**
+     * Extracts Targets from the XML SchedBlock.
+     * @param xmlSchedBlock SchedBlock XML Castor object
+     * @return Targets
+     */
+    private Target[] extractTargets(SchedBlockT xmlSchedBlock) {
+        Target[] retVal = new Target[xmlSchedBlock.getTargetCount()];
+        TargetT[] xmlTargets = xmlSchedBlock.getTarget();
+        int i = 0;
+        for (TargetT xmlt : xmlTargets) {
+            Target target = new Target();
+            // ... TODO ...
+            ScienceParameters params = new ScienceParameters();
+            target.setObservingParameters(params);
+            target.setSource(extractFieldSource(xmlt.getSourceIdRef(), xmlSchedBlock));
+            retVal[i++] = target;
+        }
+        return retVal;
+    }
+    
+    /**
+     * Extracts a FieldSource from the XML SchedBlock, referenced by the
+     * source Id.
+     * @param sourceIdRef Source Id, from the XML document
+     * @param xmlSchedBlock SchedBlock XML Castor object
+     * @return The referenced FieldSource
+     */
+    private FieldSource extractFieldSource(String sourceIdRef, SchedBlockT xmlSchedBlock) {
+        FieldSourceT[] xmlFieldSources = xmlSchedBlock.getFieldSource();
+        for (FieldSourceT xmlfs : xmlFieldSources) {
+            if (xmlfs.getId().equals(sourceIdRef)) {
+                FieldSource fs = new FieldSource(xmlfs.getName(),
+                        new SkyCoordinates(xmlfs.getRA(), xmlfs.getDec()),
+                        xmlfs.getPmRA(), xmlfs.getPmDec());
+                return fs;
+            }
+        }
+        // ... TODO throw an exception instead ...
+        return null;
+    }    
 }
