@@ -21,14 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherDataLoader.java,v 1.1 2010/02/09 00:50:04 rhiriart Exp $"
+ * "@(#) $Id: CompositeDataLoader.java,v 1.1 2010/02/19 00:21:52 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class WeatherDataLoader implements DataLoader {
+public class CompositeDataLoader implements DataLoader {
 
     private List<DataLoader> loaders;
         
