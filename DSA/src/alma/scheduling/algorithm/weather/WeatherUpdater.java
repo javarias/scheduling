@@ -1,13 +1,23 @@
 package alma.scheduling.algorithm.weather;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.datamodel.obsproject.FieldSource;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.Target;
+import alma.scheduling.datamodel.obsproject.WeatherDependentVariables;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.weather.AtmParameters;
+import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
+import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 
 public class WeatherUpdater implements ModelUpdater {
 
@@ -19,8 +29,20 @@ public class WeatherUpdater implements ModelUpdater {
         
     AtmParametersDao dao;
 
+    SchedBlockDao schedBlockDao;
+    
+    WeatherHistoryDAO weatherDao;
+    
     public void setDao(AtmParametersDao dao) {
         this.dao = dao;
+    }
+    
+    public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
+        this.schedBlockDao = schedBlockDao;
+    }
+    
+    public void setWeatherDao(WeatherHistoryDAO weatherDao) {
+        this.weatherDao = weatherDao;
     }
     
     @Override
@@ -30,13 +52,27 @@ public class WeatherUpdater implements ModelUpdater {
 
     @Override
     public void update() {
-        logger.debug("updating...");
-        double decl = 45.0; // degrees
+        logger.trace("entering");
+        
         double latitude = -23.0 + 1.0 / 60.0 + 22.42 / 3600.0;
-        double frequency = 21.533; // GHz
         double pwv = 1.5; // mm
-        double tsys = getTsys(decl, latitude, frequency, pwv);
-        logger.debug("tsys: " + tsys);
+
+        TemperatureHistRecord tr = weatherDao.getTemperatureForTime(new Date());
+        logger.info("temperature record: time = " + tr.getTime() + "; value = " + tr.getValue());
+        
+        List<SchedBlock> sbs = schedBlockDao.findAll();
+        for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
+            SchedBlock sb = iter.next();
+            double frequency = sb.getSchedulingConstraints().getRepresentativeFrequency(); // GHz
+            Target target = sb.getSchedulingConstraints().getRepresentativeTarget();
+            FieldSource src = target.getSource();
+            double decl = src.getCoordinates().getDec(); // degrees
+            double tsys = getTsys(decl, latitude, frequency, pwv);
+            WeatherDependentVariables vars = new WeatherDependentVariables();
+            vars.setTsys(tsys);
+            sb.setWeatherDependentVariables(vars);
+            schedBlockDao.saveOrUpdate(sb);            
+        }        
     }
 
     protected double[] interpolateOpacityAndTemperature(double pwv, double freq) {
@@ -91,7 +127,7 @@ public class WeatherUpdater implements ModelUpdater {
         double sinLat = Math.sin(latitudeRad);
         double cosDec = Math.cos(decRad);
         double cosLat = Math.cos(latitudeRad);
-        double sinAltitude = sinDec * sinLat + cosDec * cosLat; 
+        double sinAltitude = sinDec * sinLat + cosDec * cosLat; // missing cosH?
         
         double Airmass = 1.0 / sinAltitude;
 
