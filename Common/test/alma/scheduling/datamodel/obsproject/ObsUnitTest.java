@@ -97,7 +97,7 @@ public class ObsUnitTest extends TestCase {
             tx = session.beginTransaction();
             SchedBlock sb = new SchedBlock();
             sb.setPiName("me");
-            SchedulingConstraints constraints = new SchedulingConstraints(0.0, 0.0);
+            SchedulingConstraints constraints = new SchedulingConstraints(0.0, 0.0, null);
             sb.setSchedulingConstraints(constraints);
             session.save(sb);
             tx.commit();

@@ -52,4 +52,22 @@
         
     </class>
 
+    <query name="TemperatureHistRecord.getMaxTime">
+        <![CDATA[
+        select max(temp.time) from TemperatureHistRecord temp
+        ]]>
+    </query>
+    
+    <query name="TemperatureHistRecord.getIntervalLowerBound">
+        <![CDATA[
+        from TemperatureHistRecord temp where temp.time <= ? order by temp.time desc
+        ]]>        
+    </query>
+    
+    <query name="TemperatureHistRecord.getIntervalUpperBound">
+        <![CDATA[
+        from TemperatureHistRecord temp where temp.time > ? order by temp.time asc
+        ]]>        
+    </query>
+
 </hibernate-mapping>

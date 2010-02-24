@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedulingConstraints.java,v 1.1 2010/01/29 21:50:49 rhiriart Exp $"
+ * "@(#) $Id: SchedulingConstraints.java,v 1.2 2010/02/24 20:55:09 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -32,13 +32,17 @@ public class SchedulingConstraints {
     
     /** Representative frequency (GHz) */
     private Double representativeFrequency;
+    
+    private Target representativeTarget;
 
     public SchedulingConstraints() { }
     
     public SchedulingConstraints(Double maxAngularResolution,
-            Double representativeFrequency) {
+            Double representativeFrequency,
+            Target representativeTarget) {
         this.maxAngularResolution = maxAngularResolution;
         this.representativeFrequency = representativeFrequency;
+        this.representativeTarget = representativeTarget;
     }
 
     public Double getMaxAngularResolution() {
@@ -55,6 +59,14 @@ public class SchedulingConstraints {
 
     public void setRepresentativeFrequency(Double representativeFrequency) {
         this.representativeFrequency = representativeFrequency;
+    }
+
+    public Target getRepresentativeTarget() {
+        return representativeTarget;
+    }
+
+    public void setRepresentativeTarget(Target representativeTarget) {
+        this.representativeTarget = representativeTarget;
     }
     
 }

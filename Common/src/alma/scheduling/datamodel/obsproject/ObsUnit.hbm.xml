@@ -27,6 +27,14 @@
             <component name="schedulingConstraints" class="SchedulingConstraints">
                 <property name="maxAngularResolution" type="double" column="MAX_ANG_RESOLUTION"/>
                 <property name="representativeFrequency" type="double" column="REPR_FREQ"/>
+                <many-to-one name="representativeTarget" class="Target" column="REPR_TARGET"/>
+            </component>
+            <component name="weatherDependentVariables" class="WeatherDependentVariables">
+                <property name="lastUpdate" type="date" column="WEATHER_VARS_LAST_UPDATE"/>
+                <property name="validUntil" type="date" column="WEATHER_VARS_VALID_UNTIL"/>
+                <property name="tsys" type="double" column="WEATHER_VARS_TSYS"/>
+                <property name="projectedTsys" type="double" column="WEATHER_VARS_PROJ_TSYS"/>
+                <property name="projectionTimeIncr" type="double" column="WEATHER_VARS_PROJ_DELTA_T"/>
             </component>
             <set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
                 <key column="SCHEDBLOCKID"/>

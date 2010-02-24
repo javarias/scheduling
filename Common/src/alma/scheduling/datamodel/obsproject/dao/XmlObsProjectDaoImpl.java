@@ -21,15 +21,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.5 2010/02/19 00:23:53 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.6 2010/02/24 20:55:09 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -41,6 +44,7 @@ import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -118,10 +122,16 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSchedBlock.getWeatherConstraints().getMinPhaseStability(),
                     xmlSchedBlock.getWeatherConstraints().getMaxSeeing());
             schedBlock.setWeatherConstraints(wc);
-            Target[] targets = extractTargets(xmlSchedBlock);
-            for (Target t : targets) {
+            Map<String, Target> targets = extractTargets(xmlSchedBlock);
+            for (Iterator<String> iter = targets.keySet().iterator(); iter.hasNext();) {
+                Target t = targets.get(iter.next());
                 schedBlock.addTarget(t);
             }
+            SchedulingConstraints sc = new SchedulingConstraints(
+                    xmlSchedBlock.getSchedulingConstraints().getMaxAngularResolution(),
+                    xmlSchedBlock.getSchedulingConstraints().getRepresentativeFrequency(),
+                    targets.get(xmlSchedBlock.getSchedulingConstraints().getRepresentativeTargetIdRef()));
+            schedBlock.setSchedulingConstraints(sc);
             obsUnitSet.addObsUnit(schedBlock);
         }
         ObsUnitSetT[] xmlObsUnitSets = xmlObsUnitSet.getObsUnitSet();
@@ -137,8 +147,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
      * @param xmlSchedBlock SchedBlock XML Castor object
      * @return Targets
      */
-    private Target[] extractTargets(SchedBlockT xmlSchedBlock) {
-        Target[] retVal = new Target[xmlSchedBlock.getTargetCount()];
+    private Map<String, Target> extractTargets(SchedBlockT xmlSchedBlock) {
+        Map<String, Target> retVal = new HashMap<String, Target>();
         TargetT[] xmlTargets = xmlSchedBlock.getTarget();
         int i = 0;
         for (TargetT xmlt : xmlTargets) {
@@ -147,7 +157,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             ScienceParameters params = new ScienceParameters();
             target.setObservingParameters(params);
             target.setSource(extractFieldSource(xmlt.getSourceIdRef(), xmlSchedBlock));
-            retVal[i++] = target;
+            retVal.put(xmlt.getId(), target);
         }
         return retVal;
     }

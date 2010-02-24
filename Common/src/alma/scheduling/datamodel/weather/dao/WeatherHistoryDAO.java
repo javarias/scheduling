@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherHistoryDAO.java,v 1.2 2010/02/17 21:39:01 rhiriart Exp $"
+ * "@(#) $Id: WeatherHistoryDAO.java,v 1.3 2010/02/24 20:55:09 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
@@ -42,4 +43,7 @@ public interface WeatherHistoryDAO {
     
     public void loadWindSpeedHistory(List<WindSpeedHistRecord> records);
     
+    public HumidityHistRecord getHumidityForTime(Date ut);
+    
+    public TemperatureHistRecord getTemperatureForTime(Date ut);
 }

@@ -21,12 +21,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TemperatureHistRecord.java,v 1.2 2010/02/09 21:50:56 rhiriart Exp $"
+ * "@(#) $Id: TemperatureHistRecord.java,v 1.3 2010/02/24 20:55:09 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.weather;
 
 public class TemperatureHistRecord extends WeatherHistRecord {
 
+    public TemperatureHistRecord() {
+        super();
+    }
+    
     public TemperatureHistRecord(Double time, Double value, Double rms,
             Double slope) {
         super(time, value, rms, slope);

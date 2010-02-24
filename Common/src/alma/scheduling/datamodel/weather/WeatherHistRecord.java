@@ -14,6 +14,8 @@ public class WeatherHistRecord {
     /** Slope (degrees C / days) */
     protected Double slope;
 
+    public WeatherHistRecord() {}
+    
     public WeatherHistRecord(Double time, Double value, Double rms,
             Double slope) {
         this.time = time;

@@ -24,6 +24,14 @@
             <xs:selector xpath="./ObsUnitSet/SchedBlock/Target"/>
             <xs:field xpath="@instrumentSpecIdRef"/>
         </xs:keyref>
+        <xs:key name="TargetId">
+            <xs:selector xpath="./ObsUnitSet/SchedBlock/Target"/>
+            <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref refer="TargetId" name="TargetIdRef">
+            <xs:selector xpath="./ObsUnitSet/SchedBlock/SchedulingConstraints"/>
+            <xs:field xpath="@representativeTargetIdRef"/>
+        </xs:keyref>
     </xs:element>
     <xs:complexType name="ObsUnitT" abstract="true">
     </xs:complexType>
@@ -60,12 +68,14 @@
     <xs:complexType name="SchedulingConstraintsT">
         <xs:attribute name="maxAngularResolution" type="xs:double"/>
         <xs:attribute name="representativeFrequency" type="xs:double"/>
+        <xs:attribute name="representativeTargetIdRef" type="xs:NCName"/>
     </xs:complexType>
     <xs:complexType name="PreconditionsT">
         <xs:attribute name="maxAllowedHA" type="xs:double"/>
         <xs:attribute name="minAllowedHA" type="xs:double"/>
     </xs:complexType>
     <xs:complexType name="TargetT">
+        <xs:attribute name="id" type="xs:NCName" use="required"/>
         <xs:attribute name="sourceIdRef" type="xs:NCName" use="required"/>
         <xs:attribute name="instrumentSpecIdRef" type="xs:NCName" use="required"/>
     </xs:complexType>

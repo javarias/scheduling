@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.1 2010/01/29 21:50:49 rhiriart Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.2 2010/02/24 20:55:09 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -47,6 +47,9 @@ public class SchedBlock extends ObsUnit {
     
     /** The targets. Each one includes a FieldSource, the ObservingParameters and an InstrumentSpec. */
     private Set<Target> targets = new HashSet<Target>();
+    
+    /** Weather dependent variables, an Updateable. Needs to be updated for the current conditions. */
+    private WeatherDependentVariables weatherDependentVariables;
     
     /** Default constructor */
     public SchedBlock() { }
@@ -105,5 +108,14 @@ public class SchedBlock extends ObsUnit {
     
     public void addTarget(Target target) {
         this.targets.add(target);
+    }
+
+    public WeatherDependentVariables getWeatherDependentVariables() {
+        return weatherDependentVariables;
+    }
+
+    public void setWeatherDependentVariables(
+            WeatherDependentVariables weatherDependentVariables) {
+        this.weatherDependentVariables = weatherDependentVariables;
     }
 }
