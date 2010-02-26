@@ -54,19 +54,6 @@ public class Executive {
         executivePercentage = mExecutivePercentage;
     }
     
-    public static Executive copy(alma.scheduling.input.executive.generated.Executive in){
-        Executive exec = new Executive();
-        exec.setName(in.getName());
-        exec.setDefaultPercentage(in.getDefaultPercentage());
-        if(exec.getSchedBlockExecutivePercentage() == null){
-            exec.setSchedBlockExecutivePercentage(
-                    new HashSet<SchedBlockExecutivePercentage>());
-        }
-        if(exec.getExecutivePercentage() == null)
-            exec.setExecutivePercentage(new HashSet<ExecutivePercentage>());
-        return exec;
-    }
-    
     public void finalize() throws Throwable {
 
 	}

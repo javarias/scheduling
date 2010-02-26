@@ -1,7 +1,6 @@
 package alma.scheduling.datamodel.executive;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Set;
  * @version 1.0
  * @created 26-Jan-2010 9:26:43 AM
  */
-public class ObservingSeason {
+public class ObservingSeason implements Comparable<ObservingSeason>{
 
 	private Date endDate;
 	private String name;
@@ -52,18 +51,13 @@ public class ObservingSeason {
             Set<ExecutivePercentage> mExecutivePercentage) {
         executivePercentage = mExecutivePercentage;
     }
-
-    public static ObservingSeason copy(alma.scheduling.input.executive.generated.ObservingSeason in){
-        ObservingSeason os = new ObservingSeason();
-        os.setEndDate(in.getEndDate().toDate());
-        os.setName(in.getName());
-        os.setStartDate(in.getStartDate().toDate());
-        if (os.getExecutivePercentage() == null)
-            os.setExecutivePercentage(new HashSet<ExecutivePercentage>());
-        return os;
-    }
     
     public void finalize() throws Throwable {
 	}
+
+    @Override
+    public int compareTo(ObservingSeason o) {
+        return this.startDate.compareTo(o.startDate);
+    }
 
 }

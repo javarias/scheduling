@@ -34,21 +34,6 @@ public class PI {
         pIMembership = mPIMembership;
     }
 
-    public static PI copy(alma.scheduling.input.executive.generated.PI in, HashMap<String, Executive> execs){
-        PI pi = new PI();
-        pi.setName(in.getName());
-        if(pi.getPIMembership() == null)
-            pi.setPIMembership(new HashSet<PIMembership>());
-        for (int i = 0; i < in.getPIMembershipCount(); i++){
-            Executive e = execs.get(
-                    in.getPIMembership(i).getExecutiveRef().getNameRef());
-            PIMembership pim = PIMembership.copy(in.getPIMembership(i));
-            pim.setExecutive(e);
-            pi.getPIMembership().add(pim);
-        }
-        return pi;
-    }
-    
     public void finalize() throws Throwable {
 
 	}

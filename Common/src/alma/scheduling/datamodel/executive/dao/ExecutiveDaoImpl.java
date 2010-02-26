@@ -1,7 +1,5 @@
 package alma.scheduling.datamodel.executive.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -20,6 +18,17 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
     @Transactional(readOnly=true)
     public List<Executive> getAllExecutive() {
         return this.findAll(Executive.class);
+    }
+    
+    @Override
+    @Transactional(readOnly=true)
+    public List<ObservingSeason> getAllObservingSeason() {
+        return this.findAll(ObservingSeason.class);
+    }
+
+    @Override
+    public List<PI> getAllPi() {
+        return this.findAll(PI.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -62,17 +71,4 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
         return (ExecutivePercentage) this.executeNamedQuery(
                 "ExecutivePercentage.findBySeasonAndExecutive",args).get(0);
     }
-
-    @Transactional
-    @Override
-    public void PopulateDB(Collection<PI> pi, Collection<Executive> exec,
-            Collection<ObservingSeason> os) {
-        ArrayList<Object> objs = new ArrayList<Object>();
-        objs.addAll(exec);
-        objs.addAll(os);
-        objs.addAll(pi);
-        this.saveOrUpdate(objs);
-    }
-    
-
 }
