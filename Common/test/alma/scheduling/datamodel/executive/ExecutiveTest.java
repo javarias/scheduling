@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import alma.scheduling.datamodel.BeanFactory;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 import alma.scheduling.persistence.HibernateUtil;
 import alma.scheduling.persistence.XmlUtil;
@@ -65,7 +64,7 @@ public class ExecutiveTest extends TestCase {
         ArrayList<ExecutivePercentage> epOut =  new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
         
-        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
+       // BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         
         Transaction tx = null;
         try {
