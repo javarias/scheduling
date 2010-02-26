@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.1 2010/02/18 18:50:05 rhiriart Exp $"
+ * "@(#) $Id: Configuration.java,v 1.2 2010/02/26 23:34:31 javarias Exp $"
  */
 package alma.scheduling.datamodel.config;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,15 +36,13 @@ import java.util.List;
  */
 public class Configuration {
 
-    String workDirectory;
-    
-    String projectDirectory;
-    
-    String weatherDirectory;
-    
-    String observatoryDirectory;
-    
-    String executiveDirectory;
+    private String workDirectory;
+    private String projectDirectory;
+    private String weatherDirectory;
+    private String observatoryDirectory;
+    private String executiveDirectory;
+    private Date lastLoad;
+    private String contextFilePath;
 
     public Configuration() { }
     
@@ -87,15 +86,39 @@ public class Configuration {
         this.executiveDirectory = executiveDirectory;
     }
     
-    public List<String> getProjectFiles() {
-        List<String> retVal = new ArrayList<String>();
-        String prjAbsPath = workDirectory + "/" + projectDirectory;
+    public Date getLastLoad() {
+        return lastLoad;
+    }
+
+    public void setLastLoad(Date lastLoad) {
+        this.lastLoad = lastLoad;
+    }
+
+    public String getContextFilePath() {
+        return contextFilePath;
+    }
+
+    public void setContextFilePath(String contextFilePath) {
+        this.contextFilePath = contextFilePath;
+    }
+
+    private List<String> getFileListFromDirectory(String dir){
+        List<String> retval = new ArrayList<String>();
+        String prjAbsPath = workDirectory + "/" + dir;
         File prjDir = new File(prjAbsPath);
         File[] prjFiles = prjDir.listFiles();
         for (File f : prjFiles) {
-            retVal.add(f.getAbsolutePath());
+            retval.add(f.getAbsolutePath());
         }
-        return retVal;
+        return retval;
+    }
+    
+    public List<String> getExecutiveFiles(){
+        return getFileListFromDirectory(executiveDirectory);
+    }
+    
+    public List<String> getProjectFiles() {
+        return getFileListFromDirectory(projectDirectory);
     }
     
     public List<String> getWeatherHistoryFiles() {

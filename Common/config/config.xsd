@@ -7,6 +7,8 @@
                 <xs:element name="WeatherDirectory" type="xs:string"/>
                 <xs:element name="ObservatoryDirectory" type="xs:string"/>
                 <xs:element name="ExecutiveDirectory" type="xs:string"/>
+                <xs:element name="LastDBLoad" type="xs:dateTime"/>
+                <xs:element name="ContextFilePath" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
