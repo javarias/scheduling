@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
@@ -52,7 +53,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
         List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
         for(SchedBlock sb: sbs){
-            PI pi = execDao.findById(PI.class, sb.getPiName());
+            PI pi = ((GenericDao)execDao).findById(PI.class, sb.getPiName());
             Iterator<PIMembership> it = pi.getPIMembership().iterator();
             Double avTime = availableTime.get(
                     it.next().getExecutive().getName());

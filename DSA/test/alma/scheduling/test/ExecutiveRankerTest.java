@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
-import alma.scheduling.datamodel.BeanFactory;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ObservingSeason;
@@ -92,9 +91,9 @@ public class ExecutiveRankerTest extends TestCase {
         ArrayList<ExecutivePercentage> epOut =  new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
         
-        BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
+        //BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         
-        execDao.PopulateDB(piOut, execOut, osOut);
+       // execDao.PopulateDB(piOut, execOut, osOut);
 		
 		DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean("dsa");
 		dsa.selectCandidateSB();
