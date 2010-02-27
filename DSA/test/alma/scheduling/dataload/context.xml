@@ -37,8 +37,8 @@
         <property name="hibernateProperties">
         <props>
             <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
-            <prop key="show_sql">true</prop>
-            <prop key="format_sql">true</prop>
+            <prop key="hibernate.show_sql">true</prop>
+            <prop key="hibernate.format_sql">true</prop>
             <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
             <prop key="hibernate.connection.autocommit">false</prop>
             <prop key="hibernate.hbm2ddl.auto">update</prop>
@@ -56,21 +56,52 @@
         </props>
         </property>
     </bean>
-
+	
+	<!-- enable transactional behavior based on annotations -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+	
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref local="sessionFactory"/>
+		</property>
+	</bean>
+	
     <!-- DAO Beans -->
     <bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.WeatherHistoryDAOImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
-    <bean id="atmDao" class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
+
+	<bean id="atmDao" class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
-    
-    <!-- The transaction manager -->
-    <bean id="transactionManager" 
-    	class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-    	<property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-    
+
+	<bean id="configDao" class="alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl"/>    
+	
+	<bean id="xmlObsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDaoImpl">
+		<property name="configurationDao" ref="configDao"/>
+	</bean>
+	
+	<bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+	<bean id="schedBlockDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>	
+
+	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
+		<property name="loaders">
+			<list>
+				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
+					<property name="xmlDao" ref="xmlObsProjectDao"/>
+					<property name="dao" ref="obsProjectDao"/>
+				</bean>
+			</list>
+		</property>
+	</bean>	
+
     <!-- Weather Algorithm Beans -->
 	<bean id="weatherDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 	    <property name="loaders">
@@ -132,6 +163,8 @@
 	</bean>
 
 	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.WeatherUpdater">
-		<property name="dao" ref="atmDao"/>		
+		<property name="dao" ref="atmDao"/>
+		<property name="schedBlockDao" ref="schedBlockDao"/>
+		<property name="weatherDao" ref="weatherDao"/>
 	</bean>
 </beans>
