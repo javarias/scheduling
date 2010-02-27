@@ -1,18 +1,22 @@
 package alma.scheduling.planning_mode_sim.cli;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.input.config.generated.Configuration;
 
 
 public class AprcTool {
-
     
     private static void help(){
         System.out.println("APRC Tool Command Line Interface");
@@ -25,7 +29,7 @@ public class AprcTool {
         System.out.println("go:\t\t loads and run a simulation");
         System.out.println("help:\t\t Display this helpful message");
         System.out.println("\n\noptions:");
-        System.out.println("--working-dir=[path]\t set working path");
+        System.out.println("--working-dir=[path]\t set working path, By default is .");
     }
     
     public static String[] getOpt(String[] argv, String param){
@@ -43,7 +47,7 @@ public class AprcTool {
     }
     
     
-    private static void createWorkDir(String path){
+    private static void createWorkDir(String path) throws IOException{
         File entries[] = new File[6];
         entries[0] = new File(path + "/db");
         entries[1] = new File(path + "/projects");
@@ -62,6 +66,23 @@ public class AprcTool {
             }
             entries[i].mkdir();
         }
+        Configuration config = new Configuration();
+        File configFile = new File(path + "/aprc-config.xml");
+        config.setContextFilePath("context.xml");
+        config.setProjectDirectory("projects");
+        config.setWeatherDirectory("weather");
+        config.setObservatoryDirectory("observatory");
+        config.setExecutiveDirectory("executives");
+        if(configFile.exists())
+            configFile.delete();
+        try {
+            config.marshal(new FileWriter(configFile));
+        } catch (MarshalException e) {
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+        
     }
     
     private static void run(String ctxPath){
@@ -77,6 +98,7 @@ public class AprcTool {
                 dsa.selectCandidateSB();
                 dsa.rankSchedBlocks();
                 sbs.add(dsa.getSelectedSchedBlock());
+                dsa.updateModel();
             } catch (NoSbSelectedException e) {
                 System.out.println("DSA finished -- No more suitable SBs to be scheduled");
                 return;
@@ -85,8 +107,9 @@ public class AprcTool {
     
     /**
      * @param args
+     * @throws IOException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length==0){
             help();
             System.exit(1);
@@ -112,7 +135,7 @@ public class AprcTool {
             System.out.println("I'm doing something useful 2");
         }
         else if (args[0].compareTo("run")==0){
-            System.out.println("I'm doing something useful 3");
+            run("./context.xml");
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
