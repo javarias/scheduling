@@ -12,7 +12,7 @@ export ACS_TMP
 export ACS_CDB
 export ACS_LOG_STDOUT
 
-export TMCDB_STANDALONE_DEBUG
+export APRC_WORK_DIR
 
 RETVAL=0
 
@@ -178,10 +178,24 @@ stopACS() {
     fi
 }
 
+createAprcWorkDir() {
+    printf "Creating APRC_WORK_DIR in %s\n" "$APRC_WORK_DIR"
+    if test -n "$APRC_WORK_PACKED_FILE"; then
+        APRC_WORK_ABS_LOC=`pwd`/$APRC_WORK_PACKED_FILE
+        if [ ! -d "$APRC_WORK_DIR" ]; then   
+            mkdir $APRC_WORK_DIR
+        fi
+        cd $APRC_WORK_DIR
+        tar xvf "$APRC_WORK_ABS_LOC" &> /dev/null
+        cd - &> /dev/null
+    fi
+}
+
 case "$1" in
     start)
         createLock
         start
+        createAprcWorkDir
         # checkInstances
         ;;
     suspend)
