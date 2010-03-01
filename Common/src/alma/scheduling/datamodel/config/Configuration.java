@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.2 2010/02/26 23:34:31 javarias Exp $"
+ * "@(#) $Id: Configuration.java,v 1.3 2010/03/01 21:07:07 javarias Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -102,23 +102,28 @@ public class Configuration {
         this.contextFilePath = contextFilePath;
     }
 
-    private List<String> getFileListFromDirectory(String dir){
+    private List<String> getModifiedFilesFormDir(String dir){
         List<String> retval = new ArrayList<String>();
         String prjAbsPath = workDirectory + "/" + dir;
         File prjDir = new File(prjAbsPath);
         File[] prjFiles = prjDir.listFiles();
         for (File f : prjFiles) {
-            retval.add(f.getAbsolutePath());
+            Date d = new Date(f.lastModified());
+            //Check for modifications in the files to be loaded in the DB
+            //Only the files modified after the last load of the DB will be considered
+            if (lastLoad != null)
+                if(lastLoad.before(d))
+                    retval.add(f.getAbsolutePath());
         }
         return retval;
     }
     
     public List<String> getExecutiveFiles(){
-        return getFileListFromDirectory(executiveDirectory);
+        return getModifiedFilesFormDir(executiveDirectory);
     }
     
     public List<String> getProjectFiles() {
-        return getFileListFromDirectory(projectDirectory);
+        return getModifiedFilesFormDir(projectDirectory);
     }
     
     public List<String> getWeatherHistoryFiles() {
