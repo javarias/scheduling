@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.CannotParseDataException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
@@ -25,12 +27,14 @@ import alma.scheduling.input.executive.generated.ExecutiveData;
 
 public class XmlExecutiveDaoImpl implements ExecutiveDAO {
 
+    private static Logger logger = LoggerFactory.getLogger(XmlExecutiveDaoImpl.class);
     private boolean ready = false;
 
     private ArrayList<Executive> exec;
     private ArrayList<PI> pi;
     private ArrayList<ExecutivePercentage> ep;
     private ArrayList<ObservingSeason> os;
+    private String pathToExecDataXML = null;
 
     private ConfigurationDao configDao;
 
@@ -40,32 +44,60 @@ public class XmlExecutiveDaoImpl implements ExecutiveDAO {
         ep = new ArrayList<ExecutivePercentage>();
         os = new ArrayList<ObservingSeason>();
     }
+    
+    public XmlExecutiveDaoImpl(String pathToExecDataXML){
+        this();
+        logger.debug("Setting to read XML data from: " + pathToExecDataXML);
+        this.pathToExecDataXML = pathToExecDataXML;
+    }
 
     public ConfigurationDao getConfigDao() {
         return configDao;
     }
+    
+
 
     public void setConfigDao(ConfigurationDao configDao) {
         this.configDao = configDao;
     }
 
     private void processXMLProjectFiles() throws CannotParseDataException {
-        List<String> files = configDao.getConfiguration().getExecutiveFiles();
-        // TODO: Validate against XML schema files
-        for (Iterator<String> iter = files.iterator(); iter.hasNext();) {
-            String file = iter.next();
+        if(pathToExecDataXML!=null){
+            logger.info("Reading Executive XML data from: " + pathToExecDataXML);
             ExecutiveData execData = null;
             try {
                 execData = ExecutiveData.unmarshalExecutiveData(
-                        new FileReader(file));
+                        new FileReader(pathToExecDataXML));
+                copyExecutiveFromXMLGenerated(execData, exec, pi, ep, os);
             } catch (MarshalException e) {
-                throw new CannotParseDataException(file, e);
+                throw new CannotParseDataException(pathToExecDataXML, e);
             } catch (ValidationException e) {
-                throw new CannotParseDataException(file, e);
+                throw new CannotParseDataException(pathToExecDataXML, e);
             } catch (FileNotFoundException e) {
-                throw new CannotParseDataException(file, e);
+                throw new CannotParseDataException(pathToExecDataXML, e);
             }
-            copyExecutiveFromXMLGenerated(execData, exec, pi, ep, os);
+            
+        }
+        else{
+            logger.info("Reading configuration");
+            List<String> files = configDao.getConfiguration().getExecutiveFiles();
+            // TODO: Validate against XML schema files
+            for (Iterator<String> iter = files.iterator(); iter.hasNext();) {
+                String file = iter.next();
+                logger.info("Reading Executive XML data from: " + file);
+                ExecutiveData execData = null;
+                try {
+                    execData = ExecutiveData.unmarshalExecutiveData(
+                            new FileReader(file));
+                    copyExecutiveFromXMLGenerated(execData, exec, pi, ep, os);
+                } catch (MarshalException e) {
+                    throw new CannotParseDataException(file, e);
+                } catch (ValidationException e) {
+                    throw new CannotParseDataException(file, e);
+                } catch (FileNotFoundException e) {
+                    throw new CannotParseDataException(file, e);
+                }
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import alma.scheduling.datamodel.executive.dao.XmlExecutiveDaoImpl;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 import alma.scheduling.persistence.HibernateUtil;
 import alma.scheduling.persistence.XmlUtil;
@@ -21,7 +22,7 @@ import junit.framework.TestCase;
 
 public class ExecutiveTest extends TestCase {
 
-    //private static Logger logger = LoggerFactory.getLogger(ExecutiveTest.class);
+    private static Logger logger = LoggerFactory.getLogger(ExecutiveTest.class);
     private Session session;
     
     public ExecutiveTest(String name) {
@@ -48,32 +49,19 @@ public class ExecutiveTest extends TestCase {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        try {
-            execData = ExecutiveData.unmarshalExecutiveData(
-                    new FileReader("./projects/test0/executive/executive.xml"));
-        } catch (MarshalException e) {
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         
-        ArrayList<Executive> execOut =  new ArrayList<Executive>();
-        ArrayList<PI> piOut =  new ArrayList<PI>();
-        ArrayList<ExecutivePercentage> epOut =  new ArrayList<ExecutivePercentage>();
-        ArrayList<ObservingSeason> osOut = new ArrayList<ObservingSeason>();
+        XmlExecutiveDaoImpl xmlDao =  
+            new XmlExecutiveDaoImpl("./projects/test0/executive/executive.xml");
         
-       // BeanFactory.copyExecutiveFromXMLGenerated(execData, execOut, piOut, epOut, osOut);
         
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            for(ObservingSeason tmp: osOut)
+            for(ObservingSeason tmp: xmlDao.getAllObservingSeason())
                 session.save(tmp);
-            for(Executive tmp: execOut)
+            for(Executive tmp: xmlDao.getAllExecutive())
                 session.save(tmp);
-            for(PI tmp: piOut)
+            for(PI tmp: xmlDao.getAllPi())
                 session.save(tmp);
             tx.commit();
         } catch(Exception ex) {
