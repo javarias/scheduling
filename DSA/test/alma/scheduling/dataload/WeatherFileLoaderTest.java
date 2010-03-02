@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFileLoaderTest.java,v 1.3 2010/02/27 00:53:28 rhiriart Exp $"
+ * "@(#) $Id: WeatherFileLoaderTest.java,v 1.4 2010/03/02 02:22:02 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
+
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -33,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import alma.scheduling.algorithm.weather.WeatherUpdater;
+import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 
 public class WeatherFileLoaderTest extends TestCase {
 
@@ -52,11 +55,23 @@ public class WeatherFileLoaderTest extends TestCase {
     
     public void testWeatherDataLoading() throws Exception {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("alma/scheduling/dataload/context.xml");
+        
+        WeatherHistoryDAO wdao = (WeatherHistoryDAO) ctx.getBean("weatherDao");
+        wdao.setSimulationStartTime(new Date());
+        
         DataLoader loader = (DataLoader) ctx.getBean("weatherDataLoader");
         loader.load();
+        
         DataLoader fullLoader = (DataLoader) ctx.getBean("fullDataLoader");
         fullLoader.load();
+        
         WeatherUpdater updater = (WeatherUpdater) ctx.getBean("weatherUpdater");
-        updater.update();
+        
+        Date ut = new Date();
+        for (int i = 0; i < 10; i++) {
+            logger.info("--- update # " + i + " ---");
+            ut.setTime(ut.getTime() + 4000000); // shift in 1.11 hours
+            updater.update(ut);            
+        }
     }
 }

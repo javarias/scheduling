@@ -37,7 +37,7 @@
         <property name="hibernateProperties">
         <props>
             <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
-            <prop key="hibernate.show_sql">true</prop>
+            <prop key="hibernate.show_sql">false</prop>
             <prop key="hibernate.format_sql">true</prop>
             <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
             <prop key="hibernate.connection.autocommit">false</prop>
@@ -166,5 +166,7 @@
 		<property name="dao" ref="atmDao"/>
 		<property name="schedBlockDao" ref="schedBlockDao"/>
 		<property name="weatherDao" ref="weatherDao"/>
+		<property name="configDao" ref="configDao"/>
+		<property name="projTimeIncr" value="0.5"/>
 	</bean>
 </beans>

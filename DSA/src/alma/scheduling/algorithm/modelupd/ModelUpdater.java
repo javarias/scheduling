@@ -6,5 +6,5 @@ public interface ModelUpdater {
     
     public boolean needsToUpdate(Date date);
     
-    public void update();
+    public void update(Date date);
 }

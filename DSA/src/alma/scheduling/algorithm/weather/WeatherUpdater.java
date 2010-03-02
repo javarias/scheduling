@@ -9,12 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.WeatherDependentVariables;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.weather.AtmParameters;
+import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
@@ -27,11 +29,15 @@ public class WeatherUpdater implements ModelUpdater {
 
     private static Logger logger = LoggerFactory.getLogger(WeatherUpdater.class);
         
-    AtmParametersDao dao;
-
-    SchedBlockDao schedBlockDao;
+    private ConfigurationDao configDao;
     
-    WeatherHistoryDAO weatherDao;
+    private AtmParametersDao dao;
+
+    private SchedBlockDao schedBlockDao;
+    
+    private WeatherHistoryDAO weatherDao;
+    
+    private Double projTimeIncr;
     
     public void setDao(AtmParametersDao dao) {
         this.dao = dao;
@@ -45,22 +51,41 @@ public class WeatherUpdater implements ModelUpdater {
         this.weatherDao = weatherDao;
     }
     
+    public void setConfigDao(ConfigurationDao configDao) {
+        this.configDao = configDao;
+    }
+    
+    public void setProjTimeIncr(Double projTimeIncr) {
+        this.projTimeIncr = projTimeIncr;
+    }
+    
     @Override
     public boolean needsToUpdate(Date date) {
         return true;
     }
 
     @Override
-    public void update() {
+    public void update(Date date) {
         logger.trace("entering");
+        logger.debug("updating for time " + date);
         
-        double latitude = -23.0 + 1.0 / 60.0 + 22.42 / 3600.0;
-        double pwv = 1.5; // mm
+        double latitude = configDao.getConfiguration().getArrayCenterLatitude();
 
-        TemperatureHistRecord tr = weatherDao.getTemperatureForTime(new Date());
+        // get current PWV
+        TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
         logger.info("temperature record: time = " + tr.getTime() + "; value = " + tr.getValue());
+        HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
+        logger.info("humidity record: time = " + hr.getTime() + "; value = " + hr.getValue());        
+        double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
+
+        projTimeIncr = 0.5;
+        long deltaT = (long)( projTimeIncr * 3600.0 * 1000.0 ); // delta T in milliseconds
+        Date projDate = new Date(date.getTime() + deltaT);
+        TemperatureHistRecord ptr = weatherDao.getTemperatureForTime(projDate);
+        HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
+        double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected PWV, in mm
         
-        List<SchedBlock> sbs = schedBlockDao.findAll();
+        List<SchedBlock> sbs = schedBlockDao.findAll(); // replace this by a selector
         for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
             SchedBlock sb = iter.next();
             double frequency = sb.getSchedulingConstraints().getRepresentativeFrequency(); // GHz
@@ -68,13 +93,45 @@ public class WeatherUpdater implements ModelUpdater {
             FieldSource src = target.getSource();
             double decl = src.getCoordinates().getDec(); // degrees
             double tsys = getTsys(decl, latitude, frequency, pwv);
+            logger.info("tsys: " + tsys);
+            double ptsys = getTsys(decl, latitude, frequency, ppwv);
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
+            vars.setProjectedTsys(ptsys);
+            vars.setProjectionTimeIncr(projTimeIncr);
             sb.setWeatherDependentVariables(vars);
             schedBlockDao.saveOrUpdate(sb);            
         }        
     }
 
+    /**
+     * Estimate Precipitable Water Vapor (PWV)
+     * 
+     * @param humidity Humidty [0/1]
+     * @param temperature Temperature [C]
+     * @return PWV in mm
+     */
+    private double estimatePWV(double humidity, double temperature) {
+        double h; // PWV
+        double P_0; // water vapor partial pressure
+        double theta; // inverse temperature [K]
+        double m_w = 18 * 1.660538782E-27; // mass of a water molecule (18 amu in Kg)
+        double H = 1.5E3; // scale height of water vapor distribution
+        double rho_l = 1e3; // desity of water [Kg/m^3]
+        double k = 1.3806503E-23; // Boltzmann constant [m^2 Kg s^-2 K^-1]
+        double T_0; // ground temperature in Kelvins
+        
+        // convert temperature to degrees Kelvin
+        T_0 = temperature + 273.15;
+        theta = 300.0/T_0;
+        P_0 = 2.409E12 * humidity * Math.pow(theta, 4) * Math.exp(-22.64 * theta);
+        logger.debug("P_0 = " + P_0);
+        
+        h = ( m_w * P_0 * H ) / ( rho_l * k * T_0 );
+        logger.debug("h = " + h);
+        return h * 1E3; // in mm
+    }
+    
     protected double[] interpolateOpacityAndTemperature(double pwv, double freq) {
         double[] retVal = new double[2];
         logger.debug("pwv: " + pwv);
@@ -88,12 +145,14 @@ public class WeatherUpdater implements ModelUpdater {
         atm = dao.getEnclosingIntervalForPwvAndFreq(pwvInterval[0], freq);
         logger.debug("freq lower bound: " + atm[0].getFreq());
         logger.debug("freq upper bound: " + atm[1].getFreq());
+        
         double interpOpacity1 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getOpacity(), atm[1].getOpacity());
         logger.debug("interpolated opacity 1: " + interpOpacity1);
         double interpTemp1 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getAtmBrightnessTemp(), atm[1].getAtmBrightnessTemp());
         logger.debug("interpolated temperature 1: " + interpTemp1);
+        
         // For the PWV upper bound, interpolate opacity and temperature as functions of frequency
         atm = dao.getEnclosingIntervalForPwvAndFreq(pwvInterval[1], freq);
         double interpOpacity2 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
@@ -102,15 +161,23 @@ public class WeatherUpdater implements ModelUpdater {
         double interpTemp2 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getAtmBrightnessTemp(), atm[1].getAtmBrightnessTemp());
         logger.debug("interpolated temperature 2: " + interpTemp2);
-        // Finally, interpolate opacity and temperature again as functions of PWV
-        double finalOpacity = interpolate(pwv, pwvInterval[0], pwvInterval[1],
-                interpOpacity1, interpOpacity2);
-        logger.debug("final opacity: " + finalOpacity);
-        double finalTemp = interpolate(pwv, pwvInterval[0], pwvInterval[1],
-                interpTemp1, interpTemp2);
-        logger.debug("final temperature: " + finalTemp);
-        retVal[0] = finalOpacity;
-        retVal[1] = finalTemp;
+        
+        // Finally, interpolate opacity and temperature again as functions of PWV.
+        // Do this only if the PWV's are different, if not just return the first interpolated
+        // values.
+        if (pwvInterval[0] != pwvInterval[1]) {
+            double finalOpacity = interpolate(pwv, pwvInterval[0], pwvInterval[1],
+                    interpOpacity1, interpOpacity2);
+            logger.debug("final opacity: " + finalOpacity);
+            double finalTemp = interpolate(pwv, pwvInterval[0], pwvInterval[1],
+                    interpTemp1, interpTemp2);
+            logger.debug("final temperature: " + finalTemp);
+            retVal[0] = finalOpacity;
+            retVal[1] = finalTemp;
+        } else {
+            retVal[0] = interpOpacity1;
+            retVal[1] = interpTemp1;
+        }
         return retVal;
     }
     
