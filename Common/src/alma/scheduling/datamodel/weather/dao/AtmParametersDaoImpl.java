@@ -24,6 +24,9 @@ public class AtmParametersDaoImpl extends HibernateDaoSupport implements AtmPara
         query = getSession().getNamedQuery("AtmParameters.getPwvIntervalUpperBound");
         query.setParameter(0, pwv);
         retVal[1] = (Double) query.uniqueResult();
+        if (retVal[0] == null) {
+            retVal[0] = retVal[1];
+        }
         return retVal;
     }
 

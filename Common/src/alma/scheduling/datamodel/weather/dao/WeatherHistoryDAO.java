@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherHistoryDAO.java,v 1.3 2010/02/24 20:55:09 rhiriart Exp $"
+ * "@(#) $Id: WeatherHistoryDAO.java,v 1.4 2010/03/02 02:21:30 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
@@ -46,4 +46,13 @@ public interface WeatherHistoryDAO {
     public HumidityHistRecord getHumidityForTime(Date ut);
     
     public TemperatureHistRecord getTemperatureForTime(Date ut);
+    
+    /**
+     * Each record in the historic weather data files is identified by a time column,
+     * which is relative with respect to the point in time when the simulation started.
+     * This point is set with this function.
+     * 
+     * @param ut Start time
+     */
+    public void setSimulationStartTime(Date ut);
 }

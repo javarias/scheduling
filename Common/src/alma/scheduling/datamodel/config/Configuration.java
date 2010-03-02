@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.3 2010/03/01 21:07:07 javarias Exp $"
+ * "@(#) $Id: Configuration.java,v 1.4 2010/03/02 02:21:30 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -43,7 +43,16 @@ public class Configuration {
     private String executiveDirectory;
     private Date lastLoad;
     private String contextFilePath;
+    
+    /** Array center latitude (degrees, N is positive, S negative) */
+    private Double arrayCenterLatitude;
+    
+    /** Array center longitude (degrees, E is positive, W negative) */
+    private Double arrayCenterLongitude;
 
+    /** Maximum wind speed, beyond which no SchedBlock can be executed (km/hr) */
+    private Double maxWindSpeed;
+    
     public Configuration() { }
     
     public String getWorkDirectory() {
@@ -132,5 +141,29 @@ public class Configuration {
     
     public List<String> getWeatherATMFiles() {
         return null;
+    }
+
+    public Double getArrayCenterLatitude() {
+        return arrayCenterLatitude;
+    }
+
+    public void setArrayCenterLatitude(Double arrayCenterLatitude) {
+        this.arrayCenterLatitude = arrayCenterLatitude;
+    }
+
+    public Double getArrayCenterLongitude() {
+        return arrayCenterLongitude;
+    }
+
+    public void setArrayCenterLongitude(Double arrayCenterLongitude) {
+        this.arrayCenterLongitude = arrayCenterLongitude;
+    }
+
+    public Double getMaxWindSpeed() {
+        return maxWindSpeed;
+    }
+
+    public void setMaxWindSpeed(Double maxWindSpeed) {
+        this.maxWindSpeed = maxWindSpeed;
     }
 }

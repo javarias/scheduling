@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.2 2010/02/26 23:36:35 javarias Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.3 2010/03/02 02:21:30 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -64,8 +65,11 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
             config.setWeatherDirectory(xmlConfig.getWeatherDirectory());
             config.setObservatoryDirectory(xmlConfig.getObservatoryDirectory());
             config.setExecutiveDirectory(xmlConfig.getExecutiveDirectory());
-            config.setLastLoad(xmlConfig.getLastDBLoad());
+            config.setLastLoad(new Date()); // for now
             config.setContextFilePath(xmlConfig.getContextFilePath());
+            config.setArrayCenterLatitude(xmlConfig.getArrayCenterLatitude());
+            config.setArrayCenterLongitude(xmlConfig.getArrayCenterLongitude());
+            config.setMaxWindSpeed(xmlConfig.getMaxWindSpeed());
             return config;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
