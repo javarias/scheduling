@@ -1,3 +1,28 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.3 2010/03/02 23:19:15 javarias Exp $"
+ */
 package alma.scheduling.algorithm;
 
 import java.util.ArrayList;
@@ -34,7 +59,6 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     public SchedBlockRanker getRanker() {
         return ranker;
     }
-
 
     public void setRanker(SchedBlockRanker ranker) {
         this.ranker = ranker;
@@ -76,7 +100,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
                 for(SchedBlock sb: s.select())
                     selectedSbs.get(i).put(sb.getId(), sb);
             } catch (NoSbSelectedException e) {
-                logger.warn("DSA cannot continue if a selector cannot get SBs");
+                logger.warn("DSA cannot continue if a selector cannot get at least one SB");
                 throw new NoSbSelectedException(e.getMessage());
             }
             i++;
@@ -103,7 +127,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
                 sbs.put(sb.getId(), sb);
         }
         if (sbs.isEmpty()){
-            logger.warn("DSA cannot continue if it doesn't have SB to rank");
+            logger.warn("DSA cannot continue if it doesn't have SBs to rank");
             String strCause = "Cannot get any SB valid to be ranked using ";
             for(SchedBlockSelector s: selectors)
                 strCause += s.toString() + " ";
