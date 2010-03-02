@@ -1,5 +1,6 @@
 package alma.scheduling.algorithm.weather;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
+import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -35,6 +38,8 @@ public class WeatherUpdater implements ModelUpdater {
 
     private SchedBlockDao schedBlockDao;
     
+    private SchedBlockSelector selector;
+    
     private WeatherHistoryDAO weatherDao;
     
     private Double projTimeIncr;
@@ -45,6 +50,10 @@ public class WeatherUpdater implements ModelUpdater {
     
     public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
         this.schedBlockDao = schedBlockDao;
+    }
+    
+    public void setSelector(SchedBlockSelector selector) {
+        this.selector = selector;
     }
     
     public void setWeatherDao(WeatherHistoryDAO weatherDao) {
@@ -78,14 +87,19 @@ public class WeatherUpdater implements ModelUpdater {
         logger.info("humidity record: time = " + hr.getTime() + "; value = " + hr.getValue());        
         double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
 
-        projTimeIncr = 0.5;
         long deltaT = (long)( projTimeIncr * 3600.0 * 1000.0 ); // delta T in milliseconds
         Date projDate = new Date(date.getTime() + deltaT);
         TemperatureHistRecord ptr = weatherDao.getTemperatureForTime(projDate);
         HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
         double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected PWV, in mm
         
-        List<SchedBlock> sbs = schedBlockDao.findAll(); // replace this by a selector
+        Collection<SchedBlock> sbs;
+        try {
+            sbs = selector.select();
+        } catch (NoSbSelectedException e) {
+            return;
+        }
+        
         for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
             SchedBlock sb = iter.next();
             double frequency = sb.getSchedulingConstraints().getRepresentativeFrequency(); // GHz

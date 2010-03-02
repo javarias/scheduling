@@ -162,9 +162,13 @@
 	    </property>
 	</bean>
 
+	<bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector">
+		<property name="schedBlockDao" ref="schedBlockDao"/>
+	</bean>
+
 	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.WeatherUpdater">
 		<property name="dao" ref="atmDao"/>
-		<property name="schedBlockDao" ref="schedBlockDao"/>
+		<property name="selector" ref="weatherSelector"/>
 		<property name="weatherDao" ref="weatherDao"/>
 		<property name="configDao" ref="configDao"/>
 		<property name="projTimeIncr" value="0.5"/>
