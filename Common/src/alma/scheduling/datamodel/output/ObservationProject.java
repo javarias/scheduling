@@ -1,5 +1,7 @@
 package alma.scheduling.datamodel.output;
 
+import java.util.Set;
+
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
@@ -13,8 +15,8 @@ public class ObservationProject {
 	private double executionTime;
 	private int scienceRating;
 	private ExecutionStatus status;
-	public Affiliation m_Affiliation;
-	public SchedBlock m_SchedBlock;
+	public Set<Affiliation> affiliation;
+	public Set<SchedBlockResult> schedBlock;
 
 	public ObservationProject(){
 
@@ -44,19 +46,19 @@ public class ObservationProject {
         this.status = status;
     }
 
-    public Affiliation getM_Affiliation() {
-        return m_Affiliation;
+    public Set<Affiliation> getAffiliation() {
+        return affiliation;
     }
 
-    public void setM_Affiliation(Affiliation mAffiliation) {
-        m_Affiliation = mAffiliation;
+    public void setAffiliation(Set<Affiliation> mAffiliation) {
+        affiliation = mAffiliation;
     }
 
-    public SchedBlock getM_SchedBlock() {
-        return m_SchedBlock;
+    public Set<SchedBlockResult> getSchedBlock() {
+        return schedBlock;
     }
 
-    public void setM_SchedBlock(SchedBlock mSchedBlock) {
-        m_SchedBlock = mSchedBlock;
+    public void setSchedBlock(Set<SchedBlockResult> mSchedBlock) {
+        schedBlock = mSchedBlock;
     }
 }

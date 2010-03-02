@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.output">
+
+    <class name="Results" table="OUTPUT_RESULTS">
+        <id column="ID" type="long">
+        	<generator class="native"/>
+        </id>
+        
+        <property name="availableTime" column="AVAILABLE_TIME" type="double"/>
+        <property name="maintenanceTime" column="MAINTENANCE_TIME" type="double"/>
+        <property name="operationTime" column="OPERATION_TIME" type="double"/>
+        <property name="scientificTime" column="SCIENTIFIC_TIME" type="double"/>
+        
+		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan">
+			<key column="RESULT_ID" />
+			<one-to-many class="Array" />
+		</set>
+		
+		<set name="observationProject" table="OUTPUT_OBSERVATION_PROJECT" cascade="save-update,lock, delete, delete-orphan">
+			<key column="RESULT_ID" />
+			<one-to-many class="ObservationProject" />
+		</set>
+	</class>
+	
+	<class name="ObservationProject" table="OUTPUT_OBSERVATION_PROJECT">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		
+		<property name="executionTime" column="EXECUTION_TIME" type="double" />
+		<property name="scienceRating" column="SCIENCE_RATING" type="double" />
+		<!-- TODO: Put enum property -->
+		<set name="affiliation" table="OUTPUT_AFFILIATION" cascade="save-update,lock, delete, delete-orphan">
+			<key column="OBSERVATION_PROJECT_ID" />
+			<one-to-many class="Affiliation" />
+		</set>
+		<set name="schedBlock" table="OUTPUT_SCHED_BLOCK_RESULT" cascade="save-update,lock, delete, delete-orphan">
+			<key column="OBSERVATION_PROJECT_ID" />
+			<one-to-many class="SchedBlockResult" />
+		</set>
+	</class>
+	
+	<class name="SchedBlockResult" table="OUTPUT_SCHED_BLOCK_RESULT">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		
+		<property name="endDate" type="timestamp" column="END_DATE" />
+		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
+		<property name="mode" type="string" column="MODE"/>
+		<property name="startDate" type="timestamp" column="START_DATE" />
+		<!-- TODO: Put enum property -->
+		<property name="type" type="string" column="TYPE"/>
+		<many-to-one name="ArrayRef" column="ARRAY_REF" 
+        	 not-null="true" class="Array"/>
+	</class>
+	
+	<class name="Array" table="OUTPUT_ARRAY">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		<property name="availableTime" type="double" column="AVAILABLE_TIME"/>
+		<property name="baseline" type="double" column="BASELINE"/>
+		<property name="creationDate" type="timestamp" column="CREATION_DATE"/>
+		<property name="deletionDate" type="timestamp" column="DELETION_DATE"/>
+		<property name="maintenanceTime" type="double" column="MAINTENANCE_TIME"/>
+		<property name="scientificTime" type="double" column="SCIENTIFIC_TIME"/>
+	</class>
+	
+	<class name="Affiliation" table="OUTPUT_AFFILIATION">
+		<id column="ID" type="long">
+			<generator class="native"/>
+		</id>
+		
+		<property name="executive" type="string" column="EXECUTIVE"/>
+		<property name="percentage" type="float" column="PERCENTAGE"/>
+	</class>
+	
+</hibernate-mapping>    

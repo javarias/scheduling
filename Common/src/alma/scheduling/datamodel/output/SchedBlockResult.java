@@ -7,7 +7,7 @@ import java.util.Date;
  * @version 1.0
  * @created 02-Mar-2010 11:49:25 AM
  */
-public class SchedBlock {
+public class SchedBlockResult {
 
 	private Date endDate;
 	private double executionTime;
@@ -17,7 +17,7 @@ public class SchedBlock {
 	private String type;
 	public Array ArrayRef;
 
-	public SchedBlock(){
+	public SchedBlockResult(){
 
 	}
 

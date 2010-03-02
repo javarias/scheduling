@@ -12,7 +12,7 @@ public class Array {
 	/**
 	 * deletionTime - creationTime
 	 */
-	private double availablelTime;
+	private double availableTime;
 	private double baseline;
 	private Date creationDate;
 	private Date deletionDate;
@@ -29,12 +29,12 @@ public class Array {
 
 	}
 
-    public double getAvailablelTime() {
-        return availablelTime;
+    public double getAvailableTime() {
+        return availableTime;
     }
 
-    public void setAvailablelTime(double availablelTime) {
-        this.availablelTime = availablelTime;
+    public void setAvailableTime(double availableTime) {
+        this.availableTime = availableTime;
     }
 
     public double getBaseline() {

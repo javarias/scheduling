@@ -1,5 +1,7 @@
 package alma.scheduling.datamodel.output;
 
+import java.util.Set;
+
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
@@ -23,8 +25,8 @@ public class Results {
 	 * Sum across Array_i.scientificTime
 	 */
 	private double scientificTime;
-	public Array m_Array;
-	public ObservationProject m_ObservationProject;
+	public Set<Array> array;
+	public Set<ObservationProject> observationProject;
 
 	public Results(){
 
@@ -62,19 +64,19 @@ public class Results {
         this.scientificTime = scientificTime;
     }
 
-    public Array getM_Array() {
-        return m_Array;
+    public Set<Array> getArray() {
+        return array;
     }
 
-    public void setM_Array(Array mArray) {
-        m_Array = mArray;
+    public void setArray(Set<Array> mArray) {
+        array = mArray;
     }
 
-    public ObservationProject getM_ObservationProject() {
-        return m_ObservationProject;
+    public Set<ObservationProject> getObservationProject() {
+        return observationProject;
     }
 
-    public void setM_ObservationProject(ObservationProject mObservationProject) {
-        m_ObservationProject = mObservationProject;
+    public void setObservationProject(Set<ObservationProject> mObservationProject) {
+        observationProject = mObservationProject;
     }
 }
