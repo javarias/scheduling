@@ -21,12 +21,38 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDaoImpl.java,v 1.1 2010/03/02 23:35:12 javarias Exp $"
+ * "@(#) $Id: OutputDaoImpl.java,v 1.2 2010/03/03 21:22:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import alma.scheduling.datamodel.GenericDaoImpl;
+import alma.scheduling.datamodel.output.Results;
 
 public class OutputDaoImpl extends GenericDaoImpl implements OutputDao{
+
+    @Override
+    @Transactional
+    public void saveResults(Results results) {
+        saveOrUpdate(results);
+        
+    }
+
+    @Override
+    @Transactional
+    public void saveResults(Collection<Results> results) {
+        saveOrUpdate(results);
+        
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public List<Results> getResults() {
+        return findAll(Results.class);
+    }
 
 }

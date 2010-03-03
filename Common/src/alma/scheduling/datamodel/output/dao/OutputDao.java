@@ -21,10 +21,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDao.java,v 1.1 2010/03/02 23:35:12 javarias Exp $"
+ * "@(#) $Id: OutputDao.java,v 1.2 2010/03/03 21:22:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
+import java.util.Collection;
+import java.util.List;
+
+import alma.scheduling.datamodel.output.Results;
+
 public interface OutputDao {
 
+    /**
+     * Save the result in the DB
+     * @param results
+     */
+    public void saveResults(Results results);
+    
+    /**
+     * Save a batch of results in the DB. The implementor of this method should
+     * define the entire function as Transactional 
+     * @param The collection to be saved in the DB
+     */
+    public void saveResults(Collection<Results> results);
+    
+    /**
+     * Get all the results of the stored in the DB. <br> 
+     * <i>Note: </i> The user of this method should
+     * define as Transactional the entire function that use this method if the 
+     * implementor is using Spring and Hibernate
+     * 
+     * @return The results obtained from DB, can be null if there are no results in the DB
+     */
+    public List<Results> getResults();
 }
