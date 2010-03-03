@@ -28,7 +28,7 @@
 	
 	<xs:complexType name="Array">
 		<xs:sequence>
-			<xs:element name="availablelTime" type="xs:date" minOccurs="1" maxOccurs="1">
+			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1">
 			</xs:element>
 			<xs:element name="baseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="creationDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
@@ -43,7 +43,7 @@
 	
 	<xs:complexType name="ObservationProject">
 		<xs:sequence>
-			<xs:element name="executionTime" type="xs:date" minOccurs="1" maxOccurs="1">
+			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1">
 			</xs:element>
 			<xs:element name="scienceRating" type="xs:int" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
