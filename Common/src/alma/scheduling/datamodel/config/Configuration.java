@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.4 2010/03/02 02:21:30 rhiriart Exp $"
+ * "@(#) $Id: Configuration.java,v 1.5 2010/03/03 21:23:31 javarias Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -41,6 +41,7 @@ public class Configuration {
     private String weatherDirectory;
     private String observatoryDirectory;
     private String executiveDirectory;
+    private String outputDirectory;
     private Date lastLoad;
     private String contextFilePath;
     
@@ -94,6 +95,14 @@ public class Configuration {
     public void setExecutiveDirectory(String executiveDirectory) {
         this.executiveDirectory = executiveDirectory;
     }
+
+    public String getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
     
     public Date getLastLoad() {
         return lastLoad;
@@ -127,12 +136,39 @@ public class Configuration {
         return retval;
     }
     
+    private List<String> getFilesFromDir(String dir){
+        List<String> retval = new ArrayList<String>();
+        String prjAbsPath = workDirectory + "/" + dir;
+        File prjDir = new File(prjAbsPath);
+        File[] prjFiles = prjDir.listFiles();
+        for (File f : prjFiles) {
+            retval.add(f.getAbsolutePath());
+        }
+        return retval;
+    }
+    
+    /**
+     * 
+     * @return The modified executive xml files to be reloaded in the DB
+     */
     public List<String> getExecutiveFiles(){
         return getModifiedFilesFormDir(executiveDirectory);
     }
     
+    /**
+     * 
+     * @return The modified project xml files to be reloaded in the DB
+     */
     public List<String> getProjectFiles() {
         return getModifiedFilesFormDir(projectDirectory);
+    }
+    
+    /**
+     * 
+     * @return All the output XML files
+     */
+    public List<String> getAllOutputFiles(){
+        return getFilesFromDir(outputDirectory);
     }
     
     public List<String> getWeatherHistoryFiles() {
@@ -166,4 +202,5 @@ public class Configuration {
     public void setMaxWindSpeed(Double maxWindSpeed) {
         this.maxWindSpeed = maxWindSpeed;
     }
+
 }
