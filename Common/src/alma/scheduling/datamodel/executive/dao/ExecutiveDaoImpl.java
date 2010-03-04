@@ -46,8 +46,8 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
     @Override
     @Transactional(readOnly=true)
     public Executive getExecutive(String piName) {
-        // TODO Auto-generated method stub
-        return null;
+        PI pi = findById(PI.class, piName);
+        return pi.getPIMembership().iterator().next().getExecutive();
     }
 
     @Override

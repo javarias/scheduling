@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
+import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -18,6 +18,7 @@ import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.WeatherConstraints;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.output.Reporter;
 
 public class ExecutiveRankerTest extends TestCase {
 
@@ -44,7 +45,7 @@ public class ExecutiveRankerTest extends TestCase {
         genDao.saveOrUpdate(objs);
     }
     
-    public void testExecutiveRanker() throws Exception {
+    public void testExecutiveRanker(){
     	
         // Loading SchedBlocks
         ApplicationContext ctx = new ClassPathXmlApplicationContext(
@@ -80,10 +81,21 @@ public class ExecutiveRankerTest extends TestCase {
         populateDB(xmlExecDao, (GenericDao) execDao);
 		
 		DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean("dsa");
-		dsa.selectCandidateSB();
-		dsa.rankSchedBlocks();
-		SchedBlock sb = dsa.getSelectedSchedBlock();
-		System.out.println(sb);
+		Reporter rep = (Reporter) ctx.getBean("reporter");
+		while(true){
+		    try{
+		        dsa.selectCandidateSB();
+		        dsa.rankSchedBlocks();
+		        SchedBlock sb = dsa.getSelectedSchedBlock();
+		        logger.info("Selected an SB by DSA");
+		        //Here SB should be executed
+		        rep.report(sb);
+		    }
+		    catch(NoSbSelectedException ex){
+		        //finish the execution of the DSA, we cannot get more SBs
+		        break;
+		    }
+		}
     }
     
 

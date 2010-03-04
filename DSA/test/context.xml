@@ -101,6 +101,10 @@
 			<ref bean="execSelector" />
 		</set>
 		</property>
-	</bean> 
+	</bean>
+	
+	<bean id="reporter" class="alma.scheduling.output.ExecutiveReporter">
+		<property name="execDao" ref="execDao" />
+	</bean>
    
 </beans>
