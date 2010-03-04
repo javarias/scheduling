@@ -10,14 +10,24 @@
             <SchedulingConstraints representativeTargetIdRef="T1" maxAngularResolution="0.0"
                 representativeFrequency="0.0"/>
             <Preconditions maxAllowedHA="0.0" minAllowedHA="0.0"/>
+            <ObsParameters id="OP1">
+                <ScienceParameters duration="180.0" representativeBandwidth="4.0"
+                    representativeFrequency="130.0" sensitivityGoal="10.0"/>
+            </ObsParameters>
             <InstrumentSpec id="SS1">
-                <SpectralSpec/>                
+                <ObservingMode>SingleFieldInterferometry</ObservingMode>
+                <SpectralSpec/>
+                <HardwareRequirements>
+                    <EquipmentRequirement>
+                        <AssemblyRequirement name="ColdCart3"/>
+                    </EquipmentRequirement>
+                </HardwareRequirements>
             </InstrumentSpec>
             <InstrumentSpec id="SS4">
                 <OpticalCameraSpec/>                
             </InstrumentSpec>
-            <Target id="T1" sourceIdRef="S1" instrumentSpecIdRef="SS1"/>
-            <Target id="T2" sourceIdRef="S4" instrumentSpecIdRef="SS4"/>
+            <Target id="T1" sourceIdRef="S1" instrumentSpecIdRef="SS1" obsParametersIdRef="OP1"/>
+            <Target id="T2" sourceIdRef="S4" instrumentSpecIdRef="SS4" obsParametersIdRef="OP1"/>
             <FieldSource id="S1" name="NGC1234" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
             <FieldSource id="S2" name="NGC1235" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
             <FieldSource id="S3" name="NGC1236" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
@@ -28,6 +38,9 @@
                 maxSeeing="0.0"/>
             <SchedulingConstraints maxAngularResolution="0.0" representativeFrequency="0.0"/>
             <Preconditions maxAllowedHA="0.0" minAllowedHA="0.0"/>
+            <ObsParameters id="OP12">
+                <ScienceParameters/>
+            </ObsParameters>
         </SchedBlock>
         <ObsUnitSet>
             <SchedBlock>
@@ -35,6 +48,9 @@
                     maxSeeing="0.0"/>
                 <SchedulingConstraints maxAngularResolution="0.0" representativeFrequency="0.0"/>
                 <Preconditions maxAllowedHA="0.0" minAllowedHA="0.0"/>
+                <ObsParameters id="OP3">
+                    <ScienceParameters/>
+                </ObsParameters>
             </SchedBlock>
         </ObsUnitSet>
     </ObsUnitSet>

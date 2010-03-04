@@ -62,7 +62,7 @@ public class ObsUnitTest extends TestCase {
             sb.setPiName("me");
             sb.setWeatherConstraints(new WeatherConstraints(0.0, 0.0, 0.0, 0.0));
             ScienceParameters params = new ScienceParameters();
-            params.setIntegrationTime(0.0);
+            params.setDuration(180.0);
             params.setRepresentativeBandwidth(0.0);
             params.setRepresentativeFrequency(0.0);
             params.setSensitivityGoal(0.0);
@@ -114,7 +114,7 @@ public class ObsUnitTest extends TestCase {
             SchedBlock sb = new SchedBlock();
             sb.setPiName("me");
             ScienceParameters params = new ScienceParameters();
-            params.setIntegrationTime(0.0);
+            params.setDuration(180.0);
             params.setRepresentativeBandwidth(0.0);
             params.setRepresentativeFrequency(0.0);
             params.setSensitivityGoal(0.0);

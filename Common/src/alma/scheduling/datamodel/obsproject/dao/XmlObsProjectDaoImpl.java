@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.7 2010/02/26 23:44:50 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.8 2010/03/04 22:56:55 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -48,8 +48,10 @@ import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.WeatherConstraints;
 import alma.scheduling.input.obsproject.generated.FieldSourceT;
+import alma.scheduling.input.obsproject.generated.ObsParametersT;
 import alma.scheduling.input.obsproject.generated.ObsUnitSetT;
 import alma.scheduling.input.obsproject.generated.SchedBlockT;
+import alma.scheduling.input.obsproject.generated.ScienceParametersT;
 import alma.scheduling.input.obsproject.generated.TargetT;
 
 /**
@@ -130,6 +132,19 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSchedBlock.getSchedulingConstraints().getRepresentativeFrequency(),
                     targets.get(xmlSchedBlock.getSchedulingConstraints().getRepresentativeTargetIdRef()));
             schedBlock.setSchedulingConstraints(sc);
+            ObsParametersT xmlObsParams = xmlSchedBlock.getObsParameters();
+            if (xmlObsParams != null) {
+                ScienceParametersT xmlSciParams =
+                    xmlSchedBlock.getObsParameters().getScienceParameters();
+                if (xmlSciParams != null) {
+                    ScienceParameters scip = new ScienceParameters();
+                    scip.setDuration(xmlSciParams.getDuration());
+                    scip.setRepresentativeBandwidth(xmlSciParams.getRepresentativeBandwidth());
+                    scip.setRepresentativeFrequency(xmlSciParams.getRepresentativeFrequency());
+                    scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
+                    schedBlock.addObservingParameters(scip);
+                }
+            }
             obsUnitSet.addObsUnit(schedBlock);
         }
         ObsUnitSetT[] xmlObsUnitSets = xmlObsUnitSet.getObsUnitSet();
