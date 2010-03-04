@@ -2,6 +2,7 @@ package alma.scheduling.output;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -30,7 +31,9 @@ public class ExecutiveReporter implements Reporter {
         ExecutiveTimeSpent ets = new ExecutiveTimeSpent();
         ets.setExecutive(execDao.getExecutive(schedBlock.getPiName()));
         ets.setObservingSeason(execDao.getCurrentSeason());
-        //ets.setTimeSpent(schedBlock.get)
+        //TODO: Change this
+        ets.setTimeSpent((float) 1.0);
+        ((GenericDao) execDao).saveOrUpdate(ets);
     }
 
 }

@@ -21,13 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: PI.java,v 1.9 2010/03/02 17:08:03 javarias Exp $"
+ * "@(#) $Id: PI.java,v 1.10 2010/03/04 00:14:09 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
-import java.util.HashMap;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * @author rhiriart

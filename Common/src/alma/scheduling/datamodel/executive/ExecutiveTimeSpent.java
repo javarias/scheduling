@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveTimeSpent.java,v 1.9 2010/03/02 17:08:03 javarias Exp $"
+ * "@(#) $Id: ExecutiveTimeSpent.java,v 1.10 2010/03/04 00:14:09 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -32,6 +32,9 @@ package alma.scheduling.datamodel.executive;
  */
 public class ExecutiveTimeSpent {
 
+    /**
+     * Time spent in in hours
+     */
 	private float timeSpent;
 	private Executive executive;
 	private ObservingSeason observingSeason;
@@ -44,6 +47,10 @@ public class ExecutiveTimeSpent {
         return timeSpent;
     }
 
+    /**
+     * 
+     * @param timeSpent the time spent in the sched block observation in hours
+     */
     public void setTimeSpent(float timeSpent) {
         this.timeSpent = timeSpent;
     }
@@ -63,9 +70,5 @@ public class ExecutiveTimeSpent {
     public void setObservingSeason(ObservingSeason mObservingSeason) {
         observingSeason = mObservingSeason;
     }
-
-    public void finalize() throws Throwable {
-
-	}
 
 }

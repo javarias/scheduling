@@ -30,6 +30,7 @@
         		<value>alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml</value>  
         		<value>alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml</value>
         		<value>alma/scheduling/datamodel/obsproject/Target.hbm.xml</value>
+        		<value>alma/scheduling/datamodel/output/Output.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -69,6 +70,13 @@
     </bean>
     <bean id="sbDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+ <!-- XML DAO Beans -->
+    <bean id="configDao" class="alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl"/>
+    
+    <bean id="xmlExecDao" class="alma.scheduling.datamodel.executive.dao.XmlExecutiveDaoImpl" >
+    	<property name="configDao" ref="configDao"/>
     </bean>
     
 <!-- The transaction manager -->

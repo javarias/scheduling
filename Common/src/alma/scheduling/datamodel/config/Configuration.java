@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.5 2010/03/03 21:23:31 javarias Exp $"
+ * "@(#) $Id: Configuration.java,v 1.6 2010/03/04 00:14:09 javarias Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -130,8 +130,9 @@ public class Configuration {
             //Check for modifications in the files to be loaded in the DB
             //Only the files modified after the last load of the DB will be considered
             if (lastLoad != null)
-                if(lastLoad.before(d))
-                    retval.add(f.getAbsolutePath());
+                if(lastLoad.after(d))
+                    break;
+            retval.add(f.getAbsolutePath());
         }
         return retval;
     }
