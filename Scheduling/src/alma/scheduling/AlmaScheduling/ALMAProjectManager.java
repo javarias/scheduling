@@ -87,7 +87,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.129 2009/11/30 20:46:28 javarias Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.130 2010/03/04 01:22:40 rhiriart Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
 	
@@ -1926,7 +1926,7 @@ public class ALMAProjectManager extends ProjectManager {
 
     public ProjectLite getProjectLiteForSB(String sbId) {
         SB sb =(SB)sbQueue.get(sbId);
-        getUpdates();
+        // getUpdates();
         ProjectLite p = createProjectLite(sb.getProject().getId());
         return p;
     }
