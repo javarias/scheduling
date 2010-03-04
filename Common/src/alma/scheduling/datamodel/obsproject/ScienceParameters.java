@@ -2,24 +2,28 @@ package alma.scheduling.datamodel.obsproject;
 
 public class ScienceParameters extends ObservingParameters {
 
-    private Double integrationTime;
+    /** Scheduling block duration (seconds) */
+    private Double duration;
     
+    /** Representative bandwidth (GHz) */
     private Double representativeBandwidth;
     
+    /** Representative frequency (GHz) */
     private Double representativeFrequency;
     
+    /** Sensitivy goal (Jy) */
     private Double sensitivityGoal;
 
     public ScienceParameters() {
         super();
     }
     
-    public Double getIntegrationTime() {
-        return integrationTime;
+    public Double getDuration() {
+        return duration;
     }
 
-    public void setIntegrationTime(Double integrationTime) {
-        this.integrationTime = integrationTime;
+    public void setDuration(Double duration) {
+        this.duration = duration;
     }
 
     public Double getRepresentativeBandwidth() {
