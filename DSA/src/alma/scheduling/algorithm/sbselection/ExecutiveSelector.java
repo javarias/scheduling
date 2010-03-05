@@ -21,14 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.8 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.9 2010/03/05 21:44:08 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +38,6 @@ import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
-import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
@@ -67,7 +65,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
     }
     
     /*
-     * in this Selector all the SBs get 1 hour to be completed
+     *
      * (non-Javadoc)
      * @see alma.scheduling.algorithm.sbselection.SchedBlockSelector#select()
      */
@@ -78,11 +76,10 @@ public class ExecutiveSelector implements SchedBlockSelector {
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
         List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
         for(SchedBlock sb: sbs){
+            //TODO: replace the next line with a new method defined in ExecDAO
             PI pi = ((GenericDao)execDao).findById(PI.class, sb.getPiName());
-            Iterator<PIMembership> it = pi.getPIMembership().iterator();
-            Double avTime = availableTime.get(
-                    it.next().getExecutive().getName());
-            if (avTime.doubleValue() >= 1)
+            Double avTime = availableTime.get(execDao.getExecutive(pi.getName()).getName());
+            if (avTime.doubleValue() >= sb.getObsUnitControl().getEstimatedExecutionTime().doubleValue())
                 acceptedSbs.add(sb);
         }
         if(acceptedSbs.size() == 0){
