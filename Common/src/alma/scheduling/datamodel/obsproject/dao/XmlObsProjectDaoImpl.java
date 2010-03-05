@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.8 2010/03/04 22:56:55 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.9 2010/03/05 22:20:49 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -38,10 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnitControl;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
@@ -50,6 +53,7 @@ import alma.scheduling.datamodel.obsproject.WeatherConstraints;
 import alma.scheduling.input.obsproject.generated.FieldSourceT;
 import alma.scheduling.input.obsproject.generated.ObsParametersT;
 import alma.scheduling.input.obsproject.generated.ObsUnitSetT;
+import alma.scheduling.input.obsproject.generated.SchedBlockControlT;
 import alma.scheduling.input.obsproject.generated.SchedBlockT;
 import alma.scheduling.input.obsproject.generated.ScienceParametersT;
 import alma.scheduling.input.obsproject.generated.TargetT;
@@ -146,6 +150,20 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 }
             }
             obsUnitSet.addObsUnit(schedBlock);
+            SchedBlockControlT sbControl = xmlSchedBlock.getSchedBlockControl();
+            if(sbControl!=null){
+                ObsUnitControl ou = new ObsUnitControl();
+                ou.setArrayRequested(ArrayType.valueOf(sbControl.getArrayRequested().toString()));
+                ou.setEstimatedExecutionTime(sbControl.getEstimatedExecutionTime());
+                ou.setLastUpdate(sbControl.getLastUpdate());
+                ou.setMaximumTime(sbControl.getMaximumTime());
+                ou.setTacPriority(sbControl.getTacPriority());
+                ou.setValidUntil(sbControl.getValidUntil());
+                schedBlock.setObsUnitControl(ou);
+                SchedBlockControl sbc = new SchedBlockControl();
+                sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
+                schedBlock.setSchedBlockControl(sbc);
+            }
         }
         ObsUnitSetT[] xmlObsUnitSets = xmlObsUnitSet.getObsUnitSet();
         for (ObsUnitSetT xmlOUS : xmlObsUnitSets) {
