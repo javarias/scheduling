@@ -21,17 +21,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.5 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.6 2010/03/05 18:28:06 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.algorithm.AlgorithmPart;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
@@ -47,7 +49,7 @@ import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 
-public class WeatherUpdater implements ModelUpdater {
+public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
     static final double BOLTZMANN = 1.38e-16 * 1.0e23;  //[Jy/K]
     static final double PLANCK    = 6.626e-34; // [J s]
@@ -66,6 +68,11 @@ public class WeatherUpdater implements ModelUpdater {
     private WeatherHistoryDAO weatherDao;
     
     private Double projTimeIncr;
+
+    /**
+     * Algorithm dependencies, to be set in Spring context file.
+     */
+    private List<AlgorithmPart> dependencies;
     
     public void setDao(AtmParametersDao dao) {
         this.dao = dao;
@@ -313,5 +320,23 @@ public class WeatherUpdater implements ModelUpdater {
         else
             return -1.0;
     }
+
+    public void setAlgorithmPart(List<AlgorithmPart> dependencies) {
+        this.dependencies = dependencies;
+    }
     
+    @Override
+    public List<AlgorithmPart> getAlgorithmDependencies() {
+        return dependencies;
+    }
+
+    @Override
+    public void execute(Date ut) {
+        if (dependencies != null) {
+            for (Iterator<AlgorithmPart> iter = dependencies.iterator(); iter.hasNext();) {
+                iter.next().execute(ut);
+            }
+        }
+        update(ut);
+    }
 }

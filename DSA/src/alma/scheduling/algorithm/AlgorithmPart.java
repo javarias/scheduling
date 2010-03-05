@@ -21,13 +21,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AlgorithmPart.java,v 1.2 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: AlgorithmPart.java,v 1.3 2010/03/05 18:28:06 rhiriart Exp $"
  */
 package alma.scheduling.algorithm;
 
+import java.util.Date;
 import java.util.List;
 
+/**
+ * An AlgorithPart represents a participant in the DSA algorithm. It can
+ * be either a ModelUpdater or a SchedBlockRanker. This interface allows to
+ * follow the dependencies and run all the required ModelUpdaters for a given
+ * iteration of the DSA. At this point the database is ready to perform the
+ * final selection and ranking.
+ */
 public interface AlgorithmPart {
 
+    /**
+     * Get all the AlgorithmParts that need to be executed before the current
+     * Algorithm part can be executed. 
+     */
     List<AlgorithmPart> getAlgorithmDependencies();
+
+    /**
+     * Execute this AlgorithmPart. For a ModelUpdater this means to update the
+     * model, for a SchedBlockRanker it means to execute its dependent AlgorithmParts.
+     * @param ut Current time
+     */
+    void execute(Date ut);
 }
