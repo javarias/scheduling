@@ -4,12 +4,27 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="alma.scheduling.datamodel.obsproject">
     
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ArrayType">
+        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
+    </typedef>
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="SchedBlockState">
+        <param name="enumClassName">alma.scheduling.datamodel.obsproject.SchedBlockState</param>
+    </typedef>
+    
     <class name="ObsUnit" table="OBSUNIT">
         
         <id name="id" column="OBSUNITID">            
             <generator class="native"/>
         </id>
         <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
+        <component name="obsUnitControl" class="ObsUnitControl">
+            <property name="lastUpdate" type="date" column="OBSUNIT_CTRL_LAST_UPDATE"/>
+            <property name="validUntil" type="date" column="OBSUNIT_CTRL_VALID_UNTIL"/>
+            <property name="maximumTime" type="double" column="OBSUNIT_CTRL_MAX_TIME"/>
+            <property name="estimatedExecutionTime" type="double" column="OBSUNIT_CTRL_EXEC_TIME"/>
+            <property name="arrayRequested" type="ArrayType" column="OBSUNIT_CTRL_ARRAY_TYPE"/>
+            <property name="tacPriority" type="int" column="OBSUNIT_CTRL_TAC_PRIORITY"/>
+        </component>
         
         <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
             <key column="SCHEDBLOCKID"/>
@@ -35,6 +50,13 @@
                 <property name="tsys" type="double" column="WEATHER_VARS_TSYS"/>
                 <property name="projectedTsys" type="double" column="WEATHER_VARS_PROJ_TSYS"/>
                 <property name="projectionTimeIncr" type="double" column="WEATHER_VARS_PROJ_DELTA_T"/>
+            </component>
+            <component name="schedBlockControl" class="SchedBlockControl">
+                <property name="lastUpdate" type="date" column="SCHEDBLOCK_CTRL_LAST_UPDATE"/>
+                <property name="validUntil" type="date" column="SCHEDBLOCK_CTRL_VALID_UNTIL"/>
+                <property name="indefiniteRepeat" type="boolean" column="SCHEDBLOCK_CTRL_INDEFINITE"/>
+                <property name="executionCount" type="int" column="SCHEDBLOCK_CTRL_EXEC_COUNT"/>
+                <property name="state" type="SchedBlockState" column="SCHEDBLOCK_CTRL_STATE"/>
             </component>
             <set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
                 <key column="SCHEDBLOCKID"/>

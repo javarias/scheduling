@@ -1,5 +1,7 @@
 package alma.scheduling.datamodel.obsproject;
 
+import java.util.Date;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
@@ -125,6 +127,35 @@ public class ObsUnitTest extends TestCase {
             Target target = new Target(params, src);
             sb.addTarget(target);
             session.saveOrUpdate(sb);
+            tx.commit();
+        } catch(Exception ex) {
+            tx.rollback();
+            throw ex;
+        }        
+    }
+    
+    public void testObsUnitControl() throws Exception {
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            SchedBlock sb = new SchedBlock();
+            sb.setPiName("me");
+            ObsUnitControl ouc = new ObsUnitControl();
+            ouc.setLastUpdate(new Date());
+            ouc.setValidUntil(null);
+            ouc.setMaximumTime(1.0);
+            ouc.setEstimatedExecutionTime(0.5);
+            ouc.setTacPriority(10);
+            ouc.setArrayRequested(ArrayType.TWELVE_M);
+            sb.setObsUnitControl(ouc);
+            SchedBlockControl sbc = new SchedBlockControl();
+            sbc.setLastUpdate(new Date());
+            sbc.setValidUntil(null);
+            sbc.setExecutionCount(1);
+            sbc.setIndefiniteRepeat(false);
+            sbc.setState(SchedBlockState.FULLY_OBSERVED);
+            sb.setSchedBlockControl(sbc);
+            session.save(sb);
             tx.commit();
         } catch(Exception ex) {
             tx.rollback();
