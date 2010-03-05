@@ -64,6 +64,7 @@
                     <xs:element name="InstrumentSpec" type="InstrumentSpecT" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element name="Target" type="TargetT" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element name="FieldSource" type="FieldSourceT" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="SchedBlockControl" type="SchedBlockControlT" minOccurs="1" maxOccurs="1"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -150,4 +151,31 @@
     <xs:complexType name="AssemblyRequirementT">
         <xs:attribute name="name" type="xs:string"/>
     </xs:complexType>
+    <xs:complexType name="SchedBlockControlT">
+    	<xs:sequence>
+    		<xs:element name="LastUpdate" type="xs:dateTime" maxOccurs="1"/>
+    		<xs:element name="ValidUntil" type="xs:dateTime" maxOccurs="1"/>
+    		<xs:element name="MaximumTime" type="xs:double" maxOccurs="1">
+    			<xs:annotation>
+    				<xs:documentation>Time in hours</xs:documentation>
+    			</xs:annotation>
+    		</xs:element>
+    		<xs:element name="EstimatedExecutionTime" type="xs:double" maxOccurs="1">
+    			<xs:annotation>
+    				<xs:documentation>Time in hours</xs:documentation>
+    			</xs:annotation>
+    		</xs:element>
+    		<xs:element name="ArrayRequested" type="ArrayTypeT" maxOccurs="1"/>
+    		<xs:element name="TacPriority" type="xs:int" maxOccurs="1"/>
+    		<xs:element name="IndefiniteRepeat" type="xs:boolean" maxOccurs="1"/>
+    	</xs:sequence>
+    </xs:complexType>
+    	<xs:simpleType name="ArrayTypeT">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACA"/>
+			<xs:enumeration value="SEVEN_M"/>
+			<xs:enumeration value="TP_ARRAY"/>
+			<xs:enumeration value="TWELVE_M"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>
