@@ -8,15 +8,25 @@ import java.util.ArrayList;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
+import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
+import alma.scheduling.dataload.CompositeDataLoader;
+import alma.scheduling.dataload.DataLoader;
+import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.input.config.generated.Configuration;
+import alma.scheduling.output.MasterReporter;
+import alma.scheduling.output.Reporter;
 
 
 public class AprcTool {
+    
+    private static String workDir;
+    
+    private static XmlConfigurationDaoImpl xmlConfigDao;
     
     private static void help(){
         System.out.println("APRC Tool Command Line Interface");
@@ -29,7 +39,9 @@ public class AprcTool {
         System.out.println("go:\t\t loads and run a simulation");
         System.out.println("help:\t\t Display this helpful message");
         System.out.println("\n\noptions:");
-        System.out.println("--working-dir=[path]\t set working path, By default is .");
+        System.out.println("--working-dir=[path]\t set working path, override the APRC_WORK_DIR " +
+        		"environment variable. By default is APRC_WORK_DIR environment variable if it is " +
+        		"available, otherwise .");
     }
     
     public static String[] getOpt(String[] argv, String param){
@@ -66,13 +78,15 @@ public class AprcTool {
             }
             entries[i].mkdir();
         }
-        Configuration config = new Configuration();
+        alma.scheduling.input.config.generated.Configuration config = 
+            new alma.scheduling.input.config.generated.Configuration();
         File configFile = new File(path + "/aprc-config.xml");
         config.setContextFilePath("context.xml");
         config.setProjectDirectory("projects");
         config.setWeatherDirectory("weather");
         config.setObservatoryDirectory("observatory");
         config.setExecutiveDirectory("executives");
+        config.setOutputDirectory("output");
         if(configFile.exists())
             configFile.delete();
         try {
@@ -85,25 +99,41 @@ public class AprcTool {
         
     }
     
-    private static void run(String ctxPath){
-        run(ctxPath, "dsa");
+    private static void load(String ctxPath){
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
+        for(int i = 0; i < loadersNames.length; i++){
+            DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
+            loader.load();
+        }
     }
     
-    private static void run(String ctxPath, String DSABeanName){
-        ApplicationContext ctx = new ClassPathXmlApplicationContext(ctxPath);
-        DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(DSABeanName);
+    private static void run(String ctxPath){
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
+        if(dsaNames.length == 0)
+            throw new IllegalArgumentException("There is not a Dynamic Scheduling Algorithm bean defined in the context.xml file");
+        if(dsaNames.length > 1)
+            throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
+        DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
+        String[] masterReporterNames = ctx.getBeanNamesForType(MasterReporter.class);
         ArrayList<SchedBlock> sbs = new ArrayList<SchedBlock>();
         while(true)
             try {
                 dsa.selectCandidateSB();
                 dsa.rankSchedBlocks();
-                sbs.add(dsa.getSelectedSchedBlock());
-                dsa.updateModel();
+                SchedBlock sb = dsa.getSelectedSchedBlock();
+                sbs.add(sb);
+                for(int i = 0; i < masterReporterNames.length; i++){
+                    Reporter rep = (Reporter) ctx.getBean(masterReporterNames[i]);
+                    rep.report(sb);
+                }
             } catch (NoSbSelectedException e) {
                 System.out.println("DSA finished -- No more suitable SBs to be scheduled");
                 return;
             }
     }
+    
     
     /**
      * @param args
@@ -114,13 +144,28 @@ public class AprcTool {
             help();
             System.exit(1);
         }
+        String tmpWorkDir[] = getOpt(args, "--working-dir");
+        try{
+            if(tmpWorkDir == null)
+                throw new java.lang.IndexOutOfBoundsException();
+            workDir = tmpWorkDir[1];
+            File dir = new File(workDir);
+            if (!dir.exists()){
+                throw new IllegalArgumentException("working-dir parameter doesn't exist", null);
+            }
+        }catch(java.lang.IndexOutOfBoundsException ex){
+            workDir = System.getenv("APRC_WORK_DIR");
+            if (workDir == null){
+                File tmp = new File(".");
+                workDir = tmp.getAbsolutePath();
+            }
+        }
+        System.out.println("Using directory: " + workDir);
+        Configuration config = xmlConfigDao.getConfiguration();
         if(args[0].compareTo("createWorkDir")==0){
             try{
                 System.out.println("Creating Working directory structure");
-                String workDir[] = getOpt(args, "--working-dir");
-                if(workDir[1] == null)
-                    createWorkDir(".");
-                createWorkDir(workDir[1]);
+                createWorkDir(workDir);
             }
             catch(java.lang.NullPointerException ex){
                 help();
@@ -132,10 +177,10 @@ public class AprcTool {
             }
         }
         else if (args[0].compareTo("load")==0){
-            System.out.println("I'm doing something useful 2");
+            load(workDir + "/" +config.getContextFilePath());
         }
         else if (args[0].compareTo("run")==0){
-            run("./context.xml");
+            run(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
