@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.9 2010/03/05 21:44:08 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.10 2010/03/05 21:50:39 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -76,7 +76,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
         List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
         for(SchedBlock sb: sbs){
-            //TODO: replace the next line with a new method defined in ExecDAO
+            //TODO: replace the next line with a new method defined in ExecutiveDAO
             PI pi = ((GenericDao)execDao).findById(PI.class, sb.getPiName());
             Double avTime = availableTime.get(execDao.getExecutive(pi.getName()).getName());
             if (avTime.doubleValue() >= sb.getObsUnitControl().getEstimatedExecutionTime().doubleValue())
