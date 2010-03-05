@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockControl.java,v 1.1 2010/03/05 16:42:29 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockControl.java,v 1.2 2010/03/05 17:10:48 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -62,6 +62,9 @@ public class SchedBlockControl implements Updateable {
      * is FULLY_OBSERVED and the SchedBlock can't be executed again.
      */
     private SchedBlockState state;
+    
+    /** Sensitivity achieved so far (Jy) */
+    private Double achievedSensitivity;
     
     public SchedBlockControl() {
         // nothing here yet
@@ -109,6 +112,14 @@ public class SchedBlockControl implements Updateable {
 
     public void setState(SchedBlockState state) {
         this.state = state;
+    }
+
+    public Double getAchievedSensitivity() {
+        return achievedSensitivity;
+    }
+
+    public void setAchievedSensitivity(Double achievedSensitivity) {
+        this.achievedSensitivity = achievedSensitivity;
     }
     
 }

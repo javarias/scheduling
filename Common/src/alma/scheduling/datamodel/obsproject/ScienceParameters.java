@@ -2,9 +2,6 @@ package alma.scheduling.datamodel.obsproject;
 
 public class ScienceParameters extends ObservingParameters {
 
-    /** Scheduling block duration (seconds) */
-    private Double duration;
-    
     /** Representative bandwidth (GHz) */
     private Double representativeBandwidth;
     
@@ -18,14 +15,6 @@ public class ScienceParameters extends ObservingParameters {
         super();
     }
     
-    public Double getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Double duration) {
-        this.duration = duration;
-    }
-
     public Double getRepresentativeBandwidth() {
         return representativeBandwidth;
     }

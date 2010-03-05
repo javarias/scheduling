@@ -12,7 +12,6 @@
         
         <joined-subclass name="ScienceParameters" table="SCIENCE_PARAMETERS">
             <key column="ID"/>
-            <property name="duration" column="DURATION"/>
             <property name="representativeBandwidth" column="REPR_BANDWIDTH"/>
             <property name="representativeFrequency" column="REPR_FREQUENCY"/>
             <property name="sensitivityGoal" column="SENSITIVITY_GOAL"/>
