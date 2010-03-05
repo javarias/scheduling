@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AlgorithmPart.java,v 1.3 2010/03/05 18:28:06 rhiriart Exp $"
+ * "@(#) $Id: AlgorithmPart.java,v 1.4 2010/03/05 18:30:22 rhiriart Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -44,8 +44,9 @@ public interface AlgorithmPart {
     List<AlgorithmPart> getAlgorithmDependencies();
 
     /**
-     * Execute this AlgorithmPart. For a ModelUpdater this means to update the
-     * model, for a SchedBlockRanker it means to execute its dependent AlgorithmParts.
+     * Execute this AlgorithmPart. For a ModelUpdater this means to execute all its
+     * own AlgorithmParts, and then update the model, while for a SchedBlockRanker it
+     * means to execute its dependent AlgorithmParts.
      * @param ut Current time
      */
     void execute(Date ut);
