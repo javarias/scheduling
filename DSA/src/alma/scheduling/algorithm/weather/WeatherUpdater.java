@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.6 2010/03/05 18:28:06 rhiriart Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.7 2010/03/06 01:25:06 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.AlgorithmPart;
+import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
@@ -49,54 +50,78 @@ import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 
+/**
+ * The WeatherUpdater calculates the current and projected Tsys (for a given
+ * delta T) and updates the proper columns in the database. These values are used
+ * in a subsequent selector, where the criteria is that a SchedBlock cannot be
+ * selected if the projected Tsys is different that the current Tsys for more that
+ * a given percentage.
+ * 
+ */
 public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
-    static final double BOLTZMANN = 1.38e-16 * 1.0e23;  //[Jy/K]
-    static final double PLANCK    = 6.626e-34; // [J s]
-    static final double LIGHTSPEED= 2.99792458e8; //[m/s]
-
     private static Logger logger = LoggerFactory.getLogger(WeatherUpdater.class);
-        
+    
+    // --- Spring set properties and accessors ---
+    
     private ConfigurationDao configDao;
-    
-    private AtmParametersDao dao;
-
-    private SchedBlockDao schedBlockDao;
-    
-    private SchedBlockSelector selector;
-    
-    private WeatherHistoryDAO weatherDao;
-    
-    private Double projTimeIncr;
-
-    /**
-     * Algorithm dependencies, to be set in Spring context file.
-     */
-    private List<AlgorithmPart> dependencies;
-    
-    public void setDao(AtmParametersDao dao) {
-        this.dao = dao;
-    }
-    
-    public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
-        this.schedBlockDao = schedBlockDao;
-    }
-    
-    public void setSelector(SchedBlockSelector selector) {
-        this.selector = selector;
-    }
-    
-    public void setWeatherDao(WeatherHistoryDAO weatherDao) {
-        this.weatherDao = weatherDao;
-    }
-    
     public void setConfigDao(ConfigurationDao configDao) {
         this.configDao = configDao;
     }
     
+    private AtmParametersDao dao;
+    public void setDao(AtmParametersDao dao) {
+        this.dao = dao;
+    }
+
+    private SchedBlockDao schedBlockDao;
+    public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
+        this.schedBlockDao = schedBlockDao;
+    }
+    
+    private SchedBlockSelector selector;
+    public void setSelector(SchedBlockSelector selector) {
+        this.selector = selector;
+    }
+    
+    private WeatherHistoryDAO weatherDao;
+    public void setWeatherDao(WeatherHistoryDAO weatherDao) {
+        this.weatherDao = weatherDao;
+    }
+    
+    private Double projTimeIncr;
     public void setProjTimeIncr(Double projTimeIncr) {
         this.projTimeIncr = projTimeIncr;
     }
+
+    private List<AlgorithmPart> dependencies;
+    public void setAlgorithmPart(List<AlgorithmPart> dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    /**
+     * Zero-args constructor.
+     */
+    public WeatherUpdater() {}
+    
+    // --- AlgorithmPart interface implementation ---
+    
+    @Override
+    public List<AlgorithmPart> getAlgorithmDependencies() {
+        return dependencies;
+    }
+
+    @Override
+    public void execute(Date ut) {
+        if (dependencies != null) {
+            for (Iterator<AlgorithmPart> iter = dependencies.iterator(); iter.hasNext();) {
+                iter.next().execute(ut);
+            }
+        }
+        update(ut);
+    }    
+    
+    // --- ModelUpdater interface implementation ---
     
     @Override
     public boolean needsToUpdate(Date date) {
@@ -136,9 +161,18 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
             Target target = sb.getSchedulingConstraints().getRepresentativeTarget();
             FieldSource src = target.getSource();
             double decl = src.getCoordinates().getDec(); // degrees
-            double tsys = getTsys(decl, latitude, frequency, pwv);
+            
+            double[] tmp = interpolateOpacityAndTemperature(pwv, frequency);
+            double tau_zero = tmp[0];
+            double Tatm = tmp[1];
+            double tsys = SystemTemperatureCalculator.getTsys(decl, latitude, frequency, tau_zero, Tatm);
             logger.info("tsys: " + tsys);
-            double ptsys = getTsys(decl, latitude, frequency, ppwv);
+            
+            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
+            tau_zero = tmp[0];
+            Tatm = tmp[1];
+            double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude, frequency, tau_zero, Tatm);
+            
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
             vars.setProjectedTsys(ptsys);
@@ -148,6 +182,8 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         }        
     }
 
+    // --- Internal functions ---
+    
     /**
      * Estimate Precipitable Water Vapor (PWV)
      * 
@@ -175,8 +211,20 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         logger.debug("h = " + h);
         return h * 1E3; // in mm
     }
-    
-    protected double[] interpolateOpacityAndTemperature(double pwv, double freq) {
+
+    /**
+     * Interpolates the opacity and the atmospheric brightness temperature.
+     * 
+     * The ATM tables, stored in the database, can be seen as two surface maps. One
+     * gives the opacity for (pwv, freq), and the other the atmospheric brightness temperature
+     * for (pwv, freq). This routine interpolates these surface maps.
+     * 
+     * @param pwv Precipitable water vapor (mm)
+     * @param freq Frequency (GHz)
+     * @return an array with two values, the first one is the opacity (nepers) and the second
+     * the atmospheric brightness temperature (K)
+     */
+    private double[] interpolateOpacityAndTemperature(double pwv, double freq) {
         double[] retVal = new double[2];
         logger.debug("pwv: " + pwv);
         logger.debug("freq: " + freq);
@@ -224,119 +272,17 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         }
         return retVal;
     }
-    
+
+    /**
+     * A simple linear interpolation routine.
+     * @param x independent variable to interpolate, should be between x1 and x2
+     * @param x1 independent variable value 1
+     * @param x2 independent variable value 2
+     * @param y1 dependent variable value for x1
+     * @param y2 dependent variable value for x2
+     * @return interpolation for the dependent variable, for the value x
+     */
     private double interpolate(double x, double x1, double x2, double y1, double y2) {
         return y1 + ( y2 - y1 ) * ( x - x1 ) / ( x2 - x1 );
-    }
-    
-    protected double getTsys(double decDeg, double latitudeDeg, double frequencyGHz, double pwv ) {
-                
-        double latitudeRad = Math.toRadians(latitudeDeg);
-        double decRad = Math.toRadians(decDeg);
-
-        double sinDec = Math.sin(decRad);
-        double sinLat = Math.sin(latitudeRad);
-        double cosDec = Math.cos(decRad);
-        double cosLat = Math.cos(latitudeRad);
-        double sinAltitude = sinDec * sinLat + cosDec * cosLat; // missing cosH?
-        
-        double Airmass = 1.0 / sinAltitude;
-
-        double Tamb = 270; // Ambient temperature (260 - 280 K)
-        double eta_feed = 0.95; // forward efficiency
-        double Trx = getReceiverTemperature(frequencyGHz);
-        
-        double[] tmp = interpolateOpacityAndTemperature(pwv, frequencyGHz);
-        double tau_zero = tmp[0];
-        double Tatm = tmp[1];
-        
-        double f = Math.exp(tau_zero * Airmass);
-        double Tcmb = 2.725; // [K]
-        
-        Trx  = planck(frequencyGHz, Trx);
-        Tatm = planck(frequencyGHz, Tatm);
-        Tamb = planck(frequencyGHz, Tamb);
-
-        double Tsys =
-            (Trx
-                    + Tatm
-                    * eta_feed
-                    * (1.0 - 1 / f)
-                    + Tamb * (1.0 - eta_feed));
-        // GHz, K
-        Tsys = f * Tsys + Tcmb;
-        return Tsys;
-    }
-
-    /**
-     * Planck correction for temperature
-     * 
-     * @param frequencyGHz [GHz]
-     * @param temp[K]
-     * @return corrected temperature[K]
-     */
-    private double planck(double frequencyGHz, double temp) {
-        final double k = 1.38E-23;
-        double f = frequencyGHz * 1.0E9; // [Hz]
-        
-        double arg0 = PLANCK * f / k;
-        double ret = arg0 / (Math.exp(arg0 / temp) - 1.0);
-
-        return ret;
-    }
-    
-    /**
-     * Return the receiver temperature
-     * 
-     * @param frequency in GHz.
-     * @return receiver temperature in deg. K
-     * 
-     * TODO AB Replace this quick and dirty impl. by one using the Receiver class.
-     * 
-     * @author ab
-     *
-     */
-    private double getReceiverTemperature (double frequency) {
-        if (frequency >=31.3 && frequency <= 45.0)
-            return 17.0;
-        else if (frequency >=67.0 && frequency <= 90.0)
-            return 30.0;
-        else if (frequency >=84.0 && frequency <= 116.0)
-            return 37.0;
-        else if (frequency >=125.0 && frequency < 163.0)
-            return 51.0;
-        else if (frequency >=163.0 && frequency < 211.0)
-            return 65.0;
-        else if (frequency >=211.0 && frequency < 275.0)
-            return 83.0;
-        else if (frequency >=275.0 && frequency <= 373.0)
-            return 147.0;
-        else if (frequency >=385.0 && frequency <= 500.0)
-            return 196.0;
-        else if (frequency >=602.0 && frequency <= 720.0)
-            return 175.0;
-        else if (frequency >=787.0 && frequency <= 950.0)
-            return 230.0;
-        else
-            return -1.0;
-    }
-
-    public void setAlgorithmPart(List<AlgorithmPart> dependencies) {
-        this.dependencies = dependencies;
-    }
-    
-    @Override
-    public List<AlgorithmPart> getAlgorithmDependencies() {
-        return dependencies;
-    }
-
-    @Override
-    public void execute(Date ut) {
-        if (dependencies != null) {
-            for (Iterator<AlgorithmPart> iter = dependencies.iterator(); iter.hasNext();) {
-                iter.next().execute(ut);
-            }
-        }
-        update(ut);
-    }
+    }    
 }
