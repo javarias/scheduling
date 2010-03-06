@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.9 2010/03/05 22:20:49 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.10 2010/03/06 01:28:31 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -142,7 +142,6 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSchedBlock.getObsParameters().getScienceParameters();
                 if (xmlSciParams != null) {
                     ScienceParameters scip = new ScienceParameters();
-                    scip.setDuration(xmlSciParams.getDuration());
                     scip.setRepresentativeBandwidth(xmlSciParams.getRepresentativeBandwidth());
                     scip.setRepresentativeFrequency(xmlSciParams.getRepresentativeFrequency());
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
