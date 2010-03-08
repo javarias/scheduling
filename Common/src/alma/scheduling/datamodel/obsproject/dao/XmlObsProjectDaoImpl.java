@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.11 2010/03/08 18:31:37 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.12 2010/03/08 21:21:24 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -157,10 +157,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 ObsUnitControl ou = new ObsUnitControl();
                 ou.setArrayRequested(ArrayType.valueOf(sbControl.getArrayRequested().toString()));
                 ou.setEstimatedExecutionTime(sbControl.getEstimatedExecutionTime());
-                ou.setLastUpdate(sbControl.getLastUpdate());
                 ou.setMaximumTime(sbControl.getMaximumTime());
                 ou.setTacPriority(sbControl.getTacPriority());
-                ou.setValidUntil(sbControl.getValidUntil());
                 schedBlock.setObsUnitControl(ou);
                 SchedBlockControl sbc = new SchedBlockControl();
                 sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
