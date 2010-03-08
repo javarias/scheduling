@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.10 2010/03/06 01:28:31 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.11 2010/03/08 18:31:37 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -92,7 +92,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 prj.setStatus("ready");
                 alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
                     xmlPrj.getObsUnitSet();
-                ObsUnitSet obsUnitSet = createObsUnitSet(xmlObsUnitSet);
+                ObsUnitSet obsUnitSet = createObsUnitSet(xmlObsUnitSet, xmlPrj.getPrincipalInvestigator());
                 prj.setObsUnit(obsUnitSet);
                 retVal.add(prj);
             } catch (MarshalException e) {
@@ -113,13 +113,16 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
      * @param xmlObsUnitSet ObsUnitSet Castor generated class
      * @return ObsUnitSet data model object
      */
-    private ObsUnitSet createObsUnitSet(alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet) {
+    private ObsUnitSet createObsUnitSet(alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet,
+            String piName) {
+        // TODO It is not currently clear that the piName should be in the SchedBlock.
+        // The link between ObsProject and ObsUnit should be bi-directional.
         ObsUnitSet obsUnitSet = new ObsUnitSet();
         alma.scheduling.input.obsproject.generated.SchedBlockT[] xmlSchedBlocks = 
             xmlObsUnitSet.getSchedBlock();
         for (SchedBlockT xmlSchedBlock : xmlSchedBlocks) {
             SchedBlock schedBlock = new SchedBlock();
-            schedBlock.setPiName("");
+            schedBlock.setPiName(piName);
             WeatherConstraints wc = new WeatherConstraints(
                     xmlSchedBlock.getWeatherConstraints().getMaxWindVelocity(),
                     xmlSchedBlock.getWeatherConstraints().getMaxOpacity(),
@@ -166,7 +169,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         }
         ObsUnitSetT[] xmlObsUnitSets = xmlObsUnitSet.getObsUnitSet();
         for (ObsUnitSetT xmlOUS : xmlObsUnitSets) {
-            ObsUnitSet ous = createObsUnitSet(xmlOUS);
+            ObsUnitSet ous = createObsUnitSet(xmlOUS, piName);
             obsUnitSet.addObsUnit(ous);
         }
         return obsUnitSet;
