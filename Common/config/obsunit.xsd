@@ -153,8 +153,6 @@
     </xs:complexType>
     <xs:complexType name="SchedBlockControlT">
     	<xs:sequence>
-    		<xs:element name="LastUpdate" type="xs:dateTime" maxOccurs="1"/>
-    		<xs:element name="ValidUntil" type="xs:dateTime" maxOccurs="1"/>
     		<xs:element name="MaximumTime" type="xs:double" maxOccurs="1">
     			<xs:annotation>
     				<xs:documentation>Time in hours</xs:documentation>
