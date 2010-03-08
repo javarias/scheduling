@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="output.xsd">
-  <availableTime>0.0</availableTime>
+  <availableTime>2.0</availableTime>
   <maintenanceTime>0.0</maintenanceTime>
   <operationTime>0.0</operationTime>
   <scientificTime>0.0</scientificTime>
   <Array arrayID="NCName1">
-    <availablelTime>2001-01-01</availablelTime>
+    <availableTime>1.0</availableTime>
     <baseline>0.0</baseline>
     <creationDate>2001-01-01</creationDate>
     <deletionDate>2001-01-01</deletionDate>
     <maintenanceTime>0.0</maintenanceTime>
     <scientificTime>0.0</scientificTime>
   </Array>
-    <Array arrayID="NCName2">
-    <availablelTime>2001-01-01</availablelTime>
+  <Array arrayID="NCName2">
+    <availableTime>1.0</availableTime>
     <baseline>0.0</baseline>
     <creationDate>2001-01-01</creationDate>
     <deletionDate>2001-01-01</deletionDate>
@@ -21,12 +21,12 @@
     <scientificTime>0.0</scientificTime>
   </Array>
   <ObservationProject>
-    <executionTime>2001-01-01</executionTime>
+    <executionTime>1.0</executionTime>
     <scienceRating>0</scienceRating>
     <status>COMPLETE</status>
     <SchedBlock>
       <endDate>2001-01-01</endDate>
-      <executionTime>0.0</executionTime>
+      <executionTime>0.1</executionTime>
       <mode>mode</mode>
       <startDate>2001-01-01</startDate>
       <status>COMPLETE</status>
