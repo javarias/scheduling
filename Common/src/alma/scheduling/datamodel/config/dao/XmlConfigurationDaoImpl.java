@@ -21,14 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.5 2010/03/04 00:14:09 javarias Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.6 2010/03/08 22:35:13 javarias Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -41,6 +40,8 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
 
     public static final String APRC_WORK_DIR = "APRC_WORK_DIR";
     public static final String APRC_CONF_FILE = "aprc-config.xml";
+    
+    private Configuration config = null;
     
     private static Logger logger = LoggerFactory.getLogger(XmlConfigurationDaoImpl.class);
     
@@ -56,10 +57,12 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
         }
         
         try {
+            if(config != null)
+                return config;
             FileReader reader = new FileReader(confFileName);
             alma.scheduling.input.config.generated.Configuration xmlConfig =
                 alma.scheduling.input.config.generated.Configuration.unmarshalConfiguration(reader);
-            Configuration config = new Configuration();
+            config = new Configuration();
             config.setWorkDirectory(System.getenv(APRC_WORK_DIR));
             config.setProjectDirectory(xmlConfig.getProjectDirectory());
             config.setWeatherDirectory(xmlConfig.getWeatherDirectory());
@@ -83,4 +86,13 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
         return null;
     }
 
+    /**
+     * Not implemented in XML implementation
+     */
+    @Override
+    public void updateConfig() {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }
