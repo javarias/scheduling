@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservability.java,v 1.3 2010/03/09 16:38:16 rhiriart Exp $"
+ * "@(#) $Id: FieldSourceObservability.java,v 1.4 2010/03/09 16:40:52 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -99,6 +99,22 @@ public class FieldSourceObservability implements Updateable {
 
     public void setSettingTime(Double settingTime) {
         this.settingTime = settingTime;
+    }
+
+    public Boolean getAlwaysVisible() {
+        return alwaysVisible;
+    }
+
+    public void setAlwaysVisible(Boolean alwaysVisible) {
+        this.alwaysVisible = alwaysVisible;
+    }
+
+    public Boolean getAlwaysHidden() {
+        return alwaysHidden;
+    }
+
+    public void setAlwaysHidden(Boolean alwaysHidden) {
+        this.alwaysHidden = alwaysHidden;
     }
     
 }
