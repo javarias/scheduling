@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.1 2010/02/24 20:58:05 rhiriart Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.2 2010/03/09 01:52:15 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -80,7 +80,7 @@ public class TimeUtil {
     }
     
     /**
-     * Get the Greenwich Mean sidereal time (GST).
+     * Get the Greenwich Mean sidereal time (GST) from UT.
      * 
      * @param year Year
      * @param month Month (1-12)
@@ -106,18 +106,13 @@ public class TimeUtil {
     /** 
      * Get Local Sidereal Time (LST).
      * @param gst Greenwich Sidereal Time, in decimal hours
-     * @param longitude Longitude, in degrees
-     * @param longDir Longitude direction, either 'E' or 'W'
+     * @param longitude Longitude (degrees, 'E' is positive and 'W' is negative)
      * @return LST, in hours
      */
-    public static double getLocalSiderealTime(double gst, double longitude, char longDir) {
+    public static double getLocalSiderealTime(double gst, double longitude) {
         double lst = gst;
         double tdiff = longitude / 15.0;
-        if (longDir == 'W') {
-            lst = lst - tdiff;
-        } else if (longDir == 'E') {
-            lst = lst + tdiff;
-        }
+        lst = lst + tdiff;
         if (lst > 24.0) {
             lst = lst - 24.0;
         }
@@ -125,6 +120,63 @@ public class TimeUtil {
             lst = lst + 24.0;
         }
         return lst;
+    }
+
+    // TODO change names
+    public static double gstToLST(double gst, double longitude) {
+        return getLocalSiderealTime(gst, longitude);
+    }
+    
+    public static double lstToGST(double lst, double longitude) {
+        double gst = lst;
+        double longHours = longitude / 15.0;
+        gst = gst - longHours;
+        if (gst > 24.0) {
+            gst -= 24.0;
+        }
+        if (gst < 0) {
+            gst += 24.0;
+        }
+        return gst;
+    }
+    
+    public static double utToGST(Date ut) {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.setTime(ut);
+        double hour = cal.get(Calendar.HOUR_OF_DAY) +
+            cal.get(Calendar.MINUTE) / 60.0 + cal.get(Calendar.SECOND) / 3600.0 +
+            cal.get(Calendar.MILLISECOND) / 3600000.0;
+        return getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH), hour);
+    }
+    
+    public static Date gstToUT(double gst, int year, int month, int day) {
+        double jd = getJulianDate(year, month, day);
+        logger.debug("JD = " + jd);
+        double s = jd - 2451545.0;
+        double t = s / 36525.0;
+        double t0 = 6.697374558 + 2400.051336 * t + 0.000025862 * t * t;
+        logger.debug("t0 = " + t0);
+        t0 = t0 % 24;
+        gst = ( gst - t0 ) % 24;
+        double ut = gst * 0.9972695663;
+        logger.debug("UT = " + ut);
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        int hours = (int) ut;
+        double tmp = (ut - hours) * 60.0;
+        int minutes = (int) tmp;
+        tmp = (tmp - minutes) * 60.0;
+        int seconds = (int) tmp;
+        tmp = (tmp - seconds) * 1000.0;
+        int milliseconds = (int) tmp;
+        cal.set(Calendar.HOUR_OF_DAY, hours);
+        cal.set(Calendar.MINUTE, minutes);
+        cal.set(Calendar.SECOND, seconds);
+        cal.set(Calendar.MILLISECOND, milliseconds);
+        return cal.getTime();
     }
     
     public static double toDecimalHours(int hours, int minutes, double seconds) {

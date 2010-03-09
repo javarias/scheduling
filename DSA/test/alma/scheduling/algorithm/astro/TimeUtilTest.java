@@ -1,7 +1,9 @@
 package alma.scheduling.algorithm.astro;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -44,12 +46,37 @@ public class TimeUtilTest extends TestCase {
         double utHours = TimeUtil.toDecimalHours(14, 36, 51.67);
         double gst = TimeUtil.getGreenwichMeanSiderealTime(1980, 4, 22, utHours);
         logger.info("gst = " + gst);
+        
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 1980);
+        cal.set(Calendar.MONTH, 4);
+        cal.set(Calendar.DAY_OF_MONTH, 22);
+        cal.set(Calendar.HOUR_OF_DAY, 14);
+        cal.set(Calendar.MINUTE, 36);
+        cal.set(Calendar.SECOND, 51);
+        cal.set(Calendar.MILLISECOND, 670);
+        gst = TimeUtil.utToGST(cal.getTime());
+        logger.info("gst = " + gst);        
     }
 
     public void testGetLST() {
         double gst = TimeUtil.toDecimalHours(4, 40, 5.23);
-        double lst = TimeUtil.getLocalSiderealTime(gst, 64.0, 'W');
+        double lst = TimeUtil.getLocalSiderealTime(gst, -64.0);
         logger.info("lst = " + lst);
+    }
+    
+    public void testGstToUt() {
+        double gst = TimeUtil.toDecimalHours(4, 40, 5.23);
+        Date ut = TimeUtil.gstToUT(gst, 1980, 4, 22);
+        DateFormat df = DateFormat.getTimeInstance(DateFormat.FULL);
+        df.setTimeZone(TimeZone.getTimeZone("UT"));
+        logger.info("ut = " + df.format(ut)); // curiously, this prints the wrong TZ
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.setTime(ut);
+        logger.info("hours = " + cal.get(Calendar.HOUR_OF_DAY));
+        logger.info("minutes = " + cal.get(Calendar.MINUTE));
+        logger.info("seconds = " + cal.get(Calendar.SECOND));
+        logger.info("milliseconds = " + cal.get(Calendar.MILLISECOND));
     }
     
 }

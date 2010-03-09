@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2010/02/04 21:28:09 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.3 2010/03/09 01:52:15 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -123,7 +123,7 @@ SchedulingDSA_DIRS= alma
 SchedulingDSA_EXTRAS=
 #
 # java sources in Jarfile on/off
-DEBUG= 
+DEBUG=on
 #
 # ACS XmlIdl generation on/off
 #
