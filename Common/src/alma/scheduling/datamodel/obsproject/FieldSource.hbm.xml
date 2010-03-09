@@ -19,7 +19,10 @@
             <property name="Dec" type="double" column="DEC"/>
         </component>
         <component name="observability" class="FieldSourceObservability">
-            <property name="visible" type="boolean" column="IS_VISIBLE"/>
+            <property name="azimuthRising" type="boolean" column="IS_VISIBLE"/>
+            <property name="azimuthSetting" type="boolean" column="IS_VISIBLE"/>
+            <property name="risingTime" type="boolean" column="IS_VISIBLE"/>
+            <property name="settingTime" type="boolean" column="IS_VISIBLE"/>
             <property name="lastUpdate" type="date" column="LAST_UPDATE"/>
             <property name="validUntil" type="date" column="VALID_UNTIL"/>
         </component>

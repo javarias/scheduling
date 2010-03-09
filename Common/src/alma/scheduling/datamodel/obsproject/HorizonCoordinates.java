@@ -21,40 +21,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SkyCoordinates.java,v 1.2 2010/03/09 01:51:24 rhiriart Exp $"
+ * "@(#) $Id: HorizonCoordinates.java,v 1.1 2010/03/09 01:51:24 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
-public class SkyCoordinates {
+public class HorizonCoordinates {
 
-    /** Rigth ascension (degrees) */
-    private Double RA;
+    /** Azimuth (degrees) */
+    private Double azimuth;
     
-    /** Declination (degrees) */
-    private Double Dec;
+    /** Altitude (degrees) */
+    private Double altitude;
 
-    public SkyCoordinates() { }
+    public HorizonCoordinates() { }
+
+    public HorizonCoordinates(Double azimuth, Double altitude) {
+        super();
+        this.azimuth = azimuth;
+        this.altitude = altitude;
+    }
+
+    public Double getAzimuth() {
+        return azimuth;
+    }
+
+    public void setAzimuth(Double azimuth) {
+        this.azimuth = azimuth;
+    }
+
+    public Double getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(Double altitude) {
+        this.altitude = altitude;
+    }
     
-    public SkyCoordinates(Double rA, Double dec) {
-        RA = rA;
-        Dec = dec;
-    }
-
-    public Double getRA() {
-        return RA;
-    }
-
-    public void setRA(Double rA) {
-        RA = rA;
-    }
-
-    public Double getDec() {
-        return Dec;
-    }
-
-    public void setDec(Double dec) {
-        Dec = dec;
-    }
     
     
 }

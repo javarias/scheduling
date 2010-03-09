@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservability.java,v 1.1 2010/01/29 21:50:49 rhiriart Exp $"
+ * "@(#) $Id: FieldSourceObservability.java,v 1.2 2010/03/09 01:51:24 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -31,19 +31,21 @@ import alma.scheduling.datamodel.Updateable;
 
 public class FieldSourceObservability implements Updateable {
 
-    private boolean visible;
+    /** Direction of source appareance (degrees) */
+    private Double azimuthRising;
+    
+    /** Direction of source disappareance (degrees) */
+    private Double azimuthSetting;
+    
+    /** Rising time (UTC decimal hours) */
+    private Double risingTime;
+    
+    /** Setting time (UTC decimal hours) */
+    private Double settingTime;
     
     private Date lastUpdate;
     
     private Date validUntil;
-
-    public boolean getVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
 
     public Date getLastUpdate() {
         return lastUpdate;
@@ -59,6 +61,38 @@ public class FieldSourceObservability implements Updateable {
 
     public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
+    }
+
+    public Double getAzimuthRising() {
+        return azimuthRising;
+    }
+
+    public void setAzimuthRising(Double azimuthRising) {
+        this.azimuthRising = azimuthRising;
+    }
+
+    public Double getAzimuthSetting() {
+        return azimuthSetting;
+    }
+
+    public void setAzimuthSetting(Double azimuthSetting) {
+        this.azimuthSetting = azimuthSetting;
+    }
+
+    public Double getRisingTime() {
+        return risingTime;
+    }
+
+    public void setRisingTime(Double risingTime) {
+        this.risingTime = risingTime;
+    }
+
+    public Double getSettingTime() {
+        return settingTime;
+    }
+
+    public void setSettingTime(Double settingTime) {
+        this.settingTime = settingTime;
     }
     
 }
