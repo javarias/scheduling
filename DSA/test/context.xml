@@ -64,6 +64,12 @@
     <!-- enable transactional behavior based on annotations -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
     
+<!-- The transaction manager -->
+    <bean id="transactionManager" 
+    	class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
 <!-- DAO Beans -->
     <bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
@@ -71,6 +77,21 @@
     <bean id="sbDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+    <bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.WeatherHistoryDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+	<bean id="atmDao" class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+	
+	<bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+	<bean id="schedBlockDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>	
     
  <!-- XML DAO Beans -->
     <bean id="configDao" class="alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl"/>
@@ -79,32 +100,133 @@
     	<property name="configDao" ref="configDao"/>
     </bean>
     
-<!-- The transaction manager -->
-    <bean id="transactionManager" 
-    	class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-    	<property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="xmlObsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDaoImpl">
+		<property name="configurationDao" ref="configDao"/>
+	</bean>
     
-<!-- My Test Algorithm Beans -->
-	<bean id="sciRanker" class="alma.scheduling.algorithm.sbranking.ScienceGradeRanker">
+<!-- DataLoaders Beans -->
+	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
+		<property name="loaders">
+			<list>
+				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
+					<property name="xmlDao" ref="xmlObsProjectDao"/>
+					<property name="dao" ref="obsProjectDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
+					<property name="dbDao" ref="execDao"/>
+					<property name="xmlDao" ref="xmlConfigDao"/>
+				</bean>
+			</list>
+		</property>
+	</bean>	
+
+    <!-- Weather Algorithm Beans -->
+	<bean id="weatherDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
+	    <property name="loaders">
+	        <list>
+	            <bean class="alma.scheduling.dataload.TemperatureDataLoader">
+	                <property name="file" value="data/Temp_average_15min_all.dat"/>
+	                <property name="dao" ref="weatherDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.WindSpeedDataLoader">
+	                <property name="file" value="data/WindSpeed_average_15min_all.dat"/>
+	                <property name="dao" ref="weatherDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0001.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="0.4722"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0002.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="0.658"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0003.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="0.9134"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0004.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="1.262"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0005.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="1.796"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0006.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="2.748"/>
+	            </bean>
+	            <bean class="alma.scheduling.dataload.AtmDataLoader">
+	                <property name="file" value="data/SKY.SPE0007.trim"/>
+	                <property name="dao" ref="atmDao"/>
+	                <property name="maxNumRecords" value="100"/>
+	                <property name="pwc" value="5.186"/>
+	            </bean>
+	        </list>
+	    </property>
 	</bean>
 
+    
+<!-- My Test Algorithm Beans -->
+
+	<!-- Selectors -->
 	<bean id="execSelector" class="alma.scheduling.algorithm.sbselection.ExecutiveSelector">
 		<property name="execDao" ref="execDao"/>
 		<property name="sbDao" ref="sbDao"/>
 	</bean>
+	
+	<bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector">
+		<property name="schedBlockDao" ref="schedBlockDao"/>
+	</bean>
 
+	<!-- Rankers -->
+	<bean id="sciRanker" class="alma.scheduling.algorithm.sbranking.ScienceGradeRanker"/>
+	
+	<!-- Algorithm -->
 	<bean id="dsa" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl">
 	<property name="ranker" ref="sciRanker"/>
 		<property name="selectors">
 		<set>
 			<ref bean="execSelector" />
+			<ref bean="weatherSelector"/>
 		</set>
 		</property>
 	</bean>
 	
-	<bean id="reporter" class="alma.scheduling.output.ExecutiveReporter">
+<!-- Reporters -->
+	<bean id="execReporter" class="alma.scheduling.output.ExecutiveReporter">
 		<property name="execDao" ref="execDao" />
+	</bean>
+	
+	<bean id="reporter" class="alma.scheduling.output.MasterReporter">
+		<property name="reporters">
+		<set>
+			<ref bean="execReporter"/>
+		</set>
+		</property>
+	</bean>
+
+<!-- Updaters -->
+	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.WeatherUpdater">
+		<property name="dao" ref="atmDao"/>
+		<property name="selector" ref="weatherSelector"/>
+		<property name="weatherDao" ref="weatherDao"/>
+		<property name="configDao" ref="configDao"/>
+		<property name="projTimeIncr" value="0.5"/>
 	</bean>
    
 </beans>

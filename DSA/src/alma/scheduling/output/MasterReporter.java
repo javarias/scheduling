@@ -22,10 +22,6 @@ public class MasterReporter implements Reporter {
         }
     }
 
-    public List<Reporter> getReporters() {
-        return reporters;
-    }
-
     public void setReporters(List<Reporter> reporters) {
         this.reporters = reporters;
     }

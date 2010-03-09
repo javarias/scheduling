@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.6 2010/03/08 22:35:13 javarias Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.7 2010/03/09 00:00:19 javarias Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
@@ -87,11 +87,10 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
     }
 
     /**
-     * Not implemented in XML implementation
+     * Not implemented 
      */
     @Override
     public void updateConfig() {
-        // TODO Auto-generated method stub
         
     }
     

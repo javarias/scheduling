@@ -22,14 +22,14 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
     public Configuration getConfiguration() {
         if(config != null)
             return config;
-        config = xmlDao.getConfiguration();
+        config = xmlDao.getConfiguration(); 
         Query query = getSession().createQuery("from Configuration as config"
-                + "order by os.lastLoad desc");
+                + " order by config.lastLoad desc");
         query.setMaxResults(1);
         if(query.list().size() == 0)
             config.setLastLoad(null);
         else
-            config.setLastLoad((Date) query.list().get(0));
+            config.setLastLoad(((Configuration) query.list().get(0)).getLastLoad());
         return config;
     }
 

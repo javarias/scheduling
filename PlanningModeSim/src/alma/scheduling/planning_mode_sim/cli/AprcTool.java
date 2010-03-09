@@ -16,6 +16,8 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.dataload.CompositeDataLoader;
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.output.MasterReporter;
@@ -26,7 +28,7 @@ public class AprcTool {
     
     private static String workDir;
     
-    private static XmlConfigurationDaoImpl xmlConfigDao;
+    private static ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
     
     private static void help(){
         System.out.println("APRC Tool Command Line Interface");
@@ -87,6 +89,7 @@ public class AprcTool {
         config.setObservatoryDirectory("observatory");
         config.setExecutiveDirectory("executives");
         config.setOutputDirectory("output");
+        config.setContextFilePath("context.xml");
         if(configFile.exists())
             configFile.delete();
         try {
@@ -102,10 +105,17 @@ public class AprcTool {
     private static void load(String ctxPath){
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
+        String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
+        if(cfgBeans.length == 0){
+            System.out.println(ctxPath + " file doesn't contain a bean of the type lma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
+            System.exit(1);
+        }
         for(int i = 0; i < loadersNames.length; i++){
             DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
             loader.load();
         }
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
+        configDao.updateConfig();
     }
     
     private static void run(String ctxPath){
@@ -151,7 +161,7 @@ public class AprcTool {
             workDir = tmpWorkDir[1];
             File dir = new File(workDir);
             if (!dir.exists()){
-                throw new IllegalArgumentException("working-dir parameter doesn't exist", null);
+                throw new IllegalArgumentException("Invalid working directory, directory doesn't exist", null);
             }
         }catch(java.lang.IndexOutOfBoundsException ex){
             workDir = System.getenv("APRC_WORK_DIR");
