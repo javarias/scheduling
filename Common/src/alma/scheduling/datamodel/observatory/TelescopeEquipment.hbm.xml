@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="alma.scheduling.datamodel.observatory">
+
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="AssemblyOperationEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.observatory.AssemblyOperation</param>
+    </typedef>
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="AssemblyTypeEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.observatory.AssemblyType</param>
+    </typedef>
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="AssemblyGroupTypeEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.observatory.AssemblyGroupType</param>
+    </typedef>
+    
+    <class name="AssemblyContainer" table="ASSEMBLY_CONTAINER">
+        <id name="id" column="ID">            
+            <generator class="native"/>
+        </id>
+        <property name="type" type="AssemblyGroupTypeEnum" column="TYPE"/>
+        <property name="commissionDate" type="timestamp" column="COMMISSION_DATE"/>
+        <many-to-one name="parent" column="PARENTID" class="AssemblyContainer"/>
+        <set name="operations" table="ASSEMBLY_CONTAINER_OPERATIONS" order-by="TIME asc">
+            <key column="ID"/>
+            <composite-element class="AssemblyContainerOperation">
+                <property name="operation" column="OPERATION" type="AssemblyOperationEnum"/>
+                <property name="time" column="TIME" type="timestamp"/>
+                <property name="assemblyType" column="ASSEMBLY_TYPE" type="string"/>
+                <property name="assemblyGroup" column="ASSEMBLY_GROUP" type="string"/>
+            </composite-element>
+        </set>
+        <component name="state" class="AssemblyContainerState">
+            <property name="lastUpdate" column="STATE_LAST_UPDATE" type="timestamp"/>        
+            <property name="validUntil" column="STATE_VALID_UNTIL" type="timestamp"/>
+            <set name="assemblies" table="ASSEMBLY_CONTAINER_ASSEMBLIES">
+                <key column="ID"/>
+                <element type="AssemblyTypeEnum" column="ASSEMBLY_TYPE" not-null="true"/>
+            </set>            
+        </component>
+        
+        <joined-subclass name="TelescopeEquipment" table="EQUIPMENT">
+            
+            <key column="CONTAINER_ID"/>
+            <property name="name" type="string" column="NAME"/>
+            
+            <set name="assemblyGroups" inverse="true" cascade="save-update, lock, delete, delete-orphan">
+                <key column="PARENTID"/>
+                <one-to-many class="AssemblyContainer"/>
+            </set>            
+
+            <joined-subclass name="Antenna" table="ANTENNA">
+                <key column="EQUIPMENT_ID"/>
+                <property name="diameter" column="DIAMETER"/>
+                <property name="antennaType" column="TYPE"/>
+                <property name="effectiveCollectingArea" column="EFF_AREA"/>
+                <property name="systemTemperature" column="TSYS"/>
+            </joined-subclass>
+            
+            <joined-subclass name="Pad" table="PAD">
+                <key column="EQUIPMENT_ID"/>
+                <property name="xPosition" column="XPOS"/>
+                <property name="yPosition" column="YPOS"/>
+                <property name="zPosition" column="ZPOS"/>
+            </joined-subclass>
+            
+            <joined-subclass name="AOSTiming" table="AOSTIMING">
+                <key column="EQUIPMENT_ID"/>
+            </joined-subclass>
+            
+            <joined-subclass name="CentralLO" table="CENTRALLO">
+                <key column="EQUIPMENT_ID"/>
+            </joined-subclass>
+            
+            <joined-subclass name="PhotonicReference" table="PHOTREF">
+                <key column="EQUIPMENT_ID"/>
+            </joined-subclass>
+            
+        </joined-subclass>        
+        
+    </class>
+
+    <class name="ArrayConfiguration" table="ARRAY_CONFIGURATION">
+        <id name="id" column="ID">            
+            <generator class="native"/>
+        </id>
+        <property name="startTime" column="START_TIME" type="timestamp"/>
+        <property name="endTime" column="END_TIME" type="timestamp"/>
+        <property name="resolution" column="RESOLUTION" type="double"/>
+        <property name="uvCoverage" column="UVCOVERAGE" type="double"/>
+        <set name="antennaInstallations" table="ANTENNA_INSTALLATION" order-by="START_TIME asc">
+            <key column="ID"/>
+            <composite-element class="AntennaInstallation">
+                <property name="startTime" column="START_TIME" type="timestamp"/>
+                <property name="endTime" column="END_TIME" type="timestamp"/>
+                <many-to-one name="antenna" class="Antenna" column="ANTENNA_ID"/>
+                <many-to-one name="pad" class="Pad" column="PAD_ID"/>
+            </composite-element>
+        </set>
+    </class>
+    
+</hibernate-mapping>
