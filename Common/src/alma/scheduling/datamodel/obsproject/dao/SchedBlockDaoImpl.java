@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -30,5 +31,19 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         }        
         return sbs;
     }
+
+    @Override
+    public List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(
+            double lst) {
+        Query query =
+            getSession().getNamedQuery("SchedBlock.findSchedBlocksWithVisibleRepresentativeTarget");
+        query.setParameter(0, lst);
+        query.setParameter(1, lst);
+        query.setParameter(2, lst);
+        query.setParameter(3, lst);
+        List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
+        return schedBlocks;
+    }
+    
     
 }

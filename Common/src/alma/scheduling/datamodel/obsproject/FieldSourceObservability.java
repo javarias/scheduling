@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservability.java,v 1.4 2010/03/09 16:40:52 rhiriart Exp $"
+ * "@(#) $Id: FieldSourceObservability.java,v 1.5 2010/03/10 00:14:09 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -34,7 +34,7 @@ public class FieldSourceObservability implements Updateable {
     /** The source could be circunpolar */
     private Boolean alwaysVisible;
     
-    /** The source could be hidden */
+    /** The source could be always hidden below the horizon */
     private Boolean alwaysHidden;
     
     /** Direction of source appareance (degrees) */
@@ -43,10 +43,10 @@ public class FieldSourceObservability implements Updateable {
     /** Direction of source disappareance (degrees) */
     private Double azimuthSetting;
     
-    /** Rising time (UTC decimal hours) */
+    /** Rising time (LST decimal hours) */
     private Double risingTime;
     
-    /** Setting time (UTC decimal hours) */
+    /** Setting time (LST decimal hours) */
     private Double settingTime;
     
     private Date lastUpdate;

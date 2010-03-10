@@ -7,4 +7,5 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockDao extends GenericDao {
     List<SchedBlock> findAll();
+    List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(double lst);
 }

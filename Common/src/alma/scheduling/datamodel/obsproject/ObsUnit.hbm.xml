@@ -79,4 +79,19 @@
         
     </class>
     
+    <!-- Care must be taken because the rising time could be bigger than the setting time,
+         which happens when the interval of observability crosses the 24 hr boundary. -->
+    <query name="SchedBlock.findSchedBlocksWithVisibleRepresentativeTarget">
+        <![CDATA[
+        from SchedBlock sb where
+       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime <
+        sb.schedulingConstraints.representativeTarget.source.observability.settingTime and
+        sb.schedulingConstraints.representativeTarget.source.observability.risingTime < ? and
+        sb.schedulingConstraints.representativeTarget.source.observability.settingTime > ?) or
+       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime >
+        sb.schedulingConstraints.representativeTarget.source.observability.settingTime and
+       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime < ? or
+        sb.schedulingConstraints.representativeTarget.source.observability.settingTime > ?))        
+		]]>
+    </query>
 </hibernate-mapping>
