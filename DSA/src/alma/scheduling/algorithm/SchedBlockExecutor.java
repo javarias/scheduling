@@ -21,39 +21,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.5 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockExecutor.java,v 1.1 2010/03/10 00:16:02 rhiriart Exp $"
  */
-package alma.scheduling.algorithm.sbselection;
+package alma.scheduling.algorithm;
 
-import java.util.Collection;
 import java.util.Date;
 
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
-/**
- * This interface generalizes the selection of a set of SchedBlocks, an
- * operation needed by ModelUpdaters and SchedBlockRankers.
- *
- */
-public interface SchedBlockSelector {
+public interface SchedBlockExecutor {
 
     /**
-     * Selects a set of SchedBlocks, in a manner that is independent of
-     * the time. If the underlying queries require the time, the current
-     * time is used.
-     * @return the selected SchedBlocks
-     * @throws NoSbSelectedException if no selection is possible
-     */
-    public Collection<SchedBlock> select() throws NoSbSelectedException;
-
-    /**
-     * Selects a set of SchedBlocks for a given point in time. If the queries
-     * underlying the selection don't require the point in time, this parameter
-     * is ignored.
+     * Executes the SchedBlock at the given time.
      * 
-     * @param ut Time (UTC)
-     * @return the selected SchedBlocks
-     * @throws NoSbSelectedException if no selection is possible
+     * @param sb Scheduling Block
+     * @param ut Point in time when the SchedBlock is executed
+     * @return Point in time after the SchedBlock has been executed.
      */
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException;
+    Date execute(SchedBlock sb, Date ut);
 }

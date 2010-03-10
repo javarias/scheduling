@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.10 2010/03/05 21:50:39 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.11 2010/03/10 00:16:02 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,6 +63,12 @@ public class ExecutiveSelector implements SchedBlockSelector {
 
     public void setSbDao(SchedBlockDao sbDao) {
         this.sbDao = sbDao;
+    }
+
+    @Override
+    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
+        // ut time is ignored
+        return select();
     }
     
     /*

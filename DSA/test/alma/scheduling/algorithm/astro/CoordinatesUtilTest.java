@@ -75,7 +75,7 @@ public class CoordinatesUtilTest extends TestCase {
         double longitude = 64.0;
         SkyCoordinates coords = new SkyCoordinates(ra, dec);
         FieldSourceObservability fso =
-            CoordinatesUtil.getRisingAndSettingParameters(coords, latitude, longitude, 1980, 8, 24);
+            CoordinatesUtil.getRisingAndSettingParameters(coords, latitude, longitude);
         logger.info("azimuth rising = " + fso.getAzimuthRising());
         logger.info("azimuth setting = " + fso.getAzimuthSetting());
         logger.info("rising time = " + fso.getRisingTime());

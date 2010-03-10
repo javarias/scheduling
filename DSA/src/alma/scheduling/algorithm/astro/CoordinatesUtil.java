@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.1 2010/03/09 01:52:15 rhiriart Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.2 2010/03/10 00:16:02 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -97,19 +97,60 @@ public class CoordinatesUtil {
         return new HorizonCoordinates(A, a);
     }
     
+    /**
+     * Get rising and setting times and angles.
+     * 
+     * @param coords Equatorial coordinates
+     * @param latitude Latitude (degrees, North is positive, South negative)
+     * @param longitude Longitude (degrees)
+     * @param year Year
+     * @param month Month (1-12)
+     * @param day Day of month (1-31)
+     * @return field source observability parameters
+     */
     public static FieldSourceObservability getRisingAndSettingParameters(SkyCoordinates coords,
-            double latitude, double longitude, int year, int month, int day) {
+            double latitude, double longitude) {
+        
+        FieldSourceObservability fso = new FieldSourceObservability();
+        fso.setAlwaysHidden(false);
+        fso.setAlwaysVisible(false);
+        if (latitude > 0) {
+            // north hemisphere
+            if (coords.getDec() > (90.0 - latitude)) {
+                // source is always visible
+                fso.setAlwaysVisible(true);
+                return fso;
+            }
+            if (coords.getDec() < -(90.0 - latitude)) {
+                // source is always hidden
+                fso.setAlwaysHidden(true);
+                return fso;
+            }
+        } else {
+            // south hemisphere
+            if (coords.getDec() < -(90.0 + latitude)) {
+                // source is always visible
+                fso.setAlwaysVisible(true);
+                return fso;
+            }
+            if (coords.getDec() > (90.0 + latitude)) {
+                // source is always hidden
+                fso.setAlwaysHidden(true);
+                return fso;
+            }
+        }
+        
         double cosAr = Math.sin(Math.toRadians(coords.getDec())) /
                        Math.cos(Math.toRadians(latitude));
-        if (cosAr > 1 || cosAr < -1)
-            return null; // TODO deal with the case of circunpolar or hidden
+        // if (cosAr > 1 || cosAr < -1)
+        //     return null; // should never happen
         double Ar = Math.toDegrees(Math.acos(cosAr));
         double As = 360.0 - Ar;
         
         double raHours = coords.getRA() / 15.0;
         double tmp = - Math.tan(Math.toRadians(coords.getDec())) * Math.tan(Math.toRadians(latitude));
-        if (tmp > 1 || tmp < -1)
-            return null; // TODO deal with the case of circunpolar or hidden
+        // if (tmp > 1 || tmp < -1)
+        //     return null; // should never happen
         double H = Math.toDegrees(Math.acos(tmp)) / 15.0;
         double LSTr = 24.0 + raHours - H;
         if (LSTr > 24.0 ) {
@@ -121,22 +162,21 @@ public class CoordinatesUtil {
         }
         double r = TimeUtil.lstToGST(LSTr, longitude);
         double s = TimeUtil.lstToGST(LSTs, longitude);
-        Date utRising = TimeUtil.gstToUT(r, year, month, day);
-        Date utSetting = TimeUtil.gstToUT(s, year, month, day);
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        cal.setTime(utRising);
-        double risingHour = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 100.0); 
-        cal.setTime(utSetting);
-        double settingHour = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 100.0); 
-             
         
-        FieldSourceObservability fso = new FieldSourceObservability();
+//        Date utRising = TimeUtil.gstToUT(r, year, month, day);
+//        Date utSetting = TimeUtil.gstToUT(s, year, month, day);
+//        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+//        cal.setTime(utRising);
+//        double risingHour = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
+//                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 100.0); 
+//        cal.setTime(utSetting);
+//        double settingHour = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
+//                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 100.0); 
+        
         fso.setAzimuthRising(Ar);
         fso.setAzimuthSetting(As);
-        fso.setRisingTime(risingHour);
-        fso.setSettingTime(settingHour);
+        fso.setRisingTime(r);
+        fso.setSettingTime(s);
         return fso;
     }
 }

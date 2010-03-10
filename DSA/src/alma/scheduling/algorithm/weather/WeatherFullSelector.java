@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFullSelector.java,v 1.2 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: WeatherFullSelector.java,v 1.3 2010/03/10 00:16:02 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
+import java.util.Date;
 import java.util.Collection;
 
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
@@ -37,6 +38,11 @@ public class WeatherFullSelector implements SchedBlockSelector {
     private SchedBlockDao schedBlockDao;
     public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
         this.schedBlockDao = schedBlockDao;
+    }
+    
+    @Override
+    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
+        return select();
     }
     
     @Override
