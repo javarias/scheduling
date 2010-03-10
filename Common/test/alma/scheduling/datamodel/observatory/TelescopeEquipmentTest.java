@@ -44,7 +44,7 @@ public class TelescopeEquipmentTest extends TestCase {
             AssemblyContainer ber = new AssemblyContainer(AssemblyGroupType.BACKEND_ANALOG_RACK, new Date());
             a.addAssemblyGroup(ber);
             TelescopeEquipment fe = new TelescopeEquipment("FE1", AssemblyGroupType.FRONTEND, new Date());
-            AssemblyContainer r = new AssemblyContainer(AssemblyGroupType.RECEIVER, new Date());
+            Receiver r = new Receiver("RECV1", new Date(), ReceiverBand.BAND_1);
             r.getOperations().add(new AssemblyContainerOperation(new Date(), AssemblyOperation.ADD_ALL));
             fe.addAssemblyGroup(r);
             a.addAssemblyGroup(fe);

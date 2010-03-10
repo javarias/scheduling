@@ -13,6 +13,9 @@
     <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="AssemblyGroupTypeEnum">
         <param name="enumClassName">alma.scheduling.datamodel.observatory.AssemblyGroupType</param>
     </typedef>
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ReceiverBandEnum">
+        <param name="enumClassName">alma.scheduling.datamodel.observatory.ReceiverBand</param>
+    </typedef>
     
     <class name="AssemblyContainer" table="ASSEMBLY_CONTAINER">
         <id name="id" column="ID">            
@@ -74,6 +77,11 @@
             
             <joined-subclass name="PhotonicReference" table="PHOTREF">
                 <key column="EQUIPMENT_ID"/>
+            </joined-subclass>
+
+            <joined-subclass name="Receiver" table="RECEIVER">
+                <key column="EQUIPMENT_ID"/>
+                <property name="band" column="BAND" type="ReceiverBandEnum"/>
             </joined-subclass>
             
         </joined-subclass>        
