@@ -1,0 +1,20 @@
+/*
+ * DSAUnoService.idl
+ *
+ * Created on 2010.03.10 - 14:08:37
+ *
+ */
+
+#ifndef __alma_scheduling_DSAUnoService__
+#define __alma_scheduling_DSAUnoService__
+
+#ifndef __alma_scheduling_XDSAUno_idl__
+#import <alma/scheduling/XDSAUno.idl>
+#endif
+
+
+module alma { module scheduling {
+    service DSAUnoService : XDSAUno;
+}; };
+
+#endif

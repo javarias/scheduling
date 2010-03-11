@@ -26,11 +26,11 @@ import alma.scheduling.output.Reporter;
 
 public class AprcTool {
     
-    private static String workDir;
+    private String workDir;
     
-    private static ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
+    private ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
     
-    private static void help(){
+    private void help(){
         System.out.println("APRC Tool Command Line Interface");
         System.out.print("Usage: ");
         System.out.println("AprcTool <command> [options]");
@@ -46,7 +46,7 @@ public class AprcTool {
         		"available, otherwise .");
     }
     
-    public static String[] getOpt(String[] argv, String param){
+    public String[] getOpt(String[] argv, String param){
         for(int i = 0; i<argv.length; i++){
             if (argv[i].contains(param)){
                 if(argv[i].contains("="))
@@ -61,7 +61,7 @@ public class AprcTool {
     }
     
     
-    private static void createWorkDir(String path) throws IOException{
+    private void createWorkDir(String path) throws IOException{
         File entries[] = new File[6];
         entries[0] = new File(path + "/db");
         entries[1] = new File(path + "/projects");
@@ -102,7 +102,7 @@ public class AprcTool {
         
     }
     
-    private static void load(String ctxPath){
+    private void load(String ctxPath){
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
@@ -118,7 +118,7 @@ public class AprcTool {
         configDao.updateConfig();
     }
     
-    private static void run(String ctxPath){
+    private void run(String ctxPath){
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
         if(dsaNames.length == 0)
@@ -144,12 +144,7 @@ public class AprcTool {
             }
     }
     
-    
-    /**
-     * @param args
-     * @throws IOException 
-     */
-    public static void main(String[] args) throws IOException {
+    public void selectAction(String[] args) throws IOException{
         if (args.length==0){
             help();
             System.exit(1);
@@ -202,7 +197,23 @@ public class AprcTool {
             help();
             System.exit(1);
         }
+    }
+    
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    public static void main(String[] args) throws IOException {
+        
+        AprcTool cli = new AprcTool();
+        cli.selectAction(args);
         System.exit(0);
+ 
+    }
+    
+    public void hello(){
+        System.out.println("Hola");
+        
     }
 
 }
