@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.6 2010/03/04 00:14:09 javarias Exp $"
+ * "@(#) $Id: Configuration.java,v 1.7 2010/03/12 02:11:42 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -162,6 +162,15 @@ public class Configuration {
      */
     public List<String> getProjectFiles() {
         return getModifiedFilesFormDir(projectDirectory);
+    }
+
+    /**
+     * Get Observatory Characteristics configuration files.
+     * 
+     * @return the modified observatory characteristics files to be reloaded in the DB
+     */
+    public List<String> getObservatoryFiles() {
+        return getModifiedFilesFormDir(observatoryDirectory);
     }
     
     /**

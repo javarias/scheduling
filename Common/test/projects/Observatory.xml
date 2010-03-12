@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ObservatoryCharacteristics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../config/observatory.xsd">
+    <TelescopeEquipment commissionDate="2010-03-10T00:00:00Z">
+        <Antenna id="DV01" diameter="4.0">
+            <FrontEnd id="FE1">
+                <Receiver id="RECV1_1" band="BAND_1"/>
+            </FrontEnd>
+        </Antenna>
+        <Antenna id="DV02" diameter="4.0">
+            <FrontEnd id="FE2">
+                <Receiver id="RECV2_1" band="BAND_1">
+                    <InitialOperation operation="ADD_ALL"/>
+                    <InitialOperation operation="REMOVE_ASSEMBLY" assembly="ColdCart3"/>
+                </Receiver>
+            </FrontEnd>
+        </Antenna>
+        <Pad id="TF01" xPosition="0.0" yPosition="0.0" zPosition="0.0"/>
+        <Pad id="TF02" xPosition="0.0" yPosition="0.0" zPosition="0.0"/>
+        <Equipment id="CentralLO" type="CENTRAL_LO">
+            <Equipment id="PhotonicReference1" type="PHOTONIC_REFERENCE">
+                <InitialOperation operation="ADD_ALL"/>
+            </Equipment>    
+        </Equipment>
+    </TelescopeEquipment>
+    <EquipmentOperation>
+        <Operation time="2010-03-10T00:00:00Z" operation="ADD_ALL" equipmentRefId="DV01"/>
+        <Operation time="2010-03-10T00:00:00Z" operation="REMOVE_ASSEMBLY" equipmentRefId="FE1"
+            assembly="ColdCart3"/>
+    </EquipmentOperation>
+    <Array>
+        <ArrayConfiguration startTime="2010-03-10T00:00:00Z" endTime="2010-03-10T00:00:00Z"
+             resolution="0.0" uvCoverage="0.0">
+            <AntennaInstallation startTime="2010-03-10T00:00:00Z" endTime="2010-03-10T00:00:00Z"
+                antenna="DV01" pad="TF01"/>
+            <AntennaInstallation startTime="2010-03-10T00:00:00Z" endTime="2010-03-10T00:00:00Z"
+                antenna="DV02" pad="TF02"/>
+        </ArrayConfiguration>
+    </Array>
+</ObservatoryCharacteristics>
