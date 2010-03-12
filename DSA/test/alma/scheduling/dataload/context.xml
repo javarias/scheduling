@@ -32,6 +32,7 @@
         		<value>alma/scheduling/datamodel/obsproject/Target.hbm.xml</value>
                 <value>alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml</value>
                 <value>alma/scheduling/datamodel/weather/AtmParameters.hbm.xml</value>
+            	<value>alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -91,12 +92,36 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>	
 
+	<bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="xmlExecDao" class="alma.scheduling.datamodel.executive.dao.XmlExecutiveDaoImpl" >
+		<property name="configDao" ref="configDao"/>
+	</bean>
+
+	<bean id="xmlObservatoryDao" class="alma.scheduling.datamodel.observatory.dao.XmlObservatoryDaoImpl">
+		<property name="configurationDao" ref="configDao"/>
+	</bean>
+	
+	<bean id="observatoryDao" class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
 	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
 				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
 					<property name="xmlDao" ref="xmlObsProjectDao"/>
 					<property name="dao" ref="obsProjectDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
+					<property name="dbDao" ref="execDao"/>
+					<property name="xmlDao" ref="xmlExecDao"/>
+				</bean>
+				<bean class="alma.scheduling.dataload.observatory.ObservatoryDataLoader">
+					<property name="dao" ref="observatoryDao"/>
+					<property name="xmlDao" ref="xmlObservatoryDao"/>
 				</bean>
 			</list>
 		</property>
