@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.6 2010/03/05 20:33:00 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.7 2010/03/12 21:56:02 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -66,7 +66,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         = PlanningModeSimulator aprcTool
+SCRIPTS         = PlanningModeSimulator aprc
 #SCRIPTS_L       =
 
 #
