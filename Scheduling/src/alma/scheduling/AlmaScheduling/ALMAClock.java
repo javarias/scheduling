@@ -25,10 +25,10 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import alma.scheduling.Define.Clock;
-import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.ArrayTime;
+import alma.scheduling.Define.Clock;
 import alma.scheduling.Define.ClockAlarmListener;
+import alma.scheduling.Define.DateTime;
 
 /**
   * This class is used so that the scheduler has a common clock.
@@ -37,7 +37,7 @@ import alma.scheduling.Define.ClockAlarmListener;
   * set using that.
   *
   * @author Sohaila Lucero
-  * @version $Id: ALMAClock.java,v 1.6 2005/08/08 21:53:41 sslucero Exp $
+  * @version $Id: ALMAClock.java,v 1.7 2010/03/13 00:34:21 dclarke Exp $
   */
 public class ALMAClock implements Clock {
     //The time

@@ -25,11 +25,15 @@
  */
 package alma.scheduling.Scheduler;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import alma.acs.nc.Consumer;
 import alma.log_audience.OPERATOR;
 import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.AlmaScheduling.ALMAProjectManager;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Control;
 import alma.scheduling.Define.DateTime;
@@ -38,6 +42,7 @@ import alma.scheduling.Define.ProjectManager;
 import alma.scheduling.Define.SB;
 import alma.scheduling.Define.SBQueue;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Telescope;
 /**
  */
@@ -60,6 +65,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable{
 	// The interactive queue.
 	private SBQueue queue;
     private String[] sbsNotDone;
+    private SB currentSB;
 
     private int execCount=1;
 	
@@ -209,6 +215,7 @@ public class QueuedSBScheduler extends Scheduler implements Runnable{
         }
 		control.execSB(config.getArrayName(),best);
         takeIdFromSBsNotDone(sb.getId());
+        currentSB = sb;
         logger.fine("SCHEDULING: Queued scheduler execute # "+execCount);
         execCount++;
         logger.fine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");

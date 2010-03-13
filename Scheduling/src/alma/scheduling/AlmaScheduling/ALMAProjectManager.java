@@ -43,6 +43,8 @@ import java.util.regex.PatternSyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
+import alma.SchedulingExceptions.wrappers.AcsJObsProjectRejectedEx;
+import alma.SchedulingExceptions.wrappers.AcsJSchedBlockRejectedEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntitySerializer;
 import alma.acs.logging.AcsLogger;
@@ -87,7 +89,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.130 2010/03/04 01:22:40 rhiriart Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.131 2010/03/13 00:34:21 dclarke Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
 	
@@ -125,7 +127,8 @@ public class ALMAProjectManager extends ProjectManager {
 //    private EntityDeserializer entityDeserializer;
 //    private EntitySerializer entitySerializer;
     
-    private final ArchivePoller archivePoller;
+//    private final ArchivePoller archivePoller;
+    private final ALMAArchivePoller archivePoller;
  
     public ALMAProjectManager(ContainerServices cs, 
     		ALMAOperator o, 
@@ -144,8 +147,10 @@ public class ALMAProjectManager extends ProjectManager {
     	this.projectQueue = new ProjectQueue();
     	this.pipeline = new ALMAPipeline(cs);
     	this.clock = c;
-    	this.archivePoller = new ArchivePoller(archive, sbQueue, projectQueue,
-    			statusQs, projectUtil, logger);
+//    	this.archivePoller = new ArchivePoller(archive, sbQueue, projectQueue,
+//    			statusQs, projectUtil, logger);
+        this.archivePoller = new ALMAArchivePoller(archive, sbQueue,
+                projectQueue, statusQs, projectUtil, clock, logger);
         this.arrayName2Scheduler = new LinkedHashMap<String, Scheduler>();
 //  	sbQueue = new SBQueue();
     	specialSBs = new Vector<SpecialSB>();
@@ -2143,6 +2148,10 @@ public class ALMAProjectManager extends ProjectManager {
                                 "Rejecting project %s (not in status queue, status = %s)",
                                 project.getId(),
                                 project.getStatus().getState()));
+                        AcsJObsProjectRejectedEx ex = new AcsJObsProjectRejectedEx();
+                        ex.setProperty("UID", project.getId());
+                        ex.setProperty("Reason", "Not in status queue");
+                        ex.log(logger);
                     }
                 }
 
@@ -2160,6 +2169,10 @@ public class ALMAProjectManager extends ProjectManager {
                                     "Rejecting SchedBlock %s (not in status queue, status = %s)",
                                     sb.getId(),
                                     sb.getStatus().getState()));
+                            AcsJSchedBlockRejectedEx ex = new AcsJSchedBlockRejectedEx();
+                            ex.setProperty("UID", sb.getId());
+                            ex.setProperty("Reason", "Not in status queue");
+                            ex.log(logger);
                         }
                     }
                 }
@@ -2288,6 +2301,7 @@ public class ALMAProjectManager extends ProjectManager {
                     when,
                     statusQs.getSBStatusQueue().size()));
         }
+        
         private void logDetails(String when) {
             logProjectsAndStatuses(projectQueue, statusQs.getProjectStatusQueue());
             logOUSsAndStatuses(projectQueue, statusQs.getOUSStatusQueue());
@@ -2882,25 +2896,26 @@ public class ALMAProjectManager extends ProjectManager {
     }
 
     public SBLite[] getExistingSBLite(String[] ids) {
-       
-        SBLite[] sblites = new SBLite[ids.length];
-        SBLite sblite;
-        for(int i=0; i < ids.length; i++){
-            sblite = createSBLite(ids[i]);
-            sblites[i] = sblite;
-        }
-        return sblites;
+        return archivePoller.getExistingSBLites(ids);
+//        SBLite[] sblites = new SBLite[ids.length];
+//        SBLite sblite;
+//        for(int i=0; i < ids.length; i++){
+//            sblite = createSBLite(ids[i]);
+//            sblites[i] = sblite;
+//        }
+//        return sblites;
     }
     
     public ProjectLite[] getProjectLites(String[] ids) {
-        //getUpdates();
-        logger.fine("SCHEDULING: Called getProjectLites(ids)");
-        ProjectLite[] projectliteArray=new ProjectLite[ids.length];
-        for(int i=0; i < ids.length; i++){
-            projectliteArray[i] = createProjectLite(ids[i]);
-
-        }
-        return projectliteArray;
+        return archivePoller.getProjectLites(ids);
+//        //getUpdates();
+//        logger.fine("SCHEDULING: Called getProjectLites(ids)");
+//        ProjectLite[] projectliteArray=new ProjectLite[ids.length];
+//        for(int i=0; i < ids.length; i++){
+//            projectliteArray[i] = createProjectLite(ids[i]);
+//
+//        }
+//        return projectliteArray;
     }
 
     protected ProjectLite createProjectLite(String id) {
@@ -2925,27 +2940,13 @@ public class ALMAProjectManager extends ProjectManager {
         ProjectStatusI ps = getPSForProject(p);
         projectlite.isComplete = isProjectComplete(ps);
 
-        try {
-			projectlite.completeSBs = String.valueOf(ps.getObsProgramStatus().getNumberSBsCompleted());
-		} catch (SchedulingException e) {
-			logger.warning(String.format(
-					"Cannot get ObsProgramStatus for ProjectStatus %s (for ObsProject %s) - %s. Assuming 0 complete executions.",
-					ps.getProjectStatusEntity().getEntityId(),
-					ps.getObsProjectRef().getEntityId(),
-					e.getLocalizedMessage()));
-			projectlite.completeSBs = "0";
-		}
-        try {
-			projectlite.failedSBs = String.valueOf(ps.getObsProgramStatus().getNumberSBsFailed());
-		} catch (SchedulingException e) {
-			logger.warning(String.format(
-					"Cannot get ObsProgramStatus for ProjectStatus %s (for ObsProject %s) - %s. Assuming 0 failed executions.",
-					ps.getProjectStatusEntity().getEntityId(),
-					ps.getObsProjectRef().getEntityId(),
-					e.getLocalizedMessage()));
-			projectlite.failedSBs = "0";
-		}
-
+        int sbcompl =
+            statusQs.getOUSStatusQueue().get(ps.getObsProgramStatusRef()).getNumberSBsCompleted();
+        projectlite.completeSBs = String.valueOf(sbcompl);
+        
+        int numsbfail = statusQs.getOUSStatusQueue().get(ps.getObsProgramStatusRef()).getNumberSBsFailed();
+        projectlite.failedSBs = String.valueOf(numsbfail);
+        
 		if (ps != null ){
         	StringWriter writer = new StringWriter();
         	try{

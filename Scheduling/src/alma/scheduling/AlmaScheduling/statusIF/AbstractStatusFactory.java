@@ -12,6 +12,7 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.projectlifecycle.StateSystem;
 import alma.scheduling.AlmaScheduling.ALMAClock;
+import alma.scheduling.AlmaScheduling.StatusEntityQueueBundle;
 import alma.scheduling.Define.SchedulingException;
 
 /**
@@ -69,4 +70,6 @@ public interface AbstractStatusFactory {
 	 * ================================================================
 	 */
 	public Logger getLogger();
+	
+    public void setStatusQueue(StatusEntityQueueBundle statusQueue);
 }

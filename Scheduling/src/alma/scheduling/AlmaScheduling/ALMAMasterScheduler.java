@@ -96,7 +96,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.126 2010/02/19 23:25:07 rhiriart Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.127 2010/03/13 00:34:21 dclarke Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -214,7 +214,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             //Start the project manager's thread!
             Thread pmThread = containerServices.getThreadFactory().newThread(manager);
             manager.setProjectManagerTaskControl(new ProjectManagerTaskControl(msThread, pmThread));
-            pmThread.start();
+            // pmThread.start();
 
             // Connect to the Control NC
             eventreceiver = new ALMAReceiveEvent(containerServices, manager, 
@@ -1244,7 +1244,9 @@ public class ALMAMasterScheduler extends MasterScheduler
                 e.printStackTrace();
             }
         } else if(type.equals("queued")){
+        	//TODO: Implement this for Queued Scheduling
         }else if(type.equals("dynamic")){
+        	//TODO: Implement this for Dynamic Scheduling
         }
 
         //logger.finest ("SCHEDULING: executing SB "+sbId+" on array "

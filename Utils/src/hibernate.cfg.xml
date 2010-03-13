@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+    
+<hibernate-configuration>
+    <session-factory>
+        <!-- <property name="hibernate.connection.driver_class">
+            org.hsqldb.jdbcDriver
+        </property>
+        <property name="hibernate.connection.url">
+            jdbc:hsqldb:hsql://localhost:9001/statearchive
+        </property>
+        <property name="hibernate.connection.username">
+            sa
+        </property>
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.HSQLDialect
+        </property> -->
+        
+        <property name="hibernate.connection.driver_class">
+            oracle.jdbc.driver.OracleDriver
+        </property>
+        <property name="hibernate.connection.url">
+            jdbc:oracle:thin:@ora01-vip:1521:alma1
+        </property>
+        <property name="hibernate.connection.username">
+            alma
+        </property>
+        <property name="hibernate.connection.password">
+            alma$dba
+        </property>
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.Oracle9iDialect
+        </property>
+                
+        
+        <!-- Use the C3P0 connection pool provider -->
+        <property name="hibernate.c3p0.min_size">5</property>
+        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3p0.timeout">300</property>
+        <property name="hibernate.c3p0.max_statements">50</property>
+        <property name="hibernate.c3p0.idle_test_period">3000</property>
+        
+        <!-- Show and print nice SQL on stdout -->
+        <property name="show_sql">false</property>
+        <property name="format_sql">true</property>
+        
+        <!-- List of annotated classes -->
+        <mapping class="alma.lifecycle.persistence.domain.ObsProjectStatusPF"/>
+        <mapping class="alma.lifecycle.persistence.domain.OUSStatusPF"/>
+        <mapping class="alma.lifecycle.persistence.domain.SchedBlockStatusPF"/>
+        <mapping class="alma.lifecycle.persistence.domain.StateChangeRecord"/>
+
+
+    </session-factory>
+</hibernate-configuration>

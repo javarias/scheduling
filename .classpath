@@ -5,7 +5,6 @@
 	<classpathentry kind="var" path="INTROOT/lib/DynamicSchedulingSubsystem.jar"/>
 	<classpathentry kind="lib" path="thirdPartyPackages/JavaServlet/servlet-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="INTROOT/lib/ExecMaster.jar"/>
 	<classpathentry kind="var" path="INTROOT/lib/ExecExtensionFramework.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/acsnc.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/jcont.jar"/>
@@ -79,5 +78,8 @@
 	<classpathentry kind="var" path="ACSROOT/lib/acsAlarmService.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/acsdaemon.jar"/>
 	<classpathentry kind="var" path="ACSROOT/lib/AcsAlarmSystem.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/asdmRuntime.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/almaEnumerations_IF.jar"/>
+	<classpathentry kind="var" path="INTROOT/lib/almaEnumerations.jar"/>
 	<classpathentry kind="output" path="Scheduling/object/schedulingComp"/>
 </classpath>

@@ -12,6 +12,7 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.projectlifecycle.StateSystem;
 import alma.scheduling.AlmaScheduling.ALMAClock;
+import alma.scheduling.AlmaScheduling.StatusEntityQueueBundle;
 import alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
@@ -43,6 +44,9 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	
 	/** Hide the constructor */
 	private CachedStatusFactory() { /* Empty */ }
+
+    /** The status queue, statuses should be looked up here before creating one remotely */
+	private StatusEntityQueueBundle statusQueue;
 	
 	/** 
 	 * get the single instance
@@ -88,6 +92,10 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	 * @see alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory#createOUSStatus(java.lang.String)
 	 */
 	public OUSStatusI createOUSStatus(String uid) throws SchedulingException {
+	    if (statusQueue != null) {
+	        OUSStatusI status = statusQueue.getOUSStatusQueue().get(uid);
+	        if (status != null) return status;
+	    }
 		return new RemoteOUSStatus(uid).asLocal();
 	}
 
@@ -102,6 +110,10 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	 * @see alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory#createProjectStatus(java.lang.String)
 	 */
 	public ProjectStatusI createProjectStatus(String uid) throws SchedulingException {
+        if (statusQueue != null) {
+            ProjectStatusI status = statusQueue.getProjectStatusQueue().get(uid);
+            if (status != null) return status;
+        }
 		return new RemoteProjectStatus(uid).asLocal();
 	}
 
@@ -116,6 +128,10 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	 * @see alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory#createSBStatus(java.lang.String)
 	 */
 	public SBStatusI createSBStatus(String uid) throws SchedulingException {
+        if (statusQueue != null) {
+            SBStatusI status = statusQueue.getSBStatusQueue().get(uid);
+            if (status != null) return status;
+        }
 		return new RemoteSBStatus(uid).asLocal();
 	}
 
@@ -128,4 +144,8 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	/*
 	 * End of AbstractStatusFactory implementation
 	 * ============================================================= */
+	
+    public void setStatusQueue(StatusEntityQueueBundle statusQueue) {
+	    this.statusQueue = statusQueue;
+	}
 }

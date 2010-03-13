@@ -1,0 +1,19 @@
+#!/bin/bash
+
+touch _part_1_
+ALMA-OT -batch scripts/bulk-import-saveasnew-retrieve.py projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot projects/01SBin1OUS.aot
+rm _part_1_
+
+touch _part_2_
+ALMA-OT -batch scripts/bulk-import-saveasnew-retrieve.py projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot projects/02SBin1OUS.aot
+rm _part_2_
+
+touch _part_3_
+ALMA-OT -batch scripts/bulk-import-saveasnew-retrieve.py projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot projects/02SBin2OUS.aot
+rm _part_3_
+
+touch _part_4_
+ALMA-OT -batch scripts/bulk-import-saveasnew-retrieve.py projects/04SBin2OUS.aot projects/04SBin2OUS.aot projects/06SBinOUSHierarchy.aot projects/18SBinRepeatCountCombos.aot projects/18SBinRepeatCountCombos.aot
+rm _part_4_
+
+

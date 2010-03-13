@@ -961,7 +961,12 @@ public class CachedOUSStatus extends CachedStatusBase implements OUSStatusI {
 
 
 	public OUSStatusI[] getOUSStatus() throws IndexOutOfBoundsException, SchedulingException {
-		final OUSStatusI[] result = new OUSStatusI[getOUSStatusChoice().getOUSStatusRefCount()];
+	    OUSStatusI[] result = null;
+	    try {
+	        result = new OUSStatusI[getOUSStatusChoice().getOUSStatusRefCount()];
+	    } catch (NullPointerException ex) {
+	        result = new OUSStatusI[0];
+	    }
 		
 		for (int i = 0; i < result.length; i++) {
 			result[i] = getOUSStatus(i);

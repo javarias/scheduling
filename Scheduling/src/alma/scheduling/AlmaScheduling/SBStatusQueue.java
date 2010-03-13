@@ -34,6 +34,7 @@ import java.util.Set;
 
 import alma.acs.logging.AcsLogger;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
+import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
 import alma.scheduling.Define.SchedulingException;
 
@@ -43,7 +44,7 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author David Clarke
- * @version $Id: SBStatusQueue.java,v 1.2 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: SBStatusQueue.java,v 1.3 2010/03/13 00:34:21 dclarke Exp $
  */
 public class SBStatusQueue {
 
@@ -115,6 +116,16 @@ public class SBStatusQueue {
 	}
 
 	/**
+	 * Add a Collection of SBStatusI to this queue.
+	 * @param statuses The Collection to be added.
+	 */
+	private synchronized void add(Collection<SBStatusI> statuses) {
+		for (SBStatusI sbs : statuses) {
+			addUnsynchronised(sbs);
+		}
+	}
+
+	/**
 	 * Remove the SBStatusI with the specified entity-id from the list.
 	 * This operation does not destroy the SBStatusI. 
 	 * @param entityId The entity-id of the SBStatusI to be removed.
@@ -146,14 +157,13 @@ public class SBStatusQueue {
 			this.remove(thisId);
 		}
 		
-		// 2. Add things from that which aren't already in this
-		for (final String thatId : that.getAllIds()) {
-			if (!this.isExists(thatId)) {
-				// thatId is not in this, so add it
-				this.add(that.get(thatId));
-			}
-		}
+		// 2. update with the things from that
+		this.add(that.getValues());
 	}
+
+    public synchronized void updateIncrWith(SBStatusQueue that) {
+		this.add(that.getValues());
+    }	
 
 	/**
 	 * Get the SBStatusI with the specified entity-id.
@@ -187,6 +197,14 @@ public class SBStatusQueue {
 		return result;
 	}
 	
+	/**
+	 * Get all SBStatusI in the queue.
+	 * @return All SBStatusI in the queue in the form of a Collection.
+	 */
+	private synchronized Collection<SBStatusI> getValues() {
+		return queue.values();
+	}
+
 	/**
 	 * Get all SBStatusI in the queue.
 	 * @return All SBStatusI in the queue in the form of an array.

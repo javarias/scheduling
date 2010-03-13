@@ -48,6 +48,7 @@ import alma.scheduling.SBLite;
 
 public class ArchiveSearchFieldsPanel extends JPanel {
     private JButton searchB;
+    private JLabel searchL;
     private JButton clearB;
     private JCheckBox projectCB;
     private JCheckBox sbCB;
@@ -124,7 +125,7 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         }
     }
 
-    public void setPanelEnabled(boolean b){
+    public void setPanelEnabled(boolean b, String label){
         projectCB.setEnabled(b);
         sbCB.setEnabled(b);
         sbModeNameChoices.setEnabled(b);
@@ -134,6 +135,11 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         piNameTF.setEnabled(b);
         searchB.setEnabled(b);
         clearB.setEnabled(b);
+        searchL.setText(label);
+    }
+
+    public void setPanelEnabled(boolean b){
+        setPanelEnabled(b, "");
     }
 
     private void createCheckBoxes(){ 
@@ -256,7 +262,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         gridbag.setConstraints(sep,c);
         p.add(sep);
         JPanel bp = new JPanel(new GridLayout(1,3));
-        bp.add(new JLabel());//spacer
+        searchL = new JLabel("");
+        bp.add(searchL);//spacer
         searchB = new JButton("Search");
         searchB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -268,6 +275,8 @@ public class ArchiveSearchFieldsPanel extends JPanel {
                     showConnectMessage();
                     return;     
                 }
+            	setPanelEnabled(false, "Searching..."); // reenabled in the update after the result comes back from the archive
+
                 doClearPreviousSearch();
                 
                 if(mode.equals("searchMode")) {
@@ -424,41 +433,49 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         }
         
         public void run(){
-            String pi = piNameTF.getText();
-            String pName = projNameTF.getText();
-            String type = (String)projTypeChoices.getSelectedItem();
-            String array = (String)arrayType.getSelectedItem();
-            //if we know its for all SBs ignore it
-            String sbquery = makeSBQuery();
-            //returns a vector, first item will be matching projects
-            //second item will be matching sbs.
-            if(searchAllProject){
-            	Vector res = controller.doQuery(sbquery, pName, pi, type, array);
-            	javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
-            } else {
-            	Vector res = controller.doQuery(sbquery, pName, pi, type, array,manualMode);
-            	javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
-            }
-            
-            
+        	try {
+        		String pi = piNameTF.getText();
+        		String pName = projNameTF.getText();
+        		String type = (String)projTypeChoices.getSelectedItem();
+        		String array = (String)arrayType.getSelectedItem();
+        		//if we know its for all SBs ignore it
+        		String sbquery = makeSBQuery();
+        		//returns a vector, first item will be matching projects
+        		//second item will be matching sbs.
+        		if(searchAllProject){
+        			Vector res = controller.doQuery(sbquery, pName, pi, type, array);
+        			javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
+        		} else {
+        			Vector res = controller.doQuery(sbquery, pName, pi, type, array,manualMode);
+        			javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
+        		}
+        	} finally {
+    			javax.swing.SwingUtilities.invokeLater(new ReenableThread());
+        	}
         }
     }
     class UpdateThread implements Runnable {
-        private Vector res;
-        public UpdateThread (Vector v) {
-            res = v;
-        }
-        public void run() {
-            if(projectCB.isSelected() ){
-                displayProjectResults((ProjectLite[])res.elementAt(0));
-            } else if(sbCB.isSelected()){
-                displaySBResults((SBLite[])res.elementAt(1));
-            } 
-            if(parent.getClass().getName().contains("Interactive")){
-                ((InteractiveSchedTab)parent).selectFirstResult();
-            } else if(parent.getClass().getName().contains("Queued")){
-                ((QueuedSchedTab)parent).selectFirstResult();
-            }
-        }
+    	private Vector res;
+    	public UpdateThread (Vector v) {
+    		res = v;
+    	}
+    	public void run() {
+    		if(projectCB.isSelected() ){
+    			displayProjectResults((ProjectLite[])res.elementAt(0));
+    		} else if(sbCB.isSelected()){
+    			displaySBResults((SBLite[])res.elementAt(1));
+    		} 
+    		if(parent.getClass().getName().contains("Interactive")){
+    			((InteractiveSchedTab)parent).selectFirstResult();
+    		} else if(parent.getClass().getName().contains("Queued")){
+    			((QueuedSchedTab)parent).selectFirstResult();
+    		}
+    	}
+    }
+    // Thread which reenables the panel after some asynchronous work.
+    class ReenableThread implements Runnable {
+    	public void run() {
+    		setPanelEnabled(true);
+    	}
     }
 }

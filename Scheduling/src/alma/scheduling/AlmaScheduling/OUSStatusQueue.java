@@ -44,7 +44,7 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author David Clarke
- * @version $Id: OUSStatusQueue.java,v 1.2 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: OUSStatusQueue.java,v 1.3 2010/03/13 00:34:21 dclarke Exp $
  */
 public class OUSStatusQueue {
 
@@ -116,6 +116,16 @@ public class OUSStatusQueue {
 	}
 
 	/**
+	 * Add a Collection of OUSStatusI to this queue.
+	 * @param statuses The Collection to be added.
+	 */
+	private synchronized void add(Collection<OUSStatusI> statuses) {
+		for (OUSStatusI ouss : statuses) {
+			addUnsynchronised(ouss);
+		}
+	}
+
+	/**
 	 * Remove the OUSStatusI with the specified entity-id from the list.
 	 * This operation does not destroy the OUSStatusI. 
 	 * @param entityId The entity-id of the OUSStatusI to be removed.
@@ -147,15 +157,14 @@ public class OUSStatusQueue {
 			this.remove(thisId);
 		}
 		
-		// 2. Add things from that which aren't already in this
-		for (final String thatId : that.getAllIds()) {
-			if (!this.isExists(thatId)) {
-				// thatId is not in this, so add it
-				this.add(that.get(thatId));
-			}
-		}
+		// 2. update with the things from that
+		this.add(that.getValues());
 	}
 
+    public synchronized void updateIncrWith(OUSStatusQueue that) {
+		this.add(that.getValues());
+    }	
+	
 	/**
 	 * Get the OUSStatusI with the specified entity-id.
 	 * @param entityId The entity-id of the OUSStatusI to be returned.
@@ -186,6 +195,14 @@ public class OUSStatusQueue {
 			result[i] = queue.get(refs[i].getEntityId());
 		}
 		return result;
+	}
+
+	/**
+	 * Get all OUSStatusI in the queue.
+	 * @return All OUSStatusI in the queue in the form of a Collection.
+	 */
+	private synchronized Collection<OUSStatusI> getValues() {
+		return queue.values();
 	}
 
 	/**

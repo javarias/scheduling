@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import alma.acs.logging.AcsLogger;
 import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
@@ -43,7 +44,7 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author David Clarke
- * @version $Id: ProjectStatusQueue.java,v 1.12 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.13 2010/03/13 00:34:21 dclarke Exp $
  */
 public class ProjectStatusQueue {
 
@@ -116,6 +117,16 @@ public class ProjectStatusQueue {
 	}
 
 	/**
+	 * Add a Collection of ProjectStatusI to this queue.
+	 * @param statuses The Collection to be added.
+	 */
+	private synchronized void add(Collection<ProjectStatusI> statuses) {
+		for (ProjectStatusI ps : statuses) {
+			addUnsynchronised(ps);
+		}
+	}
+
+	/**
 	 * Remove the ProjectStatusI with the specified entity-id from the list.
 	 * This operation does not destroy the ProjectStatusI. 
 	 * @param entityId The entity-id of the ProjectStatusI to be removed.
@@ -147,15 +158,14 @@ public class ProjectStatusQueue {
 			this.remove(thisId);
 		}
 		
-		// 2. Add things from that which aren't already in this
-		for (final String thatId : that.getAllIds()) {
-			if (!this.isExists(thatId)) {
-				// thatId is not in this, so add it
-				this.add(that.get(thatId));
-			}
-		}
+		// 2. update with the things from that
+		this.add(that.getValues());
 	}
 
+    public synchronized void updateIncrWith(ProjectStatusQueue that) {
+		this.add(that.getValues());
+    }	
+	
 	/**
 	 * Get the ProjectStatusI with the specified entity-id.
 	 * @param entityId The entity-id of the ProjectStatusI to be returned.
@@ -188,6 +198,14 @@ public class ProjectStatusQueue {
 		return result;
 	}
 	
+	/**
+	 * Get all ProjectStatusI in the queue.
+	 * @return All ProjectStatusI in the queue in the form of a Collection.
+	 */
+	private synchronized Collection<ProjectStatusI> getValues() {
+		return statusQueue.values();
+	}
+
 	/**
 	 * Get all ProjectStatusI in the queue.
 	 * @return All ProjectStatusI in the queue in the form of an array.
@@ -251,5 +269,4 @@ public class ProjectStatusQueue {
     public synchronized void replace (ProjectStatusI ps) {
     	addUnsynchronised(ps);
     }
-
 }

@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingPluginsTest.java,v 1.5 2010/03/12 23:20:22 rhiriart Exp $
+ * $Id: SchedulingPluginsTest.java,v 1.6 2010/03/13 00:39:57 dclarke Exp $
  */
 
 package alma.scheduling.inttest;
@@ -191,8 +191,11 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testInteractiveSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(new String[] {"DV01"},
-                new String[] {"PhotonicReference1"}, CorrelatorType.BL, ArrayModeEnum.INTERACTIVE);
+        String arrayName = masterScheduler.createArray(
+        		new String[] {"DV01"},
+                new String[] {"PhotonicReference1"},
+                CorrelatorType.BL,
+                ArrayModeEnum.INTERACTIVE);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");
@@ -253,7 +256,11 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testQueuedSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, new String[] {"PhotonicReference1"}, CorrelatorType.BL, ArrayModeEnum.QUEUED);
+        String arrayName = masterScheduler.createArray(
+        		new String[] {"DV01"},
+                new String[] {"PhotonicReference1"},
+                CorrelatorType.BL,
+                ArrayModeEnum.QUEUED);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");
@@ -266,7 +273,11 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testManualSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(new String[] {"DV01"}, new String[] {"PhotonicReference1"}, CorrelatorType.BL, ArrayModeEnum.MANUAL);
+        String arrayName = masterScheduler.createArray(
+        		new String[] {"DV01"},
+                new String[] {"PhotonicReference1"},
+                CorrelatorType.BL,
+                ArrayModeEnum.MANUAL);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");

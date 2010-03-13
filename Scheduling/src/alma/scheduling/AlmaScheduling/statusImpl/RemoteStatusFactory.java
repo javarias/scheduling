@@ -12,6 +12,7 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.projectlifecycle.StateSystem;
 import alma.scheduling.AlmaScheduling.ALMAClock;
+import alma.scheduling.AlmaScheduling.StatusEntityQueueBundle;
 import alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
@@ -123,4 +124,6 @@ public class RemoteStatusFactory implements AbstractStatusFactory {
 	/*
 	 * End of AbstractStatusFactory implementation
 	 * ============================================================= */
+	
+    public void setStatusQueue(StatusEntityQueueBundle statusQueue) {}
 }

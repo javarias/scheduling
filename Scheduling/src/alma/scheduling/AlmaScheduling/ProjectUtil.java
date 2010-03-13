@@ -25,11 +25,13 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import alma.entity.xmlbinding.obsproject.DataProcessingParametersT;
+import alma.SchedulingExceptions.wrappers.AcsJObsProjectRejectedEx;
+import alma.SchedulingExceptions.wrappers.AcsJSchedBlockRejectedEx;
 import alma.entity.xmlbinding.obsproject.ObsProject;
-import alma.entity.xmlbinding.obsproject.ObsProjectRefT;
 import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
 import alma.entity.xmlbinding.ousstatus.PipelineParameterT;
@@ -80,6 +82,7 @@ import alma.scheduling.Define.Session;
 import alma.scheduling.Define.Source;
 import alma.scheduling.Define.Status;
 import alma.scheduling.Define.Target;
+import alma.scheduling.utils.Profiler;
 
 /**
  * The ProjectUtil class is a collection of methods that
@@ -112,19 +115,32 @@ import alma.scheduling.Define.Target;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.82 2009/11/23 23:16:02 javarias Exp $
+ * @version $Id: ProjectUtil.java,v 1.83 2010/03/13 00:34:21 dclarke Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
-	
+
 	static private final String nullPartId = "X00000000";
 	
 	private final Logger logger; 
 	private final AbstractStatusFactory statusFactory;
+	
+	/** 
+	 *  Some of the operations in ProjectUtil retrieve statuses from
+	 *  the State Archive. In some cases, these statuses are already
+	 *  in the status queue. Because this generates performance problems,
+	 *  the queue is passed when exists.
+	 */
+	private StatusEntityQueueBundle statusQueue;
     
 	public ProjectUtil(Logger logger, AbstractStatusFactory statusFactory) {
 		this.logger = logger;
 		this.statusFactory = statusFactory;
+		this.statusQueue = null;
+	}
+	
+	public void setStatusQueue(StatusEntityQueueBundle statusQueue) {
+	    this.statusQueue = statusQueue;
 	}
 	
 	/**
@@ -391,6 +407,8 @@ public class ProjectUtil {
 			                          ProjectStatusI ps, DateTime now) 
                                       throws SchedulingException {
 
+	    Profiler prof = new Profiler(logger);
+	    
 		Project project = null;
         try {
         	String projectType = "unknown";
@@ -445,22 +463,31 @@ public class ProjectUtil {
 		
 		// Initialize the obsProgram.
 		//ObsUnitSetT obsProgram = obs.getObsProgram().getObsPlan();
-        OUSStatusI ous=null;
-        try {
-            ous = ps.getObsProgramStatus();
-        }catch (Exception e){
-            e.printStackTrace();
+		prof.start("projectUtil.map, get ous");
+        OUSStatusI ous = null;
+        if (statusQueue == null) {
+            try {
+                ous = ps.getObsProgramStatus();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            ous = statusQueue.getOUSStatusQueue().get(ps.getObsProgramStatusRef());
         }
+        prof.end();
 
+        prof.start("projectUtil.map, initialize program");
 		Program program = initialize(obs.getObsProgram().getObsPlan(), sched, 
-		//Program program = initialize(obs.getObsProgram(), sched, 
                                      schedUsed, project, null, ous, now);
+		prof.end();
+		
 		if(program!=null){
 			project.setProgram(program);
 		}
 		else {
 			return null;
 		}
+		
 		// Mark the project as ready.  (This also initializes the totals.)
         try {
         	project.setReady(new DateTime(ps.getStatus().getReadyTime()));
@@ -483,11 +510,12 @@ public class ProjectUtil {
 		program = setStatusInformation(program, obs.getObsProgram().getObsPlan(), ous, now); 
 		// Make sure that all the scheduling blocks in the sched array have been accounted for.
 		for (int i = 0; i < schedUsed.length; ++i) {
-			if (!schedUsed[i])
-				throw new SchedulingException("SchedBlock with name " + 
-						sched[i].getName() + " and id " + 
-						sched[i].getSchedBlockEntity().getEntityId() +
-						" was not used in the initialization process.");
+			if (!schedUsed[i]) {
+                AcsJObsProjectRejectedEx ex = new AcsJObsProjectRejectedEx();
+                ex.setProperty("UID", project.getId());
+                ex.setProperty("Reason", "Not all the SchedBlocks have been included");
+                ex.log(logger);
+			}
 		}
 		
 		// Now, set all the partIds in the project status.
@@ -656,7 +684,8 @@ public class ProjectUtil {
             ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
             OUSStatusI[] status=null;
             try {
-                status= ous.getOUSStatus();
+                // status= ous.getOUSStatus();
+                status = statusQueue.get(ous.getOUSStatusChoice().getOUSStatusRef());
                 
                 if(status.length < 1){
                     hasStatus = false;
@@ -679,52 +708,67 @@ public class ProjectUtil {
 				program.addMember(memberProgram);
 			}
 		} else if (set.getObsUnitSetTChoice().getSchedBlockRefCount() > 0) {
-			//System.out.println("obsunitset schedblock "+ set.getObsUnitSetTChoice().getSchedBlockRefCount());
-			SchedBlockRefT[] setMember = set.getObsUnitSetTChoice().getSchedBlockRef();
-            OUSStatusI[] foo=null;
-            SBStatusI[] sbStats = null;
+			SchedBlockRefT[] schedBlockRefs = set.getObsUnitSetTChoice().getSchedBlockRef();
+            OUSStatusI[] ousStatuses = null;
+            SBStatusI[] sbStatuses = null;
             try{
-                foo = ous.getOUSStatus();
-                sbStats = ous.getSBStatus();
-                if(sbStats.length < 1){
+                // ousStatuses = ous.getOUSStatus();
+                ousStatuses = statusQueue.get(ous.getOUSStatusChoice().getOUSStatusRef());
+                
+                Profiler prof = new Profiler(logger);
+                prof.start("ous.getSBStatus");
+                // these will trigger a call to the State Archive, which is
+                // very expensive:
+                //     sbStatuses = ous.getSBStatus();
+                // getting the SB statuses from the queue instead:
+                sbStatuses = statusQueue.get(ous.getOUSStatusChoice().getSBStatusRef());
+                prof.end();
+                if (sbStatuses.length == 0) {
                     hasStatus = false;
                 } else {
                     hasStatus = true;
                 }
-            } catch(Exception e){
+            } catch(Exception e) {
                 hasStatus = false;
             }
 			SB memberSB = null;
             String sbrefid;
             ExecStatusT[] execs;
-            SBStatusI sbStatus=null;
-            for (int i = 0; i < setMember.length; ++i) {
-            	memberSB = null;
-			    if(hasStatus){
-                    execs = sbStats[i].getExecStatus();
-                    sbrefid = sbStats[i].getSchedBlockRef().getEntityId();
-                    sbStatus = getSBStatusForSBRef(sbrefid, sbStats);
-                    try {
-        		        memberSB = initialize(setMember[i],sbStatus, sched,schedUsed,project,program,now);
-                    }catch(Exception e){
-                    	memberSB = null;
-                        e.printStackTrace();
-                    }
-                    
-                    if(memberSB!=null){
-                    	memberSB = assignExecStatusToSB(memberSB, sbrefid, execs, sbStatus);
-                    }
-                    
-                } else {
-                    try {
-        		        memberSB = initialize(setMember[i], null, sched,schedUsed,project,program,now);
-                    }catch(Exception e){
-                    	memberSB = null;
-                        e.printStackTrace();
+            SBStatusI sbStatus = null;
+            // Map the SB Statuses to their corresponding SchedBlockRefs.
+            Map<String, SchedBlockRefT>sbStatusToSchedBlockRefs = new HashMap<String, SchedBlockRefT>();
+            for (SBStatusI sbs : sbStatuses) {
+                for (SchedBlockRefT sbref : schedBlockRefs) {
+                    if (sbs.getSchedBlockRef().getEntityId().equals(sbref.getEntityId())) {
+                        sbStatusToSchedBlockRefs.put(sbs.getSBStatusEntity().getEntityId(), sbref);
                     }
                 }
-			    
-			    if(memberSB!=null){
+            }
+            for (int i = 0; i < sbStatuses.length; ++i) {
+            	memberSB = null;
+			    if (hasStatus) {
+                    sbStatus = sbStatuses[i];
+                    sbrefid = sbStatusToSchedBlockRefs.get(sbStatus.getSBStatusEntity().getEntityId()).getEntityId();
+                    execs = sbStatus.getExecStatus();
+                    try {
+        		        memberSB = initialize(schedBlockRefs[i], sbStatus, sched, schedUsed, project, program, now);
+                    } catch(Exception e){
+                    	memberSB = null;
+                        e.printStackTrace();
+                    }
+                    
+                    if(memberSB != null){
+                    	memberSB = assignExecStatusToSB(memberSB, sbrefid, execs, sbStatus);
+                    }
+                } else {
+                    try {
+        		        memberSB = initialize(schedBlockRefs[i], null, sched, schedUsed, project, program, now);
+                    } catch(Exception e){
+                    	memberSB = null;
+                        e.printStackTrace();
+                    }
+                }			    
+			    if(memberSB != null) {
 			    	program.addMember(memberSB);
 			    }
 			    else {
@@ -770,7 +814,8 @@ public class ProjectUtil {
             ObsUnitSetT[] setMember = set.getObsUnitSetTChoice().getObsUnitSet();
             OUSStatusI[] status = null;
             try {
-                status = ous.getOUSStatus();
+                // status = ous.getOUSStatus();
+                status = statusQueue.get(ous.getOUSStatusChoice().getOUSStatusRef());
                 if(status.length < 1) {
                     hasStatus = false;
                 } else{
@@ -800,8 +845,16 @@ public class ProjectUtil {
             SBStatusI[] sbStats = null;
             SB memberSB = null; 
             try {
-                foo= ous.getOUSStatus();
-                sbStats = ous.getSBStatus();
+                // foo= ous.getOUSStatus();
+                foo = statusQueue.get(ous.getOUSStatusChoice().getOUSStatusRef());
+                Profiler prof = new Profiler(logger);
+                prof.start("ous.getSBStatus (from setStatusInformation)");
+                // This call will perform a CORBA call to the State Archive, which is
+                // very expensive:
+                //     sbStats = ous.getSBStatus();
+                // Getting the status from the queue instead:
+                sbStats = statusQueue.get(ous.getOUSStatusChoice().getSBStatusRef());
+                prof.end();
                 if(sbStats.length < 1){
                     hasStatus =false;
                 } else{
@@ -1029,7 +1082,7 @@ public class ProjectUtil {
 	private SB initialize(SchedBlockRefT schedRef, SBStatusI sbStatus, SchedBlock[] schedArray, boolean[] schedUsed, Project project, Program parent, DateTime now) 
 		throws SchedulingException {
             
-    	SB sb = new SB (schedRef.getEntityId());
+		SB sb = new SB (schedRef.getEntityId());
         try {
     
     		sb.setSbStatusId(sbStatus.getUID());
@@ -1051,10 +1104,14 @@ public class ProjectUtil {
     				break;
 	    		}
 		    }
-    		if (sched == null)
+    		if (sched == null){
+                AcsJSchedBlockRejectedEx ex = new AcsJSchedBlockRejectedEx();
+                ex.setProperty("UID", sb.getId());
+                ex.setProperty("Reason", "It is not in the specified SchedBlock array.");
+                ex.log(logger);
 	    		throw new SchedulingException("The scheduling block with id " + sb.getSchedBlockId() +
 		    			" is not in the specified SchedBlock array.");
-		
+    		}
             sb.setSBName(sched.getName());
             sb.setModeType(sched.getModeType().toString());
             sb.setModeName(sched.getModeName());
@@ -1144,6 +1201,10 @@ public class ProjectUtil {
                     double dec = lat.getContent();
         	        String coordType = coord.getSystem().toString(); // must be J2000
                     if (!coordType.equals("J2000")){
+                    	AcsJSchedBlockRejectedEx ex = new AcsJSchedBlockRejectedEx();
+                        ex.setProperty("UID", sb.getId());
+                        ex.setProperty("Reason", coordType + " is not supported.  Must be J2000");
+                        ex.log(logger);
                         throw new SchedulingException(coordType + " is not supported.  Must be J2000");
                     }  
                     eq[i] = new Equatorial((ra /24.0),dec);
@@ -1196,13 +1257,23 @@ public class ProjectUtil {
             //TODO fix this temporary hack!!
             SchedulingConstraintsT constraints = sched.getSchedulingConstraints();
             FrequencyT freq = constraints.getRepresentativeFrequency();
-  			sb.setCenterFrequency(freq.getContent());
+            if ( freq != null ) {
+                sb.setCenterFrequency(freq.getContent());
+            } else {
+                // TODO In case of Tower Holography, this frequency should be taken
+                // from the Holography parameters.
+                sb.setCenterFrequency(0.0);
+            }
             FrequencyBand band = getFrequencyBand(freq);
     	    sb.setFrequencyBand(band); 
             //TargetT t = constraints.getRepresentativeTargeT();
 		    
         }catch(Exception e){
-            e.printStackTrace();    
+            e.printStackTrace();
+            AcsJSchedBlockRejectedEx ex = new AcsJSchedBlockRejectedEx();
+            ex.setProperty("UID", sb.getId());
+            ex.setProperty("Reason", e.toString());
+            ex.log(logger);
             throw new SchedulingException(e.toString());
             //return null;
         }

@@ -25,20 +25,25 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.util.logging.Logger;
+
 import alma.acs.logging.AcsLogger;
+import alma.entity.xmlbinding.ousstatus.OUSStatusChoice;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
 import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
+import alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
+import alma.scheduling.Define.SchedulingException;
 
 
 /**
  * A convenience class to hold the various ??Status entities we use
  * 
  * @author dclarke
- * @version $Id: StatusEntityQueueBundle.java,v 1.2 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: StatusEntityQueueBundle.java,v 1.3 2010/03/13 00:34:21 dclarke Exp $
  */
 public class StatusEntityQueueBundle {
 
@@ -199,6 +204,100 @@ public class StatusEntityQueueBundle {
 		updateWith(newQs.getOUSStatusQueue());
 		updateWith(newQs.getSBStatusQueue());
 	}
+
+    public void updateIncrWith(ProjectStatusQueue newQ) {
+        getProjectStatusQueue().updateIncrWith(newQ);
+    }
+
+    public void updateIncrWith(OUSStatusQueue newQ) {
+        getOUSStatusQueue().updateIncrWith(newQ);
+    }
+
+    public void updateIncrWith(SBStatusQueue newQ) {
+        getSBStatusQueue().updateIncrWith(newQ);
+    }
+	
+	public void updateIncrWith(StatusEntityQueueBundle newQs) {
+        updateIncrWith(newQs.getProjectStatusQueue());
+        updateIncrWith(newQs.getOUSStatusQueue());
+        updateIncrWith(newQs.getSBStatusQueue());	    
+	}
     /* Queue management
+     * ============================================================= */
+
+    
+    
+	/*
+	 * ================================================================
+	 * Status updating
+	 * ================================================================
+	 */
+
+	/**
+	 * Refresh the status information for the project with the given
+	 * UID. <em>Note:</em> This takes an ObsProject ID, not a
+	 * ProjectStatus ID. 
+	 * 
+	 * @param projectId
+	 * @param factory
+	 * @throws SchedulingException 
+	 */
+	public void refreshProject(String projectId,
+			                   AbstractStatusFactory factory)
+			throws SchedulingException {
+		final ProjectStatusI ps = getProjectStatusQueue()
+		                 .getStatusFromProjectId(projectId);
+		
+		if (ps != null) {
+			forgetAllAboutProject(ps);
+			try {
+				loadProjectStatus(ps.getUID(), factory);
+			} catch (IndexOutOfBoundsException e) {
+				throw new SchedulingException(
+						String.format("Internal Error in refreshProject(%s)",
+								projectId), e);
+			}
+		}
+	}
+	
+	private void loadProjectStatus(String                psId,
+                                   AbstractStatusFactory factory)
+			throws IndexOutOfBoundsException, SchedulingException {
+		final ProjectStatusI ps = factory.createProjectStatus(psId);
+		getProjectStatusQueue().add(ps);
+		loadOUSStatus(ps.getObsProgramStatus());
+	}
+
+	private void loadOUSStatus(OUSStatusI ousStatus)
+			throws IndexOutOfBoundsException, SchedulingException {
+		getOUSStatusQueue().add(ousStatus);
+		for (final OUSStatusI childOUSS : ousStatus.getOUSStatus()) {
+			loadOUSStatus(childOUSS);
+		}
+		for (final SBStatusI childSBS : ousStatus.getSBStatus()) {
+			getSBStatusQueue().add(childSBS);
+		}
+	}
+
+	private void forgetAllAboutProject(ProjectStatusI ps) {
+		getProjectStatusQueue().remove(ps.getUID());
+		forgetAllAboutOUSStatus(ps.getObsProgramStatusRef().getEntityId());
+	}
+	
+	private void forgetAllAboutOUSStatus(String oussId) {
+		final OUSStatusI ouss = getOUSStatusQueue().get(oussId);
+		
+		if (ouss != null) {
+			getOUSStatusQueue().remove(oussId);
+			final OUSStatusChoice choice = ouss.getOUSStatusChoice();
+			for (final OUSStatusRefT childOUSSRef : choice.getOUSStatusRef()) {
+				forgetAllAboutOUSStatus(childOUSSRef.getEntityId());
+			}
+			for (final SBStatusRefT childSBSRef : choice.getSBStatusRef()) {
+				getSBStatusQueue().remove(childSBSRef.getEntityId());
+			}
+		}
+	}
+    /* Status updating
      * ============================================================= */
 }

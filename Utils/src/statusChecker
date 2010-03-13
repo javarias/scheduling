@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export ACS_LOG_STDOUT=8
+acsStartJava -endorsed alma.scheduling.util.StatusChecker $@
