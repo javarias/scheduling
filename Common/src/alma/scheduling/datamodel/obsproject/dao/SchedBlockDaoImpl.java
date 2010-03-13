@@ -45,5 +45,4 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         return schedBlocks;
     }
     
-    
 }

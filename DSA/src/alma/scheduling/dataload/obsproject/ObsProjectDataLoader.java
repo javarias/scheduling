@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoader.java,v 1.2 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: ObsProjectDataLoader.java,v 1.3 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
@@ -30,21 +30,22 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataLoader;
+import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnit;
+import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
 
 @Transactional
 public class ObsProjectDataLoader implements DataLoader {
-
+    
     XmlObsProjectDao xmlDao;
-    
-    ObsProjectDao dao;
-    
     public void setXmlDao(XmlObsProjectDao xmlDao) {
         this.xmlDao = xmlDao;
     }
 
+    ObsProjectDao dao;
     public void setDao(ObsProjectDao dao) {
         this.dao = dao;
     }
@@ -53,6 +54,15 @@ public class ObsProjectDataLoader implements DataLoader {
     public void load() {
         List<ObsProject> projects = xmlDao.getAllObsProjects();
         dao.saveOrUpdate(projects);
+    }
+
+    @Override
+    public void clear() {
+        // not very efficient, replace later for a delete SQL command in the DAO
+        dao.deleteAll(dao.findAll(ObsProject.class));
+        dao.deleteAll(dao.findAll(ObsUnit.class));
+        dao.deleteAll(dao.findAll(ObservingParameters.class));
+        dao.deleteAll(dao.findAll(FieldSource.class));
     }
 
 }

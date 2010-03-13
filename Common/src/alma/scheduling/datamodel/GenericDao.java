@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDao.java,v 1.6 2010/03/02 17:09:02 javarias Exp $"
+ * "@(#) $Id: GenericDao.java,v 1.7 2010/03/13 02:54:18 rhiriart Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -66,6 +66,7 @@ public interface GenericDao {
      */
     public <T> void delete(T obj);
     
+    public <T> void deleteAll(Collection<T> objs);
     
     /**
      * The implementation must retrieve all the object of the type given 

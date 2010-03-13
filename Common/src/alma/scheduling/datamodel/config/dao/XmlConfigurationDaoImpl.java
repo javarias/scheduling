@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.7 2010/03/09 00:00:19 javarias Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.8 2010/03/13 02:54:18 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
@@ -92,6 +92,10 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
     @Override
     public void updateConfig() {
         
+    }
+
+    @Override
+    public void deleteAll() {
     }
     
 }

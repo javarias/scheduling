@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TemperatureDataLoader.java,v 1.3 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: TemperatureDataLoader.java,v 1.4 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -51,5 +51,11 @@ public class TemperatureDataLoader extends WeatherParameterDataLoader {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void clear() {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FinalRanker.java,v 1.3 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.4 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -35,7 +35,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 public class FinalRanker implements SchedBlockRanker {
 
     private List<SchedBlockRanker> rankers;
-    private HashMap<SBRank,SchedBlock> ranks;
+    private HashMap<SBRank,SchedBlock> ranks = new HashMap<SBRank, SchedBlock>();
     
     public List<SchedBlockRanker> getRankers() {
         return rankers;

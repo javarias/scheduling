@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.11 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.12 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -31,8 +31,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.algorithm.obsproject.FieldSourceObservabilityUpdater;
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
@@ -45,6 +48,8 @@ import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
 public class ExecutiveSelector implements SchedBlockSelector {
 
+    private static Logger logger = LoggerFactory.getLogger(ExecutiveSelector.class);
+    
     private ExecutiveDAO execDao;
     private SchedBlockDao sbDao;
     private HashMap<String, Double> availableTime;
@@ -79,6 +84,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
     @Override
     @Transactional(readOnly=true)
     public Collection<SchedBlock> select() throws NoSbSelectedException{
+        logger.trace("entering");
         calculateRemainingTime();
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
         List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
@@ -93,6 +99,7 @@ public class ExecutiveSelector implements SchedBlockSelector {
             String strCause = "Cannot get any SB valid to be ranked using " + this.toString();
             throw new NoSbSelectedException(strCause);
         }
+        logger.info("# SchedBlocks selected: " + acceptedSbs.size());
         return acceptedSbs;
     }
     

@@ -12,7 +12,7 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 
-public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
+public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
     @Override
     @Transactional(readOnly=true)
@@ -70,5 +70,16 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO{
         args[1] = ex.getName();
         return (ExecutivePercentage) this.executeNamedQuery(
                 "ExecutivePercentage.findBySeasonAndExecutive",args).get(0);
+    }
+
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete PIMembership");        
+        getHibernateTemplate().bulkUpdate("delete PI");
+        getHibernateTemplate().bulkUpdate("delete ExecutivePercentage");
+        getHibernateTemplate().bulkUpdate("delete SchedBlockExecutivePercentage");
+        getHibernateTemplate().bulkUpdate("delete ExecutiveTimeSpent");
+        getHibernateTemplate().bulkUpdate("delete Executive");
+        getHibernateTemplate().bulkUpdate("delete ObservingSeason");
     }
 }

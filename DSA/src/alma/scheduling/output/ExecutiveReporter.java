@@ -1,5 +1,7 @@
 package alma.scheduling.output;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDao;
@@ -9,6 +11,8 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class ExecutiveReporter implements Reporter {
 
+    private static Logger logger = LoggerFactory.getLogger(ExecutiveReporter.class);
+    
     private ExecutiveDAO execDao;
     
     public ExecutiveDAO getExecDao() {

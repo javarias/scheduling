@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmDataLoader.java,v 1.2 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: AtmDataLoader.java,v 1.3 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -31,40 +31,51 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import alma.scheduling.dataload.AtmTableReader.AtmData;
+import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.weather.AtmParameters;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 
 public class AtmDataLoader implements DataLoader {
 
-    protected String file;
-    protected AtmParametersDao dao;
-    protected int maxNumRecords;
     private AtmTableReader reader;
     private int count = 0;
-    private double pwc;
 
     public AtmDataLoader() {
     }
 
+    protected String file;
     public void setFile(String file) {
         this.file = file;
     }
 
+    protected AtmParametersDao dao;
     public void setDao(AtmParametersDao dao) {
         this.dao = dao;
     }
 
+    protected int maxNumRecords;
     public void setMaxNumRecords(int maxNumRecords) {
         this.maxNumRecords = maxNumRecords;
     }
 
+    private double pwc;
     public void setPwc(double pwc) {
         this.pwc = pwc;
     }
+
+    private ConfigurationDao configurationDao;
+    public void setConfigurationDao(ConfigurationDao configurationDao) {
+        this.configurationDao = configurationDao;
+    }
     
     private void createDataReader() throws FileNotFoundException {
-        File file = new File(this.file);
-        FileReader fr = new FileReader(file);
+        Configuration config = configurationDao.getConfiguration(); 
+        String workDir = config.getWorkDirectory();
+        String weatherDir = config.getWeatherDirectory();
+        String weatherDirFullPath = workDir + "/" + weatherDir + "/";
+        File atmfile = new File(weatherDirFullPath + file);
+        FileReader fr = new FileReader(atmfile);
         reader = new AtmTableReader(fr);                
     }
 
@@ -93,5 +104,9 @@ public class AtmDataLoader implements DataLoader {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void clear() {
     }
 }

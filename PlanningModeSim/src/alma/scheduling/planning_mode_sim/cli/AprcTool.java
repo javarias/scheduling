@@ -4,14 +4,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
+import alma.scheduling.algorithm.SchedBlockExecutor;
+import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.dataload.CompositeDataLoader;
 import alma.scheduling.dataload.DataLoader;
@@ -20,11 +27,14 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.output.MasterReporter;
 import alma.scheduling.output.Reporter;
 
 
 public class AprcTool {
+    
+    private static Logger logger = LoggerFactory.getLogger(AprcTool.class);
     
     private String workDir;
     
@@ -102,7 +112,7 @@ public class AprcTool {
         
     }
     
-    private void load(String ctxPath){
+    private void fullLoad(String ctxPath) {
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
@@ -117,9 +127,39 @@ public class AprcTool {
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
         configDao.updateConfig();
     }
+
+    private void load(String ctxPath) {
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
+        DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
+        loader.load();
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
+        configDao.updateConfig();
+    }
+    
+    private void clean(String ctxPath) {
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"
+                + ctxPath);
+        String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
+        String[] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
+        if (cfgBeans.length == 0) {
+            System.out.println(ctxPath
+            + " file doesn't contain a bean of the type lma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
+            System.exit(1);
+        }
+        for(int i = 0; i < loadersNames.length; i++) {
+            DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
+            loader.clear();
+        }
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        configDao.deleteAll();
+    }
     
     private void run(String ctxPath){
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        Date time = calendar.getTime();
+        setPreconditions(ctx, new Date());
         String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
         if(dsaNames.length == 0)
             throw new IllegalArgumentException("There is not a Dynamic Scheduling Algorithm bean defined in the context.xml file");
@@ -127,13 +167,19 @@ public class AprcTool {
             throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
         DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
         String[] masterReporterNames = ctx.getBeanNamesForType(MasterReporter.class);
-        ArrayList<SchedBlock> sbs = new ArrayList<SchedBlock>();
+        // ArrayList<SchedBlock> sbs = new ArrayList<SchedBlock>();
+        SchedBlockExecutor sbExecutor =
+            (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         while(true)
             try {
+                logger.info("updating DB");
+                update(ctx, time);
+                logger.info("selecting candidate SBs");
                 dsa.selectCandidateSB();
                 dsa.rankSchedBlocks();
                 SchedBlock sb = dsa.getSelectedSchedBlock();
-                sbs.add(sb);
+                // sbs.add(sb);
+                time = sbExecutor.execute(sb, time);
                 for(int i = 0; i < masterReporterNames.length; i++){
                     Reporter rep = (Reporter) ctx.getBean(masterReporterNames[i]);
                     rep.report(sb);
@@ -142,6 +188,24 @@ public class AprcTool {
                 System.out.println("DSA finished -- No more suitable SBs to be scheduled");
                 return;
             }
+    }
+    
+    private void update(ApplicationContext ctx, Date time) {
+        String[] updaters = ctx.getBeanNamesForType(ModelUpdater.class);
+        for(int i = 0; i < updaters.length; i++) {
+            ModelUpdater updater = (ModelUpdater) ctx.getBean(updaters[i]);
+            if (updater.needsToUpdate(time)) {
+                updater.update(time);
+            }
+        }
+    }
+    
+    private void setPreconditions(ApplicationContext ctx, Date time) {
+        String[] whDaos = ctx.getBeanNamesForType(WeatherHistoryDAO.class);
+        for(int i = 0; i < whDaos.length; i++) {
+            WeatherHistoryDAO whDao = (WeatherHistoryDAO) ctx.getBean(whDaos[i]);
+            whDao.setSimulationStartTime(time);;
+        }
     }
     
     public void selectAction(String[] args) throws IOException{
@@ -181,8 +245,14 @@ public class AprcTool {
                 System.exit(1);
             }
         }
+        else if (args[0].compareTo("fullload")==0){
+            fullLoad(workDir + "/" +config.getContextFilePath());
+        }
         else if (args[0].compareTo("load")==0){
             load(workDir + "/" +config.getContextFilePath());
+        }
+        else if (args[0].compareTo("clean")==0){
+            clean(workDir + "/" +config.getContextFilePath());
         }
         else if (args[0].compareTo("run")==0){
             run(workDir + "/" + config.getContextFilePath());

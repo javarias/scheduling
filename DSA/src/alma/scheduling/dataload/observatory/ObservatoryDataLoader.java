@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservatoryDataLoader.java,v 1.1 2010/03/12 02:21:28 rhiriart Exp $"
+ * "@(#) $Id: ObservatoryDataLoader.java,v 1.2 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.dataload.observatory;
 
@@ -30,6 +30,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataLoader;
+import alma.scheduling.datamodel.observatory.AntennaInstallation;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.TelescopeEquipment;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
@@ -37,15 +38,13 @@ import alma.scheduling.datamodel.observatory.dao.XmlObservatoryDao;
 
 @Transactional
 public class ObservatoryDataLoader implements DataLoader {
-
+    
     XmlObservatoryDao xmlDao;
-    
-    ObservatoryDao dao;
-    
     public void setXmlDao(XmlObservatoryDao xmlDao) {
         this.xmlDao = xmlDao;
     }
 
+    ObservatoryDao dao;
     public void setDao(ObservatoryDao dao) {
         this.dao = dao;
     }
@@ -56,6 +55,14 @@ public class ObservatoryDataLoader implements DataLoader {
         dao.saveOrUpdate(equipments);
         List<ArrayConfiguration> arrConfigs = xmlDao.getAllArrayConfigurations();
         dao.saveOrUpdate(arrConfigs);
+    }
+
+    @Override
+    public void clear() {
+        // not very efficient, replace later for a delete SQL command in the DAO
+        dao.deleteAll(dao.findAll(AntennaInstallation.class));
+        dao.deleteAll(dao.findAll(ArrayConfiguration.class));
+        dao.deleteAll(dao.findAll(TelescopeEquipment.class));
     }
 
 }

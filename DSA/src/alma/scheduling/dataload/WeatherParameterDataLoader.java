@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherParameterDataLoader.java,v 1.2 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: WeatherParameterDataLoader.java,v 1.3 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -31,34 +31,44 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import alma.scheduling.dataload.WeatherDataReader.WeatherData;
+import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 
 public abstract class WeatherParameterDataLoader implements DataLoader {
 
-    protected String file;
-    protected WeatherHistoryDAO dao;
-    protected int maxNumRecords;
     private WeatherDataReader reader;
     private int count = 0;
 
-    public WeatherParameterDataLoader() {
-    }
+    public WeatherParameterDataLoader() { }
 
+    protected String file;
     public void setFile(String file) {
         this.file = file;
     }
 
+    protected WeatherHistoryDAO dao;
     public void setDao(WeatherHistoryDAO dao) {
         this.dao = dao;
     }
 
+    protected int maxNumRecords;
     public void setMaxNumRecords(int maxNumRecords) {
         this.maxNumRecords = maxNumRecords;
     }
 
+    private ConfigurationDao configurationDao;
+    public void setConfigurationDao(ConfigurationDao configurationDao) {
+        this.configurationDao = configurationDao;
+    }
+    
     private void createDataReader() throws FileNotFoundException {
-        File file = new File(this.file);
-        FileReader fr = new FileReader(file);
+        Configuration config = configurationDao.getConfiguration(); 
+        String workDir = config.getWorkDirectory();
+        String weatherDir = config.getWeatherDirectory();
+        String weatherDirFullPath = workDir + "/" + weatherDir + "/";
+        File weatherfile = new File(weatherDirFullPath + file);
+        FileReader fr = new FileReader(weatherfile);
         reader = new WeatherDataReader(fr);                
     }
 

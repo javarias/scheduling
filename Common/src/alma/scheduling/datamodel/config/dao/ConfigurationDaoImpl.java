@@ -42,4 +42,9 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         saveOrUpdate(config);
     }
 
+    @Override
+    public void deleteAll() {
+        getHibernateTemplate().bulkUpdate("delete Configuration");
+    }
+
 }

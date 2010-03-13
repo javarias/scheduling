@@ -132,53 +132,62 @@
 	    <property name="loaders">
 	        <list>
 	            <bean class="alma.scheduling.dataload.TemperatureDataLoader">
-	                <property name="file" value="data/Temp_average_15min_all.dat"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	                <property name="file" value="Temp_average_15min_all.dat"/>
 	                <property name="dao" ref="weatherDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.WindSpeedDataLoader">
-	                <property name="file" value="data/WindSpeed_average_15min_all.dat"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="WindSpeed_average_15min_all.dat"/>
 	                <property name="dao" ref="weatherDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0001.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0001.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="0.4722"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0002.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0002.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="0.658"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0003.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0003.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="0.9134"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0004.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0004.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="1.262"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0005.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0005.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="1.796"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0006.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0006.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="2.748"/>
 	            </bean>
 	            <bean class="alma.scheduling.dataload.AtmDataLoader">
-	                <property name="file" value="data/SKY.SPE0007.trim"/>
+	            	<property name="configurationDao" ref="configDao"/>
+	            	<property name="file" value="SKY.SPE0007.trim"/>
 	                <property name="dao" ref="atmDao"/>
 	                <property name="maxNumRecords" value="100"/>
 	                <property name="pwc" value="5.186"/>

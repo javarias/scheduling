@@ -2,13 +2,14 @@ package alma.scheduling.datamodel.executive.dao;
 
 import java.util.List;
 
+import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 
-public interface ExecutiveDAO{
+public interface ExecutiveDAO extends GenericDao {
 
     public List<Executive> getAllExecutive();
     
@@ -24,4 +25,6 @@ public interface ExecutiveDAO{
 
     public ExecutivePercentage getExecutivePercentage(Executive ex,
             ObservingSeason os);
+    
+    public void deleteAll();
 }

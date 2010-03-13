@@ -25,7 +25,7 @@ import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.SchedBlockExecutivePercentage;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 
-public class XmlExecutiveDaoImpl implements ExecutiveDAO {
+public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
 
     private static Logger logger = LoggerFactory.getLogger(XmlExecutiveDaoImpl.class);
     private boolean ready = false;

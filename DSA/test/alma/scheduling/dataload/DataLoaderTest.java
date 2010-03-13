@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DataLoaderTest.java,v 1.1 2010/03/12 17:14:04 rhiriart Exp $"
+ * "@(#) $Id: DataLoaderTest.java,v 1.2 2010/03/13 02:56:15 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -75,5 +75,7 @@ public class DataLoaderTest extends TestCase {
             ut.setTime(ut.getTime() + 4000000); // shift in 1.11 hours
             updater.update(ut);            
         }
+        
+        fullLoader.clear();
     }
 }
