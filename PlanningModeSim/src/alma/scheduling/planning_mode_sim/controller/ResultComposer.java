@@ -1,20 +1,16 @@
 package alma.scheduling.planning_mode_sim.controller;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
 import alma.scheduling.datamodel.output.ObservationProject;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.SchedBlockResult;
-import alma.scheduling.datamodel.output.dao.OutputDao;
 
 /** 
  * Gathers notifications from the Simulator, and generates an output that <br>
@@ -39,8 +35,16 @@ public class ResultComposer {
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		
+		//Temporary dummy array config
+		ArrayConfiguration arrtmp = new ArrayConfiguration();
+		arrtmp.setResolution(10.0);
+		arrtmp.setEndTime(new Date());
+		arrtmp.setStartTime(new Date());
+		
+		notifyArrayCreation(arrtmp);
 		
 		dummyObsProject = new ObservationProject();
+		dummyObsProject.setSchedBlock(new HashSet());
 	}
 	
 	public void notifyArrayCreation(ArrayConfiguration arrcfg){

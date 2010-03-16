@@ -34,6 +34,7 @@ import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.output.MasterReporter;
 import alma.scheduling.output.Reporter;
 import alma.scheduling.planning_mode_sim.controller.ResultComposer;
+import alma.scheduling.planning_mode_sim.controller.TimeHandler;
 
 
 public class AprcTool {
@@ -160,6 +161,7 @@ public class AprcTool {
     }
     
     private void run(String ctxPath){
+    	TimeHandler.initialize(TimeHandler.Type.REAL);
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         Date time = calendar.getTime();
@@ -191,7 +193,7 @@ public class AprcTool {
                 }
                 rc.notifySchedBlockStart(sb);
             } catch (NoSbSelectedException e) {
-            	OutputDao outDao = new OutputDaoImpl();
+            	OutputDao outDao = (OutputDao) ctx.getBean("outDao");
             	outDao.saveResults( rc.getResults() );
                 System.out.println("DSA finished -- No more suitable SBs to be scheduled");
                 return;
