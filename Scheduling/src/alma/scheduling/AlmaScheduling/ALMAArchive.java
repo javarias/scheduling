@@ -63,12 +63,11 @@ import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
 import alma.entity.xmlbinding.specialsb.SpecialSB;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.hla.runtime.DatamodelInstanceChecker;
-import alma.lifecycle.persistence.domain.StateChangeRecord;
+import alma.lifecycle.persistence.domain.StateEntityType;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystem;
-import alma.projectlifecycle.StateSystemHelper;
 import alma.scheduling.AlmaScheduling.facades.LoggingStateSystem;
 import alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
@@ -116,7 +115,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.97 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: ALMAArchive.java,v 1.98 2010/03/16 21:32:22 dclarke Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1781,7 +1780,7 @@ public class ALMAArchive implements Archive {
 	 * 
 	 * @return Set<String> - a set of status UIDs
 	 */
-	private Set<String> getUIDsForChangedStatuses(final String type) {
+	private Set<String> getUIDsForChangedStatuses(final StateEntityType prj) {
 		final Set<String> result = new HashSet<String>();
 
 		final IDLArrayTime start = new IDLArrayTime(lastProjectStatusQuery);
@@ -1792,10 +1791,10 @@ public class ALMAArchive implements Archive {
 				stateSystemComp.findStateChangeRecords(
 						start,
 						end, "", "", "",
-						type);
+						prj.toString());
 			logger.finer(String.format(
 					"stateChanges(%s).length: %d (start = %d, end = %d)",
-					type, stateChanges.length, start.value, end.value));
+					prj.toString(), stateChanges.length, start.value, end.value));
 			for (StateChangeData sc : stateChanges) {
 				logger.finer("domainEntityId: " + sc.domainEntityId);
 				logger.finer("domainEntityState: " + sc.domainEntityState);
@@ -1932,7 +1931,7 @@ public class ALMAArchive implements Archive {
         	// made while the query results are being processed will be
         	// missed.
         	final long now = System.currentTimeMillis();
-        	changedPSUids   = getUIDsForChangedStatuses(StateChangeRecord.ENTITY_TYPE_OBS_PROJECT);
+        	changedPSUids   = getUIDsForChangedStatuses(StateEntityType.PRJ);
             lastProjectStatusQuery = now;
         } else {
             lastProjectStatusQuery = System.currentTimeMillis();
