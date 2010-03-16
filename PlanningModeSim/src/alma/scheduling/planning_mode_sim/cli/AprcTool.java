@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -27,9 +28,12 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.output.dao.OutputDao;
+import alma.scheduling.datamodel.output.dao.OutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.output.MasterReporter;
 import alma.scheduling.output.Reporter;
+import alma.scheduling.planning_mode_sim.controller.ResultComposer;
 
 
 public class AprcTool {
@@ -39,7 +43,7 @@ public class AprcTool {
     private String workDir;
     
     private ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
-    
+      
     private void help(){
         System.out.println("APRC Tool Command Line Interface");
         System.out.print("Usage: ");
@@ -167,6 +171,7 @@ public class AprcTool {
             throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
         DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
         String[] masterReporterNames = ctx.getBeanNamesForType(MasterReporter.class);
+        ResultComposer rc = new ResultComposer();
         // ArrayList<SchedBlock> sbs = new ArrayList<SchedBlock>();
         SchedBlockExecutor sbExecutor =
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
@@ -184,10 +189,14 @@ public class AprcTool {
                     Reporter rep = (Reporter) ctx.getBean(masterReporterNames[i]);
                     rep.report(sb);
                 }
+                rc.notifySchedBlockStart(sb);
             } catch (NoSbSelectedException e) {
+            	OutputDao outDao = new OutputDaoImpl();
+            	outDao.saveResults( rc.getResults() );
                 System.out.println("DSA finished -- No more suitable SBs to be scheduled");
                 return;
             }
+       
     }
     
     private void update(ApplicationContext ctx, Date time) {
@@ -227,6 +236,7 @@ public class AprcTool {
             if (workDir == null){
                 File tmp = new File(".");
                 workDir = tmp.getAbsolutePath();
+                logger.debug( "Working directory is: " + workDir);
             }
         }
         System.out.println("Using directory: " + workDir);
