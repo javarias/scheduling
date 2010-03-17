@@ -2,6 +2,7 @@ package alma.scheduling.datamodel.obsproject;
 
 import java.util.Date;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class ObsUnitTest extends TestCase {
         super.tearDown();
     }
  
-    public void testObsProject() throws Exception {
+    public void testObsUnit() throws Exception {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
@@ -160,5 +161,45 @@ public class ObsUnitTest extends TestCase {
             tx.rollback();
             throw ex;
         }        
+    }
+    
+    public void testObsProject() throws Exception {
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            ObsProject prj = new ObsProject();
+            prj.setAssignedPriority(1);
+            prj.setPrincipalInvestigator("me");
+            prj.setStatus("ready");
+            // a ObsUnitSet containing several SchedBlock
+            // children are saved by cascading
+            ObsUnitSet ous = new ObsUnitSet();
+            SchedBlock sb2 = new SchedBlock();
+            sb2.setWeatherConstraints(new WeatherConstraints(1.0, 1.0, 1.0, 1.0));
+            SchedBlock sb3 = new SchedBlock();
+            sb3.setWeatherConstraints(new WeatherConstraints(2.0, 2.0, 2.0, 2.0));
+            ous.addObsUnit(sb2);
+            ous.addObsUnit(sb3);
+            prj.setObsUnit(ous);
+            ous.setProject(prj);
+            session.save(prj);
+            logger.info("project status = " + ous.getProject().getStatus());
+            tx.commit();
+        } catch(Exception ex) {
+            tx.rollback();
+            throw ex;
+        }
+        try {
+            tx = session.beginTransaction();
+            Query query = session.createQuery("from ObsProject");
+            ObsProject prj = (ObsProject) query.list().get(0);
+            ObsUnit ous = prj.getObsUnit();
+            assertNotNull(ous.getProject());
+            tx.commit();
+        } catch (Exception ex) {
+            tx.rollback();
+            throw ex;
+        }
+        
     }
 }

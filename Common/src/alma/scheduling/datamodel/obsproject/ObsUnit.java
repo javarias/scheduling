@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnit.java,v 1.2 2010/03/05 16:42:29 rhiriart Exp $"
+ * "@(#) $Id: ObsUnit.java,v 1.3 2010/03/17 20:24:50 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -33,6 +33,12 @@ public abstract class ObsUnit {
     private ObsUnitSet parent;
 
     private ObsUnitControl obsUnitControl;
+    
+    /**
+     * In the case of the root ObsUnitSet, this is a reference to the
+     * ObsProject. Null otherwise.
+     */
+    private ObsProject project;
     
     public Long getId() {
         return id;
@@ -56,6 +62,14 @@ public abstract class ObsUnit {
 
     public void setObsUnitControl(ObsUnitControl obsUnitControl) {
         this.obsUnitControl = obsUnitControl;
+    }
+
+    public ObsProject getProject() {
+        return project;
+    }
+
+    public void setProject(ObsProject project) {
+        this.project = project;
     }
     
 }

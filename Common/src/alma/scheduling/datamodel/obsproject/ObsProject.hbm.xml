@@ -13,6 +13,7 @@
         <property name="principalInvestigator" column="PI"/>
         <property name="assignedPriority" column="ASSIGNED_PRIORITY"/>
         <property name="status" column="STATUS"/>
+        <property name="totalExecutionTime" column="TOTAL_EXEC_TIME"/>
         
         <many-to-one name="obsUnit" class="ObsUnit" column="OBSUNITID"
             cascade="save-update" unique="true" not-null="false"/>

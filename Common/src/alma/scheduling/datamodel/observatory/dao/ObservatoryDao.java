@@ -21,12 +21,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservatoryDao.java,v 1.1 2010/03/12 02:11:42 rhiriart Exp $"
+ * "@(#) $Id: ObservatoryDao.java,v 1.2 2010/03/17 20:24:50 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.observatory.dao;
 
+import java.util.List;
+
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.GenericDao;
 
 public interface ObservatoryDao extends GenericDao {
 
+    List<ArrayConfiguration> findArrayConfigurations();
 }

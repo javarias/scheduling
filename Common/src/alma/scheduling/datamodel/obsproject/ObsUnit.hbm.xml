@@ -17,6 +17,7 @@
             <generator class="native"/>
         </id>
         <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
+        <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>
         <component name="obsUnitControl" class="ObsUnitControl">
             <property name="lastUpdate" type="date" column="OBSUNIT_CTRL_LAST_UPDATE"/>
             <property name="validUntil" type="date" column="OBSUNIT_CTRL_VALID_UNTIL"/>
