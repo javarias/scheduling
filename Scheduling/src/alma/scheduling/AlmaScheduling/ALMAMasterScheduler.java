@@ -96,7 +96,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.127 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.128 2010/03/17 22:49:02 dclarke Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1454,7 +1454,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             results = manager.archiveQuery(query, schema);
         } catch(Exception e) {
             e.printStackTrace();
-            results[0] = new String(e.toString());
+            results[1] = new String(e.toString());
         }
         return results;
     }
