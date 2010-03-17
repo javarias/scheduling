@@ -115,7 +115,7 @@ import alma.scheduling.utils.Profiler;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.83 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: ProjectUtil.java,v 1.84 2010/03/17 23:13:30 dclarke Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -605,7 +605,9 @@ public class ProjectUtil {
         if(set.getEntityPartId() == null) {
             set.setEntityPartId(genPartId());
         }
-        program = new Program (set.getEntityPartId(), ous.getUID());
+        final String domainId = set.getEntityPartId();
+        final String statusId = ous.getUID();
+        program = new Program (domainId, statusId);
 		program.setProject(project);
 		//System.out.println("ProjectUtil:program"+ program.getTotalPrograms());
 		//program.setObsUnitSetStatusId(null); // We get this from the ProjectStatus.
