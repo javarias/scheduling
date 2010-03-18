@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
@@ -27,6 +29,8 @@ import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.OutputDaoImpl;
@@ -40,6 +44,49 @@ import alma.scheduling.planning_mode_sim.controller.TimeHandler;
 public class AprcTool {
     
     private static Logger logger = LoggerFactory.getLogger(AprcTool.class);
+
+    private class Runner implements Runnable {
+
+        private ApplicationContext ctx;
+        private Date time;
+        private DynamicSchedulingAlgorithm dsa;
+        private ArrayConfiguration arrCnf;
+        private SchedBlockExecutor sbExecutor;
+        private ResultComposer rc;
+        
+        public Runner(ApplicationContext ctx, Date time,
+                DynamicSchedulingAlgorithm dsa, ArrayConfiguration arrCnf,
+                SchedBlockExecutor sbExecutor, ResultComposer rc) {
+            this.ctx = ctx;
+            this.time = time;
+            this.dsa = dsa;
+            this.arrCnf = arrCnf;
+            this.sbExecutor = sbExecutor;
+            this.rc = rc;
+            rc.notifyArrayCreation(arrCnf);
+        }
+
+        @Override
+        public void run() {
+            while(true)
+                try {
+                    logger.info("updating DB");
+                    update(ctx, time);
+                    logger.info("selecting candidate SBs");
+                    dsa.selectCandidateSB();
+                    dsa.rankSchedBlocks();
+                    SchedBlock sb = dsa.getSelectedSchedBlock();
+                    time = sbExecutor.execute(sb, arrCnf, time);
+                    rc.notifySchedBlockStart(sb);
+                } catch (NoSbSelectedException e) {
+                    OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+                    outDao.saveResults( rc.getResults() );
+                    System.out.println("DSA finished -- No more suitable SBs to be scheduled");
+                    return;
+                }            
+        }
+        
+    }
     
     private String workDir;
     
@@ -164,7 +211,7 @@ public class AprcTool {
     	TimeHandler.initialize(TimeHandler.Type.REAL);
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        Date time = calendar.getTime();
+        Date time = calendar.getTime(); // initial time is now, it should be configurable
         setPreconditions(ctx, new Date());
         String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
         if(dsaNames.length == 0)
@@ -172,33 +219,33 @@ public class AprcTool {
         if(dsaNames.length > 1)
             throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
         DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
-        String[] masterReporterNames = ctx.getBeanNamesForType(MasterReporter.class);
-        ResultComposer rc = new ResultComposer();
-        // ArrayList<SchedBlock> sbs = new ArrayList<SchedBlock>();
+        
         SchedBlockExecutor sbExecutor =
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
-        while(true)
+        ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
+        
+        List<Thread> threads = new ArrayList<Thread>();
+        List<ArrayConfiguration> arrCnfs = observatoryDao.findArrayConfigurations();
+        for (Iterator<ArrayConfiguration> iter = arrCnfs.iterator(); iter.hasNext();) {
+            ArrayConfiguration arrCnf = iter.next();
+            ResultComposer rc = new ResultComposer();
+            Runner runner = new Runner(ctx, time, dsa, arrCnf, sbExecutor, rc);
+            Thread runnerThread = new Thread(runner);
+            threads.add(runnerThread);
+        }
+        
+        for (Iterator<Thread> iter = threads.iterator(); iter.hasNext();) {
+            logger.info("starting array execution thread");
+            iter.next().start();
+        }
+        
+        for (Iterator<Thread> iter = threads.iterator(); iter.hasNext();) {
             try {
-                logger.info("updating DB");
-                update(ctx, time);
-                logger.info("selecting candidate SBs");
-                dsa.selectCandidateSB();
-                dsa.rankSchedBlocks();
-                SchedBlock sb = dsa.getSelectedSchedBlock();
-                // sbs.add(sb);
-                time = sbExecutor.execute(sb, time);
-                for(int i = 0; i < masterReporterNames.length; i++){
-                    Reporter rep = (Reporter) ctx.getBean(masterReporterNames[i]);
-                    rep.report(sb);
-                }
-                rc.notifySchedBlockStart(sb);
-            } catch (NoSbSelectedException e) {
-            	OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-            	outDao.saveResults( rc.getResults() );
-                System.out.println("DSA finished -- No more suitable SBs to be scheduled");
-                return;
+                iter.next().join();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
-       
+        }
     }
     
     private void update(ApplicationContext ctx, Date time) {

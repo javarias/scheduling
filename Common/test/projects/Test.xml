@@ -32,6 +32,13 @@
             <FieldSource id="S2" name="NGC1235" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
             <FieldSource id="S3" name="NGC1236" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
             <FieldSource id="S4" name="NGC1237" RA="0.0" Dec="0.0" pmRA="0.0" pmDec="0.0"/>
+            <SchedBlockControl>
+                <MaximumTime>2.0</MaximumTime>
+                <EstimatedExecutionTime>1.0</EstimatedExecutionTime>
+                <ArrayRequested>TWELVE_M</ArrayRequested>
+                <TacPriority>1</TacPriority>
+                <IndefiniteRepeat>false</IndefiniteRepeat>
+            </SchedBlockControl>            
         </SchedBlock>
         <SchedBlock>
             <WeatherConstraints maxWindVelocity="0.0" maxOpacity="0.0" minPhaseStability="0.0"
@@ -41,6 +48,13 @@
             <ObsParameters id="OP12">
                 <ScienceParameters/>
             </ObsParameters>
+            <SchedBlockControl>
+                <MaximumTime>2.0</MaximumTime>
+                <EstimatedExecutionTime>1.0</EstimatedExecutionTime>
+                <ArrayRequested>TWELVE_M</ArrayRequested>
+                <TacPriority>1</TacPriority>
+                <IndefiniteRepeat>false</IndefiniteRepeat>
+            </SchedBlockControl>           
         </SchedBlock>
         <ObsUnitSet>
             <SchedBlock>
@@ -51,6 +65,13 @@
                 <ObsParameters id="OP3">
                     <ScienceParameters/>
                 </ObsParameters>
+                <SchedBlockControl>
+                    <MaximumTime>2.0</MaximumTime>
+                    <EstimatedExecutionTime>1.0</EstimatedExecutionTime>
+                    <ArrayRequested>TWELVE_M</ArrayRequested>
+                    <TacPriority>1</TacPriority>
+                    <IndefiniteRepeat>false</IndefiniteRepeat>
+                </SchedBlockControl>                
             </SchedBlock>
         </ObsUnitSet>
     </ObsUnitSet>

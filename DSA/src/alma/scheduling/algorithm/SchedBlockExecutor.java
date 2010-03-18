@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutor.java,v 1.1 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockExecutor.java,v 1.2 2010/03/18 06:27:15 rhiriart Exp $"
  */
 package alma.scheduling.algorithm;
 
 import java.util.Date;
 
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockExecutor {
@@ -38,5 +39,5 @@ public interface SchedBlockExecutor {
      * @param ut Point in time when the SchedBlock is executed
      * @return Point in time after the SchedBlock has been executed.
      */
-    Date execute(SchedBlock sb, Date ut);
+    Date execute(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
 }

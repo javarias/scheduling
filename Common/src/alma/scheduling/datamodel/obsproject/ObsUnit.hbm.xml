@@ -58,7 +58,8 @@
                 <property name="indefiniteRepeat" type="boolean" column="SCHEDBLOCK_CTRL_INDEFINITE"/>
                 <property name="executionCount" type="int" column="SCHEDBLOCK_CTRL_EXEC_COUNT"/>
                 <property name="state" type="SchedBlockState" column="SCHEDBLOCK_CTRL_STATE"/>
-                <property name="achievedSensitivity" type="double" column="SCHECBLOCK_CTRL_SENSITIVITY"/>
+                <property name="achievedSensitivity" type="double" column="SCHEDBLOCK_CTRL_SENSITIVITY"/>
+                <property name="accumulatedExecutionTime" type="double" column="SCHEDBLOCK_CTRL_ACCUM_TIME"/>
             </component>
             <set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
                 <key column="SCHEDBLOCKID"/>

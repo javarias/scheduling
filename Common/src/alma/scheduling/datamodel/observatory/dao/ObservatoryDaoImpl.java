@@ -22,7 +22,7 @@ public class ObservatoryDaoImpl extends GenericDaoImpl implements ObservatoryDao
             Set<AntennaInstallation> ais = ac.getAntennaInstallations();
             for (Iterator<AntennaInstallation> iter2 = ais.iterator(); iter2.hasNext();) {
                 AntennaInstallation ai = iter2.next();
-                ai.getAntenna();
+                ai.getAntenna().getDiameter();
                 ai.getPad();
             }
         }

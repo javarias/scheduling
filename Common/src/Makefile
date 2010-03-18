@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.15 2010/03/12 02:11:42 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.16 2010/03/18 06:25:39 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -134,7 +134,7 @@ SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
                         ../config/hibernate.cfg.xml
 #
 # java sources in Jarfile on/off
-DEBUG= 
+DEBUG=on
 #
 # ACS XmlIdl generation on/off
 #

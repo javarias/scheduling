@@ -66,7 +66,7 @@ public class XmlOutputDaoImpl implements OutputDao {
         for(int i = 0; i < op.length; i++){
             ObservationProject tmpOp = itOp.next();
             op[i].setExecutionTime(tmpOp.getExecutionTime()); 
-            op[i].setScienceRating(tmpOp.getScienceRating());
+            op[i].setScienceRating((int) tmpOp.getScienceRating());
             op[i].setStatus(alma.scheduling.output.generated.types.ExecutionStatus.valueOf(
                     tmpOp.getStatus().name()));
             //set the affiliations
