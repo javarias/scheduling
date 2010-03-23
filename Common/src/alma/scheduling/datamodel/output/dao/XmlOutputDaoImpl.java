@@ -63,12 +63,13 @@ public class XmlOutputDaoImpl implements OutputDao {
             new alma.scheduling.output.generated.ObservationProject[results.getObservationProject().size()];
         Iterator<ObservationProject> itOp = results.getObservationProject().iterator();
         r.setObservationProject(op);
+      	
         for(int i = 0; i < op.length; i++){
             ObservationProject tmpOp = itOp.next();
-            op[i].setExecutionTime(tmpOp.getExecutionTime()); 
+        	op[i] = new alma.scheduling.output.generated.ObservationProject();
+            op[i].setExecutionTime(tmpOp.getExecutionTime());
             op[i].setScienceRating((int) tmpOp.getScienceRating());
-            op[i].setStatus(alma.scheduling.output.generated.types.ExecutionStatus.valueOf(
-                    tmpOp.getStatus().name()));
+            op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.COMPLETE );
             //set the affiliations
             alma.scheduling.output.generated.Affiliation aff[] = 
                 new alma.scheduling.output.generated.Affiliation[tmpOp.getAffiliation().size()];
@@ -99,6 +100,7 @@ public class XmlOutputDaoImpl implements OutputDao {
                 sb[j].setArrayRef(aRef);
             }
         }
+        
         //set the Arrays
         alma.scheduling.output.generated.Array a[] =
             new alma.scheduling.output.generated.Array[results.getArray().size()];
