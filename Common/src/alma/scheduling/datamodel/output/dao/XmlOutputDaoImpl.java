@@ -69,6 +69,7 @@ public class XmlOutputDaoImpl implements OutputDao {
         	op[i] = new alma.scheduling.output.generated.ObservationProject();
             op[i].setExecutionTime(tmpOp.getExecutionTime());
             op[i].setScienceRating((int) tmpOp.getScienceRating());
+            //TODO: Fix this presseted status. Using valueof() method returns null pointer.
             op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.COMPLETE );
             //set the affiliations
             alma.scheduling.output.generated.Affiliation aff[] = 

@@ -6,5 +6,12 @@
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.5.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
+	<classpathentry kind="var" path="ACSROOT/lib/castor.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsjlog.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/acsjlogSLF4j.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="/home/ahoffsta/introot/lib/org.springframework.transaction-3.0.0.RELEASE.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
