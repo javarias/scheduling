@@ -70,6 +70,10 @@ public abstract class TimeHandler {
 		getHandler().step();
 	}
 	
+	static public void stepAhead(int amount){
+		getHandler().step(amount);
+	}
+	
 	public enum Type{
 		SIMULATED, REAL
 	}

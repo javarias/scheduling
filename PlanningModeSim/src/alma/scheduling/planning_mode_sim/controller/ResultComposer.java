@@ -35,15 +35,8 @@ public class ResultComposer {
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		
-		//Temporary dummy array config
-		ArrayConfiguration arrtmp = new ArrayConfiguration();
-		arrtmp.setResolution(10.0);
-		arrtmp.setEndTime(new Date());
-		arrtmp.setStartTime(new Date());
-		
-		notifyArrayCreation(arrtmp);
-		
 		dummyObsProject = new ObservationProject();
+		results.getObservationProject().add( dummyObsProject );
 		dummyObsProject.setSchedBlock(new HashSet());
 	}
 	
@@ -75,7 +68,7 @@ public class ResultComposer {
 		sbr.setStartDate( TimeHandler.now() );
 		sbr.setExecutionTime( 0.0 );
 		sbr.setMode( "Single Dish" ); //TODO: Implement modes in data-model
-		sbr.setStatus(ExecutionStatus.INCOMPLETE);
+		sbr.setStatus( ExecutionStatus.COMPLETE );
 		sbr.setType( "Observation" ); //TODO: Implement types in data-model
 		
 		//TODO: Check if the containing Observation Project already exists in the results collection of obsprojects.
@@ -87,10 +80,9 @@ public class ResultComposer {
 		dummyObsProject.getSchedBlock().add(sbr);
 		
 		//TODO: Use the correct time spend on simulation
-		TimeHandler.stepAhead();
+		TimeHandler.stepAhead( (int) sb.getObsUnitControl().getEstimatedExecutionTime().floatValue() * 3600 * 1000 );
+		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime().floatValue() * 3600 * 1000 );
 		sbr.setEndDate( TimeHandler.now() );
-		
-		sbr.setExecutionTime( sbr.getStartDate().getTime() - sbr.getEndDate().getTime() );		
 	}
 		
 	/**

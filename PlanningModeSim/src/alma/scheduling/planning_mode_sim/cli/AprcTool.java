@@ -196,7 +196,7 @@ public class AprcTool {
         String[] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         if (cfgBeans.length == 0) {
             System.out.println(ctxPath
-            + " file doesn't contain a bean of the type lma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
+            + " file doesn't contain a bean of the type alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
             System.exit(1);
         }
         for(int i = 0; i < loadersNames.length; i++) {
@@ -224,11 +224,11 @@ public class AprcTool {
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
+        ResultComposer rc = new ResultComposer();
         List<Thread> threads = new ArrayList<Thread>();
         List<ArrayConfiguration> arrCnfs = observatoryDao.findArrayConfigurations();
         for (Iterator<ArrayConfiguration> iter = arrCnfs.iterator(); iter.hasNext();) {
             ArrayConfiguration arrCnf = iter.next();
-            ResultComposer rc = new ResultComposer();
             Runner runner = new Runner(ctx, time, dsa, arrCnf, sbExecutor, rc);
             Thread runnerThread = new Thread(runner);
             threads.add(runnerThread);
