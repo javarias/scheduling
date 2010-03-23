@@ -1,11 +1,11 @@
 package alma.scheduling.planning_mode_sim.controller;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
 import alma.scheduling.datamodel.output.ObservationProject;
@@ -36,8 +36,11 @@ public class ResultComposer {
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		
 		dummyObsProject = new ObservationProject();
+		dummyObsProject.setSchedBlock(new HashSet<SchedBlockResult>());
+		dummyObsProject.setScienceRating(100);
+		dummyObsProject.setAffiliation(new HashSet<Affiliation>());
+		dummyObsProject.setExecutionTime(0.0);
 		results.getObservationProject().add( dummyObsProject );
-		dummyObsProject.setSchedBlock(new HashSet());
 	}
 	
 	public void notifyArrayCreation(ArrayConfiguration arrcfg){
@@ -69,7 +72,7 @@ public class ResultComposer {
 		sbr.setExecutionTime( 0.0 );
 		sbr.setMode( "Single Dish" ); //TODO: Implement modes in data-model
 		sbr.setStatus( ExecutionStatus.COMPLETE );
-		sbr.setType( "Observation" ); //TODO: Implement types in data-model
+		sbr.setType( "SCIENTIFIC" ); //TODO: Implement types in data-model
 		
 		//TODO: Check if the containing Observation Project already exists in the results collection of obsprojects.
 		//... code
@@ -89,8 +92,39 @@ public class ResultComposer {
 	 * Gathers data at the end of simulation to complete the output data.
 	 */
 	public void completeResults(){
+		System.out.println("Completing results");
 		
+		for( ObservationProject op : results.getObservationProject()){
+			long execTime = 0;
+			for( SchedBlockResult sbr : op.getSchedBlock()){
+				execTime += sbr.getExecutionTime();
+			}
+			op.setExecutionTime(execTime);
+		}
 		
+		for( Array arr : results.getArray()){
+			arr.setScientificTime( 0.0 );
+			arr.setAvailableTime( 0.0 );
+			arr.setMaintenanceTime( 0.0 );
+		}
+		
+		//TODO: According to actual structure, SBs need to belongs to a ObsProject. What about maintenance SBs?
+		for( ObservationProject op : results.getObservationProject()){
+			System.out.println("\\-Completing observation project:" + op.getExecutionTime() );
+			for( SchedBlockResult sbr : op.getSchedBlock()){
+				if( sbr.getType() == "SCIENTIFIC")
+					sbr.getArrayRef().setScientificTime( sbr.getArrayRef().getScientificTime() + sbr.getExecutionTime() );
+				if( sbr.getType() == "MAINTENANCE")
+					sbr.getArrayRef().setMaintenanceTime( sbr.getArrayRef().getMaintenanceTime() + sbr.getExecutionTime() );
+			}
+		}
+		
+		for( Array arr : results.getArray()){
+			this.results.setScientificTime( arr.getScientificTime() +  this.results.getScientificTime() );
+			this.results.setAvailableTime( arr.getAvailableTime() +  this.results.getAvailableTime() );
+			this.results.setMaintenanceTime( arr.getMaintenanceTime() +  this.results.getMaintenanceTime() );
+		}
+				
 	}
 	
 	/**

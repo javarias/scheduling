@@ -34,6 +34,7 @@ import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.OutputDaoImpl;
+import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.output.MasterReporter;
 import alma.scheduling.output.Reporter;
@@ -79,9 +80,7 @@ public class AprcTool {
                     time = sbExecutor.execute(sb, arrCnf, time);
                     rc.notifySchedBlockStart(sb);
                 } catch (NoSbSelectedException e) {
-                    OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-                    outDao.saveResults( rc.getResults() );
-                    System.out.println("DSA finished -- No more suitable SBs to be scheduled");
+                    System.out.println("DSA for array " + arrCnf.getId().toString() + " finished -- No more suitable SBs to be scheduled");
                     return;
                 }            
         }
@@ -246,6 +245,15 @@ public class AprcTool {
                 ex.printStackTrace();
             }
         }
+        
+        rc.completeResults();
+        //Saving results to DB and XML output file
+        XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
+        xmlOutDao.setConfigDao(xmlConfigDao);
+        xmlOutDao.saveResults( rc.getResults() );
+        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+        outDao.saveResults( rc.getResults() );
+        
     }
     
     private void update(ApplicationContext ctx, Date time) {
