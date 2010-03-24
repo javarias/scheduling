@@ -20,6 +20,7 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
         return this.findAll(Executive.class);
     }
     
+    
     @Override
     @Transactional(readOnly=true)
     public List<ObservingSeason> getAllObservingSeason() {

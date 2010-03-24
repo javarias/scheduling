@@ -49,6 +49,13 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
         return schedBlocks;
     }
+    
+    @Override
+    public List<SchedBlock> findSchedBlocksByEstimatedExecutionTime(double time) {
+        Double [] args = {new Double(time)}; 
+        executeNamedQuery("SchedBlock.findByEstimatedExecutionTime", args);
+        return executeNamedQuery("SchedBlock.findByEstimatedExecutionTime", args);
+    }
 
     @Override
     public void hydrateSchedBlockObsParams(SchedBlock schedBlock) {

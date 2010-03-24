@@ -96,4 +96,11 @@
         sb.schedulingConstraints.representativeTarget.source.observability.settingTime > ?))        
 		]]>
     </query>
+    
+    <query name="SchedBlock.findByEstimatedExecutionTime">
+    	<![CDATA[
+    		from SchedBlock sb where
+    		sb.obsUnitControl.estimatedExecutionTime < ?
+    	]]>
+    </query>
 </hibernate-mapping>
