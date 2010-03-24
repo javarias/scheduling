@@ -28,6 +28,8 @@ package alma.scheduling.output;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.sax.SAXSource;
@@ -38,11 +40,13 @@ import javax.xml.validation.Validator;
 
 import junit.framework.TestCase;
 
+import org.exolab.castor.types.Date;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import alma.scheduling.output.generated.Array;
 import alma.scheduling.output.generated.Results;
 import alma.scheduling.output.generated.types.ExecutionStatus;
 import alma.scheduling.persistence.XmlUtil;
@@ -107,6 +111,28 @@ public class OutputTest extends TestCase  {
         assertEquals( results.getObservationProject(0).getStatus(), ExecutionStatus.COMPLETE );
         assertEquals( results.getObservationProject(0).getSchedBlock(0).getArrayRef().getArrayRef() , results.getArray(1).getArrayID() );
         
+    }
+    
+    public void testOutputXMLGeneration() throws Exception {
+        Results result = new Results();
+        result.setAvailableTime(100.0);
+        result.setMaintenanceTime(100.0);
+        result.setOperationTime(100.0);
+        result.setScientificTime(100.0);
+        Array array = new Array();
+        array.setAvailableTime(100.0);
+        array.setBaseline(100.0);
+        array.setCreationDate(new Date("2010-03-24"));
+        array.setDeletionDate(new Date("2010-05-15"));
+        array.setMaintenanceTime(100.0);
+        array.setScientificTime(100.0);
+        result.setArray(new Array[] {array});
+        StringWriter writer = new StringWriter();
+        result.marshal(writer);
+        String xml = writer.getBuffer().toString();
+        System.out.println("Output XML:\n" + xml);
+        Results result2 = Results.unmarshalResults(new StringReader(xml));
+        assertEquals(1, result2.getArrayCount());        
     }
 
 }
