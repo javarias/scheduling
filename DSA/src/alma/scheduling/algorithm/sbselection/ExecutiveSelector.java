@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.12 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.13 2010/03/24 16:25:24 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.scheduling.algorithm.obsproject.FieldSourceObservabilityUpdater;
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
@@ -43,6 +42,7 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
@@ -72,6 +72,18 @@ public class ExecutiveSelector implements SchedBlockSelector {
 
     @Override
     public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
+        // ut time is ignored
+        return select();
+    }
+
+    @Override
+    public Collection<SchedBlock> select(ArrayConfiguration arrConf) throws NoSbSelectedException {
+        // ut time is ignored
+        return select();
+    }
+
+    @Override
+    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException {
         // ut time is ignored
         return select();
     }
@@ -127,6 +139,5 @@ public class ExecutiveSelector implements SchedBlockSelector {
     public String toString() {
         return "ExecutiveSelector";
     }
-
     
 }

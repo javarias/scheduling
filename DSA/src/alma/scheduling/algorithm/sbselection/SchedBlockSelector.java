@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.5 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.6 2010/03/24 16:25:24 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
 import java.util.Collection;
 import java.util.Date;
 
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 /**
@@ -56,4 +57,28 @@ public interface SchedBlockSelector {
      * @throws NoSbSelectedException if no selection is possible
      */
     public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException;
+    
+    /**
+     * Selects a set of SchedBlocks for a given array.
+     * If the queries underlying the selection don't require
+     * the array, this parameter is ignored.
+     * 
+     * @param arrConf the array
+     * @return the selected SchedBlocks
+     * @throws NoSbSelectedException 
+     * @throws NoSbSelectedException if no selection is possible
+     */
+    public Collection<SchedBlock> select(ArrayConfiguration arrConf) throws NoSbSelectedException;
+    /**
+     * Selects a set of SchedBlocks for a given point in time for a given array.
+     * If the queries underlying the selection don't require the point in time
+     * or the array, these parameters
+     * are ignored.
+     * 
+     * @param ut Time (UTC)
+     * @param arrConf the array
+     * @return the selected SchedBlocks
+     * @throws NoSbSelectedException if no selection is possible
+     */
+    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException;
 }

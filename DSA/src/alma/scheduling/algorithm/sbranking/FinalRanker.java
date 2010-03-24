@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FinalRanker.java,v 1.4 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.5 2010/03/24 16:25:24 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -48,8 +48,8 @@ public class FinalRanker implements SchedBlockRanker {
     @Override
     public SchedBlock getBestSB(List<SBRank> ranks) {
         ArrayList<SBRank> ranksCopy = new ArrayList<SBRank>(ranks);
-        Collections.sort(ranksCopy);
-        return this.ranks.get(ranksCopy.get(0));
+        Collections.max(ranksCopy);
+        return this.ranks.get(Collections.max(ranksCopy));
     }
 
     @SuppressWarnings("unchecked")
