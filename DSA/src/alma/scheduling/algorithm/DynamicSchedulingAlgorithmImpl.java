@@ -21,14 +21,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.3 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.4 2010/03/25 16:43:16 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,7 @@ import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorithm {
@@ -46,6 +50,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 
     private SchedBlockRanker ranker;
     private Collection<SchedBlockSelector> selectors;
+    private ArrayConfiguration array;
     /**
      * Stores the current SBs selected from selectors
      */
@@ -86,26 +91,26 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()));
 	}
 	
-	 /* (non-Javadoc)
-     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#selectCandidateSB()
-     */
-	public void selectCandidateSB() throws NoSbSelectedException{
-	    sbs.clear();
-	    ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
-	        new ArrayList<HashMap<Long,SchedBlock>>();
-	    int i = 0;
+
+    @Override
+    public void selectCandidateSB(Date ut) throws NoSbSelectedException {
+        sbs.clear();
+        ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
+            new ArrayList<HashMap<Long,SchedBlock>>();
+        int i = 0;
         for(SchedBlockSelector s: selectors){
             selectedSbs.add(new HashMap<Long, SchedBlock>());
             try {
-                for(SchedBlock sb: s.select())
+                for(SchedBlock sb: s.select(ut, array))
                     selectedSbs.get(i).put(sb.getId(), sb);
             } catch (NoSbSelectedException e) {
-                logger.warn("DSA cannot continue if a selector cannot get at least one SB");
+                logger.warn("DSA cannot continue if selector " + s.toString() +
+                        " cannot get at least one SB");
                 throw new NoSbSelectedException(e.getMessage());
             }
             i++;
         }
-        HashMap<Long, SchedBlock> smallestSet = selectedSbs.get(0); 
+        HashMap<Long, SchedBlock> smallestSet = selectedSbs.get(0);
         for(i = 1; i<selectedSbs.size(); i++){
             if (smallestSet.size() > selectedSbs.get(i).size())
                 smallestSet = selectedSbs.get(i);
@@ -133,6 +138,14 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
                 strCause += s.toString() + " ";
             throw new NoSbSelectedException(strCause);
         }
+        
+    }
+	 /* (non-Javadoc)
+     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#selectCandidateSB()
+     */
+	public void selectCandidateSB() throws NoSbSelectedException{
+	    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+	    selectCandidateSB(calendar.getTime());
 	}
 	
 	
@@ -143,8 +156,15 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	public void updateModel(){
 	    
 	}
-	
 
+    @Override
+    public ArrayConfiguration getArray() {
+        return array;
+    }
 
+    @Override
+    public void setArray(ArrayConfiguration arrConf) {
+        this.array =  arrConf;
+    }
 	
 }

@@ -10,6 +10,7 @@ import alma.scheduling.algorithm.astro.TimeUtil;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
@@ -42,6 +43,18 @@ public class FieldSourceObservableSelector implements SchedBlockSelector {
         double lst = TimeUtil.gstToLST(TimeUtil.utToGST(ut), longitude);
         logger.debug("lst = " + lst);
         return schedBlockDao.findSchedBlocksWithVisibleRepresentativeTarget(lst);
+    }
+
+    @Override
+    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
+        return select();
+    }
+
+    @Override
+    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
+        return select(ut);
     }
 
 }

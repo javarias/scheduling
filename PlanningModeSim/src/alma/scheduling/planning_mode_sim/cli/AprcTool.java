@@ -5,14 +5,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -21,6 +23,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.SchedBlockExecutor;
+import alma.scheduling.algorithm.astro.TimeUtil;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.dataload.CompositeDataLoader;
@@ -29,15 +32,15 @@ import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.output.dao.OutputDao;
-import alma.scheduling.datamodel.output.dao.OutputDaoImpl;
 import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
-import alma.scheduling.output.MasterReporter;
-import alma.scheduling.output.Reporter;
+import alma.scheduling.planning_mode_sim.EventType;
+import alma.scheduling.planning_mode_sim.TimeEvent;
 import alma.scheduling.planning_mode_sim.controller.ResultComposer;
 import alma.scheduling.planning_mode_sim.controller.TimeHandler;
 
@@ -45,7 +48,7 @@ import alma.scheduling.planning_mode_sim.controller.TimeHandler;
 public class AprcTool {
     
     private static Logger logger = LoggerFactory.getLogger(AprcTool.class);
-
+    
     private class Runner implements Runnable {
 
         private ApplicationContext ctx;
@@ -209,42 +212,173 @@ public class AprcTool {
     private void run(String ctxPath){
     	TimeHandler.initialize(TimeHandler.Type.REAL);
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        Date time = calendar.getTime(); // initial time is now, it should be configurable
+        //Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
+       // Date time = calendar.getTime(); // initial time is now, it should be configurable
+        Date time = execDao.getCurrentSeason().getStartDate(); //The start time is the start Time of the current Season
+        Date stopTime = execDao.getCurrentSeason().getEndDate();
         setPreconditions(ctx, new Date());
         String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
         if(dsaNames.length == 0)
             throw new IllegalArgumentException("There is not a Dynamic Scheduling Algorithm bean defined in the context.xml file");
         if(dsaNames.length > 1)
             throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
-        DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
         
         SchedBlockExecutor sbExecutor =
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
         ResultComposer rc = new ResultComposer();
-        List<Thread> threads = new ArrayList<Thread>();
-        List<ArrayConfiguration> arrCnfs = observatoryDao.findArrayConfigurations();
-        for (Iterator<ArrayConfiguration> iter = arrCnfs.iterator(); iter.hasNext();) {
+      
+        //This is the timeline
+        LinkedList<TimeEvent> timesToCheck = new LinkedList<TimeEvent>();
+        
+        //This will contains all the arrays and the DSA associated to the array
+        //that can be used in the current simulation time
+        Hashtable<ArrayConfiguration,DynamicSchedulingAlgorithm> arraysCreated =
+            new Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm>();
+        
+        //The arrays created which are free (not running an sb)
+        //ArrayList<ArrayConfiguration> freeArrays= new ArrayList<ArrayConfiguration>(); 
+        
+        //All the arrays
+        ArrayList<ArrayConfiguration> arrCnfs = 
+            new ArrayList<ArrayConfiguration>(observatoryDao.findArrayConfigurations());
+        
+        //Create the events for each array construction and destruction
+        for(Iterator<ArrayConfiguration> iter = arrCnfs.iterator(); iter.hasNext();){
             ArrayConfiguration arrCnf = iter.next();
-            Runner runner = new Runner(ctx, time, dsa, arrCnf, sbExecutor, rc);
-            Thread runnerThread = new Thread(runner);
-            threads.add(runnerThread);
+            
+            TimeEvent creationEvent = new TimeEvent();
+            creationEvent.setType(EventType.ARRAY_CREATION);
+            creationEvent.setTime(arrCnf.getStartTime());
+            creationEvent.setArray(arrCnf);
+            timesToCheck.add(creationEvent);
+            
+            TimeEvent destructionEvent = new TimeEvent();
+            destructionEvent.setType(EventType.ARRAY_DESTRUCTION);
+            destructionEvent.setTime(arrCnf.getEndTime());
+            destructionEvent.setArray(arrCnf);
+            timesToCheck.add(destructionEvent);
+        }
+        //Sort the times is ascending order
+        Collections.sort(timesToCheck);
+        
+        /* Check the current time and discard the older events*/
+        while(timesToCheck.size() > 0){
+            if(timesToCheck.getFirst().getTime().before(time))
+                timesToCheck.remove();
+            else
+                break;
         }
         
-        for (Iterator<Thread> iter = threads.iterator(); iter.hasNext();) {
-            logger.info("starting array execution thread");
-            iter.next().start();
-        }
-        
-        for (Iterator<Thread> iter = threads.iterator(); iter.hasNext();) {
-            try {
-                iter.next().join();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+        /*Stop when there is not more events to schedule
+         * TODO: Execute the events until end of season*/
+        while(timesToCheck.size() > 0){
+            TimeEvent ev = timesToCheck.remove();
+            logger.info("updating DB");
+            update(ctx, time);
+            //Change the current simulation time to event time
+            time = ev.getTime();
+            switch (ev.getType()){
+            case ARRAY_CREATION:
+                DynamicSchedulingAlgorithm dsa;
+                logger.info("Simulated Time [" + time.toString() + 
+                        "] Array " + ev.getArray().getId() + " created");
+                rc.notifyArrayCreation(ev.getArray());
+                dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
+                dsa.setArray(ev.getArray());
+                arraysCreated.put(ev.getArray(), dsa);
+                logger.info("selecting candidate SBs for Array: " + ev.getArray().getId());
+                try{
+                    dsa.selectCandidateSB(time);
+                    dsa.rankSchedBlocks();
+                    SchedBlock sb = dsa.getSelectedSchedBlock();
+                    Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                    rc.notifySchedBlockStart(sb);
+                    //Create a new EventTime to check the SB execution termination in the future
+                    TimeEvent sbEndEv = new TimeEvent();
+                    sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                    sbEndEv.setSb(sb);
+                    sbEndEv.setArray(ev.getArray());
+                    sbEndEv.setTime(d);
+                    timesToCheck.add(sbEndEv);
+                } catch (NoSbSelectedException ex){
+                    System.out.println("DSA for array " + ev.getArray().getId().toString() + " finished -- No more suitable SBs to be scheduled");
+                    //freeArrays.add(ev.getArray());
+                }
+                break;
+            case ARRAY_DESTRUCTION:
+                //notify the destruction??
+                logger.info("Simulated Time[" + time.toString() + 
+                        "] Array " + ev.getArray().getId() + " deleted");
+                arraysCreated.remove(ev.getArray());
+                //freeArrays.remove(ev.getArray());
+                break;
+            case SCHEDBLOCK_EXECUTION_FINISH:
+                dsa = arraysCreated.get(ev.getArray());
+                logger.info("Simulated Time[" + time.toString() + 
+                        "] selecting candidate SBs for Array: " + ev.getArray().getId());
+                try{
+                    //The array is free now it could be scheduled a new SB
+                    dsa.selectCandidateSB(time);
+                    dsa.rankSchedBlocks();
+                    SchedBlock sb = dsa.getSelectedSchedBlock();
+                    Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                    rc.notifySchedBlockStart(sb);
+                    //Create a new EventTime to check the SB execution termination in the future
+                    TimeEvent sbEndEv = new TimeEvent();
+                    sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                    sbEndEv.setSb(sb);
+                    sbEndEv.setArray(ev.getArray());
+                    sbEndEv.setTime(d);
+                    timesToCheck.add(sbEndEv);
+                } catch (NoSbSelectedException ex){
+                    System.out.println("DSA for array " + ev.getArray().getId().toString() + " No suitable SBs to be scheduled");
+                    //freeArrays.add(ev.getArray());
+                }
+                break;
+                /*TODO: To Consider the case when an array is free
+            case FREE_ARRAY:
+                dsa = arraysCreated.get(ev.getArray());
+                //removing from free list
+                freeArrays.remove(ev.getArray());
+                logger.info("Simulated Time[" + time.toString() + 
+                        "] selecting candidate SBs for Array: " + ev.getArray().getId());
+                try{
+                    dsa.selectCandidateSB(time);
+                    dsa.rankSchedBlocks();
+                    SchedBlock sb = dsa.getSelectedSchedBlock();
+                    Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                    rc.notifySchedBlockStart(sb);
+                    //Create a new EventTime to check the SB execution termination in the future
+                    TimeEvent sbEndEv = new TimeEvent();
+                    sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                    sbEndEv.setSb(sb);
+                    sbEndEv.setArray(ev.getArray());
+                    sbEndEv.setTime(d);
+                    timesToCheck.add(sbEndEv);
+                } catch (NoSbSelectedException ex){
+                    System.out.println("DSA for array " + ev.getArray().getId().toString() + " No suitable SBs to be scheduled");
+                    freeArrays.add(ev.getArray());
+                }*/
             }
-        }
+            /*
+            //If there are free arrays. Check in 10 mins more for a suitable SB candidate
+            if(freeArrays.size() > 0){
+                //Check in 10 mins more of the simulated time
+                Date next = new Date(time.getTime() + (10 * 60 * 1000 ));
+                for(ArrayConfiguration a: freeArrays){
+                    TimeEvent freeEv = new TimeEvent();
+                    freeEv.setArray(a);
+                    freeEv.setTime(next);
+                    freeEv.setType(EventType.FREE_ARRAY);
+                    timesToCheck.add(freeEv);
+                }
+            }*/
+            //Sort in ascending order the timeline
+            Collections.sort(timesToCheck);
+        }   
         
         rc.completeResults();
         //Saving results to DB and XML output file

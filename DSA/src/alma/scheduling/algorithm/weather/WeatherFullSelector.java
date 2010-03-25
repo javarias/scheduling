@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFullSelector.java,v 1.3 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: WeatherFullSelector.java,v 1.4 2010/03/25 16:43:16 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -30,6 +30,7 @@ import java.util.Collection;
 
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
@@ -48,6 +49,18 @@ public class WeatherFullSelector implements SchedBlockSelector {
     @Override
     public Collection<SchedBlock> select() throws NoSbSelectedException {
         return schedBlockDao.findAll();
+    }
+
+    @Override
+    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
+        return select();
+    }
+
+    @Override
+    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
+        return select();
     }
 
 }
