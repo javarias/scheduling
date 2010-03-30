@@ -787,7 +787,7 @@ public class SimulationInput extends Properties implements ComponentLifecycle {
 			if (numberSets < 0)
 				error("Number of sets cannot be 0 in " + s);
 			// Create the project.
-			project[i] = new Project(name + "_project", name + "_proposal", name, "v01", pi, "", "", logger);
+			project[i] = new Project(name + "_project", name + "_proposal", name, "v01", pi, "", "", false, logger);
 				
 			// Create the program and add it to the project.
 			Program program = new Program (name + "_set_program", name + "_set_program_status");

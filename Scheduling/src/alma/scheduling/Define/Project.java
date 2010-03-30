@@ -27,14 +27,22 @@
 package alma.scheduling.Define;
 
 import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.logging.Logger;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+
+import alma.scheduling.ProjectLite;
+import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
+import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 
 
 /**
  * An Project is an observing project as viewed by the
  * scheduling subsystem. 
  * 
- * @version $Id: Project.java,v 1.11 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: Project.java,v 1.12 2010/03/30 17:52:08 dclarke Exp $
  * @author Allen Farris
  */
 public class Project implements ProjectMember {
@@ -69,14 +77,19 @@ public class Project implements ProjectMember {
 	// in a breakpoint, then breakpointTime is null.
 	protected DateTime breakpointTime;
     protected String projectVersion;
+    protected boolean manualMode;
 
     protected final Logger logger;
+    
+    private ProjectLite projectLite;
+    
 	/**
 	 * Construct an Project.
 	 */
 	public Project(String obsProjectId, String proposalId, 
             String projectName, String projectVersion, String PI,
-            String projectType, String arrayType, Logger logger) {
+            String projectType, String arrayType, boolean manualMode,
+            Logger logger) {
 
 		this.obsProjectId  = obsProjectId;
 		this.proposalId = proposalId;
@@ -89,6 +102,9 @@ public class Project implements ProjectMember {
 		program = null;
 		breakpointTime = null;
         this.projectVersion = projectVersion;
+        this.projectType = projectType;
+        this.arrayType = arrayType;
+        this.manualMode = manualMode;
 	}
 
 	public void setMemberLink() {
@@ -439,4 +455,67 @@ public class Project implements ProjectMember {
 		this.projectType = projectType;
 	}
 
+	public boolean getManualMode() {
+	    return manualMode;
+	}
+	
+	public void setManualMode(boolean manualMode) {
+	    this.manualMode = manualMode;
+	}
+	
+	public ProjectLite getProjectLite() {
+	    return projectLite;
+	}
+	
+	public void createProjectLite(ProjectStatusI prjStatus, OUSStatusI ousStatus) {
+        projectLite= new ProjectLite();
+        projectLite.uid = getId();
+        projectLite.projectName = getProjectName();
+        projectLite.piName = getPI();
+        projectLite.version = getProjectVersion();
+        projectLite.creationTime = getTimeOfCreation().toString();
+        projectLite.totalSBs = String.valueOf(getTotalSBs());
+        projectLite.completeSBs = String.valueOf(getNumberSBsCompleted());
+        projectLite.failedSBs = String.valueOf(getNumberSBsFailed());
+        
+        SB[] sbs = getAllSBs();
+        String[] sbids= new String[sbs.length];
+        for(int j=0; j < sbs.length;j++){
+            sbids[j] = sbs[j].getId();
+        }
+        projectLite.allSBIds = sbids;
+        projectLite.isComplete = isProjectComplete(prjStatus);
+
+        int sbcompl =
+            ousStatus.getNumberSBsCompleted();
+        projectLite.completeSBs = String.valueOf(sbcompl);
+        
+        int numsbfail = ousStatus.getNumberSBsFailed();
+        projectLite.failedSBs = String.valueOf(numsbfail);
+
+        if (prjStatus != null ){
+            StringWriter writer = new StringWriter();
+            try{
+                prjStatus.marshal(writer);
+                projectLite.statusXML = writer.toString();
+            }catch(MarshalException ex){
+                ex.printStackTrace();
+            }
+            catch(ValidationException ex){
+                ex.printStackTrace();
+            }
+        } else {
+            projectLite.statusXML = "";
+        }
+        
+        projectLite.status = prjStatus.getStatus().getState().toString();
+	}
+	
+    private boolean isProjectComplete(ProjectStatusI ps){
+        try {
+            return ps.getStatus().getState().toString().equals("complete");
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
 }

@@ -18,6 +18,7 @@ import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
 import alma.scheduling.Define.SchedulingException;
+import alma.projectlifecycle.StateSystemOperations;
 
 /**
  * <em>Singleton</em> implementation of the <em>Abstract Factory</em>
@@ -70,15 +71,16 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	/* (non-Javadoc)
 	 * @see alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory#setStatusSystem(alma.projectlifecycle.StateSystem, alma.acs.entityutil.EntitySerializer, alma.acs.entityutil.EntityDeserializer, alma.scheduling.AlmaScheduling.ALMAClock, java.util.logging.Logger)
 	 */
-	public void setStatusSystem(StateSystem stateSystem, EntitySerializer entitySerializer, EntityDeserializer entityDeserializer, ALMAClock clock, Logger logger) {
-		// We still need to set up the status system for the cached
-		// status entities, as we need to be able to get the things to
-		// cache.
-		RemoteStatusBase.setStatusSystem(stateSystem,
-                                           entitySerializer,
-                                           entityDeserializer,
-                                           clock,
-                                           logger);
+	public void setStatusSystem(StateSystemOperations stateSystem,
+			                    EntitySerializer      entitySerializer,
+			                    EntityDeserializer    entityDeserializer,
+			                    ALMAClock             clock,
+			                    Logger                logger) {
+		CachedStatusBase.setStatusSystem(stateSystem,
+                                         entitySerializer,
+                                         entityDeserializer,
+                                         clock,
+                                         logger);
 	}
 
 	/* (non-Javadoc)
@@ -96,7 +98,7 @@ public class CachedStatusFactory implements AbstractStatusFactory {
 	        OUSStatusI status = statusQueue.getOUSStatusQueue().get(uid);
 	        if (status != null) return status;
 	    }
-		return new RemoteOUSStatus(uid).asLocal();
+		return new CachedOUSStatus(uid);
 	}
 
 	/* (non-Javadoc)
@@ -114,7 +116,7 @@ public class CachedStatusFactory implements AbstractStatusFactory {
             ProjectStatusI status = statusQueue.getProjectStatusQueue().get(uid);
             if (status != null) return status;
         }
-		return new RemoteProjectStatus(uid).asLocal();
+		return new CachedProjectStatus(uid);
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +134,7 @@ public class CachedStatusFactory implements AbstractStatusFactory {
             SBStatusI status = statusQueue.getSBStatusQueue().get(uid);
             if (status != null) return status;
         }
-		return new RemoteSBStatus(uid).asLocal();
+		return new CachedSBStatus(uid);
 	}
 
 	/* (non-Javadoc)

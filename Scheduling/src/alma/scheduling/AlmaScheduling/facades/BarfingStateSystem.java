@@ -25,6 +25,9 @@
  */
 package alma.scheduling.AlmaScheduling.facades;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
@@ -50,30 +53,27 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: LoggingStateSystem.java,v 1.3 2010/03/30 17:52:08 dclarke Exp $
+ * @version $Id: BarfingStateSystem.java,v 1.2 2010/03/30 17:52:08 dclarke Exp $
  * @author David Clarke
  */
-public class LoggingStateSystem implements StateSystemOperations {
+public class BarfingStateSystem implements StateSystemOperations {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1784171564754132358L;
 
 	/** The object for which we are a facade. */
 	private StateSystemOperations delegate;
-	
-	/** The logger on which to, well, log things. */
-	private Logger      logger;
-	
-	/** Are we currently logging? */
-	private boolean     logging;
 	
 	/**
 	 * Construct this object
 	 * 
 	 * @throws AcsJContainerServicesEx 
 	 */
-	public LoggingStateSystem(ContainerServices containerServices) throws AcsJContainerServicesEx {
-		this.logger = containerServices.getLogger();
+	public BarfingStateSystem(ContainerServices containerServices) throws AcsJContainerServicesEx {
         org.omg.CORBA.Object obj = containerServices.getDefaultComponent(ComponentFactory.StateSystemIFName);
         this.delegate = StateSystemHelper.narrow(obj);
-        this.logging = true;
 	}
 	
 	/**
@@ -81,30 +81,31 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 * 
 	 * @throws AcsJContainerServicesEx 
 	 */
-	public LoggingStateSystem(ContainerServices     containerServices,
+	public BarfingStateSystem(ContainerServices     containerServices,
 			                  StateSystemOperations delegate)
 		throws AcsJContainerServicesEx {
-		this.logger = containerServices.getLogger();
         this.delegate = delegate;
-        this.logging = true;
 	}
 
 
 	
 	/*
 	 * ================================================================
-	 * Logging control
+	 * Barfing
 	 * ================================================================
 	 */
-	public void setLogging(boolean on) {
-		logging = on;
+	private void barf() {
+    	String x = "";
+    	try {
+    		x.charAt(99);
+    	} catch (Exception e) {
+    		e.printStackTrace(System.err);
+    	}
 	}
-
-	public boolean isLogging() {
-		return logging;
-	}
-	/* Logging control
+	/* Barfing
 	 * ------------------------------------------------------------- */
+
+
 	
 	/*
 	 * ================================================================
@@ -129,11 +130,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 			String subsys, String userID) throws PreconditionFailedEx,
 			NoSuchEntityEx, IllegalArgumentEx, NoSuchTransitionEx,
 			PostconditionFailedEx, NotAuthorizedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-				"calling StateSystem.changeOUSStatus(%s, %s, %s, %s)",
-				target, destinationState, subsys, userID));
-		}
+		barf();
 		return delegate.changeOUSStatus(target, destinationState, subsys,
 				userID);
 	}
@@ -156,11 +153,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 			String subsys, String userID) throws PreconditionFailedEx,
 			NoSuchEntityEx, IllegalArgumentEx, NoSuchTransitionEx,
 			PostconditionFailedEx, NotAuthorizedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.changeProjectStatus(%s, %s, %s, %s)",
-					target, destinationState, subsys, userID));
-		}
+		barf();
 		return delegate.changeProjectStatus(target, destinationState, subsys,
 				userID);
 	}
@@ -183,11 +176,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 			String subsys, String userID) throws PreconditionFailedEx,
 			NoSuchEntityEx, IllegalArgumentEx, NoSuchTransitionEx,
 			PostconditionFailedEx, NotAuthorizedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.changeSBStatus(%s, %s, %s, %s)",
-					target, destinationState, subsys, userID));
-		}
+		barf();
 		return delegate
 				.changeSBStatus(target, destinationState, subsys, userID);
 	}
@@ -209,11 +198,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct[] findProjectStatusByState(String[] states)
 			throws InappropriateEntityTypeEx, IllegalArgumentEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.findProjectStatusByState(%s)",
-					format(states)));
-		}
+		barf();
 		return delegate.findProjectStatusByState(states);
 	}
 
@@ -226,11 +211,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct[] findSBStatusByState(String[] states)
 			throws InappropriateEntityTypeEx, IllegalArgumentEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.findSBStatusByState(%s)",
-					format(states)));
-		}
+		barf();
 		return delegate.findSBStatusByState(states);
 	}
 
@@ -248,11 +229,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	public StateChangeData[] findStateChangeRecords(IDLArrayTime start,
 			IDLArrayTime end, String domainEntityId, String state,
 			String userId, String type) throws StateIOFailedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.findStateChangeRecords(%d, %d, %s, %s)",
-					start.value, end.value, domainEntityId, state));
-		}
+		barf();
 		return delegate.findStateChangeRecords(start, end, domainEntityId,
 				state, userId, type);
 	}
@@ -263,11 +240,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 * @see alma.projectlifecycle.StateSystemOperations#getObsProjectStates(java.lang.String)
 	 */
 	public String getObsProjectStates(String subsystem) {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getObsProjectStates(%s)",
-					subsystem));
-		}
+		barf();
 		return delegate.getObsProjectStates(subsystem);
 	}
 
@@ -277,11 +250,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 * @see alma.projectlifecycle.StateSystemOperations#getObsUnitSetStates(java.lang.String)
 	 */
 	public String getObsUnitSetStates(String subsystem) {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getObsProjectStates(%s)",
-					subsystem));
-		}
+		barf();
 		return delegate.getObsUnitSetStates(subsystem);
 	}
 
@@ -295,11 +264,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct getOUSStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getOUSStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getOUSStatus(id);
 	}
 
@@ -313,11 +278,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public String getOUSStatusXml(String id) throws InappropriateEntityTypeEx,
 			NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getOUSStatusXml(%s)",
-					id));
-		}
+		barf();
 		return delegate.getOUSStatusXml(id);
 	}
 
@@ -331,13 +292,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct getProjectStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-//		    Exception ex = new Exception();
-//		    ex.printStackTrace();
-			logger.fine(String.format(
-					"calling StateSystem.getProjectStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getProjectStatus(id);
 	}
 
@@ -353,11 +308,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	public XmlEntityStruct[] getProjectStatusList(String id)
 			throws EntitySerializationFailedEx, InappropriateEntityTypeEx,
 			NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.subsystem(%s)",
-					id));
-		}
+		barf();
 		return delegate.getProjectStatusList(id);
 	}
 
@@ -371,11 +322,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public String getProjectStatusXml(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getProjectStatusXml(%s)",
-					id));
-		}
+		barf();
 		return delegate.getProjectStatusXml(id);
 	}
 
@@ -389,11 +336,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public String[] getProjectStatusXmlList(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getProjectStatusXmlList(%s)",
-					id));
-		}
+		barf();
 		return delegate.getProjectStatusXmlList(id);
 	}
 
@@ -407,11 +350,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct getSBStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSBStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getSBStatus(id);
 	}
 
@@ -425,11 +364,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct[] getSBStatusListForOUSStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSBStatusListForOUSStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getSBStatusListForOUSStatus(id);
 	}
 
@@ -443,11 +378,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public XmlEntityStruct[] getSBStatusListForProjectStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSBStatusListForProjectStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getSBStatusListForProjectStatus(id);
 	}
 
@@ -461,11 +392,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public String getSBStatusXml(String id) throws InappropriateEntityTypeEx,
 			NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSBStatusXml(%s)",
-					id));
-		}
+		barf();
 		return delegate.getSBStatusXml(id);
 	}
 
@@ -479,11 +406,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public String[] getSBStatusXmlListForOUSStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSBStatusXmlListForOUSStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getSBStatusXmlListForOUSStatus(id);
 	}
 
@@ -497,11 +420,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public String[] getSBStatusXmlListForProjectStatus(String id)
 			throws InappropriateEntityTypeEx, NullEntityIdEx, NoSuchEntityEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSBStatusXmlListForProjectStatus(%s)",
-					id));
-		}
+		barf();
 		return delegate.getSBStatusXmlListForProjectStatus(id);
 	}
 
@@ -511,11 +430,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 * @see alma.projectlifecycle.StateSystemOperations#getSchedBlockStates(java.lang.String)
 	 */
 	public String getSchedBlockStates(String subsystem) {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.getSchedBlockStates(%s)",
-					subsystem));
-		}
+		barf();
 		return delegate.getSchedBlockStates(subsystem);
 	}
 
@@ -529,11 +444,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public void insert(XmlEntityStruct opStatus, XmlEntityStruct[] ousStatus,
 			XmlEntityStruct[] sbStatus) throws NoSuchEntityEx, StateIOFailedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.insert(%s, ousStatus[])",
-					opStatus));
-		}
+		barf();
 		delegate.insert(opStatus, ousStatus, sbStatus);
 	}
 
@@ -542,10 +453,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 * @see alma.ACS.ACSComponentOperations#name()
 	 */
 	public String name() {
-		if (isLogging()) {
-			logger.fine(String.format(
-			"calling StateSystem.name()"));
-		}
+		barf();
 		return delegate.name();
 	}
 
@@ -557,11 +465,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public void updateOUSStatus(XmlEntityStruct entity) throws NoSuchEntityEx,
 			StateIOFailedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.updateOUSStatus(%s %s)",
-					entity.entityTypeName, entity.entityId));
-		}
+		barf();
 		delegate.updateOUSStatus(entity);
 	}
 
@@ -573,11 +477,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public void updateProjectStatus(XmlEntityStruct entity)
 			throws NoSuchEntityEx, StateIOFailedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.updateProjectStatus(%s %s)",
-					entity.entityTypeName, entity.entityId));
-		}
+		barf();
 		delegate.updateProjectStatus(entity);
 	}
 
@@ -589,19 +489,13 @@ public class LoggingStateSystem implements StateSystemOperations {
 	 */
 	public void updateSBStatus(XmlEntityStruct entity) throws NoSuchEntityEx,
 			StateIOFailedEx {
-		if (isLogging()) {
-			logger.fine(String.format(
-					"calling StateSystem.updateSBStatus(%s %s)",
-					entity.entityTypeName, entity.entityId));
-		}
+		barf();
 		delegate.updateSBStatus(entity);
 	}
 	
     @Override
     public XmlEntityStruct[] getOUSStatusList(String[] states) {
-        if (isLogging()) {
-            logger.fine("calling StateSystem.getOUSStatusList(String[])");
-        }
+		barf();
         return delegate.getOUSStatusList(states);
     }
     

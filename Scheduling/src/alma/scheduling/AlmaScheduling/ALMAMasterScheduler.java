@@ -68,6 +68,7 @@ import alma.scheduling.InvalidOperation;
 import alma.scheduling.MasterSchedulerIFOperations;
 import alma.scheduling.NoSuchSB;
 import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.ProjectAndSBLites;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.Queued_Operator_to_Scheduling;
 import alma.scheduling.SBLite;
@@ -96,7 +97,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.128 2010/03/17 22:49:02 dclarke Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.129 2010/03/30 17:52:08 dclarke Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1746,5 +1747,14 @@ public class ALMAMasterScheduler extends MasterScheduler
             AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e1);
             throw e2.toInvalidOperationEx();
         }
+    }
+
+    @Override
+    public ProjectAndSBLites getProjectAndSBLitesFromSearchCriteria(
+            String projectName, String PI, boolean manualMode,
+            String projectType, String arrayType, String sbModeName,
+            String sbModeType) {        
+        return manager.getProjectAndSBLitesFromSearchCriteria(projectName,
+                PI, manualMode, projectType, arrayType, sbModeName, sbModeType);
     }
 }        

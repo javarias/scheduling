@@ -27,13 +27,21 @@
 package alma.scheduling.Define;
 
 import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.scheduling.SBLite;
+import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
 
 /**
  * An SB is the lowest-level, atomic scheduling unit. 
  * It is a SchedBlock as viewed by the scheduling subsystem.
  * 
- * @version $Id: SB.java,v 1.30 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: SB.java,v 1.31 2010/03/30 17:52:08 dclarke Exp $
  * @author Allen Farris
  */
 public class SB implements ProgramMember {
@@ -109,6 +117,8 @@ public class SB implements ProgramMember {
 	/** The mode type of the SB */
 	protected String modeType;
 
+	private SBLite sbLite;
+	
 	/**
 	 * Create an SB object.
 	 * @param id The archive-id of the scheduling block that this SB represents.
@@ -858,5 +868,70 @@ public class SB implements ProgramMember {
 		this.modeType = modeType;
 	}
 
+	public SBLite getSBLite() {
+	    return sbLite;
+	}
+	
+	public void createSBLite(SBStatusI sbStatus) {
+        sbLite = new SBLite();
+        sbLite.schedBlockRef = getId();
+        sbLite.projectRef = getProject().getId();
+        sbLite.obsUnitsetRef = "";
+        sbLite.sbName = getSBName();
+        sbLite.projectName = getProject().getProjectName();
+        sbLite.PI = getProject().getPI();
+        try {
+            sbLite.priority = getProject().getScientificPriority().getPriority();
+        } catch(NullPointerException ex) {
+            sbLite.priority = "1";
+        }
+        sbLite.ra = getTarget().getCenter().getRa();
+        sbLite.dec = getTarget().getCenter().getDec();
+        if (getIndefiniteRepeat()) {
+            sbLite.maxExec = "indefinite";
+        } else {
+            sbLite.maxExec = String.valueOf(getMaximumNumberOfExecutions());
+        }
+        sbLite.freq = 0;
+        sbLite.maxTime = 0;
+        sbLite.score = 0;
+        sbLite.success = 0; 
+        sbLite.rank = 0 ;
+        if (sbStatus == null) {
+            // For some reason the sbs is no longer in the queue, so we
+            // pretend that it's complete.
+            sbLite.isComplete = true;
+        } else {
+            // and SB is deemed complete if it's SUSPENDED as that's
+            // the state we put an SB into after an execution (unless
+            // we're operating in Full Auto mode in which case it might
+            // be READY, but deeming that complete seems a bad idea).
+            // We also deem FULLYOBSERVED as complete just in case the
+            // SB has been moved to that state after (a quick) QA0.
+            final StatusTStateType sbState = sbStatus.getStatus().getState();
+            sbLite.isComplete = sbState.equals(StatusTStateType.SUSPENDED) ||
+                                sbState.equals(StatusTStateType.FULLYOBSERVED);
+        }
+        // We may pass the all the ExecStatus to the Scheduling Plugin
+        // Right now just displaying the XML for the SB Status
+        if (sbStatus != null) {          
+            StringWriter writer = new StringWriter();
+            try {
+                sbStatus.marshal(writer);
+                sbLite.statusXML = writer.toString();
+            } catch (MarshalException ex) {
+                ex.printStackTrace();
+            } catch (ValidationException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            sbLite.statusXML = "";
+        }
+        
+        if (sbStatus != null)
+            sbLite.status = sbStatus.getStatus().getState().toString();
+        else
+            sbLite.status = "Not in Scheduling Queue";
+	}
 }
 

@@ -364,10 +364,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         for (int i=0; i < antNames.length; i++){
         	//logger.info("updateChessboard active antenna name:"+antNames[i]);
             event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE);//, null);
-            if(!antNames[i].equals("PM03"))
-            twelveMeterChessboard.processStatusChange(event);
-            else 
+            if(antNames[i].contains("PM"))
             	tpChessboard.processStatusChange(event);
+            else if(antNames[i].contains("CM")) 
+                sevenMeterChessboard.processStatusChange(event);
+            else
+                twelveMeterChessboard.processStatusChange(event);
         }
     }
     

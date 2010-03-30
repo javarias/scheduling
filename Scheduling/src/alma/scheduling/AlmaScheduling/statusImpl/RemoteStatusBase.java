@@ -20,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  * 
- * File ALMAStatusEntity.java
- * $Id: RemoteStatusBase.java,v 1.2 2009/11/09 22:58:45 rhiriart Exp $
+ * File RemoteStatusBase.java
+ * $Id: RemoteStatusBase.java,v 1.3 2010/03/30 17:52:08 dclarke Exp $
  */
 package alma.scheduling.AlmaScheduling.statusImpl;
 
@@ -35,15 +35,15 @@ import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
 import alma.entity.xmlbinding.projectstatus.StatusBaseT;
-import alma.projectlifecycle.StateSystem;
+import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.AlmaScheduling.ALMAClock;
 import alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory;
 import alma.scheduling.AlmaScheduling.statusIF.StatusBaseI;
 import alma.scheduling.Define.SchedulingException;
 
 /**
- * Common superclass for <code>ALMAProjectStatus</code>,
- * <code>ALMAOUSStatus</code> and <code>ALMASBStatus</code>.
+ * Common superclass for <code>RemoteProjectStatus</code>,
+ * <code>RemoteOUSStatus</code> and <code>RemoteSBStatus</code>.
  * 
  * @author dclarke
  */
@@ -63,7 +63,7 @@ public abstract class RemoteStatusBase implements StatusBaseI {
 	 * all be set up using <code>setStatusSystem()</code>.
 	 */
 	/** The common connection to the State System */
-	protected static StateSystem stateSystem;
+	protected static StateSystemOperations stateSystem;
 	/** The common entity deserializer */
 	protected static EntityDeserializer entityDeserializer;
 	/** The common entity serializer */
@@ -84,11 +84,11 @@ public abstract class RemoteStatusBase implements StatusBaseI {
 	 * @param logger
 	 */
 	protected static void setStatusSystem(
-			StateSystem        stateSystem,
-			EntitySerializer   entitySerializer,
-			EntityDeserializer entityDeserializer,
-			ALMAClock          clock,
-			Logger             logger) {
+			StateSystemOperations stateSystem,
+			EntitySerializer      entitySerializer,
+			EntityDeserializer    entityDeserializer,
+			ALMAClock             clock,
+			Logger                logger) {
 		RemoteStatusBase.stateSystem        = stateSystem;
 		RemoteStatusBase.entitySerializer   = entitySerializer;
 		RemoteStatusBase.entityDeserializer = entityDeserializer;
@@ -156,7 +156,6 @@ public abstract class RemoteStatusBase implements StatusBaseI {
     protected RemoteStatusBase(String uid) {
     	this.uid = uid; 
     }
-    
 	/*
 	 * End of Construction and initialisation of instances
 	 * ============================================================= */

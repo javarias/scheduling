@@ -12,6 +12,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
+import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.obsproject.ObsProjectRefT;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusChoice;
@@ -28,6 +29,10 @@ import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
 import alma.scheduling.Define.SchedulingException;
+import alma.statearchiveexceptions.InappropriateEntityTypeEx;
+import alma.statearchiveexceptions.NoSuchEntityEx;
+import alma.statearchiveexceptions.NullEntityIdEx;
+import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author dclarke
@@ -43,7 +48,13 @@ public class CachedOUSStatus extends CachedStatusBase implements OUSStatusI {
 	 * ================================================================
 	 */
 	public CachedOUSStatus(OUSStatus delegate) {
+		super(delegate.getOUSStatusEntity().getEntityId());
 		this.delegate = delegate;
+	}
+
+	public CachedOUSStatus(String uid) throws SchedulingException {
+		super(uid);
+		checkEntity();
 	}
 	/*
 	 * End of Construction
@@ -55,10 +66,57 @@ public class CachedOUSStatus extends CachedStatusBase implements OUSStatusI {
 	 * Requirements from abstract superclass
 	 * ================================================================
 	 */
-	public String getUID() {
-		return delegate.getOUSStatusEntity().getEntityId();
-	}
+	
+	/* (non-Javadoc)
+	 * @see alma.scheduling.AlmaScheduling.status.ALMAStatusEntity#checkEntity()
+	 */
+	@Override
+	protected void checkEntity() throws SchedulingException {
+		XmlEntityStruct xml = null;
+		delegate = null;
 
+		try {
+			xml = stateSystem.getOUSStatus(uid);
+			delegate = (OUSStatus)entityDeserializer.deserializeEntity(xml, OUSStatus.class); 
+		} catch (InappropriateEntityTypeEx e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving OUSStatus entity %s - entity is not an OUSStatus", getUID()),
+					e);
+		} catch (NullEntityIdEx e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving OUSStatus entity %s - entity id is null", getUID()),
+					e);
+		} catch (NoSuchEntityEx e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving OUSStatus entity %s - no such entity found", getUID()),
+					e);
+		} catch (EntityException e) {
+			if (xml == null) {
+				throw new SchedulingException(String.format(
+						"Error retrieving OUSStatus entity %s - returned XML is null",
+						getUID()),
+						e);
+			} else if (xml.xmlString == null) {
+				throw new SchedulingException(String.format(
+						"Error retrieving OUSStatus entity %s - returned XML has null string",
+						getUID()),
+						e);
+			} else {
+				final int end = (xml.xmlString.length() > 255)?
+																255:
+																xml.xmlString.length();
+				throw new SchedulingException(String.format(
+						"Error retrieving OUSStatus entity %s - cannot deserialise the returned XML%n\t%s",
+						getUID(), xml.xmlString.substring(0, end)),
+						e);
+			}
+		} catch (Exception e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving OUSStatus entity %s", getUID()),
+					e);
+		}
+
+	}
 	/* (non-Javadoc)
 	 * @see alma.scheduling.AlmaScheduling.statusIF.StatusBaseI#getDomainEntityId()
 	 */

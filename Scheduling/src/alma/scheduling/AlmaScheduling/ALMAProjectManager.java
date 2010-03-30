@@ -28,6 +28,7 @@ package alma.scheduling.AlmaScheduling;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.LinkedHashMap;
@@ -64,6 +65,7 @@ import alma.log_audience.OPERATOR;
 import alma.scheduling.EndSessionEvent;
 import alma.scheduling.NothingCanBeScheduledEnum;
 import alma.scheduling.NothingCanBeScheduledEvent;
+import alma.scheduling.ProjectAndSBLites;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 import alma.scheduling.StartSessionEvent;
@@ -89,7 +91,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.131 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.132 2010/03/30 17:52:08 dclarke Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
 	
@@ -187,6 +189,105 @@ public class ALMAProjectManager extends ProjectManager {
         }
     }
 
+    public ProjectAndSBLites getProjectAndSBLitesFromSearchCriteria(
+            String projectName, String PI, boolean manualMode,
+            String projectType, String arrayType, String sbModeName,
+            String sbModeType) {
+        try {
+            archivePoller.pollArchive();
+        } catch (SchedulingException ex) {
+            ex.printStackTrace();
+        }
+        ProjectAndSBLites retVal = new ProjectAndSBLites();
+        Project[] projects = searchProjects(projectName, PI, manualMode, projectType,
+                arrayType);
+        logger.info("# of projects after search: " + projects.length);
+        List<String> projectIds = new ArrayList<String>();
+        for (Project p : projects) {
+            projectIds.add(p.getId());
+        }
+        SB[] sbs = searchSBs(sbModeName, sbModeType);
+        logger.info("# of sbs after search: " + sbs.length); 
+        SB[] filteredSBs =
+            filterSBsFromProjectIds(sbs, projectIds);
+        List<String> sbIds = new ArrayList<String>();
+        for (SB sb : filteredSBs) {
+            sbIds.add(sb.getId());
+        }
+        Project[] filteredProjects = filterProjectsFromSBIds(projects, sbIds);
+        SBLite[] sbLites = new SBLite[filteredSBs.length];
+        for (int i = 0; i < filteredSBs.length; i++) {
+            sbLites[i] = filteredSBs[i].getSBLite();
+        }
+        retVal.sbLites = sbLites;
+        ProjectLite[] prjLites = new ProjectLite[filteredProjects.length];
+        for (int i = 0; i < filteredProjects.length; i++) {
+            prjLites[i] = filteredProjects[i].getProjectLite();
+        }
+        retVal.projectLites = prjLites;
+        return retVal;
+    }
+
+    public SB[] filterSBsFromProjectIds(SB[] sbs, List<String> projectIds) {
+        List<SB> retVal = new ArrayList<SB>();
+        for (SB sb : sbs) {
+            Project p = sb.getProject();
+            if (projectIds.contains(p.getId())) {
+                retVal.add(sb);
+            }
+        }
+        return retVal.toArray(new SB[0]);
+    }
+    
+    public Project[] filterProjectsFromSBIds(Project[] projects, List<String> sbIds) {
+        List<Project> retVal = new ArrayList<Project>();
+        for (Project p : projects) {
+            SB[] projectSBs = p.getAllSBs();
+            for (SB sb : projectSBs){
+                if(sbIds.contains(sb.getId())){
+                    retVal.add(p);
+                    break;
+                }
+            }
+        }
+        return retVal.toArray(new Project[0]);
+    }
+    
+    public Project[] searchProjects(String projectName, String PI, boolean manualMode,
+            String projectType, String arrayType) {
+        List<Project> selectedProjects = new ArrayList<Project>();
+        for (Project prj : projectQueue.getAll()) {
+            String prjProjectName = prj.getProjectName().toUpperCase();
+            String prjPI = prj.getPI().toUpperCase();
+            if (projectName.equals("*") || prjProjectName.contains(projectName.toUpperCase())) {
+                if (PI.equals("*") || prjPI.contains(PI.toUpperCase())) {
+                    if (prj.getManualMode() == manualMode) {
+                        if (projectType.equals("All") ||
+                                projectType.equals(prj.getProjectType())) {
+                            if (arrayType.equals("All") ||
+                                    arrayType.equals(prj.getArrayType())) {
+                                selectedProjects.add(prj);
+                            }
+                        }
+                    }
+                }
+            }
+        }        
+        return selectedProjects.toArray(new Project[0]);
+    }
+    
+    public SB[] searchSBs(String modeName, String modeType) {
+        List<SB> selectedSBs = new ArrayList<SB>();
+        for (SB sb : sbQueue.getAll()) {
+            if (modeName.equals("All") || modeName.equals(sb.getModeName())) {
+                if (modeType.equals("All") || modeType.equals(sb.getModeType())) {
+                    selectedSBs.add(sb);
+                }
+            }
+        }
+        return selectedSBs.toArray(new SB[0]);
+    }
+    
     private void querySpecialSBs(){
         boolean sbPresent = false;
         try {

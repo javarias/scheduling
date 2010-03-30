@@ -446,7 +446,10 @@ public class ArchiveSearchFieldsPanel extends JPanel {
         			Vector res = controller.doQuery(sbquery, pName, pi, type, array);
         			javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
         		} else {
-        			Vector res = controller.doQuery(sbquery, pName, pi, type, array,manualMode);
+        	        String sbModeType =(String) sbModeTypeChoices.getSelectedItem();
+        	        String sbModeName = (String)sbModeNameChoices.getSelectedItem();
+        			Vector res = controller.doQuery(sbModeName, sbModeType,
+        			        pName, pi, type, array, manualMode);
         			javax.swing.SwingUtilities.invokeLater( new UpdateThread(res));
         		}
         	} finally {

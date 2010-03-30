@@ -10,7 +10,7 @@ import alma.acs.entityutil.EntitySerializer;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
-import alma.projectlifecycle.StateSystem;
+import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.AlmaScheduling.ALMAClock;
 import alma.scheduling.AlmaScheduling.StatusEntityQueueBundle;
 import alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory;
@@ -65,7 +65,11 @@ public class RemoteStatusFactory implements AbstractStatusFactory {
 	/* (non-Javadoc)
 	 * @see alma.scheduling.AlmaScheduling.statusIF.AbstractStatusFactory#setStatusSystem(alma.projectlifecycle.StateSystem, alma.acs.entityutil.EntitySerializer, alma.acs.entityutil.EntityDeserializer, alma.scheduling.AlmaScheduling.ALMAClock, java.util.logging.Logger)
 	 */
-	public void setStatusSystem(StateSystem stateSystem, EntitySerializer entitySerializer, EntityDeserializer entityDeserializer, ALMAClock clock, Logger logger) {
+	public void setStatusSystem(StateSystemOperations stateSystem,
+			                    EntitySerializer      entitySerializer,
+			                    EntityDeserializer    entityDeserializer,
+			                    ALMAClock             clock,
+			                    Logger                logger) {
 		RemoteStatusBase.setStatusSystem(stateSystem,
 				                           entitySerializer,
 				                           entityDeserializer,

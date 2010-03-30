@@ -28,6 +28,7 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 import java.util.Vector;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ProjectAndSBLites;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 
@@ -37,7 +38,24 @@ public class ArchiveSearchController extends SchedulingPanelController {
         super(cs);
     }
 
-
+    public Vector doQuery(String sbModeName, String sbModeType, String prjName, String piName, 
+            String prjType, String arrType,boolean manualMode) {
+        Vector tmp = new Vector();
+        try {
+            getMSRef();
+            ProjectAndSBLites lites =
+                masterScheduler.getProjectAndSBLitesFromSearchCriteria(prjName, piName,
+                    manualMode, prjType, arrType, sbModeName, sbModeType);
+            releaseMSRef();
+            tmp.add(lites.projectLites);
+            tmp.add(lites.sbLites);
+        }catch (Exception e) {
+            logger.severe("SP_ARCHIVE_CONTROLLER: Error doing query: "+e.toString()); 
+            e.printStackTrace();
+        }
+        return tmp;
+    }
+    
     public Vector doQuery(String sbQuery, String pName, String piName, 
             String pType, String aType,boolean manualMode) {
         Vector tmp = new Vector();

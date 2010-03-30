@@ -202,7 +202,7 @@ public class ALMAArchivePoller {
 
        try {
            if (prjuids == null) {
-               projectList = getAllProject();
+               projectList = getAllProject(psQ, sbsQ);
            } else {
                projectList = new Project[prjuids.length];
                int i = 0;
@@ -213,7 +213,7 @@ public class ALMAArchivePoller {
             	   // changed project.
             	   statusQs.refreshProject(prjuid,
             			   CachedStatusFactory.getInstance());
-                   Project prj = getProject(prjuid);
+                   Project prj = getProject(prjuid, sbsQ);
                    if ( prj != null ) {
                        projectList[i++] = prj;
                    }
@@ -599,7 +599,7 @@ public class ALMAArchivePoller {
         return sbs;
     }
     
-    public Project getProject(String uid) throws SchedulingException {
+    public Project getProject(String uid, SBStatusQueue sbStatusQueue) throws SchedulingException {
         Project prj = null;
         try {    
             ObsProject project = archive.getObsProject(uid);
@@ -609,7 +609,7 @@ public class ALMAArchivePoller {
                 projectStatusId = project.getProjectStatusRef().getEntityId();
                 try {
                     ProjectStatusI ps = archive.getProjectStatusForObsProject(project);
-                    SchedBlock[] sbs = archive.getSBsFromObsProject(project);
+                    SchedBlock[] sbs = archive.getSBsFromObsProject(project, sbStatusQueue);
                     // Cache the SBs to avoid having to perform another retrieval
                     // from the ARCHIVE.
                     schedBlockBuffer.put(project.getObsProjectEntity().getEntityId(), sbs);
@@ -649,12 +649,14 @@ public class ALMAArchivePoller {
         return prj;        
     }
     
-    public Project[] getAllProject() throws SchedulingException {
+    public Project[] getAllProject(ProjectStatusQueue prjStatusQueue, SBStatusQueue sbStatusQueue)
+        throws SchedulingException {
+        
         Project[] projects = null;
         
         try {    
             Vector<Project> tmp_projects = new Vector<Project>();
-            ObsProject[] obsProjects = archive.getAllObsProjects();
+            ObsProject[] obsProjects = archive.getAllObsProjects(prjStatusQueue);
             
             for (final ObsProject project : obsProjects) {
                 obsProjectBuffer.put(project.getObsProjectEntity().getEntityId(), project);
@@ -669,12 +671,21 @@ public class ALMAArchivePoller {
                         prof1.start("get all SchedBlocks for ObsProject " + projectId);
                         
                         prof2.start("archive.getProjectStatusForObsProject");
-                        ProjectStatusI ps = archive.getProjectStatusForObsProject(project);
+                        ProjectStatusI ps = null;
+//                        logger.info("getting ProjectStatus for id " + project.getProjectStatusRef().getEntityId());
+                        if (statusQs != null) {
+                            ps = statusQs.getProjectStatusQueue().get(project.getProjectStatusRef().getEntityId());
+                        }
+                        if (ps == null) {
+                            logger.fine(String.format("state %s, belonging to project %s is null",
+                                    project.getProjectStatusRef().getEntityId(), project.getObsProjectEntity().getEntityId()));
+                            ps = archive.getProjectStatusForObsProject(project);
+                        }
                         prof2.end();
 
                         //TODO should check project queue.. if project exists don't map a new one.
                         prof2.start("getSBsFromObsProject");
-                        SchedBlock[] sbs = archive.getSBsFromObsProject(project);
+                        SchedBlock[] sbs = archive.getSBsFromObsProject(project, sbStatusQueue);
                         prof2.end();
                         
                         // Cache the SBs to avoid having to perform another retrieval

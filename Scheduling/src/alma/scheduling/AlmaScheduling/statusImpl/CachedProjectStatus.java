@@ -10,6 +10,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
+import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.obsproject.ObsProjectRefT;
 import alma.entity.xmlbinding.obsproposal.ObsProposalRefT;
 import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
@@ -20,6 +21,10 @@ import alma.entity.xmlbinding.valuetypes.StatusT;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.Define.SchedulingException;
+import alma.statearchiveexceptions.InappropriateEntityTypeEx;
+import alma.statearchiveexceptions.NoSuchEntityEx;
+import alma.statearchiveexceptions.NullEntityIdEx;
+import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author dclarke
@@ -35,7 +40,13 @@ public class CachedProjectStatus extends CachedStatusBase implements ProjectStat
 	 * ================================================================
 	 */
 	public CachedProjectStatus(ProjectStatus delegate) {
+		super(delegate.getProjectStatusEntity().getEntityId());
 		this.delegate = delegate;
+	}
+
+	public CachedProjectStatus(String uid) throws SchedulingException {
+		super(uid);
+		checkEntity();
 	}
 	/*
 	 * End of Construction
@@ -48,8 +59,55 @@ public class CachedProjectStatus extends CachedStatusBase implements ProjectStat
 	 * Requirements from abstract superclass
 	 * ================================================================
 	 */
-	public String getUID() {
-		return delegate.getProjectStatusEntity().getEntityId();
+	/* (non-Javadoc)
+	 * @see alma.scheduling.AlmaScheduling.status.ALMAStatusEntity#checkEntity()
+	 */
+	@Override
+	protected void checkEntity() throws SchedulingException {
+		XmlEntityStruct xml = null;
+		delegate = null;
+
+		try {
+			xml = stateSystem.getProjectStatus(uid);
+			delegate = (ProjectStatus)entityDeserializer.deserializeEntity(xml, ProjectStatus.class); 
+		} catch (InappropriateEntityTypeEx e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving ProjectStatus entity %s - entity is not an ProjectStatus", getUID()),
+					e);
+		} catch (NullEntityIdEx e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving ProjectStatus entity %s - entity id is null", getUID()),
+					e);
+		} catch (NoSuchEntityEx e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving ProjectStatus entity %s - no such entity found", getUID()),
+					e);
+		} catch (EntityException e) {
+			if (xml == null) {
+				throw new SchedulingException(String.format(
+						"Error retrieving ProjectStatus entity %s - returned XML is null",
+						getUID()),
+						e);
+			} else if (xml.xmlString == null) {
+				throw new SchedulingException(String.format(
+						"Error retrieving ProjectStatus entity %s - returned XML has null string",
+						getUID()),
+						e);
+			} else {
+				final int end = (xml.xmlString.length() > 255)?
+																255:
+																xml.xmlString.length();
+				throw new SchedulingException(String.format(
+						"Error retrieving ProjectStatus entity %s - cannot deserialise the returned XML%n\t%s",
+						getUID(), xml.xmlString.substring(0, end)),
+						e);
+			}
+		} catch (Exception e) {
+			throw new SchedulingException(String.format(
+					"Error retrieving ProjectStatus entity %s", getUID()),
+					e);
+		}
+
 	}
 
 	/* (non-Javadoc)
