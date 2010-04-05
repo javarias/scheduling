@@ -55,5 +55,10 @@ public class TimeEvent implements Comparable<TimeEvent>{
         return time.compareTo(o.getTime());
     }
     
+    @Override
+    public String toString() {
+        return "TimeEvent type=" + type.toString() + "; array=" + array.getId() + "; time=" +
+            time + "; sb=" + sb;
+    }
     
 }

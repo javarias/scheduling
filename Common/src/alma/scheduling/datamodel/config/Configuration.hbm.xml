@@ -8,6 +8,8 @@
         <id name="lastLoad" column="LAST_LOAD" type="timestamp">
         	<generator class="assigned"/>
         </id>
+        <property name="nextStepTime" column="NEXT_STEP_TIME" type="timestamp" not-null="false"/>
+        <property name="simulationStartTime" column="SIM_START_TIME" type="timestamp" not-null="false"/>
 	</class>
 	
 </hibernate-mapping>    

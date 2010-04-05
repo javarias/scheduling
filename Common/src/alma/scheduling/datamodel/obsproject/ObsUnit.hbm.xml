@@ -27,7 +27,7 @@
             <property name="tacPriority" type="int" column="OBSUNIT_CTRL_TAC_PRIORITY"/>
         </component>
         
-        <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
+        <joined-subclass name="SchedBlock" table="SCHEDBLOCK" lazy="false">
             <key column="SCHEDBLOCKID"/>
             <property name="piName" column="PINAME"/>
             <component name="weatherConstraints" class="WeatherConstraints">
@@ -71,7 +71,7 @@
             </set>
         </joined-subclass>
 
-        <joined-subclass name="ObsUnitSet" table="OBSUNITSET">
+        <joined-subclass name="ObsUnitSet" table="OBSUNITSET" lazy="false">
             <key column="OBSUNITSETID"/>
             <set name="obsUnits" inverse="true" cascade="save-update, lock, delete, delete-orphan">
                 <key column="PARENTID"/>
@@ -97,10 +97,19 @@
 		]]>
     </query>
     
+    <query name="SchedBlock.findSchedBlocksWithoutTooMuchTsysVariation">
+        <![CDATA[
+        from SchedBlock sb where
+        ((sb.weatherDependentVariables.projectedTsys - sb.weatherDependentVariables.tsys)
+         / sb.weatherDependentVariables.tsys) < ?
+        ]]>
+    </query>
+    
     <query name="SchedBlock.findByEstimatedExecutionTime">
     	<![CDATA[
     		from SchedBlock sb where
     		sb.obsUnitControl.estimatedExecutionTime < ?
     	]]>
     </query>
+
 </hibernate-mapping>

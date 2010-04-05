@@ -71,4 +71,14 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         schedBlock.getSchedulingConstraints().getRepresentativeTarget().getSource().getCoordinates();
     }
     
+    @Override
+    public List<SchedBlock> findSchedBlocksWithoutTooMuchTsysVariation(
+            double variation) {
+        Query query =
+            getSession().getNamedQuery("SchedBlock.findSchedBlocksWithoutTooMuchTsysVariation");
+        query.setParameter(0, variation);
+        List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
+        return schedBlocks;
+    }
+    
 }

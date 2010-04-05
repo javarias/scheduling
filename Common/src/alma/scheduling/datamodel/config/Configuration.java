@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.7 2010/03/12 02:11:42 rhiriart Exp $"
+ * "@(#) $Id: Configuration.java,v 1.8 2010/04/05 19:53:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -53,6 +53,12 @@ public class Configuration {
 
     /** Maximum wind speed, beyond which no SchedBlock can be executed (km/hr) */
     private Double maxWindSpeed;
+    
+    /** Start time for the next step, used by the step function, for debugging */
+    private Date nextStepTime;
+    
+    /** Simulation start time */
+    private Date simulationStartTime;
     
     public Configuration() { }
     
@@ -211,6 +217,22 @@ public class Configuration {
 
     public void setMaxWindSpeed(Double maxWindSpeed) {
         this.maxWindSpeed = maxWindSpeed;
+    }
+
+    public Date getNextStepTime() {
+        return nextStepTime;
+    }
+
+    public void setNextStepTime(Date nextStepTime) {
+        this.nextStepTime = nextStepTime;
+    }
+
+    public Date getSimulationStartTime() {
+        return simulationStartTime;
+    }
+
+    public void setSimulationStartTime(Date simulationStartTime) {
+        this.simulationStartTime = simulationStartTime;
     }
 
 }

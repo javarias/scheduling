@@ -1,19 +1,26 @@
 package alma.scheduling.datamodel.weather.dao;
 
+import java.util.Set;
+
 import org.hibernate.Query;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.AtmParameters;
 
 @Transactional
-public class AtmParametersDaoImpl extends HibernateDaoSupport implements AtmParametersDao {
+public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParametersDao {
 
     @Override
     public void loadAtmParameter(Object domainObject) {
         getHibernateTemplate().save(domainObject);
     }
 
+    @Override
+    public void loadAtmParameters(Set<AtmParameters> params) {
+        saveOrUpdate(params);
+    }
+    
     @Override
     public Double[] getEnclosingPwvInterval(Double pwv) {
         Double[] retVal = new Double[2];

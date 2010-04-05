@@ -38,7 +38,7 @@
         <property name="hibernateProperties">
         <props>
             <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
-            <prop key="hibernate.show_sql">false</prop>
+            <prop key="hibernate.show_sql">true</prop>
             <prop key="hibernate.format_sql">true</prop>
             <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
             <prop key="hibernate.connection.autocommit">false</prop>
@@ -125,7 +125,23 @@
 				</bean>
 			</list>
 		</property>
-	</bean>	
+	</bean>
+	
+	<bean id="prjLoader" class="alma.scheduling.dataload.CompositeDataLoader">
+		<property name="loaders">
+			<list>
+				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
+					<property name="xmlDao" ref="xmlObsProjectDao"/>
+					<property name="dao" ref="obsProjectDao"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="unloader" class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
+		<property name="xmlDao" ref="xmlObsProjectDao"/>
+		<property name="dao" ref="obsProjectDao"/>
+	</bean>
 
     <!-- Weather Algorithm Beans -->
 	<bean id="weatherDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">

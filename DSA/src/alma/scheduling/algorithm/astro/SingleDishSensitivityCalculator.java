@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SingleDishSensitivityCalculator.java,v 1.1 2010/03/06 00:57:17 rhiriart Exp $"
+ * "@(#) $Id: SingleDishSensitivityCalculator.java,v 1.2 2010/04/05 19:54:39 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -57,6 +57,9 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
         double tsys = SystemTemperatureCalculator.getTsys(declination,
                 latitude, frequency, opacity, atmBrightnessTemperature);
         double bandwidthHz = bandwidth * 1.0e9;
+        // only valid for switch mode
+        // for on-the-fly use 1.0 instead of sqrt(2)
+        // other modes have other factors
         return rho_e * Math.sqrt(2) * tsys
                 / Math.sqrt(numberAntennas * bandwidthHz * exposureTime);
     }

@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ConfigurationDao.java,v 1.3 2010/03/13 02:54:18 rhiriart Exp $"
+ * "@(#) $Id: ConfigurationDao.java,v 1.4 2010/04/05 19:53:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
+
+import java.util.Date;
 
 import alma.scheduling.datamodel.config.Configuration;
 
@@ -32,6 +34,10 @@ public interface ConfigurationDao {
     Configuration getConfiguration();
     
     void updateConfig();
+    
+    void updateNextStep(Date nextStepTime);
+    
+    void updateSimStartTime(Date simStartTime);
     
     void deleteAll();
     

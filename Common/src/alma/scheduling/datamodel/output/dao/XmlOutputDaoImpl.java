@@ -88,6 +88,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             op[i].setSchedBlock(sb);
             for(int j = 0; j < sb.length; j++){
                 SchedBlockResult tmpSb = itSb.next();
+                sb[j] = new alma.scheduling.output.generated.SchedBlock();
                 sb[j].setEndDate(new org.exolab.castor.types.Date(tmpSb.getEndDate()));
                 sb[j].setExecutionTime(tmpSb.getExecutionTime());
                 sb[j].setMode(tmpSb.getMode());
@@ -106,9 +107,9 @@ public class XmlOutputDaoImpl implements OutputDao {
         alma.scheduling.output.generated.Array a[] =
             new alma.scheduling.output.generated.Array[results.getArray().size()];
         Iterator<Array> itA = results.getArray().iterator();
-        r.setArray(a);
         for(int i = 0; i < a.length; i++){
             Array tmpA = itA.next();
+            a[i] = new alma.scheduling.output.generated.Array();
             a[i].setAvailableTime(tmpA.getAvailableTime());
             a[i].setBaseline(tmpA.getBaseline());
             a[i].setCreationDate(new org.exolab.castor.types.Date(tmpA.getCreationDate()));
@@ -117,6 +118,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             a[i].setScientificTime(tmpA.getScientificTime());
             a[i].setArrayID(Integer.toString(tmpA.hashCode()));
         }
+        r.setArray(a);
         if (fw == null){
             config = configDao.getConfiguration();
             Date d = new Date();

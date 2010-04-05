@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SensitivityCalculatorBase.java,v 1.1 2010/03/06 00:57:17 rhiriart Exp $"
+ * "@(#) $Id: SensitivityCalculatorBase.java,v 1.2 2010/04/05 19:54:39 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -84,6 +84,7 @@ public abstract class SensitivityCalculatorBase {
          // 0.95 for 3-bit orrelator modes
          // 0.99 for 4-bit orrelator modes
         return 0.88; // PdB number
+        // TODO ACA: 3bit, BL: 2bits
     }
         
     /**

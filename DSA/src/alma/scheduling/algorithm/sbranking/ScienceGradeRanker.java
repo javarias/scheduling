@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.3 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.4 2010/04/05 19:54:39 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -29,14 +29,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class ScienceGradeRanker implements SchedBlockRanker {
 
+    private static Logger logger = LoggerFactory.getLogger(ScienceGradeRanker.class);
+    
+    private double factor;
+    public void setFactor(double factor) {
+        this.factor = factor;
+    }
+    
     private HashMap<SBRank,SchedBlock> ranks;
-    private Random rand;
     
     /**
      * Create a new Science Grade Ranker
@@ -44,7 +52,6 @@ public class ScienceGradeRanker implements SchedBlockRanker {
      */
     public ScienceGradeRanker(){
         ranks = new HashMap<SBRank, SchedBlock>();
-        rand = new Random();
     }
 
     @Override
@@ -54,19 +61,15 @@ public class ScienceGradeRanker implements SchedBlockRanker {
         return this.ranks.get(ranksCopy.get(0));
     }
 
-    /*
-     * The current implementation generates a random number
-     * (non-Javadoc)
-     * @see alma.scheduling.algorithm.sbranking.SchedBlockRanker#rank()
-     */
     @Override
     public List<SBRank> rank(List<SchedBlock> sbs) {
         ranks.clear();
         for(SchedBlock sb: sbs){
             SBRank rank = new SBRank();
             rank.setId(sb.getId());
-            rank.setRank(rand.nextInt());
+            rank.setRank(factor * sb.getObsUnitControl().getTacPriority());
             ranks.put(rank, sb);
+            logger.debug("rank: " + rank);
         }
         return new ArrayList<SBRank>(ranks.keySet());
     }

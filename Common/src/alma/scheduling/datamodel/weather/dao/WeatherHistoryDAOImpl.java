@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
+import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
@@ -17,6 +19,13 @@ import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHistoryDAO {
 
     private static Logger logger = LoggerFactory.getLogger(WeatherHistoryDAOImpl.class);
+
+    // --- Spring managed properties ---
+    
+    private ConfigurationDao configurationDao;
+    public void setConfigurationDao(ConfigurationDao configurationDao) {
+        this.configurationDao = configurationDao;
+    }
     
     private Date simulationStartTime;
     
@@ -25,6 +34,15 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
     }
     
     public Date getSimulationStartTime() {
+        if (simulationStartTime == null) {
+            Configuration cnf = configurationDao.getConfiguration();
+            if (cnf == null) {
+                logger.error("Configuration is null");
+            }
+            Date startTime = configurationDao.getConfiguration().getSimulationStartTime();
+            logger.debug("setting simulation start time: " + startTime);
+            this.simulationStartTime = startTime;
+        }
         return this.simulationStartTime;
     }
     
@@ -55,7 +73,7 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
 
     @Override
     public TemperatureHistRecord getTemperatureForTime(Date ut) {
-        double dt = ( ut.getTime() - simulationStartTime.getTime() ) / ( 3600000.0); // difference in time (hours)
+        double dt = ( ut.getTime() - getSimulationStartTime().getTime() ) / ( 3600000.0); // difference in time (hours)
         logger.debug("dt = " + dt);
         Query query;
         query = getSession().getNamedQuery("TemperatureHistRecord.getMaxTime");

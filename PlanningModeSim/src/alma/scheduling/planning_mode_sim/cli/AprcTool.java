@@ -28,6 +28,7 @@ import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.dataload.CompositeDataLoader;
 import alma.scheduling.dataload.DataLoader;
+import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
@@ -190,7 +191,13 @@ public class AprcTool {
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
         configDao.updateConfig();
     }
-    
+
+    private void unload(String ctxPath) {
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        DataUnloader loader = (DataUnloader) ctx.getBean("fullDataUnloader");
+        loader.unload();
+    }
+
     private void clean(String ctxPath) {
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"
                 + ctxPath);
@@ -216,6 +223,7 @@ public class AprcTool {
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
        // Date time = calendar.getTime(); // initial time is now, it should be configurable
         Date time = execDao.getCurrentSeason().getStartDate(); //The start time is the start Time of the current Season
+        logger.debug("start time is " + time);
         Date stopTime = execDao.getCurrentSeason().getEndDate();
         setPreconditions(ctx, new Date());
         String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
@@ -264,12 +272,21 @@ public class AprcTool {
         //Sort the times is ascending order
         Collections.sort(timesToCheck);
         
+        for (TimeEvent ev : timesToCheck) {
+            logger.debug(ev.toString());
+        }
+        
         /* Check the current time and discard the older events*/
         while(timesToCheck.size() > 0){
             if(timesToCheck.getFirst().getTime().before(time))
                 timesToCheck.remove();
             else
                 break;
+        }
+
+        logger.debug("timesToCheck after removing before times:");
+        for (TimeEvent ev : timesToCheck) {
+            logger.debug(ev.toString());
         }
         
         /*Stop when there is not more events to schedule
@@ -382,12 +399,57 @@ public class AprcTool {
         
         rc.completeResults();
         //Saving results to DB and XML output file
+        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+        outDao.saveResults( rc.getResults() );
         XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
         xmlOutDao.setConfigDao(xmlConfigDao);
         xmlOutDao.saveResults( rc.getResults() );
-        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-        outDao.saveResults( rc.getResults() );
         
+    }
+
+    private void step(String ctxPath) {
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        SchedBlockExecutor sbExecutor =
+            (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
+        ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
+        // TODO just one array, for now
+        ArrayConfiguration arrCnf = observatoryDao.findArrayConfigurations().get(0);
+        Configuration config = configDao.getConfiguration();
+        Date time = config.getNextStepTime();
+        logger.debug("next step time: " + time);
+        if (time == null) {
+            time = arrCnf.getStartTime();
+            configDao.updateSimStartTime(time);
+        }
+        DynamicSchedulingAlgorithm dsa = getDSA(ctx);
+        try {
+            time = step(ctx, time, dsa, arrCnf, sbExecutor);
+        } catch (NoSbSelectedException e) {
+            System.out.println("DSA finished, no more SBs to schedule");
+        }
+        configDao.updateNextStep(time);
+    }
+    
+    private Date step(ApplicationContext ctx, Date time, DynamicSchedulingAlgorithm dsa,
+            ArrayConfiguration arrCnf, SchedBlockExecutor sbExecutor)
+        throws NoSbSelectedException {
+        update(ctx, time);
+        dsa.selectCandidateSB();
+        dsa.rankSchedBlocks();
+        SchedBlock sb = dsa.getSelectedSchedBlock();
+        time = sbExecutor.execute(sb, arrCnf, time);
+        return time;
+    }
+
+    private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) {
+        String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
+        if(dsaNames.length == 0)
+            throw new IllegalArgumentException("There is not a Dynamic Scheduling Algorithm bean defined in the context.xml file");
+        if(dsaNames.length > 1)
+            throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
+        DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
+        return dsa;
     }
     
     private void update(ApplicationContext ctx, Date time) {
@@ -452,11 +514,17 @@ public class AprcTool {
         else if (args[0].compareTo("load")==0){
             load(workDir + "/" +config.getContextFilePath());
         }
+        else if (args[0].compareTo("unload")==0){
+            unload(workDir + "/" +config.getContextFilePath());
+        }
         else if (args[0].compareTo("clean")==0){
             clean(workDir + "/" +config.getContextFilePath());
         }
         else if (args[0].compareTo("run")==0){
             run(workDir + "/" + config.getContextFilePath());
+        }
+        else if (args[0].compareTo("step")==0){
+            step(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");

@@ -10,4 +10,5 @@ public interface SchedBlockDao extends GenericDao {
     List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(double lst);
     List<SchedBlock> findSchedBlocksByEstimatedExecutionTime(double time);
     void hydrateSchedBlockObsParams(SchedBlock schedBlock);
+    public List<SchedBlock> findSchedBlocksWithoutTooMuchTsysVariation(double variation);
 }

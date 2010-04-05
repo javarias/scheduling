@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.1 2010/03/06 00:57:17 rhiriart Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.2 2010/04/05 19:54:39 rhiriart Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -56,7 +56,8 @@ public class SystemTemperatureCalculator {
         double Airmass = 1.0 / sinAltitude;
 
         // TODO Shouldn't this be the current temperature?
-        double Tamb = 270; // Ambient temperature (260 - 280 K)
+        // TODO Replace for weather temperature
+        double Tamb = 270; // Ambient temperature (260 - 280 K) 
         double etaFeed = 0.95; // forward efficiency
         double Trx = getReceiverTemperature(frequency);
         

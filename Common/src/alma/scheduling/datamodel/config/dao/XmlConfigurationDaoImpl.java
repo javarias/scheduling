@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.8 2010/03/13 02:54:18 rhiriart Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.9 2010/04/05 19:53:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -90,12 +91,15 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
      * Not implemented 
      */
     @Override
-    public void updateConfig() {
-        
-    }
+    public void updateConfig() {}
 
     @Override
-    public void deleteAll() {
-    }
+    public void deleteAll() {}
+
+    @Override
+    public void updateNextStep(Date nextStepTime) {}
+
+    @Override
+    public void updateSimStartTime(Date simStartTime) {}
     
 }

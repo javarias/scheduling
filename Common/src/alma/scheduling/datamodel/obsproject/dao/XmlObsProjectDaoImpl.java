@@ -21,17 +21,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.12 2010/03/08 21:21:24 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.13 2010/04/05 19:53:03 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
@@ -41,8 +46,11 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ArrayType;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitControl;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
+import alma.scheduling.datamodel.obsproject.ObservingParameters;
+import alma.scheduling.datamodel.obsproject.Preconditions;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
@@ -53,10 +61,14 @@ import alma.scheduling.datamodel.obsproject.WeatherConstraints;
 import alma.scheduling.input.obsproject.generated.FieldSourceT;
 import alma.scheduling.input.obsproject.generated.ObsParametersT;
 import alma.scheduling.input.obsproject.generated.ObsUnitSetT;
+import alma.scheduling.input.obsproject.generated.PreconditionsT;
 import alma.scheduling.input.obsproject.generated.SchedBlockControlT;
 import alma.scheduling.input.obsproject.generated.SchedBlockT;
+import alma.scheduling.input.obsproject.generated.SchedulingConstraintsT;
 import alma.scheduling.input.obsproject.generated.ScienceParametersT;
 import alma.scheduling.input.obsproject.generated.TargetT;
+import alma.scheduling.input.obsproject.generated.WeatherConstraintsT;
+import alma.scheduling.input.obsproject.generated.types.ArrayTypeT;
 
 /**
  * A DAO for ObsProject XML files.
@@ -64,6 +76,42 @@ import alma.scheduling.input.obsproject.generated.TargetT;
  */
 public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
 
+    private String getXmlRefId(Class cls, Long id) {
+        return String.format("_%s_%05d", cls.getSimpleName(), id);
+    }
+
+    private class XmlDomainXRef {
+        String xmlRefId;
+        Long dbId;
+        XmlDomainXRef(Class cls, Long dbId) {
+            this.xmlRefId = getXmlRefId(cls, dbId);
+            this.dbId = dbId;
+        }
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((dbId == null) ? 0 : dbId.hashCode());
+            return result;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            XmlDomainXRef other = (XmlDomainXRef) obj;
+            if (dbId == null) {
+                if (other.dbId != null)
+                    return false;
+            } else if (!dbId.equals(other.dbId))
+                return false;
+            return true;
+        }
+    }
+    
     private static Logger logger = LoggerFactory.getLogger(XmlObsProjectDaoImpl.class);
     
     private ConfigurationDao configurationDao;
@@ -139,6 +187,10 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSchedBlock.getSchedulingConstraints().getRepresentativeFrequency(),
                     targets.get(xmlSchedBlock.getSchedulingConstraints().getRepresentativeTargetIdRef()));
             schedBlock.setSchedulingConstraints(sc);
+            Preconditions pc =
+                new Preconditions(xmlSchedBlock.getPreconditions().getMaxAllowedHA(),
+                                  xmlSchedBlock.getPreconditions().getMinAllowedHA());
+            schedBlock.setPreConditions(pc);
             ObsParametersT xmlObsParams = xmlSchedBlock.getObsParameters();
             if (xmlObsParams != null) {
                 ScienceParametersT xmlSciParams =
@@ -149,6 +201,9 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     scip.setRepresentativeFrequency(xmlSciParams.getRepresentativeFrequency());
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
                     schedBlock.addObservingParameters(scip);
+                    for (Target t : targets.values()) { // TODO fix this
+                        t.setObservingParameters(scip);
+                    }
                 }
             }
             obsUnitSet.addObsUnit(schedBlock);
@@ -185,8 +240,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         for (TargetT xmlt : xmlTargets) {
             Target target = new Target();
             // ... TODO ...
-            ScienceParameters params = new ScienceParameters();
-            target.setObservingParameters(params);
+//            ScienceParameters params = new ScienceParameters();
+//            target.setObservingParameters(params);
             target.setSource(extractFieldSource(xmlt.getSourceIdRef(), xmlSchedBlock));
             retVal.put(xmlt.getId(), target);
         }
@@ -212,5 +267,141 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         }
         // ... TODO throw an exception instead ...
         return null;
-    }    
+    }
+    
+    public void saveObsProject(ObsProject prj) {
+        String prjDir = configurationDao.getConfiguration().getProjectDirectory();
+        String absPrjDir = System.getenv("APRC_WORK_DIR") + "/" + prjDir;
+        alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
+            new alma.scheduling.input.obsproject.generated.ObsProject();
+        
+        xmlPrj.setAssignedPriority(prj.getAssignedPriority());
+        xmlPrj.setPrincipalInvestigator(prj.getPrincipalInvestigator());
+        ObsUnit obsUnit = prj.getObsUnit();
+        xmlPrj.setObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) getXmlObsUnit(obsUnit));
+        
+        String fileName = String.format("%s/ObsProject%05d.xml", absPrjDir, prj.getId()); 
+        File newFile = new File(fileName);
+        if (newFile.exists()) {
+            logger.warn(newFile + " already exists");
+            String backupFile = fileName + ".bak";
+            if (newFile.renameTo(new File(backupFile))) {
+                logger.info(newFile + " was moved to " + backupFile);
+            } else {
+                logger.error("failed to rename file " + newFile);
+            }
+        }
+        try {
+            FileWriter writer = new FileWriter(newFile);
+            xmlPrj.marshal(writer);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (MarshalException ex) {
+            ex.printStackTrace();
+        } catch (ValidationException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private alma.scheduling.input.obsproject.generated.ObsUnitT getXmlObsUnit(ObsUnit obsUnit) {
+        
+        if (obsUnit instanceof ObsUnitSet) {
+            alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
+                new alma.scheduling.input.obsproject.generated.ObsUnitSetT();
+            Set<ObsUnit> subObsUnits = ((ObsUnitSet) obsUnit).getObsUnits();
+            for (ObsUnit subObsUnit : subObsUnits) {
+                alma.scheduling.input.obsproject.generated.ObsUnitT subXmlObsUnit =
+                    getXmlObsUnit(subObsUnit);
+                if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.SchedBlockT) {
+                    xmlObsUnitSet.addSchedBlock((alma.scheduling.input.obsproject.generated.SchedBlockT) subXmlObsUnit);
+                } else if (subXmlObsUnit instanceof alma.scheduling.input.obsproject.generated.ObsUnitSetT) {
+                    xmlObsUnitSet.addObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) subXmlObsUnit);
+                }
+            }
+            return xmlObsUnitSet;
+        } else if (obsUnit instanceof SchedBlock) {
+            alma.scheduling.input.obsproject.generated.SchedBlockT xmlSchedBlock =
+                new alma.scheduling.input.obsproject.generated.SchedBlockT();
+            SchedBlock sb = (SchedBlock) obsUnit;
+            // WeatherConstraints
+            WeatherConstraintsT wc = new WeatherConstraintsT();
+            wc.setMaxOpacity(sb.getWeatherConstraints().getMaxOpacity());
+            wc.setMaxSeeing(sb.getWeatherConstraints().getMaxSeeing());
+            wc.setMaxWindVelocity(sb.getWeatherConstraints().getMaxWindVelocity());
+            wc.setMinPhaseStability(sb.getWeatherConstraints().getMinPhaseStability());
+            xmlSchedBlock.setWeatherConstraints(wc);
+            // ObservingParameters
+            Set<ObservingParameters> obsParams = sb.getObservingParameters();
+            Map<XmlDomainXRef, ObsParametersT> xmlObsParams =
+                new HashMap<XmlDomainXRef, ObsParametersT>();
+            ObsParametersT theOne = null;
+            for (ObservingParameters op : obsParams) {
+                if (op instanceof ScienceParameters) {
+                    ScienceParameters scp = (ScienceParameters) op;
+                    ObsParametersT xmlOP = new ObsParametersT();
+                    xmlOP.setId(getXmlRefId(ObsParametersT.class, scp.getId()));
+                    ScienceParametersT xmlSciParams = new ScienceParametersT();
+                    xmlSciParams.setDuration(0.0);
+                    xmlSciParams.setRepresentativeBandwidth(scp.getRepresentativeBandwidth());
+                    xmlSciParams.setRepresentativeFrequency(scp.getRepresentativeFrequency());
+                    xmlSciParams.setSensitivityGoal(scp.getSensitivityGoal());
+                    xmlOP.setScienceParameters(xmlSciParams);
+                    xmlObsParams.put(new XmlDomainXRef(ObsParametersT.class, scp.getId()), xmlOP);
+                    theOne = xmlOP;
+                }
+            }
+            if (theOne != null) xmlSchedBlock.setObsParameters(theOne);  // TODO fix this
+            // Targets
+            Set<Target> targets = sb.getTargets();
+            Map<XmlDomainXRef, TargetT> xmlTargets = new HashMap<XmlDomainXRef, TargetT>();
+            Map<XmlDomainXRef, FieldSourceT> xmlSources = new HashMap<XmlDomainXRef, FieldSourceT>();
+            for (Target t : targets) {
+                TargetT xmlTarget = new TargetT();
+                XmlDomainXRef xref = new XmlDomainXRef(TargetT.class, t.getId());
+                xmlTarget.setId(xref.xmlRefId);
+                xmlTarget.setInstrumentSpecIdRef("");
+                xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().getId()));
+                xmlTarget.setSourceIdRef(getXmlRefId(FieldSourceT.class, t.getSource().getId()));
+                xmlTargets.put(xref, xmlTarget);
+                FieldSource src = t.getSource();
+                FieldSourceT xmlSrc = new FieldSourceT();
+                xmlSrc.setId(getXmlRefId(FieldSourceT.class, src.getId()));
+                xmlSrc.setName(src.getName());
+                xmlSrc.setRA(src.getCoordinates().getRA());
+                xmlSrc.setDec(src.getCoordinates().getDec());
+                if (!xmlSources.containsKey(new XmlDomainXRef(FieldSourceT.class, src.getId())))
+                    xmlSources.put(new XmlDomainXRef(FieldSourceT.class, src.getId()), xmlSrc);
+            }
+            xmlSchedBlock.setTarget(xmlTargets.values().toArray(new TargetT[0]));
+            xmlSchedBlock.setFieldSource(xmlSources.values().toArray(new FieldSourceT[0]));
+            // SchedulingConstraints
+            SchedulingConstraintsT sc = new SchedulingConstraintsT();
+            sc.setMaxAngularResolution(sb.getSchedulingConstraints().getMaxAngularResolution());
+            sc.setRepresentativeFrequency(sb.getSchedulingConstraints().getRepresentativeFrequency());
+            
+            sc.setRepresentativeTargetIdRef(getXmlRefId(TargetT.class,
+                                                        sb.getSchedulingConstraints()
+                                                          .getRepresentativeTarget()
+                                                          .getId()));
+            xmlSchedBlock.setSchedulingConstraints(sc);
+            // Preconditions
+            PreconditionsT pc = new PreconditionsT();
+            pc.setMinAllowedHA(sb.getPreConditions().getMinAllowedHourAngle());
+            pc.setMaxAllowedHA(sb.getPreConditions().getMaxAllowedHourAngle());
+            xmlSchedBlock.setPreconditions(pc);
+            // SchedBlockControl
+            ObsUnitControl ouCtrl = sb.getObsUnitControl();
+            SchedBlockControl sbCtrl = sb.getSchedBlockControl();
+            SchedBlockControlT xmlSbCtrl = new SchedBlockControlT();
+            xmlSbCtrl.setArrayRequested(ArrayTypeT.TWELVE_M);
+            xmlSbCtrl.setTacPriority(ouCtrl.getTacPriority());
+            xmlSbCtrl.setEstimatedExecutionTime(ouCtrl.getEstimatedExecutionTime());
+            xmlSbCtrl.setIndefiniteRepeat(sbCtrl.getIndefiniteRepeat());
+            xmlSbCtrl.setMaximumTime(ouCtrl.getMaximumTime());
+            xmlSchedBlock.setSchedBlockControl(xmlSbCtrl);
+            return xmlSchedBlock;
+        } else {
+            return null;
+        }
+    }
 }

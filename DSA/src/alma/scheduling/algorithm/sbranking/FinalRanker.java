@@ -21,7 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FinalRanker.java,v 1.5 2010/03/24 16:25:24 javarias Exp $"
+<<<<<<< FinalRanker.java
+ * "@(#) $Id: FinalRanker.java,v 1.6 2010/04/05 19:54:39 rhiriart Exp $"
+=======
+ * "@(#) $Id: FinalRanker.java,v 1.6 2010/04/05 19:54:39 rhiriart Exp $"
+>>>>>>> 1.5
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -30,20 +34,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class FinalRanker implements SchedBlockRanker {
 
-    private List<SchedBlockRanker> rankers;
-    private HashMap<SBRank,SchedBlock> ranks = new HashMap<SBRank, SchedBlock>();
+    private static Logger logger = LoggerFactory.getLogger(FinalRanker.class);
     
+    private List<Double> weights;
+    public void setWeights(List<Double> weights) {
+        this.weights = weights;
+    }
+    
+    private List<SchedBlockRanker> rankers;
     public List<SchedBlockRanker> getRankers() {
         return rankers;
     }
-
     public void setRankers(List<SchedBlockRanker> rankers) {
         this.rankers = rankers;
-    }
+    }    
+    
+    private HashMap<SBRank,SchedBlock> ranks = new HashMap<SBRank, SchedBlock>();
+    
 
     @Override
     public SchedBlock getBestSB(List<SBRank> ranks) {
@@ -56,20 +70,21 @@ public class FinalRanker implements SchedBlockRanker {
     @Override
     public List<SBRank> rank(List<SchedBlock> sbs) {
         ranks.clear();
-        List<SBRank>[] res = new List[rankers.size()];
+        List<SBRank>[] results = new List[rankers.size()]; // for each ranker, a list over the sbs
         int i = 0;
         for(SchedBlockRanker r: rankers){
-            res[i] = r.rank(sbs);
+            results[i] = r.rank(sbs);
             i++;
         }
         for(i = 0; i < sbs.size(); i++){
             SBRank rank =  new SBRank();
-            rank.setId(res[0].get(i).getId());
-            rank.setUid(res[0].get(i).getUid());
-            int score = 0;
-            for(int j = 0; j < res.length; j++)
-                score += res[j].get(i).getRank();
+            rank.setId(results[0].get(i).getId());
+            rank.setUid(results[0].get(i).getUid());
+            double score = 0;
+            for(int j = 0; j < results.length; j++)
+                score += weights.get(j) * results[j].get(i).getRank();
             rank.setRank(score);
+            logger.debug("rank: " + rank);
             ranks.put(rank, sbs.get(i));
         }
         return new ArrayList<SBRank>(ranks.keySet());

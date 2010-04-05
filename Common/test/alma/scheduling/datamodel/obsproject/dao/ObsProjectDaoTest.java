@@ -32,7 +32,7 @@ public class ObsProjectDaoTest extends TestCase {
         super.tearDown();
     }
  
-    public void testXmlObsProjectDao() throws Exception {
+    public void notestXmlObsProjectDao() throws Exception {
         ApplicationContext ctx =
             new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
         XmlObsProjectDao xmlDao = (XmlObsProjectDao) ctx.getBean("xmlObsProjectDao");
@@ -53,6 +53,31 @@ public class ObsProjectDaoTest extends TestCase {
             }
         }
         dao.saveOrUpdate(obsProject);
+    }
+    
+    public void testRoundTrip() throws Exception {
+        ApplicationContext ctx =
+            new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
+        XmlObsProjectDao xmlDao = (XmlObsProjectDao) ctx.getBean("xmlObsProjectDao");
+        ObsProjectDao dao = (ObsProjectDao) ctx.getBean("obsProjectDao");
+        List<ObsProject> projects = xmlDao.getAllObsProjects();
+        for (ObsProject prj : projects) {
+            ObsUnit ou = prj.getObsUnit();
+            if (ou instanceof ObsUnitSet) {
+                ObsUnitSet ous = (ObsUnitSet) ou;
+                for (ObsUnit sou : ous.getObsUnits()) {
+                    if (sou instanceof SchedBlock) {
+                        SchedBlock sb = (SchedBlock) sou;
+                        logger.debug("# of observing parameters: " +
+                                sb.getObservingParameters().size());                        
+                    }
+                }
+            }
+        }
+        dao.saveOrUpdate(projects);
+        for (ObsProject prj : projects) {
+            xmlDao.saveObsProject(prj);
+        }
     }
     
 }

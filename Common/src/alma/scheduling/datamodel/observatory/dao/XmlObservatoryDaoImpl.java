@@ -21,19 +21,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObservatoryDaoImpl.java,v 1.1 2010/03/12 02:11:42 rhiriart Exp $"
+ * "@(#) $Id: XmlObservatoryDaoImpl.java,v 1.2 2010/04/05 19:53:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.observatory.dao;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;

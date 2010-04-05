@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmDataLoader.java,v 1.3 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: AtmDataLoader.java,v 1.4 2010/04/05 19:54:39 rhiriart Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import alma.scheduling.dataload.AtmTableReader.AtmData;
 import alma.scheduling.datamodel.config.Configuration;
@@ -93,14 +95,16 @@ public class AtmDataLoader implements DataLoader {
     public void load() {
         try {
             AtmData ad;
+            Set<AtmParameters> params = new HashSet<AtmParameters>();
             while ((ad = getNextAtmDatum()) != null) {
-                AtmParameters params = new AtmParameters();
-                params.setPWV(pwc);
-                params.setFreq(ad.getFreq());
-                params.setOpacity(ad.getOpacity());
-                params.setAtmBrightnessTemp(ad.getTemperature());
-                dao.loadAtmParameter(params);
+                AtmParameters p = new AtmParameters();
+                p.setPWV(pwc);
+                p.setFreq(ad.getFreq());
+                p.setOpacity(ad.getOpacity());
+                p.setAtmBrightnessTemp(ad.getTemperature());
+                params.add(p);
             }
+            dao.loadAtmParameters(params);
         } catch(Exception ex) {
             ex.printStackTrace();
         }

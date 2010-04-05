@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDao.java,v 1.2 2010/02/19 00:23:53 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDao.java,v 1.3 2010/04/05 19:53:03 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -32,5 +32,6 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 public interface XmlObsProjectDao {
 
     List<ObsProject> getAllObsProjects();
-
+    
+    void saveObsProject(ObsProject prj);
 }
