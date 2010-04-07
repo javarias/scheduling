@@ -21,37 +21,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveTimeSpent.java,v 1.11 2010/03/04 19:16:38 javarias Exp $"
+ * "@(#) $Id: ExecutiveTimeSpent.java,v 1.12 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
+import java.util.Date;
+
 /**
- * @author rhiriart
- * @version 1.0
- * @created 26-Jan-2010 9:26:43 AM
+ * The amount of time that is charged to an Executive, during an ObservingSeason,
+ * as a consequence of the execution of an SchedBlock.
+ * The SchedBlock's PI is used to resolve the percentages that should be charged
+ * to each Executive, depending on the PI memberships to each Executive.
  */
 public class ExecutiveTimeSpent {
 
-    /**
-     * Time spent in in hours
-     */
+    /** Amount of time charged to the Executive (hours) */
 	private float timeSpent;
+	
+	// TODO May be something more indicative, not so internal?
+	/** Identifier of the SchedBlock that was executed */
 	private Long sbId;
+	
+	/** Executive that is charged */
 	private Executive executive;
+	
+	/** Observing season during which the SchedBlock was executed */
 	private ObservingSeason observingSeason;
 
-	public ExecutiveTimeSpent(){
+	/** Timestamp (UT) when the SchedBlock was executed */
+	private Date executionTime;
+	
+	/**
+	 * Zero-args constructor.
+	 */
+	public ExecutiveTimeSpent() { }
 
-	}
-
+    // --- Getters and Setters ---	
+	
     public float getTimeSpent() {
         return timeSpent;
     }
 
-    /**
-     * 
-     * @param timeSpent the time spent in the sched block observation in hours
-     */
     public void setTimeSpent(float timeSpent) {
         this.timeSpent = timeSpent;
     }
@@ -78,6 +88,14 @@ public class ExecutiveTimeSpent {
 
     public void setObservingSeason(ObservingSeason mObservingSeason) {
         observingSeason = mObservingSeason;
+    }
+
+    public Date getExecutionTime() {
+        return executionTime;
+    }
+
+    public void setExecutionTime(Date executionTime) {
+        this.executionTime = executionTime;
     }
 
 }

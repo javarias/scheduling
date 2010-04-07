@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.8 2010/04/05 19:53:02 rhiriart Exp $"
+ * "@(#) $Id: Configuration.java,v 1.9 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * This class provides configuration information.
  *
+ * TODO add here the grading cut out percentages 
  */
 public class Configuration {
 

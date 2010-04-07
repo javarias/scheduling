@@ -21,42 +21,56 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutivePercentage.java,v 1.9 2010/03/02 17:08:03 javarias Exp $"
+ * "@(#) $Id: ExecutivePercentage.java,v 1.10 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
 /**
- * @author rhiriart
- * @version 1.0
- * @created 26-Jan-2010 9:26:42 AM
+ * This class represents a many-to-many relationship between ObservingSeason
+ * and Executive. During an ObservingSeason, several Executives will have the
+ * right of a certain amount of observation time, which is represented either by a percentage
+ * over the total observation time during the ObservingSeason, or directly by the total
+ * observation time in hours. These are parameters of the link between ObservingSeason and
+ * Executive.
+ * Reciprocally, one Executive can participate in several ObservingSeasons.
  */
 public class ExecutivePercentage {
 
-	private float percentage;
-	private float totalObsTimeForSeason;
+    /**
+     * Percentage of the total observation time in a ObservingSeason that the Executive
+     * has the right to use (0-100).
+     */
+	private Float percentage;
+	
+	/**
+	 * Total observation time (in hours) that the Executive has the right to use
+	 * for its observations (provided the other conditions are met, of course).
+	 * This parameter is calculated from the percentage and the total observation time
+	 * available in the ObservingSeason. It is included here to avoid having to calculate
+	 * it all the time.
+	 */
+	private Double totalObsTimeForSeason;
 
-	public ExecutivePercentage(){
+	/**
+	 * Zero-args constructor.
+	 */
+	public ExecutivePercentage() { }
 
-	}
-
-    public float getPercentage() {
+    // --- Getters and Setters ---
+	
+    public Float getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(float percentage) {
+    public void setPercentage(Float percentage) {
         this.percentage = percentage;
     }
 
-    public float getTotalObsTimeForSeason() {
+    public Double getTotalObsTimeForSeason() {
         return totalObsTimeForSeason;
     }
 
-    public void setTotalObsTimeForSeason(float totalObsTimeForSeason) {
+    public void setTotalObsTimeForSeason(Double totalObsTimeForSeason) {
         this.totalObsTimeForSeason = totalObsTimeForSeason;
     }
-
-    public void finalize() throws Throwable {
-
-	}
-
 }

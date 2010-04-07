@@ -21,34 +21,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Executive.java,v 1.11 2010/03/04 00:14:09 javarias Exp $"
+ * "@(#) $Id: Executive.java,v 1.12 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
 import java.util.Set;
 
 /**
- * @author rhiriart
- * @version 1.0
- * @created 26-Jan-2010 9:26:42 AM
+ * An Executive is an entity that has the right to observe in the ALMA telescope.
  */
 public class Executive {
 
-	private float defaultPercentage;
+    /**
+     * Default percentage of the total telescope observation time for a season the
+     * Executive has rights over.
+     */
+	private Float defaultPercentage;
+	
+	/**
+	 * Executive name.
+	 */
 	private String name;
-	private Set<SchedBlockExecutivePercentage> schedBlockExecutivePercentage;
+	
+	/**
+	 * The ExecutivePercentages link an Executive with the ObservingSeasons it has
+	 * or will participate on, along with the percentages of the total observation time
+	 * for the ObservingSeasons it has rights on.
+	 */
 	private Set<ExecutivePercentage> executivePercentage;
 
+	/**
+	 * Zero-args constructor, required by Hibernate.
+	 */
+    public Executive() { }
 	
-    public Executive(){
-
-    }
-	
-	public float getDefaultPercentage() {
+    // --- Getters and Setters ---
+    
+	public Float getDefaultPercentage() {
         return defaultPercentage;
     }
 
-    public void setDefaultPercentage(float defaultPercentage) {
+    public void setDefaultPercentage(Float defaultPercentage) {
         this.defaultPercentage = defaultPercentage;
     }
 
@@ -60,15 +73,6 @@ public class Executive {
         this.name = name;
     }
 
-	public Set<SchedBlockExecutivePercentage> getSchedBlockExecutivePercentage() {
-        return schedBlockExecutivePercentage;
-    }
-
-    public void setSchedBlockExecutivePercentage(
-            Set<SchedBlockExecutivePercentage> mSchedBlockExecutivePercentage) {
-        schedBlockExecutivePercentage = mSchedBlockExecutivePercentage;
-    }
-
     public Set<ExecutivePercentage> getExecutivePercentage() {
         return executivePercentage;
     }
@@ -77,9 +81,4 @@ public class Executive {
             Set<ExecutivePercentage> mExecutivePercentage) {
         executivePercentage = mExecutivePercentage;
     }
-    
-    public void finalize() throws Throwable {
-
-	}
-
 }

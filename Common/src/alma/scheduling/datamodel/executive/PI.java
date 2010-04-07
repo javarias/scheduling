@@ -21,25 +21,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: PI.java,v 1.10 2010/03/04 00:14:09 javarias Exp $"
+ * "@(#) $Id: PI.java,v 1.11 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
 import java.util.Set;
 
 /**
- * @author rhiriart
- * @version 1.0
- * @created 26-Jan-2010 9:26:43 AM
+ * The Principal Investigator (PI).
  */
 public class PI {
 
+    /** The PI's name */
 	private String name;
+	
+	/** The PI Executive memberships */
 	private Set<PIMembership> pIMembership;
 
-	public PI(){
+	/**
+	 * Zero-arg constructor.
+	 */
+	public PI() { }
 
-	}
+    // --- Getters and Setters ---
 
 	public String getName() {
         return name;
@@ -56,9 +60,4 @@ public class PI {
     public void setPIMembership(Set<PIMembership> mPIMembership) {
         pIMembership = mPIMembership;
     }
-
-    public void finalize() throws Throwable {
-
-	}
-
 }

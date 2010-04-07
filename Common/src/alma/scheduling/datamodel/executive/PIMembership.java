@@ -21,29 +21,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: PIMembership.java,v 1.8 2010/03/02 17:08:03 javarias Exp $"
+ * "@(#) $Id: PIMembership.java,v 1.9 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
 /**
- * @author rhiriart
- * @version 1.0
- * @created 26-Jan-2010 9:26:43 AM
+ * The Principal Investigator (PI) Executive membership.
+ * <P>
+ * A PI can be associated to multiple Executives. Each SchedBlock specifies its PI.
+ * <P>
+ * This parameter is important because the PI is used to decide how much
+ * observation time should be charged to each Executive every time a SchedBlock is
+ * executed.
  */
 public class PIMembership {
 
-	private float membershipPercentage;
+    /** 
+     * Percentages to be used to distribute the total observation time between
+     * the PI's associated Executives.
+     */
+	private Float membershipPercentage;
+	
+	/** Executive */
 	private Executive executive;
 
-	public PIMembership(){
+	/**
+	 * Zero-arg constructor.
+	 */
+	public PIMembership() { }
 
-	}
+    // --- Getters and Setters ---
 
-	public float getMembershipPercentage() {
+	public Float getMembershipPercentage() {
         return membershipPercentage;
     }
 
-    public void setMembershipPercentage(float membershipPercentage) {
+    public void setMembershipPercentage(Float membershipPercentage) {
         this.membershipPercentage = membershipPercentage;
     }
 
@@ -54,9 +67,5 @@ public class PIMembership {
     public void setExecutive(Executive mExecutive) {
         executive = mExecutive;
     }
-
-    public void finalize() throws Throwable {
-
-	}
 
 }

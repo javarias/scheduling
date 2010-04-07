@@ -22,7 +22,6 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.PIMembership;
-import alma.scheduling.datamodel.executive.SchedBlockExecutivePercentage;
 import alma.scheduling.input.executive.generated.ExecutiveData;
 
 public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
@@ -164,10 +163,6 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
         Executive exec = new Executive();
         exec.setName(in.getName());
         exec.setDefaultPercentage(in.getDefaultPercentage());
-        if (exec.getSchedBlockExecutivePercentage() == null) {
-            exec
-                    .setSchedBlockExecutivePercentage(new HashSet<SchedBlockExecutivePercentage>());
-        }
         if (exec.getExecutivePercentage() == null)
             exec.setExecutivePercentage(new HashSet<ExecutivePercentage>());
         return exec;
@@ -177,7 +172,7 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
             alma.scheduling.input.executive.generated.ExecutivePercentage in) {
         ExecutivePercentage execp = new ExecutivePercentage();
         execp.setPercentage(in.getPercentage());
-        execp.setTotalObsTimeForSeason(in.getTotalObsTimeForSeason());
+        execp.setTotalObsTimeForSeason(new Double(in.getTotalObsTimeForSeason()));
         return execp;
     }
 

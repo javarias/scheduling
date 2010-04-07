@@ -8,17 +8,10 @@
         <id name="name" column="NAME" type="string">
         	<generator class="assigned"/>
         </id>
-        
         <property name="defaultPercentage" column="DEFAULT_PERCENTAGE" type="float"/>
-        
 		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
 			<key column="EXECUTIVE_NAME" />
 			<one-to-many class="ExecutivePercentage" />
-		</set>
-		
-		<set name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
-			<key column="EXECUTIVE_NAME" />
-			<one-to-many class="SchedBlockExecutivePercentage" />
 		</set>
 	</class>
 	
@@ -26,7 +19,6 @@
 		<id column="ID" type="long">
 			<generator class="native"/>
 		</id>
-		
 		<property name="percentage" type="float" column="PERCENTAGE"/>
 		<property name="totalObsTimeForSeason" type="float" column="TOTAL_OBS_TIME_FOR_SEASON" />
 	</class>
@@ -35,7 +27,6 @@
 		<id name="startDate" column="START_DATE" type="timestamp">
 			<generator class="assigned"/>
 		</id>
-		
 		<property name="name" type="string" column="NAME"/>
 		<property name="endDate" type="timestamp" column="END_DATE"/>
 		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
@@ -48,7 +39,6 @@
 		<id column="ID" type="long">
 			<generator class="native"/>
 		</id>
-		
 		<property name="timeSpent" type="float" column="TIME_SPENT" not-null="true"/>
 		<property name="sbId" type="long" column="SB_ID" not-null="true"/>
 		<many-to-one name="observingSeason" column="OBS_SEASON_ID" 
@@ -56,16 +46,7 @@
         <many-to-one name="executive" column="EXECUTIVE_NAME" 
         	 not-null="true" class="Executive"/>
 	</class>
-	
-	<class name="SchedBlockExecutivePercentage" table="SB_EXECUTIVE_PERCENTAGE">
-		<id column="ID" type="long">
-			<generator class="native"/>
-		</id>
-		<property name="percentage" type="float" column="PERCENTAGE"/>
-		<property name="sbid" type="string" column="SBID"/>
-		<property name="executionTime" type="long" column="EXEC_TIME"/>
-	</class>
-	
+		
 	<class name="PI" table="PI">
 		<id name="name" column="NAME" type="string">
 			<generator class="assigned"/>

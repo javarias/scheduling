@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservingSeason.java,v 1.9 2010/03/02 17:08:03 javarias Exp $"
+ * "@(#) $Id: ObservingSeason.java,v 1.10 2010/04/07 22:43:51 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -29,22 +29,43 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * @author rhiriart
- * @version 1.0
- * @created 26-Jan-2010 9:26:43 AM
+ * The ObservingSeason is the unit of time that is used in the accountability of
+ * observation time to the Executives (USA, Japan, Europe, etc.). It is usually
+ * 6 months.
+ * 
+ * APRC simulations and the planning of the telescope operations are made for a time span
+ * encopassing one or more ObservingSeasons.
  */
 public class ObservingSeason implements Comparable<ObservingSeason>{
 
+    /** Observing season start date */
+    private Date startDate;
+    
+    /** Observing season end date */
 	private Date endDate;
-	private String name;
-	private Date startDate;
-	private Set<ExecutivePercentage> executivePercentage;
 	
-	public ObservingSeason(){
+	/** Name to be used in output reports. For example "EarlyScience2011", "Spring2012", etc. */
+	private String name;
+	
+	/** Executives that participate in the ObservingSeason and their percentages */
+	private Set<ExecutivePercentage> executivePercentage;
 
-	}
+	/**
+	 * Zero-args constructor.
+	 */
+	public ObservingSeason() {}
 
-	public Date getEndDate() {
+    // --- Getters and Setters ---
+	
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
         return endDate;
     }
 
@@ -60,29 +81,16 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
         this.name = name;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
     public Set<ExecutivePercentage> getExecutivePercentage() {
         return executivePercentage;
     }
 
-    public void setExecutivePercentage(
-            Set<ExecutivePercentage> mExecutivePercentage) {
+    public void setExecutivePercentage(Set<ExecutivePercentage> mExecutivePercentage) {
         executivePercentage = mExecutivePercentage;
     }
-    
-    public void finalize() throws Throwable {
-	}
 
     @Override
     public int compareTo(ObservingSeason o) {
         return this.startDate.compareTo(o.startDate);
     }
-
 }
