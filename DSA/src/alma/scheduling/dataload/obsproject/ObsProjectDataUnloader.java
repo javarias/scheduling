@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataUnloader.java,v 1.1 2010/04/07 16:56:23 rhiriart Exp $"
+ * "@(#) $Id: ObsProjectDataUnloader.java,v 1.2 2010/04/07 21:41:58 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataUnloader;
-import alma.scheduling.dataload.DataUnloaderTest;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFullSelector.java,v 1.5 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: WeatherFullSelector.java,v 1.6 2010/04/07 21:41:58 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -31,13 +31,18 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
-import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class WeatherFullSelector implements SchedBlockSelector {
+public class WeatherFullSelector extends AbstractBaseSelector {
+
+    public WeatherFullSelector(String selectorName) {
+        super(selectorName);
+    }
 
     private static Logger logger = LoggerFactory.getLogger(WeatherFullSelector.class);
     
@@ -66,7 +71,11 @@ public class WeatherFullSelector implements SchedBlockSelector {
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        return select();
+        Collection<SchedBlock> sbs = select();
+        if (verboseLvl != VerboseLevel.NONE)
+            System.out.println("[" + ut.toString() + "]"
+                    + getVerboseLine(sbs, arrConf.getId()));
+        return sbs;
     }
 
 }

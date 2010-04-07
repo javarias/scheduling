@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.13 2010/03/24 16:25:24 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.1 2010/04/07 21:41:58 javarias Exp $"
  */
-package alma.scheduling.algorithm.sbselection;
+package alma.scheduling.algorithm.executive;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
+import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
@@ -46,14 +49,17 @@ import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class ExecutiveSelector implements SchedBlockSelector {
-
+public class ExecutiveSelector extends AbstractBaseSelector {
     private static Logger logger = LoggerFactory.getLogger(ExecutiveSelector.class);
     
     private ExecutiveDAO execDao;
     private SchedBlockDao sbDao;
     private HashMap<String, Double> availableTime;
     
+    public ExecutiveSelector(String selectorName) {
+        super(selectorName);
+    }
+
     public ExecutiveDAO getExecDao() {
         return execDao;
     }
@@ -85,7 +91,11 @@ public class ExecutiveSelector implements SchedBlockSelector {
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException {
         // ut time is ignored
-        return select();
+        Collection<SchedBlock> sbs = select();
+        if (verboseLvl != VerboseLevel.NONE)
+            System.out.println("[" + ut.toString() + "]"
+                    + getVerboseLine(sbs, arrConf.getId()));
+        return sbs;
     }
     
     /*

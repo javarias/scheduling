@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherTsysSelector.java,v 1.1 2010/04/07 16:56:23 rhiriart Exp $"
+ * "@(#) $Id: WeatherTsysSelector.java,v 1.2 2010/04/07 21:41:58 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -32,13 +32,18 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
-import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class WeatherTsysSelector implements SchedBlockSelector {
+public class WeatherTsysSelector extends AbstractBaseSelector {
+
+    public WeatherTsysSelector(String selectorName) {
+        super(selectorName);
+    }
 
     private static Logger logger = LoggerFactory.getLogger(WeatherTsysSelector.class);
     
@@ -72,15 +77,17 @@ public class WeatherTsysSelector implements SchedBlockSelector {
     @Override
     public Collection<SchedBlock> select(ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
+        return select();
     }
 
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
+        Collection<SchedBlock> sbs = select();
+        if (verboseLvl != VerboseLevel.NONE)
+            System.out.println("[" + ut.toString() + "]"
+                    + getVerboseLine(sbs, arrConf.getId()));
+        return sbs;
     }
 
 }

@@ -1,4 +1,4 @@
-package alma.scheduling.algorithm.sbselection;
+package alma.scheduling.algorithm.observatory;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -9,11 +9,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.algorithm.executive.ExecutiveSelector;
+import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
+import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class ArrayConfigurationSelector implements SchedBlockSelector {
+public class ArrayConfigurationSelector extends AbstractBaseSelector{
+    
+    public ArrayConfigurationSelector(String selectorName) {
+        super(selectorName);
+    }
+
     private static Logger logger = LoggerFactory.getLogger(ExecutiveSelector.class);
     
     private SchedBlockDao sbDao;
@@ -55,7 +64,11 @@ public class ArrayConfigurationSelector implements SchedBlockSelector {
             return sbDao.findAll();
         }
         double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000 * 60 * 60);
-        return sbDao.findSchedBlocksByEstimatedExecutionTime(remaningTime);
+        Collection<SchedBlock> sbs = sbDao.findSchedBlocksByEstimatedExecutionTime(remaningTime);
+        if (verboseLvl != VerboseLevel.NONE)
+            System.out.println("[" + ut.toString() + "]"
+                    + getVerboseLine(sbs, arrConf.getId()));
+        return sbs;
     }
     
     @Override
