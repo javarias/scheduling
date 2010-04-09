@@ -1,18 +1,10 @@
 package alma.scheduling.dataload;
 
-import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.scheduling.datamodel.GenericDao;
-import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.executive.ExecutivePercentage;
-import alma.scheduling.datamodel.executive.PI;
-import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.executive.dao.XmlExecutiveDAO;
-import alma.scheduling.datamodel.obsproject.ObsProject;
 
 public class ExecutiveDataLoader implements DataLoader {
 
@@ -40,19 +32,12 @@ public class ExecutiveDataLoader implements DataLoader {
     @Override
     public void load() {
         logger.info("Populating the DB with Exec data");
-        GenericDao genDao = (GenericDao) dbDao;
-        ArrayList<Object> objs = new ArrayList<Object>();
-        objs.addAll(xmlDao.getAllExecutive());
-        objs.addAll(xmlDao.getAllObservingSeason());
-        objs.addAll(xmlDao.getAllPi());
-        genDao.saveOrUpdate(objs);
+        dbDao.saveObservingSeasonsAndExecutives(xmlDao.getAllObservingSeason(), xmlDao.getAllExecutive());
+        dbDao.saveOrUpdate(xmlDao.getAllPi());
     }
 
     @Override
     public void clear() {
         dbDao.deleteAll();
-//        dbDao.deleteAll(dbDao.findAll(PI.class));
-//        dbDao.deleteAll(dbDao.findAll(PIMembership.class));
-//        dbDao.deleteAll(dbDao.findAll(ExecutivePercentage.class));
     }
 }
