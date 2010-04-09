@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutivePercentage.java,v 1.11 2010/04/09 01:26:15 rhiriart Exp $"
+ * "@(#) $Id: ExecutivePercentage.java,v 1.12 2010/04/09 15:20:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -108,7 +108,7 @@ public class ExecutivePercentage {
 	    this.season = season;
 	    this.executive = executive;
 	    this.percentage = percentage;
-	    if (totalObsTimeForSeason == null) {
+	    if (totalObsTimeForSeason == null || totalObsTimeForSeason == 0) {
             long start = season.getStartDate().getTime();
             long end = season.getEndDate().getTime();
             double diffHours = (end - start) / (60 * 60 * 1000);

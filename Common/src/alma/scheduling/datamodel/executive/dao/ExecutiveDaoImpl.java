@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.10 2010/04/09 01:26:15 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.11 2010/04/09 15:20:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -112,7 +112,8 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
 
     @Override
-    public void saveObservingSeasons(List<ObservingSeason> seasons) {
+    public void saveObservingSeasonsAndExecutives(List<ObservingSeason> seasons,
+            List<Executive> executives) {
         List<ExecutivePercentage> eps = new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> ss = new ArrayList<ObservingSeason>();
         List<Executive> execs = new ArrayList<Executive>();
@@ -125,6 +126,12 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
                 eps.add(ep);
             }
         }
+        // A new ExecutivePercentage needs to be created after the ObservingSeason
+        // and the Executive have been saved so its composite ID is setup
+        // with non-null references to these objects.
+        // The Lists need to be converted to arrays to avoid a concurrent modification
+        // exception, which results from ExecutivePercentage constructor modification of
+        // the ObservingSeason and ExecutivePercentage.
         ObservingSeason[] ssarr = ss.toArray(new ObservingSeason[0]);
         Executive[] execsarr = execs.toArray(new Executive[0]);
         ExecutivePercentage[] eparr = eps.toArray(new ExecutivePercentage[0]);
@@ -133,6 +140,10 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
             Executive e = execsarr[i];
             ExecutivePercentage ep = eparr[i];
             saveOrUpdate(new ExecutivePercentage(s, e, ep.getPercentage(), ep.getTotalObsTimeForSeason()));
+        }
+        // Save the executives
+        for (Executive e : executives) {
+            saveOrUpdate(e);
         }
     }
 }

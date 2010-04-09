@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.5 2010/04/09 01:26:15 rhiriart Exp $"
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.6 2010/04/09 15:20:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -225,7 +225,8 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
                     data.getObservingSeason(i).getExecutivePercentage(j);
                 Executive e = execm.get(ref.getExecutiveRef());
                 ExecutivePercentage execPercent =
-                    new ExecutivePercentage(tmp, e, new Float(ref.getPercentage()), new Double(ref.getTotalObsTimeForSeason()));
+                    new ExecutivePercentage(tmp, e, new Float(ref.getPercentage()),
+                            new Double(ref.getTotalObsTimeForSeason()));
                 ep.add(execPercent);
             }
         }

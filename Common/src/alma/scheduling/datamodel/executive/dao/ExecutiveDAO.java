@@ -26,7 +26,8 @@ public interface ExecutiveDAO extends GenericDao {
     public ExecutivePercentage getExecutivePercentage(Executive ex,
             ObservingSeason os);
     
-    public void saveObservingSeasons(List<ObservingSeason> seasons);
+    public void saveObservingSeasonsAndExecutives(List<ObservingSeason> seasons,
+            List<Executive> executives);
     
     public void deleteAll();
 }
