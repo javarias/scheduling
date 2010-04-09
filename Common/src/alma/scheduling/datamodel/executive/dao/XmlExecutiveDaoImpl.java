@@ -1,3 +1,28 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.5 2010/04/09 01:26:15 rhiriart Exp $"
+ */
 package alma.scheduling.datamodel.executive.dao;
 
 import java.io.FileNotFoundException;
@@ -27,47 +52,127 @@ import alma.scheduling.input.executive.generated.ExecutiveData;
 public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
 
     private static Logger logger = LoggerFactory.getLogger(XmlExecutiveDaoImpl.class);
-    private boolean ready = false;
-
+    
+    private boolean xmlDataHasBeenLoaded = false;
     private ArrayList<Executive> exec;
     private ArrayList<PI> pi;
     private ArrayList<ExecutivePercentage> ep;
     private ArrayList<ObservingSeason> os;
+    
+    /**
+     * Path to the XML fine containing the Executive data. If this is not set,
+     * then all the files in the executives directory from the ConfigurationDao are
+     * loaded.
+     */
     private String pathToExecDataXML = null;
-
+    
+    // --- Spring properties ---
+    
     private ConfigurationDao configDao;
+    public void setConfigDao(ConfigurationDao configDao) {
+        this.configDao = configDao;
+    }
 
+    // --- Constructors ---
+    
     public XmlExecutiveDaoImpl() {
         exec = new ArrayList<Executive>();
         pi = new ArrayList<PI>();
         ep = new ArrayList<ExecutivePercentage>();
         os = new ArrayList<ObservingSeason>();
     }
-    
+
+
     public XmlExecutiveDaoImpl(String pathToExecDataXML){
         this();
         logger.debug("Setting to read XML data from: " + pathToExecDataXML);
         this.pathToExecDataXML = pathToExecDataXML;
     }
+    
+    // --- XmlExecutiveDAO impl ---
+    
+    @Override
+    public List<Executive> getAllExecutive() {
+        if(!xmlDataHasBeenLoaded){
+            try {
+                processXMLProjectFiles();
+                xmlDataHasBeenLoaded = true;
+            } catch (CannotParseDataException e) {
+                e.printStackTrace();
+            }
+        }
+        return exec;
+    }
 
-    public ConfigurationDao getConfigDao() {
-        return configDao;
+    @Override
+    public List<ObservingSeason> getAllObservingSeason() {
+        if(!xmlDataHasBeenLoaded){
+            try {
+                processXMLProjectFiles();
+                xmlDataHasBeenLoaded = true;
+            } catch (CannotParseDataException e) {
+                e.printStackTrace();
+            }
+        }        
+        return os;
     }
     
-
-
-    public void setConfigDao(ConfigurationDao configDao) {
-        this.configDao = configDao;
+    @Override
+    public List<PI> getAllPi() {
+        if(!xmlDataHasBeenLoaded){
+            try {
+                processXMLProjectFiles();
+                xmlDataHasBeenLoaded = true;
+            } catch (CannotParseDataException e) {
+                e.printStackTrace();
+            }
+        }        
+        return pi;
     }
 
+    @Override
+    public ObservingSeason getCurrentSeason() {
+        if(!xmlDataHasBeenLoaded){
+            try {
+                processXMLProjectFiles();
+                xmlDataHasBeenLoaded = true;
+            } catch (CannotParseDataException e) {
+                e.printStackTrace();
+            }
+        }
+        ObservingSeason[] osArray = new ObservingSeason[os.size()];
+        os.toArray(osArray);
+        Arrays.sort(osArray);
+        return osArray[0];
+    }
+
+    @Override
+    public Executive getExecutive(String piName) {
+        return null;
+    }
+
+    @Override
+    public ExecutivePercentage getExecutivePercentage(Executive ex,
+            ObservingSeason os) {
+        return null;
+    }
+
+    @Override
+    public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex,
+            ObservingSeason os) {
+        return null;
+    }
+
+    // --- Private functions ---
+    
     private void processXMLProjectFiles() throws CannotParseDataException {
-        if(pathToExecDataXML!=null){
+        if (pathToExecDataXML != null) {
             logger.info("Reading Executive XML data from: " + pathToExecDataXML);
             ExecutiveData execData = null;
             try {
                 execData = ExecutiveData.unmarshalExecutiveData(
                         new FileReader(pathToExecDataXML));
-                copyExecutiveFromXMLGenerated(execData, exec, pi, ep, os);
+                copyExecutiveFromXMLGenerated(execData);
             } catch (MarshalException e) {
                 throw new CannotParseDataException(pathToExecDataXML, e);
             } catch (ValidationException e) {
@@ -77,7 +182,7 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
             }
             
         }
-        else{
+        else {
             logger.info("Reading configuration");
             List<String> files = configDao.getConfiguration().getExecutiveFiles();
             // TODO: Validate against XML schema files
@@ -88,7 +193,7 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
                 try {
                     execData = ExecutiveData.unmarshalExecutiveData(
                             new FileReader(file));
-                    copyExecutiveFromXMLGenerated(execData, exec, pi, ep, os);
+                    copyExecutiveFromXMLGenerated(execData);
                 } catch (MarshalException e) {
                     throw new CannotParseDataException(file, e);
                 } catch (ValidationException e) {
@@ -101,60 +206,36 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
     }
 
     private void copyExecutiveFromXMLGenerated(
-            alma.scheduling.input.executive.generated.ExecutiveData data,
-            List<Executive> execOut, List<PI> piOut,
-            List<ExecutivePercentage> epOut, List<ObservingSeason> osOut) {
-        XmlExecutiveDaoImpl xmlExDao = new XmlExecutiveDaoImpl();
+            alma.scheduling.input.executive.generated.ExecutiveData data) {
         if (data == null)
-            throw new NullPointerException(
-                    "Executive data input cannot be null");
-        if (execOut == null)
-            throw new NullPointerException("execOut cannot be null");
-        if (piOut == null)
-            throw new NullPointerException("piOut cannot be null");
-        if (epOut == null)
-            throw new NullPointerException("epOut cannot be null");
-        if (osOut == null)
-            throw new NullPointerException("osOut cannot be null");
+            throw new NullPointerException("Executive data input cannot be null");
 
-        HashMap<String, Executive> exec = new HashMap<String, Executive>();
-        HashMap<String, ExecutivePercentage> ep = new HashMap<String, ExecutivePercentage>();
-        HashMap<String, ObservingSeason> os = new HashMap<String, ObservingSeason>();
+        HashMap<String, Executive> execm = new HashMap<String, Executive>();
+        HashMap<String, ObservingSeason> osm = new HashMap<String, ObservingSeason>();
 
-        for (int i = 0; i < data.getExecutivePercentageCount(); i++) {
-            ep.put(data.getExecutivePercentage(i).getId(), xmlExDao
-                    .copyExecutivePercentage(data.getExecutivePercentage(i)));
+        for (int i = 0; i < data.getExecutiveCount(); i++) {
+            Executive tmp = copyExecutive(data.getExecutive(i));
+            execm.put(data.getExecutive(i).getName(), tmp);
         }
         for (int i = 0; i < data.getObservingSeasonCount(); i++) {
-            ObservingSeason tmp = xmlExDao.copyObservingSeason(data
-                    .getObservingSeason(i));
-            os.put(data.getObservingSeason(i).getId(), tmp);
-            for (int j = 0; j < data.getObservingSeason(i)
-                    .getExecutivePercentageRefCount(); j++) {
-                ExecutivePercentage epTmp = ep.get(data.getObservingSeason(i)
-                        .getExecutivePercentageRef(j).getIdRef());
-                tmp.getExecutivePercentage().add(epTmp);
+            ObservingSeason tmp = copyObservingSeason(data.getObservingSeason(i));
+            osm.put(data.getObservingSeason(i).getName(), tmp);
+            for (int j = 0; j < data.getObservingSeason(i).getExecutivePercentageCount(); j++) {
+                alma.scheduling.input.executive.generated.ExecutivePercentage ref =
+                    data.getObservingSeason(i).getExecutivePercentage(j);
+                Executive e = execm.get(ref.getExecutiveRef());
+                ExecutivePercentage execPercent =
+                    new ExecutivePercentage(tmp, e, new Float(ref.getPercentage()), new Double(ref.getTotalObsTimeForSeason()));
+                ep.add(execPercent);
             }
         }
-        for (int i = 0; i < data.getExecutiveCount(); i++) {
-            Executive tmp = xmlExDao.copyExecutive(data.getExecutive(i));
-            exec.put(data.getExecutive(i).getName(), tmp);
-            for (int j = 0; j < data.getExecutive(i)
-                    .getExecutivePercentageRefCount(); j++) {
-                ExecutivePercentage epTmp = ep.get(data.getExecutive(i)
-                        .getExecutivePercentageRef(j).getIdRef());
-                tmp.getExecutivePercentage().add(epTmp);
-            }
-        }
-
         for (int i = 0; i < data.getPICount(); i++) {
-            PI tmp = xmlExDao.copyPI(data.getPI(i), exec);
-            piOut.add(tmp);
+            PI tmp = copyPI(data.getPI(i), execm);
+            pi.add(tmp);
         }
 
-        execOut.addAll(exec.values());
-        epOut.addAll(ep.values());
-        osOut.addAll(os.values());
+        exec.addAll(execm.values());
+        os.addAll(osm.values());
 
     }
 
@@ -168,22 +249,12 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
         return exec;
     }
 
-    private ExecutivePercentage copyExecutivePercentage(
-            alma.scheduling.input.executive.generated.ExecutivePercentage in) {
-        ExecutivePercentage execp = new ExecutivePercentage();
-        execp.setPercentage(in.getPercentage());
-        execp.setTotalObsTimeForSeason(new Double(in.getTotalObsTimeForSeason()));
-        return execp;
-    }
-
     private ObservingSeason copyObservingSeason(
             alma.scheduling.input.executive.generated.ObservingSeason in) {
         ObservingSeason os = new ObservingSeason();
-        os.setEndDate(in.getEndDate().toDate());
         os.setName(in.getName());
         os.setStartDate(in.getStartDate().toDate());
-        if (os.getExecutivePercentage() == null)
-            os.setExecutivePercentage(new HashSet<ExecutivePercentage>());
+        os.setEndDate(in.getEndDate().toDate());
         return os;
     }
 
@@ -194,8 +265,7 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
         if (pi.getPIMembership() == null)
             pi.setPIMembership(new HashSet<PIMembership>());
         for (int i = 0; i < in.getPIMembershipCount(); i++) {
-            Executive e = execs.get(in.getPIMembership(i).getExecutiveRef()
-                    .getNameRef());
+            Executive e = execs.get(in.getPIMembership(i).getExecutiveRef());
             PIMembership pim = copyPIMembership(in.getPIMembership(i));
             pim.setExecutive(e);
             pi.getPIMembership().add(pim);
@@ -209,80 +279,4 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
         pim.setMembershipPercentage(pim.getMembershipPercentage());
         return pim;
     }
-
-    @Override
-    public List<Executive> getAllExecutive() {
-        if(!ready){
-            try {
-                processXMLProjectFiles();
-                ready = true;
-            } catch (CannotParseDataException e) {
-                e.printStackTrace();
-            }
-        }
-        return exec;
-    }
-
-    @Override
-    public List<ObservingSeason> getAllObservingSeason() {
-        if(!ready){
-            try {
-                processXMLProjectFiles();
-                ready = true;
-            } catch (CannotParseDataException e) {
-                e.printStackTrace();
-            }
-        }        
-        return os;
-    }
-
-    @Override
-    public List<PI> getAllPi() {
-        if(!ready){
-            try {
-                processXMLProjectFiles();
-                ready = true;
-            } catch (CannotParseDataException e) {
-                e.printStackTrace();
-            }
-        }        
-        return pi;
-    }
-
-    @Override
-    public ObservingSeason getCurrentSeason() {
-        if(!ready){
-            try {
-                processXMLProjectFiles();
-                ready = true;
-            } catch (CannotParseDataException e) {
-                e.printStackTrace();
-            }
-        }
-        ObservingSeason[] osArray = new ObservingSeason[os.size()];
-        os.toArray(osArray);
-        Arrays.sort(osArray);
-        return osArray[0];
-    }
-
-    @Override
-    public Executive getExecutive(String piName) {
-        //TODO: implement
-        return null;
-    }
-
-    @Override
-    public ExecutivePercentage getExecutivePercentage(Executive ex,
-            ObservingSeason os) {
-        //TODO: implement
-        return null;
-    }
-
-    @Override
-    public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex,
-            ObservingSeason os) {
-        //TODO: implement
-        return null;
-    }
-
 }

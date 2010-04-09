@@ -2,10 +2,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
 	<xs:element name="ExecutiveData" type="ExecutiveData">
-		<xs:key name="ExecutivePercentageKey">
-			<xs:selector xpath="./ExecutivePercentage" />
-			<xs:field xpath="@id" />
-		</xs:key>
 		<xs:key name="ExecutiveKey">
 			<xs:selector xpath="./Executive" />
 			<xs:field xpath="name" />
@@ -14,22 +10,13 @@
 			<xs:selector xpath="./ObservingSeason" />
 			<xs:field xpath="@id" />
 		</xs:key>
-		<xs:keyref name="ExecutivePercentageRef_Executive" refer="ExecutivePercentageKey">
-			<xs:selector xpath="./Executive/ExecutivePercentageRef" />
-			<xs:field xpath="@idRef" />
-		</xs:keyref>
-		<xs:keyref name="ExecutivePercentageRef_ObservingSeason"
-			refer="ExecutivePercentageKey">
-			<xs:selector xpath="./ObservingSeason/ExecutivePercentageRef" />
-			<xs:field xpath="@idRef" />
-		</xs:keyref>
 		<xs:keyref name="ExecutiveRef_PIMembership" refer="ExecutiveKey">
 			<xs:selector xpath="./PIMembership/ExecutiveRef" />
-			<xs:field xpath="@nameRef" />
+			<xs:field xpath="@executiveRef" />
 		</xs:keyref>
-		<xs:keyref name="ObservingSeasonRef_ExecutiveTimeSpent" refer="ObservingSeasonKey">
-			<xs:selector xpath="./ExecutiveTimeSpent/ObservingSeasonRef" />
-			<xs:field xpath="@idRef" />
+		<xs:keyref name="ExecutivePercentage_Executive" refer="ExecutiveKey">
+			<xs:selector xpath="./ObservingSeason/ExecutivePercentage"/>
+			<xs:field xpath="@executiveRef"/>
 		</xs:keyref>
 	</xs:element>
 
@@ -37,72 +24,42 @@
 		<xs:sequence>
 			<xs:element name="Executive" type="Executive" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="ObservingSeason" type="ObservingSeason" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="ExecutivePercentage" type="ExecutivePercentage" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="PI" type="PI" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="PI">
 		<xs:sequence>
-			<xs:element name="name" type="xs:string" minOccurs="1"
-				maxOccurs="1" />
 			<xs:element name="PIMembership" type="PIMembership"
 				minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="email" type="xs:string" use="optional"/>		
 	</xs:complexType>
 
 	<xs:complexType name="ObservingSeason">
 		<xs:sequence>
-			<xs:element name="endDate" type="xs:date" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="name" type="xs:string" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="startDate" type="xs:date" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="ExecutivePercentageRef" minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="ExecutivePercentage" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:attribute name="idRef" type="xs:NCName" use="required" />
-				</xs:complexType>
+					<xs:attribute name="executiveRef" type="xs:NCName" use="required"/>
+					<xs:attribute name="percentage" type="xs:float" use="required"/>
+					<xs:attribute name="totalObsTimeForSeason" type="xs:float" use="optional"/>		
+				</xs:complexType>				
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="id" type="xs:NCName" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="startDate" type="xs:date" use="required"/>
+		<xs:attribute name="endDate" type="xs:date" use="required"/>
 	</xs:complexType>
 	
 	<xs:complexType name="Executive">
-		<xs:sequence>
-			<xs:element name="defaultPercentage" type="xs:float"
-				minOccurs="1" maxOccurs="1" />
-			<xs:element name="name" type="xs:NCName" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="ExecutivePercentageRef" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:attribute name="idRef" type="xs:NCName" use="required"/>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="ExecutivePercentage">
-		<xs:sequence>
-			<xs:element name="percentage" type="xs:float" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="totalObsTimeForSeason" type="xs:float"
-				minOccurs="1" maxOccurs="1" />
-		</xs:sequence>
-		<xs:attribute name="id" type="xs:NCName" use="required"/>
+		<xs:attribute name="name" type="xs:NCName" use="required"/>
+		<xs:attribute name="defaultPercentage" type="xs:float" use="required"/>
 	</xs:complexType>
 
 	<xs:complexType name="PIMembership">
-		<xs:sequence>
-			<xs:element name="membershipPercentage" type="xs:float"
-				minOccurs="1" maxOccurs="1" />
-			<!-- Reference to Executive -->
-			<xs:element name="ExecutiveRef" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:attribute name="nameRef" type="xs:NCName" use="required"/>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
+		<xs:attribute name="membershipPercentage" type="xs:float" use="required"/>
+		<xs:attribute name="executiveRef" type="xs:NCName" use="required"/>
 	</xs:complexType>
 
 </xs:schema>

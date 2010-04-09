@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Executive.java,v 1.12 2010/04/07 22:43:51 rhiriart Exp $"
+ * "@(#) $Id: Executive.java,v 1.13 2010/04/09 01:26:15 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -32,6 +33,9 @@ import java.util.Set;
  */
 public class Executive {
 
+    /** Executive (surrogate) identifier. Assigned by the database. */
+    private Long id;
+    
     /**
      * Default percentage of the total telescope observation time for a season the
      * Executive has rights over.
@@ -48,16 +52,24 @@ public class Executive {
 	 * or will participate on, along with the percentages of the total observation time
 	 * for the ObservingSeasons it has rights on.
 	 */
-	private Set<ExecutivePercentage> executivePercentage;
+	private Set<ExecutivePercentage> executivePercentage = new HashSet<ExecutivePercentage>();
 
 	/**
 	 * Zero-args constructor, required by Hibernate.
 	 */
-    public Executive() { }
+    public Executive() {}
 	
     // --- Getters and Setters ---
     
-	public Float getDefaultPercentage() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public Float getDefaultPercentage() {
         return defaultPercentage;
     }
 

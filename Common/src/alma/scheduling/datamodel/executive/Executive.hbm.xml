@@ -5,34 +5,39 @@
 <hibernate-mapping package="alma.scheduling.datamodel.executive">
 
     <class name="Executive" table="EXECUTIVE">
-        <id name="name" column="NAME" type="string">
-        	<generator class="assigned"/>
-        </id>
+    	<id name="id" column="ID">            
+    		<generator class="native"/>
+    	</id>
+    	<property name="name" column="NAME" type="string"/>
         <property name="defaultPercentage" column="DEFAULT_PERCENTAGE" type="float"/>
-		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
-			<key column="EXECUTIVE_NAME" />
+		<set name="executivePercentage" inverse="true">
+			<key column="EXECUTIVE_ID" />
+			<one-to-many class="ExecutivePercentage" />
+		</set>
+	</class>
+	
+	<class name="ObservingSeason" table="OBSERVING_SEASON">
+		<id name="id" column="ID">            
+			<generator class="native"/>
+		</id>
+		<property name="name" type="string" column="NAME"/>
+		<property name="startDate" type="timestamp" column="START_DATE"/>
+		<property name="endDate" type="timestamp" column="END_DATE"/>
+		<set name="executivePercentage" inverse="true">
+			<key column="SEASON_ID" />
 			<one-to-many class="ExecutivePercentage" />
 		</set>
 	</class>
 	
 	<class name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE">
-		<id column="ID" type="long">
-			<generator class="native"/>
-		</id>
+		<composite-id name="id" class="ExecutivePercentage$Id">
+			<key-property name="executiveId" access="field" column="EXECUTIVE_ID"/>
+			<key-property name="seasonId" access="field" column="SEASON_ID"/>
+		</composite-id>		
 		<property name="percentage" type="float" column="PERCENTAGE"/>
-		<property name="totalObsTimeForSeason" type="float" column="TOTAL_OBS_TIME_FOR_SEASON" />
-	</class>
-	
-	<class name="ObservingSeason" table="OBSERVING_SEASON">
-		<id name="startDate" column="START_DATE" type="timestamp">
-			<generator class="assigned"/>
-		</id>
-		<property name="name" type="string" column="NAME"/>
-		<property name="endDate" type="timestamp" column="END_DATE"/>
-		<set name="ExecutivePercentage" table="EXECUTIVE_PERCENTAGE" cascade="save-update,lock, delete, delete-orphan">
-			<key column="START_DATE" />
-			<one-to-many class="ExecutivePercentage" />
-		</set>
+		<property name="totalObsTimeForSeason" type="double" column="TOTAL_OBS_TIME_FOR_SEASON" />
+		<many-to-one name="executive" column="EXECUTIVE_ID" not-null="true" insert="false" update="false"/>
+		<many-to-one name="season" column="SEASON_ID" not-null="true" insert="false" update="false"/>
 	</class>
 	
 	<class name="ExecutiveTimeSpent" table="EXECUTIVE_TIME_SPENT">

@@ -21,11 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservingSeason.java,v 1.10 2010/04/07 22:43:51 rhiriart Exp $"
+ * "@(#) $Id: ObservingSeason.java,v 1.11 2010/04/09 01:26:15 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -38,6 +39,9 @@ import java.util.Set;
  */
 public class ObservingSeason implements Comparable<ObservingSeason>{
 
+    /** ObservingSeason (surrogate) identifier. Assigned by the database. */
+    private Long id;
+    
     /** Observing season start date */
     private Date startDate;
     
@@ -48,7 +52,7 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
 	private String name;
 	
 	/** Executives that participate in the ObservingSeason and their percentages */
-	private Set<ExecutivePercentage> executivePercentage;
+	private Set<ExecutivePercentage> executivePercentage = new HashSet<ExecutivePercentage>();
 
 	/**
 	 * Zero-args constructor.
@@ -57,6 +61,14 @@ public class ObservingSeason implements Comparable<ObservingSeason>{
 
     // --- Getters and Setters ---
 	
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public Date getStartDate() {
         return startDate;
     }
