@@ -21,12 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoTest.java,v 1.1 2010/04/09 01:26:15 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveDaoTest.java,v 1.2 2010/04/09 15:19:00 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -83,12 +81,9 @@ public class ExecutiveDaoTest extends TestCase {
             for (ExecutivePercentage execPercent : exec.getExecutivePercentage()) {
                 logger.info("exective percent total obs time: " + execPercent.getTotalObsTimeForSeason());
             }
-        }
-        
-        ExecutiveDAO dao = (ExecutiveDAO) ctx.getBean("execDao");
-        
-        dao.saveObservingSeasons(seasons);
-        
+        }        
+        ExecutiveDAO dao = (ExecutiveDAO) ctx.getBean("execDao");        
+        dao.saveObservingSeasonsAndExecutives(seasons, executives);        
         dao.saveOrUpdate(pis);
     }
     
