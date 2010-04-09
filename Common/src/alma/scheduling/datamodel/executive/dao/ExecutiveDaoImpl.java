@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.12 2010/04/09 20:52:02 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.13 2010/04/09 22:56:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -43,7 +43,14 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     @Override
     @Transactional(readOnly=true)
     public List<Executive> getAllExecutive() {
-        return this.findAll(Executive.class);
+        List<Executive> execs =  findAll(Executive.class);
+        for (Executive exec : execs) {
+            for (ExecutivePercentage ep : exec.getExecutivePercentage()) {
+                ObservingSeason o = ep.getSeason();
+                o.getStartDate();
+            }            
+        }
+        return execs;
     }
     
     
