@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.6 2010/04/09 15:20:02 rhiriart Exp $"
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.7 2010/04/09 20:52:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -263,6 +263,7 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
             HashMap<String, Executive> execs) {
         PI pi = new PI();
         pi.setName(in.getName());
+        pi.setEmail(in.getEmail());
         if (pi.getPIMembership() == null)
             pi.setPIMembership(new HashSet<PIMembership>());
         for (int i = 0; i < in.getPIMembershipCount(); i++) {

@@ -21,13 +21,13 @@ public interface ExecutiveDAO extends GenericDao {
     
     public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex, ObservingSeason os);
     
-    public Executive getExecutive(String piName);
-
-    public ExecutivePercentage getExecutivePercentage(Executive ex,
-            ObservingSeason os);
+    public Executive getExecutive(String piEmail);
     
+    public PI getPIFromEmail(String piEmail);
+
     public void saveObservingSeasonsAndExecutives(List<ObservingSeason> seasons,
             List<Executive> executives);
     
     public void deleteAll();
+    
 }

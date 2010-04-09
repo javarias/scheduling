@@ -53,11 +53,12 @@
 	</class>
 		
 	<class name="PI" table="PI">
-		<id name="name" column="NAME" type="string">
+		<id name="email" column="EMAIL" type="string">
 			<generator class="assigned"/>
 		</id>
+		<property name="name" column="NAME" type="string"/>
 		<set name="PIMembership" table="PI_MEMBERSHIP" cascade="save-update,lock, delete, delete-orphan">
-			<key column="PI_NAME" />
+			<key column="PI_EMAIL" />
 			<one-to-many class="PIMembership" />
 		</set>
 	</class>
@@ -77,12 +78,5 @@
 			where ets.observingSeason.startDate = ? and ets.executive.name = ? 
 		]]>
 	</query>
-	
-	<sql-query name="ExecutivePercentage.findBySeasonAndExecutive">
-	<return alias="ep" class="ExecutivePercentage" />
-		SELECT * FROM EXECUTIVE_PERCENTAGE WHERE
-		  EXECUTIVE_PERCENTAGE.START_DATE = ? AND
-		  EXECUTIVE_PERCENTAGE.EXECUTIVE_NAME = ?
-	</sql-query>
 	
 </hibernate-mapping>    

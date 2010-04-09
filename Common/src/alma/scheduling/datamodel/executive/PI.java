@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: PI.java,v 1.11 2010/04/07 22:43:51 rhiriart Exp $"
+ * "@(#) $Id: PI.java,v 1.12 2010/04/09 20:52:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -32,6 +32,9 @@ import java.util.Set;
  */
 public class PI {
 
+    /** The PI's email, which is also used as the identifier. */
+    private String email;
+    
     /** The PI's name */
 	private String name;
 	
@@ -45,7 +48,15 @@ public class PI {
 
     // --- Getters and Setters ---
 
-	public String getName() {
+	public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
         return name;
     }
 

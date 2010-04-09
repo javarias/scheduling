@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoTest.java,v 1.2 2010/04/09 15:19:00 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveDaoTest.java,v 1.3 2010/04/09 20:52:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -33,10 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
+import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 
@@ -48,6 +48,7 @@ import alma.scheduling.datamodel.executive.PI;
 public class ExecutiveDaoTest extends TestCase {
 
     private static Logger logger = LoggerFactory.getLogger(ExecutiveDaoTest.class);
+    private ApplicationContext context;
     
     public ExecutiveDaoTest(String name) {
         super(name);
@@ -55,18 +56,16 @@ public class ExecutiveDaoTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        context = new ClassPathXmlApplicationContext("alma/scheduling/datamodel/executive/dao/context.xml");
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
  
-    @Transactional
-    public void testXmlObsProjectDao() throws Exception {
-        ApplicationContext ctx =
-            new ClassPathXmlApplicationContext("alma/scheduling/datamodel/executive/dao/context.xml");
+    public void testXmlToDb() throws Exception {
         logger.info("getting DAOs");
-        XmlExecutiveDAO xmldao = (XmlExecutiveDAO) ctx.getBean("xmlExecDao");
+        XmlExecutiveDAO xmldao = (XmlExecutiveDAO) context.getBean("xmlExecDao");
         List<Executive> executives = xmldao.getAllExecutive();
         logger.info("# of executives: " + executives.size());
         assertEquals(3, executives.size());
@@ -82,9 +81,29 @@ public class ExecutiveDaoTest extends TestCase {
                 logger.info("exective percent total obs time: " + execPercent.getTotalObsTimeForSeason());
             }
         }        
-        ExecutiveDAO dao = (ExecutiveDAO) ctx.getBean("execDao");        
+        ExecutiveDAO dao = (ExecutiveDAO) context.getBean("execDao");        
         dao.saveObservingSeasonsAndExecutives(seasons, executives);        
         dao.saveOrUpdate(pis);
+        
+        dao.deleteAll();
+    }
+    
+    public void testDaoQueries() throws Exception {
+        XmlExecutiveDAO xmldao = (XmlExecutiveDAO) context.getBean("xmlExecDao");
+        ExecutiveDAO dao = (ExecutiveDAO) context.getBean("execDao");        
+        dao.saveObservingSeasonsAndExecutives(xmldao.getAllObservingSeason(), xmldao.getAllExecutive());        
+        dao.saveOrUpdate(xmldao.getAllPi());
+        Executive e = dao.getExecutive("csmith@noao.edu");
+        assertNotNull(e);
+        PI pi = dao.getPIFromEmail("csmith@noao.edu");
+        assertNotNull(pi);
+        for (ExecutivePercentage ep : e.getExecutivePercentage()) {
+            ObservingSeason o = ep.getSeason();
+            List<ExecutiveTimeSpent> ets = dao.getExecutiveTimeSpent(e, o);
+            assertEquals(0, ets.size());
+        }
+        dao.deleteAll();
+               
     }
     
 }

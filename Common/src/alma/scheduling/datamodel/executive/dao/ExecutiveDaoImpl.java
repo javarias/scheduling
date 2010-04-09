@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.11 2010/04/09 15:20:02 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.12 2010/04/09 20:52:02 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -72,11 +72,23 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
     @Override
     @Transactional(readOnly=true)
-    public Executive getExecutive(String piName) {
-        PI pi = findById(PI.class, piName);
-        return pi.getPIMembership().iterator().next().getExecutive();
+    public Executive getExecutive(String piEmail) {
+        PI pi = findById(PI.class, piEmail);
+        Executive exec = pi.getPIMembership().iterator().next().getExecutive();
+        for (ExecutivePercentage ep : exec.getExecutivePercentage()) {
+            ObservingSeason o = ep.getSeason();
+            o.getStartDate();
+        }
+        return exec;
     }
 
+    @Override
+    @Transactional(readOnly=true)
+    public PI getPIFromEmail(String piEmail) {
+        PI pi = findById(PI.class, piEmail);
+        return pi;
+    }
+    
     @Override
     @Transactional(readOnly=true)
     public List<ExecutiveTimeSpent> getExecutiveTimeSpent(Executive ex,
@@ -85,26 +97,14 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
         args[0] = os.getStartDate();
         args[1] = ex.getName();
         return this.executeNamedQuery(
-                "ExecutiveTimeSpent.findBySeasonAndExecutive",args);
+                "ExecutiveTimeSpent.findBySeasonAndExecutive", args);
     }
     
-    @Override
-    @Transactional(readOnly=true)
-    public ExecutivePercentage getExecutivePercentage(Executive ex,
-            ObservingSeason os) {
-        Object[] args= new Object[2];
-        args[0] =os.getStartDate();
-        args[1] = ex.getName();
-        return (ExecutivePercentage) this.executeNamedQuery(
-                "ExecutivePercentage.findBySeasonAndExecutive",args).get(0);
-    }
-
     @Override
     public void deleteAll() {
         getHibernateTemplate().bulkUpdate("delete PIMembership");        
         getHibernateTemplate().bulkUpdate("delete PI");
         getHibernateTemplate().bulkUpdate("delete ExecutivePercentage");
-        getHibernateTemplate().bulkUpdate("delete SchedBlockExecutivePercentage");
         getHibernateTemplate().bulkUpdate("delete ExecutiveTimeSpent");
         getHibernateTemplate().bulkUpdate("delete Executive");
         getHibernateTemplate().bulkUpdate("delete ObservingSeason");
