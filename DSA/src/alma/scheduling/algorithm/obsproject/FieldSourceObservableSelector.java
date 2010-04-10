@@ -7,17 +7,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.astro.TimeUtil;
+import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
-import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class FieldSourceObservableSelector implements SchedBlockSelector {
-
+public class FieldSourceObservableSelector extends AbstractBaseSelector {
+    
     private static Logger logger = LoggerFactory.getLogger(FieldSourceObservableSelector.class);
     
+    public FieldSourceObservableSelector(String selectorName) {
+        super(selectorName);
+    }
+
     // --- Spring set properties and accessors ---
     
     private ConfigurationDao configDao;
@@ -54,7 +58,9 @@ public class FieldSourceObservableSelector implements SchedBlockSelector {
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        return select(ut);
+        Collection<SchedBlock> sbs = select(ut);
+        printVerboseInfo(sbs, arrConf.getId(), ut);
+        return sbs;
     }
 
 }

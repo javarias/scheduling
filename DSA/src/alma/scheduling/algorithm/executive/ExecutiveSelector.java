@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.1 2010/04/07 21:41:58 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.2 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm.executive;
 
@@ -92,9 +92,7 @@ public class ExecutiveSelector extends AbstractBaseSelector {
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException {
         // ut time is ignored
         Collection<SchedBlock> sbs = select();
-        if (verboseLvl != VerboseLevel.NONE)
-            System.out.println("[" + ut.toString() + "]"
-                    + getVerboseLine(sbs, arrConf.getId()));
+        printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }
     
@@ -113,7 +111,7 @@ public class ExecutiveSelector extends AbstractBaseSelector {
         for(SchedBlock sb: sbs){
             //TODO: replace the next line with a new method defined in ExecutiveDAO
             PI pi = ((GenericDao)execDao).findById(PI.class, sb.getPiName());
-            Double avTime = availableTime.get(execDao.getExecutive(pi.getName()).getName());
+            Double avTime = availableTime.get(execDao.getExecutive(pi.getEmail()).getName());
             if (avTime.doubleValue() >= sb.getObsUnitControl().getEstimatedExecutionTime().doubleValue())
                 acceptedSbs.add(sb);
         }
@@ -124,15 +122,16 @@ public class ExecutiveSelector extends AbstractBaseSelector {
         logger.info("# SchedBlocks selected: " + acceptedSbs.size());
         return acceptedSbs;
     }
-    
+
+@Transactional(readOnly=true)    
     private void calculateRemainingTime(){
         if (availableTime == null)
             availableTime = new HashMap<String, Double>();
         availableTime.clear();
-        List<Executive> execs = execDao.getAllExecutive();
         ObservingSeason currOs = execDao.getCurrentSeason();
-        for(Executive exec: execs){
-            ExecutivePercentage ep = execDao.getExecutivePercentage(exec, currOs);
+        for(Executive exec: execDao.getAllExecutive()){
+            ExecutivePercentage ep = 
+                searchForExecutivePercentage(exec, currOs);
             List<ExecutiveTimeSpent> etss = 
                 execDao.getExecutiveTimeSpent(exec, currOs);
             double spentTime = 0;
@@ -142,9 +141,18 @@ public class ExecutiveSelector extends AbstractBaseSelector {
             availableTime.put(exec.getName(), 
                     new Double(ep.getTotalObsTimeForSeason() - spentTime));
         }
-        
     }
 
+@Transactional(readOnly=true)
+    private ExecutivePercentage searchForExecutivePercentage(Executive exec,
+            ObservingSeason os){
+        for(ExecutivePercentage ep: exec.getExecutivePercentage()) {
+            if(ep.getSeason().getId().compareTo(os.getId()) == 0)
+                return ep;
+        }
+        return null;
+    }
+    
     @Override
     public String toString() {
         return "ExecutiveSelector";

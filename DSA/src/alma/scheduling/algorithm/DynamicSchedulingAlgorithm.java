@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.10 2010/03/25 16:43:16 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.11 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -33,8 +33,9 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface DynamicSchedulingAlgorithm {
 
-    
     public void rankSchedBlocks();
+    
+    public void rankSchedBlocks(Date ut);
 
     /**
      * Clean the current candidate SBs and run again the selectors
@@ -54,7 +55,7 @@ public interface DynamicSchedulingAlgorithm {
      */
     public void selectCandidateSB(Date ut) throws NoSbSelectedException;
 
-    public void updateModel();
+    public void updateModel(Date ut);
     
     public SchedBlock getSelectedSchedBlock();
     
@@ -68,5 +69,7 @@ public interface DynamicSchedulingAlgorithm {
      * @return The scheduled array
      */
     public ArrayConfiguration getArray();
+    
+    public void setVerboseLevel(VerboseLevel verboseLvl);
 
 }

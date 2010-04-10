@@ -21,21 +21,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.4 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.5 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
-public class ScienceGradeRanker implements SchedBlockRanker {
+public class ScienceGradeRanker extends AbstractBaseRanker {
 
     private static Logger logger = LoggerFactory.getLogger(ScienceGradeRanker.class);
     
@@ -50,19 +52,18 @@ public class ScienceGradeRanker implements SchedBlockRanker {
      * Create a new Science Grade Ranker
      * 
      */
-    public ScienceGradeRanker(){
+    public ScienceGradeRanker(String rankerName){
+        super(rankerName);
         ranks = new HashMap<SBRank, SchedBlock>();
     }
 
     @Override
     public SchedBlock getBestSB(List<SBRank> ranks) {
-        ArrayList<SBRank> ranksCopy = new ArrayList<SBRank>(ranks);
-        Collections.sort(ranksCopy);
-        return this.ranks.get(ranksCopy.get(0));
+        return this.ranks.get(Collections.max(ranks));
     }
 
     @Override
-    public List<SBRank> rank(List<SchedBlock> sbs) {
+    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut){
         ranks.clear();
         for(SchedBlock sb: sbs){
             SBRank rank = new SBRank();
@@ -71,6 +72,7 @@ public class ScienceGradeRanker implements SchedBlockRanker {
             ranks.put(rank, sb);
             logger.debug("rank: " + rank);
         }
+        printVerboseInfo(ranks.keySet(), arrConf.getId(), ut);
         return new ArrayList<SBRank>(ranks.keySet());
     }
 

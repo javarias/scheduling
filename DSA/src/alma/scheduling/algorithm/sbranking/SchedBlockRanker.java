@@ -21,12 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockRanker.java,v 1.4 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: SchedBlockRanker.java,v 1.5 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
+import java.util.Date;
 import java.util.List;
 
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockRanker {
@@ -38,7 +40,7 @@ public interface SchedBlockRanker {
      * @param the list of SchedBlock to be ranked
      * @return the rank of each SchedBlock. 
      */
-    public List<SBRank> rank(List<SchedBlock> sbs);
+    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut);
 
     /**
      * 

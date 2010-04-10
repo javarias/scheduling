@@ -22,24 +22,30 @@
  * MA 02111-1307  USA
  *
 <<<<<<< FinalRanker.java
- * "@(#) $Id: FinalRanker.java,v 1.6 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.7 2010/04/10 00:12:35 javarias Exp $"
 =======
- * "@(#) $Id: FinalRanker.java,v 1.6 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.7 2010/04/10 00:12:35 javarias Exp $"
 >>>>>>> 1.5
  */
 package alma.scheduling.algorithm.sbranking;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
-public class FinalRanker implements SchedBlockRanker {
+public class FinalRanker extends AbstractBaseRanker {
+
+    public FinalRanker(String rankerName) {
+        super(rankerName);
+    }
 
     private static Logger logger = LoggerFactory.getLogger(FinalRanker.class);
     
@@ -68,12 +74,12 @@ public class FinalRanker implements SchedBlockRanker {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<SBRank> rank(List<SchedBlock> sbs) {
+    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut) {
         ranks.clear();
         List<SBRank>[] results = new List[rankers.size()]; // for each ranker, a list over the sbs
         int i = 0;
         for(SchedBlockRanker r: rankers){
-            results[i] = r.rank(sbs);
+            results[i] = r.rank(sbs, arrConf, ut);
             i++;
         }
         for(i = 0; i < sbs.size(); i++){
@@ -86,7 +92,8 @@ public class FinalRanker implements SchedBlockRanker {
             rank.setRank(score);
             logger.debug("rank: " + rank);
             ranks.put(rank, sbs.get(i));
-        }
+        }    
+        printVerboseInfo(ranks.keySet(), arrConf.getId(), ut);
         return new ArrayList<SBRank>(ranks.keySet());
     }
 

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFullSelector.java,v 1.6 2010/04/07 21:41:58 javarias Exp $"
+ * "@(#) $Id: WeatherFullSelector.java,v 1.7 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -72,9 +72,7 @@ public class WeatherFullSelector extends AbstractBaseSelector {
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
         Collection<SchedBlock> sbs = select();
-        if (verboseLvl != VerboseLevel.NONE)
-            System.out.println("[" + ut.toString() + "]"
-                    + getVerboseLine(sbs, arrConf.getId()));
+        printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }
 

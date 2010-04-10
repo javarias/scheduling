@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.4 2010/03/25 16:43:16 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.5 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -37,8 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
+import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -50,6 +53,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 
     private SchedBlockRanker ranker;
     private Collection<SchedBlockSelector> selectors;
+    private Collection<ModelUpdater> updaters;
     private ArrayConfiguration array;
     /**
      * Stores the current SBs selected from selectors
@@ -61,34 +65,32 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         sbs =  new HashMap<Long, SchedBlock>();
     }
 
-    public SchedBlockRanker getRanker() {
-        return ranker;
-    }
-
     public void setRanker(SchedBlockRanker ranker) {
         this.ranker = ranker;
     }
 
-    public Collection<SchedBlockSelector> getSelectors() {
-        return selectors;
-    }
-
-    /* (non-Javadoc)
-     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#setSelectors(java.util.Collection)
-     */
     public void setSelectors(Collection<SchedBlockSelector> selectors) {
         this.selectors = selectors;
+    }
+    
+    public void setUpdaters(Collection<ModelUpdater> updaters) {
+        this.updaters = updaters;
     }
 
     public SchedBlock getSelectedSchedBlock(){
 	    return ranker.getBestSB(ranks);
 	}
 	
+    public void rankSchedBlocks(){
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        rankSchedBlocks(calendar.getTime());
+    }
+    
 	/* (non-Javadoc)
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#rankSchedBlocks()
      */
-	public void rankSchedBlocks(){
-	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()));
+	public void rankSchedBlocks(Date ut){
+	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()), array, ut);
 	}
 	
 
@@ -153,8 +155,10 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#updateModel()
      */
 	@Transactional
-	public void updateModel(){
-	    
+	public void updateModel(Date ut){
+	    for(ModelUpdater updater: updaters)
+	        if (updater.needsToUpdate(ut)) 
+	            updater.update(ut);
 	}
 
     @Override
@@ -165,6 +169,13 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     @Override
     public void setArray(ArrayConfiguration arrConf) {
         this.array =  arrConf;
+    }
+
+    @Override
+    public void setVerboseLevel(VerboseLevel verboseLvl) {
+        AbstractBaseSelector.setVerboseLevel(verboseLvl);
+        AbstractBaseRanker.setVerboseLevel(verboseLvl);
+        
     }
 	
 }

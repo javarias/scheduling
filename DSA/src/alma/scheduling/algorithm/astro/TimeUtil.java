@@ -21,10 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.2 2010/03/09 01:52:15 rhiriart Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.3 2010/04/10 00:12:35 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -35,6 +37,9 @@ import org.slf4j.LoggerFactory;
 public class TimeUtil {
 
     private static Logger logger = LoggerFactory.getLogger(TimeUtil.class);
+    
+    private final static DateFormat format = 
+        new SimpleDateFormat("'['yyyy-MM-dd'T'HH:mm:ss'] '");
 
     public static double getJulianDate(Date ut) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
@@ -181,6 +186,10 @@ public class TimeUtil {
     
     public static double toDecimalHours(int hours, int minutes, double seconds) {
         return hours + ( minutes + ( seconds / 60.0 ) ) / 60.0;
+    }
+
+    public static String getUTString(Date ut) {
+        return format.format(ut);
     }
     
 }

@@ -1,8 +1,11 @@
 package alma.scheduling.algorithm.sbselection;
 
 import java.util.Collection;
+import java.util.Date;
 
 import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.algorithm.astro.TimeUtil;
+import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 
@@ -17,6 +20,14 @@ public abstract class AbstractBaseSelector implements SchedBlockSelector {
     
     public static void setVerboseLevel(VerboseLevel lvl){
         verboseLvl = lvl;
+    }
+    
+    protected void printVerboseInfo(Collection<SchedBlock> sbs,
+            Long arrId, Date ut) {
+        if (verboseLvl != VerboseLevel.NONE){
+            System.out.println(TimeUtil.getUTString(ut)
+                    + getVerboseLine(sbs, arrId));
+        }
     }
     
     /**

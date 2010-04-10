@@ -65,9 +65,7 @@ public class ArrayConfigurationSelector extends AbstractBaseSelector{
         }
         double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000 * 60 * 60);
         Collection<SchedBlock> sbs = sbDao.findSchedBlocksByEstimatedExecutionTime(remaningTime);
-        if (verboseLvl != VerboseLevel.NONE)
-            System.out.println("[" + ut.toString() + "]"
-                    + getVerboseLine(sbs, arrConf.getId()));
+        printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }
     
