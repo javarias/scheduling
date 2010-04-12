@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.9 2010/04/05 19:53:02 rhiriart Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.10 2010/04/12 20:53:35 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
@@ -75,6 +75,9 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
             config.setArrayCenterLatitude(xmlConfig.getArrayCenterLatitude());
             config.setArrayCenterLongitude(xmlConfig.getArrayCenterLongitude());
             config.setMaxWindSpeed(xmlConfig.getMaxWindSpeed());
+            config.setGradeAPercent(xmlConfig.getGradeAPercent());
+            config.setGradeBPercent(xmlConfig.getGradeBPercent());
+            config.setGradeCPercent(xmlConfig.getGradeCPercent());            
             return config;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -34,7 +34,8 @@ public class ObsProjectTest extends TestCase {
         try {
             tx = session.beginTransaction();
             ObsProject prj = new ObsProject();
-            prj.setAssignedPriority(1);
+            prj.setScienceScore(3.14f);
+            prj.setScienceRank(10);
             prj.setPrincipalInvestigator("me");
             prj.setStatus("ready");
             session.save(prj);
@@ -50,13 +51,15 @@ public class ObsProjectTest extends TestCase {
         try {
             tx = session.beginTransaction();
             ObsProject prj = new ObsProject();
-            prj.setAssignedPriority(1);
+            prj.setScienceScore(3.14f);
+            prj.setScienceRank(10);
             prj.setPrincipalInvestigator("me");
             prj.setStatus("ready");
             SchedBlock sb = new SchedBlock();
             sb.setPiName("me");
             sb.setWeatherConstraints(new WeatherConstraints(0.0, 0.0, 0.0, 0.0));
             prj.setObsUnit(sb);
+            sb.setProject(prj);
             session.save(prj);
             tx.commit();
         } catch(Exception ex) {

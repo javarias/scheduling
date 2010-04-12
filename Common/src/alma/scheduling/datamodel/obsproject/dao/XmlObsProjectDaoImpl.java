@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.13 2010/04/05 19:53:03 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.14 2010/04/12 20:53:35 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -135,7 +135,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
                     alma.scheduling.input.obsproject.generated.ObsProject.unmarshalObsProject(new FileReader(prjFile));
                 ObsProject prj = new ObsProject();
-                prj.setAssignedPriority(xmlPrj.getAssignedPriority());
+                prj.setScienceScore(xmlPrj.getScientificScore());
+                prj.setScienceRank(xmlPrj.getScientificRank());
                 prj.setPrincipalInvestigator(xmlPrj.getPrincipalInvestigator());
                 prj.setStatus("ready");
                 alma.scheduling.input.obsproject.generated.ObsUnitSetT xmlObsUnitSet =
@@ -213,7 +214,6 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 ou.setArrayRequested(ArrayType.valueOf(sbControl.getArrayRequested().toString()));
                 ou.setEstimatedExecutionTime(sbControl.getEstimatedExecutionTime());
                 ou.setMaximumTime(sbControl.getMaximumTime());
-                ou.setTacPriority(sbControl.getTacPriority());
                 schedBlock.setObsUnitControl(ou);
                 SchedBlockControl sbc = new SchedBlockControl();
                 sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
@@ -275,7 +275,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
             new alma.scheduling.input.obsproject.generated.ObsProject();
         
-        xmlPrj.setAssignedPriority(prj.getAssignedPriority());
+        xmlPrj.setScientificScore(prj.getScienceScore());
+        xmlPrj.setScientificRank(prj.getScienceRank());
         xmlPrj.setPrincipalInvestigator(prj.getPrincipalInvestigator());
         ObsUnit obsUnit = prj.getObsUnit();
         xmlPrj.setObsUnitSet((alma.scheduling.input.obsproject.generated.ObsUnitSetT) getXmlObsUnit(obsUnit));
@@ -394,7 +395,6 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             SchedBlockControl sbCtrl = sb.getSchedBlockControl();
             SchedBlockControlT xmlSbCtrl = new SchedBlockControlT();
             xmlSbCtrl.setArrayRequested(ArrayTypeT.TWELVE_M);
-            xmlSbCtrl.setTacPriority(ouCtrl.getTacPriority());
             xmlSbCtrl.setEstimatedExecutionTime(ouCtrl.getEstimatedExecutionTime());
             xmlSbCtrl.setIndefiniteRepeat(sbCtrl.getIndefiniteRepeat());
             xmlSbCtrl.setMaximumTime(ouCtrl.getMaximumTime());

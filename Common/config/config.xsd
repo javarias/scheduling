@@ -12,6 +12,9 @@
                 <xs:element name="ArrayCenterLatitude" type="xs:double" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="ArrayCenterLongitude" type="xs:double" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="MaxWindSpeed" type="xs:double" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="GradeAPercent" type="xs:float" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="GradeBPercent" type="xs:float" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="GradeCPercent" type="xs:float" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

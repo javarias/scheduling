@@ -4,7 +4,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="PrincipalInvestigator" type="xs:string"/>
-                <xs:element name="AssignedPriority" type="xs:int"/>
+                <xs:element name="ScientificScore" type="xs:float"/>
+                <xs:element name="ScientificRank" type="xs:int"/>
                 <xs:element name="ObsUnitSet" type="ObsUnitSetT"/>
             </xs:sequence>
         </xs:complexType>
@@ -164,7 +165,6 @@
     			</xs:annotation>
     		</xs:element>
     		<xs:element name="ArrayRequested" type="ArrayTypeT" maxOccurs="1"/>
-    		<xs:element name="TacPriority" type="xs:int" maxOccurs="1"/>
     		<xs:element name="IndefiniteRepeat" type="xs:boolean" maxOccurs="1"/>
     	</xs:sequence>
     </xs:complexType>

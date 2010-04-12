@@ -10,6 +10,10 @@
         </id>
         <property name="nextStepTime" column="NEXT_STEP_TIME" type="timestamp" not-null="false"/>
         <property name="simulationStartTime" column="SIM_START_TIME" type="timestamp" not-null="false"/>
-	</class>
+        
+        <property name="gradeAPercent" column="GRADE_A_PERCENT" type="float" not-null="false"/>
+        <property name="gradeBPercent" column="GRADE_B_PERCENT" type="float" not-null="false"/>
+        <property name="gradeCPercent" column="GRADE_C_PERCENT" type="float" not-null="false"/>
+    </class>
 	
 </hibernate-mapping>    

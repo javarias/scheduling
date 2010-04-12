@@ -28,7 +28,7 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
     }
     
     /**
-     * Get the current Configuration, merging date from the XML input file
+     * Get the current Configuration, merging data from the XML input file
      * that is not kept in the database with some dynamic data that is
      * updated there.
      */
@@ -40,13 +40,16 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         Query query = getSession().createQuery("from Configuration as config"
                 + " order by config.lastLoad desc");
         query.setMaxResults(1);
-        if(query.list().size() == 0) {
+        if (query.list().size() == 0) {
             config.setLastLoad(null);
         } else {
-            Configuration conf = (Configuration) query.list().get(0);
-            config.setLastLoad(conf.getLastLoad());
-            config.setNextStepTime(conf.getNextStepTime());
-            config.setSimulationStartTime(conf.getSimulationStartTime());
+            Configuration dbConf = (Configuration) query.list().get(0);
+            config.setLastLoad(dbConf.getLastLoad());
+            config.setNextStepTime(dbConf.getNextStepTime());
+            config.setSimulationStartTime(dbConf.getSimulationStartTime());
+            config.setGradeAPercent(dbConf.getGradeAPercent());
+            config.setGradeBPercent(dbConf.getGradeBPercent());
+            config.setGradeCPercent(dbConf.getGradeCPercent());
         }
         return config;
     }

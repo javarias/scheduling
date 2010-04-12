@@ -21,20 +21,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.3 2010/03/17 20:24:50 rhiriart Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.4 2010/04/12 20:53:35 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 public class ObsProject {
 
+    /** Surrogate identifier */
     private Long Id;
     
+    /**
+     * The principal investigator (PI).
+     * <P>
+     * SchedBlocks are associated with an Executive by means of the PI
+     * membership.
+     */
     private String principalInvestigator;
     
-    private Integer assignedPriority;
+    /**
+     * Scientific score, assigned by the different ALMA Project Review
+     * Commitees (APRC).
+     * <P>
+     * The APRCs are specialized on different scientific fields
+     * (galactic, extra-galactic, etc.). Scores assigned by different
+     * APRCs to different projects could collide. In order to construct
+     * a totally ordered list of ObsProjects, these collisions needs to be
+     * resolved, which is done by means of the scienceRank, assigned by a
+     * central commitee.
+     */
+    private Float scienceScore;
     
+    /**
+     * Scientific Rank. The rank applies a total order over the set
+     * of ObsProjects (for an Observing Season, I guess).
+     */
+    private Integer scienceRank;
+    
+    /** The ObsProject status */
     private String status;
     
+    /**
+     * The Observation Unit, which could be a SchedBlock, or a set of SchedBlocks, 
+     * or Program.
+     */
     private ObsUnit obsUnit;
     
     /**
@@ -43,8 +72,12 @@ public class ObsProject {
      */
     private Double totalExecutionTime;
     
+    // --- constructors ---
+    
     public ObsProject() { }
 
+    // --- setters/getters ---
+    
     public Long getId() {
         return Id;
     }
@@ -59,14 +92,6 @@ public class ObsProject {
 
     public void setPrincipalInvestigator(String principalInvestigator) {
         this.principalInvestigator = principalInvestigator;
-    }
-
-    public Integer getAssignedPriority() {
-        return assignedPriority;
-    }
-
-    public void setAssignedPriority(Integer assignedPriority) {
-        this.assignedPriority = assignedPriority;
     }
 
     public String getStatus() {
@@ -91,5 +116,21 @@ public class ObsProject {
 
     public void setTotalExecutionTime(Double totalExecutionTime) {
         this.totalExecutionTime = totalExecutionTime;
+    }
+
+    public Float getScienceScore() {
+        return scienceScore;
+    }
+
+    public void setScienceScore(Float scienceScore) {
+        this.scienceScore = scienceScore;
+    }
+
+    public Integer getScienceRank() {
+        return scienceRank;
+    }
+
+    public void setScienceRank(Integer scienceRank) {
+        this.scienceRank = scienceRank;
     }
 }

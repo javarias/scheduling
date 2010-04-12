@@ -24,7 +24,6 @@
             <property name="maximumTime" type="double" column="OBSUNIT_CTRL_MAX_TIME"/>
             <property name="estimatedExecutionTime" type="double" column="OBSUNIT_CTRL_EXEC_TIME"/>
             <property name="arrayRequested" type="ArrayType" column="OBSUNIT_CTRL_ARRAY_TYPE"/>
-            <property name="tacPriority" type="int" column="OBSUNIT_CTRL_TAC_PRIORITY"/>
         </component>
         
         <joined-subclass name="SchedBlock" table="SCHEDBLOCK" lazy="false">

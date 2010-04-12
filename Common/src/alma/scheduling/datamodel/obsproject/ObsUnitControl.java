@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnitControl.java,v 1.1 2010/03/05 16:42:29 rhiriart Exp $"
+ * "@(#) $Id: ObsUnitControl.java,v 1.2 2010/04/12 20:53:35 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -50,9 +50,6 @@ public class ObsUnitControl implements Updateable {
     /** The type of the array that has been requested */
     private ArrayType arrayRequested;
     
-    /** Priority assigned by the TAC */
-    private Integer tacPriority;
-
     public ObsUnitControl() {
         // nothing here yet
     }
@@ -99,13 +96,5 @@ public class ObsUnitControl implements Updateable {
 
     public void setArrayRequested(ArrayType arrayRequested) {
         this.arrayRequested = arrayRequested;
-    }
-
-    public Integer getTacPriority() {
-        return tacPriority;
-    }
-
-    public void setTacPriority(Integer tacPriority) {
-        this.tacPriority = tacPriority;
     }
 }

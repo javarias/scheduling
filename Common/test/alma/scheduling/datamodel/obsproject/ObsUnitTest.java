@@ -144,7 +144,6 @@ public class ObsUnitTest extends TestCase {
             ouc.setValidUntil(null);
             ouc.setMaximumTime(1.0);
             ouc.setEstimatedExecutionTime(0.5);
-            ouc.setTacPriority(10);
             ouc.setArrayRequested(ArrayType.TWELVE_M);
             sb.setObsUnitControl(ouc);
             SchedBlockControl sbc = new SchedBlockControl();
@@ -168,7 +167,8 @@ public class ObsUnitTest extends TestCase {
         try {
             tx = session.beginTransaction();
             ObsProject prj = new ObsProject();
-            prj.setAssignedPriority(1);
+            prj.setScienceScore(3.14f);
+            prj.setScienceRank(10);
             prj.setPrincipalInvestigator("me");
             prj.setStatus("ready");
             // a ObsUnitSet containing several SchedBlock
