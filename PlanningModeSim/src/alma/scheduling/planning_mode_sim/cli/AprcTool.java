@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.TimeZone;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -23,8 +20,8 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.SchedBlockExecutor;
+import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.algorithm.astro.TimeUtil;
-import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.dataload.CompositeDataLoader;
 import alma.scheduling.dataload.DataLoader;
@@ -49,51 +46,9 @@ import alma.scheduling.planning_mode_sim.controller.TimeHandler;
 public class AprcTool {
     
     private static Logger logger = LoggerFactory.getLogger(AprcTool.class);
-    
-    private class Runner implements Runnable {
-
-        private ApplicationContext ctx;
-        private Date time;
-        private DynamicSchedulingAlgorithm dsa;
-        private ArrayConfiguration arrCnf;
-        private SchedBlockExecutor sbExecutor;
-        private ResultComposer rc;
-        
-        public Runner(ApplicationContext ctx, Date time,
-                DynamicSchedulingAlgorithm dsa, ArrayConfiguration arrCnf,
-                SchedBlockExecutor sbExecutor, ResultComposer rc) {
-            this.ctx = ctx;
-            this.time = time;
-            this.dsa = dsa;
-            this.arrCnf = arrCnf;
-            this.sbExecutor = sbExecutor;
-            this.rc = rc;
-            rc.notifyArrayCreation(arrCnf);
-        }
-
-        @Override
-        public void run() {
-            while(true)
-                try {
-                    logger.info("updating DB");
-                    update(ctx, time);
-                    logger.info("selecting candidate SBs");
-                    dsa.selectCandidateSB();
-                    dsa.rankSchedBlocks();
-                    SchedBlock sb = dsa.getSelectedSchedBlock();
-                    time = sbExecutor.execute(sb, arrCnf, time);
-                    rc.notifySchedBlockStart(sb);
-                } catch (NoSbSelectedException e) {
-                    System.out.println("DSA for array " + arrCnf.getId().toString() + " finished -- No more suitable SBs to be scheduled");
-                    return;
-                }            
-        }
-        
-    }
-    
     private String workDir;
-    
     private ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
+    private VerboseLevel verboseLvl = null;
       
     private void help(){
         System.out.println("APRC Tool Command Line Interface");
@@ -118,7 +73,11 @@ public class AprcTool {
                     return argv[i].split("=");
                 String retval[] = new String[2];
                 retval[0]=argv[i];
-                retval[1]=argv[i+1];
+                try{
+                    retval[1]=argv[i+1];
+                } catch(ArrayIndexOutOfBoundsException ex){
+                    retval[1] = null;
+                }
                 return retval;
             }
         }
@@ -223,7 +182,7 @@ public class AprcTool {
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
        // Date time = calendar.getTime(); // initial time is now, it should be configurable
         Date time = execDao.getCurrentSeason().getStartDate(); //The start time is the start Time of the current Season
-        logger.debug("start time is " + time);
+        System.out.println(TimeUtil.getUTString(time) + "Starting Simulation");
         Date stopTime = execDao.getCurrentSeason().getEndDate();
         setPreconditions(ctx, new Date());
         String[] dsaNames = ctx.getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
@@ -294,22 +253,24 @@ public class AprcTool {
         while(timesToCheck.size() > 0){
             TimeEvent ev = timesToCheck.remove();
             logger.info("updating DB");
-            update(ctx, time);
             //Change the current simulation time to event time
             time = ev.getTime();
             switch (ev.getType()){
             case ARRAY_CREATION:
                 DynamicSchedulingAlgorithm dsa;
-                logger.info("Simulated Time [" + time.toString() + 
-                        "] Array " + ev.getArray().getId() + " created");
+                System.out.println(TimeUtil.getUTString(time) + 
+                        "Array " + ev.getArray().getId() + " created");
                 rc.notifyArrayCreation(ev.getArray());
                 dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
+                dsa.setVerboseLevel(verboseLvl);
                 dsa.setArray(ev.getArray());
                 arraysCreated.put(ev.getArray(), dsa);
-                logger.info("selecting candidate SBs for Array: " + ev.getArray().getId());
+                dsa.updateModel(time);
+                System.out.println(TimeUtil.getUTString(time) + 
+                        "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
                     dsa.selectCandidateSB(time);
-                    dsa.rankSchedBlocks();
+                    dsa.rankSchedBlocks(time);
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     rc.notifySchedBlockStart(sb);
@@ -327,19 +288,22 @@ public class AprcTool {
                 break;
             case ARRAY_DESTRUCTION:
                 //notify the destruction??
-                logger.info("Simulated Time[" + time.toString() + 
-                        "] Array " + ev.getArray().getId() + " deleted");
+                System.out.println(TimeUtil.getUTString(time) + "Array Id: " + 
+                        ev.getArray().getId() + " destroyed");
                 arraysCreated.remove(ev.getArray());
                 //freeArrays.remove(ev.getArray());
                 break;
             case SCHEDBLOCK_EXECUTION_FINISH:
                 dsa = arraysCreated.get(ev.getArray());
-                logger.info("Simulated Time[" + time.toString() + 
-                        "] selecting candidate SBs for Array: " + ev.getArray().getId());
+                System.out.println(TimeUtil.getUTString(time) + 
+                        "Finishing Execution of SchedBlock Id: " + ev.getSb().getId());
+                dsa.updateModel(time);
+                System.out.println(TimeUtil.getUTString(time) + 
+                        "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
                     //The array is free now it could be scheduled a new SB
                     dsa.selectCandidateSB(time);
-                    dsa.rankSchedBlocks();
+                    dsa.rankSchedBlocks(time);
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     rc.notifySchedBlockStart(sb);
@@ -434,9 +398,9 @@ public class AprcTool {
     private Date step(ApplicationContext ctx, Date time, DynamicSchedulingAlgorithm dsa,
             ArrayConfiguration arrCnf, SchedBlockExecutor sbExecutor)
         throws NoSbSelectedException {
-        update(ctx, time);
+        dsa.updateModel(time);
         dsa.selectCandidateSB();
-        dsa.rankSchedBlocks();
+        dsa.rankSchedBlocks(time);
         SchedBlock sb = dsa.getSelectedSchedBlock();
         time = sbExecutor.execute(sb, arrCnf, time);
         return time;
@@ -450,16 +414,6 @@ public class AprcTool {
             throw new IllegalArgumentException("There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
         DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx.getBean(dsaNames[0]);
         return dsa;
-    }
-    
-    private void update(ApplicationContext ctx, Date time) {
-        String[] updaters = ctx.getBeanNamesForType(ModelUpdater.class);
-        for(int i = 0; i < updaters.length; i++) {
-            ModelUpdater updater = (ModelUpdater) ctx.getBean(updaters[i]);
-            if (updater.needsToUpdate(time)) {
-                updater.update(time);
-            }
-        }
     }
     
     private void setPreconditions(ApplicationContext ctx, Date time) {
@@ -493,6 +447,18 @@ public class AprcTool {
             }
         }
         System.out.println("Using directory: " + workDir);
+        String[] verbose = getOpt(args, "-vvv");
+        if(verboseLvl == null && verbose != null)
+            verboseLvl = VerboseLevel.HIGH;
+        verbose = getOpt(args, "-vv");
+        if(verboseLvl == null && verbose != null)
+            verboseLvl = VerboseLevel.MEDIUM;
+        verbose = getOpt(args, "-v");
+        if(verboseLvl == null && verbose != null)
+            verboseLvl = VerboseLevel.LOW;
+        if(verboseLvl == null)
+            verboseLvl = VerboseLevel.NONE;
+        System.out.println("Verbosity Level: " + verboseLvl);
         Configuration config = xmlConfigDao.getConfiguration();
         if(args[0].compareTo("createWorkDir")==0){
             try{
