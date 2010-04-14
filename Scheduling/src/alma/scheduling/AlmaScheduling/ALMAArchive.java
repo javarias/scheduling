@@ -121,7 +121,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.99 2010/03/30 17:52:08 dclarke Exp $
+ * @version $Id: ALMAArchive.java,v 1.100 2010/04/14 21:01:49 rhiriart Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1896,23 +1896,7 @@ public class ALMAArchive implements Archive {
     		String[] sbRunnableStates) throws SchedulingException {
         logger.info("entering determineRunnablesByStatus");
         
-        if (lastProjectStatusQuery > 0) {
-            IDLArrayTime end = new IDLArrayTime(-1);
-            try {
-                StateChangeData[] stateChanges =
-                    stateSystemComp.findStateChangeRecords(
-                            new IDLArrayTime(lastProjectStatusQuery),
-                            end, "", "", "", "PRJ");
-                logger.finer("stateChanges.length: " + stateChanges.length);
-                for (StateChangeData sc : stateChanges) {
-                    logger.finer("domainEntityId: " + sc.domainEntityId);
-                    logger.finer("domainEntityId: " + sc.domainEntityState);
-                    logger.finer("domainEntityId: " + sc.statusEntityId);
-                }
-            } catch (StateIOFailedEx e) {
-                e.printStackTrace();
-            }
-        } else {
+        if (lastProjectStatusQuery < 0) {
             lastProjectStatusQuery = System.currentTimeMillis();
             logger.info("new lastProjectStatusQuery: " + (new Date(lastProjectStatusQuery)));
         }
