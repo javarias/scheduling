@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.7 2010/03/06 01:25:06 rhiriart Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.8 2010/04/14 17:22:12 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.AlgorithmPart;
 import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
@@ -129,6 +130,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
     }
 
     @Override
+    @Transactional
     public void update(Date date) {
         logger.trace("entering");
         logger.debug("updating for time " + date);

@@ -55,7 +55,8 @@ public class ExecutiveRankerTest extends TestCase {
         SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 
         ObsProject prj = new ObsProject();
-        prj.setAssignedPriority(1);
+        prj.setScienceRank(1);
+        prj.setScienceScore(new Float(1.0));
         prj.setPrincipalInvestigator("me");
         prj.setStatus("ready");
         

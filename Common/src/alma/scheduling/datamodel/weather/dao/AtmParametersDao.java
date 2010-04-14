@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmParametersDao.java,v 1.2 2010/04/05 19:53:03 rhiriart Exp $"
+ * "@(#) $Id: AtmParametersDao.java,v 1.3 2010/04/14 17:22:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import alma.scheduling.datamodel.weather.AtmParameters;
@@ -38,5 +39,7 @@ public interface AtmParametersDao {
     public Double[] getEnclosingPwvInterval(Double pwv);
     
     public AtmParameters[] getEnclosingIntervalForPwvAndFreq(Double pwv, Double freq);
+    
+    public List<AtmParameters> getAllAtmParameters();
 
 }

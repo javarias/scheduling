@@ -265,12 +265,18 @@ public class AprcTool {
                 dsa.setVerboseLevel(verboseLvl);
                 dsa.setArray(ev.getArray());
                 arraysCreated.put(ev.getArray(), dsa);
+                System.out.println("Before update " + new Date());
                 dsa.updateModel(time);
+                System.out.println("After update " + new Date());
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
+                    System.out.println("Before selectors " + new Date());
                     dsa.selectCandidateSB(time);
+                    System.out.println("After selectors " + new Date());
+                    System.out.println("Before rankers " + new Date());
                     dsa.rankSchedBlocks(time);
+                    System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     rc.notifySchedBlockStart(sb);
@@ -282,6 +288,7 @@ public class AprcTool {
                     sbEndEv.setTime(d);
                     timesToCheck.add(sbEndEv);
                 } catch (NoSbSelectedException ex){
+                    System.out.println("After selectors " + new Date());
                     System.out.println("DSA for array " + ev.getArray().getId().toString() + " finished -- No more suitable SBs to be scheduled");
                     //freeArrays.add(ev.getArray());
                 }
@@ -297,13 +304,19 @@ public class AprcTool {
                 dsa = arraysCreated.get(ev.getArray());
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Finishing Execution of SchedBlock Id: " + ev.getSb().getId());
+                System.out.println("Before update " + new Date());
                 dsa.updateModel(time);
+                System.out.println("After update " + new Date());
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
                     //The array is free now it could be scheduled a new SB
+                    System.out.println("Before selectors " + new Date());
                     dsa.selectCandidateSB(time);
+                    System.out.println("After selectors " + new Date());
+                    System.out.println("Before rankers " + new Date());
                     dsa.rankSchedBlocks(time);
+                    System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     rc.notifySchedBlockStart(sb);
@@ -315,6 +328,7 @@ public class AprcTool {
                     sbEndEv.setTime(d);
                     timesToCheck.add(sbEndEv);
                 } catch (NoSbSelectedException ex){
+                    System.out.println("After selectors " + new Date());
                     System.out.println("DSA for array " + ev.getArray().getId().toString() + " No suitable SBs to be scheduled");
                     //freeArrays.add(ev.getArray());
                 }
@@ -387,6 +401,7 @@ public class AprcTool {
             configDao.updateSimStartTime(time);
         }
         DynamicSchedulingAlgorithm dsa = getDSA(ctx);
+        dsa.setVerboseLevel(verboseLvl);
         try {
             time = step(ctx, time, dsa, arrCnf, sbExecutor);
         } catch (NoSbSelectedException e) {
@@ -458,7 +473,7 @@ public class AprcTool {
             verboseLvl = VerboseLevel.LOW;
         if(verboseLvl == null)
             verboseLvl = VerboseLevel.NONE;
-        System.out.println("Verbosity Level: " + verboseLvl);
+        System.out.println("Verbose Level: " + verboseLvl);
         Configuration config = xmlConfigDao.getConfiguration();
         if(args[0].compareTo("createWorkDir")==0){
             try{

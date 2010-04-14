@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.14 2010/04/12 20:53:35 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.15 2010/04/14 17:22:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -143,6 +143,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlPrj.getObsUnitSet();
                 ObsUnitSet obsUnitSet = createObsUnitSet(xmlObsUnitSet, xmlPrj.getPrincipalInvestigator());
                 prj.setObsUnit(obsUnitSet);
+                obsUnitSet.setProject(prj);
                 retVal.add(prj);
             } catch (MarshalException e) {
                 e.printStackTrace();

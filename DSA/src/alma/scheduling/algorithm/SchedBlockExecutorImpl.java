@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.2 2010/03/18 06:27:15 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.3 2010/04/14 17:22:12 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -138,8 +138,8 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         }
         schedBlockDao.saveOrUpdate(schedBlock);
         
-        long executionTime = (long) schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue()
-            * 3600 * 1000;
+        long executionTime = (long) (schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue()
+            * 3600 * 1000);
         Date nextExecutionTime = new Date(ut.getTime() + executionTime);
         return nextExecutionTime;
     }
