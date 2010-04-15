@@ -143,11 +143,14 @@ public class StatusChecker extends ComponentClient {
     }
     
     public void check(String prjStatusId) {
+    	Profiler prof = new Profiler(logger);
         Transaction tx = session.beginTransaction();
         List prjStatusPFs;
         if (prjStatusId == null) {
+        	prof.start("retrieving all ObsProjectStatus");
             prjStatusPFs =
             session.createQuery("from ObsProjectStatusPF").list();
+        	prof.end();
         } else {
             String query = String.format("from ObsProjectStatusPF where statusEntityId = '%s'", prjStatusId);
             prjStatusPFs = session.createQuery(query).list();
@@ -161,8 +164,10 @@ public class StatusChecker extends ComponentClient {
             reporter.startProjectStatus(prjStatusPF.getProjectStatusId());
             
             try {
+            	prof.start("unmarshalling project status");
                 ProjectStatus prjStatus =
                     ProjectStatus.unmarshalProjectStatus(new StringReader(prjStatusPF.getXml()));
+                prof.end();
                 
                 OUSStatus rootOUSStatus = getOUSStatus(prjStatus.getObsProgramStatusRef());
                 List<SBStatus> sbStatuses = new ArrayList<SBStatus>();
@@ -185,17 +190,24 @@ public class StatusChecker extends ComponentClient {
     }
     
     private OUSStatus getOUSStatus(OUSStatusRefT ref) throws Exception {
+    	Profiler prof = new Profiler(logger);
+    	prof.start("retrieving OUSStatus");
         String query = String.format("from OUSStatusPF where statusEntityId = '%s'",
                 ref.getEntityId());
         OUSStatusPF ousStatusPF =
             (OUSStatusPF) session.createQuery(query).uniqueResult();
+        prof.end();
         if (ousStatusPF == null)
             throw new NullPointerException(ref.getEntityId() + " not found in database");
+        prof.start("unmarshalling OUSStatus");
         OUSStatus ousStatus = OUSStatus.unmarshalOUSStatus(new StringReader(ousStatusPF.getXml()));
+        prof.end();
         return ousStatus;
     }
     
     private void getSBStatuses(OUSStatus ousStatus, List<SBStatus> sbStatuses) throws XMLException {
+    	Profiler prof = new Profiler(logger);
+    	prof.start("getting SBStatuses");
         SBStatusRefT[] sbStatusRefs = ousStatus.getOUSStatusChoice().getSBStatusRef();
         for (int i = 0; i < sbStatusRefs.length; i++) {
             try {
@@ -226,6 +238,7 @@ public class StatusChecker extends ComponentClient {
                 reporter.endOUSStatus(null, "[" + ex +"]");                
             }
         }
+        prof.end();
     }
     
     private SBStatus getSBStatus(SBStatusRefT ref) throws Exception {
@@ -240,16 +253,26 @@ public class StatusChecker extends ComponentClient {
     }
 
     private ObsProject getObsProject(ObsProjectRefT ref) throws Exception {
+    	Profiler prof = new Profiler(logger);
         ObsProject project = null;
+        prof.start("retrieving ObsProject");
         XmlEntityStruct xmlent = archOperational.retrieveDirty(ref.getEntityId());
+        prof.end();
+        prof.start("deserializing ObsProject");
         project = (ObsProject) entityDeserializer.deserializeEntity(xmlent, ObsProject.class);
+        prof.end();
         return project;
     }
     
     private SchedBlock getSchedBlock(SchedBlockRefT ref) throws Exception {
+    	Profiler prof = new Profiler(logger);
         SchedBlock schedblock = null;
+        prof.start("retrieving SchedBlock");
         XmlEntityStruct xmlent = archOperational.retrieveDirty(ref.getEntityId());
+        prof.end();
+        prof.start("deserializing SchedBlock");
         schedblock = (SchedBlock) entityDeserializer.deserializeEntity(xmlent, SchedBlock.class);
+        prof.end();
         return schedblock;        
     }
     
