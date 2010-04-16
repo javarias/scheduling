@@ -10,6 +10,8 @@ import org.hibernate.Session;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
+import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -71,6 +73,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         schedBlock.getSchedulingConstraints().getRepresentativeTarget().getSource().getCoordinates();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public List<SchedBlock> findSchedBlocksWithoutTooMuchTsysVariation(
             double variation) {
@@ -80,5 +83,43 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
         return schedBlocks;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SchedBlock> findSchedBlocksWithEnoughTimeInExecutive(
+            Executive exec, ObservingSeason os) throws NullPointerException {
+        if (exec == null)
+            throw new NullPointerException("Executive parameter cannot be null");
+        if (os == null)
+            throw new NullPointerException(
+                    "Observing Season parameter cannot be null");
+        Query query = null;
+        query = getSession()
+                .createQuery(
+                        "select sum(ets.timeSpent) from ExecutiveTimeSpent ets "
+                                + "where ets.executive = ? and ets.observingSeason = ?");
+        query.setParameter(0, exec);
+        query.setParameter(1, os);
+        Double timeSpent = (Double) query.uniqueResult();
+        if(timeSpent == null)
+            timeSpent = new Double(0.0);
+        query = getSession()
+                .createQuery(
+                        "select sb from SchedBlock sb, PI pi join pi.PIMembership pim, "
+                                + "Executive e join e.executivePercentage ep "
+                                + "where sb.piName = pi.email and "
+                                + "pim.executive = ? and "
+                                + "ep.executive = ? and "
+                                + "ep.season = ? and "
+                                + "ep.totalObsTimeForSeason - sb.obsUnitControl.estimatedExecutionTime >= "
+                                + timeSpent.toString());
+        query.setParameter(0, exec);
+        query.setParameter(1, exec);
+        query.setParameter(2, os);
+        List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
+        return schedBlocks;
+    }
+    
+    
     
 }

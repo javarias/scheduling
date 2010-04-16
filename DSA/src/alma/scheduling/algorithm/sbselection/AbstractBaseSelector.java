@@ -21,6 +21,10 @@ public abstract class AbstractBaseSelector implements SchedBlockSelector {
     public static void setVerboseLevel(VerboseLevel lvl){
         verboseLvl = lvl;
     }
+ 
+    public String getSelectorName(){
+        return selectorName;
+    }
     
     protected void printVerboseInfo(Collection<SchedBlock> sbs,
             Long arrId, Date ut) {
@@ -56,7 +60,6 @@ public abstract class AbstractBaseSelector implements SchedBlockSelector {
         }
         return str;
     }
-    
     
 }
 

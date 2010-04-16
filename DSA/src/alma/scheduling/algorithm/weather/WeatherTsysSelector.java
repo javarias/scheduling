@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherTsysSelector.java,v 1.3 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: WeatherTsysSelector.java,v 1.4 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -32,7 +32,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SBRank.java,v 1.4 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: SBRank.java,v 1.5 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -88,7 +88,7 @@ public class SBRank implements Comparable<SBRank>{
 
     @Override
     public int compareTo(SBRank o) {
-        return (int) (this.getRank() - o.getRank());
+        return (int) (this.getRank() * 100000 - o.getRank() * 100000);
     }
     
 }

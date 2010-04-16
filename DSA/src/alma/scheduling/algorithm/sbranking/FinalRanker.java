@@ -22,9 +22,9 @@
  * MA 02111-1307  USA
  *
 <<<<<<< FinalRanker.java
- * "@(#) $Id: FinalRanker.java,v 1.7 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.8 2010/04/16 20:59:49 javarias Exp $"
 =======
- * "@(#) $Id: FinalRanker.java,v 1.7 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.8 2010/04/16 20:59:49 javarias Exp $"
 >>>>>>> 1.5
  */
 package alma.scheduling.algorithm.sbranking;
@@ -67,9 +67,9 @@ public class FinalRanker extends AbstractBaseRanker {
 
     @Override
     public SchedBlock getBestSB(List<SBRank> ranks) {
-        ArrayList<SBRank> ranksCopy = new ArrayList<SBRank>(ranks);
-        Collections.max(ranksCopy);
-        return this.ranks.get(Collections.max(ranksCopy));
+        SBRank best = Collections.max(ranks);
+        System.out.println(best.getId() + "," + this.ranks.get(best).getId() + "," + best.getRank());
+        return this.ranks.get(best);
     }
 
     @SuppressWarnings("unchecked")
@@ -92,9 +92,10 @@ public class FinalRanker extends AbstractBaseRanker {
             rank.setRank(score);
             logger.debug("rank: " + rank);
             ranks.put(rank, sbs.get(i));
-        }    
-        printVerboseInfo(ranks.keySet(), arrConf.getId(), ut);
-        return new ArrayList<SBRank>(ranks.keySet());
+        }
+        ArrayList<SBRank> retVal = new ArrayList<SBRank>(ranks.keySet());
+        printVerboseInfo(retVal, arrConf.getId(), ut);
+        return retVal;
     }
 
 }

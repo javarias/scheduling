@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.2 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.3 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.executive;
 
@@ -105,9 +105,14 @@ public class ExecutiveSelector extends AbstractBaseSelector {
     @Transactional(readOnly=true)
     public Collection<SchedBlock> select() throws NoSbSelectedException{
         logger.trace("entering");
-        calculateRemainingTime();
+ //       calculateRemainingTime();
         List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
-        List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
+        List<Executive>execs = execDao.getAllExecutive();
+        for(Executive e: execs){
+            List<SchedBlock> sbs = sbDao.findSchedBlocksWithEnoughTimeInExecutive(e, execDao.getCurrentSeason());
+            acceptedSbs.addAll(sbs);
+        }
+ /*       List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
         for(SchedBlock sb: sbs){
             //TODO: replace the next line with a new method defined in ExecutiveDAO
             PI pi = ((GenericDao)execDao).findById(PI.class, sb.getPiName());
@@ -119,7 +124,7 @@ public class ExecutiveSelector extends AbstractBaseSelector {
             String strCause = "Cannot get any SB valid to be ranked using " + this.toString();
             throw new NoSbSelectedException(strCause);
         }
-        logger.info("# SchedBlocks selected: " + acceptedSbs.size());
+ */       logger.info("# SchedBlocks selected: " + acceptedSbs.size());
         return acceptedSbs;
     }
 

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.6 2010/04/14 17:22:12 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.7 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -46,7 +46,7 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
         this.factor = factor;
     }
     
-    private HashMap<SBRank,SchedBlock> ranks;
+    private ArrayList<SBRank> ranks;
     
     /**
      * Create a new Science Grade Ranker
@@ -54,12 +54,12 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
      */
     public ScienceGradeRanker(String rankerName){
         super(rankerName);
-        ranks = new HashMap<SBRank, SchedBlock>();
+        ranks = new ArrayList<SBRank>();
     }
 
     @Override
     public SchedBlock getBestSB(List<SBRank> ranks) {
-        return this.ranks.get(Collections.max(ranks));
+        return null;
     }
 
     @Override
@@ -68,13 +68,12 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
         for(SchedBlock sb: sbs){
             SBRank rank = new SBRank();
             rank.setId(sb.getId());
-            //sb.getParent();
             rank.setRank(sb.getProject().getScienceScore());
-            ranks.put(rank, sb);
+            ranks.add(rank);
             logger.debug("rank: " + rank);
         }
-        printVerboseInfo(ranks.keySet(), arrConf.getId(), ut);
-        return new ArrayList<SBRank>(ranks.keySet());
+        printVerboseInfo(ranks, arrConf.getId(), ut);
+        return ranks;
     }
 
     @Override

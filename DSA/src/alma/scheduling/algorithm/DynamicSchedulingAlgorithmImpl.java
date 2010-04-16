@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.5 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.6 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -52,7 +52,8 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     private static Logger logger = LoggerFactory.getLogger(DynamicSchedulingAlgorithmImpl.class);
 
     private SchedBlockRanker ranker;
-    private Collection<SchedBlockSelector> selectors;
+    private Collection<SchedBlockSelector> preUpdateSelectors;
+    private Collection<SchedBlockSelector> postUpdateSelectors;
     private Collection<ModelUpdater> updaters;
     private ArrayConfiguration array;
     /**
@@ -69,8 +70,12 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         this.ranker = ranker;
     }
 
-    public void setSelectors(Collection<SchedBlockSelector> selectors) {
-        this.selectors = selectors;
+    public void setPostUpdateSelectors(Collection<SchedBlockSelector> postUpdateSelectors) {
+        this.postUpdateSelectors = postUpdateSelectors;
+    }
+    
+    public void setPreUpdateSelectors(Collection<SchedBlockSelector> preUpdateSelectors) {
+        this.preUpdateSelectors = preUpdateSelectors;
     }
     
     public void setUpdaters(Collection<ModelUpdater> updaters) {
@@ -92,11 +97,70 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	public void rankSchedBlocks(Date ut){
 	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()), array, ut);
 	}
-	
 
     @Override
+    @Transactional
     public void selectCandidateSB(Date ut) throws NoSbSelectedException {
         sbs.clear();
+        HashMap<Long, SchedBlock> pre = selectSBs(ut, preUpdateSelectors);
+        updateModel(ut, pre.values());
+        HashMap<Long, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
+        Collection<SchedBlock> min = null;
+        if(pre.size() > post.size())
+            min = post.values();
+        else
+            min = pre.values();
+        for(SchedBlock sb: min){
+            if(pre.get(sb.getId()) == null || post.get(sb.getId()) == null)
+                break;
+            sbs.put(sb.getId(), sb);
+        }
+    }
+	 /* (non-Javadoc)
+     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#selectCandidateSB()
+     */
+	public void selectCandidateSB() throws NoSbSelectedException{
+	    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+	    selectCandidateSB(calendar.getTime());
+	}
+	
+	
+	/* (non-Javadoc)
+     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#updateModel()
+     */
+	@Transactional
+	public void updateModel(Date ut, Collection<SchedBlock> filteredSBs){
+	    for(ModelUpdater updater: updaters)
+	        if (updater.needsToUpdate(ut)) 
+	            updater.update(ut, filteredSBs);
+	}
+	
+	@Transactional
+    public void updateModel(Date ut){
+        for(ModelUpdater updater: updaters)
+            if (updater.needsToUpdate(ut)) 
+                updater.update(ut);
+    }
+
+    @Override
+    public ArrayConfiguration getArray() {
+        return array;
+    }
+
+    @Override
+    public void setArray(ArrayConfiguration arrConf) {
+        this.array =  arrConf;
+    }
+
+    @Override
+    public void setVerboseLevel(VerboseLevel verboseLvl) {
+        AbstractBaseSelector.setVerboseLevel(verboseLvl);
+        AbstractBaseRanker.setVerboseLevel(verboseLvl);
+        
+    }
+	
+    private HashMap<Long, SchedBlock> selectSBs(Date ut, Collection<SchedBlockSelector> selectors) throws NoSbSelectedException{
+        HashMap<Long, SchedBlock> internal_sbs = new HashMap<Long, SchedBlock>();
         ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
             new ArrayList<HashMap<Long,SchedBlock>>();
         int i = 0;
@@ -131,51 +195,16 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
             }
             // Add to the selected sb if that sb was selected by all the others selectors
             if(verified)
-                sbs.put(sb.getId(), sb);
+                internal_sbs.put(sb.getId(), sb);
         }
-        if (sbs.isEmpty()){
+        if (internal_sbs.isEmpty()){
             logger.warn("DSA cannot continue if it doesn't have SBs to rank");
             String strCause = "Cannot get any SB valid to be ranked using ";
             for(SchedBlockSelector s: selectors)
                 strCause += s.toString() + " ";
             throw new NoSbSelectedException(strCause);
-        }
+        }   
         
+        return internal_sbs;
     }
-	 /* (non-Javadoc)
-     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#selectCandidateSB()
-     */
-	public void selectCandidateSB() throws NoSbSelectedException{
-	    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-	    selectCandidateSB(calendar.getTime());
-	}
-	
-	
-	/* (non-Javadoc)
-     * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#updateModel()
-     */
-	@Transactional
-	public void updateModel(Date ut){
-	    for(ModelUpdater updater: updaters)
-	        if (updater.needsToUpdate(ut)) 
-	            updater.update(ut);
-	}
-
-    @Override
-    public ArrayConfiguration getArray() {
-        return array;
-    }
-
-    @Override
-    public void setArray(ArrayConfiguration arrConf) {
-        this.array =  arrConf;
-    }
-
-    @Override
-    public void setVerboseLevel(VerboseLevel verboseLvl) {
-        AbstractBaseSelector.setVerboseLevel(verboseLvl);
-        AbstractBaseRanker.setVerboseLevel(verboseLvl);
-        
-    }
-	
 }

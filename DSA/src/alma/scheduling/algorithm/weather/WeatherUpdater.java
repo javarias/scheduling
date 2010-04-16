@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.8 2010/04/14 17:22:12 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.9 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -132,56 +132,68 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
     @Override
     @Transactional
     public void update(Date date) {
-        logger.trace("entering");
-        logger.debug("updating for time " + date);
-        
-        double latitude = configDao.getConfiguration().getArrayCenterLatitude();
-
-        // get current PWV
-        TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-        logger.info("temperature record: time = " + tr.getTime() + "; value = " + tr.getValue());
-        HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-        logger.info("humidity record: time = " + hr.getTime() + "; value = " + hr.getValue());        
-        double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
-
-        long deltaT = (long)( projTimeIncr * 3600.0 * 1000.0 ); // delta T in milliseconds
-        Date projDate = new Date(date.getTime() + deltaT);
-        TemperatureHistRecord ptr = weatherDao.getTemperatureForTime(projDate);
-        HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
-        double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected PWV, in mm
-        
         Collection<SchedBlock> sbs;
         try {
             sbs = selector.select();
         } catch (NoSbSelectedException e) {
             return;
         }
-        
+        update(date,sbs);
+    }
+
+    @Override
+    public void update(Date date, Collection<SchedBlock> sbs) {
+        logger.trace("entering");
+        logger.debug("updating for time " + date);
+
+        double latitude = configDao.getConfiguration().getArrayCenterLatitude();
+
+        // get current PWV
+        TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
+        logger.info("temperature record: time = " + tr.getTime() + "; value = "
+                + tr.getValue());
+        HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
+        logger.info("humidity record: time = " + hr.getTime() + "; value = "
+                + hr.getValue());
+        double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
+
+        long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
+                                                               // milliseconds
+        Date projDate = new Date(date.getTime() + deltaT);
+        TemperatureHistRecord ptr = weatherDao.getTemperatureForTime(projDate);
+        HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
+        double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected
+                                                                   // PWV, in mm
+
         for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
             SchedBlock sb = iter.next();
-            double frequency = sb.getSchedulingConstraints().getRepresentativeFrequency(); // GHz
-            Target target = sb.getSchedulingConstraints().getRepresentativeTarget();
+            double frequency = sb.getSchedulingConstraints()
+                    .getRepresentativeFrequency(); // GHz
+            Target target = sb.getSchedulingConstraints()
+                    .getRepresentativeTarget();
             FieldSource src = target.getSource();
             double decl = src.getCoordinates().getDec(); // degrees
-            
+
             double[] tmp = interpolateOpacityAndTemperature(pwv, frequency);
             double tau_zero = tmp[0];
             double Tatm = tmp[1];
-            double tsys = SystemTemperatureCalculator.getTsys(decl, latitude, frequency, tau_zero, Tatm);
+            double tsys = SystemTemperatureCalculator.getTsys(decl, latitude,
+                    frequency, tau_zero, Tatm);
             logger.info("tsys: " + tsys);
-            
+
             tmp = interpolateOpacityAndTemperature(ppwv, frequency);
             tau_zero = tmp[0];
             Tatm = tmp[1];
-            double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude, frequency, tau_zero, Tatm);
-            
+            double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude,
+                    frequency, tau_zero, Tatm);
+
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
             vars.setProjectedTsys(ptsys);
             vars.setProjectionTimeIncr(projTimeIncr);
             sb.setWeatherDependentVariables(vars);
-            schedBlockDao.saveOrUpdate(sb);            
-        }        
+            schedBlockDao.saveOrUpdate(sb);
+        }
     }
 
     // --- Internal functions ---
@@ -286,5 +298,6 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
      */
     private double interpolate(double x, double x1, double x2, double y1, double y2) {
         return y1 + ( y2 - y1 ) * ( x - x1 ) / ( x2 - x1 );
-    }    
+    }
+   
 }

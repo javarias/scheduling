@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.1 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.2 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.obsproject;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,7 @@ import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.FieldSourceDao;
 
 public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmPart {
@@ -113,6 +115,12 @@ public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmP
             sourceDao.saveOrUpdate(src);
         }
         hasUpdated = true;
+    }
+
+    @Override
+    public void update(Date date, Collection<SchedBlock> sbs) {
+        update(date);
+        
     }
 
     // --- Internal functions ---

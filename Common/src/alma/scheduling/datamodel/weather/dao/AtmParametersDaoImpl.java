@@ -38,7 +38,6 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
             retVal[1] = atmParamsCache[0][getPwvPosition(pwv)].getPWV();
         }
         else {
-            AtmParameters tmp = atmParamsCache[0][getPwvPosition(pwv)];
             retVal[0] = atmParamsCache[0][getPwvPosition(pwv)].getPWV();
             retVal[1] = atmParamsCache[0][getPwvPosition(pwv)].getPWV();
         }

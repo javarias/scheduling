@@ -21,15 +21,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ModelUpdater.java,v 1.4 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: ModelUpdater.java,v 1.5 2010/04/16 20:59:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.modelupd;
 
+import java.util.Collection;
 import java.util.Date;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface ModelUpdater {
     
     public boolean needsToUpdate(Date date);
     
     public void update(Date date);
+    
+    public void update(Date date, Collection<SchedBlock> sbs);
 }
