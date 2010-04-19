@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.6 2010/04/16 20:59:49 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.7 2010/04/19 22:24:12 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -167,6 +167,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         for(SchedBlockSelector s: selectors){
             selectedSbs.add(new HashMap<Long, SchedBlock>());
             try {
+            	//TODO: Nullpointer exception, as none sb is returned by s.select()
                 for(SchedBlock sb: s.select(ut, array))
                     selectedSbs.get(i).put(sb.getId(), sb);
             } catch (NoSbSelectedException e) {

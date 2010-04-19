@@ -18,6 +18,10 @@
         <property name="maintenanceTime" column="MAINTENANCE_TIME" type="double"/>
         <property name="operationTime" column="OPERATION_TIME" type="double"/>
         <property name="scientificTime" column="SCIENTIFIC_TIME" type="double"/>
+        <property name="obsSeasonEnd" column="OBS_SEASON_END" type="timestamp" />
+        <property name="obsSeasonStart" column="OBS_SEASON_START" type="timestamp" />
+        <property name="startSimDate" column="START_SIM_DATE" type="timestamp" />
+        <property name="stopSimDate" column="STOP_SIM_DATE" type="timestamp" />
         
 		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan">
 			<key column="RESULT_ID" />
@@ -35,9 +39,9 @@
 			<generator class="native"/>
 		</id>
 		
-		<property name="executionTime" type="double" column="EXECUTION_TIME" />
-		<property name="scienceRating" type="double" column="SCIENCE_RATING" />
+		<property name="assignedPriority" type="long" column="ASSIGNED_PRIORITY" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
+		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
 		<set name="affiliation" table="OUTPUT_AFFILIATION" cascade="save-update,lock, delete, delete-orphan">
 			<key column="OBSERVATION_PROJECT_ID" />
 			<one-to-many class="Affiliation" />
@@ -56,6 +60,7 @@
 		<property name="endDate" type="timestamp" column="END_DATE" />
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
 		<property name="mode" type="string" column="MODE"/>
+		<property name="representativeFrequency" type="double" column="REPRESENTATIVE_FREQUENCY"/>
 		<property name="startDate" type="timestamp" column="START_DATE" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="type" type="string" column="TYPE"/>
@@ -68,11 +73,12 @@
 			<generator class="native"/>
 		</id>
 		<property name="availableTime" type="double" column="AVAILABLE_TIME"/>
-		<property name="baseline" type="double" column="BASELINE"/>
 		<property name="creationDate" type="timestamp" column="CREATION_DATE"/>
 		<property name="deletionDate" type="timestamp" column="DELETION_DATE"/>
 		<property name="maintenanceTime" type="double" column="MAINTENANCE_TIME"/>
 		<property name="scientificTime" type="double" column="SCIENTIFIC_TIME"/>
+		<property name="resolution" type="double" column="RESOLUTION"/>
+		<property name="uvCoverage" type="double" column="UV_COVERAGE"/>
 	</class>
 	
 	<class name="Affiliation" table="OUTPUT_AFFILIATION">

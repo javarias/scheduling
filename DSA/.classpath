@@ -8,5 +8,6 @@
 	<classpathentry kind="var" path="ACSROOT/lib/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="src" path="/Common"/>
+	<classpathentry kind="lib" path="/home/ahoffsta/introot/lib/spring.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

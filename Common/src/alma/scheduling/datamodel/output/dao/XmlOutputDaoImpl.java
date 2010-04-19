@@ -58,6 +58,11 @@ public class XmlOutputDaoImpl implements OutputDao {
         r.setMaintenanceTime(results.getMaintenanceTime());
         r.setOperationTime(results.getOperationTime());
         r.setScientificTime(results.getScientificTime());
+        r.setObsSeasonEnd(new org.exolab.castor.types.Date(results.getObsSeasonEnd()));
+        r.setObsSeasonStart(new org.exolab.castor.types.Date(results.getObsSeasonStart()));
+        r.setStartSimDate(new org.exolab.castor.types.Date(results.getStartSimDate()));
+        r.setStopSimDate(new org.exolab.castor.types.Date(results.getStopSimDate()));
+        
         //set the observation projects
         alma.scheduling.output.generated.ObservationProject op[] =
             new alma.scheduling.output.generated.ObservationProject[results.getObservationProject().size()];
@@ -68,9 +73,11 @@ public class XmlOutputDaoImpl implements OutputDao {
             ObservationProject tmpOp = itOp.next();
         	op[i] = new alma.scheduling.output.generated.ObservationProject();
             op[i].setExecutionTime(tmpOp.getExecutionTime());
-            op[i].setScienceRating((int) tmpOp.getScienceRating());
+            op[i].setAssignedPriority((long) tmpOp.getAssignedPriority());
+            op[i].setId(tmpOp.getId());
             //TODO: Fix this presseted status. Using valueof() method returns null pointer.
             op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.COMPLETE );
+            
             //set the affiliations
             alma.scheduling.output.generated.Affiliation aff[] = 
                 new alma.scheduling.output.generated.Affiliation[tmpOp.getAffiliation().size()];
@@ -81,6 +88,7 @@ public class XmlOutputDaoImpl implements OutputDao {
                 aff[j].setExecutive(tmpAff.getExecutive());
                 aff[j].setPercentage(tmpAff.getPercentage());
             }
+            
             //set the sched blocks results
             alma.scheduling.output.generated.SchedBlock sb[] = 
                 new alma.scheduling.output.generated.SchedBlock[tmpOp.getSchedBlock().size()];
@@ -91,7 +99,9 @@ public class XmlOutputDaoImpl implements OutputDao {
                 sb[j] = new alma.scheduling.output.generated.SchedBlock();
                 sb[j].setEndDate(new org.exolab.castor.types.Date(tmpSb.getEndDate()));
                 sb[j].setExecutionTime(tmpSb.getExecutionTime());
+                sb[j].setId(tmpSb.getId());
                 sb[j].setMode(tmpSb.getMode());
+                sb[j].setRepresentativeFrequency(tmpSb.getRepresentativeFrequency());
                 sb[j].setStartDate(new org.exolab.castor.types.Date(tmpSb.getStartDate()));
                 sb[j].setStatus(alma.scheduling.output.generated.types.ExecutionStatus.valueOf(
                         tmpSb.getStatus().name()));
@@ -110,13 +120,15 @@ public class XmlOutputDaoImpl implements OutputDao {
         for(int i = 0; i < a.length; i++){
             Array tmpA = itA.next();
             a[i] = new alma.scheduling.output.generated.Array();
-            a[i].setAvailableTime(tmpA.getAvailableTime());
-            a[i].setBaseline(tmpA.getBaseline());
+            a[i].setAvailablelTime( tmpA.getAvailableTime());
             a[i].setCreationDate(new org.exolab.castor.types.Date(tmpA.getCreationDate()));
             a[i].setDeletionDate(new org.exolab.castor.types.Date(tmpA.getDeletionDate()));
+            //a[i].setId(Integer.toString(tmpA.hashCode()));
+            a[i].setId(Long.toString(tmpA.getId()));
             a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
             a[i].setScientificTime(tmpA.getScientificTime());
-            a[i].setArrayID(Integer.toString(tmpA.hashCode()));
+            a[i].setResolution( tmpA.getResolution());
+            a[i].setUvCoverage( tmpA.getUvCoverage());
         }
         r.setArray(a);
         if (fw == null){

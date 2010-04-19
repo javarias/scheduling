@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservationProject.java,v 1.4 2010/03/17 20:57:47 rhiriart Exp $"
+ * "@(#) $Id: ObservationProject.java,v 1.5 2010/04/19 22:24:12 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -30,15 +30,13 @@ import java.util.Set;
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
- * @created 02-Mar-2010 11:49:25 AM
+ * @created 15-Abr-2010 14:54:52
  */
 public class ObservationProject {
 
-	/**
-	 * Sum across ScheBlock_i.executionTime.
-	 */
 	private double executionTime;
-	private double scienceRating;
+	private long id;
+	private long assignedPriority;
 	private ExecutionStatus status;
 	public Set<Affiliation> affiliation;
 	public Set<SchedBlockResult> schedBlock;
@@ -55,12 +53,12 @@ public class ObservationProject {
         this.executionTime = executionTime;
     }
 
-    public double getScienceRating() {
-        return scienceRating;
+    public long getAssignedPriority() {
+        return assignedPriority;
     }
 
-    public void setScienceRating(double scienceRating) {
-        this.scienceRating = scienceRating;
+    public void setAssignedPriority(long assignedPriority) {
+        this.assignedPriority = assignedPriority;
     }
 
     public ExecutionStatus getStatus() {
@@ -86,4 +84,14 @@ public class ObservationProject {
     public void setSchedBlock(Set<SchedBlockResult> mSchedBlock) {
         schedBlock = mSchedBlock;
     }
+    
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+
 }

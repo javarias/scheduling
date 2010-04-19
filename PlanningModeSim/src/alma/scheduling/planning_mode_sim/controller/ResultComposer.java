@@ -1,10 +1,23 @@
 package alma.scheduling.planning_mode_sim.controller;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.springframework.context.ApplicationContext;
+
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.PI;
+import alma.scheduling.datamodel.executive.PIMembership;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
@@ -25,29 +38,29 @@ import alma.scheduling.datamodel.output.SchedBlockResult;
 public class ResultComposer {
 	
 	private Results results;
-	//TODO: Delete this dummy obsProject for SBs, as the references for obtained the correct ObsProejct is ready.
-	private ObservationProject dummyObsProject;
+	private ApplicationContext context = null;
 	
 	
-	public ResultComposer(){
-		//TODO: Create a new instances of the output datamodel, and fill it with essential and top-level data.
+	public ResultComposer(ApplicationContext ctx){
 		results = new Results();
+		results.setObsSeasonEnd(new Date());
+		results.setObsSeasonStart(new Date());
+		results.setStartSimDate(new Date());
+		results.setStopSimDate(new Date());
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		
-		dummyObsProject = new ObservationProject();
-		dummyObsProject.setSchedBlock(new HashSet<SchedBlockResult>());
-		dummyObsProject.setScienceRating(100);
-		dummyObsProject.setAffiliation(new HashSet<Affiliation>());
-		dummyObsProject.setExecutionTime(0.0);
-		results.getObservationProject().add( dummyObsProject );
+		context = ctx;
 	}
 	
 	public void notifyArrayCreation(ArrayConfiguration arrcfg){
 		Array arr = new Array();
-		arr.setBaseline( 1000.0 );
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
+		// TODO Implement available time (deletionDate - CreationDate)
+		arr.setId(arrcfg.getId());
+		arr.setResolution( arrcfg.getResolution());
+		arr.setUvCoverage(arrcfg.getUvCoverage());
 		results.getArray().add(arr);
 	}
 	
@@ -58,33 +71,96 @@ public class ResultComposer {
 //	}
 	
 	/**
+	 * Notify to the ResultsComposer that a new schedblock has been send to
+	 * CONTROL for execution. It store every data necesary for results about
+	 * the SB, and its main characteristics.
 	 * 
 	 * TODO: Add param that indicates in which array was started its execution
 	 * @param sb SchedulingBlock (class from datamodel) that needs to be informed of its execution.
 	 */
 	public void notifySchedBlockStart(SchedBlock sb){
 		
-		//Creation of SchedBlockResult
+		// TODO Implement distinction of types of SB. If maintenance, account to a ghost ObsProject.
+		
+		// Creation of SchedBlockResult
 		SchedBlockResult sbr = new SchedBlockResult();
 		Iterator<Array> it = results.getArray().iterator();
 		sbr.setArrayRef( it.next() );
 		sbr.setStartDate( TimeHandler.now() );
-		sbr.setExecutionTime( 0.0 );
+		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime() );
 		sbr.setMode( "Single Dish" ); //TODO: Implement modes in data-model
-		sbr.setStatus( ExecutionStatus.COMPLETE );
-		sbr.setType( "SCIENTIFIC" ); //TODO: Implement types in data-model
+
+		// State
+		if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
+			sbr.setStatus( ExecutionStatus.COMPLETE );
+		}else{
+			sbr.setStatus( ExecutionStatus.INCOMPLETE);
+		}
 		
-		//TODO: Check if the containing Observation Project already exists in the results collection of obsprojects.
-		//... code
-		if( !results.getObservationProject().contains(dummyObsProject) )
-			results.getObservationProject().add(dummyObsProject);
-	
-		//TODO: Assign the SB to the correct Observation Project, whence the reverse association is created.
-		dummyObsProject.getSchedBlock().add(sbr);
+		//TODO: Waiting for SB type implementation on data-model.
+		sbr.setType( "SCIENTIFIC" ); 
+		
+		// Obtaining reference from the SchedBlock to the Observation Project.
+		ObsProject inputObsProjectRef = null;
+		ObsUnit refOu = sb;
+		while ( inputObsProjectRef == null){
+			// If the current obsunit has parent, asign and exit
+			if( refOu.getProject() != null){
+				inputObsProjectRef = refOu.getProject();
+				continue;
+			}
+			// If the current obsunit doesn't have a project, jump to next parent 
+			if( refOu.getProject() == null)
+				refOu = refOu.getParent();
+		}
+		
+		// Check if the containing Observation Project already exists in the results collection of obsprojects.
+		boolean isPresent = false;
+		ObservationProject outputObservationProjectRef = null;
+		for( ObservationProject tmpOp : results.getObservationProject() ){
+			if( tmpOp.getId() == inputObsProjectRef.getId() ){
+				isPresent = true;
+				outputObservationProjectRef = tmpOp;
+				break;
+			}
+		}
+		
+		// If false, add the observation project.
+		if( !isPresent ){
+			// Create the Observation Project
+			ObservationProject newObsProject = new ObservationProject();
+			newObsProject.setAssignedPriority( inputObsProjectRef.getScienceRank() );
+			newObsProject.setId( inputObsProjectRef.getId());
+			newObsProject.setStatus( ExecutionStatus.INCOMPLETE );
+			// Create the Affiliations Set and their Affiliations			
+			newObsProject.setAffiliation(new HashSet<Affiliation>());
+			Affiliation newAffiliation = new Affiliation();
+			ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
+			for( PI tmpPI : execDao.getAllPi() ){
+				if( tmpPI.getName().compareTo( inputObsProjectRef.getPrincipalInvestigator() ) == 0 ){
+					for( PIMembership tmpPIMembership : tmpPI.getPIMembership() ){
+						newAffiliation.setPercentage( tmpPIMembership.getMembershipPercentage().intValue() );
+						newAffiliation.setExecutive( tmpPIMembership.getExecutive().getName() );
+						// Only the first PI Membership is considered, as currently the datamodel doesn't allow to know which PI Membership to use.
+						break;
+					}
+					// And if we found the correct PI, we are finished searching it.
+					break;
+				}
+			}
+			// Create the SchedBlock Set.
+			newObsProject.setSchedBlock(new HashSet<SchedBlockResult>());
+			// Add the new ObservationProject to the Results
+			results.getObservationProject().add( newObsProject );
+			// Save the reference for further use
+			outputObservationProjectRef = newObsProject;
+		}
+		
+		// Add the SchedBlock to the corresponding ObservationProject
+		outputObservationProjectRef.getSchedBlock().add(sbr);
 		
 		//TODO: Use the correct time spend on simulation
-		TimeHandler.stepAhead( (int) sb.getObsUnitControl().getEstimatedExecutionTime().floatValue() * 3600 * 1000 );
-		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime().floatValue() * 3600 * 1000 );
+		TimeHandler.stepAhead( (int) sbr.getExecutionTime() );
 		sbr.setEndDate( TimeHandler.now() );
 	}
 		

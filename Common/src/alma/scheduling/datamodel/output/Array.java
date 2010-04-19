@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Array.java,v 1.3 2010/03/02 23:35:41 javarias Exp $"
+ * "@(#) $Id: Array.java,v 1.4 2010/04/19 22:24:12 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -30,25 +30,18 @@ import java.util.Date;
 /**
  * @author Arturo Hoffstadt Urrutia
  * @version 1.0
- * @created 02-Mar-2010 11:49:24 AM
+ * @created 15-Abr-2010 14:54:52
  */
 public class Array {
 
-	/**
-	 * deletionTime - creationTime
-	 */
 	private double availableTime;
-	private double baseline;
 	private Date creationDate;
 	private Date deletionDate;
-	/**
-	 * Sum of the SB_i.executionTime, given that SB_i.type == maintenance.
-	 */
+	private long id;
 	private double maintenanceTime;
-	/**
-	 * Sum of the SB_i.executionTime, given that SB_i.type == scientific.
-	 */
 	private double scientificTime;
+	private double resolution;
+	private double uvCoverage;
 
 	public Array(){
 
@@ -60,14 +53,6 @@ public class Array {
 
     public void setAvailableTime(double availableTime) {
         this.availableTime = availableTime;
-    }
-
-    public double getBaseline() {
-        return baseline;
-    }
-
-    public void setBaseline(double baseline) {
-        this.baseline = baseline;
     }
 
     public Date getCreationDate() {
@@ -85,6 +70,14 @@ public class Array {
     public void setDeletionDate(Date deletionDate) {
         this.deletionDate = deletionDate;
     }
+    
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
     public double getMaintenanceTime() {
         return maintenanceTime;
@@ -101,4 +94,20 @@ public class Array {
     public void setScientificTime(double scientificTime) {
         this.scientificTime = scientificTime;
     }
+
+	public double getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(double resolution) {
+		this.resolution = resolution;
+	}
+
+	public double getUvCoverage() {
+		return uvCoverage;
+	}
+
+	public void setUvCoverage(double uvCoverage) {
+		this.uvCoverage = uvCoverage;
+	}
 }

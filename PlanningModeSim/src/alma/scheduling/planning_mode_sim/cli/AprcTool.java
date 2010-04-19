@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -58,6 +59,9 @@ public class AprcTool {
         System.out.println("\nList of Commands:\n");
         System.out.println("createWorkDir:\t Creates a template for the work directory");
         System.out.println("load:\t\t loads the database with the data stored in the XML files");
+        System.out.println("unload:\t\t ???");
+        System.out.println("clean:\t\t unload from database obsproject, executive, results, and observatory data");
+        System.out.println("step:\t\t step through each cycle of simulation, returning to command prompt");
         System.out.println("run:\t\t runs a simulation, generating an output file");
         System.out.println("go:\t\t loads and run a simulation");
         System.out.println("help:\t\t Display this helpful message");
@@ -132,7 +136,7 @@ public class AprcTool {
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         if(cfgBeans.length == 0){
-            System.out.println(ctxPath + " file doesn't contain a bean of the type lma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
+            System.out.println(ctxPath + " file doesn't contain a bean of the type alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
             System.exit(1);
         }
         for(int i = 0; i < loadersNames.length; i++){
@@ -190,7 +194,7 @@ public class AprcTool {
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
-        ResultComposer rc = new ResultComposer();
+        ResultComposer rc = new ResultComposer(ctx);
       
         //This is the timeline
         LinkedList<TimeEvent> timesToCheck = new LinkedList<TimeEvent>();
@@ -244,8 +248,8 @@ public class AprcTool {
         }
         
         /*Stop at end of season*/
-        while( time.before(stopTime)){
-            TimeEvent ev = timesToCheck.remove();
+        while( time.before(stopTime) && !timesToCheck.isEmpty() ){
+        	TimeEvent ev = timesToCheck.remove();
             //Change the current simulation time to event time
             time = ev.getTime();
             switch (ev.getType()){

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
 	<xs:element name="Results" type="Results">
 		<xs:key name="ArrayKey">
 			<xs:selector xpath=".//Array" />
-			<xs:field xpath="@arrayID" />
+			<xs:field xpath="id" />
 		</xs:key>
 		<xs:keyref name="SchedBlockRef_Array" refer="ArrayKey">
 			<xs:selector xpath=".//SchedBlock/ArrayRef" />
@@ -13,39 +14,38 @@
 	
 	<xs:complexType name="Results">
 		<xs:sequence>
-			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
-			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
-			<xs:element name="operationTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
-			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
+			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="obsSeasonEnd" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="obsSeasonStart" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="operationTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="startSimDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="stopSimDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="Array" type="Array" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="ObservationProject" type="ObservationProject" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
+		<xs:attribute name="id" type="xs:NCName" use="required"/>		
 	</xs:complexType>
 	
 	<xs:complexType name="Array">
 		<xs:sequence>
-			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
-			<xs:element name="baseline" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="availablelTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="creationDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="deletionDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
-			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
+			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="resolution" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="uvCoverage" type="xs:double" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
-		<xs:attribute name="arrayID" type="xs:NCName" use="required"/>		
+		<xs:attribute name="id" type="xs:NCName" use="required"/>		
 	</xs:complexType>
 	
 	<xs:complexType name="ObservationProject">
 		<xs:sequence>
-			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1">
-			</xs:element>
-			<xs:element name="scienceRating" type="xs:int" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="assignedPriority" type="xs:long" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="SchedBlock" type="SchedBlock" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="Affiliation" type="Affiliation" minOccurs="1" maxOccurs="unbounded"/>
@@ -58,12 +58,14 @@
 			<xs:element name="percentage" type="xs:int" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
-	
+
 	<xs:complexType name="SchedBlock">
 		<xs:sequence>
 			<xs:element name="endDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="mode" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="representativeFrequency" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="startDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
@@ -75,7 +77,6 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	
 
 	<xs:simpleType name="ExecutionStatus">
 		<xs:restriction base="xs:string">
@@ -84,5 +85,4 @@
 			<xs:enumeration value="NOT_STARTED"/>
 		</xs:restriction>
 	</xs:simpleType>
-
 </xs:schema>

@@ -81,7 +81,7 @@ public class OutputTest extends TestCase  {
     public void testExecutiveInputModel() throws Exception{
        
         try {
-            XmlUtil.validateData("../config/output.xsd", "./projects/outputTest01/output/output.xml");
+            XmlUtil.validateData("../config/output.xsd", "./projects/outputTest02/output/output.xml");
         } catch (SAXException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -93,7 +93,7 @@ public class OutputTest extends TestCase  {
         Results results = null;
         try {
         	results = Results.unmarshalResults(
-                    new FileReader("./projects/outputTest01/output/output.xml"));
+                    new FileReader("./projects/outputTest02/output/output.xml"));
         } catch (MarshalException e) {
             e.printStackTrace();
         	fail("Unmarshalling problems. Please re-generate the castor classes.");
@@ -107,9 +107,9 @@ public class OutputTest extends TestCase  {
         }
         
         assertEquals( results.getArrayCount(), 2);
-        assertEquals( results.getArray(0).getArrayID(), "NCName1" );
+        assertEquals( "Array01", results.getArray(0).getId() );
         assertEquals( results.getObservationProject(0).getStatus(), ExecutionStatus.COMPLETE );
-        assertEquals( results.getObservationProject(0).getSchedBlock(0).getArrayRef().getArrayRef() , results.getArray(1).getArrayID() );
+        assertEquals( results.getObservationProject(0).getSchedBlock(0).getArrayRef().getArrayRef() , results.getArray(0).getId() );
         
     }
     
@@ -120,8 +120,7 @@ public class OutputTest extends TestCase  {
         result.setOperationTime(100.0);
         result.setScientificTime(100.0);
         Array array = new Array();
-        array.setAvailableTime(100.0);
-        array.setBaseline(100.0);
+        array.setAvailablelTime(100.0);
         array.setCreationDate(new Date("2010-03-24"));
         array.setDeletionDate(new Date("2010-05-15"));
         array.setMaintenanceTime(100.0);

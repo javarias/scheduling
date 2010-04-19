@@ -5,5 +5,13 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="var" path="ACSROOT/lib/castor.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="/home/ahoffsta/introot/lib/spring.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate-annotations.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate-cglib-repack-2.1_3.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate-entitymanager.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

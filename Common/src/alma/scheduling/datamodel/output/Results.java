@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Results.java,v 1.3 2010/03/02 23:35:41 javarias Exp $"
+ * "@(#) $Id: Results.java,v 1.4 2010/04/19 22:24:12 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -34,22 +35,14 @@ import java.util.Set;
  */
 public class Results {
 
-	/**
-	 * Sum across Array_i.availableTime
-	 */
 	private double availableTime;
-	/**
-	 * Sum across Array_i.maintenanceTime.
-	 */
 	private double maintenanceTime;
-	/**
-	 * Sum across ObservationProject_i.executionTime
-	 */
 	private double operationTime;
-	/**
-	 * Sum across Array_i.scientificTime
-	 */
 	private double scientificTime;
+	private Date obsSeasonEnd;
+	private Date obsSeasonStart;
+	private Date startSimDate;
+	private Date stopSimDate;
 	public Set<Array> array;
 	public Set<ObservationProject> observationProject;
 
@@ -104,4 +97,36 @@ public class Results {
     public void setObservationProject(Set<ObservationProject> mObservationProject) {
         observationProject = mObservationProject;
     }
+
+	public Date getObsSeasonEnd() {
+		return obsSeasonEnd;
+	}
+
+	public void setObsSeasonEnd(Date obsSeasonEnd) {
+		this.obsSeasonEnd = obsSeasonEnd;
+	}
+
+	public Date getObsSeasonStart() {
+		return obsSeasonStart;
+	}
+
+	public void setObsSeasonStart(Date obsSeasonStart) {
+		this.obsSeasonStart = obsSeasonStart;
+	}
+
+	public Date getStartSimDate() {
+		return startSimDate;
+	}
+
+	public void setStartSimDate(Date startSimDate) {
+		this.startSimDate = startSimDate;
+	}
+
+	public Date getStopSimDate() {
+		return stopSimDate;
+	}
+
+	public void setStopSimDate(Date stopSimDate) {
+		this.stopSimDate = stopSimDate;
+	}
 }
