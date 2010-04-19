@@ -395,9 +395,10 @@ public class AprcTool {
         configDao.updateNextStep(time);
     }
     
-    private Date step(ApplicationContext ctx, Date time, DynamicSchedulingAlgorithm dsa,
-            ArrayConfiguration arrCnf, SchedBlockExecutor sbExecutor)
-        throws NoSbSelectedException {
+    private Date step(ApplicationContext ctx, Date time,
+            DynamicSchedulingAlgorithm dsa, ArrayConfiguration arrCnf,
+            SchedBlockExecutor sbExecutor) throws NoSbSelectedException {
+        dsa.setVerboseLevel(verboseLvl);
         dsa.updateModel(time);
         dsa.selectCandidateSB();
         dsa.rankSchedBlocks(time);
