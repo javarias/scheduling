@@ -386,7 +386,6 @@ public class AprcTool {
             configDao.updateSimStartTime(time);
         }
         DynamicSchedulingAlgorithm dsa = getDSA(ctx);
-        dsa.setVerboseLevel(verboseLvl);
         try {
             time = step(ctx, time, dsa, arrCnf, sbExecutor);
         } catch (NoSbSelectedException e) {
@@ -399,6 +398,7 @@ public class AprcTool {
             DynamicSchedulingAlgorithm dsa, ArrayConfiguration arrCnf,
             SchedBlockExecutor sbExecutor) throws NoSbSelectedException {
         dsa.setVerboseLevel(verboseLvl);
+        dsa.setArray(arrCnf);
         dsa.updateModel(time);
         dsa.selectCandidateSB();
         dsa.rankSchedBlocks(time);
