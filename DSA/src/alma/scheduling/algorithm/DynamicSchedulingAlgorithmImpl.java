@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.7 2010/04/19 22:24:12 ahoffsta Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.8 2010/04/19 23:37:40 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -110,11 +110,12 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
             min = post.values();
         else
             min = pre.values();
-        for(SchedBlock sb: min){
-            if(pre.get(sb.getId()) == null || post.get(sb.getId()) == null)
-                break;
-            sbs.put(sb.getId(), sb);
-        }
+		for (SchedBlock sb : min) {
+			if (pre.get(sb.getId()) != null && post.get(sb.getId()) != null)
+				sbs.put(sb.getId(), sb);
+		}
+		if(sbs.size() == 0)
+			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");
     }
 	 /* (non-Javadoc)
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#selectCandidateSB()
