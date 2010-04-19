@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
@@ -283,8 +281,8 @@ public class AprcTool {
                     timesToCheck.add(sbEndEv);
                 } catch (NoSbSelectedException ex){
                     System.out.println("After selectors " + new Date());
-                    System.out.println("DSA for array " + ev.getArray().getId().toString() + " finished -- No more suitable SBs to be scheduled");
-                    //freeArrays.add(ev.getArray());
+                    System.out.println(TimeUtil.getUTString(time) + " DSA for array " + ev.getArray().getId().toString() + " -- No suitable SBs to be scheduled");
+                    freeArrays.add(ev.getArray());
                 }
                 break;
             case ARRAY_DESTRUCTION:
@@ -329,8 +327,8 @@ public class AprcTool {
                 dsa = arraysCreated.get(ev.getArray());
                 //removing from free list
                 freeArrays.remove(ev.getArray());
-                logger.info("Simulated Time[" + time.toString() + 
-                        "] selecting candidate SBs for Array: " + ev.getArray().getId());
+                System.out.println(TimeUtil.getUTString(time) + 
+                        "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
                     dsa.selectCandidateSB(time);
                     dsa.rankSchedBlocks();
