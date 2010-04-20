@@ -401,7 +401,7 @@ public class AprcTool {
             SchedBlockExecutor sbExecutor) throws NoSbSelectedException {
         dsa.setVerboseLevel(verboseLvl);
         dsa.setArray(arrCnf);
-        dsa.updateModel(time);
+        //dsa.updateModel(time);
         dsa.selectCandidateSB();
         dsa.rankSchedBlocks(time);
         SchedBlock sb = dsa.getSelectedSchedBlock();
