@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Constants.java,v 1.1 2010/03/06 00:57:17 rhiriart Exp $"
+ * "@(#) $Id: Constants.java,v 1.2 2010/04/20 20:33:18 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -35,4 +35,8 @@ public class Constants {
     static final double PLANCK    = 6.626e-34;
     /** Speed of light (m/s) */
     static final double LIGHT_SPEED= 2.99792458e8;
+    /** Chajnantor latitude */
+    public static final double CHAJNANTOR_LATITUDE = -23.022778;
+    /** Chajnantor longitude */
+    public static final double CHAJNANTOR_LONGITUDE = -67.755;
 }

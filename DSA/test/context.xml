@@ -264,6 +264,12 @@
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 	
+	<bean id="hourAngleSelector" class="alma.scheduling.algorithm.obsproject.HourAngleSelector"
+		scope="prototype">
+        <constructor-arg><value>hourAngleSelector</value></constructor-arg>
+		<property name="sbDao" ref="sbDao"/>		
+	</bean>
+	
 	<!-- Rankers -->
 	
 	<bean id="sciRanker" class="alma.scheduling.algorithm.sbranking.ScienceGradeRanker" scope="prototype">
@@ -307,6 +313,7 @@
 				<ref bean="execSelector"/>
 				<ref bean="sourceSelector"/>
 				<ref bean="arrayConfigSelector"/>
+				<ref bean="hourAngleSelector" />
 			</set>
 		</property>
 		<property name="postUpdateSelectors">

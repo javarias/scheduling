@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.2 2010/03/10 00:16:02 rhiriart Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.3 2010/04/20 20:33:18 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -63,6 +63,27 @@ public class CoordinatesUtil {
         double ha = lst - ra;
         if (ha < 0) ha += 24;
         return ha;
+    }
+    
+    /**
+     * Get the right ascencion of a given sky coordinate.
+     * 
+     * @param ut Time (UT)
+     * @param ha Hour Angle (decimal hours)
+     * @param longitude Geographic longitude (degrees, 'E' is positive, 'W' negative)
+     * @return right ascencion (decimal hours)
+     */
+    public static double getRA(Date ut, double ha, double longitude) {
+    	Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+    	cal.setTime(ut);
+    	double hours = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 1000.0);
+    	double gst = TimeUtil.getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), hours);
+    	double lst = TimeUtil.getLocalSiderealTime(gst, longitude);
+    	double ra = lst - ha;
+    	if ( ra < 0 ) ra +=24;
+    	return ra;
     }
     
     /**
