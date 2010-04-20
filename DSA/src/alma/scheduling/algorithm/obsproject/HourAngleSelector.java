@@ -56,8 +56,14 @@ public class HourAngleSelector extends AbstractBaseSelector {
 		 */
 		double raLowLimit = CoordinatesUtil.getRA(ut, 8, Constants.CHAJNANTOR_LONGITUDE);
 		double raHighLimit = CoordinatesUtil.getRA(ut, 16, Constants.CHAJNANTOR_LONGITUDE);
-		logger.debug("RA Limits: " + raLowLimit + ", " + raHighLimit);
-		List<SchedBlock> res = sbDao.findSchedBlocksBetweenHourAngles(raLowLimit, raHighLimit);
+		logger.info("RA Limits: " + raLowLimit + ", " + raHighLimit);
+		List<SchedBlock> res = null;
+		if (raHighLimit < raLowLimit ){
+			res = sbDao.findSchedBlocksBetweenHourAngles(raLowLimit, 359.999999999999);
+			res.addAll(sbDao.findSchedBlocksBetweenHourAngles(0, raHighLimit));
+		}
+		else
+			res = sbDao.findSchedBlocksBetweenHourAngles(raLowLimit, raHighLimit);
 		if(res.size() == 0)
 			throw new NoSbSelectedException("sbDao.findSchedBlocksBetweenHourAngles returned no results");
 		this.printVerboseInfo(res, arrConf.getId(), ut);
