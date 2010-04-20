@@ -119,6 +119,13 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
         return schedBlocks;
     }
+
+	@Override
+	public List<SchedBlock> findSchedBlocksBetweenHourAngles(double lowLimit,
+			double highLimit) {
+		Object[] params = {lowLimit, highLimit};
+		return executeNamedQuery("SchedBlock.findByTargetHourAngleLimits", params);
+	}
     
     
     

@@ -14,4 +14,5 @@ public interface SchedBlockDao extends GenericDao {
     void hydrateSchedBlockObsParams(SchedBlock schedBlock);
     public List<SchedBlock> findSchedBlocksWithoutTooMuchTsysVariation(double variation);
     public List<SchedBlock> findSchedBlocksWithEnoughTimeInExecutive(Executive exec, ObservingSeason os) throws NullPointerException;
+    public List<SchedBlock> findSchedBlocksBetweenHourAngles(double lowLimit, double highLimit);
 }

@@ -110,5 +110,13 @@
     		sb.obsUnitControl.estimatedExecutionTime < ?
     	]]>
     </query>
+    
+    <query name="SchedBlock.findByTargetHourAngleLimits">
+    	<![CDATA[
+    		from SchedBlock sb where
+    		sb.schedulingConstraints.representativeTarget.source.coordinates.RA >= ? and
+    		sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?
+    	]]>
+    </query>
 
 </hibernate-mapping>
