@@ -331,7 +331,7 @@ public class AprcTool {
                         "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
                     dsa.selectCandidateSB(time);
-                    dsa.rankSchedBlocks();
+                    dsa.rankSchedBlocks(time);
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     rc.notifySchedBlockStart(sb);
