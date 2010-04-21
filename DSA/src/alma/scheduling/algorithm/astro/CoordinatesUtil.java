@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.4 2010/04/20 21:02:49 javarias Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.5 2010/04/21 16:36:34 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -83,7 +83,6 @@ public class CoordinatesUtil {
     	double lst = TimeUtil.getLocalSiderealTime(gst, longitude);
     	double ra = lst - ha;
     	if ( ra < 0 ) ra +=24;
-    	ra = ra * 15; //transforms hours to degrees
     	return ra;
     }
     

@@ -44,6 +44,22 @@ public class CoordinatesUtilTest extends TestCase {
         assertEquals(5.862286, ha, 0.1);
     }
     
+    public void testGetRA() {
+        double ha = 5.0 + 51.0 / 60.0 + 44.0 / 3600.0;
+        double longitude = -64.0; // 64 degrees W
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 1980);
+        cal.set(Calendar.MONTH, 4);
+        cal.set(Calendar.DAY_OF_MONTH, 22);
+        cal.set(Calendar.HOUR_OF_DAY, 14);
+        cal.set(Calendar.MINUTE, 36);
+        cal.set(Calendar.SECOND, 51);
+        cal.set(Calendar.MILLISECOND, 670);
+        double ra = CoordinatesUtil.getRA(cal.getTime(), ha, longitude);
+        logger.info("right ascencion = " + ra);
+        assertEquals(18.538230, ra, 0.1);
+    }
+    
     public void testGetHorizonFromEquatorial() {
         double ra = 18.0 + 32.0 / 60.0 + 21.0 / 3600.0; // hours
         ra = ra * 15.0; // degrees
