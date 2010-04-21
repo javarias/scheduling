@@ -274,17 +274,24 @@
 	
 	<bean id="sciRanker" class="alma.scheduling.algorithm.sbranking.ScienceGradeRanker" scope="prototype">
         <constructor-arg><value>sciRanker</value></constructor-arg>
-		<property name="factor" value="3.14"/>
+		<property name="factor" value="1"/>
 	</bean>
+
+	<bean id="hourAngleRanker" class="alma.scheduling.algorithm.obsproject.HourAngleRanker" scope="prototype">
+        <constructor-arg><value>hourAngleRanker</value></constructor-arg>
+	</bean>
+	
 	<bean id="finalRanker" class="alma.scheduling.algorithm.sbranking.FinalRanker" scope="prototype">
         <constructor-arg><value>finalRanker</value></constructor-arg>
 		<property name="rankers">
 			<set>
 				<ref bean="sciRanker"/>
+				<ref bean="hourAngleRanker"/>
 			</set>
 		</property>
 		<property name="weights">
 			<set>
+				<value>1.0</value>
 				<value>2.0</value>
 			</set>
 		</property>

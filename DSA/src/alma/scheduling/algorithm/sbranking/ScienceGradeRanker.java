@@ -21,14 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.7 2010/04/16 20:59:49 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.8 2010/04/21 17:08:06 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;

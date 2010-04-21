@@ -54,13 +54,13 @@ public class HourAngleSelector extends AbstractBaseSelector {
 		/* In the south hemisphere the calculation of the HA is: H + 12 = LST - alpha 
 		 * The Hour angle to find is -4 <= H + 12 <= +4
 		 */
-		double raLowLimit = CoordinatesUtil.getRA(ut, 8, Constants.CHAJNANTOR_LONGITUDE);
-		double raHighLimit = CoordinatesUtil.getRA(ut, 16, Constants.CHAJNANTOR_LONGITUDE);
-		logger.info("RA Limits: " + raLowLimit + ", " + raHighLimit);
+		double raLowLimit = CoordinatesUtil.getRA(ut, 16.0, Constants.CHAJNANTOR_LONGITUDE);
+		double raHighLimit = CoordinatesUtil.getRA(ut, 8.0, Constants.CHAJNANTOR_LONGITUDE);
+		System.out.println("RA Limits: " + raLowLimit + ", " + raHighLimit);
 		List<SchedBlock> res = null;
 		if (raHighLimit < raLowLimit ){
-			res = sbDao.findSchedBlocksBetweenHourAngles(raLowLimit, 359.999999999999);
-			res.addAll(sbDao.findSchedBlocksBetweenHourAngles(0, raHighLimit));
+			res = sbDao.findSchedBlocksBetweenHourAngles(raLowLimit * 15.0 , 360);
+			res.addAll(sbDao.findSchedBlocksBetweenHourAngles(0, raHighLimit * 15.0));
 		}
 		else
 			res = sbDao.findSchedBlocksBetweenHourAngles(raLowLimit, raHighLimit);
