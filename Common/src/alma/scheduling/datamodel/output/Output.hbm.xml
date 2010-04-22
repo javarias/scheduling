@@ -39,7 +39,8 @@
 			<generator class="native"/>
 		</id>
 		
-		<property name="assignedPriority" type="long" column="ASSIGNED_PRIORITY" />
+		<property name="scienceRank" type="long" column="SCIENCE_RANK" />
+		<property name="scienceScore" type="float" column="SCIENCE_SCORE" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
 		<set name="affiliation" table="OUTPUT_AFFILIATION" cascade="save-update,lock, delete, delete-orphan">

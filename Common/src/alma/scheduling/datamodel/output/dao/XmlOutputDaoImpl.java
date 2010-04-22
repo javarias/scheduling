@@ -60,8 +60,6 @@ public class XmlOutputDaoImpl implements OutputDao {
         r.setScientificTime(results.getScientificTime());
         r.setObsSeasonEnd(new org.exolab.castor.types.Date(results.getObsSeasonEnd()));
         r.setObsSeasonStart(new org.exolab.castor.types.Date(results.getObsSeasonStart()));
-        r.setStartSimDate(new org.exolab.castor.types.Date(results.getStartSimDate()));
-        r.setStopSimDate(new org.exolab.castor.types.Date(results.getStopSimDate()));
         
         //set the observation projects
         alma.scheduling.output.generated.ObservationProject op[] =
@@ -73,7 +71,8 @@ public class XmlOutputDaoImpl implements OutputDao {
             ObservationProject tmpOp = itOp.next();
         	op[i] = new alma.scheduling.output.generated.ObservationProject();
             op[i].setExecutionTime(tmpOp.getExecutionTime());
-            op[i].setAssignedPriority((long) tmpOp.getAssignedPriority());
+            op[i].setScienceRank( tmpOp.getScienceRank());
+            op[i].setScienceScore( tmpOp.getScienceScore());
             op[i].setId(tmpOp.getId());
             //TODO: Fix this presseted status. Using valueof() method returns null pointer.
             op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.COMPLETE );

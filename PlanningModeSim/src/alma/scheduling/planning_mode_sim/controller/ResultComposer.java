@@ -43,14 +43,17 @@ public class ResultComposer {
 	
 	public ResultComposer(ApplicationContext ctx){
 		results = new Results();
-		results.setObsSeasonEnd(new Date());
-		results.setObsSeasonStart(new Date());
-		results.setStartSimDate(new Date());
-		results.setStopSimDate(new Date());
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		
 		context = ctx;
+	}
+	
+	public void notifyExecutiveData(Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
+		results.setObsSeasonStart(obsSeasonStart);
+		results.setObsSeasonEnd(obsSeasonEnd);
+		results.setStartSimDate(obsSeasonStart);
+		results.setStopSimDate(obsSeasonEnd);
 	}
 	
 	public void notifyArrayCreation(ArrayConfiguration arrcfg){
@@ -63,12 +66,6 @@ public class ResultComposer {
 		arr.setUvCoverage(arrcfg.getUvCoverage());
 		results.getArray().add(arr);
 	}
-	
-//	public void notifyArrayDestruction(ArrayConfiguration arrcfg){
-//		//TODO: Complete when observatory characteristics models is ready
-//		Iterator<Array> it = results.getArray().iterator();
-//		it.next().setDeletionDate( TimeUtil.now() );
-//	}
 	
 	/**
 	 * Notify to the ResultsComposer that a new schedblock has been send to
@@ -88,15 +85,9 @@ public class ResultComposer {
 		sbr.setArrayRef( it.next() );
 		sbr.setStartDate( TimeHandler.now() );
 		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime() );
-		sbr.setMode( "Single Dish" ); //TODO: Implement modes in data-model
-
-		// State
-		if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
-			sbr.setStatus( ExecutionStatus.COMPLETE );
-		}else{
-			sbr.setStatus( ExecutionStatus.INCOMPLETE);
-		}
-		
+		sbr.setStatus( ExecutionStatus.INCOMPLETE );
+		//TODO: Implement modes in data-model
+		sbr.setMode( "Single Dish" ); 
 		//TODO: Waiting for SB type implementation on data-model.
 		sbr.setType( "SCIENTIFIC" ); 
 		
@@ -129,7 +120,8 @@ public class ResultComposer {
 		if( !isPresent ){
 			// Create the Observation Project
 			ObservationProject newObsProject = new ObservationProject();
-			newObsProject.setAssignedPriority( inputObsProjectRef.getScienceRank() );
+			newObsProject.setScienceRank( inputObsProjectRef.getScienceRank() );
+			newObsProject.setScienceScore( inputObsProjectRef.getScienceScore() );
 			newObsProject.setId( inputObsProjectRef.getId());
 			newObsProject.setStatus( ExecutionStatus.INCOMPLETE );
 			// Create the Affiliations Set and their Affiliations			
@@ -163,6 +155,14 @@ public class ResultComposer {
 		TimeHandler.stepAhead( (int) sbr.getExecutionTime() );
 		sbr.setEndDate( TimeHandler.now() );
 	}
+	
+	public void notifySchedBlockStop(SchedBlock sb){
+		// TODO: To be able to implement SBR retrieval, the datamodel must include the ORIGINAL ID.
+		
+		//if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
+		//	sbr.setStatus( ExecutionStatus.COMPLETE );
+		//}
+	}
 		
 	/**
 	 * Gathers data at the end of simulation to complete the output data.
@@ -171,7 +171,7 @@ public class ResultComposer {
 		System.out.println("Completing results");
 		
 		for( ObservationProject op : results.getObservationProject()){
-			long execTime = 0;
+			double execTime = 0;
 			for( SchedBlockResult sbr : op.getSchedBlock()){
 				execTime += sbr.getExecutionTime();
 			}

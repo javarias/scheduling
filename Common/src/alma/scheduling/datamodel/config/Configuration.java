@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.10 2010/04/12 20:53:35 rhiriart Exp $"
+ * "@(#) $Id: Configuration.java,v 1.11 2010/04/22 19:19:53 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -42,6 +42,7 @@ public class Configuration {
     private String executiveDirectory;
     private String outputDirectory;
     private Date lastLoad;
+    private Date simulationStartTime;
     private String contextFilePath;
     
     /**
@@ -91,12 +92,10 @@ public class Configuration {
     /** Start time for the next step, used by the step function, for debugging */
     private Date nextStepTime;
     
-    /** Simulation start time */
-    private Date simulationStartTime;
-    
+   
     public Configuration() { }
     
-    public String getWorkDirectory() {
+	public String getWorkDirectory() {
         return workDirectory;
     }
 

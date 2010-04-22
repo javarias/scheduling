@@ -181,9 +181,10 @@ public class AprcTool {
     private void run(String ctxPath){
     	TimeHandler.initialize(TimeHandler.Type.REAL);
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
-        //Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
-       // Date time = calendar.getTime(); // initial time is now, it should be configurable
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        // Date time = calendar.getTime(); // initial time is now, it should be configurable
         Date time = execDao.getCurrentSeason().getStartDate(); //The start time is the start Time of the current Season
         System.out.println(TimeUtil.getUTString(time) + "Starting Simulation");
         Date stopTime = execDao.getCurrentSeason().getEndDate();
@@ -193,6 +194,12 @@ public class AprcTool {
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
         ResultComposer rc = new ResultComposer(ctx);
+        rc.notifyExecutiveData(
+        		execDao.getCurrentSeason().getStartDate(), 
+        		execDao.getCurrentSeason().getEndDate(), 
+        		// TODO: Fix Configuration datamodel to include start and stop dates.
+        		execDao.getCurrentSeason().getStartDate(), 
+        		execDao.getCurrentSeason().getEndDate() );
       
         //This is the timeline
         LinkedList<TimeEvent> timesToCheck = new LinkedList<TimeEvent>();
@@ -435,7 +442,7 @@ public class AprcTool {
         DynamicSchedulingAlgorithm dsa = getDSA(ctx);
         System.out.println("Running first update " + new Date());
         dsa.updateModel(time);
-        System.out.println("Finishiing first update " + new Date());
+        System.out.println("Finishing first update " + new Date());
     }
     
     public void selectAction(String[] args) throws IOException{

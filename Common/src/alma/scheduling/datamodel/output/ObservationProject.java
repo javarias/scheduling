@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservationProject.java,v 1.5 2010/04/19 22:24:12 ahoffsta Exp $"
+ * "@(#) $Id: ObservationProject.java,v 1.6 2010/04/22 19:19:53 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -36,7 +36,8 @@ public class ObservationProject {
 
 	private double executionTime;
 	private long id;
-	private long assignedPriority;
+	private long scienceRank;
+	private float scienceScore;
 	private ExecutionStatus status;
 	public Set<Affiliation> affiliation;
 	public Set<SchedBlockResult> schedBlock;
@@ -51,14 +52,6 @@ public class ObservationProject {
 
     public void setExecutionTime(double executionTime) {
         this.executionTime = executionTime;
-    }
-
-    public long getAssignedPriority() {
-        return assignedPriority;
-    }
-
-    public void setAssignedPriority(long assignedPriority) {
-        this.assignedPriority = assignedPriority;
     }
 
     public ExecutionStatus getStatus() {
@@ -92,6 +85,21 @@ public class ObservationProject {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	public long getScienceRank() {
+		return scienceRank;
+	}
 
+	public void setScienceRank(long scienceRank) {
+		this.scienceRank = scienceRank;
+	}
+
+	public float getScienceScore() {
+		return scienceScore;
+	}
+
+	public void setScienceScore(float scienceScore) {
+		this.scienceScore = scienceScore;
+	}
 
 }
