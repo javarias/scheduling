@@ -79,6 +79,10 @@
         <property name="configurationDao" ref="configDao"/>
     </bean>
 
+    <bean id="archiveObsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ArchiveObsProjectDaoImpl">
+        <property name="configurationDao" ref="configDao"/>
+    </bean>
+
     <bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
