@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.13 2010/04/09 22:56:02 rhiriart Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.14 2010/04/23 19:50:49 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -37,9 +39,12 @@ import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
+import alma.scheduling.datamodel.executive.PIMembership;
 
 public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
+    private static Logger logger = LoggerFactory.getLogger(ExecutiveDaoImpl.class);
+    
     @Override
     @Transactional(readOnly=true)
     public List<Executive> getAllExecutive() {
@@ -61,8 +66,13 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     }
 
     @Override
+    @Transactional
     public List<PI> getAllPi() {
-        return this.findAll(PI.class);
+        List<PI> pis = this.findAll(PI.class);
+        for(PI pi: pis)
+            for(PIMembership pim :pi.getPIMembership())
+                pim.getExecutive();
+        return pis;
     }
 
     @SuppressWarnings("unchecked")
