@@ -56,7 +56,7 @@
 	<xs:complexType name="Affiliation">
 		<xs:sequence>
 			<xs:element name="executive" type="xs:string" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="percentage" type="xs:int" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="percentage" type="xs:float" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 

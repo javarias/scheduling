@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
@@ -178,6 +179,7 @@ public class AprcTool {
         configDao.deleteAll();
     }
     
+    @Transactional
     private void run(String ctxPath){
     	TimeHandler.initialize(TimeHandler.Type.REAL);
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);

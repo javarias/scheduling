@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.Executive;
@@ -75,6 +76,7 @@ public class ResultComposer {
 	 * TODO: Add param that indicates in which array was started its execution
 	 * @param sb SchedulingBlock (class from datamodel) that needs to be informed of its execution.
 	 */
+	@Transactional
 	public void notifySchedBlockStart(SchedBlock sb){
 		
 		// TODO Implement distinction of types of SB. If maintenance, account to a ghost ObsProject.
@@ -87,25 +89,16 @@ public class ResultComposer {
 		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime() );
 		sbr.setStatus( ExecutionStatus.INCOMPLETE );
 		//TODO: Implement modes in data-model
+		// In the XSD, there is a spec: InstrumentSpecT, and ObservingMode
 		sbr.setMode( "Single Dish" ); 
 		//TODO: Waiting for SB type implementation on data-model.
 		sbr.setType( "SCIENTIFIC" ); 
 		
 		// Obtaining reference from the SchedBlock to the Observation Project.
-		ObsProject inputObsProjectRef = null;
-		ObsUnit refOu = sb;
-		while ( inputObsProjectRef == null){
-			// If the current obsunit has parent, asign and exit
-			if( refOu.getProject() != null){
-				inputObsProjectRef = refOu.getProject();
-				continue;
-			}
-			// If the current obsunit doesn't have a project, jump to next parent 
-			if( refOu.getProject() == null)
-				refOu = refOu.getParent();
-		}
-		
-		// Check if the containing Observation Project already exists in the results collection of obsprojects.
+		ObsProject inputObsProjectRef = sb.getProject();
+				
+		// Check if the Observation Project already exists in the results collection of obsprojects.
+		// TODO: add to the datamodel an attribute that saves the original obsproject ID
 		boolean isPresent = false;
 		ObservationProject outputObservationProjectRef = null;
 		for( ObservationProject tmpOp : results.getObservationProject() ){
@@ -122,24 +115,19 @@ public class ResultComposer {
 			ObservationProject newObsProject = new ObservationProject();
 			newObsProject.setScienceRank( inputObsProjectRef.getScienceRank() );
 			newObsProject.setScienceScore( inputObsProjectRef.getScienceScore() );
-			newObsProject.setId( inputObsProjectRef.getId());
+			newObsProject.setId( inputObsProjectRef.getId() );
 			newObsProject.setStatus( ExecutionStatus.INCOMPLETE );
+			
 			// Create the Affiliations Set and their Affiliations			
 			newObsProject.setAffiliation(new HashSet<Affiliation>());
 			Affiliation newAffiliation = new Affiliation();
 			ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
-			for( PI tmpPI : execDao.getAllPi() ){
-				if( tmpPI.getName().compareTo( inputObsProjectRef.getPrincipalInvestigator() ) == 0 ){
-					for( PIMembership tmpPIMembership : tmpPI.getPIMembership() ){
-						newAffiliation.setPercentage( tmpPIMembership.getMembershipPercentage().intValue() );
-						newAffiliation.setExecutive( tmpPIMembership.getExecutive().getName() );
-						// Only the first PI Membership is considered, as currently the datamodel doesn't allow to know which PI Membership to use.
-						break;
-					}
-					// And if we found the correct PI, we are finished searching it.
-					break;
-				}
-			}
+			newAffiliation.setExecutive( execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
+			System.out.println("OUTPUT: This project belongs to: " + execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
+			newAffiliation.setPercentage( 0.00f );
+
+			newObsProject.getAffiliation().add( newAffiliation );
+			
 			// Create the SchedBlock Set.
 			newObsProject.setSchedBlock(new HashSet<SchedBlockResult>());
 			// Add the new ObservationProject to the Results
@@ -167,6 +155,7 @@ public class ResultComposer {
 	/**
 	 * Gathers data at the end of simulation to complete the output data.
 	 */
+	@Transactional
 	public void completeResults(){
 		System.out.println("Completing results");
 		
@@ -186,7 +175,7 @@ public class ResultComposer {
 		
 		//TODO: According to actual structure, SBs need to belongs to a ObsProject. What about maintenance SBs?
 		for( ObservationProject op : results.getObservationProject()){
-			System.out.println("\\-Completing observation project:" + op.getExecutionTime() );
+			System.out.println("\\-Completing observation project #" + op.getId() + ": " + op.getExecutionTime() );
 			for( SchedBlockResult sbr : op.getSchedBlock()){
 				if( sbr.getType() == "SCIENTIFIC")
 					sbr.getArrayRef().setScientificTime( sbr.getArrayRef().getScientificTime() + sbr.getExecutionTime() );

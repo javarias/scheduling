@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Affiliation.java,v 1.2 2010/03/02 23:35:41 javarias Exp $"
+ * "@(#) $Id: Affiliation.java,v 1.3 2010/04/23 21:37:01 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -33,7 +33,7 @@ package alma.scheduling.datamodel.output;
 public class Affiliation {
 
 	private String executive;
-	private int percentage;
+	private float percentage;
 
 	public Affiliation(){
 
@@ -47,11 +47,11 @@ public class Affiliation {
         this.executive = executive;
     }
 
-    public int getPercentage() {
+    public float getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(int percentage) {
+    public void setPercentage(float percentage) {
         this.percentage = percentage;
     }
 

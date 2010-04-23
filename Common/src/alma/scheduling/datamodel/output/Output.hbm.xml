@@ -35,10 +35,9 @@
 	</class>
 	
 	<class name="ObservationProject" table="OUTPUT_OBSERVATION_PROJECT">
-		<id column="ID" type="long">
-			<generator class="native"/>
+		<id name="id" column="ID" type="long">
+			<generator class="assigned"/>
 		</id>
-		
 		<property name="scienceRank" type="long" column="SCIENCE_RANK" />
 		<property name="scienceScore" type="float" column="SCIENCE_SCORE" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
