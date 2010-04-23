@@ -151,7 +151,11 @@ public class ACSComponentFactory implements ComponentFactory {
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx {
        final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(StateSystemIFName);
-       return wrapStateSystemComponent(StateSystemHelper.narrow(obj), diags);
+       final StateSystemOperations ops = StateSystemHelper.narrow(obj);
+       if (ops == null) {
+    	   logger.warning("SCHEDULING: Cannot find default ALMA State System component.");
+       }
+       return wrapStateSystemComponent(ops, diags);
 	}
 
 	/* (non-Javadoc)
@@ -163,7 +167,13 @@ public class ACSComponentFactory implements ComponentFactory {
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx {
        final org.omg.CORBA.Object obj = containerServices.getComponent(name);
-       return wrapStateSystemComponent(StateSystemHelper.narrow(obj), diags);
+       final StateSystemOperations ops = StateSystemHelper.narrow(obj);
+       if (ops == null) {
+    	   logger.warning(String.format(
+    			   "SCHEDULING: Cannot find ALMA State System component called %s.",
+    			   name));
+       }
+       return wrapStateSystemComponent(ops, diags);
 	}
    /* end of State System
     * -------------------------------------------------------------- */
@@ -234,7 +244,11 @@ public class ACSComponentFactory implements ComponentFactory {
 		throws AcsJContainerServicesEx, UserException {
 	       final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(ArchiveIFName);
 	       final ArchiveConnection con = ArchiveConnectionHelper.narrow(obj);
-	       return wrapArchiveComponent(con.getOperational("SCHEDULING"), diags);
+	       final OperationalOperations ops = con.getOperational("SCHEDULING");
+	       if (ops == null) {
+	    	   logger.warning("SCHEDULING: Cannot find default ALMA Archive component.");
+	       }
+	       return wrapArchiveComponent(ops, diags);
 	}
 
 	/* (non-Javadoc)
@@ -247,7 +261,13 @@ public class ACSComponentFactory implements ComponentFactory {
 		throws AcsJContainerServicesEx, UserException {
        final org.omg.CORBA.Object obj = containerServices.getComponent(name);
        final ArchiveConnection con = ArchiveConnectionHelper.narrow(obj);
-       return wrapArchiveComponent(con.getOperational("SCHEDULING"), diags);
+       final OperationalOperations ops = con.getOperational("SCHEDULING");
+       if (ops == null) {
+    	   logger.warning(String.format(
+    			   "SCHEDULING: Cannot find ALMA Archive component called %s.",
+    			   name));
+       }
+       return wrapArchiveComponent(ops, diags);
 	}
    /* end of Archive XMLStore
     * -------------------------------------------------------------- */
