@@ -115,6 +115,9 @@ public class ACSComponentFactory implements ComponentFactory {
     			case LOGGING:
     				result = new LoggingStateSystem(containerServices, result);
     				break;
+    			case PROFILING:
+    				result = new ProfilingStateSystem(containerServices, result);
+    				break;
     			case BARFING:
     				result = new BarfingStateSystem(containerServices, result);
     				break;

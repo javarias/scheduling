@@ -37,13 +37,13 @@ import alma.xmlstore.OperationalOperations;
  * Done as an interface so that we can insert facades for them and do
  * useful things like tracing.
  *
- * @version $Id: ComponentFactory.java,v 1.1 2010/04/20 23:04:14 dclarke Exp $
+ * @version $Id: ComponentFactory.java,v 1.2 2010/04/23 23:35:23 dclarke Exp $
  * @author David Clarke
  */
 public interface ComponentFactory {
 	
     public enum ComponentDiagnosticTypes {
-    	LOGGING, BARFING
+    	LOGGING, PROFILING, BARFING
     }
 
 	// State System
