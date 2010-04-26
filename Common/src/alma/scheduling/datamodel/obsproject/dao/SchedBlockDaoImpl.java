@@ -126,7 +126,23 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 		Object[] params = {lowLimit, highLimit};
 		return executeNamedQuery("SchedBlock.findByTargetHourAngleLimits", params);
 	}
-    
-    
-    
+	
+    @SuppressWarnings("unchecked")
+    public List<SchedBlock> findSchedBlocksOutOfSunArea(double lowRaLimit,
+            double highRaLimit, double lowDecLimit, double highDecLimit) {
+        Query query = null;
+        query = getSession()
+                .createQuery(
+                        "from SchedBlock sb where "
+                                + " not (sb.schedulingConstraints.representativeTarget.source.coordinates.RA >= ? and "
+                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?) and "
+                                + " not (sb.schedulingConstraints.representativeTarget.source.coordinates.Dec >= ? and "
+                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?)");
+        query.setParameter(0, lowRaLimit);
+        query.setParameter(1, highRaLimit);
+        query.setParameter(2, lowDecLimit);
+        query.setParameter(3, highDecLimit);
+        List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
+        return schedBlocks;
+    }
 }
