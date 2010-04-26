@@ -79,4 +79,38 @@ public class TimeUtilTest extends TestCase {
         logger.info("milliseconds = " + cal.get(Calendar.MILLISECOND));
     }
     
+    public void testLeapYears() {
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 1996);
+        cal.set(Calendar.MONTH, 2);
+        cal.set(Calendar.DAY_OF_MONTH, 29);
+        cal.set(Calendar.HOUR_OF_DAY, 14);
+        cal.set(Calendar.MINUTE, 36);
+        cal.set(Calendar.SECOND, 51);
+        cal.set(Calendar.MILLISECOND, 670);
+        
+        int days = TimeUtil.getLeapYearDaysfrom1990(cal.getTime());
+        assertEquals(1, days);
+    }
+    
+    public void testNumbersOfDaysfrom1990() {
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 1980);
+        cal.set(Calendar.MONTH, Calendar.JULY);
+        cal.set(Calendar.DAY_OF_MONTH, 27);
+        
+        int days = TimeUtil.getDaysFrom1990(cal.getTime());
+        assertEquals(-3444, days);
+    }
+    
+    public void testSunAstroData() {
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 2010);
+        cal.set(Calendar.MONTH, Calendar.MARCH);
+        cal.set(Calendar.DAY_OF_MONTH, 21);
+        
+        SunAstroData sunData = CoordinatesUtil.getSunAstroData(cal.getTime());
+        assertEquals(8.0 + 25.0/60.0 + 46.0/3600.0, sunData.ra, 0.1);
+    }
+    
 }

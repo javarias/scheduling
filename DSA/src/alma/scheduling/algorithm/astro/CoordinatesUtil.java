@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.5 2010/04/21 16:36:34 javarias Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.6 2010/04/26 23:04:55 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -199,5 +199,50 @@ public class CoordinatesUtil {
         fso.setRisingTime(r);
         fso.setSettingTime(s);
         return fso;
+    }
+    
+    public static SunAstroData getRADecSun(Date ut){
+        int days = TimeUtil.getDaysFrom1990(ut);
+        double n = 360.0/365.242191 * days;
+        double Eg = 279.403303;
+        if(n < 0)
+            n = n + (((int)((-n) / 360) + 1) * 360.0);
+        else if(n > 360)
+            n = n - ((int)( n / 360) * 360.0);
+        double m = n + Eg - 282.768422;
+        if(m < 0)
+            m += 360;
+        double ec = 360.0/Math.PI * 0.016713 * Math.sin(m * Math.PI / 180.0);
+        double Lg = n + ec + Eg;
+        if(Lg > 360)
+            Lg -= 360;
+//        double x = Math.cos(Lg * Math.PI / 180.0);
+//        double y = Math.sin(Lg * Math.PI / 180.0) * Math.cos(Eg * Math.PI / 180.0) 
+//        - Math.tan(0.0) * Math.sin(Eg * Math.PI / 180.0);
+//        double ra = Math.atan(y/x);
+        double Bg = 0.0;
+        double x = Math.cos(Lg * Math.PI / 180.0);
+        double y = Math.sin(Lg * Math.PI / 180.0) * Math.cos(Eg * Math.PI / 180.0) 
+        - Math.tan(Bg * Math.PI / 180.0) * Math.sin(Eg * Math.PI / 180.0);
+        double ra = Math.atan(y/x);
+        double dec = Math.sin(Bg * Math.PI / 180.0) * Math.cos(Eg * Math.PI / 180.0);
+        dec += Math.cos(Bg * Math.PI / 180.0) * Math.sin(Eg * Math.PI / 180.0) * Math.sin(Lg * Math.PI / 180.0);
+        dec = Math.asin(dec);
+        ra = ra * 180 / Math.PI;
+        if( ( x < 0 && y > 0 ) ||  (x > 0 && y < 0) )
+            ra += 180;
+        else if ( x > 0 && y < 0)
+            ra += 360;
+        SunAstroData sunData = new SunAstroData(ra ,dec * 180 / Math.PI);
+        sunData.setTrueAnomaly(m + ec);
+        return sunData;
+    }
+    
+    public static SunAstroData getSunAstroData(Date ut) {
+        SunAstroData sunData = getRADecSun(ut);
+        double f = (1 + 0.016713 * Math.cos(sunData.getTrueAnomaly() * Math.PI / 180.0))
+                / (1 - Math.pow(0.0161713, 2));
+        sunData.setAngularDiameter(f * 0.533128);
+        return sunData;
     }
 }

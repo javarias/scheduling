@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.3 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.4 2010/04/26 23:04:55 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -187,9 +187,48 @@ public class TimeUtil {
     public static double toDecimalHours(int hours, int minutes, double seconds) {
         return hours + ( minutes + ( seconds / 60.0 ) ) / 60.0;
     }
-
+    
     public static String getUTString(Date ut) {
         return format.format(ut);
     }
     
+    public static int getDaysFrom1990(Date date){
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.setTime(date);
+        int days = 0;
+        if(cal.get(Calendar.YEAR) >= 1990)
+            days = cal.get(Calendar.YEAR) - 1990;
+        else
+            days = 1990 - cal.get(Calendar.YEAR) - 1;
+        days = days * 365;
+        if(cal.get(Calendar.YEAR) >= 1990)
+            days += cal.get(Calendar.DAY_OF_YEAR) - 1;
+        else{
+            if (cal.get(Calendar.YEAR) % 4 == 0)
+                days += 366 - (cal.get(Calendar.DAY_OF_YEAR) - 1);
+            else
+                days += 365 - (cal.get(Calendar.DAY_OF_YEAR) - 1);
+        }
+        days += getLeapYearDaysfrom1990(date);
+        if(cal.get(Calendar.YEAR) % 4 == 0 && cal.get(Calendar.MONTH) > Calendar.FEBRUARY)
+            days--;
+        if (! (cal.get(Calendar.YEAR) >= 1990))
+            return -days;
+        return days;
+    }
+    
+    public static int getLeapYearDaysfrom1990(Date date){
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.setTime(date);
+        double years = 0.0;
+        if(cal.get(Calendar.YEAR) > 1990)
+            years = cal.get(Calendar.YEAR) - 1990;
+        else
+            years = 1990 - cal.get(Calendar.YEAR);
+        years = years / 4.0;
+        if((years - (int)years) >= 0.5 )
+            if(!(cal.get(Calendar.YEAR) % 4 == 0 && cal.get(Calendar.MONTH) > Calendar.FEBRUARY))
+                years++;
+        return (int)years;
+    }
 }
