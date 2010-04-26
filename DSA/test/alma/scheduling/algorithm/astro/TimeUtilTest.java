@@ -102,7 +102,7 @@ public class TimeUtilTest extends TestCase {
         int days = TimeUtil.getDaysFrom1990(cal.getTime());
         assertEquals(-3444, days);
     }
-    
+/*    
     public void testSunAstroData() {
         Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
         cal.set(Calendar.YEAR, 2010);
@@ -112,5 +112,5 @@ public class TimeUtilTest extends TestCase {
         SunAstroData sunData = CoordinatesUtil.getSunAstroData(cal.getTime());
         assertEquals(8.0 + 25.0/60.0 + 46.0/3600.0, sunData.ra, 0.1);
     }
-    
+    */
 }
