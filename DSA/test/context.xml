@@ -276,6 +276,12 @@
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 	
+	<bean id="moonAvoidanceSelector" class="alma.scheduling.algorithm.obsproject.MoonAvoidanceSelector"
+		scope="prototype">
+        <constructor-arg><value>moonAvoidanceSelector</value></constructor-arg>
+		<property name="sbDao" ref="sbDao"/>		
+	</bean>
+	
 	<!-- Rankers -->
 	
 	<bean id="sciRanker" class="alma.scheduling.algorithm.sbranking.ScienceGradeRanker" scope="prototype">
@@ -328,6 +334,7 @@
 				<ref bean="arrayConfigSelector"/>
 				<ref bean="hourAngleSelector" />
                 <ref bean="sunAvoidanceSelector" />
+                <ref bean="moonAvoidanceSelector" />
 			</set>
 		</property>
 		<property name="postUpdateSelectors">
