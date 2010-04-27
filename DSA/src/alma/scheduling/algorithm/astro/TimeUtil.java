@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.4 2010/04/26 23:04:55 javarias Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.5 2010/04/27 22:10:04 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -192,25 +192,27 @@ public class TimeUtil {
         return format.format(ut);
     }
     
-    public static int getDaysFrom1990(Date date){
+    public static double getDaysFrom1990(Date date){
         Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
         cal.setTime(date);
-        int days = 0;
+        double days = 0;
         if(cal.get(Calendar.YEAR) >= 1990)
             days = cal.get(Calendar.YEAR) - 1990;
         else
             days = 1990 - cal.get(Calendar.YEAR) - 1;
         days = days * 365;
-        if(cal.get(Calendar.YEAR) >= 1990)
+        if(cal.get(Calendar.YEAR) >= 1990) {
             days += cal.get(Calendar.DAY_OF_YEAR) - 1;
+            days += cal.get(Calendar.HOUR_OF_DAY)/24.0 + cal.get(Calendar.MINUTE)/1440.0 + cal.get(Calendar.SECOND)/86400.0; 
+        }
         else{
             if (cal.get(Calendar.YEAR) % 4 == 0)
-                days += 366 - (cal.get(Calendar.DAY_OF_YEAR) - 1);
+                days += 366.0 - (cal.get(Calendar.DAY_OF_YEAR) + cal.get(Calendar.HOUR_OF_DAY)/24.0 + cal.get(Calendar.MINUTE)/1440.0 + cal.get(Calendar.SECOND)/86400.0);
             else
-                days += 365 - (cal.get(Calendar.DAY_OF_YEAR) - 1);
+                days += 365.0 - (cal.get(Calendar.DAY_OF_YEAR) + cal.get(Calendar.HOUR_OF_DAY)/24.0 + cal.get(Calendar.MINUTE)/1440.0 + cal.get(Calendar.SECOND)/86400.0);
         }
         days += getLeapYearDaysfrom1990(date);
-        if(cal.get(Calendar.YEAR) % 4 == 0 && cal.get(Calendar.MONTH) > Calendar.FEBRUARY)
+        if(cal.get(Calendar.YEAR) % 4 == 0 && cal.get(Calendar.MONTH) < Calendar.MARCH)
             days--;
         if (! (cal.get(Calendar.YEAR) >= 1990))
             return -days;

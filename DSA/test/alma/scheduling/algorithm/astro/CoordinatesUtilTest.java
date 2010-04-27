@@ -97,4 +97,34 @@ public class CoordinatesUtilTest extends TestCase {
         logger.info("rising time = " + fso.getRisingTime());
         logger.info("setting time = " + fso.getSettingTime());
     }
+    
+    public void testSunAstroData() {
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 1980);
+        cal.set(Calendar.MONTH, Calendar.JULY);
+        cal.set(Calendar.DAY_OF_MONTH, 27);
+        cal.set(Calendar.MINUTE, 00);
+        cal.set(Calendar.SECOND, 00);
+        cal.set(Calendar.MILLISECOND, 000);
+        
+        SunAstroData sunData = CoordinatesUtil.getSunAstroData(cal.getTime());
+        assertEquals((8.0 + 25.0/60.0 + 46.0/3600.0 ) * 15.0, sunData.ra, 1.0);
+        assertEquals(19.0 + 13.0/60.0 + 48.0/3600.0 , sunData.dec, 0.3);
+    }
+    
+    
+    public void testMoonAstroData() {
+        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
+        cal.set(Calendar.YEAR, 1979);
+        cal.set(Calendar.MONTH, Calendar.FEBRUARY);
+        cal.set(Calendar.DAY_OF_MONTH, 26);
+        cal.set(Calendar.HOUR_OF_DAY, 16);
+        cal.set(Calendar.MINUTE, 00);
+        cal.set(Calendar.SECOND, 00);
+        cal.set(Calendar.MILLISECOND, 000);
+        
+        MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(cal.getTime());
+        assertEquals( (22.0 + 33.0/60.0 + 27.0/3600.0 ) * 15.0, moonData.ra, 0.5);
+        assertEquals( -8.0 + 1.0/60.0 + 00.0/3600.0 , moonData.dec, 0.3);
+    }
 }

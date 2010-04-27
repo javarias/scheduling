@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.6 2010/04/26 23:04:55 javarias Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.7 2010/04/27 22:10:04 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -202,7 +202,7 @@ public class CoordinatesUtil {
     }
     
     public static SunAstroData getRADecSun(Date ut){
-        int days = TimeUtil.getDaysFrom1990(ut);
+        double days = TimeUtil.getDaysFrom1990(ut);
         double n = 360.0/365.242191 * days;
         double Eg = 279.403303;
         if(n < 0)
@@ -216,20 +216,21 @@ public class CoordinatesUtil {
         double Lg = n + ec + Eg;
         if(Lg > 360)
             Lg -= 360;
-//        double x = Math.cos(Lg * Math.PI / 180.0);
-//        double y = Math.sin(Lg * Math.PI / 180.0) * Math.cos(Eg * Math.PI / 180.0) 
-//        - Math.tan(0.0) * Math.sin(Eg * Math.PI / 180.0);
-//        double ra = Math.atan(y/x);
+        double T = (TimeUtil.getJulianDate(ut) - 2451545.0) / 36525.0;
+        double dE = 46.815 * T + 0.0006 * Math.pow(T, 2) + 0.00181 * Math.pow(T, 3);
+        dE = Math.abs(dE);
+        dE = dE / 3600;
+        double E = 23.439292 - dE;
         double Bg = 0.0;
         double x = Math.cos(Lg * Math.PI / 180.0);
-        double y = Math.sin(Lg * Math.PI / 180.0) * Math.cos(Eg * Math.PI / 180.0) 
+        double y = Math.sin(Lg * Math.PI / 180.0) * Math.cos(E * Math.PI / 180.0) 
         - Math.tan(Bg * Math.PI / 180.0) * Math.sin(Eg * Math.PI / 180.0);
         double ra = Math.atan(y/x);
-        double dec = Math.sin(Bg * Math.PI / 180.0) * Math.cos(Eg * Math.PI / 180.0);
-        dec += Math.cos(Bg * Math.PI / 180.0) * Math.sin(Eg * Math.PI / 180.0) * Math.sin(Lg * Math.PI / 180.0);
+        double dec = Math.sin(Bg * Math.PI / 180.0) * Math.cos(E * Math.PI / 180.0);
+        dec += Math.cos(Bg * Math.PI / 180.0) * Math.sin(E * Math.PI / 180.0) * Math.sin(Lg * Math.PI / 180.0);
         dec = Math.asin(dec);
         ra = ra * 180 / Math.PI;
-        if( ( x < 0 && y > 0 ) ||  (x > 0 && y < 0) )
+        if( ( x < 0 && y > 0 ) ||  (x < 0 && y < 0) )
             ra += 180;
         else if ( x > 0 && y < 0)
             ra += 360;
@@ -244,5 +245,93 @@ public class CoordinatesUtil {
                 / (1 - Math.pow(0.0161713, 2));
         sunData.setAngularDiameter(f * 0.533128);
         return sunData;
+    }
+    
+    public static MoonAstroData getRaDecMoon(Date ut) {
+        double days = TimeUtil.getDaysFrom1990(ut);
+        double n = 360.0/365.242191 * days;
+        double Eg = 279.403303;
+        if(n < 0)
+            n = n + (((int)((-n) / 360) + 1) * 360.0);
+        else if(n > 360)
+            n = n - ((int)( n / 360) * 360.0);
+        double m = n + Eg - 282.768422;
+        if(m < 0)
+            m += 360;
+        double ec = 360.0/Math.PI * 0.016713 * Math.sin(m * Math.PI / 180.0);
+        double Lg = n + ec + Eg;
+        if(Lg > 360)
+            Lg -= 360;
+        
+        double l  = 13.1763966 * days + 318.351648;
+        if(l < 0)
+            l = l + (((int)((-l) / 360) + 1) * 360.0);
+        else if(l > 360)
+            l = l - ((int)( l / 360) * 360.0);
+        
+        double Mm = l - 0.1114041 * days - 36.340410;
+        if(Mm < 0)
+            Mm = Mm + (((int)((-Mm) / 360) + 1) * 360.0);
+        else if(Mm > 360)
+            Mm = Mm - ((int)( Mm / 360) * 360.0);
+        
+        double N = 318.510107 - 0.0529539 * days;
+        if(N < 0)
+            N = N + (((int)((-N) / 360) + 1) * 360.0);
+        else if(N > 360)
+            N = N - ((int)( N / 360) * 360.0);
+        
+        double Ev = 1.2739 * Math.sin((2 * (l - Lg) - Mm) * Math.PI / 180.0);
+        double Ae = 0.1852 * Math.sin(m * Math.PI / 180.0);
+        double A3 = 0.37 * Math.sin(m * Math.PI / 180.0);
+        double Mmp = Mm + Ev - Ae - A3;
+        double Ec = 6.2886 * Math.sin(Mmp * Math.PI / 180.0);
+        double A4 = 0.214 * Math.sin( 2 * Mmp * Math.PI / 180.0);
+        double lp = l + Ev + Ec - Ae + A4;
+        double V = 0.6583 * Math.sin(2 * (lp - Lg) * Math.PI / 180.0);
+        double lpp = lp + V;
+        double Np = N - 0.16 * Math.sin(m * Math.PI / 180.0);
+        double y = Math.sin((lpp - Np) * Math.PI / 180.0) * Math.cos(5.145396 * Math.PI / 180.0);
+        double x = Math.cos((lpp - Np) * Math.PI / 180.0);
+        double Lm = Math.atan(y/x);
+        Lm = Lm * 180 / Math.PI;
+        if( ( x < 0 && y > 0 ) ||  (x > 0 && y < 0) )
+            Lm += 180;
+        else if ( x > 0 && y < 0)
+            Lm += 360;
+        Lm += Np;
+        double Bm = Math.asin(Math.sin((lpp - Np) * Math.PI / 180.0) * Math.sin(5.145396 * Math.PI / 180.0)) * 180.0 / Math.PI;
+        
+        // mean obliquity of the eclipstic
+        double T = (TimeUtil.getJulianDate(ut) - 2451545.0) / 36525.0;
+        double dE = 46.815 * T + 0.0006 * Math.pow(T, 2) + 0.00181 * Math.pow(T, 3);
+        dE = Math.abs(dE);
+        dE = dE / 3600;
+        double E = 23.439292 - dE;
+        
+        x = Math.cos(Lm * Math.PI / 180.0);
+        y = Math.sin(Lm * Math.PI / 180.0) * Math.cos(E * Math.PI / 180.0) 
+        - Math.tan(Bm * Math.PI / 180.0) * Math.sin(E * Math.PI / 180.0);
+        double ra = Math.atan(y/x);
+        double dec = Math.sin(Bm * Math.PI / 180.0) * Math.cos(E * Math.PI / 180.0);
+        dec += Math.cos(Bm * Math.PI / 180.0) * Math.sin(E * Math.PI / 180.0) * Math.sin(Lg * Math.PI / 180.0);
+        dec = Math.asin(dec);
+        ra = ra * 180 / Math.PI;
+        if( ( x < 0 && y > 0 ) ||  (x < 0 && y < 0) )
+            ra += 180;
+        else if ( x > 0 && y < 0)
+            ra += 360;
+        dec = dec * 180 / Math.PI;
+        MoonAstroData moonData = new MoonAstroData(ra, dec);
+        moonData.setMmp(Mmp);
+        moonData.setEc(Ec);
+        return moonData;
+    }
+    
+    public static MoonAstroData getMoonAstroData(Date ut){
+        MoonAstroData moonData = getRaDecMoon(ut);
+        double pp =  (1 - Math.pow(0.054900, 2)) / (1 + 0.054900 * Math.cos((moonData.getMmp() + moonData.getEc()) * Math.PI / 180.0));
+        moonData.setAngularDiameter(0.5181/ pp);
+        return moonData;
     }
 }

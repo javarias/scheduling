@@ -3,7 +3,6 @@ package alma.scheduling.algorithm.astro;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -99,18 +98,8 @@ public class TimeUtilTest extends TestCase {
         cal.set(Calendar.MONTH, Calendar.JULY);
         cal.set(Calendar.DAY_OF_MONTH, 27);
         
-        int days = TimeUtil.getDaysFrom1990(cal.getTime());
-        assertEquals(-3444, days);
+        double days = TimeUtil.getDaysFrom1990(cal.getTime());
+        assertEquals(-3444, days, 1);
     }
-/*    
-    public void testSunAstroData() {
-        Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        cal.set(Calendar.YEAR, 2010);
-        cal.set(Calendar.MONTH, Calendar.MARCH);
-        cal.set(Calendar.DAY_OF_MONTH, 21);
-        
-        SunAstroData sunData = CoordinatesUtil.getSunAstroData(cal.getTime());
-        assertEquals(8.0 + 25.0/60.0 + 46.0/3600.0, sunData.ra, 0.1);
-    }
-    */
+    
 }

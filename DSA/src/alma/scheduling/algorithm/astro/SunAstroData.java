@@ -9,11 +9,11 @@ public class SunAstroData extends RaDec {
         super(ra, dec);
     }
 
-    public double getTrueAnomaly() {
+    double getTrueAnomaly() {
         return trueAnomaly;
     }
 
-    public void setTrueAnomaly(double trueAnomaly) {
+    void setTrueAnomaly(double trueAnomaly) {
         this.trueAnomaly = trueAnomaly;
     }
 
