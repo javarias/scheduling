@@ -128,7 +128,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 	}
 	
     @SuppressWarnings("unchecked")
-    public List<SchedBlock> findSchedBlocksOutOfSunArea(double lowRaLimit,
+    public List<SchedBlock> findSchedBlocksOutOfArea(double lowRaLimit,
             double highRaLimit, double lowDecLimit, double highDecLimit) {
         Query query = null;
         query = getSession()
