@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.5 2010/04/27 22:10:04 javarias Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.6 2010/04/28 20:01:07 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -189,6 +189,7 @@ public class TimeUtil {
     }
     
     public static String getUTString(Date ut) {
+        format.setTimeZone(TimeZone.getTimeZone("UT"));
         return format.format(ut);
     }
     
