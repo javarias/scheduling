@@ -48,8 +48,8 @@
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="startDate" type="xs:date" use="required"/>
-		<xs:attribute name="endDate" type="xs:date" use="required"/>
+		<xs:attribute name="startDate" type="xs:dateTime" use="required"/>
+		<xs:attribute name="endDate" type="xs:dateTime" use="required"/>
 	</xs:complexType>
 	
 	<xs:complexType name="Executive">
