@@ -40,4 +40,9 @@ public class TimeReal extends TimeHandler{
 		logger.debug("Invocation of step() method in a non-simulated environment");
 	}
 
+	@Override
+	public void step(Date date) {
+		logger.debug("Invocation of step() method in a non-simulated environment");		
+	}
+
 }

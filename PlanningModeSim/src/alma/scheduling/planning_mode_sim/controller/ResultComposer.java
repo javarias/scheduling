@@ -55,13 +55,14 @@ public class ResultComposer {
 		results.setObsSeasonEnd(obsSeasonEnd);
 		results.setStartSimDate(obsSeasonStart);
 		results.setStopSimDate(obsSeasonEnd);
+		results.setAvailableTime( (results.getObsSeasonEnd().getTime() - results.getObsSeasonStart().getTime())/1000);
 	}
 	
 	public void notifyArrayCreation(ArrayConfiguration arrcfg){
 		Array arr = new Array();
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
-		// TODO Implement available time (deletionDate - CreationDate)
+		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/1000);
 		arr.setId(arrcfg.getId());
 		arr.setResolution( arrcfg.getResolution());
 		arr.setUvCoverage(arrcfg.getUvCoverage());
@@ -88,6 +89,7 @@ public class ResultComposer {
 		sbr.setStartDate( TimeHandler.now() );
 		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime() );
 		sbr.setStatus( ExecutionStatus.INCOMPLETE );
+		sbr.setRepresentativeFrequency( sb.getSchedulingConstraints().getRepresentativeFrequency() );
 		//TODO: Implement modes in data-model
 		// In the XSD, there is a spec: InstrumentSpecT, and ObservingMode
 		sbr.setMode( "Single Dish" ); 
@@ -123,14 +125,18 @@ public class ResultComposer {
 			Affiliation newAffiliation = new Affiliation();
 			ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
 			newAffiliation.setExecutive( execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
-			System.out.println("OUTPUT: This project belongs to: " + execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
-			newAffiliation.setPercentage( 0.00f );
-
+			newAffiliation.setPercentage( 
+					execDao.getPIFromEmail( 
+							inputObsProjectRef.getPrincipalInvestigator() )
+							.getPIMembership()
+							.iterator()
+							.next()
+							.getMembershipPercentage() );
 			newObsProject.getAffiliation().add( newAffiliation );
 			
-			// Create the SchedBlock Set.
+			// Create the SchedBlock Set and add the new ObservationProject to the Results
 			newObsProject.setSchedBlock(new HashSet<SchedBlockResult>());
-			// Add the new ObservationProject to the Results
+
 			results.getObservationProject().add( newObsProject );
 			// Save the reference for further use
 			outputObservationProjectRef = newObsProject;
@@ -139,8 +145,7 @@ public class ResultComposer {
 		// Add the SchedBlock to the corresponding ObservationProject
 		outputObservationProjectRef.getSchedBlock().add(sbr);
 		
-		//TODO: Use the correct time spend on simulation
-		TimeHandler.stepAhead( (int) sbr.getExecutionTime() );
+		TimeHandler.stepAhead( sb.getObsUnitControl().getEstimatedExecutionTime() );
 		sbr.setEndDate( TimeHandler.now() );
 	}
 	
@@ -150,6 +155,8 @@ public class ResultComposer {
 		//if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
 		//	sbr.setStatus( ExecutionStatus.COMPLETE );
 		//}
+		//sbr.setEndDate( TimeHandler.now() );
+
 	}
 		
 	/**
@@ -169,7 +176,6 @@ public class ResultComposer {
 		
 		for( Array arr : results.getArray()){
 			arr.setScientificTime( 0.0 );
-			arr.setAvailableTime( 0.0 );
 			arr.setMaintenanceTime( 0.0 );
 		}
 		
@@ -186,7 +192,6 @@ public class ResultComposer {
 		
 		for( Array arr : results.getArray()){
 			this.results.setScientificTime( arr.getScientificTime() +  this.results.getScientificTime() );
-			this.results.setAvailableTime( arr.getAvailableTime() +  this.results.getAvailableTime() );
 			this.results.setMaintenanceTime( arr.getMaintenanceTime() +  this.results.getMaintenanceTime() );
 		}
 				

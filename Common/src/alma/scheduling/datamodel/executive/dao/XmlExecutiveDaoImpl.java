@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.7 2010/04/09 20:52:02 rhiriart Exp $"
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.8 2010/04/28 19:23:03 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -278,7 +278,7 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
     private PIMembership copyPIMembership(
             alma.scheduling.input.executive.generated.PIMembership in) {
         PIMembership pim = new PIMembership();
-        pim.setMembershipPercentage(pim.getMembershipPercentage());
+        pim.setMembershipPercentage(in.getMembershipPercentage());
         return pim;
     }
 }

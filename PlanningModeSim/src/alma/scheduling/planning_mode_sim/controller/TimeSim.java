@@ -40,14 +40,21 @@ public class TimeSim extends TimeHandler{
 	}
 
 	/* (non-Javadoc)
-	 * @see alma.scheduling.planning_mode_sim.controller.TimeUtil#step(double)
+	 * @see alma.scheduling.planning_mode_sim.controller.TimeUtil#step(int)
 	 */
 	public void step(int time) {
 		Calendar cal = Calendar.getInstance( TimeZone.getTimeZone("UT") );
         cal.setTime(date);
-        cal.add(Calendar.MILLISECOND, time);
+        cal.add(Calendar.MILLISECOND, time * 1000);
         date = cal.getTime();
         logger.debug("Stepping forward into:" + date.toString() );
+	}
+	
+	
+	@Override
+	public void step(Date date) {
+		this.date = date;
+		logger.debug("Stepping forward into:" + date.toString() );
 	}
 
 }

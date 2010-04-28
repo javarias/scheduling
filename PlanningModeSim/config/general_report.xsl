@@ -1,27 +1,3 @@
-<!--
-ALMA - Atacama Large Millimeter Array
-(c) European Southern Observatory, 2002
-(c) Associated Universities Inc., 2002
-Copyright by ESO (in the framework of the ALMA collaboration),
-Copyright by AUI (in the framework of the ALMA collaboration),
-All rights reserved.
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY, without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-MA 02111-1307  USA
--->
-
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet 
   version="1.0"
@@ -38,6 +14,8 @@ MA 02111-1307  USA
     <html>
       <head> <title>Planning Mode Simulator -- Report</title> </head>
       <body>
+
+	<!-- General information -->
 	<h1>Planning Mode Simulator -- Report</h1>
 	
 	<h2>Simulation parameters</h2>
@@ -54,21 +32,39 @@ MA 02111-1307  USA
 	  <li><b>Time spent in maintenance: </b> <xsl:value-of select="maintenanceTime"/> [sec]</li>
 	  <li><b>Time spent in scientific observations: </b> <xsl:value-of select="scientificTime"/> [sec]</li>
         </ul>
+	
+	<!-- Array Section -->
+	<xsl:if test='count(Array) > 0'>
+	  <h2>Per Array Results</h2>
+	    <xsl:apply-templates select="Array">
+	      <xsl:sort select="id" data-type ="number" />
+	    </xsl:apply-templates>
+	</xsl:if>
+	<xsl:if test='count(Array) = 0'>
+	  <b>WARNING: </b> The simulation results file did not have any data on array configuration. Please check the simulation configuration (aprc-config.xml file). In case you suppose this should not happen, please contact the Scheduling subsystem team.
+	</xsl:if>
+	
+	<!-- Observation Projects Section -->	
+	<xsl:if test='count(ObservationProject) > 0'>
+	  <h2>Per Observation Project Results</h2>
+	  <xsl:apply-templates select="ObservationProject">
+	    <xsl:sort select="id" data-type ="number" />
+	  </xsl:apply-templates>
+	</xsl:if>
+	<xsl:if test='count(ObservationProject) = 0'>
+	  <b>WARNING: </b> The simulation results file did not have any data on observation projects execution. Please check the simulation configuration. In case you suppose this should not happen, please contact the Scheduling subsystem team.
+	</xsl:if>
 
-	<h2>Per Array Results</h2>
-	<xsl:apply-templates select="Array">
-	  <xsl:sort select="id" data-type ="number" />
-	</xsl:apply-templates>
-
-	<h2>Per Observation Project Results</h2>
-	<xsl:apply-templates select="ObservationProject">
-	  <xsl:sort select="id" data-type ="number" />
-	</xsl:apply-templates>
-
-	<h2>Per Scheduling Block Results</h2>
-	<xsl:apply-templates select="ObservationProject/SchedBlock">
-	  <xsl:sort select="id" data-type ="number" />
-	</xsl:apply-templates>
+	<!-- Scheduling Blocks Section -->	
+	<xsl:if test='count(ObservationProject/SchedBlock) > 0'>
+	  <h2>Per Scheduling Block Results</h2>
+	  <xsl:apply-templates select="ObservationProject/SchedBlock">
+	    <xsl:sort select="id" data-type ="number" />
+	  </xsl:apply-templates>
+	</xsl:if>
+	<xsl:if test='count(ObservationProject/SchedBlock) = 0'>
+	  <b>WARNING: </b> The simulation results file did not have any data on scheduling blocks execution. Please check the simulation configuration. In case you suppose this should not happen, please contact the Scheduling subsystem team.
+	</xsl:if>
 
       </body>
     </html>
@@ -89,6 +85,7 @@ MA 02111-1307  USA
       </ul>
   </xsl:template>
 
+  <!-- Per observation project template -->
   <xsl:template match="ObservationProject">
     <h3>Observation Project ID <xsl:value-of select="id"/></h3>
       <ul>
@@ -114,6 +111,7 @@ MA 02111-1307  USA
       </ul>
   </xsl:template>
 
+  <!-- Per scheduling block template -->
   <xsl:template match="ObservationProject/SchedBlock">
     <a name="SB-{id}"/>
     <h3>Scheduling Block ID <xsl:value-of select="id"/></h3>

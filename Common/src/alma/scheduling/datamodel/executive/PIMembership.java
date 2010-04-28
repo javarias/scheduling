@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: PIMembership.java,v 1.9 2010/04/07 22:43:51 rhiriart Exp $"
+ * "@(#) $Id: PIMembership.java,v 1.10 2010/04/28 19:23:03 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -40,7 +40,7 @@ public class PIMembership {
      * Percentages to be used to distribute the total observation time between
      * the PI's associated Executives.
      */
-	private Float membershipPercentage;
+	private float membershipPercentage;
 	
 	/** Executive */
 	private Executive executive;
@@ -52,11 +52,11 @@ public class PIMembership {
 
     // --- Getters and Setters ---
 
-	public Float getMembershipPercentage() {
+	public float getMembershipPercentage() {
         return membershipPercentage;
     }
 
-    public void setMembershipPercentage(Float membershipPercentage) {
+    public void setMembershipPercentage(float membershipPercentage) {
         this.membershipPercentage = membershipPercentage;
     }
 

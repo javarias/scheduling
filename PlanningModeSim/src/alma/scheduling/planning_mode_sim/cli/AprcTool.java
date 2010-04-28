@@ -181,20 +181,25 @@ public class AprcTool {
     
     @Transactional
     private void run(String ctxPath){
-    	TimeHandler.initialize(TimeHandler.Type.REAL);
-        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+    	ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
-        // Date time = calendar.getTime(); // initial time is now, it should be configurable
+        
+        // Time Handling section
+        TimeHandler.initialize(TimeHandler.Type.SIMULATED);
         Date time = execDao.getCurrentSeason().getStartDate(); //The start time is the start Time of the current Season
+        TimeHandler.getHandler().setStartingDate( execDao.getCurrentSeason().getStartDate() );
         System.out.println(TimeUtil.getUTString(time) + "Starting Simulation");
         Date stopTime = execDao.getCurrentSeason().getEndDate();
+        
+        
         setPreconditions(ctx, new Date());
         SchedBlockExecutor sbExecutor =
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
+        // Initialization of Result Composer
         ResultComposer rc = new ResultComposer(ctx);
         rc.notifyExecutiveData(
         		execDao.getCurrentSeason().getStartDate(), 
@@ -254,13 +259,14 @@ public class AprcTool {
             logger.debug(ev.toString());
         }
         
-        /*Stop at end of season*/
+        // Stop at end of season
         while( time.before(stopTime) && !timesToCheck.isEmpty() ){
         	TimeEvent ev = timesToCheck.remove();
             //Change the current simulation time to event time
             time = ev.getTime();
             switch (ev.getType()){
             case ARRAY_CREATION:
+            	TimeHandler.getHandler().step(ev.getTime());
                 DynamicSchedulingAlgorithm dsa;
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Array " + ev.getArray().getId() + " created");
@@ -280,6 +286,7 @@ public class AprcTool {
                     System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                    TimeHandler.getHandler().step(d);
                     rc.notifySchedBlockStart(sb);
                     //Create a new EventTime to check the SB execution termination in the future
                     TimeEvent sbEndEv = new TimeEvent();
@@ -295,14 +302,16 @@ public class AprcTool {
                 }
                 break;
             case ARRAY_DESTRUCTION:
-                //notify the destruction??
+                //notify the destruction?? (RESPONSE: No, at this moment. Everything is gathered at creation)
                 System.out.println(TimeUtil.getUTString(time) + "Array Id: " + 
                         ev.getArray().getId() + " destroyed");
+                TimeHandler.getHandler().step(ev.getTime());
                 arraysCreated.remove(ev.getArray());
                 freeArrays.remove(ev.getArray());
                 break;
             case SCHEDBLOCK_EXECUTION_FINISH:
                 dsa = arraysCreated.get(ev.getArray());
+                TimeHandler.getHandler().step(ev.getTime());
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Finishing Execution of SchedBlock Id: " + ev.getSb().getId());
                 System.out.println(TimeUtil.getUTString(time) + 
@@ -317,6 +326,7 @@ public class AprcTool {
                     System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                    TimeHandler.getHandler().step(d);
                     rc.notifySchedBlockStart(sb);
                     //Create a new EventTime to check the SB execution termination in the future
                     TimeEvent sbEndEv = new TimeEvent();
@@ -334,6 +344,7 @@ public class AprcTool {
                 
             case FREE_ARRAY:
                 dsa = arraysCreated.get(ev.getArray());
+                TimeHandler.getHandler().step(ev.getTime());
                 //removing from free list
                 freeArrays.remove(ev.getArray());
                 System.out.println(TimeUtil.getUTString(time) + 
@@ -343,6 +354,7 @@ public class AprcTool {
                     dsa.rankSchedBlocks(time);
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                    TimeHandler.getHandler().step(d);
                     rc.notifySchedBlockStart(sb);
                     //Create a new EventTime to check the SB execution termination in the future
                     TimeEvent sbEndEv = new TimeEvent();
@@ -373,11 +385,12 @@ public class AprcTool {
         
         rc.completeResults();
         //Saving results to DB and XML output file
-        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-        outDao.saveResults( rc.getResults() );
         XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
         xmlOutDao.setConfigDao(xmlConfigDao);
         xmlOutDao.saveResults( rc.getResults() );
+        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+        outDao.saveResults( rc.getResults() );
+
         
     }
 

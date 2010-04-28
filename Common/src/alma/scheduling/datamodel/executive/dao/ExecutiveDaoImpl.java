@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.15 2010/04/26 23:02:49 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.16 2010/04/28 19:23:03 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -103,6 +103,9 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     @Transactional(readOnly=true)
     public PI getPIFromEmail(String piEmail) {
         PI pi = findById(PI.class, piEmail);
+        for( PIMembership pim : pi.getPIMembership() ){
+        	pim.getMembershipPercentage();
+        }
         return pi;
     }
     

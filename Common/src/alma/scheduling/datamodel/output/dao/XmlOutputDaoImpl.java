@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
@@ -50,6 +51,7 @@ public class XmlOutputDaoImpl implements OutputDao {
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void saveResults(Results results) {
         // TODO Auto-generated method stub
         alma.scheduling.output.generated.Results r = 
@@ -65,8 +67,7 @@ public class XmlOutputDaoImpl implements OutputDao {
         alma.scheduling.output.generated.ObservationProject op[] =
             new alma.scheduling.output.generated.ObservationProject[results.getObservationProject().size()];
         Iterator<ObservationProject> itOp = results.getObservationProject().iterator();
-        r.setObservationProject(op);
-      	
+              	
         for(int i = 0; i < op.length; i++){
             ObservationProject tmpOp = itOp.next();
         	op[i] = new alma.scheduling.output.generated.ObservationProject();
@@ -81,19 +82,18 @@ public class XmlOutputDaoImpl implements OutputDao {
             alma.scheduling.output.generated.Affiliation aff[] = 
                 new alma.scheduling.output.generated.Affiliation[tmpOp.getAffiliation().size()];
             Iterator<Affiliation> itAff = tmpOp.getAffiliation().iterator();
-            op[i].setAffiliation(aff);
             for(int j = 0; j < aff.length; j++){
                 Affiliation tmpAff = itAff.next();
                 aff[j] = new alma.scheduling.output.generated.Affiliation();
                 aff[j].setExecutive(tmpAff.getExecutive());
                 aff[j].setPercentage(tmpAff.getPercentage());
             }
+            op[i].setAffiliation(aff);
             
             //set the sched blocks results
             alma.scheduling.output.generated.SchedBlock sb[] = 
                 new alma.scheduling.output.generated.SchedBlock[tmpOp.getSchedBlock().size()];
             Iterator<SchedBlockResult> itSb = tmpOp.getSchedBlock().iterator();
-            op[i].setSchedBlock(sb);
             for(int j = 0; j < sb.length; j++){
                 SchedBlockResult tmpSb = itSb.next();
                 sb[j] = new alma.scheduling.output.generated.SchedBlock();
@@ -108,10 +108,13 @@ public class XmlOutputDaoImpl implements OutputDao {
                 sb[j].setType(tmpSb.getType());  
                 alma.scheduling.output.generated.ArrayRef aRef= 
                     new alma.scheduling.output.generated.ArrayRef();
-                aRef.setArrayRef(Integer.toString(tmpSb.getArrayRef().hashCode()));
+                aRef.setArrayRef(Long.toString(tmpSb.getArrayRef().getId()));
                 sb[j].setArrayRef(aRef);
             }
+            op[i].setSchedBlock(sb);
         }
+        
+        r.setObservationProject(op);
         
         //set the Arrays
         alma.scheduling.output.generated.Array a[] =
@@ -131,6 +134,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             a[i].setUvCoverage( tmpA.getUvCoverage());
         }
         r.setArray(a);
+        
         if (fw == null){
             config = configDao.getConfiguration();
             Date d = new Date();

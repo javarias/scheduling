@@ -58,6 +58,12 @@ public abstract class TimeHandler {
 	 */
 	public abstract void step(int time);
 	
+	/**
+	 * Steps forward to the specified date.
+	 * @param Date Date to which the internal clock must be moved to.
+	 */
+	public abstract void step(Date date);
+	
 	static public TimeHandler getHandler(){
 		return inst;		
 	}
@@ -72,6 +78,10 @@ public abstract class TimeHandler {
 	
 	static public void stepAhead(int amount){
 		getHandler().step(amount);
+	}
+	
+	static public void stepAhead(double amount){
+		getHandler().step(new Double(amount).intValue());
 	}
 	
 	public enum Type{
