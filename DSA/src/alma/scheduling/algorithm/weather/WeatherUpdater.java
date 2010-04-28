@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.9 2010/04/16 20:59:49 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.10 2010/04/28 17:30:47 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -58,10 +58,12 @@ import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
  * selected if the projected Tsys is different that the current Tsys for more that
  * a given percentage.
  * 
+ * In a spring context this class should be used as a singleton
  */
 public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
     private static Logger logger = LoggerFactory.getLogger(WeatherUpdater.class);
+    private static Date lastUpdate = new Date(0);
     
     // --- Spring set properties and accessors ---
     
@@ -125,13 +127,15 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
     // --- ModelUpdater interface implementation ---
     
     @Override
-    public boolean needsToUpdate(Date date) {
-        return true;
+    public synchronized boolean needsToUpdate(Date date) {
+        if(date.after(lastUpdate))
+            return true;
+        return false;
     }
 
     @Override
     @Transactional
-    public void update(Date date) {
+    public synchronized void update(Date date) {
         Collection<SchedBlock> sbs;
         try {
             sbs = selector.select();
@@ -142,10 +146,15 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
     }
 
     @Override
-    public void update(Date date, Collection<SchedBlock> sbs) {
+    public synchronized void update(Date date, Collection<SchedBlock> sbs) {
+        /*this is to assure of the atomicity of the update operation*/
+        if(needsToUpdate(date) == false)
+            return;
+        lastUpdate = date;
+        
         logger.trace("entering");
         logger.debug("updating for time " + date);
-
+        
         double latitude = configDao.getConfiguration().getArrayCenterLatitude();
 
         // get current PWV
