@@ -1,0 +1,5 @@
+In the meantime, the reports can be generated adding the following line to the XML output file:
+<?xml-stylesheet href="<path-to-xsl-file/genera_report.xsl" type="text/xsl" ?>
+
+Using any Gecko-powered browser (the whole mozilla-firefox family), you can view the XML output file, and it will show the results as appliying the XSL transformation.
+
