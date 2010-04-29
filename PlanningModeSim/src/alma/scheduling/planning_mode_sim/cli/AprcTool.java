@@ -50,6 +50,7 @@ public class AprcTool {
     private ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
     private VerboseLevel verboseLvl = null;
     private String DSAName = null;
+    boolean toBeInterrupted = false;
       
     private void help(){
         System.out.println("APRC Tool Command Line Interface");
@@ -261,12 +262,32 @@ public class AprcTool {
         
         // Stop at end of season
         while( time.before(stopTime) && !timesToCheck.isEmpty() ){
-        	TimeEvent ev = timesToCheck.remove();
+        	step(timesToCheck, stopTime, rc, ctx, arraysCreated, freeArrays, sbExecutor);
+        	if(toBeInterrupted)
+        	    Console.getConsole(this).activate();
+        }   
+        
+        rc.completeResults();
+        //Saving results to DB and XML output file
+        XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
+        xmlOutDao.setConfigDao(xmlConfigDao);
+        xmlOutDao.saveResults( rc.getResults() );
+        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+        outDao.saveResults( rc.getResults() );
+
+        
+    }
+
+    private void step(LinkedList<TimeEvent> timesToCheck, 
+            Date time, ResultComposer rc, ApplicationContext ctx,
+            Hashtable<ArrayConfiguration,DynamicSchedulingAlgorithm> arraysCreated,
+            ArrayList<ArrayConfiguration> freeArrays, SchedBlockExecutor sbExecutor){
+        TimeEvent ev = timesToCheck.remove();
             //Change the current simulation time to event time
             time = ev.getTime();
             switch (ev.getType()){
             case ARRAY_CREATION:
-            	TimeHandler.getHandler().step(ev.getTime());
+                TimeHandler.getHandler().step(ev.getTime());
                 DynamicSchedulingAlgorithm dsa;
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Array " + ev.getArray().getId() + " created");
@@ -278,12 +299,12 @@ public class AprcTool {
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
-                    System.out.println("Before selectors " + new Date());
+//                    System.out.println("Before selectors " + new Date());
                     dsa.selectCandidateSB(time);
-                    System.out.println("After selectors " + new Date());
-                    System.out.println("Before rankers " + new Date());
+//                    System.out.println("After selectors " + new Date());
+//                    System.out.println("Before rankers " + new Date());
                     dsa.rankSchedBlocks(time);
-                    System.out.println("After rankers " + new Date());
+//                    System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     TimeHandler.getHandler().step(d);
@@ -318,12 +339,12 @@ public class AprcTool {
                         "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
                     //The array is free now it could be scheduled a new SB
-                    System.out.println("Before selectors " + new Date());
+//                    System.out.println("Before selectors " + new Date());
                     dsa.selectCandidateSB(time);
-                    System.out.println("After selectors " + new Date());
-                    System.out.println("Before rankers " + new Date());
+//                    System.out.println("After selectors " + new Date());
+//                    System.out.println("Before rankers " + new Date());
                     dsa.rankSchedBlocks(time);
-                    System.out.println("After rankers " + new Date());
+//                    System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     TimeHandler.getHandler().step(d);
@@ -350,8 +371,12 @@ public class AprcTool {
                 System.out.println(TimeUtil.getUTString(time) + 
                         "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
                 try{
+//                    System.out.println("Before selectors " + new Date());
                     dsa.selectCandidateSB(time);
+//                    System.out.println("After selectors " + new Date());
+//                    System.out.println("Before rankers " + new Date());
                     dsa.rankSchedBlocks(time);
+//                    System.out.println("After rankers " + new Date());
                     SchedBlock sb = dsa.getSelectedSchedBlock();
                     Date d = sbExecutor.execute(sb, ev.getArray(), time);
                     TimeHandler.getHandler().step(d);
@@ -381,19 +406,8 @@ public class AprcTool {
             }
             //Sort in ascending order the timeline
             Collections.sort(timesToCheck);
-        }   
-        
-        rc.completeResults();
-        //Saving results to DB and XML output file
-        XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
-        xmlOutDao.setConfigDao(xmlConfigDao);
-        xmlOutDao.saveResults( rc.getResults() );
-        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-        outDao.saveResults( rc.getResults() );
-
-        
     }
-
+    
     private void step(String ctxPath) {
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
@@ -526,7 +540,8 @@ public class AprcTool {
             run(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("step")==0){
-            step(workDir + "/" + config.getContextFilePath());
+            this.toBeInterrupted = true;
+            run(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
