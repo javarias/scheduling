@@ -6,13 +6,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="var" path="ACSROOT/lib/castor.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/hibernate3.jar"/>
-	<classpathentry kind="lib" path="/home/ahoffsta/introot/lib/spring.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/hibernate-annotations.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/hibernate-cglib-repack-2.1_3.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/hibernate-commons-annotations.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/hibernate-entitymanager.jar"/>
-	<classpathentry kind="var" path="ACSROOT/lib/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
