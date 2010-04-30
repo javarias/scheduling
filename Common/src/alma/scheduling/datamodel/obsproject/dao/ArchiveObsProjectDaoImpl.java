@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ArchiveObsProjectDaoImpl.java,v 1.2 2010/04/23 23:35:37 dclarke Exp $"
+ * "@(#) $Id: ArchiveObsProjectDaoImpl.java,v 1.3 2010/04/30 22:45:20 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -45,7 +45,11 @@ import alma.acs.component.client.ComponentClient;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.acs.entityutil.EntitySerializer;
+import alma.entity.xmlbinding.ousstatus.OUSStatus;
+import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.Define.SchedulingException;
@@ -161,7 +165,8 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
     
     // ACS Diagnostics
     private final static ComponentDiagnosticTypes[] xmlStoreDiags = {
-    	ComponentDiagnosticTypes.LOGGING
+    	ComponentDiagnosticTypes.LOGGING,
+    	ComponentDiagnosticTypes.PROFILING
     };
     
     private final static ComponentDiagnosticTypes[] stateSystemDiags = {
@@ -447,7 +452,7 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
     }
 
     /**
-	 * Get all the APDM ScheBlocks that correspond to the given APDM
+	 * Get all the APDM SchedBlocks that correspond to the given APDM
 	 * ObsProjects.
 	 * 
      * @param apdmProjects
@@ -471,7 +476,7 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
     }
 
     /**
-	 * Get all the APDM ScheBlocks that correspond to the given APDM
+	 * Get all the APDM SchedBlocks that correspond to the given APDM
 	 * ObsProjects.
 	 * 
      * @param apdmProjects
@@ -489,6 +494,76 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
     	}
         return result;
     }
+    
+	/**
+	 * Get the OUSStatuses and SBStatues corresponding to the given
+	 * ProjectStatus.
+	 * 
+	 * @param projectStatus
+	 * @param ousStatuses
+	 * @param sbStatuses
+	 */
+	private void getOUSandSBStatuses(
+			ProjectStatus projectStatus,
+			Map<String, OUSStatus> ousStatuses,
+			Map<String, SBStatus> sbStatuses) {
+		
+		XmlEntityStruct xml[] = null;
+		try {
+			xml = stateSystem.getProjectStatusList(projectStatus.getProjectStatusEntity().getEntityId());
+		} catch (Exception e) {
+        	logger.warning(String.format(
+        			"can not pull Status objects for ProjectStatus %s from State System",
+        			projectStatus.getProjectStatusEntity().getEntityId()));
+            e.printStackTrace(System.out);
+		}
+		
+		for (final XmlEntityStruct xes : xml) {
+			if (xes.entityTypeName.equals(OUSStatus.class.getSimpleName())) {
+				try {
+					final OUSStatus status = (OUSStatus) entityDeserializer.
+						deserializeEntity(xes, OUSStatus.class);
+					ousStatuses.put(status.getOUSStatusEntity().getEntityId(), status);
+				} catch (Exception e) {
+		        	logger.warning("can not deserialise OUSStatus from State System (skipping)");
+		            e.printStackTrace(System.out);
+				}
+			} else if (xes.entityTypeName.equals(SBStatus.class.getSimpleName())) {
+				try {
+					final SBStatus status = (SBStatus) entityDeserializer.
+						deserializeEntity(xes, SBStatus.class);
+					sbStatuses.put(status.getSBStatusEntity().getEntityId(), status);
+				} catch (Exception e) {
+		        	logger.warning("can not deserialise SBStatus from State System (skipping)");
+		            e.printStackTrace(System.out);
+				}
+			} else if (xes.entityTypeName.equals(ProjectStatus.class.getSimpleName())) {
+				// Skip, we've already got the ProjectStatus.
+			} else {
+	        	logger.warning(String.format(
+	        			"Unexpected entity type (%s) as child of ProjectStatus %s (skipping)",
+	        			xes.entityTypeName,
+	        			projectStatus.getProjectStatusEntity().getEntityId()));
+			}
+		}
+	}
+    
+	/**
+	 * Get the OUSStatuses and SBStatues corresponding to the given
+	 * ProjectStatuses.
+	 * 
+	 * @param projectStatuses
+	 * @param ousStatuses
+	 * @param sbStatuses
+	 */
+	private void getOUSandSBStatuses(
+			Map<String, ProjectStatus> projectStatuses,
+			Map<String, OUSStatus>     ousStatuses,
+			Map<String, SBStatus>      sbStatuses) {
+		for (final ProjectStatus ps : projectStatuses.values()) {
+			getOUSandSBStatuses(ps, ousStatuses, sbStatuses);
+		}
+	}
 	/* End Steps from which the main operations are made
 	 * ============================================================= */
 
@@ -528,9 +603,25 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
         
         logger.info("Got the schedblocks");
         logAPDMSchedBlocks(apdmProjects, apdmSchedBlocks);
+        
+        // Get all the APDM OUSStatuses and APDM SBStatuses
+        final Map<String, OUSStatus> ousStatuses = new TreeMap<String, OUSStatus>();
+        final Map<String, SBStatus> sbStatuses = new TreeMap<String, SBStatus>();
+        getOUSandSBStatuses(projectStatuses, ousStatuses, sbStatuses);
+        
+        logger.info("Got the remaining statuses");
+        logStatuses(apdmProjects, projectStatuses, ousStatuses, sbStatuses);
 
         // Convert them to Scheduling stylee ObsProjects
-        final List<ObsProject> result = null;
+        final APDMtoSchedulingConverter converter =
+        	new APDMtoSchedulingConverter(apdmProjects,
+				                          apdmSchedBlocks,
+				                          projectStatuses,
+				                          ousStatuses,
+				                          sbStatuses,
+				                          APDMtoSchedulingConverter.Phase.PHASE1,
+				                          logger);
+        final List<ObsProject> result = converter.convertAPDMPhase1ProjectsToDataModel();
         logObsProjects(result);
 
         return result;
@@ -566,8 +657,24 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
         logger.info("Got the schedblocks");
         logAPDMSchedBlocks(apdmProjects, apdmSchedBlocks);
 
+        // Get all the APDM OUSStatuses and APDM SBStatuses
+        final Map<String, OUSStatus> ousStatuses = new TreeMap<String, OUSStatus>();
+        final Map<String, SBStatus> sbStatuses = new TreeMap<String, SBStatus>();
+        getOUSandSBStatuses(projectStatuses, ousStatuses, sbStatuses);
+        
+        logger.info("Got the remaining statuses");
+        logStatuses(apdmProjects, projectStatuses, ousStatuses, sbStatuses);
+
         // Convert them to Scheduling stylee ObsProjects
-        final List<ObsProject> result = null;
+        final APDMtoSchedulingConverter converter =
+        	new APDMtoSchedulingConverter(apdmProjects,
+				                          apdmSchedBlocks,
+				                          projectStatuses,
+				                          ousStatuses,
+				                          sbStatuses,
+				                          APDMtoSchedulingConverter.Phase.PHASE2,
+				                          logger);
+        final List<ObsProject> result = converter.convertAPDMPhase2ProjectsToDataModel();
         logObsProjects(result);
 
         return result;
@@ -630,7 +737,7 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
                     schedBlock.addObservingParameters(scip);
                     for (Target t : targets.values()) { // TODO fix this
-                        t.setObservingParameters(scip);
+                        t.addObservingParameters(scip);
                     }
                 }
             }
@@ -788,7 +895,8 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
                 XmlDomainXRef xref = new XmlDomainXRef(TargetT.class, t.getId());
                 xmlTarget.setId(xref.xmlRefId);
                 xmlTarget.setInstrumentSpecIdRef("");
-                xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().getId()));
+                // TODO: Reinstate corrected version (ObservingParameters)
+//                xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().getId()));
                 xmlTarget.setSourceIdRef(getXmlRefId(FieldSourceT.class, t.getSource().getId()));
                 xmlTargets.put(xref, xmlTarget);
                 FieldSource src = t.getSource();
@@ -889,6 +997,71 @@ public class ArchiveObsProjectDaoImpl extends ComponentClient
 					schedBlock.getSBStatusRef().getEntityId(),
 					op.getProjectName(),
 					op.getObsProjectEntity().getEntityId());
+		}
+		logger.info(sb.toString());
+	}
+
+	private void recLogOUSStatus(
+			final String indent,
+			final OUSStatus ousStatus,
+			final Map<String, OUSStatus> ousStatuses,
+			final Map<String, SBStatus> sbStatuses,
+			final Formatter f) {
+		f.format("%sOUSS uid: %s, OUS uid: %s in %s, status is %s%n",
+				indent,
+				ousStatus.getOUSStatusEntity().getEntityId(),
+				ousStatus.getObsUnitSetRef().getPartId(),
+				ousStatus.getObsUnitSetRef().getEntityId(),
+				ousStatus.getStatus().getState());
+		for (final OUSStatusRefT childRef : ousStatus.getOUSStatusChoice().getOUSStatusRef()) {
+			final String childId = childRef.getEntityId();
+			final OUSStatus child = ousStatuses.get(childId);
+			recLogOUSStatus(indent + "\t", child, ousStatuses, sbStatuses, f);
+		}
+		for (final SBStatusRefT childRef : ousStatus.getOUSStatusChoice().getSBStatusRef()) {
+			final String childId = childRef.getEntityId();
+			final SBStatus child = sbStatuses.get(childId);
+			f.format("%s\tSBS uid: %s, SB uid: %s, status is %s%n",
+					indent,
+					child.getSBStatusEntity().getEntityId(),
+					child.getSchedBlockRef().getEntityId(),
+					child.getStatus().getState());
+		}
+	}
+
+	private void logOneProjectStatus(
+			final alma.entity.xmlbinding.obsproject.ObsProject apdmProject,
+			final ProjectStatus projectStatus,
+			final Map<String, OUSStatus> ousStatuses,
+			final Map<String, SBStatus> sbStatuses,
+			final Formatter f) {
+		f.format("\tProject %s, PS uid: %s, OP uid: %s, status is %s%n",
+				apdmProject.getProjectName(), 
+				projectStatus.getProjectStatusEntity().getEntityId(),
+				projectStatus.getObsProjectRef().getEntityId(),
+				projectStatus.getStatus().getState());
+		final String programId = projectStatus.getObsProgramStatusRef().getEntityId();
+		final OUSStatus ouss = ousStatuses.get(programId);
+		recLogOUSStatus("\t\t", ouss, ousStatuses, sbStatuses, f);
+		f.format("%n");
+	}
+
+	private void logStatuses(
+			final Map<String, alma.entity.xmlbinding.obsproject.ObsProject> apdmProjects,
+			final Map<String, ProjectStatus> projectStatuses,
+			final Map<String, OUSStatus> ousStatuses,
+			final Map<String, SBStatus> sbStatuses) {
+		final StringBuilder sb = new StringBuilder();
+		final Formatter f = new Formatter(sb);
+		f.format("Found %d OUSStatus%s and %s SBStatus%s%n",
+				ousStatuses.size(),
+				((ousStatuses.size()==1)? "": "es"),
+				sbStatuses.size(),
+			    ((sbStatuses.size()==1)? "": "es"));
+		for (final ProjectStatus ps : projectStatuses.values()) {
+			final alma.entity.xmlbinding.obsproject.ObsProject apdmProject = apdmProjects.get(
+					ps.getObsProjectRef().getEntityId());
+			logOneProjectStatus(apdmProject, ps, ousStatuses, sbStatuses, f);
 		}
 		logger.info(sb.toString());
 	}
