@@ -1,6 +1,10 @@
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import junit.framework.TestCase;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -9,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.persistence.HibernateUtil;
-import junit.framework.TestCase;
 
 public class ObsUnitTest extends TestCase {
 
@@ -115,15 +118,19 @@ public class ObsUnitTest extends TestCase {
             tx = session.beginTransaction();
             SchedBlock sb = new SchedBlock();
             sb.setPiName("me");
-            ScienceParameters params = new ScienceParameters();
-            params.setRepresentativeBandwidth(0.0);
-            params.setRepresentativeFrequency(0.0);
-            params.setSensitivityGoal(0.0);
-            sb.addObservingParameters(params);
+            Set<ObservingParameters> paramSet = new HashSet<ObservingParameters>();
+            for (double i = 0.0; i < 4; i += 1.01) {
+            	ScienceParameters params = new ScienceParameters();
+            	params.setRepresentativeBandwidth(i);
+            	params.setRepresentativeFrequency(i);
+            	params.setSensitivityGoal(i);
+            	paramSet.add(params);
+            	sb.addObservingParameters(params);
+            }
             session.save(sb);
             FieldSource src = new FieldSource("0000+000", new SkyCoordinates(0.0, 0.0), 0.0, 0.0);
             session.save(src);
-            Target target = new Target(params, src);
+            Target target = new Target(paramSet, src);
             sb.addTarget(target);
             session.saveOrUpdate(sb);
             tx.commit();
