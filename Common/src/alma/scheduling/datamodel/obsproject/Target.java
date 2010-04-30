@@ -21,21 +21,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Target.java,v 1.1 2010/01/29 21:50:49 rhiriart Exp $"
+ * "@(#) $Id: Target.java,v 1.2 2010/04/30 22:44:36 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Target {
 
     private Long id;
     
-    private ObservingParameters observingParameters;
+    
+    /** Polymorphic observing parameters, the type depends on the type of the observation */
+    private Set<ObservingParameters> observingParameters = new HashSet<ObservingParameters>();
     
     private FieldSource source;
 
     public Target() { }
 
-    public Target(ObservingParameters observingParameters, FieldSource source) {
+    public Target(Set<ObservingParameters> observingParameters, FieldSource source) {
         this.observingParameters = observingParameters;
         this.source = source;
     }
@@ -48,14 +53,18 @@ public class Target {
         this.id = id;
     }
     
-    public ObservingParameters getObservingParameters() {
+    public Set<ObservingParameters> getObservingParameters() {
         return observingParameters;
     }
 
-    public void setObservingParameters(ObservingParameters observingParameters) {
+    public void setObservingParameters(Set<ObservingParameters> observingParameters) {
         this.observingParameters = observingParameters;
     }
 
+    public void addObservingParameters(ObservingParameters observingParameters) {
+        this.observingParameters.add(observingParameters);
+    }
+    
     public FieldSource getSource() {
         return source;
     }
