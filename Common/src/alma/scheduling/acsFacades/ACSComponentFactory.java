@@ -213,6 +213,9 @@ public class ACSComponentFactory implements ComponentFactory {
         	   case LOGGING:
         		   result = new LoggingOperational(containerServices, result);
         		   break;
+        	   case PROFILING:
+        		   result = new ProfilingOperational(containerServices, result);
+        		   break;
         	   default:
         		   logger.warning(String.format(
         				   "Asking for a %s Archive component, no implementation of which is known - ignoring",
