@@ -7,8 +7,12 @@
         <id name="id" column="ID">            
             <generator class="native"/>
         </id>
-        <many-to-one name="source" column="SOURCE" class="FieldSource" cascade="save-update"/>        
-        <many-to-one name="observingParameters" column="OBS_PARAMS" class="ObservingParameters"
-            cascade="save-update"/>        
+        <many-to-one name="source" column="SOURCE" class="FieldSource" cascade="save-update"/>
+		<set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
+			<key column="OBS_PARAMS" />
+			<one-to-many class="ObservingParameters" />
+		</set>        
+ <!--       <many-to-one name="observingParameters" column="OBS_PARAMS" class="ObservingParameters"
+            cascade="save-update"/>        -->  
     </class>
 </hibernate-mapping>

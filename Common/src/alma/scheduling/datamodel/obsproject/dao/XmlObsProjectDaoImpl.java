@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.15 2010/04/14 17:22:12 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.16 2010/04/30 23:38:52 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +205,9 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
                     schedBlock.addObservingParameters(scip);
                     for (Target t : targets.values()) { // TODO fix this
-                        t.setObservingParameters(scip);
+                        HashSet<ObservingParameters> obsParams = new HashSet<ObservingParameters>();
+                        obsParams.add(scip);
+                        t.setObservingParameters(obsParams);
                     }
                 }
             }
@@ -362,7 +365,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 XmlDomainXRef xref = new XmlDomainXRef(TargetT.class, t.getId());
                 xmlTarget.setId(xref.xmlRefId);
                 xmlTarget.setInstrumentSpecIdRef("");
-                xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().getId()));
+                xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().iterator().next().getId()));
                 xmlTarget.setSourceIdRef(getXmlRefId(FieldSourceT.class, t.getSource().getId()));
                 xmlTargets.put(xref, xmlTarget);
                 FieldSource src = t.getSource();
