@@ -278,134 +278,159 @@ public class AprcTool {
         
     }
 
-    private void step(LinkedList<TimeEvent> timesToCheck, 
-            Date time, ResultComposer rc, ApplicationContext ctx,
-            Hashtable<ArrayConfiguration,DynamicSchedulingAlgorithm> arraysCreated,
-            ArrayList<ArrayConfiguration> freeArrays, SchedBlockExecutor sbExecutor){
-        TimeEvent ev = timesToCheck.remove();
-            //Change the current simulation time to event time
-            time = ev.getTime();
-            switch (ev.getType()){
-            case ARRAY_CREATION:
-                TimeHandler.getHandler().step(ev.getTime());
-                DynamicSchedulingAlgorithm dsa;
-                System.out.println(TimeUtil.getUTString(time) + 
-                        "Array " + ev.getArray().getId() + " created");
-                rc.notifyArrayCreation(ev.getArray());
-                dsa = getDSA(ctx);
-                dsa.setVerboseLevel(verboseLvl);
-                dsa.setArray(ev.getArray());
-                arraysCreated.put(ev.getArray(), dsa);
-                System.out.println(TimeUtil.getUTString(time) + 
-                        "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
-                try{
-//                    System.out.println("Before selectors " + new Date());
-                    dsa.selectCandidateSB(time);
-//                    System.out.println("After selectors " + new Date());
-//                    System.out.println("Before rankers " + new Date());
-                    dsa.rankSchedBlocks(time);
-//                    System.out.println("After rankers " + new Date());
-                    SchedBlock sb = dsa.getSelectedSchedBlock();
-                    Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                    TimeHandler.getHandler().step(d);
-                    rc.notifySchedBlockStart(sb);
-                    //Create a new EventTime to check the SB execution termination in the future
-                    TimeEvent sbEndEv = new TimeEvent();
-                    sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
-                    sbEndEv.setSb(sb);
-                    sbEndEv.setArray(ev.getArray());
-                    sbEndEv.setTime(d);
-                    timesToCheck.add(sbEndEv);
-                } catch (NoSbSelectedException ex){
-                    System.out.println("After selectors " + new Date());
-                    System.out.println(TimeUtil.getUTString(time) + " DSA for array " + ev.getArray().getId().toString() + " -- No suitable SBs to be scheduled");
-                    freeArrays.add(ev.getArray());
-                }
+    private void step(
+            LinkedList<TimeEvent> timesToCheck,
+            Date time,
+            ResultComposer rc,
+            ApplicationContext ctx,
+            Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm> arraysCreated,
+            ArrayList<ArrayConfiguration> freeArrays,
+            SchedBlockExecutor sbExecutor) {
+      //  try{
+            TimeEvent ev = timesToCheck.remove();
+    //        } catch (java.lang.No)
+        // Change the current simulation time to event time
+        time = ev.getTime();
+        switch (ev.getType()) {
+        case ARRAY_CREATION:
+            TimeHandler.getHandler().step(ev.getTime());
+            DynamicSchedulingAlgorithm dsa;
+            System.out.println(TimeUtil.getUTString(time) + "Array "
+                    + ev.getArray().getId() + " created");
+            rc.notifyArrayCreation(ev.getArray());
+            dsa = getDSA(ctx);
+            dsa.setVerboseLevel(verboseLvl);
+            dsa.setArray(ev.getArray());
+            arraysCreated.put(ev.getArray(), dsa);
+            System.out
+                    .println(TimeUtil.getUTString(time)
+                            + "Starting selection of candidate SchedBlocks for Array Id: "
+                            + ev.getArray().getId());
+            try {
+                dsa.selectCandidateSB(time);
+                dsa.rankSchedBlocks(time);
+                SchedBlock sb = dsa.getSelectedSchedBlock();
+                Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                TimeHandler.getHandler().step(d);
+                rc.notifySchedBlockStart(sb);
+                // Create a new EventTime to check the SB execution termination
+                // in the future
+                TimeEvent sbEndEv = new TimeEvent();
+                sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                sbEndEv.setSb(sb);
+                sbEndEv.setArray(ev.getArray());
+                sbEndEv.setTime(d);
+                timesToCheck.add(sbEndEv);
+            } catch (NoSbSelectedException ex) {
+                System.out.println("After selectors " + new Date());
+                System.out.println(TimeUtil.getUTString(time)
+                        + " DSA for array " + ev.getArray().getId().toString()
+                        + " -- No suitable SBs to be scheduled");
+                freeArrays.add(ev.getArray());
                 break;
-            case ARRAY_DESTRUCTION:
-                //notify the destruction?? (RESPONSE: No, at this moment. Everything is gathered at creation)
-                System.out.println(TimeUtil.getUTString(time) + "Array Id: " + 
-                        ev.getArray().getId() + " destroyed");
-                TimeHandler.getHandler().step(ev.getTime());
-                arraysCreated.remove(ev.getArray());
-                freeArrays.remove(ev.getArray());
-                break;
-            case SCHEDBLOCK_EXECUTION_FINISH:
-                dsa = arraysCreated.get(ev.getArray());
-                TimeHandler.getHandler().step(ev.getTime());
-                System.out.println(TimeUtil.getUTString(time) + 
-                        "Finishing Execution of SchedBlock Id: " + ev.getSb().getId());
-                System.out.println(TimeUtil.getUTString(time) + 
-                        "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
-                try{
-                    //The array is free now it could be scheduled a new SB
-//                    System.out.println("Before selectors " + new Date());
-                    dsa.selectCandidateSB(time);
-//                    System.out.println("After selectors " + new Date());
-//                    System.out.println("Before rankers " + new Date());
-                    dsa.rankSchedBlocks(time);
-//                    System.out.println("After rankers " + new Date());
-                    SchedBlock sb = dsa.getSelectedSchedBlock();
-                    Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                    TimeHandler.getHandler().step(d);
-                    rc.notifySchedBlockStart(sb);
-                    //Create a new EventTime to check the SB execution termination in the future
-                    TimeEvent sbEndEv = new TimeEvent();
-                    sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
-                    sbEndEv.setSb(sb);
-                    sbEndEv.setArray(ev.getArray());
-                    sbEndEv.setTime(d);
-                    timesToCheck.add(sbEndEv);
-                } catch (NoSbSelectedException ex){
-                    System.out.println("After selectors " + new Date());
-                    System.out.println("DSA for array " + ev.getArray().getId().toString() + " No suitable SBs to be scheduled");
-                    freeArrays.add(ev.getArray());
-                }
-                break;
-                
-            case FREE_ARRAY:
-                dsa = arraysCreated.get(ev.getArray());
-                TimeHandler.getHandler().step(ev.getTime());
-                //removing from free list
-                freeArrays.remove(ev.getArray());
-                System.out.println(TimeUtil.getUTString(time) + 
-                        "Starting selection of candidate SchedBlocks for Array Id: " + ev.getArray().getId());
-                try{
-//                    System.out.println("Before selectors " + new Date());
-                    dsa.selectCandidateSB(time);
-//                    System.out.println("After selectors " + new Date());
-//                    System.out.println("Before rankers " + new Date());
-                    dsa.rankSchedBlocks(time);
-//                    System.out.println("After rankers " + new Date());
-                    SchedBlock sb = dsa.getSelectedSchedBlock();
-                    Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                    TimeHandler.getHandler().step(d);
-                    rc.notifySchedBlockStart(sb);
-                    //Create a new EventTime to check the SB execution termination in the future
-                    TimeEvent sbEndEv = new TimeEvent();
-                    sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
-                    sbEndEv.setSb(sb);
-                    sbEndEv.setArray(ev.getArray());
-                    sbEndEv.setTime(d);
-                    timesToCheck.add(sbEndEv);
-                } catch (NoSbSelectedException ex){
-                    System.out.println("DSA for array " + ev.getArray().getId().toString() + " No suitable SBs to be scheduled");
-                    freeArrays.add(ev.getArray());
-                }
             }
-            if(freeArrays.size() > 0){
-                //Check in 30 mins more of the simulated time
-                Date next = new Date(time.getTime() + (30 * 60 * 1000 ));
-                for(ArrayConfiguration a: freeArrays){
-                    TimeEvent freeEv = new TimeEvent();
-                    freeEv.setArray(a);
-                    freeEv.setTime(next);
-                    freeEv.setType(EventType.FREE_ARRAY);
-                    timesToCheck.add(freeEv);
-                }
+            break;
+        case ARRAY_DESTRUCTION:
+            // notify the destruction?? (RESPONSE: No, at this moment.
+            // Everything is gathered at creation)
+            System.out.println(TimeUtil.getUTString(time) + "Array Id: "
+                    + ev.getArray().getId() + " destroyed");
+            TimeHandler.getHandler().step(ev.getTime());
+            arraysCreated.remove(ev.getArray());
+            freeArrays.remove(ev.getArray());
+            break;
+        case SCHEDBLOCK_EXECUTION_FINISH:
+            dsa = arraysCreated.get(ev.getArray());
+            TimeHandler.getHandler().step(ev.getTime());
+            System.out.println(TimeUtil.getUTString(time)
+                    + "Finishing Execution of SchedBlock Id: "
+                    + ev.getSb().getId());
+            System.out
+                    .println(TimeUtil.getUTString(time)
+                            + "Starting selection of candidate SchedBlocks for Array Id: "
+                            + ev.getArray().getId());
+            try {
+                dsa.selectCandidateSB(time);
+                dsa.rankSchedBlocks(time);
+                SchedBlock sb = dsa.getSelectedSchedBlock();
+                Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                TimeHandler.getHandler().step(d);
+                rc.notifySchedBlockStart(sb);
+                // Create a new EventTime to check the SB execution termination
+                // in the future
+                TimeEvent sbEndEv = new TimeEvent();
+                sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                sbEndEv.setSb(sb);
+                sbEndEv.setArray(ev.getArray());
+                sbEndEv.setTime(d);
+                timesToCheck.add(sbEndEv);
+            } catch (NoSbSelectedException ex) {
+                System.out.println("After selectors " + new Date());
+                System.out.println("DSA for array "
+                        + ev.getArray().getId().toString()
+                        + " No suitable SBs to be scheduled");
+                freeArrays.add(ev.getArray());
+                break;
             }
-            //Sort in ascending order the timeline
-            Collections.sort(timesToCheck);
+            break;
+
+        case FREE_ARRAY:
+            dsa = null;
+            try{
+                dsa = arraysCreated.get(ev.getArray());
+            } catch (NullPointerException ex){ //The array was destroyed, deleting the remaining events   
+            }
+            if (dsa == null)
+                return;
+            TimeHandler.getHandler().step(ev.getTime());
+            // removing from free list
+            while (freeArrays.remove(ev.getArray()))
+                ;
+            System.out
+                    .println(TimeUtil.getUTString(time)
+                            + "Starting selection of candidate SchedBlocks for Array Id: "
+                            + ev.getArray().getId());
+            try {
+                // System.out.println("Before selectors " + new Date());
+                dsa.selectCandidateSB(time);
+                // System.out.println("After selectors " + new Date());
+                // System.out.println("Before rankers " + new Date());
+                dsa.rankSchedBlocks(time);
+                // System.out.println("After rankers " + new Date());
+                SchedBlock sb = dsa.getSelectedSchedBlock();
+                Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                TimeHandler.getHandler().step(d);
+                rc.notifySchedBlockStart(sb);
+                // Create a new EventTime to check the SB execution termination
+                // in the future
+                TimeEvent sbEndEv = new TimeEvent();
+                sbEndEv.setType(EventType.SCHEDBLOCK_EXECUTION_FINISH);
+                sbEndEv.setSb(sb);
+                sbEndEv.setArray(ev.getArray());
+                sbEndEv.setTime(d);
+                timesToCheck.add(sbEndEv);
+            } catch (NoSbSelectedException ex) {
+                System.out.println("DSA for array "
+                        + ev.getArray().getId().toString()
+                        + " No suitable SBs to be scheduled");
+                freeArrays.add(ev.getArray());
+                break;
+            }
+            break;
+        }
+        if (freeArrays.size() > 0) {
+            // Check in 30 mins more of the simulated time
+            Date next = new Date(time.getTime() + (30 * 60 * 1000));
+            for (ArrayConfiguration a : freeArrays) {
+                TimeEvent freeEv = new TimeEvent();
+                freeEv.setArray(a);
+                freeEv.setTime(next);
+                freeEv.setType(EventType.FREE_ARRAY);
+                timesToCheck.add(freeEv);
+            }
+        }
+        // Sort in ascending order the timeline
+        Collections.sort(timesToCheck);
     }
     
     private void step(String ctxPath) {
