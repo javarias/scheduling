@@ -249,6 +249,7 @@
 		scope="prototype">
         <constructor-arg><value>weatherTsysSelector</value></constructor-arg>
 		<property name="schedBlockDao" ref="schedBlockDao"/>
+    	<property name="tsysVariation" value="0.2"/>
 	</bean>
 
 	<bean id="sourceSelector" class="alma.scheduling.algorithm.obsproject.FieldSourceObservableSelector"
