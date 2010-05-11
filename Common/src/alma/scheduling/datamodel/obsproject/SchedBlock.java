@@ -21,12 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.4 2010/04/14 17:22:12 javarias Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.5 2010/05/11 18:01:29 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import alma.scheduling.datamodel.executive.Executive;
 
 public class SchedBlock extends ObsUnit {
 
@@ -53,6 +55,8 @@ public class SchedBlock extends ObsUnit {
     
     /** Several parameters needed to control the execution of the SchedBlock */
     private SchedBlockControl schedBlockControl;
+    
+    private Executive executive;
     
     /** Default constructor */
     public SchedBlock() { }
@@ -130,6 +134,14 @@ public class SchedBlock extends ObsUnit {
         this.schedBlockControl = schedBlockControl;
     }
     
+    public Executive getExecutive() {
+        return executive;
+    }
+
+    public void setExecutive(Executive executive) {
+        this.executive = executive;
+    }
+
     public ObsProject getProject(){
         ObsUnit ou = this;
         /* Navigate through the hierarchy*/ 
