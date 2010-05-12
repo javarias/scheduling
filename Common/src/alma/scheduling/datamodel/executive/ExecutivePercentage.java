@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutivePercentage.java,v 1.13 2010/05/12 17:18:53 javarias Exp $"
+ * "@(#) $Id: ExecutivePercentage.java,v 1.14 2010/05/12 19:43:58 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -98,7 +98,7 @@ public class ExecutivePercentage {
 	 * Remaining time for Observing in hours. Initally this has the same value
 	 * than totalObsTimeForSeason.
 	 */
-    private Double ramainingObsTime;
+    private Double remainingObsTime;
 
 	/**
 	 * Zero-args constructor, required by Hibernate.
@@ -120,10 +120,10 @@ public class ExecutivePercentage {
             double diffHours = (end - start) / (60 * 60 * 1000);
             double obsTime = diffHours * percentage / 100;
             this.totalObsTimeForSeason = obsTime;
-            this.ramainingObsTime = obsTime;
+            this.remainingObsTime = obsTime;
 	    } else {
 	        this.totalObsTimeForSeason = totalObsTimeForSeason;
-	        this.ramainingObsTime = totalObsTimeForSeason;
+	        this.remainingObsTime = totalObsTimeForSeason;
 	    }
 	    
 	    this.id.executiveId = executive.getId();
@@ -175,12 +175,12 @@ public class ExecutivePercentage {
         this.season = season;
     }
 
-    public Double getRamainingObsTime() {
-        return ramainingObsTime;
+    public Double getRemainingObsTime() {
+        return remainingObsTime;
     }
 
-    public void setRamainingObsTime(Double ramainingObsTime) {
-        this.ramainingObsTime = ramainingObsTime;
+    public void setRemainingObsTime(Double ramainingObsTime) {
+        this.remainingObsTime = ramainingObsTime;
     }
     
 }
