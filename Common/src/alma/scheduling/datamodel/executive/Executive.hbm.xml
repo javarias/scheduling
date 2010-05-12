@@ -36,7 +36,7 @@
 		</composite-id>		
 		<property name="percentage" type="float" column="PERCENTAGE"/>
 		<property name="totalObsTimeForSeason" type="double" column="TOTAL_OBS_TIME_FOR_SEASON" />
-		<property name="remainingObsTime" type="double" column="RAMAINING_OBSTIME" />
+		<property name="remainingObsTime" type="double" column="REMAINING_OBSTIME" />
 		<many-to-one name="executive" column="EXECUTIVE_ID" not-null="true" insert="false" update="false"/>
 		<many-to-one name="season" column="SEASON_ID" not-null="true" insert="false" update="false"/>
 	</class>
