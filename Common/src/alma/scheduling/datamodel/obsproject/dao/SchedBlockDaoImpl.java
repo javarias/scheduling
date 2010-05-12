@@ -137,7 +137,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
                                 + " not (sb.schedulingConstraints.representativeTarget.source.coordinates.RA >= ? and "
                                 + " sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?) and "
                                 + " not (sb.schedulingConstraints.representativeTarget.source.coordinates.Dec >= ? and "
-                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?)");
+                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.Dec <= ?)");
         query.setParameter(0, lowRaLimit);
         query.setParameter(1, highRaLimit);
         query.setParameter(2, lowDecLimit);
