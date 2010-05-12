@@ -68,6 +68,7 @@
                 <key column="SCHEDBLOCKID"/>
                 <one-to-many class="Target"/>
             </set>
+            <many-to-one name="executive" column="EXECUTIVE_ID" not-null="false" />
         </joined-subclass>
 
         <joined-subclass name="ObsUnitSet" table="OBSUNITSET" lazy="false">
