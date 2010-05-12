@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.4 2010/04/20 21:02:49 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.5 2010/05/12 22:49:20 javarias Exp $"
  */
 package alma.scheduling.algorithm.executive;
 
@@ -31,6 +31,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.executive.ExecutivePercentage;
-import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -47,12 +48,12 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
 public class ExecutiveSelector extends AbstractBaseSelector {
-    private static Logger logger = LoggerFactory.getLogger(ExecutiveSelector.class);
-    
+    private static Logger logger = LoggerFactory
+            .getLogger(ExecutiveSelector.class);
+
     private ExecutiveDAO execDao;
     private SchedBlockDao sbDao;
-    private HashMap<String, Double> availableTime;
-    
+
     public ExecutiveSelector(String selectorName) {
         super(selectorName);
     }
@@ -80,84 +81,67 @@ public class ExecutiveSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf) throws NoSbSelectedException {
+    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
         // ut time is ignored
         return select();
     }
 
     @Override
-    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException {
+    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
         // ut time is ignored
         Collection<SchedBlock> sbs = select();
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }
-    
+
     /*
-     *
+     * 
      * (non-Javadoc)
+     * 
      * @see alma.scheduling.algorithm.sbselection.SchedBlockSelector#select()
      */
     @Override
-    @Transactional(readOnly=true)
-    public Collection<SchedBlock> select() throws NoSbSelectedException{
+    @Transactional(readOnly = true)
+    public Collection<SchedBlock> select() throws NoSbSelectedException {
         logger.trace("entering");
- //       calculateRemainingTime();
-        List<SchedBlock> acceptedSbs =  new ArrayList<SchedBlock>();
-        List<Executive>execs = execDao.getAllExecutive();
-        for(Executive e: execs){
-            List<SchedBlock> sbs = sbDao.findSchedBlocksWithEnoughTimeInExecutive(e, execDao.getCurrentSeason());
+        List<SchedBlock> acceptedSbs = new ArrayList<SchedBlock>();
+        List<Executive> execs = execDao.getAllExecutive();
+        for (Executive e : execs) {
+            List<SchedBlock> sbs = sbDao
+                    .findSchedBlocksWithEnoughTimeInExecutive(e, execDao
+                            .getCurrentSeason());
             acceptedSbs.addAll(sbs);
         }
- /*       List<SchedBlock> sbs =  sbDao.findAll(SchedBlock.class);
-        for(SchedBlock sb: sbs){
-            //TODO: replace the next line with a new method defined in ExecutiveDAO
-            PI pi = ((GenericDao)execDao).findById(PI.class, sb.getPiName());
-            Double avTime = availableTime.get(execDao.getExecutive(pi.getEmail()).getName());
-            if (avTime.doubleValue() >= sb.getObsUnitControl().getEstimatedExecutionTime().doubleValue())
-                acceptedSbs.add(sb);
-        }
-        if(acceptedSbs.size() == 0){
-            String strCause = "Cannot get any SB valid to be ranked using " + this.toString();
-            throw new NoSbSelectedException(strCause);
-        }
- */       logger.info("# SchedBlocks selected: " + acceptedSbs.size());
+        logger.info("# SchedBlocks selected: " + acceptedSbs.size());
         return acceptedSbs;
     }
 
-@Transactional(readOnly=true)    
-    private void calculateRemainingTime(){
-        if (availableTime == null)
-            availableTime = new HashMap<String, Double>();
-        availableTime.clear();
-        ObservingSeason currOs = execDao.getCurrentSeason();
-        for(Executive exec: execDao.getAllExecutive()){
-            ExecutivePercentage ep = 
-                searchForExecutivePercentage(exec, currOs);
-            List<ExecutiveTimeSpent> etss = 
-                execDao.getExecutiveTimeSpent(exec, currOs);
-            double spentTime = 0;
-            for(ExecutiveTimeSpent ets: etss){
-                spentTime += ets.getTimeSpent();
-            }
-            availableTime.put(exec.getName(), 
-                    new Double(ep.getTotalObsTimeForSeason() - spentTime));
-        }
+    @Override
+    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+        // TODO Auto-generated method stub
+        /*        query = getSession()
+                .createQuery(
+                        "select sb from SchedBlock sb, PI pi join pi.PIMembership pim, "
+                                + "Executive e join e.executivePercentage ep "
+                                + "where sb.piName = pi.email and "
+                                + "pim.executive = ? and "
+                                + "ep.executive = ? and "
+                                + "ep.season = ? and "
+                                + "ep.totalObsTimeForSeason - sb.obsUnitControl.estimatedExecutionTime >= "
+                                + timeSpent.toString());
+        query.setParameter(0, exec);
+        query.setParameter(1, exec);
+        query.setParameter(2, os);*/
+        //List<Executive> execs = execDao.getAllExecutive();
+        ObservingSeason os = execDao.getCurrentSeason();
+        Conjunction conj = Restrictions.conjunction(); 
+        conj.add(Restrictions.eq("ep.season", os));
+        conj.add(Restrictions.leProperty("obsUnitControl.estimatedExecutionTime", "ep.remainingObsTime"));
+        return conj;
     }
 
-@Transactional(readOnly=true)
-    private ExecutivePercentage searchForExecutivePercentage(Executive exec,
-            ObservingSeason os){
-        for(ExecutivePercentage ep: exec.getExecutivePercentage()) {
-            if(ep.getSeason().getId().compareTo(os.getId()) == 0)
-                return ep;
-        }
-        return null;
-    }
     
-    @Override
-    public String toString() {
-        return "ExecutiveSelector";
-    }
-    
+
 }

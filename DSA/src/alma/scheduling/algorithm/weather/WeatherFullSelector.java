@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFullSelector.java,v 1.7 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: WeatherFullSelector.java,v 1.8 2010/05/12 22:49:20 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
 import java.util.Collection;
 import java.util.Date;
 
+import org.hibernate.criterion.Criterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +75,12 @@ public class WeatherFullSelector extends AbstractBaseSelector {
         Collection<SchedBlock> sbs = select();
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
+    }
+
+    @Override
+    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

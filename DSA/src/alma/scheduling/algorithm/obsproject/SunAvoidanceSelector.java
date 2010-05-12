@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+
 import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.astro.SunAstroData;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
@@ -59,6 +62,27 @@ public class SunAvoidanceSelector extends AbstractBaseSelector {
         List<SchedBlock> sbs = sbDao.findSchedBlocksOutOfArea(lowRa, highRa, lowDec, highDec);
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
+    }
+
+    @Override
+    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+        SunAstroData sunData = CoordinatesUtil.getSunAstroData(ut);
+        double highRa, lowRa, highDec, lowDec;
+        highRa = sunData.getRa() + sunData.getAngularDiameter()/2;
+        lowRa = sunData.getRa() - sunData.getAngularDiameter()/2;
+        highDec = sunData.getDec() + sunData.getAngularDiameter() / 2;
+        lowDec = sunData.getDec() - sunData.getAngularDiameter() / 2;
+
+        Criterion crit1 = Restrictions.not(Restrictions.conjunction().add(
+                Restrictions.and(Restrictions.ge("s.coordinates.RA",
+                        new Double(lowRa)), Restrictions.le("s.coordinates.RA",
+                        new Double(highRa)))));
+        Criterion crit2 = Restrictions.not(Restrictions.conjunction().add(
+                Restrictions.and(Restrictions.ge("s.coordinates.Dec",
+                        new Double(lowDec)), Restrictions.le(
+                        "s.coordinates.Dec", new Double(highDec)))));
+        Criterion crit = Restrictions.and(crit1, crit2);
+        return crit;
     }
 
 }

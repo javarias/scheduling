@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,5 +72,29 @@ public class HourAngleSelector extends AbstractBaseSelector {
 		logger.debug("HourAngle selector returned " + res.size() + " SchedBlock redords");
 		return res;
 	}
+
+    @Override
+    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+        double raLowLimit = CoordinatesUtil.getRA(ut, 16.0,
+                Constants.CHAJNANTOR_LONGITUDE);
+        double raHighLimit = CoordinatesUtil.getRA(ut, 8.0,
+                Constants.CHAJNANTOR_LONGITUDE);
+
+        Criterion crit = null;
+        if (raHighLimit < raLowLimit) {
+            Criterion crit1 = Restrictions.and(Restrictions.ge(
+                    "s.coordinates.RA", new Double(raLowLimit * 15)),
+                    Restrictions.le("s.coordinates.RA", new Double(360)));
+            Criterion crit2 = Restrictions.and(Restrictions.ge(
+                    "s.coordinates.RA", new Double(0)), Restrictions.le(
+                    "s.coordinates.RA", new Double(raHighLimit * 15)));
+            crit = Restrictions.or(crit1, crit2);
+        } else {
+            crit = Restrictions.and(Restrictions.ge("s.coordinates.RA",
+                    new Double(raLowLimit * 15)), Restrictions.le(
+                    "s.coordinates.RA", new Double(raHighLimit * 15)));
+        }
+        return crit;
+    }
 
 }

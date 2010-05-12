@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +75,13 @@ public class ArrayConfigurationSelector extends AbstractBaseSelector{
     public String toString() {
         return getClass().toString();
     }
-    
+
+    @Override
+    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+        double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000 * 60 * 60);
+        Criterion crit = Restrictions.le("obsUnitControl.estimatedExecutionTime", new Double(remaningTime));
+        return crit;
+    }
     
 
 }

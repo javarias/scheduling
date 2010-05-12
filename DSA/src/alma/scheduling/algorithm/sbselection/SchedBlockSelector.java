@@ -21,12 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.6 2010/03/24 16:25:24 javarias Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.7 2010/05/12 22:49:20 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
 import java.util.Collection;
 import java.util.Date;
+
+import org.hibernate.criterion.Criterion;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -81,4 +83,24 @@ public interface SchedBlockSelector {
      * @throws NoSbSelectedException if no selection is possible
      */
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) throws NoSbSelectedException;
+    
+   
+    /**
+     * The name of the property used for the restrictions must be 'sb'. 
+     * 
+     * SchedBlock properties alias that are used:
+     * "schedulingConstraints.representativeTarget","rt" </br>
+     * "schedulingConstraints.representativeTarget.source","s" </br>
+     * "executive.executivePercentage", "ep" </br>
+     * 
+     * If you want to use, for example: </br>
+     * "schedulingConstraints.representativeTarget.source.coordinates.RA" you
+     * must replace it by "s.coordinates.RA"
+     * 
+     * All this alias are defined as part of the criteria created by the {@link MasterSelector#select()}
+     * 
+     * @return the criterion for the SchedBlocks ('sb') to be used in conjunction
+     * with the others selectors 
+     */
+     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf);
 }

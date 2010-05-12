@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherTsysSelector.java,v 1.4 2010/04/16 20:59:49 javarias Exp $"
+ * "@(#) $Id: WeatherTsysSelector.java,v 1.5 2010/05/12 22:49:20 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +87,20 @@ public class WeatherTsysSelector extends AbstractBaseSelector {
         Collection<SchedBlock> sbs = select();
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
+    }
+
+    @Override
+    public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
+        /*
+         * from SchedBlock sb where ((sb.weatherDependentVariables.projectedTsys
+         * - sb.weatherDependentVariables.tsys) /
+         * sb.weatherDependentVariables.tsys) < ?
+         */
+        Criterion crit = Restrictions
+                .sqlRestriction("( this_.WEATHER_VARS_PROJ_TSYS - "
+                        + "this_.WEATHER_VARS_TSYS ) /  this_.WEATHER_VARS_TSYS < "
+                        + tsysVariation);
+        return crit;
     }
 
 }

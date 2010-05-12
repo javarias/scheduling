@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.3 2010/04/14 17:22:12 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.4 2010/05/12 22:49:20 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -36,6 +36,7 @@ import alma.scheduling.algorithm.astro.InterferometrySensitivityCalculator;
 import alma.scheduling.algorithm.weather.OpacityInterpolator;
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.AntennaInstallation;
@@ -85,7 +86,10 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         ets.setObservingSeason(execDao.getCurrentSeason());
         ets.setSbId(schedBlock.getId());
         ets.setTimeSpent(schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue());
+        ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
+        ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue());
         ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
+        ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
         
         double execTime = schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue();
         double accumTime = 0.0;

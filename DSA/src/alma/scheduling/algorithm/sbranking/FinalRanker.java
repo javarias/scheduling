@@ -21,12 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
-<<<<<<< FinalRanker.java
- * "@(#) $Id: FinalRanker.java,v 1.8 2010/04/16 20:59:49 javarias Exp $"
-=======
- * "@(#) $Id: FinalRanker.java,v 1.8 2010/04/16 20:59:49 javarias Exp $"
->>>>>>> 1.5
+ * "@(#) $Id: FinalRanker.java,v 1.9 2010/05/12 22:49:20 javarias Exp $"
  */
+
 package alma.scheduling.algorithm.sbranking;
 
 import java.util.ArrayList;

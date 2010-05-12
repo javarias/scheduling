@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.8 2010/04/19 23:37:40 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.9 2010/05/12 22:49:20 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -52,6 +52,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     private static Logger logger = LoggerFactory.getLogger(DynamicSchedulingAlgorithmImpl.class);
 
     private SchedBlockRanker ranker;
+    /** The master selector, it should contains all the others preUpdateSelectors*/
     private Collection<SchedBlockSelector> preUpdateSelectors;
     private Collection<SchedBlockSelector> postUpdateSelectors;
     private Collection<ModelUpdater> updaters;
@@ -100,20 +101,19 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 
     @Override
     @Transactional
+    //TODO: The selectSB function should be removed or improved
     public void selectCandidateSB(Date ut) throws NoSbSelectedException {
         sbs.clear();
         HashMap<Long, SchedBlock> pre = selectSBs(ut, preUpdateSelectors);
+//        Date t1 = new Date();
         updateModel(ut, pre.values());
+//        Date t2 =  new Date();
+//        System.out.println("Update takes: " + (t2.getTime() - t1.getTime()) + " ms");
+//        t1= new Date();
         HashMap<Long, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
-        Collection<SchedBlock> min = null;
-        if(pre.size() > post.size())
-            min = post.values();
-        else
-            min = pre.values();
-		for (SchedBlock sb : min) {
-			if (pre.get(sb.getId()) != null && post.get(sb.getId()) != null)
-				sbs.put(sb.getId(), sb);
-		}
+//        t2 = new Date();
+//        System.out.println("Post Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
+        sbs = post;
 		if(sbs.size() == 0)
 			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");
     }
@@ -165,16 +165,18 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         ArrayList<HashMap<Long, SchedBlock>> selectedSbs = 
             new ArrayList<HashMap<Long,SchedBlock>>();
         int i = 0;
-        for(SchedBlockSelector s: selectors){
+        for (SchedBlockSelector s : selectors) {
             selectedSbs.add(new HashMap<Long, SchedBlock>());
             try {
-            	//TODO: Nullpointer exception, as none sb is returned by s.select()
-                for(SchedBlock sb: s.select(ut, array))
+                for (SchedBlock sb : s.select(ut, array))
                     selectedSbs.get(i).put(sb.getId(), sb);
             } catch (NoSbSelectedException e) {
-                logger.warn("DSA cannot continue if selector " + s.toString() +
-                        " cannot get at least one SB");
+                logger.warn("DSA cannot continue if selector " + s.toString()
+                        + " cannot get at least one SB");
                 throw new NoSbSelectedException(e.getMessage());
+            } catch (NullPointerException e) {
+                logger.warn("DSA cannot continue if selector " + s.toString()
+                        + " cannot get at least one SB");
             }
             i++;
         }
