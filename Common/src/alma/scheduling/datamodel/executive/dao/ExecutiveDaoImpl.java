@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.16 2010/04/28 19:23:03 ahoffsta Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.17 2010/05/12 22:43:59 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -165,5 +165,18 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
         for (Executive e : executives) {
             saveOrUpdate(e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ExecutivePercentage getExecutivePercentage(Executive exec, ObservingSeason os) {
+        List<ExecutivePercentage> ep;
+        Query query = getSession().createQuery("from ExecutivePercentage as ep " +
+                "where ep.season = ? and ep.executive = ?");
+        query.setMaxResults(1);
+        query.setParameter(0, os);
+        query.setParameter(1, exec);
+        ep = query.list();
+        return ep.get(0);        
     }
 }

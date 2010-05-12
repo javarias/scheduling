@@ -4,6 +4,7 @@ import java.util.List;
 
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.ExecutivePercentage;
 import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
@@ -26,6 +27,8 @@ public interface ExecutiveDAO extends GenericDao {
 
     public void saveObservingSeasonsAndExecutives(List<ObservingSeason> seasons,
             List<Executive> executives);
+    
+    public ExecutivePercentage getExecutivePercentage(Executive exec, ObservingSeason os);
     
     public void deleteAll();
     
