@@ -191,15 +191,71 @@ public class APDMtoSchedulingConverter {
 		// Create the result
 		final ObsProject obsProject = new ObsProject();
 		
+		{
+			String projectId = "<<didn't get far enough to set>>";
+			String statusId  = "<<didn't get far enough to set>>";
+			String programId = "<<didn't get far enough to set>>";
+			
+			final alma.entity.xmlbinding.obsproject.ObsProjectEntityT opEnt = apdmProject.getObsProjectEntity();
+			if (opEnt != null) {
+				projectId = opEnt.getEntityId();
+				if (projectId == null) {
+					projectId = "<<APDM ObsProject has null entity id>>";
+				}
+			} else {
+				projectId = "<<APDM ObsProject has no entity object>>";
+			}
+			logger.info(String.format(
+					"Processing project %s, is %sin dictionary",
+					projectId,
+					apdmProjects.containsKey(projectId)? "": "NOT "));
+
+			final alma.entity.xmlbinding.projectstatus.ProjectStatusRefT psRef = apdmProject.getProjectStatusRef();
+			if (psRef != null) {
+				statusId = psRef.getEntityId();
+				if (statusId == null) {
+					statusId = "<<APDM ObsProject has null project status id>>";
+				}
+			} else {
+				statusId = "<<APDM ObsProject has no project status ref object>>";
+			}
+			logger.info(String.format(
+					"... project status id %s, is %sin dictionary",
+					statusId,
+					projectStatuses.containsKey(statusId)? "": "NOT "));
+			
+			if (projectStatuses.containsKey(statusId)) {
+				final ProjectStatus projectStatus = projectStatuses.get(statusId);
+				final alma.entity.xmlbinding.ousstatus.OUSStatusRefT sRef = projectStatus.getObsProgramStatusRef();
+				if (sRef != null) {
+					programId = sRef.getEntityId();
+					if (programId == null) {
+						programId = "<<APDM ObsProject' program status ref has null entity id>>";
+					}
+				} else {
+					programId = "<<APDM ObsProject has no program status ref object>>";
+				}
+
+				logger.info(String.format(
+						"... program status %s is %sin dictionary",
+						programId,
+						ousStatuses.containsKey(programId)? "": "NOT "));
+			} else {
+				logger.info("... therefore cannot get program status");
+			}
+		}
+		
+		
 		// Fill in the top level object
-		final ProjectStatus projectStatus = projectStatuses.get(apdmProject.getObsProjectEntity().getEntityId());
+		final ProjectStatus projectStatus = projectStatuses.get(apdmProject.getProjectStatusRef().getEntityId());
 		final OUSStatus programStatus = ousStatuses.get(
 				projectStatus.getObsProgramStatusRef().getEntityId());
 		
 		/* obsProject.setId() - No need, it is handled by Hibernate */
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
-		obsProject.setScienceScore(0.0f); // TODO: model conversion
+		obsProject.setScienceScore((float)apdmProject.getScientificScore());
+		obsProject.setLetterGrade(apdmProject.getLetterGrade());
 		obsProject.setStatus(
 				projectStatus.getStatus().getState().toString());
 		obsProject.setTotalExecutionTime(
@@ -229,6 +285,33 @@ public class APDMtoSchedulingConverter {
 		// Create the result
 		final ObsUnitControl obsUnitControl = new ObsUnitControl();
 		final ObsUnitSet     obsUnitSet     = new ObsUnitSet();
+		{
+			String ousPartId = apdmOUS.getEntityPartId();
+			String statusId  = "<<didn't get far enough to set>>";
+			
+			if (ousPartId == null) {
+				ousPartId = "<<APDM ObsUnitSet has null entity id>>";
+			}
+
+			logger.info(String.format(
+					"Processing OUS %s",
+					ousPartId));
+
+			final alma.entity.xmlbinding.ousstatus.OUSStatusRefT oussRef = apdmOUS.getOUSStatusRef();
+			if (oussRef != null) {
+				statusId = oussRef.getEntityId();
+				if (statusId == null) {
+					statusId = "<<APDM ObsUnitSet has null ous status id>>";
+				}
+			} else {
+				statusId = "<<APDM ObsUnitSet has no ous status ref object>>";
+			}
+			logger.info(String.format(
+					"... OUSStatus id %s, is %sin dictionary",
+					statusId,
+					ousStatuses.containsKey(statusId)? "": "NOT "));
+		}
+
 		
 		// Fill in the top level objects
 		/* obsUnitSet.setId() - No need, it is handled by Hibernate */
@@ -270,7 +353,7 @@ public class APDMtoSchedulingConverter {
 				final alma.entity.xmlbinding.schedblock.SchedBlock apdmSB = apdmSchedBlocks.get(childDomainUID);
 				final String childStatusUID = apdmSB.getSBStatusRef().getEntityId();
 				if (sbStatuses.containsKey(childStatusUID)) {
-					final SBStatus sbStatus = sbStatuses.get(childDomainUID);
+					final SBStatus sbStatus = sbStatuses.get(childStatusUID);
 					try {
 						final SchedBlock schedBlock = createPhase2SchedBlock(
 								apdmSB,
@@ -322,6 +405,39 @@ public class APDMtoSchedulingConverter {
 		// Create the result
 		final SchedBlock schedBlock = new SchedBlock();
 		
+		{
+			String sbId = "<<didn't get far enough to set>>";
+			String statusId  = "<<didn't get far enough to set>>";
+
+			final alma.entity.xmlbinding.schedblock.SchedBlockEntityT sbEnt = apdmSB.getSchedBlockEntity();
+			if (sbEnt != null) {
+				sbId = sbEnt.getEntityId();
+				if (sbId == null) {
+					sbId = "<<APDM SchedBlock has null entity id>>";
+				}
+			} else {
+				sbId = "<<APDM SchedBlock has no entity object>>";
+			}
+			logger.info(String.format(
+					"Processing sched block %s, is %sin dictionary",
+					sbId,
+					apdmSchedBlocks.containsKey(sbId)? "": "NOT "));
+
+			final alma.entity.xmlbinding.sbstatus.SBStatusRefT sbsRef = apdmSB.getSBStatusRef();
+			if (sbsRef != null) {
+				statusId = sbsRef.getEntityId();
+				if (statusId == null) {
+					statusId = "<<APDM SchedBlock has null sb status id>>";
+				}
+			} else {
+				statusId = "<<APDM SchedBlock has no sb status ref object>>";
+			}
+			logger.info(String.format(
+					"... SBStatus id %s, is %sin dictionary",
+					statusId,
+					sbStatuses.containsKey(statusId)? "": "NOT "));
+		}
+
 		// Fill in the top level object
 		
 		// Create objects which hang off the top level SchedBlock, and hang them off it
@@ -380,13 +496,23 @@ public class APDMtoSchedulingConverter {
 		}
 		
 		// Dig around for the representative target.
-		final String representativeTargetId =
-			apdmSB.getSchedulingConstraints().getRepresentativeTargetRef().getPartId();
-		final Target representativeTarget = targets.get(representativeTargetId);
-		if (representativeTarget != null) {
-			schedBlock.getSchedulingConstraints().setRepresentativeTarget(representativeTarget);
+		final alma.entity.xmlbinding.schedblock.SchedulingConstraintsT constraints = apdmSB.getSchedulingConstraints();
+		if (constraints != null) {
+			final alma.entity.xmlbinding.schedblock.SchedBlockRefT representativeTargetRef =
+				constraints.getRepresentativeTargetRef();
+			if (representativeTargetRef != null) {
+				final String representativeTargetId = representativeTargetRef.getPartId();
+				final Target representativeTarget = targets.get(representativeTargetId);
+				if (representativeTarget != null) {
+					schedBlock.getSchedulingConstraints().setRepresentativeTarget(representativeTarget);
+				} else {
+					throw new ConversionException("Cannot find representative target");
+				}
+			} else {
+				throw new ConversionException("No representative target reference object");
+			}
 		} else {
-			throw new ConversionException("Cannot find representative target");
+			throw new ConversionException("No scheduling constraints (want to look in them for the representative target)");
 		}
 		
 		// Return the result
@@ -424,11 +550,16 @@ public class APDMtoSchedulingConverter {
 			SBStatus                                             sbStatus) throws ConversionException {
 		final SchedBlockControl result = new SchedBlockControl();
 		
+		logger.fine(String.format(
+				"createPhase2SchedBlockControl(SchedBlockControlT%s, SBStatus(%s))",
+				(control == null)? "(null!)": "",
+				(sbStatus == null)? "null!": sbStatus.getSBStatusEntity().getEntityId()));
 		result.setAccumulatedExecutionTime(sbStatus.getTotalUsedTimeInSec()/3600.0);
 		result.setAchievedSensitivity(0.0); // TODO: model conversion
 		result.setExecutionCount(sbExecutionCount(sbStatus));
 		result.setIndefiniteRepeat(control.getIndefiniteRepeat());
 		result.setState(sbState(sbStatus));
+		logger.fine("ended createPhase2SchedBlockControl(...)");
 
 		return result;
 	}
@@ -453,23 +584,30 @@ public class APDMtoSchedulingConverter {
 		for (final alma.entity.xmlbinding.schedblock.SchedBlockChoice2 outer : apdmSB.getSchedBlockChoice2()) {
 			for (final alma.entity.xmlbinding.schedblock.SchedBlockChoice2Item inner : outer.getSchedBlockChoice2Item()) {
 				ObservingParameters op;
+				String name;
 				String partId;
 				if (inner.getScienceParameters() != null) {
+					name   = inner.getScienceParameters().getName();
 					partId = inner.getScienceParameters().getEntityPartId();
 					try {
 						op = createScienceParameters(inner.getScienceParameters());
 						result.put(partId, op);
+						logger.info(String.format(
+								"Converted APDM Science Parameters %s (%s) in SchedBlock %s",
+								name, partId,
+								apdmSB.getSchedBlockEntity().getEntityId()));
 					} catch (ConversionException e) {
 						logger.info(String.format(
-								"Cannot convert APDM ObservingParameters %s in SchedBlock %s - %s, skipping",
-								partId,
+								"Cannot convert APDM ObservingParameters %s (%s) in SchedBlock %s - %s, skipping",
+								name, partId,
 								apdmSB.getSchedBlockEntity().getEntityId(),
 								e.getMessage()));
 					}
 				} else {
 					logger.info(String.format(
-							"Cannot convert APDM ObservingParameters in SchedBlock %s - unsupported type, skipping",
-							apdmSB.getSchedBlockEntity().getEntityId()));
+							"Cannot convert APDM ObservingParameters in SchedBlock %s - unsupported type (%s), skipping",
+							apdmSB.getSchedBlockEntity().getEntityId(),
+							workOutType(inner)));
 				}
 			}
 		}
@@ -499,7 +637,7 @@ public class APDMtoSchedulingConverter {
 				result.put(partId, fieldSource);
 			} catch (ConversionException e) {
 				logger.info(String.format(
-						"Cannot convert APDM FieldSoruce %s in SchedBlock %s - %s, skipping",
+						"Cannot convert APDM FieldSource %s in SchedBlock %s - %s, skipping",
 						partId,
 						apdmSB.getSchedBlockEntity().getEntityId(),
 						e.getMessage()));
@@ -530,6 +668,10 @@ public class APDMtoSchedulingConverter {
 			try {
 				final Target target = createTarget(apdmTarget, observingParameters, fieldSources);
 				result.put(partId, target);
+				logger.info(String.format(
+						"Converted APDM Target %s in SchedBlock %s",
+						partId,
+						apdmSB.getSchedBlockEntity().getEntityId()));
 			} catch (ConversionException e) {
 				logger.info(String.format(
 						"Cannot convert APDM Target %s in SchedBlock %s - %s, skipping",
@@ -660,6 +802,41 @@ public class APDMtoSchedulingConverter {
 						sbStatus.getStatus().getState().toString()));
 		}
 	}
-	/* End Utils
+
+
+	private String workOutType(alma.entity.xmlbinding.schedblock.SchedBlockChoice2Item inner) {
+		String result = "<<really, seriously unknown type>>";
+		
+		if (inner.getAmplitudeCalParameters() != null) {
+			result = "Amplitute Cal";
+		} else if (inner.getAtmosphericCalParameters() != null) {
+			result = "Atmospheric Cal";
+		} else if (inner.getBandpassCalParameters() != null) {
+			result = "Bandpass Cal";
+		} else if (inner.getDelayCalParameters() != null) {
+			result = "Delay Cal";
+		} else if (inner.getFocusCalParameters() != null) {
+			result = "Focus Cal";
+		} else if (inner.getHolographyParameters() != null) {
+			result = "Holography Cal";
+		} else if (inner.getOpticalPointingParameters() != null) {
+			result = "Optical Pointing Cal";
+		} else if (inner.getPhaseCalParameters() != null) {
+			result = "Phase Cal";
+		} else if (inner.getPointingCalParameters() != null) {
+			result = "Pointing Cal";
+		} else if (inner.getPolarizationCalParameters() != null) {
+			result = "Polarization Cal";
+		} else if (inner.getRadiometricPointingParameters() != null) {
+			result = "Radiometric Cal";
+		} else if (inner.getReservationParameters() != null) {
+			result = "Reservation Cal";
+		} else if (inner.getScienceParameters() != null) {
+			result = "Science Cal";
+		}
+		
+		return result;
+	}
+/* End Utils
 	 * ============================================================= */
 }
