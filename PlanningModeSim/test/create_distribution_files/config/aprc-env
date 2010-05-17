@@ -1,0 +1,5 @@
+# Hibernate database configuration
+DBDIR=$APRC_WORK_DIR/hsqldb
+DBNAME=data_model
+DBPORT=8090
+SQLTOOL_RC_FILE=./config/sqltool.rc

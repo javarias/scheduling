@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# We require the config/testenv file.
+[ -f "$APRC_HOME/config/aprc-env" ] || exit $?
+
+# Source test configuration file.
+. "$APRC_HOME/config/aprc-env"
+
+RETVAL=0
+
+start() {
+    startHSQLDB
+}
+
+stop() {
+    stopHSQLDB
+}
+
+fullload() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@
+}
+
+load() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@
+}
+
+unload() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@
+}
+
+run() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@ 
+}
+
+step() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@
+}
+
+clean() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@ 
+}
+
+startHSQLDB() {
+    printf "Starting HSQLDB\n"
+    java org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT" &> $APRC_WORK_DIR/logs/hsqldb.log &
+}
+
+stopHSQLDB() {
+    printf "Stopping HSQLDB\n"
+    # Get the location of hsqldb.jar.
+    HSQLDB_JAR=`find $APRC_HOME -name hsqldb.jar`
+    SQLTOOL_RC_FILE=$APRC_HOME/config/sqltool.rc
+    java -jar "$HSQLDB_JAR" --rcfile "$SQLTOOL_RC_FILE" --sql "shutdown;" "$DBNAME"
+}
+
+case "$1" in
+    start)
+        start $@
+        ;;
+    stop)
+        stop $@
+        ;;
+    fullload)
+        fullload $@
+        ;;
+    load)
+        load $@
+        ;;
+    unload)
+        unload $@
+        ;;
+    clean)
+        clean $@ 
+        ;;
+    run)
+        run $@
+        ;;
+    step)
+        step $@
+        ;;
+    *)
+        printf "Usage: $0 {start|stop|fullload|load|unload|step|run|clean}\n"
+        exit 1
+esac
+
+exit $RETVAL
