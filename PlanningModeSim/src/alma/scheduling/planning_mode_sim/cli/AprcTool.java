@@ -340,6 +340,7 @@ public class AprcTool {
             freeArrays.remove(ev.getArray());
             break;
         case SCHEDBLOCK_EXECUTION_FINISH:
+            sbExecutor.finishSbExecution(ev.getSb(), ev.getArray(), time);
             dsa = arraysCreated.get(ev.getArray());
             TimeHandler.getHandler().step(ev.getTime());
             System.out.println(TimeUtil.getUTString(time)
@@ -433,43 +434,6 @@ public class AprcTool {
         Collections.sort(timesToCheck);
     }
     
-    private void step(String ctxPath) {
-        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
-        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
-        SchedBlockExecutor sbExecutor =
-            (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
-        ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
-        // TODO just one array, for now
-        ArrayConfiguration arrCnf = observatoryDao.findArrayConfigurations().get(0);
-        Configuration config = configDao.getConfiguration();
-        Date time = config.getNextStepTime();
-        logger.debug("next step time: " + time);
-        if (time == null) {
-            time = arrCnf.getStartTime();
-            configDao.updateSimStartTime(time);
-        }
-        DynamicSchedulingAlgorithm dsa = getDSA(ctx);
-        try {
-            time = step(ctx, time, dsa, arrCnf, sbExecutor);
-        } catch (NoSbSelectedException e) {
-            System.out.println("DSA finished, no more SBs to schedule");
-        }
-        configDao.updateNextStep(time);
-    }
-    
-    private Date step(ApplicationContext ctx, Date time,
-            DynamicSchedulingAlgorithm dsa, ArrayConfiguration arrCnf,
-            SchedBlockExecutor sbExecutor) throws NoSbSelectedException {
-        dsa.setVerboseLevel(verboseLvl);
-        dsa.setArray(arrCnf);
-        //dsa.updateModel(time);
-        dsa.selectCandidateSB();
-        dsa.rankSchedBlocks(time);
-        SchedBlock sb = dsa.getSelectedSchedBlock();
-        time = sbExecutor.execute(sb, arrCnf, time);
-        return time;
-    }
-
     private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) {
         if (DSAName == null) {
             String[] dsaNames = ctx
