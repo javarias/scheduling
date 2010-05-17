@@ -1,7 +1,7 @@
 /**
  * 
  */
-package alma.scheduling.datamodel.obsproject.dao;
+package alma.scheduling.datamodel;
 
 /**
  * @author dclarke

@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ProjectIncrementalDao.java,v 1.1 2010/05/17 23:30:39 dclarke Exp $"
+ * "@(#) $Id: ProjectIncrementalDao.java,v 1.2 2010/05/17 23:34:16 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.List;
 
+import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 
 /**
