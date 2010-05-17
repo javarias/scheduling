@@ -15,6 +15,7 @@ import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -144,5 +145,15 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         query.setParameter(3, highDecLimit);
         List<SchedBlock> schedBlocks = (List<SchedBlock>) query.list();
         return schedBlocks;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SchedBlock> findSchedBlockWithStatusReady() {
+        Query query = null;
+        query = getSession().createQuery(
+                "from SchedBlock sb where sb.schedBlockControl.state = ?");
+        query.setParameter(0, SchedBlockState.READY);
+        return query.list();
     }
 }

@@ -17,4 +17,5 @@ public interface SchedBlockDao extends GenericDao {
     public List<SchedBlock> findSchedBlocksBetweenHourAngles(double lowLimit, double highLimit);
     public List<SchedBlock> findSchedBlocksOutOfArea(double lowRaLimit,
             double highRaLimit, double lowDecLimit, double highDecLimit);
+    public List<SchedBlock> findSchedBlockWithStatusReady();
 }

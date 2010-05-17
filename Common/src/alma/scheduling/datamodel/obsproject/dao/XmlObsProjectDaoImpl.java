@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.16 2010/04/30 23:38:52 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.17 2010/05/17 23:16:07 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -54,6 +54,7 @@ import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.Preconditions;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
@@ -221,6 +222,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 schedBlock.setObsUnitControl(ou);
                 SchedBlockControl sbc = new SchedBlockControl();
                 sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
+                sbc.setState(SchedBlockState.READY);
                 schedBlock.setSchedBlockControl(sbc);
             }
         }
