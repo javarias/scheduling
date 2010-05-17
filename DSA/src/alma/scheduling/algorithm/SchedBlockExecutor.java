@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutor.java,v 1.2 2010/03/18 06:27:15 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockExecutor.java,v 1.3 2010/05/17 23:17:19 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -40,4 +40,12 @@ public interface SchedBlockExecutor {
      * @return Point in time after the SchedBlock has been executed.
      */
     Date execute(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
+    
+    /**
+     * 
+     * @param sb Scheduling Block
+     * @param ut Point in time when the SchedBlock is executed
+     * @return Point in time after the SchedBlock has been executed.
+     */
+    void finishSbExecution(SchedBlock sb, ArrayConfiguration arrCnf, Date ut);
 }
