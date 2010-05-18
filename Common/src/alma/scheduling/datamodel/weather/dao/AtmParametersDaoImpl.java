@@ -50,7 +50,7 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
             fillCache();
         AtmParameters[] retVal = new AtmParameters[2];
         retVal[0] = atmParamsCache[getFreqPosition(freq)][getPwvPosition(pwv)];
-        retVal[1] = atmParamsCache[getFreqPosition(freq) + 1][getPwvPosition(pwv) + 1];
+        retVal[1] = atmParamsCache[getFreqPosition(freq) + 1][(getPwvPosition(pwv) == 6 ? getPwvPosition(pwv) : getPwvPosition(pwv) + 1)];
         return retVal;
     }
 
@@ -67,19 +67,19 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
     
     /* returns the upper bound, except for pwv > 5.186 which return the lower bound*/
     private int getPwvPosition(Double pwv){
-        if (pwv == 0.4722 || pwv < 0.4722)
+        if (pwv <= 0.4722)
             return 0;
-        else if (pwv == 0.658 || (pwv > 0.4722 && pwv < 0.658))
+        else if (pwv > 0.4722 && pwv <= 0.658)
             return 1;
-        else if (pwv == 0.9134 || (pwv > 0.658 && pwv < 0.9134))
+        else if (pwv > 0.658 && pwv <= 0.9134)
             return 2;
-        else if (pwv == 1.262 || (pwv > 0.9134 && pwv < 1.262))
+        else if (pwv > 0.9134 && pwv <= 1.262)
             return 3;
-        else if (pwv == 1.796 || (pwv > 1.262 && pwv < 1.796))
+        else if (pwv > 1.262 && pwv <= 1.796)
             return 4;
-        else if (pwv == 2.748 || (pwv > 1.796 && pwv < 2.748))
+        else if (pwv > 1.796 && pwv <= 2.748)
             return 5;
-        else if (pwv == 5.186 || ( pwv > 2.748 && pwv < 5.186 ) || pwv > 5.186)
+        else if (pwv > 2.748) //  pwv > 5.186
             return 6;
         return -1;
     }

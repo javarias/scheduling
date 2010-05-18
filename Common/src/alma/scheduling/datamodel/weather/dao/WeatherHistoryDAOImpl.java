@@ -68,7 +68,8 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
 
     @Override
     public HumidityHistRecord getHumidityForTime(Date ut) {
-        return new HumidityHistRecord(0.0, 0.50, 0.1, 0.1);
+    	double h = 0.5 + Math.random() * 4.0;
+        return new HumidityHistRecord(0.0, h, 0.1, 0.1);
     }
 
     @Override
