@@ -17,6 +17,14 @@ public class SchedBlockStatusSelector extends AbstractBaseSelector {
 
     private SchedBlockDao sbDao;
     
+    public SchedBlockDao getSbDao() {
+        return sbDao;
+    }
+
+    public void setSbDao(SchedBlockDao sbDao) {
+        this.sbDao = sbDao;
+    }
+
     public SchedBlockStatusSelector(String selectorName) {
         super(selectorName);
     }
