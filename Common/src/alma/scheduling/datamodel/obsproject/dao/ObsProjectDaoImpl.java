@@ -1,6 +1,9 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.List;
+
 import org.hibernate.LockMode;
+import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +49,18 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
                 hydrateObsUnit(sou);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ObsProject> getObsProjectsOrderBySciRank() {
+        Query query = getSession().createQuery("from ObsProject prj order by prj.scienceRank");
+        return query.list();
+    }
+
+    @Override
+    public void saveOrUpdate(ObsProject prj) {
+        super.saveOrUpdate(prj);
     }
     
 }

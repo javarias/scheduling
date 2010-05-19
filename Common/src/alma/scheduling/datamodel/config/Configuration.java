@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.11 2010/04/22 19:19:53 ahoffsta Exp $"
+ * "@(#) $Id: Configuration.java,v 1.12 2010/05/19 17:31:47 javarias Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -46,39 +46,10 @@ public class Configuration {
     private String contextFilePath;
     
     /**
-     * Percent of projects graded "A" (0-100).
+     * Contains the configuration of the grade of the projects.
      * 
-     * Given this parameter, a project is graded "A" if its scoring number
-     * situates it between the top gradeAPercent % projects, when they are ordered
-     * by score.
-     * 
-     * gradeAPercet + gradeBPercent + gradeCPercent < 100
      */
-    private Float gradeAPercent;
-    
-    /**
-     * Percent of projects graded "B" (0-100).
-     * 
-     * Given this parameter, a project is graded "B" if its scoring number
-     * situates it below the top gradeAPercent % projects, but between the
-     * gradeBPercent % projects, when they are ordered by score. 
-     * 
-     * gradeAPercet + gradeBPercent + gradeCPercent < 100
-     */
-    private Float gradeBPercent;
-    
-    /**
-     * Percent of projects graded "B" (0-100).
-     * 
-     * Given this parameter, a project is graded "C" if its scoring number
-     * situates it below the gradeBPercent % projects, but between the
-     * gradeCPercent % projects, when they are ordered by score.
-     * 
-     * gradeAPercet + gradeBPercent + gradeCPercent < 100
-     * 
-     * All the rest of ObsProjects are graded "D".
-     */
-    private Float gradeCPercent;
+    private ScienceGradeConfig scienceGradeConfig;
     
     /** Array center latitude (degrees, N is positive, S negative) */
     private Double arrayCenterLatitude;
@@ -125,6 +96,14 @@ public class Configuration {
 
     public void setObservatoryDirectory(String observatoryDirectory) {
         this.observatoryDirectory = observatoryDirectory;
+    }
+    
+    public ScienceGradeConfig getScienceGradeConfig() {
+        return scienceGradeConfig;
+    }
+
+    public void setScienceGradeConfig(ScienceGradeConfig scienceGradeConfig) {
+        this.scienceGradeConfig = scienceGradeConfig;
     }
 
     public String getExecutiveDirectory() {
@@ -266,30 +245,6 @@ public class Configuration {
 
     public void setSimulationStartTime(Date simulationStartTime) {
         this.simulationStartTime = simulationStartTime;
-    }
-
-    public Float getGradeAPercent() {
-        return gradeAPercent;
-    }
-
-    public void setGradeAPercent(Float gradeAPercent) {
-        this.gradeAPercent = gradeAPercent;
-    }
-
-    public Float getGradeBPercent() {
-        return gradeBPercent;
-    }
-
-    public void setGradeBPercent(Float gradeBPercent) {
-        this.gradeBPercent = gradeBPercent;
-    }
-
-    public Float getGradeCPercent() {
-        return gradeCPercent;
-    }
-
-    public void setGradeCPercent(Float gradeCPercent) {
-        this.gradeCPercent = gradeCPercent;
     }
 
 }

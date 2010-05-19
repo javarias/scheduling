@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.10 2010/04/12 20:53:35 rhiriart Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.11 2010/05/19 17:31:47 javarias Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.ScienceGradeConfig;
 
 public class XmlConfigurationDaoImpl implements ConfigurationDao {
 
@@ -75,9 +76,11 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
             config.setArrayCenterLatitude(xmlConfig.getArrayCenterLatitude());
             config.setArrayCenterLongitude(xmlConfig.getArrayCenterLongitude());
             config.setMaxWindSpeed(xmlConfig.getMaxWindSpeed());
-            config.setGradeAPercent(xmlConfig.getGradeAPercent());
-            config.setGradeBPercent(xmlConfig.getGradeBPercent());
-            config.setGradeCPercent(xmlConfig.getGradeCPercent());            
+            ScienceGradeConfig sc = new ScienceGradeConfig();
+            sc.setnGradeAPrj(xmlConfig.getGradeA());
+            sc.setnGradeBPrj(xmlConfig.getGradeB());
+            sc.setnGradeCPrj(xmlConfig.getGradeC()); 
+            config.setScienceGradeConfig(sc);
             return config;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

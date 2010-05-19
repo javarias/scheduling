@@ -10,9 +10,13 @@
         </id>
         <property name="nextStepTime" column="NEXT_STEP_TIME" type="timestamp" not-null="false"/>
         <property name="simulationStartTime" column="SIM_START_TIME" type="timestamp" not-null="false"/>
-        <property name="gradeAPercent" column="GRADE_A_PERCENT" type="float" not-null="false"/>
-        <property name="gradeBPercent" column="GRADE_B_PERCENT" type="float" not-null="false"/>
-        <property name="gradeCPercent" column="GRADE_C_PERCENT" type="float" not-null="false"/>
+        <component name="scienceGradeConfig" class="ScienceGradeConfig">
+        	<property name="totalPrj" column="SCI_GRADE_CONFIG_TOTAL_PRJS" />
+        	<property name="nGradeAPrj" column="SCI_GRADE_CONFIG_A_PRJS"/>
+        	<property name="nGradeBPrj" column="SCI_GRADE_CONFIG_B_PRJS"/>
+        	<property name="nGradeCPrj" column="SCI_GRADE_CONFIG_C_PRJS"/>
+        	<property name="nGradeDPrj" column="SCI_GRADE_CONFIG_D_PRJS"/>
+        </component>
     </class>
 	
 </hibernate-mapping>    

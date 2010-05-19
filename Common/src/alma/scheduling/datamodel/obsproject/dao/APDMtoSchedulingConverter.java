@@ -36,6 +36,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
@@ -255,7 +256,7 @@ public class APDMtoSchedulingConverter {
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
 		obsProject.setScienceScore((float)apdmProject.getScientificScore());
-		obsProject.setLetterGrade(apdmProject.getLetterGrade());
+		obsProject.setLetterGrade(ScienceGrade.valueOf(apdmProject.getLetterGrade()));
 		obsProject.setStatus(
 				projectStatus.getStatus().getState().toString());
 		obsProject.setTotalExecutionTime(

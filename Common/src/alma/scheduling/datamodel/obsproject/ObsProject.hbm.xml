@@ -3,6 +3,11 @@
     "-//Hibernate/Hibernate Mapping DTD//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="alma.scheduling.datamodel.obsproject">
+    
+    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ScienceGrade">
+        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ScienceGrade</param>
+    </typedef>
+    
     <class name="ObsProject" table="OBSPROJECT">
         <id name="id" column="OBSPROJECTID">            
             <generator class="native"/>
@@ -10,6 +15,7 @@
         <property name="principalInvestigator" column="PI"/>
         <property name="scienceScore" column="SCIENCE_SCORE" />
         <property name="scienceRank" column="SCIENCE_RANK"/>
+        <property name="letterGrade" type="ScienceGrade" column="SCIENCE_GRADE"/>
         <property name="status" column="STATUS"/>
         <property name="totalExecutionTime" column="TOTAL_EXEC_TIME"/>
         <many-to-one name="obsUnit" class="ObsUnit" column="OBSUNITID"

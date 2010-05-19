@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.correlatorSrc.CorrConfigValidator.SBConversionException;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.config.Configuration;
+import alma.scheduling.datamodel.config.ScienceGradeConfig;
 
 // TODO Why are merging XML with database? Why not to store the information from
 // the XML in the database and then forget about the XML.
@@ -47,9 +49,7 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
             config.setLastLoad(dbConf.getLastLoad());
             config.setNextStepTime(dbConf.getNextStepTime());
             config.setSimulationStartTime(dbConf.getSimulationStartTime());
-            config.setGradeAPercent(dbConf.getGradeAPercent());
-            config.setGradeBPercent(dbConf.getGradeBPercent());
-            config.setGradeCPercent(dbConf.getGradeCPercent());
+            config.setScienceGradeConfig(dbConf.getScienceGradeConfig());
         }
         return config;
     }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.5 2010/05/14 19:34:42 dclarke Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.6 2010/05/19 17:31:47 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -60,7 +60,7 @@ public class ObsProject {
     /**
      * Letter Grade
      */
-    private String letterGrade;
+    private ScienceGrade letterGrade;
     
     /** The ObsProject status */
     private String status;
@@ -139,11 +139,11 @@ public class ObsProject {
         this.scienceRank = scienceRank;
     }
 
-    public String getLetterGrade() {
+    public ScienceGrade getLetterGrade() {
         return letterGrade;
     }
 
-    public void setLetterGrade(String letterGrade) {
+    public void setLetterGrade(ScienceGrade letterGrade) {
         this.letterGrade = letterGrade;
     }
 }
