@@ -289,6 +289,12 @@
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 
+	<bean id="sbStatusSelector" class="alma.scheduling.algorithm.obsproject.SchedBlockStatusSelector"
+		scope="prototype">
+        <constructor-arg><value>sbStatusSelector</value></constructor-arg>
+		<property name="sbDao" ref="sbDao"/>		
+	</bean>
+
 	<bean id="preUpdateSelector" class="alma.scheduling.algorithm.sbselection.MasterSelector"
 		scope="prototype">
 		<property name="selectors">
@@ -299,6 +305,7 @@
 				<ref bean="hourAngleSelector" />
                 <ref bean="sunAvoidanceSelector" />
                 <ref bean="moonAvoidanceSelector" />
+                <ref bean="sbStatusSelector" />
 			</set>
         </property>
 	</bean>
