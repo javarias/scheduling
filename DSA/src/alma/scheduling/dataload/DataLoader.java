@@ -21,9 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DataLoader.java,v 1.2 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: DataLoader.java,v 1.3 2010/05/19 17:37:27 javarias Exp $"
  */
 package alma.scheduling.dataload;
+
 
 /**
  * Bulk data loader from a file.
@@ -31,7 +32,7 @@ package alma.scheduling.dataload;
  */
 public interface DataLoader {
 
-    public void load();
+    public void load() throws Exception;
  
     public void clear();
     

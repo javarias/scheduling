@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.8 2010/04/21 17:08:06 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.9 2010/05/19 17:37:27 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 
 public class ScienceGradeRanker extends AbstractBaseRanker {
 
@@ -63,10 +64,20 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
     @Override
     public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut){
         ranks.clear();
+        double score;
         for(SchedBlock sb: sbs){
+            score = sb.getProject().getScienceScore();
+            if(sb.getProject().getLetterGrade() == ScienceGrade.A)
+                score *= 1.0;
+            else if (sb.getProject().getLetterGrade() == ScienceGrade.B)
+                score *= 0.5;
+            else if (sb.getProject().getLetterGrade() == ScienceGrade.C)
+                score *= 0.25;
+            else
+                score *=0;
             SBRank rank = new SBRank();
             rank.setId(sb.getId());
-            rank.setRank(sb.getProject().getScienceScore());
+            rank.setRank(score);
             ranks.add(rank);
             logger.debug("rank: " + rank);
         }
