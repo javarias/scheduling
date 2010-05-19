@@ -153,6 +153,8 @@
 				<bean class="alma.scheduling.dataload.DataLinker">
 					<property name="sbDao" ref="sbDao"/>
 					<property name="execDao" ref="execDao"/>
+                    <property name="configDao" ref="configDao"/>
+                    <property name="obsPrjDao" ref="obsProjectDao"/>
 				</bean>
 			</list>
 		</property>
