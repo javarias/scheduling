@@ -131,7 +131,7 @@ public class AprcTool {
         
     }
     
-    private void fullLoad(String ctxPath) {
+    private void fullLoad(String ctxPath) throws Exception {
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
@@ -147,7 +147,7 @@ public class AprcTool {
         configDao.updateConfig();
     }
 
-    private void load(String ctxPath) {
+    private void load(String ctxPath) throws Exception {
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
@@ -463,7 +463,7 @@ public class AprcTool {
         System.out.println("Finishing first update " + new Date());
     }
     
-    public void selectAction(String[] args) throws IOException{
+    public void selectAction(String[] args) throws Exception{
         if (args.length==0){
             help();
             System.exit(1);
@@ -546,9 +546,9 @@ public class AprcTool {
     
     /**
      * @param args
-     * @throws IOException 
+     * @throws Exception 
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         
         AprcTool cli = new AprcTool();
         cli.selectAction(args);
