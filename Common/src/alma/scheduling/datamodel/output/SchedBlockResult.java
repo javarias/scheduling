@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockResult.java,v 1.3 2010/04/19 22:24:12 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlockResult.java,v 1.4 2010/05/19 21:00:32 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -37,12 +37,21 @@ public class SchedBlockResult {
 	private Date endDate;
 	private double executionTime;
 	private long id;
+	private long originalId;
 	private String mode;
 	private double representativeFrequency;
 	private Date startDate;
 	private ExecutionStatus status;
 	private String type;
 	public Array ArrayRef;
+	
+	public long getOriginalId() {
+		return originalId;
+	}
+
+	public void setOriginalId(long originalId) {
+		this.originalId = originalId;
+	}
 
 	public SchedBlockResult(){
 

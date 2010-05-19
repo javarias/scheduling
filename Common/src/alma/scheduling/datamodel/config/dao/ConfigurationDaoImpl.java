@@ -12,8 +12,9 @@ import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.ScienceGradeConfig;
 
-// TODO Why are merging XML with database? Why not to store the information from
-// the XML in the database and then forget about the XML.
+/* TODO Why it is necesarry to merge the XML with database? Wouldn't be cleaner to store
+ * Why not to store the information from the XML in the database and then forget about the XML.
+ */
 
 @Transactional
 public class ConfigurationDaoImpl extends GenericDaoImpl implements

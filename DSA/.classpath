@@ -9,5 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="src" path="/Common"/>
 	<classpathentry kind="lib" path="/home/ahoffsta/introot/lib/spring.jar"/>
+	<classpathentry kind="var" path="ACSROOT/lib/hibernate3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

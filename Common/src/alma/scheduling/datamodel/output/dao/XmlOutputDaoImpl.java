@@ -60,8 +60,12 @@ public class XmlOutputDaoImpl implements OutputDao {
         r.setMaintenanceTime(results.getMaintenanceTime());
         r.setOperationTime(results.getOperationTime());
         r.setScientificTime(results.getScientificTime());
-        r.setObsSeasonEnd(new org.exolab.castor.types.Date(results.getObsSeasonEnd()));
-        r.setObsSeasonStart(new org.exolab.castor.types.Date(results.getObsSeasonStart()));
+        r.setObsSeasonEnd(results.getObsSeasonEnd());
+        r.setObsSeasonStart(results.getObsSeasonStart());
+        r.setStartSimDate(results.getStartSimDate());
+        r.setStopSimDate(results.getStartSimDate());
+        r.setStartRealDate(results.getStartRealDate());
+        r.setStopRealDate(results.getStopRealDate());
         
         //set the observation projects
         alma.scheduling.output.generated.ObservationProject op[] =
@@ -75,6 +79,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             op[i].setScienceRank( tmpOp.getScienceRank());
             op[i].setScienceScore( tmpOp.getScienceScore());
             op[i].setId(tmpOp.getId());
+            op[i].setOriginalId(tmpOp.getOriginalId());
             //TODO: Fix this presseted status. Using valueof() method returns null pointer.
             op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.COMPLETE );
             
@@ -97,16 +102,17 @@ public class XmlOutputDaoImpl implements OutputDao {
             for(int j = 0; j < sb.length; j++){
                 SchedBlockResult tmpSb = itSb.next();
                 sb[j] = new alma.scheduling.output.generated.SchedBlock();
-                sb[j].setEndDate(new org.exolab.castor.types.Date(tmpSb.getEndDate()));
+                sb[j].setEndDate(tmpSb.getEndDate());
                 sb[j].setExecutionTime(tmpSb.getExecutionTime());
                 sb[j].setId(tmpSb.getId());
+                sb[j].setOriginalId(tmpSb.getOriginalId());
                 sb[j].setMode(tmpSb.getMode());
                 sb[j].setRepresentativeFrequency(tmpSb.getRepresentativeFrequency());
-                sb[j].setStartDate(new org.exolab.castor.types.Date(tmpSb.getStartDate()));
+                sb[j].setStartDate(tmpSb.getStartDate());
                 sb[j].setStatus(alma.scheduling.output.generated.types.ExecutionStatus.valueOf(
                         tmpSb.getStatus().name()));
                 sb[j].setType(tmpSb.getType());  
-                alma.scheduling.output.generated.ArrayRef aRef= 
+                alma.scheduling.output.generated.ArrayRef aRef = 
                     new alma.scheduling.output.generated.ArrayRef();
                 aRef.setArrayRef(Long.toString(tmpSb.getArrayRef().getId()));
                 sb[j].setArrayRef(aRef);
@@ -124,9 +130,9 @@ public class XmlOutputDaoImpl implements OutputDao {
             Array tmpA = itA.next();
             a[i] = new alma.scheduling.output.generated.Array();
             a[i].setAvailablelTime( tmpA.getAvailableTime());
-            a[i].setCreationDate(new org.exolab.castor.types.Date(tmpA.getCreationDate()));
-            a[i].setDeletionDate(new org.exolab.castor.types.Date(tmpA.getDeletionDate()));
-            //a[i].setId(Integer.toString(tmpA.hashCode()));
+            a[i].setCreationDate(tmpA.getCreationDate());
+            a[i].setDeletionDate(tmpA.getDeletionDate());
+            // Id needs to be a string, as it is used for XPath reference check in XML schema.
             a[i].setId(Long.toString(tmpA.getId()));
             a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
             a[i].setScientificTime(tmpA.getScientificTime());
@@ -137,9 +143,11 @@ public class XmlOutputDaoImpl implements OutputDao {
         
         if (fw == null){
             config = configDao.getConfiguration();
-            Date d = new Date();
-            String pathToFile = config.getWorkDirectory() + "/" + config.getOutputDirectory() 
-            + "/" + "output_" + d.getTime() + ".xml";
+            String pathToFile = config.getWorkDirectory() + "/" + 
+            					config.getOutputDirectory() + "/" + 
+            					"output_" + 
+            					results.getStartRealDate().getTime() + 
+            					".xml";
             try {
                 fw = new FileWriter(pathToFile);
                 r.marshal(fw);

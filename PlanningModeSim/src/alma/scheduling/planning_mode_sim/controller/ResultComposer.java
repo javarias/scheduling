@@ -1,3 +1,27 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ */
 package alma.scheduling.planning_mode_sim.controller;
 
 import java.util.Calendar;
@@ -6,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
@@ -15,10 +40,13 @@ import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
+import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
@@ -42,12 +70,12 @@ public class ResultComposer {
 	private ApplicationContext context = null;
 	
 	
-	public ResultComposer(ApplicationContext ctx){
+	public ResultComposer(ApplicationContext context){
 		results = new Results();
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
 		
-		context = ctx;
+		this.context = context;
 	}
 	
 	public void notifyExecutiveData(Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
@@ -56,6 +84,7 @@ public class ResultComposer {
 		results.setStartSimDate(obsSeasonStart);
 		results.setStopSimDate(obsSeasonEnd);
 		results.setAvailableTime( (results.getObsSeasonEnd().getTime() - results.getObsSeasonStart().getTime())/1000);
+		results.setStartRealDate(new Date());
 	}
 	
 	public void notifyArrayCreation(ArrayConfiguration arrcfg){
@@ -79,7 +108,6 @@ public class ResultComposer {
 	 */
 	@Transactional
 	public void notifySchedBlockStart(SchedBlock sb){
-		
 		// TODO Implement distinction of types of SB. If maintenance, account to a ghost ObsProject.
 		
 		// Creation of SchedBlockResult
@@ -95,6 +123,7 @@ public class ResultComposer {
 		sbr.setMode( "Single Dish" ); 
 		//TODO: Waiting for SB type implementation on data-model.
 		sbr.setType( "SCIENTIFIC" ); 
+		sbr.setOriginalId( sb.getId() );
 		
 		// Obtaining reference from the SchedBlock to the Observation Project.
 		ObsProject inputObsProjectRef = sb.getProject();
@@ -104,7 +133,7 @@ public class ResultComposer {
 		boolean isPresent = false;
 		ObservationProject outputObservationProjectRef = null;
 		for( ObservationProject tmpOp : results.getObservationProject() ){
-			if( tmpOp.getId() == inputObsProjectRef.getId() ){
+			if( tmpOp.getOriginalId() == inputObsProjectRef.getId() ){
 				isPresent = true;
 				outputObservationProjectRef = tmpOp;
 				break;
@@ -117,7 +146,7 @@ public class ResultComposer {
 			ObservationProject newObsProject = new ObservationProject();
 			newObsProject.setScienceRank( inputObsProjectRef.getScienceRank() );
 			newObsProject.setScienceScore( inputObsProjectRef.getScienceScore() );
-			newObsProject.setId( inputObsProjectRef.getId() );
+			newObsProject.setOriginalId( inputObsProjectRef.getId() );
 			newObsProject.setStatus( ExecutionStatus.INCOMPLETE );
 			
 			// Create the Affiliations Set and their Affiliations			
@@ -149,14 +178,68 @@ public class ResultComposer {
 		sbr.setEndDate( TimeHandler.now() );
 	}
 	
+	@Transactional
 	public void notifySchedBlockStop(SchedBlock sb){
-		// TODO: To be able to implement SBR retrieval, the datamodel must include the ORIGINAL ID.
+		// Obtaining reference from the SchedBlock to the Observation Project.
+		ObsProject inputObsProjectRef = sb.getProject();
+//		ApplicationContext context = new FileSystemXmlApplicationContext("file://" + ctxPath);
+//		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
+//		obsProjectDao.hydrateSchedBlocks(inputObsProjectRef);
+				
+		// Check if the Observation Project already exists in the results collection of obsprojects.
+		// TODO: add to the datamodel an attribute that saves the original obsproject ID
+		boolean isPresent = false;
+		ObservationProject outputObservationProjectRef = null;
+		for( ObservationProject tmpOp : results.getObservationProject() ){
+			if( tmpOp.getOriginalId() == inputObsProjectRef.getId() ){
+				isPresent = true;
+				outputObservationProjectRef = tmpOp;
+				break;
+			}
+		}
+		// TODO: If nor found (isPresent == false), raise an exception
 		
-		//if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
-		//	sbr.setStatus( ExecutionStatus.COMPLETE );
-		//}
-		//sbr.setEndDate( TimeHandler.now() );
-
+		long completedSbs = 0;
+		for( SchedBlockResult sbr : outputObservationProjectRef.getSchedBlock() ){
+			if( sbr.getOriginalId() == sb.getId() ){
+				if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
+					sbr.setStatus( ExecutionStatus.COMPLETE );
+					sbr.setEndDate( TimeHandler.now() );
+					completedSbs += 1;
+				}
+				//TODO: See what are the other status.
+			}
+		}		
+		
+		long totalSbs = this.numberOfSchedBlocks( inputObsProjectRef.getObsUnit() );
+		if( completedSbs == totalSbs )
+			outputObservationProjectRef.setStatus( ExecutionStatus.COMPLETE );
+		else if( completedSbs > 0 )
+			outputObservationProjectRef.setStatus( ExecutionStatus.INCOMPLETE );
+		else{
+			// TODO: This should never happen. Illegal state reached, throw exception
+			outputObservationProjectRef.setStatus( ExecutionStatus.NOT_STARTED );
+		}	
+	}
+	
+	@Transactional
+	private long numberOfSchedBlocks( ObsUnit ouRef ){
+		if( ouRef instanceof SchedBlock ){
+			return 1;
+		}
+		
+		long numberSbs = 0;
+		ObsUnitSet ouSet = (ObsUnitSet)ouRef;
+				
+		for( ObsUnit ouTmp : ouSet.getObsUnits() ){
+			if( ouTmp instanceof SchedBlock ){
+				numberSbs += 1;
+			}else if( ouTmp instanceof ObsUnitSet ){
+				numberSbs += numberOfSchedBlocks( ouTmp );
+			}
+		}
+		
+		return numberSbs;
 	}
 		
 	/**
@@ -165,6 +248,8 @@ public class ResultComposer {
 	@Transactional
 	public void completeResults(){
 		System.out.println("Completing results");
+		
+		results.setStopRealDate( new Date() );
 		
 		for( ObservationProject op : results.getObservationProject()){
 			double execTime = 0;

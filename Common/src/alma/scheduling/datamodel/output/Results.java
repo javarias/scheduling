@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Results.java,v 1.4 2010/04/19 22:24:12 ahoffsta Exp $"
+ * "@(#) $Id: Results.java,v 1.5 2010/05/19 21:00:32 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -43,6 +43,8 @@ public class Results {
 	private Date obsSeasonStart;
 	private Date startSimDate;
 	private Date stopSimDate;
+	private Date startRealDate;
+	private Date stopRealDate;
 	public Set<Array> array;
 	public Set<ObservationProject> observationProject;
 
@@ -129,4 +131,21 @@ public class Results {
 	public void setStopSimDate(Date stopSimDate) {
 		this.stopSimDate = stopSimDate;
 	}
+	
+	public Date getStartRealDate() {
+		return startRealDate;
+	}
+
+	public void setStartRealDate(Date startRealDate) {
+		this.startRealDate = startRealDate;
+	}
+
+	public Date getStopRealDate() {
+		return stopRealDate;
+	}
+
+	public void setStopRealDate(Date stopRealDate) {
+		this.stopRealDate = stopRealDate;
+	}
+
 }

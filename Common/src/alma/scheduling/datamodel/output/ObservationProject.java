@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservationProject.java,v 1.6 2010/04/22 19:19:53 ahoffsta Exp $"
+ * "@(#) $Id: ObservationProject.java,v 1.7 2010/05/19 21:00:32 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -36,12 +36,21 @@ public class ObservationProject {
 
 	private double executionTime;
 	private long id;
+	private long originalId;
 	private long scienceRank;
 	private float scienceScore;
 	private ExecutionStatus status;
 	public Set<Affiliation> affiliation;
 	public Set<SchedBlockResult> schedBlock;
+	
+	public long getOriginalId() {
+		return originalId;
+	}
 
+	public void setOriginalId(long originalId) {
+		this.originalId = originalId;
+	}
+	
 	public ObservationProject(){
 
 	}

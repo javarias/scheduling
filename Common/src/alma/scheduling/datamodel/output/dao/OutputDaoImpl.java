@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDaoImpl.java,v 1.2 2010/03/03 21:22:12 javarias Exp $"
+ * "@(#) $Id: OutputDaoImpl.java,v 1.3 2010/05/19 21:00:32 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
@@ -39,14 +39,13 @@ public class OutputDaoImpl extends GenericDaoImpl implements OutputDao{
     @Transactional
     public void saveResults(Results results) {
         saveOrUpdate(results);
-        
     }
 
     @Override
     @Transactional
     public void saveResults(Collection<Results> results) {
         saveOrUpdate(results);
-        
+       
     }
 
     @Override

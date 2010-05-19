@@ -22,6 +22,8 @@
         <property name="obsSeasonStart" column="OBS_SEASON_START" type="timestamp" />
         <property name="startSimDate" column="START_SIM_DATE" type="timestamp" />
         <property name="stopSimDate" column="STOP_SIM_DATE" type="timestamp" />
+        <property name="startRealDate" column="START_REAL_DATE" type="timestamp" />
+        <property name="stopRealDate" column="STOP_REAL_DATE" type="timestamp" />
         
 		<set name="array" table="OUTPUT_ARRAY" cascade="save-update,lock, delete, delete-orphan">
 			<key column="RESULT_ID" />
@@ -35,11 +37,12 @@
 	</class>
 	
 	<class name="ObservationProject" table="OUTPUT_OBSERVATION_PROJECT">
-		<id name="id" column="ID" type="long">
-			<generator class="assigned"/>
+		<id name="id" type="long">
+			<generator class="native"/>
 		</id>
 		<property name="scienceRank" type="long" column="SCIENCE_RANK" />
 		<property name="scienceScore" type="float" column="SCIENCE_SCORE" />
+		<property name="originalId" type="long" column="ORIGINAL_ID" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
 		<set name="affiliation" table="OUTPUT_AFFILIATION" cascade="save-update,lock, delete, delete-orphan">
@@ -59,6 +62,7 @@
 		
 		<property name="endDate" type="timestamp" column="END_DATE" />
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
+		<property name="originalId" type="long" column="ORIGINAL_ID" />		
 		<property name="mode" type="string" column="MODE"/>
 		<property name="representativeFrequency" type="double" column="REPRESENTATIVE_FREQUENCY"/>
 		<property name="startDate" type="timestamp" column="START_DATE" />

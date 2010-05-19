@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.12 2010/05/19 17:31:47 javarias Exp $"
+ * "@(#) $Id: Configuration.java,v 1.13 2010/05/19 21:00:32 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -41,6 +41,7 @@ public class Configuration {
     private String observatoryDirectory;
     private String executiveDirectory;
     private String outputDirectory;
+    private String reportDirectory;
     private Date lastLoad;
     private Date simulationStartTime;
     private String contextFilePath;
@@ -121,6 +122,14 @@ public class Configuration {
     public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
+    
+    public String getReportDirectory() {
+		return reportDirectory;
+	}
+
+	public void setReportDirectory(String reportDirectory) {
+		this.reportDirectory = reportDirectory;
+	}
     
     public Date getLastLoad() {
         return lastLoad;

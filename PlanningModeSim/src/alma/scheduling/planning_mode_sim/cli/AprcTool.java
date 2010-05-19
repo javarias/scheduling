@@ -1,8 +1,34 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ */
+
 package alma.scheduling.planning_mode_sim.cli;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +60,7 @@ import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
@@ -41,6 +68,7 @@ import alma.scheduling.planning_mode_sim.EventType;
 import alma.scheduling.planning_mode_sim.TimeEvent;
 import alma.scheduling.planning_mode_sim.controller.ResultComposer;
 import alma.scheduling.planning_mode_sim.controller.TimeHandler;
+import alma.scheduling.planning_mode_sim.util.XsltTransformer;
 
 
 public class AprcTool {
@@ -57,14 +85,16 @@ public class AprcTool {
         System.out.print("Usage: ");
         System.out.println("AprcTool <command> [options]");
         System.out.println("\nList of Commands:\n");
-        System.out.println("createWorkDir:\t Creates a template for the work directory");
-        System.out.println("load:\t\t loads the database with the data stored in the XML files");
+        System.out.println("createWorkDir:\t Creates a template for the work directory.");
+        System.out.println("load:\t\t loads the database with the data stored in the XML files.");
+        // TODO: What does this command do?
         System.out.println("unload:\t\t ???");
-        System.out.println("clean:\t\t unload from database obsproject, executive, results, and observatory data");
-        System.out.println("step:\t\t step through each cycle of simulation, returning to command prompt");
-        System.out.println("run:\t\t runs a simulation, generating an output file");
-        System.out.println("go:\t\t loads and run a simulation");
-        System.out.println("help:\t\t Display this helpful message");
+        System.out.println("clean:\t\t unload from database obsproject, executive, results, and observatory data.");
+        System.out.println("step:\t\t step through each cycle of simulation, returning to command prompt.");
+        System.out.println("run:\t\t runs a simulation, generating an output file.");
+        System.out.println("go:\t\t loads and run a simulation.");
+        System.out.println("help:\t\t Display this helpful message.");
+        System.out.println("report:\t\t Generate HTML reports from the results of the simulation.");
         System.out.println("\n\noptions:");
         System.out.println("--working-dir=[path]\t set working path, override the APRC_WORK_DIR " +
         		"environment variable. By default is APRC_WORK_DIR environment variable if it is " +
@@ -91,13 +121,14 @@ public class AprcTool {
     
     
     private void createWorkDir(String path) throws IOException{
-        File entries[] = new File[6];
+        File entries[] = new File[7];
         entries[0] = new File(path + "/db");
         entries[1] = new File(path + "/projects");
-        entries[2] = new File(path +"/weather");
+        entries[2] = new File(path + "/weather");
         entries[3] = new File(path + "/observatory");
         entries[4] = new File(path + "/executives");
-        entries[5] = new File (path + "/output");
+        entries[5] = new File(path + "/output");
+        entries[6] = new File(path + "/reports");
         //aprc-config.xml    - a general configuration file for the APRC
         //context.xml        - Spring context file 
         
@@ -118,6 +149,7 @@ public class AprcTool {
         config.setObservatoryDirectory("observatory");
         config.setExecutiveDirectory("executives");
         config.setOutputDirectory("output");
+        config.setReportDirectory("reports");
         config.setContextFilePath("context.xml");
         if(configFile.exists())
             configFile.delete();
@@ -193,6 +225,7 @@ public class AprcTool {
         TimeHandler.getHandler().setStartingDate( execDao.getCurrentSeason().getStartDate() );
         System.out.println(TimeUtil.getUTString(time) + "Starting Simulation");
         Date stopTime = execDao.getCurrentSeason().getEndDate();
+        configDao.getConfiguration().setSimulationStartTime(new Date());
         
         
         setPreconditions(ctx, new Date());
@@ -269,13 +302,11 @@ public class AprcTool {
         
         rc.completeResults();
         //Saving results to DB and XML output file
-        XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
-        xmlOutDao.setConfigDao(xmlConfigDao);
-        xmlOutDao.saveResults( rc.getResults() );
         OutputDao outDao = (OutputDao) ctx.getBean("outDao");
         outDao.saveResults( rc.getResults() );
-
-        
+        XmlOutputDaoImpl xmlOutDao = new XmlOutputDaoImpl();
+        xmlOutDao.setConfigDao(xmlConfigDao);
+        xmlOutDao.saveResults( rc.getResults() );        
     }
 
     private void step(
@@ -320,6 +351,7 @@ public class AprcTool {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
+                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
@@ -365,6 +397,7 @@ public class AprcTool {
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
                 timesToCheck.add(sbEndEv);
+                rc.notifySchedBlockStop(sb);
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println("DSA for array "
@@ -409,6 +442,7 @@ public class AprcTool {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
+                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
             } catch (NoSbSelectedException ex) {
                 System.out.println("DSA for array "
@@ -434,6 +468,25 @@ public class AprcTool {
         Collections.sort(timesToCheck);
     }
     
+    private void report(String ctxPath){
+    	ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+    	OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+        Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
+        
+    	URL xslt = getClass().getClassLoader()
+    							.getResource("alma/scheduling/planning_mode_sim/reports/general_report.xsl");
+    	String xmlIn = workDir + "/" +
+    				   xmlConfigDao.getConfiguration().getOutputDirectory() + "/" + 
+    				   "output_" +
+    				   lastResult.getStartRealDate().getTime() + 
+    				   ".xml";
+    	String htmlOut = workDir + "/" + xmlConfigDao.getConfiguration().getReportDirectory() + "/test1.html";
+    	System.out.println("URL ofr xslt: " + xslt.toString());
+    	
+    	XsltTransformer.transform(xslt.toString(), xmlIn, htmlOut );
+    	
+    }
+
     private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) {
         if (DSAName == null) {
             String[] dsaNames = ctx
@@ -531,6 +584,9 @@ public class AprcTool {
         else if (args[0].compareTo("step")==0){
             this.toBeInterrupted = true;
             run(workDir + "/" + config.getContextFilePath());
+        }
+        else if (args[0].compareTo("report")==0){
+            report(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");

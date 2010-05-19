@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.9 2010/05/12 22:49:20 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.10 2010/05/19 21:00:32 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -30,9 +30,12 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
+import org.hibernate.LockMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,9 @@ import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
+import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnit;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorithm {
@@ -116,7 +122,40 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         sbs = post;
 		if(sbs.size() == 0)
 			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");
+	    Iterator it = sbs.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        SchedBlock tmpSB = (SchedBlock)pairs.getValue();
+	        ObsProject tmpOP = tmpSB.getProject();
+	        ObsUnit ou = tmpSB.getProject().getObsUnit();
+	        hydrateObsUnit( ou );
+	    }
+
     }
+    
+    private void hydrateObsUnit(ObsUnit ou) {
+        //getHibernateTemplate().lock(ou, LockMode.NONE);
+        
+        logger.trace("hydrating ObsUnit");
+        logger.debug("ObsUnit class: " + ou.getClass().getName());
+        if (ou == null)
+            logger.warn("ObsUnit is null");
+        if (ou instanceof SchedBlock) {
+            logger.trace("hydrating SchedBlock");
+            SchedBlock sb = (SchedBlock) ou;
+            sb.getSchedulingConstraints().getMaxAngularResolution();
+            logger.debug("successfully casted SchedBlock");
+            return;
+        } else if (ou instanceof ObsUnitSet) {
+            logger.debug("hydrating ObsUnitSet");
+            ObsUnitSet ous = (ObsUnitSet) ou;
+            logger.debug("# of ObsUnits in ObsUnitSet: " + ous.getObsUnits().size());
+            for (ObsUnit sou : ous.getObsUnits()) {
+                hydrateObsUnit(sou);
+            }
+        }
+    }
+    
 	 /* (non-Javadoc)
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#selectCandidateSB()
      */

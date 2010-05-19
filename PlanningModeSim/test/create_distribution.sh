@@ -10,15 +10,20 @@ echo "Checking for Castor library..."
 if [ ! -f $ACSROOT/lib/castor.jar ] ; then
 	echo "   * Not present in ACS distribution, please correct this error.";
 fi
-cp  $ACSROOT/lib/castor.jar $TARGET/lib/castor-1.3.1/castor.jar;
+cp $ACSROOT/lib/castor.jar $TARGET/lib/castor-1.3.1/castor.jar;
 
 echo "Checking for Xerces-J library..."
-if [ ! -f Xerces-J-bin.2.9.1.tar.gz ] ; then
-	echo "   * Not present, downloading...";
-	wget http://apache.freeby.pctools.cl/xerces/j/Xerces-J-bin.2.9.1.tar.gz;
-	tar xfz Xerces-J-bin.2.9.1.tar.gz;
+#if [ ! -f Xerces-J-bin.2.9.1.tar.gz ] ; then
+#	echo "   * Not present, downloading...";
+#	wget http://apache.freeby.pctools.cl/xerces/j/Xerces-J-bin.2.9.1.tar.gz;
+#	tar xfz Xerces-J-bin.2.9.1.tar.gz;
+#fi
+#cp xerces-2_9_1/xercesImpl.jar $TARGET/lib/castor-1.3.1;
+if [ ! -f $ACSROOT/lib/endorsed/xercesImpl.jar ] ; then
+        echo "   * Not present in ACS distribution, please correct this error.";
 fi
-cp xerces-2_9_1/xercesImpl.jar $TARGET/lib/castor-1.3.1;
+cp $ACSROOT/lib/endorsed/xercesImpl.jar $TARGET/lib/castor-1.3.1/xercesImpl.jar;
+
 
 echo "Checking for Spring libraries..."
 if [ ! -f spring-framework-2.5.5-with-dependencies.zip ] ; then
@@ -27,6 +32,7 @@ if [ ! -f spring-framework-2.5.5-with-dependencies.zip ] ; then
 	unzip spring-framework-2.5.5-with-dependencies.zip;
 fi
 cp -r spring-framework-2.5.5/lib/* spring-framework-2.5.5/dist $TARGET/lib/spring-2.5.5/;
+cp $ACSROOT/lib/hsqldb.jar $TARGET/lib/spring-2.5.5/hsqldb/hsqldb.jar
 
 echo "Checking for SFL4J libraries..."
 if [ ! -f slf4j-1.5.2.zip ] ; then
@@ -44,3 +50,4 @@ cp -r create_distribution_files/getJarsFromIntroot.sh $TARGET/lib/alma-7.1/;
 cp -r create_distribution_files/bin create_distribution_files/config create_distribution_files/OO $TARGET/;
 mkdir $TARGET/doc;
 chmod a+x $TARGET/bin/*;
+chown -R $USER:$USER $TARGET;

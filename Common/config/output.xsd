@@ -16,12 +16,14 @@
 		<xs:sequence>
 			<xs:element name="availableTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="obsSeasonEnd" type="xs:date" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="obsSeasonStart" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="obsSeasonEnd" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="obsSeasonStart" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="operationTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="startSimDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="stopSimDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="startSimDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="stopSimDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="startRealDate" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="stopRealDate" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="Array" type="Array" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element name="ObservationProject" type="ObservationProject" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
@@ -31,8 +33,8 @@
 	<xs:complexType name="Array">
 		<xs:sequence>
 			<xs:element name="availablelTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="creationDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="deletionDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="creationDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="deletionDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="maintenanceTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="resolution" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
@@ -46,6 +48,7 @@
 			<xs:element name="scienceRank" type="xs:long" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="scienceScore" type="xs:float" minOccurs="1" maxOccurs="1"/>			
 			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>			
 			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="SchedBlock" type="SchedBlock" minOccurs="1" maxOccurs="unbounded"/>
@@ -62,12 +65,13 @@
 
 	<xs:complexType name="SchedBlock">
 		<xs:sequence>
-			<xs:element name="endDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="endDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="executionTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="id" type="xs:long" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="mode" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="representativeFrequency" type="xs:double" minOccurs="1" maxOccurs="1"/>
-			<xs:element name="startDate" type="xs:date" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="startDate" type="xs:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="status" type="ExecutionStatus" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1"/>
 			<!-- Reference to Array -->

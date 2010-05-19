@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.7 2010/03/12 21:56:02 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.8 2010/05/19 21:00:32 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -66,7 +66,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         = PlanningModeSimulator aprc
+SCRIPTS         = aprc
 #SCRIPTS_L       =
 
 #
@@ -120,7 +120,7 @@ USER_IDL =
 #
 JARFILES=planningModeSimGUI
 planningModeSimGUI_DIRS=alma
-jjj_EXTRAS= 
+planningModeSimGUI_EXTRAS=alma/scheduling/planning_mode_sim/reports/general_report.xsl 
 #
 # java sources in Jarfile on/off
 DEBUG= 
