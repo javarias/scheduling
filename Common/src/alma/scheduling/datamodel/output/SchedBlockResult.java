@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockResult.java,v 1.4 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlockResult.java,v 1.5 2010/05/20 16:47:28 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -40,6 +40,8 @@ public class SchedBlockResult {
 	private long originalId;
 	private String mode;
 	private double representativeFrequency;
+	private double goalSensitivity;
+	private double achievedSensitivity;
 	private Date startDate;
 	private ExecutionStatus status;
 	private String type;
@@ -128,5 +130,22 @@ public class SchedBlockResult {
 	public void setRepresentativeFrequency(double representativeFrequency) {
 		this.representativeFrequency = representativeFrequency;
 	}
+	
+	public double getGoalSensitivity() {
+		return goalSensitivity;
+	}
+
+	public void setGoalSensitivity(double goalSensitivity) {
+		this.goalSensitivity = goalSensitivity;
+	}
+
+	public double getAchievedSensitivity() {
+		return achievedSensitivity;
+	}
+
+	public void setAchievedSensitivity(double achievedSensitivity) {
+		this.achievedSensitivity = achievedSensitivity;
+	}
+
 
 }

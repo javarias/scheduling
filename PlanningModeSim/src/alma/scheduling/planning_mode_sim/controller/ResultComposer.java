@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -44,8 +45,10 @@ import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
+import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
+import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
@@ -206,6 +209,16 @@ public class ResultComposer {
 					sbr.setStatus( ExecutionStatus.COMPLETE );
 					sbr.setEndDate( TimeHandler.now() );
 					completedSbs += 1;
+					// Obtaining Sensitivities
+					Set<ObservingParameters> ops = sb.getObservingParameters();
+			        double sensGoalJy = 10.0;
+			        for (Iterator<ObservingParameters> iter = ops.iterator(); iter.hasNext();) {
+			            ObservingParameters params = iter.next();
+			            if (params instanceof ScienceParameters) {
+			                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
+			            }
+			        }
+			        sbr.setAchievedSensitivity(sb.getSchedBlockControl().getAchievedSensitivity());
 				}
 				//TODO: See what are the other status.
 			}

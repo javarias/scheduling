@@ -65,6 +65,8 @@
 		<property name="originalId" type="long" column="ORIGINAL_ID" />		
 		<property name="mode" type="string" column="MODE"/>
 		<property name="representativeFrequency" type="double" column="REPRESENTATIVE_FREQUENCY"/>
+		<property name="goalSensitivity" type="double" column="GOAL_SENSITIVITY"/>
+		<property name="achievedSensitivity" type="double" column="ACHIEVED_SENSITIVITY"/>
 		<property name="startDate" type="timestamp" column="START_DATE" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="type" type="string" column="TYPE"/>

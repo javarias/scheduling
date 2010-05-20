@@ -124,9 +124,11 @@
 		<li><b>Observation mode: </b> <xsl:value-of select="mode"/></li>
 		<li><b>Type: </b> <xsl:value-of select="type"/></li>
 		<li><b>Representative Frequency: </b> <xsl:value-of select="representativeFrequency"/></li>
+		<li><b>Goal Sensitivity: </b> <xsl:value-of select="goalSensitivity"/></li>
+		<li><b>Achieved Sensitivity: </b> <xsl:value-of select="achievedSensitivity"/></li>
 		<li><b>Execution Time: </b> <xsl:value-of select="executionTime"/></li>
 		<li><b>Execution Status: </b> <xsl:value-of select="status"/></li>
-		<li><b>Executed in Array: </b> <a href="#Array-1">Array 1</a> </li>
+		<li><b>Executed in Array: </b> <a href="#Array-{ArrayRef/@arrayRef}">Array <xsl:value-of select="ArrayRef/@arrayRef"/></a> </li>
       </ul>
   </xsl:template>
 

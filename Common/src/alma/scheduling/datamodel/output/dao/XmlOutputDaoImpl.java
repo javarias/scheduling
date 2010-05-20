@@ -108,6 +108,8 @@ public class XmlOutputDaoImpl implements OutputDao {
                 sb[j].setOriginalId(tmpSb.getOriginalId());
                 sb[j].setMode(tmpSb.getMode());
                 sb[j].setRepresentativeFrequency(tmpSb.getRepresentativeFrequency());
+                sb[j].setGoalSensitivity(tmpSb.getGoalSensitivity());
+                sb[j].setAchievedSensitivity(tmpSb.getAchievedSensitivity());
                 sb[j].setStartDate(tmpSb.getStartDate());
                 sb[j].setStatus(alma.scheduling.output.generated.types.ExecutionStatus.valueOf(
                         tmpSb.getStatus().name()));

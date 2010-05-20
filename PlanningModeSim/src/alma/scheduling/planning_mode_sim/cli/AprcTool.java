@@ -480,7 +480,11 @@ public class AprcTool {
     				   "output_" +
     				   lastResult.getStartRealDate().getTime() + 
     				   ".xml";
-    	String htmlOut = workDir + "/" + xmlConfigDao.getConfiguration().getReportDirectory() + "/test1.html";
+    	String htmlOut = workDir + "/" + 
+    					xmlConfigDao.getConfiguration().getReportDirectory() + "/" +
+    					"report_" +
+    					lastResult.getStartRealDate().getTime() + 
+    					".html";
     	System.out.println("URL ofr xslt: " + xslt.toString());
     	
     	XsltTransformer.transform(xslt.toString(), xmlIn, htmlOut );
