@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,17 +84,21 @@ public class HourAngleSelector extends AbstractBaseSelector {
 
         Criterion crit = null;
         if (raHighLimit < raLowLimit) {
-            Criterion crit1 = Restrictions.and(Restrictions.ge(
-                    "s.coordinates.RA", new Double(raLowLimit * 15)),
-                    Restrictions.le("s.coordinates.RA", new Double(360)));
-            Criterion crit2 = Restrictions.and(Restrictions.ge(
-                    "s.coordinates.RA", new Double(0)), Restrictions.le(
-                    "s.coordinates.RA", new Double(raHighLimit * 15)));
-            crit = Restrictions.or(crit1, crit2);
+            Disjunction disj = Restrictions.disjunction();
+            Conjunction con1 = Restrictions.conjunction();
+            con1.add(Restrictions.ge("s.coordinates.RA", new Double(raLowLimit * 15)));
+            con1.add(Restrictions.le("s.coordinates.RA", new Double(360)));
+            disj.add(con1);
+            Conjunction con2 = Restrictions.conjunction();
+            con2.add(Restrictions.ge("s.coordinates.RA", new Double(0)));
+            con2.add(Restrictions.le("s.coordinates.RA", new Double(raHighLimit * 15)));
+            disj.add(con2);
+            crit = disj;
         } else {
-            crit = Restrictions.and(Restrictions.ge("s.coordinates.RA",
-                    new Double(raLowLimit * 15)), Restrictions.le(
-                    "s.coordinates.RA", new Double(raHighLimit * 15)));
+            Conjunction conj = Restrictions.conjunction();
+            conj.add(Restrictions.ge("s.coordinates.RA", new Double(raLowLimit * 15)));
+            conj.add(Restrictions.le("s.coordinates.RA", new Double(raHighLimit * 15)));
+            crit = conj;
         }
         return crit;
     }
