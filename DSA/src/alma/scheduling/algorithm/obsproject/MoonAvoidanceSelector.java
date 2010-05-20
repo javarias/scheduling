@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -72,15 +73,12 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
         lowRa = moonData.getRa() - moonData.getAngularDiameter() / 2;
         highDec = moonData.getDec() + moonData.getAngularDiameter() / 2;
         lowDec = moonData.getDec() - moonData.getAngularDiameter() / 2;
-        Criterion crit1 = Restrictions.not(Restrictions.conjunction().add(
-                Restrictions.and(Restrictions.ge("s.coordinates.RA",
-                        new Double(lowRa)), Restrictions.le("s.coordinates.RA",
-                        new Double(highRa)))));
-        Criterion crit2 = Restrictions.not(Restrictions.conjunction().add(
-                Restrictions.and(Restrictions.ge("s.coordinates.Dec",
-                        new Double(lowDec)), Restrictions.le(
-                        "s.coordinates.Dec", new Double(highDec)))));
-        Criterion crit = Restrictions.and(crit1, crit2);
+        Conjunction conj = Restrictions.conjunction();
+        conj.add(Restrictions.ge("s.coordinates.RA", new Double(lowRa)));
+        conj.add(Restrictions.le("s.coordinates.RA", new Double(highRa)));
+        conj.add(Restrictions.ge("s.coordinates.Dec", new Double(lowDec)));
+        conj.add(Restrictions.le("s.coordinates.Dec", new Double(highDec)));
+        Criterion crit = Restrictions.not(conj);
         return crit;
     }
 
