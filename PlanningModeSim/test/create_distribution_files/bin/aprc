@@ -36,6 +36,10 @@ step() {
     java alma.scheduling.planning_mode_sim.cli.AprcTool $@
 }
 
+report() {
+    java alma.scheduling.planning_mode_sim.cli.AprcTool $@
+}
+
 clean() {
     java alma.scheduling.planning_mode_sim.cli.AprcTool $@ 
 }
@@ -77,6 +81,9 @@ case "$1" in
         ;;
     step)
         step $@
+        ;;
+    report)
+        report $@
         ;;
     *)
         printf "Usage: $0 {start|stop|fullload|load|unload|step|run|clean}\n"
