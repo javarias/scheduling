@@ -56,8 +56,8 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
             throws NoSbSelectedException {
         MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(ut);
         double highRa, lowRa, highDec, lowDec;
-        highRa = moonData.getRa() + moonData.getAngularDiameter()/2;
-        lowRa = moonData.getRa() - moonData.getAngularDiameter()/2;
+        highRa = moonData.getRA() + moonData.getAngularDiameter()/2;
+        lowRa = moonData.getRA() - moonData.getAngularDiameter()/2;
         highDec = moonData.getDec() + moonData.getAngularDiameter()/2;
         lowDec = moonData.getDec() - moonData.getAngularDiameter()/2;
         List<SchedBlock> sbs = sbDao.findSchedBlocksOutOfArea(lowRa, highRa, lowDec, highDec);
@@ -69,8 +69,8 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
         MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(ut);
         double highRa, lowRa, highDec, lowDec;
-        highRa = moonData.getRa() + moonData.getAngularDiameter() / 2;
-        lowRa = moonData.getRa() - moonData.getAngularDiameter() / 2;
+        highRa = moonData.getRA() + moonData.getAngularDiameter() / 2;
+        lowRa = moonData.getRA() - moonData.getAngularDiameter() / 2;
         highDec = moonData.getDec() + moonData.getAngularDiameter() / 2;
         lowDec = moonData.getDec() - moonData.getAngularDiameter() / 2;
         Conjunction conj = Restrictions.conjunction();

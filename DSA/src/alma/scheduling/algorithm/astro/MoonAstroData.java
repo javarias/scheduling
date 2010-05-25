@@ -1,6 +1,8 @@
 package alma.scheduling.algorithm.astro;
 
-public class MoonAstroData extends RaDec {
+import alma.scheduling.datamodel.obsproject.SkyCoordinates;
+
+public class MoonAstroData extends SkyCoordinates {
     
     private double Mmp;
     private double Ec;

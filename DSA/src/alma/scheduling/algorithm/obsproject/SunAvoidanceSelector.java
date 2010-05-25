@@ -56,8 +56,8 @@ public class SunAvoidanceSelector extends AbstractBaseSelector {
             throws NoSbSelectedException {
         SunAstroData sunData = CoordinatesUtil.getSunAstroData(ut);
         double highRa, lowRa, highDec, lowDec;
-        highRa = sunData.getRa() + sunData.getAngularDiameter()/2;
-        lowRa = sunData.getRa() - sunData.getAngularDiameter()/2;
+        highRa = sunData.getRA() + sunData.getAngularDiameter()/2;
+        lowRa = sunData.getRA() - sunData.getAngularDiameter()/2;
         highDec = sunData.getDec() + sunData.getAngularDiameter()/2;
         lowDec = sunData.getDec() - sunData.getAngularDiameter()/2;
         List<SchedBlock> sbs = sbDao.findSchedBlocksOutOfArea(lowRa, highRa, lowDec, highDec);
@@ -69,8 +69,8 @@ public class SunAvoidanceSelector extends AbstractBaseSelector {
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
         SunAstroData sunData = CoordinatesUtil.getSunAstroData(ut);
         double highRa, lowRa, highDec, lowDec;
-        highRa = sunData.getRa() + sunData.getAngularDiameter()/2;
-        lowRa = sunData.getRa() - sunData.getAngularDiameter()/2;
+        highRa = sunData.getRA() + sunData.getAngularDiameter()/2;
+        lowRa = sunData.getRA() - sunData.getAngularDiameter()/2;
         highDec = sunData.getDec() + sunData.getAngularDiameter() / 2;
         lowDec = sunData.getDec() - sunData.getAngularDiameter() / 2;
 

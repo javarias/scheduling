@@ -1,6 +1,8 @@
 package alma.scheduling.algorithm.astro;
 
-public class SunAstroData extends RaDec {
+import alma.scheduling.datamodel.obsproject.SkyCoordinates;
+
+public class SunAstroData extends SkyCoordinates {
     private double trueAnomaly;
     
     private double angularDiameter;
