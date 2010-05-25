@@ -482,6 +482,8 @@ public class AprcTool {
         ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         ReportGenerator reporter = new ReportGenerator((SchedBlockDao) ctx.getBean("sbDao"));
         reporter.printALMAReceiverBandReport();
+        //System.out.println("");
+        //reporter.printLSTRangesReport();
     	
     }
     
@@ -606,7 +608,6 @@ public class AprcTool {
             run(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("report")==0){
-            try{
                 if(args[1].compareTo("help") == 0)
                     reportHelp();
                 else if(args[1].compareTo("1") == 0)
@@ -615,9 +616,7 @@ public class AprcTool {
                     finalreport(workDir + "/" +config.getContextFilePath());
                 else
                     reportHelp();
-            }catch (java.lang.ArrayIndexOutOfBoundsException ex){
-                reportHelp();
-            }
+            
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
