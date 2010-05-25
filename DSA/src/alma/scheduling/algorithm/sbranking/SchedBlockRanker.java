@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockRanker.java,v 1.5 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: SchedBlockRanker.java,v 1.6 2010/05/25 23:59:28 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -37,10 +37,11 @@ public interface SchedBlockRanker {
      * This method should clean the current ranks and calculate the
      * rank of each SchedBlock
      * 
+     * @param nProjects number of total projects
      * @param the list of SchedBlock to be ranked
      * @return the rank of each SchedBlock. 
      */
-    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut);
+    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut, int nProjects);
 
     /**
      * 

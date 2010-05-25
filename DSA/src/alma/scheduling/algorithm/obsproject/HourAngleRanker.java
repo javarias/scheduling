@@ -27,7 +27,7 @@ public class HourAngleRanker extends AbstractBaseRanker {
 
 	@Override
 	public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf,
-			Date ut) {
+			Date ut, int nProjects) {
 		ranks.clear();
 		for(SchedBlock sb: sbs){
 			SBRank rank = new SBRank();

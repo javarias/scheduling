@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FinalRanker.java,v 1.9 2010/05/12 22:49:20 javarias Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.10 2010/05/25 23:59:28 javarias Exp $"
  */
 
 package alma.scheduling.algorithm.sbranking;
@@ -71,12 +71,12 @@ public class FinalRanker extends AbstractBaseRanker {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut) {
+    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut, int nProjects) {
         ranks.clear();
         List<SBRank>[] results = new List[rankers.size()]; // for each ranker, a list over the sbs
         int i = 0;
         for(SchedBlockRanker r: rankers){
-            results[i] = r.rank(sbs, arrConf, ut);
+            results[i] = r.rank(sbs, arrConf, ut, nProjects);
             i++;
         }
         for(i = 0; i < sbs.size(); i++){

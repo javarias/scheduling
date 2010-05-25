@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.10 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.11 2010/05/25 23:59:28 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -63,6 +63,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     private Collection<SchedBlockSelector> postUpdateSelectors;
     private Collection<ModelUpdater> updaters;
     private ArrayConfiguration array;
+    private static int nProjects;
     /**
      * Stores the current SBs selected from selectors
      */
@@ -102,7 +103,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#rankSchedBlocks()
      */
 	public void rankSchedBlocks(Date ut){
-	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()), array, ut);
+	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()), array, ut, nProjects);
 	}
 
     @Override
@@ -250,4 +251,13 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         
         return internal_sbs;
     }
+
+    public static int getnProjects() {
+        return nProjects;
+    }
+
+    public static void setnProjects(int nProjects) {
+        DynamicSchedulingAlgorithmImpl.nProjects = nProjects;
+    }
+    
 }
