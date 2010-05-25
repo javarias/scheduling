@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.9 2010/05/19 17:37:27 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.10 2010/05/25 19:22:04 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -68,13 +68,13 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
         for(SchedBlock sb: sbs){
             score = sb.getProject().getScienceScore();
             if(sb.getProject().getLetterGrade() == ScienceGrade.A)
-                score *= 1.0;
+                score += 4.0;
             else if (sb.getProject().getLetterGrade() == ScienceGrade.B)
-                score *= 0.5;
+                score += 2.0;
             else if (sb.getProject().getLetterGrade() == ScienceGrade.C)
-                score *= 0.25;
+                score += 1.0;
             else
-                score *=0;
+                score += 0;
             SBRank rank = new SBRank();
             rank.setId(sb.getId());
             rank.setRank(score);
