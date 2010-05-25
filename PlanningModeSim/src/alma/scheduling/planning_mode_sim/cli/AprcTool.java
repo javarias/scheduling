@@ -60,6 +60,7 @@ import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
@@ -99,6 +100,16 @@ public class AprcTool {
         System.out.println("--working-dir=[path]\t set working path, override the APRC_WORK_DIR " +
         		"environment variable. By default is APRC_WORK_DIR environment variable if it is " +
         		"available, otherwise .");
+    }
+    
+    private void reportHelp(){
+        System.out.println("Reports help");
+        System.out.println("Usage: ");
+        System.out.println("aprc report <command>");
+        System.out.println("\nList of Commands:\n");
+        System.out.println("1:\tGenerate statistics report containing crowding by LST ranges and ALMA Receiver Bands");
+        System.out.println("2:\tGenerate result report (after run the simulation)");
+        System.out.println("help:\tShow this help message");
     }
     
     public String[] getOpt(String[] argv, String param){
@@ -160,7 +171,6 @@ public class AprcTool {
         } catch (ValidationException e) {
             e.printStackTrace();
         }
-        
     }
     
     private void fullLoad(String ctxPath) throws Exception {
@@ -468,27 +478,33 @@ public class AprcTool {
         Collections.sort(timesToCheck);
     }
     
-    private void report(String ctxPath){
-    	ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
-    	OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+    private void crowdingReport(String ctxPath){
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        ReportGenerator reporter = new ReportGenerator((SchedBlockDao) ctx.getBean("sbDao"));
+        reporter.printALMAReceiverBandReport();
+    	
+    }
+    
+    private void finalreport(String ctxPath){
+        ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
+        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
         Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
         
-    	URL xslt = getClass().getClassLoader()
-    							.getResource("alma/scheduling/planning_mode_sim/reports/general_report.xsl");
-    	String xmlIn = workDir + "/" +
-    				   xmlConfigDao.getConfiguration().getOutputDirectory() + "/" + 
-    				   "output_" +
-    				   lastResult.getStartRealDate().getTime() + 
-    				   ".xml";
-    	String htmlOut = workDir + "/" + 
-    					xmlConfigDao.getConfiguration().getReportDirectory() + "/" +
-    					"report_" +
-    					lastResult.getStartRealDate().getTime() + 
-    					".html";
-    	System.out.println("URL ofr xslt: " + xslt.toString());
-    	
-    	XsltTransformer.transform(xslt.toString(), xmlIn, htmlOut );
-    	
+        URL xslt = getClass().getClassLoader()
+                                .getResource("alma/scheduling/planning_mode_sim/reports/general_report.xsl");
+        String xmlIn = workDir + "/" +
+                       xmlConfigDao.getConfiguration().getOutputDirectory() + "/" + 
+                       "output_" +
+                       lastResult.getStartRealDate().getTime() + 
+                       ".xml";
+        String htmlOut = workDir + "/" + 
+                        xmlConfigDao.getConfiguration().getReportDirectory() + "/" +
+                        "report_" +
+                        lastResult.getStartRealDate().getTime() + 
+                        ".html";
+        System.out.println("URL ofr xslt: " + xslt.toString());
+        
+        XsltTransformer.transform(xslt.toString(), xmlIn, htmlOut );
     }
 
     private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) {
@@ -590,7 +606,18 @@ public class AprcTool {
             run(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("report")==0){
-            report(workDir + "/" + config.getContextFilePath());
+            try{
+                if(args[1].compareTo("help") == 0)
+                    reportHelp();
+                else if(args[1].compareTo("1") == 0)
+                    crowdingReport(workDir + "/" +config.getContextFilePath());
+                else if(args[1].compareTo("2") == 0)
+                    finalreport(workDir + "/" +config.getContextFilePath());
+                else
+                    reportHelp();
+            }catch (java.lang.ArrayIndexOutOfBoundsException ex){
+                reportHelp();
+            }
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
