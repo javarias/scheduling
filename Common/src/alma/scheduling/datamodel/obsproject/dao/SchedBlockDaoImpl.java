@@ -136,8 +136,8 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
                 .createQuery(
                         "from SchedBlock sb where "
                                 + " not (sb.schedulingConstraints.representativeTarget.source.coordinates.RA >= ? and "
-                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?) and "
-                                + " not (sb.schedulingConstraints.representativeTarget.source.coordinates.Dec >= ? and "
+                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ? and "
+                                + " sb.schedulingConstraints.representativeTarget.source.coordinates.Dec >= ? and "
                                 + " sb.schedulingConstraints.representativeTarget.source.coordinates.Dec <= ?)");
         query.setParameter(0, lowRaLimit);
         query.setParameter(1, highRaLimit);
@@ -156,4 +156,19 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         query.setParameter(0, SchedBlockState.READY);
         return query.list();
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SchedBlock> findSchedBlockBetweenFrequencies(double lowFreq,
+            double highFreq) {
+        Query query = null;
+        query = getSession().createQuery("from SchedBlock sb " +
+        		"where sb.schedulingConstraints.representativeFrequency >= ? " +
+                "and sb.schedulingConstraints.representativeFrequency <= ?");
+        query.setParameter(0, lowFreq);
+        query.setParameter(1, highFreq);
+        return query.list();
+    }
+    
+    
 }
