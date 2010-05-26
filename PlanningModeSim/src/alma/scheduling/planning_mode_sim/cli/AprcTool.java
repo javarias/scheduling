@@ -228,6 +228,8 @@ public class AprcTool {
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        //Set the total numbers of projects (this can be useful for the rankers)
+        DynamicSchedulingAlgorithmImpl.setnProjects(configDao.getConfiguration().getScienceGradeConfig().getTotalPrj());
         
         // Time Handling section
         TimeHandler.initialize(TimeHandler.Type.SIMULATED);
