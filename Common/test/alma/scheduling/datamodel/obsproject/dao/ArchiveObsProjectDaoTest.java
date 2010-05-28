@@ -32,19 +32,19 @@ public class ArchiveObsProjectDaoTest extends TestCase {
         super.tearDown();
     }
     
-    public void testArchiveObsProjectDaoPhase1() throws Exception {
+    public void testPhase1XMLStoreProjectDao() throws Exception {
         ApplicationContext ctx =
             new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
-        ArchiveObsProjectDao archiveDao = (ArchiveObsProjectDao) ctx.getBean("archiveObsProjectDao");
-        List<ObsProject> projects = archiveDao.getAllPhase1ObsProjects();
+        ProjectIncrementalDao archiveDao = (Phase1XMLStoreProjectDao) ctx.getBean("phase1XMLStoreProject");
+        List<ObsProject> projects = archiveDao.getAllObsProjects();
     }
     
-    public void testArchiveObsProjectDaoPhase2() throws Exception {
+    public void dont_testPhase2XMLStoreProjectDao() throws Exception {
         ApplicationContext ctx =
             new ClassPathXmlApplicationContext("alma/scheduling/datamodel/obsproject/dao/context.xml");
-        ArchiveObsProjectDao archiveDao = (ArchiveObsProjectDao) ctx.getBean("archiveObsProjectDao");
+        ProjectIncrementalDao archiveDao = (Phase2XMLStoreProjectDao) ctx.getBean("phase2XMLStoreProject");
 //        ObsProjectDao dao = (ObsProjectDao) ctx.getBean("obsProjectDao");
-        List<ObsProject> projects = archiveDao.getAllPhase2ObsProjects();
+        List<ObsProject> projects = archiveDao.getAllObsProjects();
 //        assertNotNull(projects);
 //        assertEquals(1, projects.size());
 //        ObsProject obsProject = projects.get(0);

@@ -79,7 +79,11 @@
         <property name="configurationDao" ref="configDao"/>
     </bean>
 
-    <bean id="archiveObsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ArchiveObsProjectDaoImpl">
+    <bean id="phase1XMLStoreProject" class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
+        <property name="configurationDao" ref="configDao"/>
+    </bean>
+
+    <bean id="phase2XMLStoreProject" class="alma.scheduling.datamodel.obsproject.dao.Phase2XMLStoreProjectDao">
         <property name="configurationDao" ref="configDao"/>
     </bean>
 
