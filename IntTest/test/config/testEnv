@@ -2,6 +2,7 @@
 # Comment this line if the CDB being used shouldn't be decompressed
 # from a tar file.
 CDB_PACKED_FILE=./config/CDB.tar.gz
+TESTDIR=`pwd`
 ACS_CDB=`pwd`/tmp
 # ACS_CDB=`pwd`/config
 ACS_TMP=`pwd`/tmp
@@ -19,4 +20,7 @@ SQLTOOL_RC_FILE=./config/sqltool.rc
 # State system
 RUNLOCATION=tst
 
-unset DISPLAY
+JAVA_OPTIONS="-Darchive.configFile=$TESTDIR/archiveConfig.properties $JAVA_OPTIONS"
+JAVA_OPTIONS="-DACS.managerhost=localhost $JAVA_OPTIONS"
+
+# unset DISPLAY
