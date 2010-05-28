@@ -6,9 +6,6 @@ import java.util.logging.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.sun.star.lang.IllegalArgumentException;
-import com.sun.star.lang.NullPointerException;
-
 import alma.archive.database.helpers.wrappers.DbConfigException;
 import alma.archive.database.helpers.wrappers.StateArchiveDbConfig;
 import alma.obops.dam.config.Ph1mContextFactory;

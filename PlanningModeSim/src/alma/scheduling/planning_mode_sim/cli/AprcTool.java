@@ -43,8 +43,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.star.lang.IllegalArgumentException;
-
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.SchedBlockExecutor;
