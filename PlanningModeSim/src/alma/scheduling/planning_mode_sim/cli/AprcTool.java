@@ -43,6 +43,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sun.star.lang.IllegalArgumentException;
+
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.SchedBlockExecutor;
@@ -66,6 +68,7 @@ import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.planning_mode_sim.EventType;
+import alma.scheduling.planning_mode_sim.Ph1mSynchronizer;
 import alma.scheduling.planning_mode_sim.TimeEvent;
 import alma.scheduling.planning_mode_sim.controller.ResultComposer;
 import alma.scheduling.planning_mode_sim.controller.TimeHandler;
@@ -223,7 +226,7 @@ public class AprcTool {
     }
     
     @Transactional
-    private void run(String ctxPath){
+    private void run(String ctxPath) throws IllegalArgumentException{
     	ApplicationContext ctx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
@@ -328,7 +331,7 @@ public class AprcTool {
             ApplicationContext ctx,
             Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm> arraysCreated,
             ArrayList<ArrayConfiguration> freeArrays,
-            SchedBlockExecutor sbExecutor) {
+            SchedBlockExecutor sbExecutor) throws IllegalArgumentException {
       //  try{
             TimeEvent ev = timesToCheck.remove();
     //        } catch (java.lang.No)
@@ -511,7 +514,7 @@ public class AprcTool {
         XsltTransformer.transform(xslt.toString(), xmlIn, htmlOut );
     }
 
-    private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) {
+    private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) throws IllegalArgumentException {
         if (DSAName == null) {
             String[] dsaNames = ctx
                     .getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
@@ -528,7 +531,7 @@ public class AprcTool {
         return dsa;
     }
     
-    private void setPreconditions(ApplicationContext ctx, Date time) {
+    private void setPreconditions(ApplicationContext ctx, Date time) throws IllegalArgumentException {
         String[] whDaos = ctx.getBeanNamesForType(WeatherHistoryDAO.class);
         for(int i = 0; i < whDaos.length; i++) {
             WeatherHistoryDAO whDao = (WeatherHistoryDAO) ctx.getBean(whDaos[i]);
@@ -538,6 +541,22 @@ public class AprcTool {
         System.out.println("Running first update " + new Date());
         dsa.updateModel(time);
         System.out.println("Finishing first update " + new Date());
+    }
+    
+    private void listPh1mProposals(String ctx){
+        Ph1mSynchronizer ph1m = new Ph1mSynchronizer();
+        ph1m.init(ctx);
+        ph1m.printReport();
+    }
+    
+    private void synchPh1m(String ctx){
+        Ph1mSynchronizer ph1m = new Ph1mSynchronizer();
+        ph1m.init(ctx);
+        try {
+            ph1m.synchronizeAllProjects();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
     
     public void selectAction(String[] args) throws Exception{
@@ -552,7 +571,7 @@ public class AprcTool {
             workDir = tmpWorkDir[1];
             File dir = new File(workDir);
             if (!dir.exists()){
-                throw new IllegalArgumentException("Invalid working directory, directory doesn't exist", null);
+                throw new IllegalArgumentException("Invalid working directory, directory doesn't exist");
             }
         }catch(java.lang.IndexOutOfBoundsException ex){
             workDir = System.getenv("APRC_WORK_DIR");
@@ -619,6 +638,12 @@ public class AprcTool {
                 else
                     reportHelp();
             
+        }
+        else if(args[0].compareTo("ph1m") == 0){
+            if(args[1].compareTo("list") == 0)
+                listPh1mProposals(config.getContextFilePath());
+            else if(args[1].compareTo("synch") == 0)
+                synchPh1m(config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
