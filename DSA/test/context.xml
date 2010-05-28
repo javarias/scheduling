@@ -135,7 +135,14 @@
 	</bean>
 
 	<!-- DataLoaders Beans -->
-	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
+    <bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
+        <property name="sbDao" ref="sbDao"/>
+        <property name="execDao" ref="execDao"/>
+        <property name="configDao" ref="configDao"/>
+        <property name="obsPrjDao" ref="obsProjectDao"/>
+    </bean>
+	
+    <bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
 				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
@@ -150,17 +157,13 @@
 					<property name="dao" ref="observatoryDao"/>
 					<property name="xmlDao" ref="xmlObservatoryDao"/>
 				</bean>
-				<bean class="alma.scheduling.dataload.DataLinker">
-					<property name="sbDao" ref="sbDao"/>
-					<property name="execDao" ref="execDao"/>
-                    <property name="configDao" ref="configDao"/>
-                    <property name="obsPrjDao" ref="obsProjectDao"/>
-				</bean>
+				<ref bean="dataLinker"/>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="fullDataUnloader" class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
+	
+    <bean id="fullDataUnloader" class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
 	    <property name="xmlDao" ref="xmlObsProjectDao"/>
       	    <property name="dao" ref="obsProjectDao"/>
 	</bean>
@@ -305,7 +308,7 @@
 				<ref bean="hourAngleSelector" />
                 <ref bean="sunAvoidanceSelector" />
                 <ref bean="moonAvoidanceSelector" />
-                <ref bean="sbStatusSelector" />
+                <ref bean="sbStatusSelector" /> 
 			</set>
         </property>
 	</bean>
