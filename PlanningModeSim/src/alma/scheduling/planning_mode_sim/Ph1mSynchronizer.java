@@ -7,10 +7,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import alma.archive.database.helpers.wrappers.DbConfigException;
-import alma.archive.database.helpers.wrappers.StateArchiveDbConfig;
+import alma.archive.database.helpers.wrappers.RelationalDbConfig;
 import alma.obops.dam.config.Ph1mContextFactory;
 import alma.obops.dam.ph1m.dao.Ph1mDao;
 import alma.obops.dam.ph1m.domain.Proposal;
+import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 
@@ -19,7 +20,8 @@ public class Ph1mSynchronizer {
     private static Logger logger = Logger.getLogger(Ph1mSynchronizer.class.getName());
     
     private Ph1mDao ph1mDao;
-    private ObsProjectDao obsProjDao;  
+    private ObsProjectDao obsProjDao;
+    private DataLoader linker;
     
     /**
      * 
@@ -48,6 +50,11 @@ public class Ph1mSynchronizer {
                 logger.info("Project " + p.getUid() + " cannot be retieved from ph1m.");
             }
         }
+        try {
+            linker.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public void printReport(){
@@ -68,11 +75,12 @@ public class Ph1mSynchronizer {
         //Scheduling context init
         ApplicationContext simCtx = new FileSystemXmlApplicationContext("file://"+ctxPath);
         obsProjDao = (ObsProjectDao) simCtx.getBean("obsProjectDao");
+        linker = (DataLoader) simCtx.getBean("dataLinker");
         
         //Ph1m context init
-        StateArchiveDbConfig ph1mDbConfig;
+        RelationalDbConfig ph1mDbConfig;
         try {
-            ph1mDbConfig = new StateArchiveDbConfig(logger);
+            ph1mDbConfig = new RelationalDbConfig(logger);
             Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", ph1mDbConfig);
             
         } catch (DbConfigException e) {
