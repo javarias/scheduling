@@ -573,7 +573,8 @@ public class ArchivePoller extends ComponentClient {
         
         try {    
             Vector<Project> tmp_projects = new Vector<Project>();
-            ObsProject[] obsProjects = archive.getAllObsProjects();
+            ObsProject[] obsProjects = archive.getAllObsProjects(
+            		statusQs.getProjectStatusQueue());
             
             for (final ObsProject project : obsProjects) {
                 obsProjectBuffer.put(project.getObsProjectEntity().getEntityId(), project);
@@ -585,7 +586,9 @@ public class ArchivePoller extends ComponentClient {
                         ProjectStatusI ps = archive.getProjectStatusForObsProject(project);
                         
                         //TODO should check project queue.. if project exists don't map a new one.
-                        SchedBlock[] sbs = archive.getSBsFromObsProject(project);
+                        SchedBlock[] sbs = archive.getSBsFromObsProject(
+                        		project,
+                        		statusQs.getSBStatusQueue());
                         
                         // Cache the SBs to avoid having to perform another retrieval
                         // from the ARCHIVE.
