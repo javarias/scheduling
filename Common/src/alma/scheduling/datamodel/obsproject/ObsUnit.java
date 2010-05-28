@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnit.java,v 1.3 2010/03/17 20:24:50 rhiriart Exp $"
+ * "@(#) $Id: ObsUnit.java,v 1.4 2010/05/28 19:13:58 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -30,6 +30,9 @@ public abstract class ObsUnit {
     /** Identifier, a surrogate database key */
     private Long id;
     
+    /** ALMA Archive unique identifier*/
+    private String uid;
+
     private ObsUnitSet parent;
 
     private ObsUnitControl obsUnitControl;
@@ -70,6 +73,14 @@ public abstract class ObsUnit {
 
     public void setProject(ObsProject project) {
         this.project = project;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
     
 }

@@ -16,6 +16,7 @@
         <id name="id" column="OBSUNITID">            
             <generator class="native"/>
         </id>
+        <property name="uid" column="UID"/>
         <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
         <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>
         <component name="obsUnitControl" class="ObsUnitControl">

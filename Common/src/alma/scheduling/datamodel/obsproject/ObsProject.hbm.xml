@@ -12,6 +12,7 @@
         <id name="id" column="OBSPROJECTID">            
             <generator class="native"/>
         </id>
+        <property name="uid" column="UID"/>
         <property name="principalInvestigator" column="PI"/>
         <property name="scienceScore" column="SCIENCE_SCORE" />
         <property name="scienceRank" column="SCIENCE_RANK"/>

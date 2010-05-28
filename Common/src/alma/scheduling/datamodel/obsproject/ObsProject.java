@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.6 2010/05/19 17:31:47 javarias Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.7 2010/05/28 19:13:58 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -29,6 +29,9 @@ public class ObsProject {
 
     /** Surrogate identifier */
     private Long Id;
+    
+    /** ALMA Archive unique identifier*/
+    private String uid;
     
     /**
      * The principal investigator (PI).
@@ -146,4 +149,13 @@ public class ObsProject {
     public void setLetterGrade(ScienceGrade letterGrade) {
         this.letterGrade = letterGrade;
     }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+    
 }
