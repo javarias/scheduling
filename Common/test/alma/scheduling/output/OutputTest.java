@@ -30,6 +30,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.sax.SAXSource;
@@ -40,7 +42,6 @@ import javax.xml.validation.Validator;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.types.Date;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.InputSource;
