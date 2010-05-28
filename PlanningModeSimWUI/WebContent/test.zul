@@ -1,0 +1,18 @@
+<window>
+	<zscript><![CDATA[
+	import org.zkoss.zkplus.spring.SpringUtil;
+	import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
+
+	ExecutiveDAO execDao = (ExecutiveDAO) SpringUtil.getBean("execDao");
+	List list = execDao.getAllExecutive();
+]]>
+ </zscript>
+
+	<grid>
+		<rows>
+			<row forEach="${list}">
+				<label value="${each.name}" />
+			</row>
+		</rows>
+	</grid>
+</window>

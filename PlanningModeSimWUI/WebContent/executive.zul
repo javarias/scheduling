@@ -1,0 +1,15 @@
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+<window title="Planning Mode Simulator, Web Interface -- Executive"
+	border="normal" mode="embedded" id="MainWindow" apply="${sessionScope.executiveController}">
+
+	<grid>
+		<rows>
+			<row forEach="" >
+				Executive:
+				<textbox value="${each.name}" />
+			</row>
+		</rows>
+	</grid>
+	
+</window>

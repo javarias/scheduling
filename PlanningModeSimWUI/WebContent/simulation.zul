@@ -1,0 +1,150 @@
+<?page title="Simulation" contentType="text/html;charset=UTF-8" id="simulationPage"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+<zk>
+	<window title="Simulation" border="normal" mode="overlapped"
+		sizable="true" maximizable="true" closable="true" width="600px"
+		height="600px" apply="alma.scheduling.psm.web.SimulationController"
+		id="simulationWindow">
+
+		<borderlayout>
+			<west border="none" splittable="true" width="200"
+				minsize="200" size="34%">
+				<borderlayout width="200">
+					<north border="none">
+						<panel title="Status" border="normal"
+							framable="true" style="margin-bottom:10px; margin-right:5px">
+							<panelchildren>
+								This simulation hasn't been ran yet.
+								Please load the data using the button
+								bellow or the menu, so that simulation
+								can be properly made.
+							</panelchildren>
+						</panel>
+					</north>
+					<center border="none">
+						<panel title="Tasks" border="normal"
+							framable="true" style="margin-bottom:10px; margin-right:5px">
+							<panelchildren>
+								<grid>
+									<rows>
+										<row>
+											<button
+												label="Basic configuration" width="100%"
+												id="buttonBasicConfiguration" />
+										</row>
+										<row>
+											<button
+												label="Configure data sources" width="100%"
+												id="buttonDataSources" />
+										</row>
+										<row>
+											<button label="Load data"
+												width="100%" id="buttonLoad" />
+										</row>
+										<row>
+											<button
+												label="Run simulation" width="100%" disabled="true"
+												id="buttonRun" />
+										</row>
+										<row>
+											<button
+												label="Generate reports" width="100%" disabled="true"
+												id="buttonReports" />
+										</row>
+									</rows>
+								</grid>
+							</panelchildren>
+						</panel>
+					</center>
+				</borderlayout>
+			</west>
+			<center border="none">
+				<grid>
+					<rows>
+						<row spans="2">
+							<label value="Simulation meta-data"
+								style="font-weight: bold" />
+						</row>
+						<row>
+							Name:
+							<textbox value="Early science simulation"
+								width="100%" />
+						</row>
+						<row>
+							Simulated start date:
+							<datebox width="100%" />
+						</row>
+						<row>
+							Simulated stop date:
+							<datebox width="100%" />
+						</row>
+						<row spans="2">
+							<label value="Data sources"
+								style="font-weight: bold" />
+						</row>
+						<row>
+							Executive and user data:
+							<combobox width="100%"
+								value="Early Science and Adass2008 users">
+								<comboitem
+									label="Early Science and Adass2008 users" />
+								<comboitem
+									label="Early Science and ALMA users" />
+								<comboitem
+									label="Simulated environment and one user" />
+								<comboitem
+									label="Simulated environment and two users" />
+								<comboitem
+									label="Simulated environment and 200 users" />
+							</combobox>
+						</row>
+						<row>
+							Observatory and hardware configuration:
+							<combobox width="100%"
+								value="Two antennas, one array">
+								<comboitem
+									label="Two antennas, one array" />
+								<comboitem
+									label="Four antennas, two arrays" />
+								<comboitem
+									label="16 antennas, four arrays" />
+							</combobox>
+						</row>
+						<row>
+							Weather statistics:
+							<combobox width="100%" value="Good year">
+								<comboitem label="Good year" />
+								<comboitem label="Normal year" />
+								<comboitem label="Bad year" />
+							</combobox>
+						</row>
+						<row>
+							Observation projects:
+							<combobox width="100%"
+								value="100 batch created projects">
+								<comboitem
+									label="100 batch created projects" />
+								<comboitem
+									label="1000 batch created projects" />
+								<comboitem
+									label="7000 batch created projects" />
+							</combobox>
+						</row>
+						<row>
+							DSA configuration
+							<combobox width="100%"
+								value="DSA Version 0.2">
+								<comboitem label="DSA Version 0.4" />
+								<comboitem label="DSA Version 0.6" />
+								<comboitem label="DSA Version 0.8-R1" />
+							</combobox>
+						</row>
+					</rows>
+				</grid>
+
+			</center>
+			<south border="normal">Status bar</south>
+		</borderlayout>
+	</window>
+</zk>

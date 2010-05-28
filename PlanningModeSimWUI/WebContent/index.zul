@@ -1,0 +1,39 @@
+<?page title="Planning Mode Simulator -- Web Interface" id="mainPage"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<zk>
+	<window title="Planning Mode Simulator" width="100%" height="100%"
+		mode="embedded" border="normal"
+		apply="${sessionScope.mainWindowController}" id="mainWindow">
+		<caption label="" image="/images/date.png" />
+
+		<menubar>
+			<menu label="Simulation">
+				<menupopup>
+					<menuitem label="New" id="menuItemNew" />
+					<menuitem label="Open" id="menuItemOpen" />
+					<menuitem label="Save" id="menuItemSave" />
+					<menuitem label="Save as..." id="menuItemSaveAs" />
+					<menuitem label="Clone" id="menuItemClone" />
+					<menuseparator />
+					<menuitem label="Exit" id="menuItemExit" />
+				</menupopup>
+			</menu>
+			<menu label="View">
+				<menupopup>
+					<menuitem label="Cascade" />
+					<menuitem label="Mosaic" />
+				</menupopup>
+			</menu>
+			<menu label="Help">
+				<menupopup>
+					<menuitem label="Help contents..." />
+					<menuitem label="Distribution webpage..." />
+					<menuseparator />
+					<menuitem label="About..." />
+				</menupopup>
+			</menu>
+		</menubar>
+	</window>
+
+
+</zk>
