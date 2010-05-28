@@ -203,6 +203,7 @@ public class APDMtoSchedulingConverter {
 			} else {
 				projectId = "<<APDM ObsProject has no entity object>>";
 			}
+			obsProject.setUid(projectId);
 			logger.info(String.format(
 					"Processing project %s, is %sin dictionary",
 					projectId,
@@ -416,6 +417,7 @@ public class APDMtoSchedulingConverter {
 			} else {
 				sbId = "<<APDM SchedBlock has no entity object>>";
 			}
+			schedBlock.setUid(sbId);
 			logger.info(String.format(
 					"Processing sched block %s, is %sin dictionary",
 					sbId,
