@@ -8,8 +8,8 @@
     <sect1>
         <title>Introduction</title>
         <para>The ALMA Programme Review Committee Tool (APRC Tool) allows to simulate the execution
-            of observation projects for one or more observation seasons and analyze the results of
-            the simulation, as well as the distibution of projects with respect to several
+            of observation projects for one or more observation seasons and analyse the results of
+            the simulation, as well as the distribution of projects with respect to several
             parameters. The APRC Tool uses the same algorithm that the online scheduling system uses
             to select the next scheduling block to run, the Dynamic Scheduling Algorithm, or
             DSA.</para>
@@ -472,7 +472,7 @@ as a replacement for the command line interface.</para>
         <title>Architecture</title>
         <para>The architecture of the GUI follow a strictly Model-Controller-View pattern. The framework
 used to enforce and achieve this pattern is ZK, which is a rich internet application framework, that allows
-quick prototiping, but also has several enterprise qualities, such as automatic data mapping from user
+quick prototyping, but also has several enterprise qualities, such as automatic data mapping from user
 interface to controller, Spring Framework integration, and Hibernate integration, which is the same layers of
 frameworks that the scheduling subsystem is using to develop the APRC simulator and the DSA.</para>
 	<varlistentry>
@@ -480,8 +480,8 @@ frameworks that the scheduling subsystem is using to develop the APRC simulator 
                     <listitem>
                         <para>To construct the views, ZK provides ZUL, a language based on XML and XUL, which
 are both widely used for user interface definitions. It allows the developers to see exactly how the interfaces will
-look (using a provided eclipse plugin, called "ZK Studio"). ZUL is very powerfull, even allowing to embed java code
-in the interface defition. This functionality will not be used, as to better separate the definition of the view,
+look (using a provided eclipse plugin, called "ZK Studio"). ZUL is very powerful, even allowing to embed java code
+in the interface definition. This functionality will not be used, as to better separate the definition of the view,
 from the controller.</para>
                     </listitem>
                 </varlistentry>
@@ -490,7 +490,7 @@ from the controller.</para>
                     <listitem>
                         <para>In the MVC pattern, controller is that piece of software that handles the logic of the
 interface. The intention of this separation (between view definitions, and logic) is such that views can be easily
-changed, without much effort, enhancing maintanability of the software, and allowing make quick changes easy. Java
+changed, without much effort, enhancing maintainability of the software, and allowing make quick changes easy. Java
 classes that uses ZK's auto-mapping features allows transparent access to view definitions. Even changes to it can be
 made from java code.</para>
                     </listitem>
@@ -500,7 +500,7 @@ made from java code.</para>
                     <listitem>
                         <para>The model section of the MVC pattern, takes care of data handling. Not only it's storage,
 but also it's processing. In this case, it will be the APRC tool libraries , and the work database. This is intended
-to reuse all the code between the CLI and the GUI, and to allows the same tools, to have the same behaivour. </para>
+to reuse all the code between the CLI and the GUI, and to allows the same tools, to have the same behaviour. </para>
                     </listitem>
                 </varlistentry>
             </variablelist>
@@ -509,19 +509,19 @@ to reuse all the code between the CLI and the GUI, and to allows the same tools,
         <title>Definition of Views</title>
 		<para>Views are the user interfaces. This section contains a few examples of user views that are
 available in the GUI prototype. The prototype if not yet functional, but his has data access capabilities, and 
-navigation is posible. The views are not yet settled, as this are only for technology-tests and to see if the
+navigation is possible. The views are not yet settled, as this are only for technology-tests and to see if the
 selected stack of frameworks integrates correctly.</para>
 	<varlistentry>
 		<term>Main window</term>
                     <listitem>
                         <para>This window (<xref linkend="mainWindow"/>) is the first screen a user will see. The selected 
-framework imitates desktop applications, so users will not have to learn how to use a new application. The interace
+framework imitates desktop applications, so users will not have to learn how to use a new application. The interface
 has a window, that uses the whole web page. It has menu bar, where all functionality can be found, according to the context of the selected
 window. A predetermined set of tasks are set when there is no other active window.</para>
 			<para> The menu entry "Simulation", allows to create new simulations, load previous one, and save
 them. The menu "View" is set there to organize the windows, when there are too many in the web page. "Help" entry has
 links to this manual, download page, and information of the software itself.</para>
-			<para> The large whitespace is intended for window usage. As simulations are created, run and
+			<para> The large white-space is intended for window usage. As simulations are created, ran and
 reports gets generated, different window will become available and presented in there.
 	<figure xml:id="mainWindow">
             <title>Main window</title>
@@ -535,10 +535,10 @@ reports gets generated, different window will become available and presented in 
                     <term>New simulation window</term>
                     <listitem>
                         <para>When a new simulation is requested by the user, the window in figure <xref linkend="simConfigWindow"/>
- is presented. It is a form that has a serie of necessary information, which is covered in previous section of this manual.
+ is presented. It is a form that has a series of necessary information, which is covered in previous section of this manual.
  To make things easier to the user, there is a "Default values" button, which completes the form correct and default values.</para>
 			<para> Basic configuration of the simulation is done through this window, so this window is also
-presented if the user want's to change anything else.</para>
+presented if the user wants to change anything on the basic simulation configuration.</para>
 	<figure xml:id="simConfigWindow">
             <title>Simulation configuration window</title>
             <mediaobject>
@@ -551,7 +551,7 @@ presented if the user want's to change anything else.</para>
                     <term>Simulation window</term>
                     <listitem>
                         <para>When a simulation is created, different data sources needs to be selected. Data sources are
-provided by the APRC tool backend, and the window depicted in <xref linkend="simWindow"/> presents to the user the
+provided by the APRC tool back-end, and the window depicted in <xref linkend="simWindow"/> presents to the user the
  different options available. </para>
 			<para> The same window also has two side panels. The first one gives the status of the simulation, 
 meanwhile the second one, presents to the users the most common tasks to execute.</para>
@@ -568,7 +568,7 @@ meanwhile the second one, presents to the users the most common tasks to execute
                     <term>Observation projects listing window</term>
                     <listitem>
                         <para>This window shows the currently loaded observation projects. This view is intended just to show
-the data-mapping capabilities of ZK using Spring framwork.</para>
+the data-mapping capabilities of ZK using Spring framework.</para>
 	<figure xml:id="obsProjectsWindow">
             <title>Observation projects listing</title>
             <mediaobject>
