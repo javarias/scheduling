@@ -204,6 +204,8 @@ public class APDMtoSchedulingConverter {
 			} else {
 				projectId = "<<APDM ObsProject has no entity object>>";
 			}
+			//obsProject.setUid(projectId);
+			obsProject.setUid(apdmProject.getObsProposalRef().getEntityId());
 
 			logger.info(String.format(
 					"Processing project %s, is %sin dictionary",
@@ -443,7 +445,23 @@ public class APDMtoSchedulingConverter {
 		}
 
 		// Fill in the top level object
-		schedBlock.setPiName(obsProject.getPrincipalInvestigator());
+		
+		ObsUnitControl obsUnitControl = new ObsUnitControl();
+//		try {
+//			obsUnitControl.setMaximumTime(apdmSB.getObsUnitControl().getMaximumTime().getContent());
+//			obsUnitControl.setEstimatedExecutionTime(apdmSB.getObsUnitControl().getEstimatedExecutionTime().getContent());
+//		} catch(NullPointerException ex) {
+//			// throw new ConversionException("schedblock maximum time and/or estimatedexecutiontime are null");
+//			
+//		}
+		obsUnitControl.setMaximumTime(0.5);
+		obsUnitControl.setEstimatedExecutionTime(0.5);
+		schedBlock.setObsUnitControl(obsUnitControl);
+
+                // Setting the PI name from the SB, for now. It should probably be set from the
+                // ObsProject instead.
+		schedBlock.setPiName(apdmSB.getPIName());
+		// schedBlock.setPiName(obsProject.getPrincipalInvestigator());
 		schedBlock.setUid(apdmSB.getSchedBlockEntity().getEntityId());
 		
 		// Create objects which hang off the top level SchedBlock, and

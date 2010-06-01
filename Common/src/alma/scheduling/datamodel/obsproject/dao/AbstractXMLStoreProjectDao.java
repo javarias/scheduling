@@ -108,7 +108,7 @@ public abstract class AbstractXMLStoreProjectDao
 		this.componentFactory = new ACSComponentFactory(getContainerServices());
 		this.logger = getContainerServices().getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
-		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
+		// this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		getContainerServices().getLogger());
 		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer);
