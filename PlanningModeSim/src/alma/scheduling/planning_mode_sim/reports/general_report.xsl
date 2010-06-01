@@ -5,8 +5,6 @@
   xmlns="http://www.w3.org/1999/xhtml">
 
   <!-- TODO: Add measure units to output reports -->
-  <!-- TODO: Add hyperlinks between elements-->
- 
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
  
   <!-- Root template, also creates the body of the document -->
@@ -30,9 +28,9 @@
 	<p> This section covers the execution results of the simulation.</p>
         <ul>
 	  <li><b>ALMA's total available time: </b> <xsl:value-of select="availableTime"/> [sec]</li>
-	  <li><b>Time spent in operations (maintenance + scientific): </b> <xsl:value-of select="operationTime"/> [sec]</li>
-	  <li><b>Time spent in maintenance: </b> <xsl:value-of select="maintenanceTime"/> [sec]</li>
-	  <li><b>Time spent in scientific observations: </b> <xsl:value-of select="scientificTime"/> [sec]</li>
+	  <li><b>Time spent in operations (maintenance + scientific): </b> <xsl:value-of select="operationTime"/> [hour]</li>
+	  <li><b>Time spent in maintenance: </b> <xsl:value-of select="maintenanceTime"/> [hour]</li>
+	  <li><b>Time spent in scientific observations: </b> <xsl:value-of select="scientificTime"/> [hour]</li>
         </ul>
 	
 	<!-- Array Section -->
@@ -79,9 +77,9 @@
       <ul>
 	<li><b>Array created in: </b> <xsl:value-of select="creationDate"/></li>
 	<li><b>Array deleted in: </b> <xsl:value-of select="deletionDate"/></li>
-	<li><b>Array's total available time: </b> <xsl:value-of select="availablelTime"/> [sec]</li>
-	<li><b>Time spent in maintenance: </b> <xsl:value-of select="availablelTime"/> [sec]</li>
-	<li><b>Time spent in scientific observations: </b> <xsl:value-of select="scientificTime"/> [sec]</li>
+	<li><b>Array's total available time: </b> <xsl:value-of select="availablelTime"/> [hour]</li>
+	<li><b>Time spent in maintenance: </b> <xsl:value-of select="availablelTime"/> [hour]</li>
+	<li><b>Time spent in scientific observations: </b> <xsl:value-of select="scientificTime"/> [hour]</li>
 	<li><b>Resolution: </b><xsl:value-of select="resolution"/> [arcsec]</li>
 	<li><b>UV Coverage: </b> <xsl:value-of select="uvCoverage"/></li>
       </ul>
@@ -93,7 +91,7 @@
       <ul>
 		<li><b>Science Rank: </b> <xsl:value-of select="scienceRank"/></li>
 		<li><b>Science Score: </b> <xsl:value-of select="scienceScore"/></li>
-		<li><b>Execution Time: </b> <xsl:value-of select="executionTime"/></li>
+		<li><b>Execution Time: </b> <xsl:value-of select="executionTime"/> [hour]</li>
 		<li><b>Execution Status: </b> <xsl:value-of select="status"/></li>
 		<li><b>List of Affiliation: </b>
 		  <ul>
@@ -126,7 +124,7 @@
 		<li><b>Representative Frequency: </b> <xsl:value-of select="representativeFrequency"/></li>
 		<li><b>Goal Sensitivity: </b> <xsl:value-of select="goalSensitivity"/></li>
 		<li><b>Achieved Sensitivity: </b> <xsl:value-of select="achievedSensitivity"/></li>
-		<li><b>Execution Time: </b> <xsl:value-of select="executionTime"/></li>
+		<li><b>Execution Time: </b> <xsl:value-of select="executionTime"/> [hour]</li>
 		<li><b>Execution Status: </b> <xsl:value-of select="status"/></li>
 		<li><b>Executed in Array: </b> <a href="#Array-{ArrayRef/@arrayRef}">Array <xsl:value-of select="ArrayRef/@arrayRef"/></a> </li>
       </ul>
