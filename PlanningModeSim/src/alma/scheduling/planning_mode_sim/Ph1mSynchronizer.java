@@ -50,7 +50,7 @@ public class Ph1mSynchronizer {
             try{
                 syncrhonizeProject(p);
             }catch(NullPointerException e){
-                logger.info("Project " + p.getUid() + " cannot be retieved from ph1m. Reason: " + e.getCause());
+                logger.info("Project " + p.getUid() + " cannot be retrieved from ph1m. Reason: " + e.getCause());
             }
         }
         try {
