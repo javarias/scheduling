@@ -10,7 +10,7 @@
 	<property name="webinf" location="${webcontent}/WEB-INF" />
 	<property name="src" location="src" />
 	<property name="test" location="test" />
-	<property name="bin" location="src/build/classes" />
+	<property name="bin" location="build/classes" />
 	<property name="lib" location="${webinf}/lib" />
 	<property name="doc" location="doc" />
 	<property name="dist" location="dist" />
@@ -57,16 +57,19 @@
 	</target>
 
 	<!-- Build our classpath: depends on ALMA environment -->
-	<path id="ph1m.class.path">
+	<path id="PlanningModeSimulatorWUI.class.path">
+		
+		<pathelement location="${jarfile}" />
 		
 		<pathelement location="${TOMCAT_LIB}/servlet-api.jar" />
-
+		<pathelement location="${TOMCAT_LIB}/jsp-api.jar" />
+			
 		<pathelement location="${INTROOT}/lib/planningModeSimGUI.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
 		<pathelement location="${INTROOT}/lib/spring.jar" />
 		
-		<pathelement location="${ACSROOT}/lib/tomcat5/common/lib/jsp-api.jar" />
+
 		<pathelement location="${ACSROOT}/lib/antlr.jar" />
 		<pathelement location="${ACSROOT}/lib/commons-collections-3.1.jar" />
 		<pathelement location="${ACSROOT}/lib/antlr.jar" />
@@ -125,6 +128,7 @@
 				<attribute name="Built-By" value="${user.name}" />
 			</manifest>
 		</jar>
+		<copy file="${jarfile}" todir="${lib}" />
 	</target>
 
 
