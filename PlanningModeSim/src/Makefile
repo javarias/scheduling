@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.8 2010/05/19 21:00:32 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.9 2010/06/01 17:22:06 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -120,7 +120,7 @@ USER_IDL =
 #
 JARFILES=planningModeSimGUI
 planningModeSimGUI_DIRS=alma
-planningModeSimGUI_EXTRAS=alma/scheduling/planning_mode_sim/reports/general_report.xsl 
+planningModeSimGUI_EXTRAS=alma/scheduling/planning_mode_sim/reports/general_report.xsl ph1mContext.xml
 #
 # java sources in Jarfile on/off
 DEBUG= 

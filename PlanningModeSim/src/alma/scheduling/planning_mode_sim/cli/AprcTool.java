@@ -639,9 +639,9 @@ public class AprcTool {
         }
         else if(args[0].compareTo("ph1m") == 0){
             if(args[1].compareTo("list") == 0)
-                listPh1mProposals(config.getContextFilePath());
+                listPh1mProposals(workDir + "/" + config.getContextFilePath());
             else if(args[1].compareTo("sync") == 0)
-                synchPh1m(config.getContextFilePath());
+                synchPh1m(workDir + "/" + config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");

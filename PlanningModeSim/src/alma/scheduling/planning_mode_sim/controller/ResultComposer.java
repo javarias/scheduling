@@ -156,14 +156,16 @@ public class ResultComposer {
 			newObsProject.setAffiliation(new HashSet<Affiliation>());
 			Affiliation newAffiliation = new Affiliation();
 			ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
-			newAffiliation.setExecutive( execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
-			newAffiliation.setPercentage( 
-					execDao.getPIFromEmail( 
-							inputObsProjectRef.getPrincipalInvestigator() )
-							.getPIMembership()
-							.iterator()
-							.next()
-							.getMembershipPercentage() );
+			// newAffiliation.setExecutive( execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
+			newAffiliation.setExecutive(sb.getExecutive().getName());
+//			newAffiliation.setPercentage( 
+//					execDao.getPIFromEmail( 
+//							inputObsProjectRef.getPrincipalInvestigator() )
+//							.getPIMembership()
+//							.iterator()
+//							.next()
+//							.getMembershipPercentage() );
+			newAffiliation.setPercentage(1.0f);
 			newObsProject.getAffiliation().add( newAffiliation );
 			
 			// Create the SchedBlock Set and add the new ObservationProject to the Results
