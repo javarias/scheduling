@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+        ahoffsta, UTFSM-NRAO, 01-06-2010
+-->
+
+<project name="PlanningModeSimulatorWUI" default="warfile">
+
+	<!-- useful definitions -->
+	<property name="webcontent" location="WebContent" />
+	<property name="webinf" location="${webcontent}/WEB-INF" />
+	<property name="src" location="src" />
+	<property name="test" location="test" />
+	<property name="bin" location="src/build/classes" />
+	<property name="lib" location="${webinf}/lib" />
+	<property name="doc" location="doc" />
+	<property name="dist" location="dist" />
+	<property name="jarfile" location="PlanningModeSimulatorWUI.jar" />
+	<property name="warfile" location="PlanningModeSimulatorWUI.war" />
+
+	<!-- 
+	   WARNING 
+	   The following definitions only work on Linux in the ALMA environment
+        -->
+	<property environment="env" />
+	<property name="ACSROOT" value="${env.ACSROOT}" />
+	<property name="ACSDATA" value="${env.ACSDATA}" />
+	<property name="TOMCAT_LIB" value="${ACSROOT}/lib/tomcat5/common/lib" />
+
+	<!-- set INTROOT to the value from the users env if set; 
+             else use ACSROOT -->
+	<condition property="INTROOT" value="${env.INTROOT}" else="${env.ACSROOT}">
+		<isset property="env.INTROOT" />
+	</condition>
+	<!-- <echo message="INTROOT=${INTROOT}"/> -->
+
+
+	<!-- cleanup  -->
+	<target name="clean" depends="clear-dist">
+		<delete file="${warfile}" />
+		<delete dir="${bin}" />
+	</target>
+
+	<target name="clear-dist">
+		<delete dir="${dist}" />
+	</target>
+
+	<!-- create the distribution directory -->
+	<target name="dist" depends="clear-dist">
+		<delete dir="${dist}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<!-- create the distribution directory -->
+	<target name="bin">
+		<delete dir="${bin}" />
+		<mkdir dir="${bin}" />
+	</target>
+
+	<!-- Build our classpath: depends on ALMA environment -->
+	<path id="ph1m.class.path">
+		
+		<pathelement location="${TOMCAT_LIB}/servlet-api.jar" />
+
+		<pathelement location="${INTROOT}/lib/planningModeSimGUI.jar" />
+		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
+		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
+		<pathelement location="${INTROOT}/lib/spring.jar" />
+		
+		<pathelement location="${ACSROOT}/lib/tomcat5/common/lib/jsp-api.jar" />
+		<pathelement location="${ACSROOT}/lib/antlr.jar" />
+		<pathelement location="${ACSROOT}/lib/commons-collections-3.1.jar" />
+		<pathelement location="${ACSROOT}/lib/antlr.jar" />
+		<pathelement location="${ACSROOT}/lib/tomcat5/server/webapps/manager/WEB-INF/lib/commons-fileupload-1.2.jar" />
+		<pathelement location="${ACSROOT}/lib/tomcat5/server/webapps/manager/WEB-INF/lib/commons-io-1.4.jar" />
+		<pathelement location="${ACSROOT}/lib/dom4j-1.6.1.jar" />
+		<pathelement location="${ACSROOT}/lib/hibernate3.jar" />
+		<pathelement location="${ACSROOT}/lib/hibernate-annotations.jar" />
+		<pathelement location="${ACSROOT}/lib/hibernate-commons-annotations.jar" />
+		<pathelement location="${ACSROOT}/lib/hibernate-entitymanager.jar" />
+		<pathelement location="${ACSROOT}/lib/hsqldb.jar" />
+		<pathelement location="${ACSROOT}/lib/jta-1.1.jar" />
+		<pathelement location="${ACSROOT}/lib/log4j-1.2.15.jar" />
+		<pathelement location="${ACSROOT}/lib/slf4j-api-1.5.8.jar" />
+
+		<pathelement location="${lib}/lib/bsh.jar" />
+		<pathelement location="${lib}/lib/cglib-nodep-2.1_3.jar" />
+		<pathelement location="${lib}/lib/fckez.jar" />
+		<pathelement location="${lib}/lib/groovy.jar" />
+		<pathelement location="${lib}/lib/jruby.jar" />
+		<pathelement location="${lib}/lib/js.jar" />
+		<pathelement location="${lib}/lib/jython.jar" />
+		<pathelement location="${lib}/lib/slf4j-log4j12-1.5.2-jar" />
+
+		<pathelement location="${lib}/zcommon.jar" />
+		<pathelement location="${lib}/zcommon.jar" />
+		<pathelement location="${lib}/zcommons-el.jar" />
+		<pathelement location="${lib}/zhtml.jar" />
+		<pathelement location="${lib}/zk.jar" />
+		<pathelement location="${lib}/zkplus.jar" />
+		<pathelement location="${lib}/zul.jar" />
+		<pathelement location="${lib}/zweb.jar" />	
+		
+	</path>
+
+
+	<!-- 
+	   WARNING
+	       The following task only works on Linux in the ALMA environment
+	       
+	   Compile all our sources 
+	-->
+	<target name="compile" depends="bin">
+		<javac srcdir="${src}" destdir="${bin}" debug="on">
+			<classpath refid="PlanningModeSimulatorWUI.class.path" />
+		</javac>
+	</target>
+
+
+	<!-- build a Jarfile for this module -->
+	<target name="jarfile">
+
+		<jar destfile="${jarfile}">
+			<fileset dir="${bin}" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+			</manifest>
+		</jar>
+	</target>
+
+
+	<!-- 
+           ********************************************************
+	   copy all our source and classfiles into the distribution
+	   directory 
+           ********************************************************
+        -->
+	<target name="copy" depends="dist">
+		<copy todir="${dist}">
+			<!-- copy resources and config files -->
+			<fileset dir="${webcontent}" />
+		</copy>
+		<copy todir="${dist}/WEB-INF/classes">
+			<fileset dir="${src}">
+			</fileset>
+			<fileset dir="${bin}">
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- 
+           ********************************************************
+	   build a WAR file for this application, assumes 'compile'
+           was run, but won't invoke it ('make all' will take care
+           of that)
+           ********************************************************
+        -->
+	<target name="warfile" depends="copy" >
+
+		<war destfile="${warfile}" >
+			<fileset dir="${dist}" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+			</manifest>
+		</war>
+	</target>
+</project>
