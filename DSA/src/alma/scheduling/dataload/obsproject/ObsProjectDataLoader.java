@@ -21,30 +21,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoader.java,v 1.3 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: ObsProjectDataLoader.java,v 1.4 2010/06/01 17:17:30 rhiriart Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.DataLoader;
+import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
+import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
 
 @Transactional
 public class ObsProjectDataLoader implements DataLoader {
     
+	private static Logger logger = LoggerFactory.getLogger(ObsProjectDataLoader.class);
+	
+	/**
+	 * DAO to get Light Projects from files.
+	 */
     XmlObsProjectDao xmlDao;
     public void setXmlDao(XmlObsProjectDao xmlDao) {
         this.xmlDao = xmlDao;
     }
 
+    /**
+     * DAO to get projects from ARCHIVE XML Store.
+     */
+    ProjectDao archProjectDao;
+    public void setArchProjectDao(ProjectDao archProjectDao) {
+    	this.archProjectDao  = archProjectDao;
+    }
+    
+    /**
+     * DAO to store projects in work database.
+     */
     ObsProjectDao dao;
     public void setDao(ObsProjectDao dao) {
         this.dao = dao;
@@ -52,7 +72,20 @@ public class ObsProjectDataLoader implements DataLoader {
 
     @Override
     public void load() {
-        List<ObsProject> projects = xmlDao.getAllObsProjects();
+    	List<ObsProject> projects = null;
+    	if (xmlDao != null) {
+    		projects = xmlDao.getAllObsProjects();
+    	} else if (archProjectDao != null) {
+    		try {
+				projects = archProjectDao.getAllObsProjects();
+			} catch (DAOException ex) {
+				logger.error("error getting projects from XML Store");
+				ex.printStackTrace();
+			}
+    	} else {
+    		logger.error("no DAO to retrieve projects has been setup");
+    		return;
+    	}
         dao.saveOrUpdate(projects);
     }
 

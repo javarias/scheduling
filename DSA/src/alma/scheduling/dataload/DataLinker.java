@@ -2,6 +2,8 @@ package alma.scheduling.dataload;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.config.Configuration;
@@ -17,6 +19,8 @@ import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
 public class DataLinker implements DataLoader {
 
+	private static Logger logger = LoggerFactory.getLogger(DataLinker.class);
+	
     private SchedBlockDao sbDao;
     private ExecutiveDAO execDao;
     private ConfigurationDao configDao;
@@ -64,6 +68,7 @@ public class DataLinker implements DataLoader {
     public void load() throws InvalidScienceGradeConfig {
         List<SchedBlock>sbs = sbDao.findAll();
         for(SchedBlock sb: sbs){
+        	System.out.println("sb.getPiName() = " + sb.getPiName());
             PI pi = execDao.getPIFromEmail(sb.getPiName());
             sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
             sbDao.saveOrUpdate(sb);
