@@ -640,7 +640,7 @@ public class AprcTool {
         else if(args[0].compareTo("ph1m") == 0){
             if(args[1].compareTo("list") == 0)
                 listPh1mProposals(config.getContextFilePath());
-            else if(args[1].compareTo("synch") == 0)
+            else if(args[1].compareTo("sync") == 0)
                 synchPh1m(config.getContextFilePath());
         }
         else if (args[0].compareTo("go")==0){

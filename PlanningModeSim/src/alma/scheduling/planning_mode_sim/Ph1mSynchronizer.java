@@ -30,12 +30,15 @@ public class Ph1mSynchronizer {
      * @throws NullPointerException if the proposal retrived is null
      */
     public void syncrhonizeProject(ObsProject p) throws IllegalArgumentException, NullPointerException {
+        logger.info("Synchronizing proposal: " + p.getUid());
         if(p == null || p.getUid() == null)
             throw new IllegalArgumentException("Obs Project is null or project uid is null ");
         Proposal prop = ph1mDao.findProposalByArchiveUid(p.getUid());
         if(prop == null)
             throw new NullPointerException("Proposal retrieved from Phase1m with uid: " + p.getUid() + " is null");
         p.setScienceRank(prop.getAssessment().getAprcRank());
+        if (prop.getAssessment().getAprcScore() == null)
+            throw new NullPointerException("aprc Score is null");
         p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
         
         obsProjDao.saveOrUpdate(p);
@@ -47,7 +50,7 @@ public class Ph1mSynchronizer {
             try{
                 syncrhonizeProject(p);
             }catch(NullPointerException e){
-                logger.info("Project " + p.getUid() + " cannot be retieved from ph1m.");
+                logger.info("Project " + p.getUid() + " cannot be retieved from ph1m. Reason: " + e.getCause());
             }
         }
         try {
