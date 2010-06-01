@@ -189,6 +189,7 @@ public class APDMtoSchedulingConverter {
 		ObsProject obsProject = new ObsProject();
 		
 		{
+			// Everything in this block is about logging.
 			String projectId = "<<didn't get far enough to set>>";
 			String statusId  = "<<didn't get far enough to set>>";
 			String programId = "<<didn't get far enough to set>>";
@@ -203,7 +204,7 @@ public class APDMtoSchedulingConverter {
 			} else {
 				projectId = "<<APDM ObsProject has no entity object>>";
 			}
-			obsProject.setUid(projectId);
+
 			logger.info(String.format(
 					"Processing project %s, is %sin dictionary",
 					projectId,
@@ -251,6 +252,7 @@ public class APDMtoSchedulingConverter {
 		// Fill in the top level object
 		
 		/* obsProject.setId() - No need, it is handled by Hibernate */
+		obsProject.setUid(apdmProject.getObsProjectEntity().getEntityId());
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
 		obsProject.setScienceScore((float)apdmProject.getScientificScore());
@@ -304,6 +306,7 @@ public class APDMtoSchedulingConverter {
 		ObsUnitControl obsUnitControl = new ObsUnitControl();
 		ObsUnitSet     obsUnitSet     = new ObsUnitSet();
 		{
+			// Everything in this block is about logging.
 			String ousPartId = apdmOUS.getEntityPartId();
 			String statusId  = "<<didn't get far enough to set>>";
 			
@@ -404,6 +407,7 @@ public class APDMtoSchedulingConverter {
 		SchedBlock schedBlock = new SchedBlock();
 		
 		{
+			// Everything in this block is about logging.
 			String sbId = "<<didn't get far enough to set>>";
 			String statusId  = "<<didn't get far enough to set>>";
 
@@ -417,7 +421,6 @@ public class APDMtoSchedulingConverter {
 			} else {
 				sbId = "<<APDM SchedBlock has no entity object>>";
 			}
-			schedBlock.setUid(sbId);
 			logger.info(String.format(
 					"Processing sched block %s, is %sin dictionary",
 					sbId,
@@ -440,6 +443,8 @@ public class APDMtoSchedulingConverter {
 		}
 
 		// Fill in the top level object
+		schedBlock.setPiName(obsProject.getPrincipalInvestigator());
+		schedBlock.setUid(apdmSB.getSchedBlockEntity().getEntityId());
 		
 		// Create objects which hang off the top level SchedBlock, and
 		// hang them off it.
