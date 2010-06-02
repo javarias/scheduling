@@ -33,11 +33,13 @@ import alma.entity.xmlbinding.valuetypes.AngleT;
 import alma.entity.xmlbinding.valuetypes.AngularVelocityT;
 import alma.entity.xmlbinding.valuetypes.FrequencyT;
 import alma.entity.xmlbinding.valuetypes.SensitivityT;
+import alma.entity.xmlbinding.valuetypes.TimeT;
 import alma.entity.xmlbinding.valuetypes.UserAngleT;
 import alma.entity.xmlbinding.valuetypes.types.AngleTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.AngularVelocityTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.FrequencyTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.SensitivityTUnitType;
+import alma.entity.xmlbinding.valuetypes.types.TimeTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.UserAngleTUserUnitType;
 
 
@@ -49,6 +51,7 @@ public class ConverterTest extends TestCase  {
 	private Map<AngularVelocityTUnitType, Double> spin;
 	private Map<FrequencyTUnitType, Double> radio4LongWave;
 	private Map<SensitivityTUnitType, Double> sense;
+	private Map<TimeTUnitType, Double> clock;
 	
 	public ConverterTest(String name) {
         super(name);
@@ -87,6 +90,14 @@ public class ConverterTest extends TestCase  {
     	sense = new HashMap<SensitivityTUnitType, Double>();
         sense.put(SensitivityTUnitType.MJY, 1.0 * 1000.0);
         sense.put(SensitivityTUnitType.JY, 1.0);
+
+    	clock = new HashMap<TimeTUnitType, Double>();
+        clock.put(TimeTUnitType.NS,  1.0e9 * 3600);
+        clock.put(TimeTUnitType.US,  1.0e6 * 3600);
+        clock.put(TimeTUnitType.MS,  1.0e3 * 3600);
+        clock.put(TimeTUnitType.S,   3600.0);
+        clock.put(TimeTUnitType.MIN, 60.0);
+        clock.put(TimeTUnitType.H,   1.0);
 }
 
     protected void tearDown() throws Exception {
@@ -253,6 +264,30 @@ public class ConverterTest extends TestCase  {
         			assertEquals(
         					String.format("Converting %f %s to %s", u.getContent(), u.getUnit(), endUnit),
         					sense.get(endUnit), endValue, 0.001);
+        		} catch (NeedsContextException e) {
+        			assertTrue(String.format("Converting %f %s to %s and got a NeedsContextException",
+        					u.getContent(), u.getUnit(), endUnit),
+        					(sense.get(startUnit) < 0) || (sense.get(endUnit) < 0));
+        		}
+        	}
+    	}
+    }
+
+    /**
+     * @param args
+     */
+    public void testTimeConversions() throws Exception{
+    	
+    	final TimeT u = new TimeT();
+    	for (final TimeTUnitType startUnit : clock.keySet()) {
+    		u.setContent(clock.get(startUnit));
+    		u.setUnit(startUnit.toString());
+        	for (final TimeTUnitType endUnit : clock.keySet()) {
+        		try {
+        			final double endValue = TimeConverter.convertedValue(u, endUnit);
+        			assertEquals(
+        					String.format("Converting %f %s to %s", u.getContent(), u.getUnit(), endUnit),
+        					clock.get(endUnit), endValue, 0.001);
         		} catch (NeedsContextException e) {
         			assertTrue(String.format("Converting %f %s to %s and got a NeedsContextException",
         					u.getContent(), u.getUnit(), endUnit),
