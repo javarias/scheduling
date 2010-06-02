@@ -26,6 +26,7 @@ import alma.scheduling.datamodel.helpers.AngularVelocityConverter;
 import alma.scheduling.datamodel.helpers.ConversionException;
 import alma.scheduling.datamodel.helpers.FrequencyConverter;
 import alma.scheduling.datamodel.helpers.SensitivityConverter;
+import alma.scheduling.datamodel.helpers.TimeConverter2;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitControl;
@@ -204,8 +205,6 @@ public class APDMtoSchedulingConverter {
 			} else {
 				projectId = "<<APDM ObsProject has no entity object>>";
 			}
-			//obsProject.setUid(projectId);
-			obsProject.setUid(apdmProject.getObsProposalRef().getEntityId());
 
 			logger.info(String.format(
 					"Processing project %s, is %sin dictionary",
@@ -254,7 +253,8 @@ public class APDMtoSchedulingConverter {
 		// Fill in the top level object
 		
 		/* obsProject.setId() - No need, it is handled by Hibernate */
-		obsProject.setUid(apdmProject.getObsProjectEntity().getEntityId());
+		obsProject.setUid(apdmProject.getObsProposalRef().getEntityId());
+		// obsProject.setUid(apdmProject.getObsProjectEntity().getEntityId());
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
 		obsProject.setScienceScore((float)apdmProject.getScientificScore());
@@ -447,21 +447,43 @@ public class APDMtoSchedulingConverter {
 		// Fill in the top level object
 		
 		ObsUnitControl obsUnitControl = new ObsUnitControl();
-//		try {
-//			obsUnitControl.setMaximumTime(apdmSB.getObsUnitControl().getMaximumTime().getContent());
-//			obsUnitControl.setEstimatedExecutionTime(apdmSB.getObsUnitControl().getEstimatedExecutionTime().getContent());
-//		} catch(NullPointerException ex) {
-//			// throw new ConversionException("schedblock maximum time and/or estimatedexecutiontime are null");
-//			
-//		}
-		obsUnitControl.setMaximumTime(0.5);
-		obsUnitControl.setEstimatedExecutionTime(0.5);
+		try {
+			double hrVal = TimeConverter2.toHours(apdmSB.getObsUnitControl().getMaximumTime().getContent(),
+					apdmSB.getObsUnitControl().getMaximumTime().getUnit());
+			obsUnitControl.setMaximumTime(hrVal);
+		} catch(NullPointerException ex) {
+			String msg = String.format("null pointer exception when getting maximum execution time in SchedBlock %s: %s",
+					apdmSB.getSchedBlockEntity().getEntityId(), ex);
+			logger.severe(msg);
+			obsUnitControl.setMaximumTime(0.5);
+		}
+		try {
+			double hrVal = TimeConverter2.toHours(apdmSB.getObsUnitControl().getEstimatedExecutionTime().getContent(),
+					apdmSB.getObsUnitControl().getEstimatedExecutionTime().getUnit());
+			obsUnitControl.setEstimatedExecutionTime(hrVal);
+		} catch(NullPointerException ex) {
+			String msg = String.format("null pointer exception when getting estimated execution time in SchedBlock %s: %s",
+					apdmSB.getSchedBlockEntity().getEntityId(), ex);
+			logger.severe(msg);
+			obsUnitControl.setEstimatedExecutionTime(0.5);
+		}
+		if (obsUnitControl.getEstimatedExecutionTime() <= 0.0) {
+			String msg = String.format("estimated execution time needs to be > 0.0, current value %f in SB %s",
+					obsUnitControl.getEstimatedExecutionTime(), apdmSB.getSchedBlockEntity().getEntityId());
+			logger.severe(msg);
+			obsUnitControl.setMaximumTime(0.5);
+			obsUnitControl.setEstimatedExecutionTime(0.5);			
+		}
+		if (obsUnitControl.getMaximumTime() < obsUnitControl.getEstimatedExecutionTime()) {
+			String msg = String.format("maximum execution time needs to be >= estimated execution time, current value %f in SB %s",
+					obsUnitControl.getMaximumTime(), apdmSB.getSchedBlockEntity().getEntityId());
+			logger.severe(msg);
+			obsUnitControl.setMaximumTime(obsUnitControl.getEstimatedExecutionTime());
+		}
 		schedBlock.setObsUnitControl(obsUnitControl);
 
-                // Setting the PI name from the SB, for now. It should probably be set from the
-                // ObsProject instead.
-		schedBlock.setPiName(apdmSB.getPIName());
-		// schedBlock.setPiName(obsProject.getPrincipalInvestigator());
+		// schedBlock.setPiName(apdmSB.getPIName());
+		schedBlock.setPiName(obsProject.getPrincipalInvestigator());
 		schedBlock.setUid(apdmSB.getSchedBlockEntity().getEntityId());
 		
 		// Create objects which hang off the top level SchedBlock, and
