@@ -25,9 +25,9 @@ public class Ph1mSynchronizer {
     
     /**
      * 
-     * @param p the ObsProject to be syncronized
+     * @param p the ObsProject to be synchronized
      * @throws IllegalArgumentException if the project is null of the uid is invalid
-     * @throws NullPointerException if the proposal retrived is null
+     * @throws NullPointerException if the proposal retrieved is null
      */
     public void syncrhonizeProject(ObsProject p) throws IllegalArgumentException, NullPointerException {
         logger.info("Synchronizing proposal: " + p.getUid());
