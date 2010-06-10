@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.6 2010/05/24 21:17:53 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.7 2010/06/10 21:21:32 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -85,13 +85,13 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         ets.setExecutive(execDao.getExecutive(schedBlock.getPiName()));
         ets.setObservingSeason(execDao.getCurrentSeason());
         ets.setSbId(schedBlock.getId());
-        ets.setTimeSpent(schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue());
+        ets.setTimeSpent(schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
         ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
         ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue());
         ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
         ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
         
-        double execTime = schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue();
+        double execTime = schedBlock.getSchedBlockControl().getSbMaximumTime();
         double accumTime = 0.0;
         if (schedBlock.getSchedBlockControl().getAccumulatedExecutionTime() != null) {
             accumTime = schedBlock.getSchedBlockControl().getAccumulatedExecutionTime();            
