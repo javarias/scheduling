@@ -20,13 +20,14 @@ import alma.entity.xmlbinding.valuetypes.types.AngularVelocityTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.FrequencyTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.SensitivityTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.entity.xmlbinding.valuetypes.types.TimeTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.UserAngleTUserUnitType;
 import alma.scheduling.datamodel.helpers.AngleConverter;
 import alma.scheduling.datamodel.helpers.AngularVelocityConverter;
 import alma.scheduling.datamodel.helpers.ConversionException;
 import alma.scheduling.datamodel.helpers.FrequencyConverter;
 import alma.scheduling.datamodel.helpers.SensitivityConverter;
-import alma.scheduling.datamodel.helpers.TimeConverter2;
+import alma.scheduling.datamodel.helpers.TimeConverter;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitControl;
@@ -53,11 +54,21 @@ public class APDMtoSchedulingConverter {
 
 	/*
 	 * ================================================================
+	 * Constants
+	 * ================================================================
+	 */
+	private static final double defaultSBMaximumHours = 0.5;
+	private static final double defaultSBEstimatedExecutionHours = 0.5;
+	/* End Constants
+	 * ============================================================= */
+
+	/*
+	 * ================================================================
 	 * Enums
 	 * ================================================================
 	 */
 	/** Used to control which phase of the APDM to look in. */
-	public enum Phase {PHASE1, PHASE2};
+	public enum Phase {PHASE1, PHASE2}
 	/* End Enums
 	 * ============================================================= */
 
@@ -446,52 +457,32 @@ public class APDMtoSchedulingConverter {
 
 		// Fill in the top level object
 		
-		ObsUnitControl obsUnitControl = new ObsUnitControl();
-		try {
-			double hrVal = TimeConverter2.toHours(apdmSB.getObsUnitControl().getMaximumTime().getContent(),
-					apdmSB.getObsUnitControl().getMaximumTime().getUnit());
-			obsUnitControl.setMaximumTime(hrVal);
-		} catch(NullPointerException ex) {
-			String msg = String.format("null pointer exception when getting maximum execution time in SchedBlock %s: %s",
-					apdmSB.getSchedBlockEntity().getEntityId(), ex);
-			logger.severe(msg);
-			obsUnitControl.setMaximumTime(0.5);
-		}
-		try {
-			double hrVal = TimeConverter2.toHours(apdmSB.getObsUnitControl().getEstimatedExecutionTime().getContent(),
-					apdmSB.getObsUnitControl().getEstimatedExecutionTime().getUnit());
-			obsUnitControl.setEstimatedExecutionTime(hrVal);
-		} catch(NullPointerException ex) {
-			String msg = String.format("null pointer exception when getting estimated execution time in SchedBlock %s: %s",
-					apdmSB.getSchedBlockEntity().getEntityId(), ex);
-			logger.severe(msg);
-			obsUnitControl.setEstimatedExecutionTime(0.5);
-		}
-		if (obsUnitControl.getEstimatedExecutionTime() <= 0.0) {
-			String msg = String.format("estimated execution time needs to be > 0.0, current value %f in SB %s",
-					obsUnitControl.getEstimatedExecutionTime(), apdmSB.getSchedBlockEntity().getEntityId());
-			logger.severe(msg);
-			obsUnitControl.setMaximumTime(0.5);
-			obsUnitControl.setEstimatedExecutionTime(0.5);			
-		}
-		if (obsUnitControl.getMaximumTime() < obsUnitControl.getEstimatedExecutionTime()) {
-			String msg = String.format("maximum execution time needs to be >= estimated execution time, current value %f in SB %s",
-					obsUnitControl.getMaximumTime(), apdmSB.getSchedBlockEntity().getEntityId());
-			logger.severe(msg);
-			obsUnitControl.setMaximumTime(obsUnitControl.getEstimatedExecutionTime());
-		}
-		schedBlock.setObsUnitControl(obsUnitControl);
-
 		// schedBlock.setPiName(apdmSB.getPIName());
 		schedBlock.setPiName(obsProject.getPrincipalInvestigator());
 		schedBlock.setUid(apdmSB.getSchedBlockEntity().getEntityId());
 		
 		// Create objects which hang off the top level SchedBlock, and
 		// hang them off it.
+		ObsUnitControl obsUnitControl;
 		Preconditions preconditions;
 		SchedulingConstraints schedulingConstraints;
 		SchedBlockControl schedBlockControl;
 		
+		try {
+			obsUnitControl = createObsUnitControl(
+					apdmSB.getObsUnitControl(),
+					apdmSB.getSchedBlockEntity().getEntityId(),
+					defaultSBMaximumHours,
+					defaultSBEstimatedExecutionHours);
+			schedBlock.setObsUnitControl(obsUnitControl);
+		} catch (ConversionException e) {
+			logger.info(String.format(
+					"Cannot create ObsUnitControl object for SchedBlock %s in Project %s - %s",
+					apdmSB.getSchedBlockEntity().getEntityId(),
+					apdmProject.getObsProjectEntity().getEntityId(),
+					e.getMessage()));
+			throw e;
+		}
 		try {
 			preconditions = createPreconditions(
 					apdmSB.getPreconditions());
@@ -582,6 +573,62 @@ public class APDMtoSchedulingConverter {
 		return schedBlock;
 	}
 
+	private ObsUnitControl createObsUnitControl(
+			alma.entity.xmlbinding.obsproject.ObsUnitControlT obsUnitControl,
+			String                                            apdmSBId,
+			double                                            defaultSBMaximumHours,
+			double                                            defaultSBEstimatedExecutionHours)
+		throws ConversionException {
+		ObsUnitControl result = new ObsUnitControl();
+		
+		try {
+			result.setMaximumTime(TimeConverter.convertedValue(
+					obsUnitControl.getMaximumTime(),
+					TimeTUnitType.H));
+		} catch (NullPointerException e) {
+			logger.warning(String.format(
+					"Missing Maximum Time in ObsUnitControl for SchedBlock %s, using default of %f%s",
+					apdmSBId, defaultSBMaximumHours,
+					TimeTUnitType.H));
+			result.setMaximumTime(defaultSBMaximumHours);
+		}
+		
+		try {
+			result.setEstimatedExecutionTime(TimeConverter.convertedValue(
+					obsUnitControl.getEstimatedExecutionTime(),
+					TimeTUnitType.H));
+		} catch (NullPointerException e) {
+			logger.warning(String.format(
+					"Missing Estimated Execution Time in ObsUnitControl for SchedBlock %s, using default of %f%s",
+					apdmSBId,
+					defaultSBEstimatedExecutionHours,
+					TimeTUnitType.H));
+			result.setEstimatedExecutionTime(defaultSBEstimatedExecutionHours);
+		}
+
+		if (result.getEstimatedExecutionTime() <= 0.0) {
+			String msg = String.format("Estimated Execution Time in ObsUnitControl for SchedBlock %s should be > 0.0, current value %f, using default of %f%s",
+					apdmSBId,
+					result.getEstimatedExecutionTime(),
+					defaultSBEstimatedExecutionHours,
+					TimeTUnitType.H);
+			logger.warning(msg);
+			result.setEstimatedExecutionTime(defaultSBEstimatedExecutionHours);			
+		}
+		if (result.getMaximumTime() < result.getEstimatedExecutionTime()) {
+			String msg = String.format("Maximum Time in ObsUnitControl for SchedBlock %s should be >= Estimated Execution Time (%f%s), current value %f, setting to %f%s",
+					apdmSBId,
+					result.getEstimatedExecutionTime(),
+					TimeTUnitType.H,
+					result.getMaximumTime(),
+					result.getEstimatedExecutionTime(),
+					TimeTUnitType.H);
+			logger.warning(msg);
+			result.setMaximumTime(result.getEstimatedExecutionTime());
+		}
+		return result;
+	}
+
 	private Preconditions createPreconditions(
 			alma.entity.xmlbinding.obsproject.PreconditionsT preconditions)
 		throws ConversionException {
@@ -630,6 +677,9 @@ public class APDMtoSchedulingConverter {
 
 		result.setAchievedSensitivity(0.0); // TODO: model conversion
 		result.setIndefiniteRepeat(control.getIndefiniteRepeat());
+		result.setSbMaximumTime(TimeConverter.convertedValue(
+								control.getSBMaximumTime(),
+								TimeTUnitType.H));
 
 		if (sbStatus == null) {
 			result.setAccumulatedExecutionTime(0.0);
