@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnitControl.java,v 1.2 2010/04/12 20:53:35 rhiriart Exp $"
+ * "@(#) $Id: ObsUnitControl.java,v 1.3 2010/06/10 21:17:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -41,10 +41,10 @@ public class ObsUnitControl implements Updateable {
     /** Until when the last update is valid */
     private Date validUntil;
     
-    /** The maximum time that the ObsUnit is allowed to run (hours) */
+    /** This is the sum of allowed execution times for all parts of this ObsUnit (hours) */
     private Double maximumTime;
 
-    /** Extimated execution time (hours) */
+    /** Estimated execution time calculated by the OT (hours) */
     private Double estimatedExecutionTime;
     
     /** The type of the array that has been requested */
