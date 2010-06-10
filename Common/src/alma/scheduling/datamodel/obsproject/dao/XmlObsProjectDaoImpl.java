@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.17 2010/05/17 23:16:07 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.18 2010/06/10 21:26:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -217,12 +217,13 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             if(sbControl!=null){
                 ObsUnitControl ou = new ObsUnitControl();
                 ou.setArrayRequested(ArrayType.valueOf(sbControl.getArrayRequested().toString()));
-                ou.setEstimatedExecutionTime(sbControl.getEstimatedExecutionTime());
+                ou.setEstimatedExecutionTime(0.0);
                 ou.setMaximumTime(sbControl.getMaximumTime());
                 schedBlock.setObsUnitControl(ou);
                 SchedBlockControl sbc = new SchedBlockControl();
                 sbc.setIndefiniteRepeat(sbControl.getIndefiniteRepeat());
                 sbc.setState(SchedBlockState.READY);
+                sbc.setSbMaximumTime(sbControl.getEstimatedExecutionTime());
                 schedBlock.setSchedBlockControl(sbc);
             }
         }
@@ -401,7 +402,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             SchedBlockControl sbCtrl = sb.getSchedBlockControl();
             SchedBlockControlT xmlSbCtrl = new SchedBlockControlT();
             xmlSbCtrl.setArrayRequested(ArrayTypeT.TWELVE_M);
-            xmlSbCtrl.setEstimatedExecutionTime(ouCtrl.getEstimatedExecutionTime());
+            xmlSbCtrl.setEstimatedExecutionTime(sbCtrl.getSbMaximumTime());
             xmlSbCtrl.setIndefiniteRepeat(sbCtrl.getIndefiniteRepeat());
             xmlSbCtrl.setMaximumTime(ouCtrl.getMaximumTime());
             xmlSchedBlock.setSchedBlockControl(xmlSbCtrl);
