@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.7 2010/06/10 21:21:32 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.8 2010/06/10 21:30:02 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -87,7 +87,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         ets.setSbId(schedBlock.getId());
         ets.setTimeSpent(schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
         ExecutivePercentage ep = execDao.getExecutivePercentage(schedBlock.getExecutive(), execDao.getCurrentSeason());
-        ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue());
+        ep.setRemainingObsTime(ep.getRemainingObsTime() - schedBlock.getSchedBlockControl().getSbMaximumTime().floatValue());
         ((GenericDao) execDao).saveOrUpdate(ets); // TODO fix interfaces instead
         ((GenericDao) execDao).saveOrUpdate(ep); // TODO fix interfaces instead
         
@@ -145,7 +145,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         }
         schedBlockDao.saveOrUpdate(schedBlock);
         
-        long executionTime = (long) (schedBlock.getObsUnitControl().getEstimatedExecutionTime().floatValue()
+        long executionTime = (long) (schedBlock.getSchedBlockControl().getSbMaximumTime().doubleValue()
             * 3600 * 1000);
         Date nextExecutionTime = new Date(ut.getTime() + executionTime);
         return nextExecutionTime;
