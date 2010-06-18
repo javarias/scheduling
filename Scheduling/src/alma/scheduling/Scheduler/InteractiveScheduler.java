@@ -106,7 +106,7 @@ import alma.scheduling.Define.Telescope;
  * starts the execution of an SB.
  * <li> endExecSB -- Used by the MasterScheduler when an SB has ended.
  * </ul>
- * @version $Id: InteractiveScheduler.java,v 1.30 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: InteractiveScheduler.java,v 1.31 2010/06/18 15:09:45 dclarke Exp $
  * @author Allen Farris
  */
 public class InteractiveScheduler extends Scheduler implements InteractiveSession {
@@ -398,7 +398,12 @@ public class InteractiveScheduler extends Scheduler implements InteractiveSessio
 
         sb.setRunning();
         logger.fine("INTERACTIVE_SCHEDULER: Sending sb("+best.getBestSelection()+", status:"+sb.getStatus().toString()+") to control at time="+sb.getStatus().getStartTime());
-		control.execSB(config.getArrayName(),best);
+		try {
+        	control.execSB(config.getArrayName(),best);
+        } catch (SchedulingException e) {
+        	config.abortExecSB(sb.getId());
+        	throw e;
+        }
 		String msg = "Scheduling block " + sbId  + 
 			" in interactive session for project " + projectId + 
 			" with PI " + PI + " has been started.";

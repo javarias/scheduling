@@ -207,13 +207,19 @@ public class QueuedSBScheduler extends Scheduler implements Runnable{
             sb.setStartTime(clock.getDateTime());
         }
         try {
+            projectManager.verifyRunnable(sb.getId());
             sb.setRunning();
         } catch(Exception e) {
             logger.fine("SCHEDULING: Cannot set sb to running state.");
             logger.fine(e.toString());
             return true;
         }
-		control.execSB(config.getArrayName(),best);
+        try {
+        	control.execSB(config.getArrayName(),best);
+        } catch (SchedulingException e) {
+        	config.abortExecSB(sb.getId());
+        	throw e;
+        }
         takeIdFromSBsNotDone(sb.getId());
         currentSB = sb;
         logger.fine("SCHEDULING: Queued scheduler execute # "+execCount);

@@ -34,7 +34,6 @@ import java.util.Set;
 
 import alma.acs.logging.AcsLogger;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
-import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
 import alma.scheduling.Define.SchedulingException;
 
@@ -44,7 +43,7 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author David Clarke
- * @version $Id: SBStatusQueue.java,v 1.3 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: SBStatusQueue.java,v 1.4 2010/06/18 15:09:45 dclarke Exp $
  */
 public class SBStatusQueue {
 
@@ -270,5 +269,13 @@ public class SBStatusQueue {
     	addUnsynchronised(sbs);
     }
 
-
+	/**
+	 * Remove all the things in <code>that</code> from this queue
+	 * @param that
+	 */
+	public synchronized void remove(SBStatusQueue that) {
+		for (final String id : that.getAllIds()) {
+			remove(id);
+		}
+	}
 }

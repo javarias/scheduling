@@ -42,9 +42,11 @@ import alma.Control.CorrelatorType;
 import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.SBNotRunnableEx;
 import alma.SchedulingExceptions.UnidentifiedResponseEx;
 import alma.SchedulingExceptions.wrappers.AcsJCannotRunCompleteSBEx;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
+import alma.SchedulingExceptions.wrappers.AcsJSBNotRunnableEx;
 import alma.SchedulingExceptions.wrappers.AcsJUnidentifiedResponseEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
@@ -97,7 +99,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.129 2010/03/30 17:52:08 dclarke Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.130 2010/06/18 15:09:45 dclarke Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -1543,7 +1545,7 @@ public class ALMAMasterScheduler extends MasterScheduler
 
     // Interactive_Scheduler_to_MasterScheduler
     public void executeInteractiveSB(String sbId, String schedulerId) 
-        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
+        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx, SBNotRunnableEx {
 
         Scheduler scheduler = getScheduler(schedulerId);
         String type = scheduler.getType();
@@ -1555,11 +1557,15 @@ public class ALMAMasterScheduler extends MasterScheduler
         }
         try {
             logger.fine("Looking for SB ("+sbId+") in queue... "+sbQueue.get(sbId)+" == is it there?");
+            manager.verifyRunnable(sbId);
             ((InteractiveScheduler)scheduler).execute(sbQueue.get(sbId));
         } catch(SchedulingException e) {
-            if(e.getMessage().equals("SB has reached its maximum execution count.") ){
+            if (e.getMessage().equals("SB has reached its maximum execution count.") ){
                 AcsJCannotRunCompleteSBEx e1 = new AcsJCannotRunCompleteSBEx(e);
                 throw e1.toCannotRunCompleteSBEx();
+            } else if (e.getMessage().contains("not ready to run") ){
+                AcsJSBNotRunnableEx e1 = new AcsJSBNotRunnableEx(e);
+                throw e1.toSBNotRunnableEx();
             } else {
                 AcsJInvalidOperationEx e2 = new AcsJInvalidOperationEx(e);
                 throw e2.toInvalidOperationEx();

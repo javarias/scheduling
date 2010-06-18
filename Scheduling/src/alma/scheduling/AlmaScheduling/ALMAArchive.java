@@ -58,6 +58,7 @@ import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
 import alma.entity.xmlbinding.obsproject.ObsUnitSetTChoice;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.StatusBaseT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockControlT;
@@ -121,7 +122,7 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.100 2010/04/14 21:01:49 rhiriart Exp $
+ * @version $Id: ALMAArchive.java,v 1.101 2010/06/18 15:09:45 dclarke Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -717,7 +718,51 @@ public class ALMAArchive implements Archive {
         return result;
     }
     
+    private boolean isWanted(StatusBaseT statusEntity, String[] wantedStates) {
+    	final String state = statusEntity.getStatus().getState().toString();
+    	
+		for (String wantedState : wantedStates) {
+			if (state.equals(wantedState)) {
+				return true;
+			}
+		}
+		return false;
+    }
     
+    /**
+     * Get the ProjectStatuses indicated by ids ant sort them into ones
+     * in the desired states and the ones not in those states.
+     * 
+     * @param ids - the EntityIds of the ProjectStatuses we should get
+     *              and sort
+     * @param wanted - where to put the ProjectStatuses which are in
+     *                 one of the wantedStates
+     * @param unwanted - where to put the ProjectStatuses which are not
+     *                   in one of the wantedStates
+     * @param wantedStates - the states to use for sorting the
+     *                       ProjectStatuses
+     */
+    private void sortProjectStatuses(Iterable<String>   ids,
+    								 ProjectStatusQueue wanted,
+    								 ProjectStatusQueue unwanted,
+    								 String[]           wantedStates) {
+        for (String id : ids) {
+        	final ProjectStatus ps = getProjectStatus(id);
+        	if (ps != null) {
+        		if (isWanted(ps, wantedStates)) {
+        			wanted.add(new CachedProjectStatus(ps));
+    				logger.finer(String.format("adding ProjectStatus %s (in state %s) to wanted queue",
+    						ps.getProjectStatusEntity().getEntityId(),
+    						ps.getStatus().getState().toString()));
+        		} else {
+        			unwanted.add(new CachedProjectStatus(ps));
+    				logger.finer(String.format("adding ProjectStatus %s (in state %s) to unwanted queue",
+    						ps.getProjectStatusEntity().getEntityId(),
+    						ps.getStatus().getState().toString()));
+        		}
+        	}
+        }
+    }
     
     public ProjectStatusQueue getProjectStatusesByIDs(Iterable<String> ids, String[] opRunnableStates)
         throws SchedulingException {
@@ -798,14 +843,17 @@ public class ALMAArchive implements Archive {
 		return result;
 	}
 
-	public SBStatusQueue getSBStatusesByProjectStatusIds(Iterable<String> uids, String[] sbRunnableStates) {
+	public SBStatusQueue getSBStatusesByProjectStatusIds(ProjectStatusQueue runnablePSs, String[] sbRunnableStates) {
 	    final SBStatusQueue result = new SBStatusQueue(logger);
-	    for (String uid : uids) {
+	    for (ProjectStatusI ps : runnablePSs.getAll()) {
+	    	final String uid = ps.getUID();
 	        XmlEntityStruct xml[] = null;
 	        try {
 	            xml = stateSystemComp.getSBStatusListForProjectStatus(uid);
 	        } catch (Exception e) {
-	            logger.finest("Scheduling can not pull SBStatuses from State System");
+	            logger.warning(String.format(
+	            		"Scheduling can not get SBStatuses for ProjectStatus %s (ObsProject %s) from State System - %s",
+	            		uid, ps.getDomainEntityId(), e.getMessage()));
 	            e.printStackTrace(System.out);
 	            sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
 	            try {
@@ -817,19 +865,21 @@ public class ALMAArchive implements Archive {
 	        for (final XmlEntityStruct xes : xml) {
 	            try {
 	                final SBStatus sbs = (SBStatus) entityDeserializer.
-	                deserializeEntity(xes, SBStatus.class);
-	                for (String runnableState : sbRunnableStates) {
-	                    if (sbs.getStatus().getState().toString().equals(runnableState)) {
-	                        logger.finer("adding SBStatus " +
-	                                sbs.getSBStatusEntity().getEntityId() +
-	                                " to queue");
-	                        result.add(new CachedSBStatus(sbs));
-	                        break;
-	                    }
+	                	deserializeEntity(xes, SBStatus.class);
+	                if (isWanted(sbs, sbRunnableStates)) {
+	    				logger.finer(String.format("adding SBStatus %s (in state %s) to wanted queue",
+	    						sbs.getSBStatusEntity().getEntityId(),
+	    						sbs.getStatus().getState().toString()));
+	                	result.add(new CachedSBStatus(sbs));
+	                } else {
+	    				logger.finer(String.format("rejecting SBStatus %s (in state %s) as unwanted",
+	    						sbs.getSBStatusEntity().getEntityId(),
+	    						sbs.getStatus().getState().toString()));
 	                }
-	                result.add(new CachedSBStatus(sbs));
 	            } catch (Exception e) {
-	                logger.finest("Scheduling can not deserialise SBStatus from State System");
+		            logger.warning(String.format(
+		            		"Scheduling can not deserialise SBStatus %s for ProjectStatus %s (ObsProject %s) from State System - %s",
+		            		xes.entityId, uid, ps.getDomainEntityId(), e.getMessage()));
 	                e.printStackTrace(System.out);
 	                sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
 	                try {
@@ -1863,7 +1913,6 @@ public class ALMAArchive implements Archive {
 
 	
 	/**
-     * 
      * Work out which SBs and ObsProjects can be observed based on
      * their statuses and the statuses of their containing projects.
      * Put the results into <code>runnableSBSs</code> and
@@ -1959,7 +2008,8 @@ public class ALMAArchive implements Archive {
     
     public StatusEntityQueueBundle determineRunnablesByStatusIncr(
             String[] opRunnableStatesArray,
-            String[] sbRunnableStatesArray) throws SchedulingException {
+            String[] sbRunnableStatesArray,
+            StatusEntityQueueBundle zapQs) throws SchedulingException {
         logger.info("entering determineRunnablesByStatusIncr");
         
         Set<String> changedPSUids;
@@ -1979,8 +2029,17 @@ public class ALMAArchive implements Archive {
             changedPSUids  = new HashSet<String>();
         }
         
-        final ProjectStatusQueue runnablePSs  = getProjectStatusesByIDs(changedPSUids, opRunnableStatesArray);
-        final SBStatusQueue      runnableSBSs = getSBStatusesByProjectStatusIds(changedPSUids, sbRunnableStatesArray);
+        final ProjectStatusQueue runnablePSs    = new ProjectStatusQueue(logger);
+        final ProjectStatusQueue unrunnablePSs  = new ProjectStatusQueue(logger);
+        sortProjectStatuses(changedPSUids, runnablePSs, unrunnablePSs, opRunnableStatesArray);
+        final SBStatusQueue runnableSBSs = getSBStatusesByProjectStatusIds(runnablePSs, sbRunnableStatesArray);
+
+        // We could have just used zapQs.getProjectStatusQueue() rather
+        // than bother with unrunnablePSs. Depends if we decide to do
+        // any processing based upon it, I guess.
+        zapQs.getProjectStatusQueue().updateWith(unrunnablePSs);
+        getOUSandSBStatusesFor(zapQs);
+        
         
         // Find SBStatuses which are not part of a runnable project
         // and ProjectStatuses which have at least one SBStatus
@@ -2068,6 +2127,71 @@ public class ALMAArchive implements Archive {
 //        }
 		
 		return result;
+	}
+    
+	/**
+	 * Get all the OUSStatuses that are associated with the provided
+	 * ProjectStatuses' ObsProjects' ObsUnitSets.
+	 * 
+	 * @param runnablePSs - the queue of ProjectStatuses to use as a
+	 *                      starting point for the search for
+	 *                      OUSStatuses.
+	 * @return an StatusEntityQueue<SBStatusI, SBStatusRefT> containing
+	 *         all the OSUStatus entities found
+	 * 
+	 * @throws SchedulingException
+	 */
+	public void getOUSandSBStatusesFor(StatusEntityQueueBundle bundle)
+				throws SchedulingException {
+		
+		for (final ProjectStatusI ps : bundle.getProjectStatusQueue().getAll()) {
+			try {
+				final XmlEntityStruct[] xml
+					= stateSystemComp.getProjectStatusList(
+						ps.getProjectStatusEntity().getEntityId());
+				for (XmlEntityStruct xes : xml) {
+					try {
+						if (xes.entityTypeName.equals("OUSStatus")) {
+							final OUSStatus ouss = (OUSStatus) entityDeserializer.
+							deserializeEntity(xes, OUSStatus.class);
+							bundle.getOUSStatusQueue().add(new CachedOUSStatus(ouss));
+						} else if (xes.entityTypeName.equals("SBStatus")) {
+							final SBStatus sbs = (SBStatus) entityDeserializer.
+							deserializeEntity(xes, SBStatus.class);
+							bundle.getSBStatusQueue().add(new CachedSBStatus(sbs));
+						} else if (!xes.entityTypeName.equals("ProjectStatus")) {
+							logger.warning(String.format(
+									"Unrecognised entity type for entity %s from State System - type is %s",
+									xes.entityId,
+									xes.entityTypeName));
+						}
+					} catch (Exception e) {
+						logger.warning(String.format(
+								"Can not deserialise %s %s from State System - %s",
+								xes.entityTypeName,
+								xes.entityId,
+								e.getMessage()));
+					}
+				}
+			} catch (Exception e) {
+				logger.warning(String.format(
+						"Can not pull child statuses for ProjectStatus %s from State System - %s",
+						ps.getProjectStatusEntity().getEntityId(),
+						e.getMessage()));
+			}
+		}
+        
+//        for (final ProjectStatusI ps : runnablePSs.getAll()) {
+//    		try {
+//    			addAllOUSStatuses(ps.getObsProgramStatus(), result);
+//    		} catch (SchedulingException e) {
+//    			logger.warning(String.format(
+//    					"Cannot get OUSStatuses for ProjectStatus %s (for ObsProject %s) - %s",
+//    					ps.getProjectStatusEntity().getEntityId(),
+//    					ps.getObsProjectRef().getEntityId(),
+//    					e.getLocalizedMessage()));
+//    		}
+//        }
 	}
 	
 //	private void addAllOUSStatuses(OUSStatusI     ouss,

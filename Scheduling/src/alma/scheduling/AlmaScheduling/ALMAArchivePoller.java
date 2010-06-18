@@ -7,6 +7,7 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -25,7 +26,6 @@ import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
-import alma.projectlifecycle.StateChangeData;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
@@ -62,13 +62,27 @@ import alma.scheduling.utils.Profiler;
  */
 public class ALMAArchivePoller {
 
-    final public static String[] OPRunnableStates = {
+    /**
+     * We are interested in ObsProjects with the following states -
+     * getting them from the archive and showing them to the user.
+     */
+   final public static String[] OPInterestingStates = {
         StatusTStateType.READY.toString(),              
         StatusTStateType.PARTIALLYOBSERVED.toString()               
     };
-    final public static String[] SBRunnableStates = {
-        StatusTStateType.READY.toString(),              
+    /**
+     * We are interested in SchedBlocks with the following states -
+     * getting them from the archive and showing them to the user.
+     */
+    final public static String[] SBInterestingStates = {
+        StatusTStateType.READY.toString(),            
         StatusTStateType.RUNNING.toString()             
+    };
+    /**
+     * We can execute SchedBlocks with the following states.
+     */
+    final public static String[] SBRunnableStates = {
+        StatusTStateType.READY.toString()             
     };
     
     private AcsLogger                   logger;
@@ -168,15 +182,21 @@ public class ALMAArchivePoller {
             // Asks the State Archive for the statuses and works out which ones
             // are runnable
             final StatusEntityQueueBundle newQs =
-                archive.determineRunnablesByStatus(OPRunnableStates,
-                        SBRunnableStates);
+                archive.determineRunnablesByStatus(OPInterestingStates,
+                        SBInterestingStates);
             statusQs.updateIncrWith(newQs);
             archive.setProjectUtilStatusQueue(statusQs);
-        } else if ( prjToUpd.length > 0 ){ // Incremental load
+        } else /* if ( prjToUpd.length > 0 )*/ { // Incremental load
+        	StatusEntityQueueBundle zapQs = new StatusEntityQueueBundle(logger);
             StatusEntityQueueBundle newQs =
-                archive.determineRunnablesByStatusIncr(OPRunnableStates,
-                        SBRunnableStates);
+                archive.determineRunnablesByStatusIncr(OPInterestingStates,
+                		SBInterestingStates, zapQs);
             statusQs.updateIncrWith(newQs);
+            forget(zapQs);
+//            logProjectStatuses("After determineRunnablesByStatusIncr",
+//            				   statusQs.getProjectStatusQueue(),
+//            				   newQs.getProjectStatusQueue(),
+//            				   zapQs.getProjectStatusQueue());
             archive.setProjectUtilStatusQueue(statusQs);
         }
  
@@ -189,7 +209,29 @@ public class ALMAArchivePoller {
 //         logNumbers("at end of pollArchive");
 //         logDetails("at end of pollArchive");
     }
-    
+
+	private void forget(StatusEntityQueueBundle zapQs) {
+		statusQs.remove(zapQs);
+		for (final ProjectStatusI ps : zapQs.getProjectStatusQueue().getAll()) {
+			final String domainId = ps.getDomainEntityId();
+			projectQueue.remove(domainId);
+			logger.fine(String.format(
+					"Removing ObsProject %s from queue (its state is %s)",
+					ps.getDomainEntityId(),
+					ps.getStatus().getState().toString()));
+		}
+		for (final SBStatusI sbs : zapQs.getSBStatusQueue().getAll()) {
+			final String domainId = sbs.getDomainEntityId();
+			sbQueue.remove(domainId);
+			ProjectStatusI ps = zapQs.getProjectStatusQueue().get(sbs.getProjectStatusRef().getEntityId());
+			logger.fine(String.format(
+					"Removing SchedBlock %s from queue (its state is %s, its ObsProject's state is %s)",
+					sbs.getDomainEntityId(),
+					sbs.getStatus().getState().toString(),
+					ps.getStatus().getState().toString()));
+		}
+	}
+
 	/**
      * polls the archive for new/updated projects
      * then updates the queues (project queue, sb queue & project status queue)
@@ -202,8 +244,11 @@ public class ALMAArchivePoller {
 
        try {
            if (prjuids == null) {
+        	   logger.finest("OLD_PollArchive(null)");
                projectList = getAllProject(psQ, sbsQ);
            } else {
+        	   logger.finest(String.format(
+        			   "OLD_PollArchive(%s)", formatArray(prjuids)));
                projectList = new Project[prjuids.length];
                int i = 0;
                for ( String prjuid : prjuids ) {
@@ -227,12 +272,12 @@ public class ALMAArchivePoller {
            for (final Project project : projectList) {
                if (psQ.isExists(project.getProjectStatusId())) {
                    projects.add(project);
-                   logger.fine(String.format(
+                   logger.info(String.format(
                            "Including project %s (status is %s)",
                            project.getId(),
                            project.getStatus().getState()));
                } else {
-                   logger.fine(String.format(
+                   logger.info(String.format(
                            "Rejecting project %s (not in status queue, status = %s)",
                            project.getId(),
                            project.getStatus().getState()));
@@ -371,6 +416,20 @@ public class ALMAArchivePoller {
        }
    }
    
+   private String formatArray(String[] prjuids) {
+	   final StringBuilder b = new StringBuilder();
+	   String sep = "";
+	   b.append("[");
+	   for (final String s : prjuids) {
+		   b.append(sep);
+		   b.append(s);
+		   sep = ", ";
+	   }
+	   b.append("]");
+	   return b.toString();
+   }
+
+@SuppressWarnings("unused") // Sometimes we don't log, and that's OK
    private void logNumbers(String when) {
        logger.fine(String.format(
                "ObsProject    queue size %s = %d",
@@ -394,6 +453,7 @@ public class ALMAArchivePoller {
                statusQs.getSBStatusQueue().size()));
    }
    
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
    private void logDetails(String when) {
        logProjectsAndStatuses(projectQueue, statusQs.getProjectStatusQueue());
        logOUSsAndStatuses(projectQueue, statusQs.getOUSStatusQueue());
@@ -582,6 +642,50 @@ public class ALMAArchivePoller {
            logger.info(b.toString());
        }
    }
+   
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+   private void logProjectStatuses(String             when,
+								   ProjectStatusQueue result,
+								   ProjectStatusQueue added,
+								   ProjectStatusQueue removed) {
+	   final Set<String> allIds = new TreeSet<String>();
+	   allIds.addAll(result.getAllIds());
+	   allIds.addAll(added.getAllIds());
+	   allIds.addAll(removed.getAllIds());
+
+	   final StringBuilder b = new StringBuilder();
+	   final Formatter     f = new Formatter(b);
+
+	   f.format("ProjectStatuses %s%n%n", when);
+	   f.format("%32s%32s%6s%6s%6s%n", "Status UID", "Project UID", "In Q", "Add", "Delete");
+	   for (final String uid : allIds) {
+		   f.format("%32s", uid);
+		   ProjectStatusI ps = null;
+		   String inQ = "no";
+		   String add = "no";
+		   String del = "no";
+
+		   if (result.get(uid) != null) {
+			   ps = result.get(uid);
+			   inQ = "Yes";
+		   }
+		   if (added.get(uid) != null) {
+			   ps = added.get(uid);
+			   add = "Yes";
+		   }
+		   if (removed.get(uid) != null) {
+			   ps = removed.get(uid);
+			   del = "Yes";
+		   }
+
+		   if (ps != null) {
+			   f.format("%32s%6s%6s%6s%n", ps.getDomainEntityId(), inQ, add, del);
+		   } else {
+			   f.format(" - cannot find UID in any queue (seriously unexpected)%n");
+		   }
+	   }
+	   logger.fine(b.toString());
+   }
 
     private static SB[] getSBs(Vector<SB> v, String s) {
         Vector<SB> sbsV = new Vector<SB>();
@@ -732,7 +836,10 @@ public class ALMAArchivePoller {
                     " Projects from ObsProject found archived.");
             //return projects;
         } catch (SchedulingException e1) {
-            logger.severe("Scheduling encounter errors when get obsproject from archive");
+            logger.severe(String.format(
+            		"Scheduling encountered errors when get obsproject from archive - %s",
+            		e1.getMessage()));
+            e1.printStackTrace(System.out);
         } catch (Exception e) {
             sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
             try {

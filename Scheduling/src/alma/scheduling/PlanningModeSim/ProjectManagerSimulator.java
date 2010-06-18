@@ -200,4 +200,7 @@ public class ProjectManagerSimulator
         return archive.getSchedulerStats();
     }
 
+	@Override
+	public void verifyRunnable(String sbId) throws SchedulingException { }
+
 }

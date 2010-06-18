@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import alma.acs.logging.AcsLogger;
 import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
@@ -44,7 +43,7 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author David Clarke
- * @version $Id: ProjectStatusQueue.java,v 1.13 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: ProjectStatusQueue.java,v 1.14 2010/06/18 15:09:45 dclarke Exp $
  */
 public class ProjectStatusQueue {
 
@@ -269,4 +268,14 @@ public class ProjectStatusQueue {
     public synchronized void replace (ProjectStatusI ps) {
     	addUnsynchronised(ps);
     }
+
+	/**
+	 * Remove all the things in <code>that</code> from this queue
+	 * @param that
+	 */
+	public synchronized void remove(ProjectStatusQueue that) {
+		for (final String id : that.getAllIds()) {
+			remove(id);
+		}
+	}
 }

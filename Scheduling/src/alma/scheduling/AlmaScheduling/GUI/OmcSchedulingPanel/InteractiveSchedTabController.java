@@ -27,9 +27,8 @@ package alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel;
 import java.util.ArrayList;
 
 import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.Control.ExecBlockEndedEvent;
-import alma.Control.ExecBlockStartedEvent;
 import alma.SchedulingExceptions.CannotRunCompleteSBEx;
+import alma.SchedulingExceptions.SBNotRunnableEx;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.offline.ASDMArchivedEvent;
@@ -37,7 +36,6 @@ import alma.scheduling.GUIExecBlockEndedEvent;
 import alma.scheduling.GUIExecBlockStartedEvent;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.ProjectLite;
-import alma.scheduling.SBLite;
 import alma.scheduling.Define.SchedulingException;
 import alma.xmlstore.XmlStoreNotificationEvent;
 
@@ -167,7 +165,7 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
     }
 
     public synchronized void executeSB(String id) 
-        throws SchedulingException, CannotRunCompleteSBEx {
+        throws SchedulingException, CannotRunCompleteSBEx, SBNotRunnableEx {
         try{
             logger.fine("IS: Sending sb ("+id+") to be executed");
             currentSBId = id;
@@ -176,9 +174,12 @@ public class InteractiveSchedTabController extends SchedulingPanelController {
             scheduler.startSession(project.piName, project.uid);
             scheduler.setCurrentSB(id);
             scheduler.executeSB(id);
-        }catch(CannotRunCompleteSBEx e){
+        } catch (CannotRunCompleteSBEx e){
             throw e;
-        }catch( Exception e){
+        } catch (SBNotRunnableEx e){
+            throw e;
+        } catch (Exception e){
+        	e.printStackTrace();
             throw new SchedulingException (e);
         }
     }

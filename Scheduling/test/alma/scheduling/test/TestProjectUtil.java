@@ -89,7 +89,7 @@ public class TestProjectUtil {
 	
 	public static Project createProject() {
 		
-		Project prj = new Project (genEntityId(),genEntityId(),"TestProject","v01","Allen Farris", "Continuum", "TWELVE-M", Logger.getLogger("TestProjectUtil"));
+		Project prj = new Project (genEntityId(),genEntityId(),"TestProject","v01","Allen Farris", "Continuum", "TWELVE-M", false, Logger.getLogger("TestProjectUtil"));
 		prj.setProjectStatusId(genEntityId());
 		Program program = new Program (genPartId(), genEntityId());
 		prj.setProgram(program);

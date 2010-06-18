@@ -61,7 +61,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.97 2010/02/19 23:25:07 rhiriart Exp $
+ * @version $Id: ALMAControl.java,v 1.98 2010/06/18 15:09:45 dclarke Exp $
  */
 public class ALMAControl implements Control {
     
@@ -204,6 +204,7 @@ public class ALMAControl implements Control {
                         OPERATOR.value, arrayName);
                 logger.fine("Session ("+sessionRef.partId+") has OUSStatus ("+sessionRef.entityId+") type "+
                         "is "+sessionRef.entityTypeName+" and version = "+sessionRef.instanceVersion);
+                manager.verifyRunnable(sbId);
                 ctrl.observe(sbRef, sessionRef, 0L); 
             } else {
                 logger.severe("***************************************");

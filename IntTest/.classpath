@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="lib/SchedulingIntegrationTest.jar"/>
+	<classpathentry kind="lib" path="lib/uispec4j-jdk6-2.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
+	<classpathentry kind="output" path="object/SchedulingIntegrationTest"/>
+</classpath>

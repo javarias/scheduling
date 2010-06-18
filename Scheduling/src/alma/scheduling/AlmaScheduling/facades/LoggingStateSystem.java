@@ -50,7 +50,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: LoggingStateSystem.java,v 1.3 2010/03/30 17:52:08 dclarke Exp $
+ * @version $Id: LoggingStateSystem.java,v 1.4 2010/06/18 15:09:45 dclarke Exp $
  * @author David Clarke
  */
 public class LoggingStateSystem implements StateSystemOperations {
@@ -355,7 +355,7 @@ public class LoggingStateSystem implements StateSystemOperations {
 			NullEntityIdEx, NoSuchEntityEx {
 		if (isLogging()) {
 			logger.fine(String.format(
-					"calling StateSystem.subsystem(%s)",
+					"calling StateSystem.getProjectStatusList(%s)",
 					id));
 		}
 		return delegate.getProjectStatusList(id);

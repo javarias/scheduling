@@ -38,7 +38,7 @@ import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.Define.TaskControl;
 import alma.scheduling.Scheduler.DSA.SchedulerStats;
 /**
- * @version $Id: ProjectManager.java,v 1.19 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: ProjectManager.java,v 1.20 2010/06/18 15:09:45 dclarke Exp $
  * @author Sohaila Lucero
  */
 public class ProjectManager implements Runnable,
@@ -150,5 +150,8 @@ public class ProjectManager implements Runnable,
     public void getUpdates() throws SchedulingException {}
     public void publishNothingCanBeScheduled(NothingCanBeScheduledEnum reason){}
     public void addSchedulerStatsToArchive(SchedulerStats s){}    
-    public SchedulerStats[] getSchedulerStatsFromArchive(){ return null;}    
+    public SchedulerStats[] getSchedulerStatsFromArchive(){ return null;}
+
+	@Override
+	public void verifyRunnable(String sbId) throws SchedulingException { }    
 }

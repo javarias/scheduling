@@ -35,8 +35,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -45,7 +43,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
@@ -53,11 +50,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import alma.SchedulingExceptions.CannotRunCompleteSBEx;
+import alma.SchedulingExceptions.SBNotRunnableEx;
 import alma.acs.logging.AcsLogLevel;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 
+@SuppressWarnings("serial")
 public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements SchedulerTab {
     //private String schedulerName;
     //private String arrayName;
@@ -470,9 +469,18 @@ public class InteractiveSchedTab extends SchedulingPanelGeneralPanel implements 
                     //setSBStatus(sbId, "RUNNING");//eventually do this with exec block started event
                 }
                 //check if a sb has been selected.
-            } catch(CannotRunCompleteSBEx e){
-                logger.severe("SCHEDULING_PANEL: Error running SB, its complete");
+            } catch(CannotRunCompleteSBEx e) {
+                logger.severe("SCHEDULING_PANEL: Error running SB, it's complete");
                 showErrorPopup("This SB has reached its max execution count.", "executeSB");
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            closeExecutionWaitingThing();
+                        }
+                });
+            } catch(SBNotRunnableEx e) {
+                logger.severe(String.format(
+                		"SCHEDULING_PANEL: Error running SB, %s", e.getMessage()));
+                showErrorPopup(e.getMessage(), "executeSB");
                 javax.swing.SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             closeExecutionWaitingThing();

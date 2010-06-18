@@ -21,7 +21,7 @@
  * MA 02111-1307  USA
  * 
  * File ALMASBStatus.java
- * $Id: RemoteSBStatus.java,v 1.2 2009/11/09 22:58:45 rhiriart Exp $
+ * $Id: RemoteSBStatus.java,v 1.3 2010/06/18 15:09:45 dclarke Exp $
  */
 package alma.scheduling.AlmaScheduling.statusImpl;
 
@@ -45,6 +45,7 @@ import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
 import alma.entity.xmlbinding.valuetypes.StatusT;
+import alma.scheduling.AlmaScheduling.ALMAArchivePoller;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
@@ -674,5 +675,28 @@ public class RemoteSBStatus extends RemoteStatusBase implements SBStatusI {
 	}
 	/*
 	 * End of Methods with entity resolution
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * Utilities
+	 * ================================================================
+	 */
+	/* (non-Javadoc)
+	 * @see alma.scheduling.AlmaScheduling.statusIF.SBStatusI#isRunnable()
+	 */
+	public boolean isRunnable() {
+		final String myState = getStatus().getState().toString();
+		for (final String runnableState : ALMAArchivePoller.SBRunnableStates) {
+			if (myState.equals(runnableState)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/*
+	 * End of Utilities
 	 * ============================================================= */
 }

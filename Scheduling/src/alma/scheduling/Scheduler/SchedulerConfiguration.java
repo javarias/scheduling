@@ -107,7 +107,7 @@ import alma.scheduling.Define.Telescope;
  * <li> Execute a specified scheduling unit.
  * </ul>
  * 
- * @version $Id: SchedulerConfiguration.java,v 1.19 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: SchedulerConfiguration.java,v 1.20 2010/06/18 15:09:45 dclarke Exp $
  * @author Allen Farris
  */
 public class SchedulerConfiguration extends TaskControl {
@@ -198,9 +198,19 @@ public class SchedulerConfiguration extends TaskControl {
     private String previousSB;
 	
 	public synchronized void startExecSB(String sbId) {
-        System.out.println("**********************");
-        System.out.println("CurrentSB set to "+sbId);
+        log.info("CurrentSB set to "+sbId);
 		currentSB = sbId;
+	}
+	
+	public synchronized void abortExecSB(String sbId) {
+        if (currentSB.equals(sbId)) {
+            log.info("Clearing currentSB");
+        } else {
+        	log.warning(String.format(
+        		"trying to abort SchedBlock %s, but current SchedBlock is %s - aborting %s",
+        		sbId, currentSB, currentSB));
+        }
+    	currentSB = null;
 	}
 
 	public synchronized void endExecSB(String sbId) {

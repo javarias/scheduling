@@ -43,7 +43,7 @@ import alma.scheduling.Define.SchedulingException;
  * A convenience class to hold the various ??Status entities we use
  * 
  * @author dclarke
- * @version $Id: StatusEntityQueueBundle.java,v 1.3 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: StatusEntityQueueBundle.java,v 1.4 2010/06/18 15:09:45 dclarke Exp $
  */
 public class StatusEntityQueueBundle {
 
@@ -221,6 +221,24 @@ public class StatusEntityQueueBundle {
         updateIncrWith(newQs.getProjectStatusQueue());
         updateIncrWith(newQs.getOUSStatusQueue());
         updateIncrWith(newQs.getSBStatusQueue());	    
+	}
+
+    public void remove(ProjectStatusQueue that) {
+        getProjectStatusQueue().remove(that);
+    }
+
+    public void remove(OUSStatusQueue that) {
+        getOUSStatusQueue().remove(that);
+    }
+
+    public void remove(SBStatusQueue that) {
+        getSBStatusQueue().remove(that);
+    }
+	
+	public void remove(StatusEntityQueueBundle that) {
+		remove(that.getProjectStatusQueue());
+		remove(that.getOUSStatusQueue());
+		remove(that.getSBStatusQueue());	    
 	}
     /* Queue management
      * ============================================================= */

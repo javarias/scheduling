@@ -32,11 +32,12 @@ import alma.SchedulingExceptions.CannotRunCompleteSBEx;
 import alma.SchedulingExceptions.InvalidObjectEx;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.SchedulingExceptions.NoSuchSBEx;
+import alma.SchedulingExceptions.SBNotRunnableEx;
 import alma.SchedulingExceptions.wrappers.AcsJInvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentLifecycleException;
 import alma.acs.container.ContainerServices;
-import alma.acs.logging.AcsLogger; 
+import alma.acs.logging.AcsLogger;
 import alma.scheduling.Interactive_PI_to_SchedulingOperations;
 import alma.scheduling.InvalidOperation;
 import alma.scheduling.MasterSchedulerIF;
@@ -197,7 +198,7 @@ public class ALMAInteractiveScheduler extends InteractiveScheduler
     }*/
 
     public void executeSB(String sbId) 
-        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx {
+        throws InvalidOperationEx, NoSuchSBEx, CannotRunCompleteSBEx, SBNotRunnableEx {
 
         try {
             logger.fine("sb id: "+sbId);

@@ -28,7 +28,6 @@ package alma.scheduling.AlmaScheduling;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.LinkedHashMap;
@@ -37,7 +36,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -47,7 +45,6 @@ import org.exolab.castor.xml.ValidationException;
 import alma.SchedulingExceptions.wrappers.AcsJObsProjectRejectedEx;
 import alma.SchedulingExceptions.wrappers.AcsJSchedBlockRejectedEx;
 import alma.acs.container.ContainerServices;
-import alma.acs.entityutil.EntitySerializer;
 import alma.acs.logging.AcsLogger;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
@@ -91,7 +88,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  *
  * @author Sohaila Lucero
- * @version $Id: ALMAProjectManager.java,v 1.132 2010/03/30 17:52:08 dclarke Exp $
+ * @version $Id: ALMAProjectManager.java,v 1.133 2010/06/18 15:09:45 dclarke Exp $
  */
 public class ALMAProjectManager extends ProjectManager {
 	
@@ -3275,4 +3272,31 @@ public class ALMAProjectManager extends ProjectManager {
 	}
 	/* End of Associations between arrays and schedulers
 	 * ============================================================= */
+
+	public void verifyRunnable(String sbId)
+										   throws SchedulingException {
+		try {
+			final SB sb = sbQueue.get(sbId);
+			final SBStatusI sbs =
+				statusQs.getSBStatusQueue().get(sb.getSbStatusId());
+			logger.fine(String.format(
+					"SchedBlock %s is in state %s (from %s)",
+					sbId,
+					sbs.getStatus().getState().toString(),
+					sbs.getClass().getSimpleName()));
+			if (!sbs.isRunnable()) {
+				final String message = String.format(
+					"SchedBlock %s is not ready to run (state is %s)",
+					sbId,
+					sbs.getStatus().getState().toString());
+				logger.warning(message);
+				throw new SchedulingException(message);
+			}
+		} catch (Exception e) {
+			logger.warning(String.format(
+				"Unexpected error while checking status of SchedBlock %s - %s",
+				sbId, e.getMessage()));
+			throw new SchedulingException(e);
+		}
+	}
 }

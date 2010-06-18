@@ -357,6 +357,22 @@ public interface SBStatusI extends StatusBaseI {
 	
 	/*
 	 * ================================================================
+	 * Utilities
+	 * ================================================================
+	 */
+	/**
+	 * Is this SBStatusI in a runnable state?
+	 * @return True if it is, false if it isn't.
+	 */
+	public boolean isRunnable();
+	/*
+	 * End of Utilities
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
 	 * Conversion between local cached and remote versions
 	 * ================================================================
 	 */

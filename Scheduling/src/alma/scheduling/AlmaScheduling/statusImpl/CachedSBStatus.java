@@ -21,6 +21,7 @@ import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
 import alma.entity.xmlbinding.valuetypes.StatusT;
+import alma.scheduling.AlmaScheduling.ALMAArchivePoller;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.ProjectStatusI;
 import alma.scheduling.AlmaScheduling.statusIF.SBStatusI;
@@ -686,5 +687,28 @@ public class CachedSBStatus extends CachedStatusBase implements SBStatusI {
 	}
 	/*
 	 * End of Methods with entity resolution
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * Utilities
+	 * ================================================================
+	 */
+	/* (non-Javadoc)
+	 * @see alma.scheduling.AlmaScheduling.statusIF.SBStatusI#isRunnable()
+	 */
+	public boolean isRunnable() {
+		final String myState = getStatus().getState().toString();
+		for (final String runnableState : ALMAArchivePoller.SBRunnableStates) {
+			if (myState.equals(runnableState)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/*
+	 * End of Utilities
 	 * ============================================================= */
 }

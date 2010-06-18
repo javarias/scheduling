@@ -44,7 +44,7 @@ import alma.scheduling.Define.SchedulingException;
  * MasterScheduler and Scheduler objects.
  * 
  * @author David Clarke
- * @version $Id: OUSStatusQueue.java,v 1.3 2010/03/13 00:34:21 dclarke Exp $
+ * @version $Id: OUSStatusQueue.java,v 1.4 2010/06/18 15:09:45 dclarke Exp $
  */
 public class OUSStatusQueue {
 
@@ -271,4 +271,13 @@ public class OUSStatusQueue {
     	addUnsynchronised(ouss);
     }
 
+	/**
+	 * Remove all the things in <code>that</code> from this queue
+	 * @param that
+	 */
+	public synchronized void remove(OUSStatusQueue that) {
+		for (final String id : that.getAllIds()) {
+			remove(id);
+		}
+	}
 }
