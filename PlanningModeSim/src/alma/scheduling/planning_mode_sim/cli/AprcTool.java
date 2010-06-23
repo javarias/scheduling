@@ -386,16 +386,17 @@ public class AprcTool {
             break;
         case SCHEDBLOCK_EXECUTION_FINISH:
             sbExecutor.finishSbExecution(ev.getSb(), ev.getArray(), time);
-            dsa = arraysCreated.get(ev.getArray());
             TimeHandler.getHandler().step(ev.getTime());
             System.out.println(TimeUtil.getUTString(time)
                     + "Finishing Execution of SchedBlock Id: "
                     + ev.getSb().getId());
+            if (arraysCreated.get(ev.getArray()) != null)
             System.out
                     .println(TimeUtil.getUTString(time)
                             + "Starting selection of candidate SchedBlocks for Array Id: "
                             + ev.getArray().getId());
             try {
+                dsa = arraysCreated.get(ev.getArray());
                 dsa.selectCandidateSB(time);
                 dsa.rankSchedBlocks(time);
                 SchedBlock sb = dsa.getSelectedSchedBlock();
@@ -418,6 +419,8 @@ public class AprcTool {
                         + " No suitable SBs to be scheduled");
                 freeArrays.add(ev.getArray());
                 break;
+            }catch (NullPointerException ex){
+                // The array was destroyed already
             }
             break;
 
@@ -663,8 +666,12 @@ public class AprcTool {
         
         AprcTool cli = new AprcTool();
         cli.selectAction(args);
+        // Wait until HSQLDB thread is finished to do his job
+        // This case applies when the simulator is using HSQLDB in File mode
+        if(Thread.activeCount() > 1){
+            Thread.sleep(10000);
+        }
         System.exit(0);
- 
     }
     
     public void hello(){
