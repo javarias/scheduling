@@ -113,6 +113,7 @@
 	   Compile all our sources 
 	-->
 	<target name="compile" depends="bin">
+		<exec dir="." executable="scripts/prepare_war.sh" />
 		<javac srcdir="${src}" destdir="${bin}" debug="on">
 			<classpath refid="PlanningModeSimulatorWUI.class.path" />
 		</javac>
@@ -139,7 +140,6 @@
            ********************************************************
         -->
 	<target name="copy" depends="dist">
-		<exec dir="." executable="scripts/prepare_war.sh" />
 		<copy todir="${dist}">
 			<!-- copy resources and config files -->
 			<fileset dir="${webcontent}" />
