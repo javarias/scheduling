@@ -106,7 +106,7 @@
 				<hbox width="600px" align="center"
 					widths="33%, 33%, 33%">
 					<button label="Cancel" id="buttonCancel" />
-					<button label="Reset" id="buttonReset" />
+					<button label="Default values" id="buttonReset" />
 					<button label="Save" id="buttonSave" />
 				</hbox>
 			</panelchildren>
