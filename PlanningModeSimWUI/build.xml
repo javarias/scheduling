@@ -139,6 +139,7 @@
            ********************************************************
         -->
 	<target name="copy" depends="dist">
+		<exec dir="." executable="scripts/prepare_war.sh" />
 		<copy todir="${dist}">
 			<!-- copy resources and config files -->
 			<fileset dir="${webcontent}" />
