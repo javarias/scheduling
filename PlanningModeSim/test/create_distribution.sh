@@ -1,6 +1,7 @@
 #! /bin/bash
 
 TARGET='APRC';
+# TODO: Create a temporary directory to save all download and decompressed directories.
 
 mkdir -p $TARGET/lib/castor-1.3.1;
 mkdir -p $TARGET/lib/spring-2.5.5;
