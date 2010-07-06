@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.9 2010/06/01 17:22:06 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.10 2010/07/06 18:07:33 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -118,9 +118,11 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES=planningModeSimGUI
-planningModeSimGUI_DIRS=alma
-planningModeSimGUI_EXTRAS=alma/scheduling/planning_mode_sim/reports/general_report.xsl ph1mContext.xml
+JARFILES=SchedulingPSM SchedulingPSMCli
+SchedulingPSM_DIRS= alma/scheduling/psm/sim alma/scheduling/psm/util
+SchedulingPSM_DIRS_EXTRAS=alma/scheduling/psm/reports/general_report.xsl ph1mContext.xml
+SchedulingPSMCli_DIRS=alma/scheduling/psm/cli
+
 #
 # java sources in Jarfile on/off
 DEBUG= 
@@ -162,7 +164,7 @@ ASCII_TO_MIF =
 #
 # other files to be installed
 #----------------------------
-INSTALL_FILES = ../lib/jcalendar-1.3.3.jar ../lib/looks-2.0.1.jar
+INSTALL_FILES =
 
 #
 # list of all possible C-sources (used to create automatic dependencies)

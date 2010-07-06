@@ -40,14 +40,15 @@ if [ ! -f slf4j-1.5.2.zip ] ; then
 	wget http://www.slf4j.org/dist/slf4j-1.5.2.zip;
 	unzip slf4j-1.5.2.zip;
 fi
-cp slf4j-1.5.2/slf4j-log4j12-1.5.2.jar $TARGET/lib/alma-7.1/;
+#cp slf4j-1.5.2/slf4j-simple-1.5.2.jar $TARGET/lib/alma-7.1/;
+#rm -rf $TARGET/lib/spring-2.5.5/slf4j/slf4j-log4j12-1.5.0.jar
 
 echo "Getting jars from INTROOT..."
-cp $INTROOT/lib/planningModeSimGUI.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET/lib/alma-7.1/;
+cp $INTROOT/lib/SchedulingPSM.jar $INTROOT/lib/SchedulingPSMCli.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET/lib/alma-7.1/;
 
 echo "Adding scripts and directories structures...";
 cp -r create_distribution_files/getJarsFromIntroot.sh $TARGET/lib/alma-7.1/;
 cp -r create_distribution_files/bin create_distribution_files/config create_distribution_files/OO $TARGET/;
 mkdir $TARGET/doc;
 chmod a+x $TARGET/bin/*;
-chown -R $USER:$USER $TARGET;
+chown -R $USER:$GROUP $TARGET;
