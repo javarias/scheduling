@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+    default-lazy-init="true"
+    default-autowire="byName" >
+
+    <!-- SpringDbConfigPostProcessor is a BeanFactoryPostProcessor that will apply DbConfig settings to the sessionFactory -->
+    <bean class="alma.obops.utils.config.SpringDbConfigPostProcessor"/>
+    
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="annotatedClasses">
+			<list>
+				<value>alma.obops.dam.ph1m.domain.AlmaReviewPanel</value>
+				<value>alma.obops.dam.ph1m.domain.Assessment</value>
+				<value>alma.obops.dam.ph1m.domain.Assessor</value>
+				<value>alma.obops.dam.ph1m.domain.Assignment</value>
+				<value>alma.obops.dam.ph1m.domain.Cycle</value>
+				<value>alma.obops.dam.ph1m.domain.FieldT</value>
+				<value>alma.obops.dam.ph1m.domain.Panel</value>
+				<value>alma.obops.dam.ph1m.domain.PanelMember</value>
+				<value>alma.obops.dam.ph1m.domain.Period</value>
+				<value>alma.obops.dam.ph1m.domain.ObsProposalView</value>
+				<value>alma.obops.dam.ph1m.domain.Proposal</value>
+				<value>alma.obops.dam.ph1m.domain.ProposalAuthor</value>
+				<value>alma.obops.dam.ph1m.domain.ProposalPackage</value>
+				<value>alma.obops.dam.ph1m.domain.Recommendation</value>
+				<value>alma.obops.dam.ph1m.domain.RecommendationType</value>
+				<value>alma.obops.dam.ph1m.domain.ScienceAssessor</value>
+				<value>alma.obops.dam.ph1m.domain.TechnicalAssessor</value>
+                <value>alma.obops.dam.ph1m.domain.Ph1mUser</value>
+                <value>alma.obops.dam.ph1m.domain.mock.ObsProposalPF</value>
+                
+                <value>alma.lifecycle.persistence.domain.ObsProjectStatusPF</value>
+				<value>alma.lifecycle.persistence.domain.OUSStatusPF</value>
+				<value>alma.lifecycle.persistence.domain.SchedBlockStatusPF</value>
+				<value>alma.lifecycle.persistence.domain.StateChangeRecord</value>
+			</list>
+		</property>
+        <property name="hibernateProperties">
+            <props>
+				<!-- These props will not be affected by SpringDbConfig -->
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+                
+                <!--  connection pool properties -->
+				<prop key="hibernate.c3p0.min_size" >5</prop>
+				<prop key="hibernate.c3p0.max_size" >20</prop>
+				<prop key="hibernate.c3p0.timeout" >300</prop>
+				<prop key="hibernate.c3p0.max_statements" >50</prop>
+				<prop key="hibernate.c3p0.idle_test_period" >3000</prop>
+                
+        	    <prop key="hibernate.jdbc.batch_size">0</prop>
+        	    <prop key="hibernate.connection.autocommit">false</prop>
+        	    <prop key="hibernate.hbm2ddl.auto">false</prop>
+        	    <prop key="cache.use_query_cache">false</prop>
+        	    <prop key="cache.use_second_level_cache">false</prop>
+        	    <prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+        	    
+        	    <prop key="transaction.flush_before_completion">true</prop>
+        	    <prop key="transaction.auto_close_session">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- enable the configuration of transactional behavior based on annotations -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+    
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref local="sessionFactory"/>
+        </property>
+    </bean>
+ 
+  	<!--  ====== DAOs ====== -->
+    <bean id="ph1mDao" class="alma.obops.dam.ph1m.dao.Ph1mDaoHibernateImpl">
+    </bean>
+    
+    <bean id="ph1mArchiveDao" class="alma.obops.dam.ph1m.dao.Ph1mArchiveDaoImpl">
+    </bean>
+    
+    <bean id="ph1mUserDao" class="alma.obops.dam.ph1m.dao.Ph1mUserDaoLdapImpl">
+    </bean>
+    
+    <bean id="ph1mUserMockDao" class="alma.obops.dam.ph1m.dao.Ph1mUserDaoDbImpl">
+    </bean>
+
+    <bean id="obsProposalDao" class="alma.obops.dam.apdm.dao.ObsProposalArchiveDao">
+    </bean>
+    
+    <bean id="obsProjectDao" class="alma.obops.dam.apdm.dao.ObsProjectArchiveDao">
+    </bean>        
+    
+    <!--  ====== Utility DAOs ====== -->
+    <bean id="hibernateUtils" class="alma.obops.dam.utils.HibernateUtilsImpl" >
+    </bean> 
+    
+    <!--  ====== Services beans  ====== -->
+    <bean id="administrationService" 
+          class="alma.obops.dam.ph1m.service.AdministrationServiceImpl" >
+    </bean>     
+    
+    <bean id="ph1mCrudService" 
+          class="alma.obops.dam.ph1m.service.Ph1mCrudServiceImpl" >
+    </bean>
+    
+     <!--  ====== State System Beans ====== -->
+    <bean id="stateArchiveHibernateDao" class="alma.lifecycle.persistence.dao.StateArchiveHibernateDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="stateArchive" class="alma.lifecycle.persistence.StateArchiveImpl">
+    </bean>
+
+    <bean id="stateEngine" class="alma.lifecycle.stateengine.StateEngineImpl">
+    	<property name="inputUmlFilePath" value="/obs-project-life-cycle.mdxml"/>
+    </bean> 
+</beans>
