@@ -31,7 +31,7 @@ if [ ! -f spring-framework-2.5.5-with-dependencies.zip ] ; then
 	echo "   * Not present, downloading...";
 	wget wget http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-2.5.5-with-dependencies.zip
 fi
-unzip spring-framework-2.5.5-with-dependencies.zip > /dev/null;
+unzip -o spring-framework-2.5.5-with-dependencies.zip > /dev/null;
 cp -r spring-framework-2.5.5/lib/* spring-framework-2.5.5/dist $TARGET/lib/spring-2.5.5/;
 cp $ACSROOT/lib/hsqldb.jar $TARGET/lib/spring-2.5.5/hsqldb/hsqldb.jar
 
@@ -40,7 +40,7 @@ if [ ! -f slf4j-1.5.2.zip ] ; then
 	echo "   * Not present, downloading...";
 	wget http://www.slf4j.org/dist/slf4j-1.5.2.zip;
 fi
-unzip slf4j-1.5.2.zip > /dev/null;
+unzip -o slf4j-1.5.2.zip > /dev/null;
 #cp slf4j-1.5.2/slf4j-simple-1.5.2.jar $TARGET/lib/alma-7.1/;
 #rm -rf $TARGET/lib/spring-2.5.5/slf4j/slf4j-log4j12-1.5.0.jar
 

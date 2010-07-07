@@ -7,7 +7,8 @@
 . "$APRC_HOME/config/aprc-env"
 
 RETVAL=0
-JAVA_OPTS='-Xmn512M -Xms1512M'
+#JAVA_OPTS='-Xmn512M -Xms1512M'
+JAVA_OPTS='-XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSParallelRemarkEnabled'
 
 start() {
     startHSQLDB

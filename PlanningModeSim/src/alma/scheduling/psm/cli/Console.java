@@ -26,6 +26,7 @@
 package alma.scheduling.psm.cli;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,14 +63,13 @@ public class Console {
     	verboseLvl = parseVerboseLevel(args);
     	try {
 			selectAction(args);
-		} catch (Exception e) {
-			if( e instanceof IllegalArgumentException ){
-				logger.error("Specified working directory does not exist. Please specify a correct working directory.");
-			}			
+		} catch (IllegalArgumentException e) {
+			logger.error("Specified working directory does not exist. Please specify a correct working directory.");
+			System.exit(4); // Exit code 4: Specified working directory does not exist
 		}
     }
     
-    private void selectAction(String[] args) throws Exception{
+    private void selectAction(String[] args) throws IllegalArgumentException{
     	
         if(args[0].compareTo("createWorkDir") == 0){
         	Simulator simulator = new Simulator( workDir );

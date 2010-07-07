@@ -86,7 +86,7 @@ public class Simulator extends PsmContext {
 		super(workDir);
 	}
       
-    public void createWorkDir(String newWorkDir) throws IOException{
+    public void createWorkDir(String newWorkDir){
     	
         File entries[] = new File[7];
         entries[0] = new File(newWorkDir + "/db");
@@ -123,10 +123,18 @@ public class Simulator extends PsmContext {
         try {
             config.marshal(new FileWriter(configFile));
         } catch (MarshalException e) {
+        	logger.error("Unable to save Configuration XML.");
             e.printStackTrace();
+        	System.exit(5);
         } catch (ValidationException e) {
-            e.printStackTrace();
-        }
+        	logger.error("XML does not validate against schema.");
+        	e.printStackTrace();
+        	System.exit(6);
+        } catch (IOException e) {
+        	logger.error("Unable to create configuration file " + newWorkDir + "/aprc-config.xml");
+			e.printStackTrace();
+        	System.exit(7);
+		}
     }
     
 

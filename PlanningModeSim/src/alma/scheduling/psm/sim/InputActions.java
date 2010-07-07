@@ -45,7 +45,7 @@ public class InputActions extends PsmContext {
 		super(workDir);
 	}
 	
-    public void fullLoad() throws Exception {
+    public void fullLoad() {
         ApplicationContext ctx = new FileSystemXmlApplicationContext( contextFile );
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
@@ -57,17 +57,27 @@ public class InputActions extends PsmContext {
         }
         for(int i = 0; i < loadersNames.length; i++){
             DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
-            loader.load();
+            try {
+				loader.load();
+			} catch (Exception e) {
+				logger.error("Data loading error: fullload()");
+				e.printStackTrace();
+			}
         }
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
         configDao.updateConfig();
     }
 
-    public void load() throws Exception {
+    public void load(){
         ApplicationContext ctx = new FileSystemXmlApplicationContext(contextFile);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
-        loader.load();
+        try {
+			loader.load();
+		} catch (Exception e) {
+			logger.error("Data loading error: load()");
+			e.printStackTrace();
+		}
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
         configDao.updateConfig();
     }
