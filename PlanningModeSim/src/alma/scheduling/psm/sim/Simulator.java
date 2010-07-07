@@ -216,7 +216,7 @@ public class Simulator extends PsmContext {
         // Stop at end of season
         while( time.before(stopTime) && !timesToCheck.isEmpty() ){
         	step(timesToCheck, stopTime, rc, 
-//        			ctx, 
+        			ctx, 
         			arraysCreated, freeArrays, sbExecutor);
         	if(isToBeInterrupted())
         	    Console.getConsole().activate(this);
@@ -231,17 +231,17 @@ public class Simulator extends PsmContext {
         xmlOutDao.saveResults( rc.getResults() );        
     }
 
-    @Transactional
+//    @Transactional
     public void step(
             LinkedList<TimeEvent> timesToCheck,
             Date time,
             ResultComposer rc,
-            //ApplicationContext ctx,
+            ApplicationContext ctx,
             Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm> arraysCreated,
             ArrayList<ArrayConfiguration> freeArrays,
             SchedBlockExecutor sbExecutor) throws IllegalArgumentException {
     	
-    	ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
+    	//ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
     	
       //  try{
 		TimeEvent ev = timesToCheck.remove();
