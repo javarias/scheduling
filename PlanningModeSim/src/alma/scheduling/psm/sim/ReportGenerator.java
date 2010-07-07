@@ -47,7 +47,6 @@ import alma.scheduling.psm.util.XsltTransformer;
 
 public class ReportGenerator extends PsmContext {
 	
-	private SchedBlockDao sbDao;
     public static final int ReceiverBandsRange[][] = 
     {{0,0}, {0,0}, {0,0}, {84,116}, {125,169}, {163,211}, {211,275},
         {275,373}, {385,500}, {602,720}};
@@ -58,9 +57,10 @@ public class ReportGenerator extends PsmContext {
     
     public void crowdingReport() {
         System.out.println("Band\t\tNumber of SchedBlocks\tList of SchedBlocks");
+        
         ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
         SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
-        
+       
         for (int i = 3; i < ReportGenerator.ReceiverBandsRange.length; i++) {
             List<SchedBlock> sbs = sbDao.findSchedBlockBetweenFrequencies(
                     ReportGenerator.ReceiverBandsRange[i][0],
@@ -77,6 +77,10 @@ public class ReportGenerator extends PsmContext {
     @SuppressWarnings("unchecked")
     public void printLSTRangesReport() {
         System.out.println("LST Range\tNumber of SchedBlocks\tList of SchedBlocks");
+        
+        ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
+        SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
+        
         List<SchedBlock> sbs = sbDao.findAll();
         ArrayList<SchedBlock> lstRanges[] = new ArrayList[24];
         for(int i = 0; i < lstRanges.length; i++)

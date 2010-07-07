@@ -25,8 +25,6 @@
 
 package alma.scheduling.psm.cli;
 
-import alma.scheduling.psm.sim.Simulator;
-
 public class PsmCli {
 
 	/**

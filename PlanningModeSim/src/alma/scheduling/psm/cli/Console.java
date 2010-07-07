@@ -26,13 +26,11 @@
 package alma.scheduling.psm.cli;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.VerboseLevel;
-import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.Simulator;
@@ -109,12 +107,16 @@ public class Console {
         }
         else if (args[0].compareTo("report")==0){
         	ReportGenerator reportGenerator = new ReportGenerator( workDir );
-                if(args[1].compareTo("help") == 0)
+        		if(args.length == 1)
+        			reportHelp();
+        		else if(args[1].compareTo("help") == 0)
                     reportHelp();
                 else if(args[1].compareTo("1") == 0)
                 	reportGenerator.crowdingReport();
                 else if(args[1].compareTo("2") == 0)
                 	reportGenerator.finalreport();
+                else if(args[1].compareTo("3") == 0)
+                	reportGenerator.printLSTRangesReport();                
                 else
                     reportHelp();
             
@@ -171,8 +173,9 @@ public class Console {
         System.out.println("Usage: ");
         System.out.println("aprc report <command>");
         System.out.println("\nList of Commands:");
-        System.out.println("1:\tGenerate statistics report containing crowding by LST ranges and ALMA Receiver Bands.");
+        System.out.println("1:\tGenerate statistics report containing SBs per ALMA Receiver Bands.");
         System.out.println("2:\tGenerate result report (after run the simulation).");
+        System.out.println("3:\tGenerate statistics report containing SBs per LST ranges.");
         System.out.println("help:\tShow this help message.");
     }
     
