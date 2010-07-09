@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.5 2010/05/11 18:01:29 javarias Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.6 2010/07/09 17:14:05 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -38,7 +38,7 @@ public class SchedBlock extends ObsUnit {
     /** Weather constraints */
     private WeatherConstraints weatherConstraints;
     
-    /** Polimorphic observing parameters, the type depends on the type of the observation */
+    /** Polymorphic observing parameters, the type depends on the type of the observation */
     private Set<ObservingParameters> observingParameters = new HashSet<ObservingParameters>();
     
     /** Pre-conditions required to execute SchedBlock */

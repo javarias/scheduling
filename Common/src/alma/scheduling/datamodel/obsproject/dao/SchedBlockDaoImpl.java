@@ -4,9 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -169,6 +173,35 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         query.setParameter(1, highFreq);
         return query.list();
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SchedBlock> findSchedBlocks(Criterion crit) {
+        Criteria criteria = createCriteria();
+        criteria.add(crit);
+        return criteria.list();
+    }
+
+    @Override
+    public List<SchedBlock> findSchedBlocks(Criterion crit, List<SchedBlock> sbs) {
+        Criteria criteria = createCriteria();
+        Conjunction conj = Restrictions.conjunction();
+        conj.add(crit);
+        conj.add(Restrictions.in("id", sbs));
+        return null;
+    }
     
-    
+    private Criteria createCriteria(){
+        Criteria criteria = this.getSession().createCriteria(SchedBlock.class);
+        criteria
+                .createAlias("schedulingConstraints.representativeTarget", "rt")
+                .setFetchMode("rt", FetchMode.JOIN).createAlias(
+                        "schedulingConstraints.representativeTarget.source",
+                        "s").setFetchMode("s", FetchMode.JOIN).createAlias(
+                        "executive", "exec").setFetchMode("exec",
+                        FetchMode.JOIN).createAlias(
+                        "executive.executivePercentage", "ep").setFetchMode(
+                        "ep", FetchMode.JOIN);
+        return criteria;
+    }
 }

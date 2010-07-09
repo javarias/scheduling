@@ -24,6 +24,7 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
     }
 
     @Override
+    @Transactional
     public void loadAtmParameters(Set<AtmParameters> params) {
         saveOrUpdate(params);
     }
