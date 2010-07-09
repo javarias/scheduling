@@ -4,20 +4,27 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class MasterSelector extends HibernateDaoSupport implements SchedBlockSelector {
+public class MasterSelector implements SchedBlockSelector {
 
-    private Collection<SchedBlockSelector> selectors; 
+    protected Collection<SchedBlockSelector> selectors; 
+    protected SchedBlockDao sbDao;
     
+    public SchedBlockDao getSbDao() {
+        return sbDao;
+    }
+
+    public void setSbDao(SchedBlockDao sbDao) {
+        this.sbDao = sbDao;
+    }
+
     public Collection<SchedBlockSelector> getSelectors() {
         return selectors;
     }
@@ -58,28 +65,21 @@ public class MasterSelector extends HibernateDaoSupport implements SchedBlockSel
 
         return null;
     }
-
-    @SuppressWarnings("unchecked")
+    
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        Criteria criteria = this.getSession().createCriteria(SchedBlock.class);
-        criteria
-                .createAlias("schedulingConstraints.representativeTarget", "rt")
-                .setFetchMode("rt", FetchMode.JOIN).createAlias(
-                        "schedulingConstraints.representativeTarget.source",
-                        "s").setFetchMode("s", FetchMode.JOIN).createAlias(
-                        "executive", "exec").setFetchMode("exec",
-                        FetchMode.JOIN).createAlias(
-                        "executive.executivePercentage", "ep").setFetchMode(
-                        "ep", FetchMode.JOIN);
-        criteria.add(getCriterion(ut, arrConf));
         Date t1= new Date();
-        List<SchedBlock> sbs = criteria.list();
+        List<SchedBlock> sbs = sbDao.findSchedBlocks(getCriterion(ut, arrConf));
         Date t2 = new Date();
         System.out.println("Size of criteria query: " + sbs.size() );
         System.out.println("Time used: " + (t2.getTime() - t1.getTime()) + " ms");
         return sbs;
+    }
+
+    @Override
+    public boolean canBeSelected(SchedBlock sb) {
+        return false;
     }
 
 }

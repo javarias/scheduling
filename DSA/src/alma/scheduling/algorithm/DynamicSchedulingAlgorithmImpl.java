@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.12 2010/07/09 17:03:00 rhiriart Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.13 2010/07/09 17:17:31 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.hibernate.LockMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,10 +57,11 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     private static Logger logger = LoggerFactory.getLogger(DynamicSchedulingAlgorithmImpl.class);
 
     private SchedBlockRanker ranker;
-    /** The master selector, it should contains all the others preUpdateSelectors*/
+    /** it should contains all the Pre-Update Selectors*/
     private Collection<SchedBlockSelector> preUpdateSelectors;
     private Collection<SchedBlockSelector> postUpdateSelectors;
     private Collection<ModelUpdater> updaters;
+    private Collection<ModelUpdater> firstRunUpdaters;
     private ArrayConfiguration array;
     private static int nProjects;
     /**
@@ -94,6 +94,14 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	    return ranker.getBestSB(ranks);
 	}
 	
+    public Collection<ModelUpdater> getFirstRunUpdaters() {
+        return firstRunUpdaters;
+    }
+
+    public void setFirstRunUpdaters(Collection<ModelUpdater> firstRunUpdaters) {
+        this.firstRunUpdaters = firstRunUpdaters;
+    }
+
     public void rankSchedBlocks(){
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         rankSchedBlocks(calendar.getTime());
@@ -264,6 +272,13 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 
     public static void setnProjects(int nProjects) {
         DynamicSchedulingAlgorithmImpl.nProjects = nProjects;
+    }
+
+    @Override
+    public void initialize(Date ut) {
+        for(ModelUpdater updater: firstRunUpdaters)
+            if (updater.needsToUpdate(ut)) 
+                updater.update(ut);
     }
     
 }

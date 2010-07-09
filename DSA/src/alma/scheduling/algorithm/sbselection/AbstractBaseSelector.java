@@ -5,7 +5,6 @@ import java.util.Date;
 
 import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.algorithm.astro.TimeUtil;
-import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 
@@ -60,6 +59,10 @@ public abstract class AbstractBaseSelector implements SchedBlockSelector {
         }
         return str;
     }
-    
+
+    @Override
+    public boolean canBeSelected(SchedBlock sb) {
+        return false;
+    }
 }
 

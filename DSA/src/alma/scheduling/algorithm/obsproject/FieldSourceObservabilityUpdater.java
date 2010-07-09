@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.2 2010/04/16 20:59:49 javarias Exp $"
+ * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.3 2010/07/09 17:17:31 javarias Exp $"
  */
 package alma.scheduling.algorithm.obsproject;
 
@@ -121,6 +121,11 @@ public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmP
     public void update(Date date, Collection<SchedBlock> sbs) {
         update(date);
         
+    }
+
+    @Override
+    public void update(Date date, SchedBlock sb) {
+        throw new IllegalAccessError("This class cannot the used as partial updater");
     }
 
     // --- Internal functions ---

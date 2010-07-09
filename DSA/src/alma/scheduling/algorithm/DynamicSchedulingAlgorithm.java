@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.11 2010/04/10 00:12:35 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.12 2010/07/09 17:17:31 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -71,5 +71,7 @@ public interface DynamicSchedulingAlgorithm {
     public ArrayConfiguration getArray();
     
     public void setVerboseLevel(VerboseLevel verboseLvl);
+    
+    public void initialize(Date ut);
 
 }

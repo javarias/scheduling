@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.7 2010/05/12 22:49:20 javarias Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.8 2010/07/09 17:17:31 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -103,4 +103,6 @@ public interface SchedBlockSelector {
      * with the others selectors 
      */
      public Criterion getCriterion(Date ut, ArrayConfiguration arrConf);
+     
+     public boolean canBeSelected(SchedBlock sb);
 }

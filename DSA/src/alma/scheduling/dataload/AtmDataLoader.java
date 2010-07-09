@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmDataLoader.java,v 1.4 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: AtmDataLoader.java,v 1.5 2010/07/09 17:17:31 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -31,6 +31,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.dataload.AtmTableReader.AtmData;
 import alma.scheduling.datamodel.config.Configuration;
@@ -92,6 +94,7 @@ public class AtmDataLoader implements DataLoader {
     }
 
     @Override
+    @Transactional(readOnly=false)
     public void load() {
         try {
             AtmData ad;

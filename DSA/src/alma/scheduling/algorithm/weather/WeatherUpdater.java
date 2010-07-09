@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.10 2010/04/28 17:30:47 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.11 2010/07/09 17:17:31 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -63,21 +63,21 @@ import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
     private static Logger logger = LoggerFactory.getLogger(WeatherUpdater.class);
-    private static Date lastUpdate = new Date(0);
+    protected static Date lastUpdate = new Date(0);
     
     // --- Spring set properties and accessors ---
     
-    private ConfigurationDao configDao;
+    protected ConfigurationDao configDao;
     public void setConfigDao(ConfigurationDao configDao) {
         this.configDao = configDao;
     }
     
-    private AtmParametersDao dao;
+    protected AtmParametersDao dao;
     public void setDao(AtmParametersDao dao) {
         this.dao = dao;
     }
 
-    private SchedBlockDao schedBlockDao;
+    protected SchedBlockDao schedBlockDao;
     public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
         this.schedBlockDao = schedBlockDao;
     }
@@ -87,17 +87,17 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         this.selector = selector;
     }
     
-    private WeatherHistoryDAO weatherDao;
+    protected WeatherHistoryDAO weatherDao;
     public void setWeatherDao(WeatherHistoryDAO weatherDao) {
         this.weatherDao = weatherDao;
     }
     
-    private Double projTimeIncr;
+    protected Double projTimeIncr;
     public void setProjTimeIncr(Double projTimeIncr) {
         this.projTimeIncr = projTimeIncr;
     }
 
-    private List<AlgorithmPart> dependencies;
+    protected List<AlgorithmPart> dependencies;
     public void setAlgorithmPart(List<AlgorithmPart> dependencies) {
         this.dependencies = dependencies;
     }
@@ -214,7 +214,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
      * @param temperature Temperature [C]
      * @return PWV in mm
      */
-    private double estimatePWV(double humidity, double temperature) {
+    protected double estimatePWV(double humidity, double temperature) {
         double h; // PWV
         double P_0; // water vapor partial pressure
         double theta; // inverse temperature [K]
@@ -247,7 +247,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
      * @return an array with two values, the first one is the opacity (nepers) and the second
      * the atmospheric brightness temperature (K)
      */
-    private double[] interpolateOpacityAndTemperature(double pwv, double freq) {
+    protected double[] interpolateOpacityAndTemperature(double pwv, double freq) {
         double[] retVal = new double[2];
         logger.debug("pwv: " + pwv);
         logger.debug("freq: " + freq);
@@ -305,8 +305,13 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
      * @param y2 dependent variable value for x2
      * @return interpolation for the dependent variable, for the value x
      */
-    private double interpolate(double x, double x1, double x2, double y1, double y2) {
+    protected double interpolate(double x, double x1, double x2, double y1, double y2) {
         return y1 + ( y2 - y1 ) * ( x - x1 ) / ( x2 - x1 );
+    }
+
+    @Override
+    public void update(Date date, SchedBlock sb) {
+        
     }
    
 }
