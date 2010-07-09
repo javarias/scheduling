@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.11 2010/05/25 23:59:28 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.12 2010/07/09 17:03:00 rhiriart Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -111,18 +111,22 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
     //TODO: The selectSB function should be removed or improved
     public void selectCandidateSB(Date ut) throws NoSbSelectedException {
         sbs.clear();
+        Date t1 = new Date();
         HashMap<Long, SchedBlock> pre = selectSBs(ut, preUpdateSelectors);
-//        Date t1 = new Date();
+        Date t2 = new Date();        
+        System.out.println("Pre Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
+        t1 = new Date();
         updateModel(ut, pre.values());
-//        Date t2 =  new Date();
-//        System.out.println("Update takes: " + (t2.getTime() - t1.getTime()) + " ms");
-//        t1= new Date();
+        t2 =  new Date();
+        System.out.println("Update takes: " + (t2.getTime() - t1.getTime()) + " ms");
+        t1= new Date();
         HashMap<Long, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
-//        t2 = new Date();
-//        System.out.println("Post Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
+        t2 = new Date();
+        System.out.println("Post Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
         sbs = post;
 		if(sbs.size() == 0)
 			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");
+		t1 = new Date();
 	    Iterator it = sbs.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
@@ -131,6 +135,8 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	        ObsUnit ou = tmpSB.getProject().getObsUnit();
 	        hydrateObsUnit( ou );
 	    }
+	    t2 = new Date();
+        System.out.println("Hidrate ObsUnit takes: " + (t2.getTime() - t1.getTime()) + " ms");	    
 
     }
     
