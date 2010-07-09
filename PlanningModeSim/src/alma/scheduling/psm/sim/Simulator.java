@@ -435,7 +435,7 @@ public class Simulator extends PsmContext {
         }
         DynamicSchedulingAlgorithm dsa = getDSA(ctx);
         System.out.println("Running first update " + new Date());
-        dsa.updateModel(time);
+        dsa.initialize(time);
         System.out.println("Finishing first update " + new Date());
     }
     
