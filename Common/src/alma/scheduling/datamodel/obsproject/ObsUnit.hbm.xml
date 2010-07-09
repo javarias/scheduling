@@ -40,7 +40,7 @@
                 <property name="maxAllowedHourAngle" type="double" column="MAX_ALLOWED_HA"/>
                 <property name="minAllowedHourAngle" type="double" column="MIN_ALLOWED_HA"/>
             </component>
-            <component name="schedulingConstraints" class="SchedulingConstraints">
+            <component name="schedulingConstraints" class="SchedulingConstraints" lazy="false">
                 <property name="maxAngularResolution" type="double" column="MAX_ANG_RESOLUTION"/>
                 <property name="representativeFrequency" type="double" column="REPR_FREQ"/>
                 <many-to-one name="representativeTarget" class="Target" column="REPR_TARGET"/>
@@ -73,9 +73,9 @@
             <many-to-one name="executive" column="EXECUTIVE_ID" not-null="false" />
         </joined-subclass>
 
-        <joined-subclass name="ObsUnitSet" table="OBSUNITSET" lazy="false">
+        <joined-subclass name="ObsUnitSet" table="OBSUNITSET">
             <key column="OBSUNITSETID"/>
-            <set name="obsUnits" inverse="true" cascade="save-update, lock, delete, delete-orphan">
+            <set name="obsUnits" inverse="true" cascade="save-update, lock, delete, delete-orphan" lazy="false">
                 <key column="PARENTID"/>
                 <one-to-many class="ObsUnit"/>
             </set>

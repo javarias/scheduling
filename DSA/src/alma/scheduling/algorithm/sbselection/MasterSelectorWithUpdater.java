@@ -2,9 +2,7 @@ package alma.scheduling.algorithm.sbselection;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;

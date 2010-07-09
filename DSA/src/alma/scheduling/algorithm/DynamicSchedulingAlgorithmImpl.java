@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.13 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.14 2010/07/09 21:47:26 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -134,41 +134,6 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         sbs = post;
 		if(sbs.size() == 0)
 			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");
-		t1 = new Date();
-	    Iterator it = sbs.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        SchedBlock tmpSB = (SchedBlock)pairs.getValue();
-	        ObsProject tmpOP = tmpSB.getProject();
-	        ObsUnit ou = tmpSB.getProject().getObsUnit();
-	        hydrateObsUnit( ou );
-	    }
-	    t2 = new Date();
-        System.out.println("Hidrate ObsUnit takes: " + (t2.getTime() - t1.getTime()) + " ms");	    
-
-    }
-    
-    private void hydrateObsUnit(ObsUnit ou) {
-        //getHibernateTemplate().lock(ou, LockMode.NONE);
-        
-        logger.trace("hydrating ObsUnit");
-        logger.debug("ObsUnit class: " + ou.getClass().getName());
-        if (ou == null)
-            logger.warn("ObsUnit is null");
-        if (ou instanceof SchedBlock) {
-            logger.trace("hydrating SchedBlock");
-            SchedBlock sb = (SchedBlock) ou;
-            sb.getSchedulingConstraints().getMaxAngularResolution();
-            logger.debug("successfully casted SchedBlock");
-            return;
-        } else if (ou instanceof ObsUnitSet) {
-            logger.debug("hydrating ObsUnitSet");
-            ObsUnitSet ous = (ObsUnitSet) ou;
-            logger.debug("# of ObsUnits in ObsUnitSet: " + ous.getObsUnits().size());
-            for (ObsUnit sou : ous.getObsUnits()) {
-                hydrateObsUnit(sou);
-            }
-        }
     }
     
 	 /* (non-Javadoc)
