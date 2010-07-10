@@ -273,6 +273,7 @@ public class Simulator extends PsmContext {
                             + ev.getArray().getId());
             try {
                 dsa.selectCandidateSB(time);
+                dsa.updateCandidateSB(time);
                 logger.info("Ranking available scheduling blocks for Arrai Id: " + ev.getArray().getId());
                 dsa.rankSchedBlocks(time);
                 logger.info("Obtaining scheduling block for array: " + ev.getArray().getId());
@@ -290,7 +291,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
-                rc.notifySchedBlockStop(sb);
+//                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
@@ -324,6 +325,7 @@ public class Simulator extends PsmContext {
             try {
                 dsa = arraysCreated.get(ev.getArray());
                 dsa.selectCandidateSB(time);
+                dsa.updateCandidateSB(time);
                 dsa.rankSchedBlocks(time);
                 SchedBlock sb = dsa.getSelectedSchedBlock();
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
@@ -337,7 +339,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
                 timesToCheck.add(sbEndEv);
-                rc.notifySchedBlockStop(sb);
+//                rc.notifySchedBlockStop(sb);
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println("DSA for array "
@@ -369,6 +371,7 @@ public class Simulator extends PsmContext {
             try {
                 // System.out.println("Before selectors " + new Date());
                 dsa.selectCandidateSB(time);
+                dsa.updateCandidateSB(time);
                 // System.out.println("After selectors " + new Date());
                 // System.out.println("Before rankers " + new Date());
                 dsa.rankSchedBlocks(time);
@@ -384,7 +387,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
-                rc.notifySchedBlockStop(sb);
+//                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
             } catch (NoSbSelectedException ex) {
                 System.out.println("DSA for array "

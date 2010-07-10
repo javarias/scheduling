@@ -14,7 +14,8 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName"><value>org.hsqldb.jdbcDriver</value></property>
-        <property name="url"><value>jdbc:hsqldb:hsql://localhost:8090/data_model</value></property>
+        <!--<property name="url"><value>jdbc:hsqldb:hsql://localhost:8090/data_model</value></property>-->
+    	<property name="url"><value>jdbc:hsqldb:file:/export/home/granite/rhiriart/APRC/tmp/hsqldb/data_model</value></property>
         <property name="username"><value>sa</value></property>
         <property name="password"><value></value></property>
     </bean>
@@ -102,8 +103,15 @@
 	<!-- Selectors -->
 	
 	<bean id="sourceSelector" class="alma.scheduling.algorithm.obsproject.FieldSourceObservableSelector">
+		<constructor-arg><value>sourceSelector</value></constructor-arg>
 		<property name="configDao" ref="configDao"/>
-		<property name="schedBlockDao" ref="schedBlockDao"/>		
+		<property name="schedBlockDao" ref="schedBlockDao"/>
+	</bean>
+
+	<bean id="sbStatusSelector" class="alma.scheduling.algorithm.obsproject.SchedBlockStatusSelector"
+		scope="prototype">
+		<constructor-arg><value>sbStatusSelector</value></constructor-arg>
+		<property name="sbDao" ref="schedBlockDao"/>		
 	</bean>
 
 	<!-- Updaters -->

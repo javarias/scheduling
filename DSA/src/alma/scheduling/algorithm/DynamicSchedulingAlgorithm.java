@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.12 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.13 2010/07/10 01:25:04 rhiriart Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -44,6 +44,8 @@ public interface DynamicSchedulingAlgorithm {
      * cannot intersect a common group between al SBs returned by the selectors used
      */
     public void selectCandidateSB() throws NoSbSelectedException;
+
+    public void updateCandidateSB(Date ut) throws NoSbSelectedException;
     
     /**
      * Clean the current candidate SBs and run again the selectors

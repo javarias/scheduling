@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.14 2010/07/09 21:47:26 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.15 2010/07/10 01:25:04 rhiriart Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -115,17 +115,32 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	}
 
     @Override
-    @Transactional
     //TODO: The selectSB function should be removed or improved
+    @Transactional
     public void selectCandidateSB(Date ut) throws NoSbSelectedException {
         sbs.clear();
         Date t1 = new Date();
         HashMap<Long, SchedBlock> pre = selectSBs(ut, preUpdateSelectors);
         Date t2 = new Date();        
         System.out.println("Pre Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
-        t1 = new Date();
-        updateModel(ut, pre.values());
-        t2 =  new Date();
+//        t1 = new Date();
+//        updateModel(ut, pre.values());
+//        t2 =  new Date();
+//        System.out.println("Update takes: " + (t2.getTime() - t1.getTime()) + " ms");
+//        t1= new Date();
+//        HashMap<Long, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
+//        t2 = new Date();
+//        System.out.println("Post Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
+        sbs = pre;
+		if(sbs.size() == 0)
+			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");    	
+    }
+    
+    @Override
+    public void updateCandidateSB(Date ut) throws NoSbSelectedException {
+        Date t1 = new Date();
+        updateModel(ut, sbs.values());
+        Date t2 =  new Date();
         System.out.println("Update takes: " + (t2.getTime() - t1.getTime()) + " ms");
         t1= new Date();
         HashMap<Long, SchedBlock> post = selectSBs(ut, postUpdateSelectors);
@@ -133,7 +148,7 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
         System.out.println("Post Selectors takes: " + (t2.getTime() - t1.getTime()) + " ms");
         sbs = post;
 		if(sbs.size() == 0)
-			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");
+			throw new NoSbSelectedException("Intersection of Selectors doesn't contain common SchedBlocks");    	
     }
     
 	 /* (non-Javadoc)

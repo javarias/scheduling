@@ -14,4 +14,22 @@
 	overflowToDisk="false" 
 	memoryStoreEvictionPolicy="LFU">
 	</cache>
+	<cache name="alma.scheduling.datamodel.obsproject.ObsUnit" 
+		maxElementsInMemory="10000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
+	<cache name="alma.scheduling.datamodel.obsproject.ObsUnitSet" 
+		maxElementsInMemory="10000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
+	<cache name="alma.scheduling.datamodel.obsproject.ObsProject" 
+		maxElementsInMemory="10000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
 </ehcache>
