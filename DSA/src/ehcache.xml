@@ -32,4 +32,10 @@
 		overflowToDisk="false" 
 		memoryStoreEvictionPolicy="LFU">
 	</cache>
+		<cache name="org.hibernate.cache.UpdateTimestampsCache" 
+		maxElementsInMemory="10000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
 </ehcache>

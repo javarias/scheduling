@@ -95,6 +95,8 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             cache.clear();
         if (cache.get(date) == null) {
             // get current PWV
+            System.out.println("Start Calculations");
+            Date t1 = new Date();
             TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
             logger.info("temperature record: time = " + tr.getTime()
                     + "; value = " + tr.getValue());
@@ -115,6 +117,8 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             tmp.setPwv(pwv);
             tmp.setPpwv(ppwv);
             cache.put(date, tmp);
+            Date t2 = new Date();
+            System.out.println("Weather Calculations takes: " + (t2.getTime() - t1.getTime()) + " ms");
         }
         double pwv = cache.get(date).getPwv();
         double ppwv = cache.get(date).getPpwv();

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.5 2010/05/12 22:49:20 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.6 2010/07/12 20:40:13 javarias Exp $"
  */
 package alma.scheduling.algorithm.executive;
 
@@ -140,6 +140,11 @@ public class ExecutiveSelector extends AbstractBaseSelector {
         conj.add(Restrictions.eq("ep.season", os));
         conj.add(Restrictions.leProperty("obsUnitControl.estimatedExecutionTime", "ep.remainingObsTime"));
         return conj;
+    }
+
+    @Override
+    public boolean canBeSelected(SchedBlock sb) {
+        return false;
     }
 
     
