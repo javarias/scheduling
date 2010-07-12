@@ -53,14 +53,14 @@
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.transaction.factory_class"
 					>org.hibernate.transaction.JDBCTransactionFactory</prop>
-				<prop key="hibernate.connection.autocommit">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
-				<prop key="cache.use_query_cache">true</prop>
-				<prop key="cache.use_second_level_cache">true</prop>
-				<prop key="cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-				<prop key="transaction.flush_before_completion">true</prop>
-				<prop key="transaction.auto_close_session">false</prop>
-				<prop key="hibernate.max_fetch_depth">5</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<prop key="hibernate.transaction.flush_before_completion">false</prop>
+				<prop key="hibernate.transaction.auto_close_session">false</prop>
+				<prop key="hibernate.max_fetch_depth">0</prop>
 				<prop key="hibernate.default_batch_fetch_size">16</prop>
 				<prop key="hibernate.jdbc.batch_size">25</prop>
 				<prop key="hibernate.jdbc.fetch_size">8</prop>
