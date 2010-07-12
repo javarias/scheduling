@@ -223,9 +223,12 @@ public class Simulator extends PsmContext {
         
         // Stop at end of season
         while( time.before(stopTime) && !timesToCheck.isEmpty() ){
+            Date t1 = new Date();
         	step(timesToCheck, stopTime, rc, 
         			ctx, 
         			arraysCreated, freeArrays, sbExecutor);
+        	Date t2 = new Date();
+        	System.out.println("Step takes: "+ (t2.getTime() - t1.getTime()));
         	if(isToBeInterrupted())
         	    Console.getConsole().activate(this);
         }   
@@ -272,7 +275,10 @@ public class Simulator extends PsmContext {
                             + "Starting selection of candidate SchedBlocks for Array Id: "
                             + ev.getArray().getId());
             try {
+                Date t1 = new Date();
                 dsa.selectCandidateSB(time);
+                Date t2 = new Date();
+                System.out.println("Selection takes: "+ (t2.getTime() - t1.getTime()));
                 dsa.updateCandidateSB(time);
                 logger.info("Ranking available scheduling blocks for Arrai Id: " + ev.getArray().getId());
                 dsa.rankSchedBlocks(time);
@@ -324,7 +330,10 @@ public class Simulator extends PsmContext {
                             + ev.getArray().getId());
             try {
                 dsa = arraysCreated.get(ev.getArray());
+                Date t1 = new Date();
                 dsa.selectCandidateSB(time);
+                Date t2 = new Date();
+                System.out.println("Selection takes: "+ (t2.getTime() - t1.getTime()));
                 dsa.updateCandidateSB(time);
                 dsa.rankSchedBlocks(time);
                 SchedBlock sb = dsa.getSelectedSchedBlock();
@@ -370,7 +379,10 @@ public class Simulator extends PsmContext {
                             + ev.getArray().getId());
             try {
                 // System.out.println("Before selectors " + new Date());
+                Date t1 = new Date();
                 dsa.selectCandidateSB(time);
+                Date t2 = new Date();
+                System.out.println("Selection takes: "+ (t2.getTime() - t1.getTime()));
                 dsa.updateCandidateSB(time);
                 // System.out.println("After selectors " + new Date());
                 // System.out.println("Before rankers " + new Date());
