@@ -17,6 +17,7 @@ cp spring-framework-2.5.5/lib/jakarta-commons/commons-fileupload.jar $TARGET/;
 cp spring-framework-2.5.5/lib/jakarta-commons/commons-io.jar $TARGET/;
 cp spring-framework-2.5.5/lib/dom4j/dom4j-1.6.1.jar $TARGET/;
 cp spring-framework-2.5.5/lib/groovy/groovy-1.5.5.jar $TARGET/;
+cp spring-framework-2.5.5/lib/hibernate/hibernate3.jar $TARGET/;
 cp spring-framework-2.5.5/lib/hibernate/hibernate-annotations.jar $TARGET/;
 cp spring-framework-2.5.5/lib/hibernate/hibernate-commons-annotations.jar $TARGET/;
 cp spring-framework-2.5.5/lib/hibernate/hibernate-entitymanager.jar $TARGET/;
@@ -34,6 +35,7 @@ if [ ! -f slf4j-1.5.2.zip ] ; then
 	wget http://www.slf4j.org/dist/slf4j-1.5.2.zip;
 fi
 unzip -o slf4j-1.5.2.zip > /dev/null;
+cp slf4j-1.5.2/slf4j-api-1.5.2.jar $TARGET;
 cp slf4j-1.5.2/slf4j-log4j12-1.5.2.jar $TARGET;
 
 echo "Checking for ZK libraries..."
@@ -55,5 +57,14 @@ cp zk-bin-5.0.3/dist/lib/ext/jython.jar $TARGET;
 cp zk-bin-5.0.3/dist/lib/zkforge/fckez.jar $TARGET;
 
 echo "Getting jars from INTROOT..."
-cp $INTROOT/lib/planningModeSimGUI.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET;
+cp $INTROOT/lib/SchedulingPSM.jar $INTROOT/lib/SchedulingPSMCli.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET;
+
+echo "Checking for EHCache libraries..."
+if [ ! -f ehcache-core-2.1.0-distribution.tar.gz ] ; then
+        echo "   * Not present, downloading...";
+        wget http://sourceforge.net/projects/ehcache/files/ehcache-core/ehcache-core-2.1.0/ehcache-core-2.1.0-distribution.tar.gz/download;
+fi
+tar xfz ehcache-core-2.1.0-distribution.tar.gz;
+cp ehcache-core-2.1.0/ehcache-core-2.1.0.jar $TARGET;
+
 

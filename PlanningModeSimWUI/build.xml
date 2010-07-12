@@ -3,7 +3,7 @@
         ahoffsta, UTFSM-NRAO, 01-06-2010
 -->
 
-<project name="PlanningModeSimulatorWUI" default="warfile">
+<project name="SchedulingPSMWui" default="warfile">
 
 	<!-- useful definitions -->
 	<property name="webcontent" location="WebContent" />
@@ -14,8 +14,8 @@
 	<property name="lib" location="${webinf}/lib" />
 	<property name="doc" location="doc" />
 	<property name="dist" location="dist" />
-	<property name="jarfile" location="PlanningModeSimulatorWUI.jar" />
-	<property name="warfile" location="PlanningModeSimulatorWUI.war" />
+	<property name="jarfile" location="SchedulingPSMWui.jar" />
+	<property name="warfile" location="SchedulingPSMWui.war" />
 
 	<!-- 
 	   WARNING 
@@ -64,10 +64,10 @@
 		<pathelement location="${TOMCAT_LIB}/servlet-api.jar" />
 		<pathelement location="${TOMCAT_LIB}/jsp-api.jar" />
 			
-		<pathelement location="${INTROOT}/lib/planningModeSimGUI.jar" />
+		<pathelement location="${INTROOT}/lib/SchedulingPSM.jar" />
+		<pathelement location="${INTROOT}/lib/SchedulingPSMCli.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
-		<pathelement location="${INTROOT}/lib/spring.jar" />
 		
 
 		<pathelement location="${ACSROOT}/lib/antlr.jar" />
@@ -93,6 +93,8 @@
 		<pathelement location="${lib}/lib/js.jar" />
 		<pathelement location="${lib}/lib/jython.jar" />
 		<pathelement location="${lib}/lib/slf4j-log4j12-1.5.2-jar" />
+		<pathelement location="${lib}/lib/spring.jar" />
+		<pathelement location="${lib}/lib/ehcache-core-2.1.0.jar" />
 
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommon.jar" />

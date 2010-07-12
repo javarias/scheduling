@@ -4,7 +4,7 @@
 	<window title="Planning Mode Simulator" width="100%" height="100%"
 		mode="embedded" border="normal"
 		apply="${sessionScope.mainWindowController}" id="mainWindow">
-		<caption label="" image="/images/date.png" />
+		<caption label="" image="images/date.png" />
 
 		<menubar>
 			<menu label="Simulation">
@@ -22,6 +22,8 @@
 				<menupopup>
 					<menuitem label="Cascade" />
 					<menuitem label="Mosaic" />
+					<menuseparator />
+					<menuitem label="Contextual help" />
 				</menupopup>
 			</menu>
 			<menu label="Help">
