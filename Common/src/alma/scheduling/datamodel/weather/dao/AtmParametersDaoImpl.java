@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.AtmParameters;
 
-@Transactional
 public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParametersDao {
 
     /* freq , pwv*/
@@ -85,6 +84,7 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
         return -1;
     }
     
+    @Transactional
     private void fillCache(){
         logger.debug("Filling ATM Parameters Cache");
         List<AtmParameters> atmParams = getAllAtmParameters();

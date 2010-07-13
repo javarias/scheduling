@@ -63,7 +63,7 @@
 		<property name="endDate" type="timestamp" column="END_DATE" />
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>
 		<property name="originalId" type="long" column="ORIGINAL_ID" />		
-		<property name="mode" type="string" column="MODE"/>
+		<property name="mode" type="string" column="RESULT_MODE"/>
 		<property name="representativeFrequency" type="double" column="REPRESENTATIVE_FREQUENCY"/>
 		<property name="goalSensitivity" type="double" column="GOAL_SENSITIVITY"/>
 		<property name="achievedSensitivity" type="double" column="ACHIEVED_SENSITIVITY"/>

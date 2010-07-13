@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.11 2010/07/09 17:14:05 javarias Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.12 2010/07/13 21:38:16 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author javarias
  *
  */
-@Transactional
 public abstract class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
 
     @Override
@@ -59,7 +58,7 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     }
 
     @Override
-    @Transactional(readOnly=false)
+    @Transactional
     public <T> void saveOrUpdate(Collection<T> objs) {
         getHibernateTemplate().saveOrUpdateAll(objs);
     }

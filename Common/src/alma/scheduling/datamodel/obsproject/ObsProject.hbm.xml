@@ -9,11 +9,11 @@
     </typedef>
     
     <class name="ObsProject" table="OBSPROJECT">
-    <cache usage="read-write"/>
+    <cache usage="read-write" region="alma.scheduling.datamodel.obsproject.ObsUnit"/>
         <id name="id" column="OBSPROJECTID">            
             <generator class="native"/>
         </id>
-        <property name="uid" column="UID"/>
+        <property name="uid" column="OBSPROJECT_UID"/>
         <property name="principalInvestigator" column="PI"/>
         <property name="scienceScore" column="SCIENCE_SCORE" />
         <property name="scienceRank" column="SCIENCE_RANK"/>
