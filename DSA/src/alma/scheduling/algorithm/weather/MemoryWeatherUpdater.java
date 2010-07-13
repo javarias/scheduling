@@ -39,7 +39,8 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         logger.trace("entering");
         logger.debug("updating for time " + date);
         
-        double latitude = configDao.getConfiguration().getArrayCenterLatitude();
+        if(latitude == null)
+            latitude = configDao.getConfiguration().getArrayCenterLatitude();
 
         // get current PWV
         TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
@@ -90,7 +91,8 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 
     @Override
     public void update(Date date, SchedBlock sb) {
-        double latitude = configDao.getConfiguration().getArrayCenterLatitude();
+        if(latitude == null)
+            latitude = configDao.getConfiguration().getArrayCenterLatitude();
         if(cache.keySet().size() > 100)
             cache.clear();
         if (cache.get(date) == null) {

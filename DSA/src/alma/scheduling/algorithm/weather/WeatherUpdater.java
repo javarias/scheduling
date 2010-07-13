@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.11 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.12 2010/07/13 21:38:56 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -64,6 +64,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
     private static Logger logger = LoggerFactory.getLogger(WeatherUpdater.class);
     protected static Date lastUpdate = new Date(0);
+    protected static Double latitude = null;
     
     // --- Spring set properties and accessors ---
     
