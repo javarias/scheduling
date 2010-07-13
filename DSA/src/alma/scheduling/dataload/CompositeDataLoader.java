@@ -21,12 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CompositeDataLoader.java,v 1.3 2010/05/19 17:37:27 javarias Exp $"
+ * "@(#) $Id: CompositeDataLoader.java,v 1.4 2010/07/13 21:53:35 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.transaction.annotation.Transactional;
 
 public class CompositeDataLoader implements DataLoader {
 
@@ -37,6 +39,7 @@ public class CompositeDataLoader implements DataLoader {
     }
 
     @Override
+    @Transactional
     public void load() throws Exception {
         for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
             iter.next().load();
