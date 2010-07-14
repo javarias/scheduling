@@ -1,0 +1,91 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * $Id: SchedulingArray.idl,v 1.1 2010/07/14 00:33:30 rhiriart Exp $
+ */
+
+#ifndef _SCHEDULINGARRAY_IDL_
+#define _SCHEDULINGARRAY_IDL_
+
+#include <acscomponent.idl>
+#include <acserr.idl>
+
+#pragma prefix "alma"
+
+module scheduling {
+
+    typedef string SchedBlockUID;
+
+    struct SchedBlockScore {
+        SchedBlockUID uid;
+        double score;
+        unsigned long rank;
+    };
+    typedef sequence<SchedBlockScore> SchedBlockScoreSeq;
+
+    /**
+     * Inside the Array component, a thread executes SchedBlocks as soon
+     * they are available in a queue.
+     * This callback reports state changes in the execution.
+     */
+    interface SchedBlockExecutionCallback : ACS::OffShoot {
+
+        /**
+         * Report a change of status in a SB execution.
+         */
+        oneway void report(in SchedBlockUID uid, in ACSErr::Completion completion);
+    };
+
+    /**
+     * Interface to manage the Array's internal SchedBlock execution queue.
+     */
+    interface SchedBlockQueueManager {
+        void push(in SchedBlockUID uid);
+        SchedBlockUID pull();
+        void moveUp(in SchedBlockUID uid); 
+        void moveDown(in SchedBlockUID uid);
+    };
+
+    /**
+     * Interface to control the Array's SchedBlock execution thread.
+     */
+    interface SchedBlockExecutionManager {
+        void start(in SchedBlockExecutionCallback callback);
+        void stop();
+        SchedBlockUID getRunningSchedBlock();
+        void stopRunningSchedBlock();
+        void abortRunningtSchedBlock();
+    };
+
+    /**
+     * Interface to run the Dynamic Scheduling Algorithm.
+     */
+    interface DSA {
+        SchedBlockScoreSeq run();
+    };
+
+    interface Array : ACS::ACSComponent, SchedBlockQueueManager,
+                      SchedBlockExecutionManager, DSA { };
+
+};
+#endif // _SCHEDULINGARRAY_IDL_
