@@ -51,8 +51,8 @@ public class ReportGenerator extends PsmContext {
     {{0,0}, {0,0}, {0,0}, {84,116}, {125,169}, {163,211}, {211,275},
         {275,373}, {385,500}, {602,720}};
     
-    public ReportGenerator(String contextFile){
-    	super(contextFile);
+    public ReportGenerator(String workDir){
+    	super(workDir);
     }
     
     public void crowdingReport() {
