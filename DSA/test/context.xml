@@ -104,6 +104,10 @@
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
+	
+	<!-- ResultComposer -->
+	<bean id="resultComposer" class="alma.scheduling.psm.sim.ResultComposer">
+	</bean>
 
 	<!-- DAO Beans -->
 	<bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
