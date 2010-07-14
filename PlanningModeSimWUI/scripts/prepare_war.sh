@@ -2,6 +2,8 @@
 
 TARGET='../WebContent/WEB-INF/lib/';
 
+mkdir -p $TARGET;
+
 mkdir tmp;
 cd tmp;
 echo "Checking for Spring libraries..."
@@ -67,4 +69,9 @@ fi
 tar xfz ehcache-core-2.1.0-distribution.tar.gz;
 cp ehcache-core-2.1.0/ehcache-core-2.1.0.jar $TARGET;
 
+echo "Checking for Castor library..."
+if [ ! -f $ACSROOT/lib/castor.jar ] ; then
+        echo "   * Not present in ACS distribution, please correct this error.";
+fi
+cp $ACSROOT/lib/castor.jar $TARGET;
 
