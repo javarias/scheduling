@@ -55,7 +55,7 @@
         <h2>General Results</h2>
 	<p> This section covers the execution results of the simulation.</p>
         <ul>
-	  <li><b>ALMA's total available time: </b> <xsl:value-of select="format-time(@{availableTime} as xs:time"/> [sec]</li>
+<!--	  <li><b>ALMA's total available time: </b> <xsl:value-of select="format-time(@{availableTime} as xs:time"/> [sec]</li>-->
 	  <li><b>Time spent in operations (maintenance + scientific): </b> <xsl:value-of select="operationTime"/> [hour]</li>
 	  <li><b>Time spent in maintenance: </b> <xsl:value-of select="maintenanceTime"/> [hour]</li>
 	  <li><b>Time spent in scientific observations: </b> <xsl:value-of select="scientificTime"/> [hour]</li>

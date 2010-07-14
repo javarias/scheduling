@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.11 2010/07/14 20:58:40 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.12 2010/07/14 21:08:53 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -119,9 +119,9 @@ USER_IDL =
 # Jarfiles and their directories
 #
 JARFILES=SchedulingPSM SchedulingPSMCli
-SchedulingPSM_DIRS= alma/scheduling/psm/sim alma/scheduling/psm/util
-SchedulingPSM_DIRS_EXTRAS=alma/scheduling/psm/reports/general_report.xsl ph1mContext.xml
-SchedulingPSMCli_DIRS=alma/scheduling/psm/cli alma/scheduling/psm/reports/general_report.xsl
+SchedulingPSM_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim
+SchedulingPSM_EXTRAS=alma/scheduling/psm/reports/general_report.xsl ph1mContext.xml
+SchedulingPSMCli_DIRS=alma/scheduling/psm/cli
 
 #
 # java sources in Jarfile on/off
