@@ -24,10 +24,13 @@
  */
 package alma.scheduling.psm.sim;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
+import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.Affiliation;
 import alma.scheduling.datamodel.output.Array;
 import alma.scheduling.datamodel.output.ExecutionStatus;
@@ -73,17 +77,20 @@ public class ResultComposer {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ResultComposer.class);
 	private Results results;
 	private ApplicationContext context = null;
+	private HashMap<Long,ArrayList<Date>> startDates;
+	private HashMap<Long,LinkedHashMap<Date,Double>> endDates;
 	
 	
-	public ResultComposer(ApplicationContext context){
+	public ResultComposer(){
 		results = new Results();
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
-		
-		this.context = context;
+		startDates = new HashMap<Long,ArrayList<Date>>();
+		endDates = new HashMap<Long,LinkedHashMap<Date,Double>>();
 	}
 	
-	public void notifyExecutiveData(Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
+	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
+		this.context = ctx;
 		results.setObsSeasonStart(obsSeasonStart);
 		results.setObsSeasonEnd(obsSeasonEnd);
 		results.setStartSimDate(obsSeasonStart);
@@ -111,7 +118,7 @@ public class ResultComposer {
 	 * TODO: Add param that indicates in which array was started its execution
 	 * @param sb SchedulingBlock (class from datamodel) that needs to be informed of its execution.
 	 */
-	@Transactional
+    @Transactional(readOnly=true)
 	public void notifySchedBlockStart(SchedBlock sb){
 		// TODO Implement distinction of types of SB. If maintenance, account to a ghost ObsProject.
 		
@@ -188,13 +195,26 @@ public class ResultComposer {
 		sbr.setEndDate( TimeHandler.now() );
 	}
 	
-	@Transactional
+    @Transactional(readOnly=true)
 	public void notifySchedBlockStop(SchedBlock sb){
+		// private HashMap<Long,LinkedHashMap<Date,Double>> endDates;
+		
+		//Saving schedblock id and their end dates
+		LinkedHashMap<Date, Double> entry = endDates.get( sb.getId() );
+		if( entry == null ){
+			entry = new LinkedHashMap<Date, Double>( );
+			endDates.put(sb.getId(), entry );
+		}		
+		entry.put( TimeHandler.now(), sb.getSchedBlockControl().getAchievedSensitivity() );
+		
+	}
+	
+    @Transactional(readOnly=true)
+	public void calculateCompletion(SchedBlock sb, Date d, Double s){
+		
+	
 		// Obtaining reference from the SchedBlock to the Observation Project.
 		ObsProject inputObsProjectRef = sb.getProject();
-//		ApplicationContext context = new FileSystemXmlApplicationContext("file://" + ctxPath);
-//		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
-//		obsProjectDao.hydrateSchedBlocks(inputObsProjectRef);
 				
 		// Check if the Observation Project already exists in the results collection of obsprojects.
 		// TODO: add to the datamodel an attribute that saves the original obsproject ID
@@ -207,14 +227,13 @@ public class ResultComposer {
 				break;
 			}
 		}
-		// TODO: If nor found (isPresent == false), raise an exception
 		
 		long completedSbs = 0;
 		for( SchedBlockResult sbr : outputObservationProjectRef.getSchedBlock() ){
 			if( sbr.getOriginalId() == sb.getId() ){
 				if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
 					sbr.setStatus( ExecutionStatus.COMPLETE );
-					sbr.setEndDate( TimeHandler.now() );
+					sbr.setEndDate( d );
 					completedSbs += 1;
 					// Obtaining Sensitivities
 					Set<ObservingParameters> ops = sb.getObservingParameters();
@@ -225,7 +244,7 @@ public class ResultComposer {
 			                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
 			            }
 			        }
-			        sbr.setAchievedSensitivity(sb.getSchedBlockControl().getAchievedSensitivity());
+			        sbr.setAchievedSensitivity(s);
 				}
 				//TODO: See what are the other status.
 			}
@@ -239,10 +258,10 @@ public class ResultComposer {
 		else{
 			// TODO: This should never happen. Illegal state reached, throw exception
 			outputObservationProjectRef.setStatus( ExecutionStatus.NOT_STARTED );
-		}	
+		}
 	}
 	
-	@Transactional
+    @Transactional(readOnly=true)
 	private long numberOfSchedBlocks( ObsUnit ouRef ){
 		if( ouRef instanceof SchedBlock ){
 			return 1;
@@ -265,9 +284,19 @@ public class ResultComposer {
 	/**
 	 * Gathers data at the end of simulation to complete the output data.
 	 */
-	@Transactional
+    @Transactional(readOnly=true)
 	public void completeResults(){
 		System.out.println("Completing results");
+		
+		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");		
+		Set<Long> sbIDs = endDates.keySet();
+		for( Long id : sbIDs ){
+			SchedBlock sb = schedBlockDao.findById(SchedBlock.class, id);
+			for( Date d : endDates.get(id).keySet()){
+				calculateCompletion(sb, d, endDates.get(id).get(d));
+			}
+			
+		}
 		
 		results.setStopRealDate( new Date() );
 		

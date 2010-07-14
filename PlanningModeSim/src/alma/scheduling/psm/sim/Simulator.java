@@ -162,8 +162,9 @@ public class Simulator extends PsmContext {
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
         // Initialization of Result Composer
-        ResultComposer rc = new ResultComposer(ctx);
+        ResultComposer rc = (ResultComposer) ctx.getBean("resultComposer");
         rc.notifyExecutiveData(
+        		ctx,
         		execDao.getCurrentSeason().getStartDate(), 
         		execDao.getCurrentSeason().getEndDate(), 
         		// TODO: Fix Configuration datamodel to include start and stop dates.
@@ -252,11 +253,7 @@ public class Simulator extends PsmContext {
             ArrayList<ArrayConfiguration> freeArrays,
             SchedBlockExecutor sbExecutor) throws IllegalArgumentException {
     	
-    	//ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
-    	
-      //  try{
 		TimeEvent ev = timesToCheck.remove();
-    //        } catch (java.lang.No)
         // Change the current simulation time to event time
         time = ev.getTime();
         switch (ev.getType()) {
@@ -297,7 +294,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
-//                rc.notifySchedBlockStop(sb);
+                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
@@ -348,7 +345,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
                 timesToCheck.add(sbEndEv);
-//                rc.notifySchedBlockStop(sb);
+                rc.notifySchedBlockStop(sb);
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println("DSA for array "
@@ -399,7 +396,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
-//                rc.notifySchedBlockStop(sb);
+                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
             } catch (NoSbSelectedException ex) {
                 System.out.println("DSA for array "

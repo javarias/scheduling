@@ -116,7 +116,7 @@ public class ReportGenerator extends PsmContext {
         Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
         
         URL xslt = getClass().getClassLoader()
-                                .getResource("alma/scheduling/planning_mode_sim/reports/general_report.xsl");
+                                .getResource("alma/scheduling/psm/reports/general_report.xsl");
         // TODO: Change names to a more characteristic name
         String xmlIn = this.getOutputDirectory() + "/" + 
                        "output_" +
@@ -128,7 +128,7 @@ public class ReportGenerator extends PsmContext {
                         ".html";
         System.out.println("URL ofr xslt: " + xslt.toString());
         
-        XsltTransformer.transform(xslt.toString(), xmlIn, htmlOut );
+        XsltTransformer.transform( xslt.toString(), xmlIn, htmlOut );
     }
     
 }

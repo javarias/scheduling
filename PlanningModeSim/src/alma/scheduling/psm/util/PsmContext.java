@@ -3,6 +3,8 @@ package alma.scheduling.psm.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -25,8 +27,7 @@ public class PsmContext {
 	}
 
 	protected void loadAprcConfig(){
-		alma.scheduling.input.config.generated.Configuration config = 
-            new alma.scheduling.input.config.generated.Configuration();
+		Configuration config = new Configuration();
         File configFile = new File(workDir + "/aprc-config.xml");
         try {
             config = Configuration.unmarshalConfiguration(new FileReader(configFile));
@@ -40,6 +41,37 @@ public class PsmContext {
         contextFile = "file://" + workDir + "/" + config.getContextFilePath();
         reportDir = workDir + "/" + config.getReportDirectory();
         outputDir = workDir + "/" + config.getOutputDirectory();
+	}
+	
+	public Configuration getAprcConfig(){
+		Configuration config = new Configuration();
+        File configFile = new File(workDir + "/aprc-config.xml");
+        try {
+            config = Configuration.unmarshalConfiguration(new FileReader(configFile));
+        } catch (MarshalException e) {
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+        return config;
+	}
+	
+	public void saveAprcConfig(Configuration config){
+		System.out.println("Saving configuration XML to: " + workDir + "/aprc-config.xml");
+        File configFile = new File(workDir + "/aprc-config.xml");
+        try {
+            config.marshal(new FileWriter(configFile));
+        } catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e){
+			e.printStackTrace();
+		} catch (MarshalException e){
+			e.printStackTrace();
+		} catch (ValidationException e){
+			e.printStackTrace();
+		}
 	}
 	
 	public String getContextFile(){
