@@ -12,6 +12,8 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnit;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
@@ -66,25 +68,6 @@ public class DataLinker implements DataLoader {
     @Override
     @Transactional( readOnly=false)
     public void load() throws InvalidScienceGradeConfig {
-        List<SchedBlock>sbs = sbDao.findAll();
-        for(SchedBlock sb: sbs){
-        	System.out.println("sb.getPiName() = " + sb.getPiName());
-            PI pi = execDao.getPIFromEmail(sb.getPiName());
-            sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
-            sbDao.saveOrUpdate(sb);
-        }
-        
-        Configuration config = configDao.getConfiguration();
-        config.getScienceGradeConfig().setTotalPrj(sbs.size());
-        config.getScienceGradeConfig()
-                .setnGradeDPrj(
-                        config.getScienceGradeConfig().getTotalPrj()
-                                - (config.getScienceGradeConfig().getnGradeAPrj()
-                                   + config.getScienceGradeConfig().getnGradeBPrj() 
-                                   + config.getScienceGradeConfig().getnGradeCPrj()));
-        config.getScienceGradeConfig().testValues();
-        configDao.updateConfig();
-        
         List<ObsProject>prjs = obsPrjDao.getObsProjectsOrderBySciRank();
         long i = 0;
         for(ObsProject p: prjs){
@@ -101,6 +84,28 @@ public class DataLinker implements DataLoader {
             i++;
             obsPrjDao.saveOrUpdate(p);
         }
+        
+        List<SchedBlock>sbs = sbDao.findAll();
+        for(SchedBlock sb: sbs){
+            System.out.println("sb.getPiName() = " + sb.getPiName());
+            PI pi = execDao.getPIFromEmail(sb.getPiName());
+            sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
+            ObsProject p = sb.getProject();
+            sb.setScienceScore(p.getScienceScore());
+            sb.setLetterGrade(p.getLetterGrade());
+            sb.setScienceRank(p.getScienceRank());
+            sbDao.saveOrUpdate(sb);
+        }
+        
+        Configuration config = configDao.getConfiguration();
+        config.getScienceGradeConfig().setTotalPrj(sbs.size());
+        config.getScienceGradeConfig()
+                .setnGradeDPrj(
+                        config.getScienceGradeConfig().getTotalPrj()
+                                - (config.getScienceGradeConfig().getnGradeAPrj()
+                                   + config.getScienceGradeConfig().getnGradeBPrj() 
+                                   + config.getScienceGradeConfig().getnGradeCPrj()));
+        config.getScienceGradeConfig().testValues();
+        configDao.updateConfig();
     }
-
 }
