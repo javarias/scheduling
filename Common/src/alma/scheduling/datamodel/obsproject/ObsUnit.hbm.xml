@@ -18,7 +18,7 @@
         </id>
         <property name="uid" column="OBSUNIT_UID"/>
         <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
-        <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>  
+<!--    <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>  -->
         <component name="obsUnitControl" class="ObsUnitControl">
             <property name="lastUpdate" type="date" column="OBSUNIT_CTRL_LAST_UPDATE"/>
             <property name="validUntil" type="date" column="OBSUNIT_CTRL_VALID_UNTIL"/>
@@ -30,6 +30,9 @@
         <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
             <key column="SCHEDBLOCKID"/>
             <property name="piName" column="PINAME"/>
+            <property name="scienceScore" column="SCIENCE_SCORE" />
+        	<property name="scienceRank" column="SCIENCE_RANK"/>
+       		<property name="letterGrade" type="ScienceGrade" column="SCIENCE_GRADE"/>
             <component name="weatherConstraints" class="WeatherConstraints">
                 <property name="maxWindVelocity" type="double" column="MAX_WIND_VELOCITY"/>
                 <property name="maxOpacity" type="double" column="MAX_OPACITY"/>
