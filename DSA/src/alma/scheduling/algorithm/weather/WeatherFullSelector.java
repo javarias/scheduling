@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherFullSelector.java,v 1.8 2010/05/12 22:49:20 javarias Exp $"
+ * "@(#) $Id: WeatherFullSelector.java,v 1.9 2010/07/20 23:07:00 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -32,7 +32,6 @@ import org.hibernate.criterion.Criterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
@@ -51,28 +50,11 @@ public class WeatherFullSelector extends AbstractBaseSelector {
     public void setSchedBlockDao(SchedBlockDao schedBlockDao) {
         this.schedBlockDao = schedBlockDao;
     }
-    
-    @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        return select();
-    }
-    
-    @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
-        logger.debug("selecting SBs");
-        return schedBlockDao.findAll();
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        return select();
-    }
 
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        Collection<SchedBlock> sbs = select();
+        Collection<SchedBlock> sbs = schedBlockDao.findAll();
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }

@@ -1,20 +1,15 @@
 package alma.scheduling.algorithm.observatory;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
-import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.algorithm.executive.ExecutiveSelector;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
-import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
@@ -37,28 +32,6 @@ public class ArrayConfigurationSelector extends AbstractBaseSelector{
         this.sbDao = sbDao;
     }
 
-    @Override
-    @Transactional (readOnly=true)
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        return select(cal.getTime(),null);
-    }
-
-    @Override
-    @Transactional (readOnly=true)
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        return select(ut, null);
-    }
-
-
-    @Override
-    @Transactional(readOnly=true)
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        return select(cal.getTime(), arrConf);
-    }
-    
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf) {
         if (arrConf == null){

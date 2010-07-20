@@ -34,25 +34,6 @@ public class HourAngleSelector extends AbstractBaseSelector {
 	}
 
 	@Override
-	public Collection<SchedBlock> select() throws NoSbSelectedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-			throws NoSbSelectedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
 			throws NoSbSelectedException {
 		/* In the south hemisphere the calculation of the HA is: H + 12 = LST - alpha 

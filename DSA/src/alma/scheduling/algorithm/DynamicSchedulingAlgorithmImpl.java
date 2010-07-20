@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.15 2010/07/10 01:25:04 rhiriart Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.16 2010/07/20 23:07:00 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -30,9 +30,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
@@ -47,9 +45,6 @@ import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.algorithm.sbselection.SchedBlockSelector;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
-import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.ObsUnit;
-import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorithm {

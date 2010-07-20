@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.12 2010/07/13 21:38:56 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.13 2010/07/20 23:07:00 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -139,7 +139,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
     public synchronized void update(Date date) {
         Collection<SchedBlock> sbs;
         try {
-            sbs = selector.select();
+            sbs = selector.select(date, null);
         } catch (NoSbSelectedException e) {
             return;
         }
@@ -312,7 +312,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
     @Override
     public void update(Date date, SchedBlock sb) {
-        
+        //Do nothing;
     }
    
 }

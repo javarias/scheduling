@@ -46,25 +46,6 @@ public class MasterSelector implements SchedBlockSelector {
         }
         return conj;
     }
-
-    @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-
-        return null;
-    }
     
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)

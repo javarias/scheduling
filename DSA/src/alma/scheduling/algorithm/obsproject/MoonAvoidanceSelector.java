@@ -33,25 +33,6 @@ public class MoonAvoidanceSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
         MoonAstroData moonData = CoordinatesUtil.getMoonAstroData(ut);

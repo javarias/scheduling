@@ -30,22 +30,6 @@ public class SchedBlockStatusSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
-        return sbDao.findSchedBlockWithStatusReady();
-    }
-
-    @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        return sbDao.findSchedBlockWithStatusReady();
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        return sbDao.findSchedBlockWithStatusReady();
-    }
-
-    @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
         return sbDao.findSchedBlockWithStatusReady();

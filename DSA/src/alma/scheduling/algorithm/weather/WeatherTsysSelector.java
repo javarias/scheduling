@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherTsysSelector.java,v 1.6 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: WeatherTsysSelector.java,v 1.7 2010/07/20 23:07:00 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -59,12 +59,8 @@ public class WeatherTsysSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        return select();
-    }
-    
-    @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
+    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
+            throws NoSbSelectedException {
         logger.debug("selecting SBs");
         List<SchedBlock> selSBs =
             schedBlockDao.findSchedBlocksWithoutTooMuchTsysVariation(tsysVariation);
@@ -72,21 +68,8 @@ public class WeatherTsysSelector extends AbstractBaseSelector {
         for (SchedBlock sb : selSBs) {
             logger.debug("selected SB ID: " + sb.getId());
         }
+        printVerboseInfo(selSBs, arrConf.getId(), ut);
         return selSBs;
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        return select();
-    }
-
-    @Override
-    public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        Collection<SchedBlock> sbs = select();
-        printVerboseInfo(sbs, arrConf.getId(), ut);
-        return sbs;
     }
 
     @Override

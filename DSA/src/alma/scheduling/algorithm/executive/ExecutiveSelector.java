@@ -21,14 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveSelector.java,v 1.6 2010/07/12 20:40:13 javarias Exp $"
+ * "@(#) $Id: ExecutiveSelector.java,v 1.7 2010/07/20 23:07:00 javarias Exp $"
  */
 package alma.scheduling.algorithm.executive;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.criterion.Conjunction;
@@ -36,7 +35,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
@@ -75,36 +73,9 @@ public class ExecutiveSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        // ut time is ignored
-        return select();
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        // ut time is ignored
-        return select();
-    }
-
-    @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        // ut time is ignored
-        Collection<SchedBlock> sbs = select();
-        printVerboseInfo(sbs, arrConf.getId(), ut);
-        return sbs;
-    }
-
-    /*
-     * 
-     * (non-Javadoc)
-     * 
-     * @see alma.scheduling.algorithm.sbselection.SchedBlockSelector#select()
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
+        // ut and arrConf are ignored
         logger.trace("entering");
         List<SchedBlock> acceptedSbs = new ArrayList<SchedBlock>();
         List<Executive> execs = execDao.getAllExecutive();
@@ -115,12 +86,13 @@ public class ExecutiveSelector extends AbstractBaseSelector {
             acceptedSbs.addAll(sbs);
         }
         logger.info("# SchedBlocks selected: " + acceptedSbs.size());
+        printVerboseInfo(acceptedSbs, arrConf.getId(), ut);
         return acceptedSbs;
     }
 
+
     @Override
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        // TODO Auto-generated method stub
         /*        query = getSession()
                 .createQuery(
                         "select sb from SchedBlock sb, PI pi join pi.PIMembership pim, "
@@ -141,12 +113,5 @@ public class ExecutiveSelector extends AbstractBaseSelector {
         conj.add(Restrictions.leProperty("obsUnitControl.estimatedExecutionTime", "ep.remainingObsTime"));
         return conj;
     }
-
-    @Override
-    public boolean canBeSelected(SchedBlock sb) {
-        return false;
-    }
-
-    
 
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.8 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.9 2010/07/20 23:07:00 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -41,44 +41,13 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 public interface SchedBlockSelector {
 
     /**
-     * Selects a set of SchedBlocks, in a manner that is independent of
-     * the time. If the underlying queries require the time, the current
-     * time is used.
-     * @return the selected SchedBlocks
-     * @throws NoSbSelectedException if no selection is possible
-     */
-    public Collection<SchedBlock> select() throws NoSbSelectedException;
-
-    /**
-     * Selects a set of SchedBlocks for a given point in time. If the queries
-     * underlying the selection don't require the point in time, this parameter
-     * is ignored.
-     * 
-     * @param ut Time (UTC)
-     * @return the selected SchedBlocks
-     * @throws NoSbSelectedException if no selection is possible
-     */
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException;
-    
-    /**
-     * Selects a set of SchedBlocks for a given array.
-     * If the queries underlying the selection don't require
-     * the array, this parameter is ignored.
-     * 
-     * @param arrConf the array
-     * @return the selected SchedBlocks
-     * @throws NoSbSelectedException 
-     * @throws NoSbSelectedException if no selection is possible
-     */
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf) throws NoSbSelectedException;
-    /**
      * Selects a set of SchedBlocks for a given point in time for a given array.
      * If the queries underlying the selection don't require the point in time
      * or the array, these parameters
      * are ignored.
      * 
-     * @param ut Time (UTC)
-     * @param arrConf the array
+     * @param ut Time (UTC), it can be null if the implementation doesn't use this parameter.
+     * @param arrConf the array it can be null if the implementation doesn't use this parameter.
      * @return the selected SchedBlocks
      * @throws NoSbSelectedException if no selection is possible
      */
@@ -104,5 +73,12 @@ public interface SchedBlockSelector {
      */
      public Criterion getCriterion(Date ut, ArrayConfiguration arrConf);
      
+     /**
+      * Determine if the SchedBlock passed as parameter can be selected by the class
+      * implementing this interface.
+      * 
+      * @param sb The SchedBlock to be evaluated
+      * @return True if the SchedBlock can be selected or False otherwise
+      */
      public boolean canBeSelected(SchedBlock sb);
 }

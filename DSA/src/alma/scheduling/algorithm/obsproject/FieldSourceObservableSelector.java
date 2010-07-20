@@ -39,30 +39,15 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
     }
 
     // --- SchedBlockSelector impl --
-    
-    @Override
-    public Collection<SchedBlock> select() throws NoSbSelectedException {
-        return select(new Date());
-    }
-
-    @Override
-    public Collection<SchedBlock> select(Date ut) throws NoSbSelectedException {
-        double longitude = configDao.getConfiguration().getArrayCenterLongitude();
-        double lst = TimeUtil.gstToLST(TimeUtil.utToGST(ut), longitude);
-        logger.debug("lst = " + lst);
-        return schedBlockDao.findSchedBlocksWithVisibleRepresentativeTarget(lst);
-    }
-
-    @Override
-    public Collection<SchedBlock> select(ArrayConfiguration arrConf)
-            throws NoSbSelectedException {
-        return select();
-    }
 
     @Override
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
-        Collection<SchedBlock> sbs = select(ut);
+        double longitude = configDao.getConfiguration().getArrayCenterLongitude();
+        double lst = TimeUtil.gstToLST(TimeUtil.utToGST(ut), longitude);
+        logger.debug("lst = " + lst);
+        Collection<SchedBlock> sbs = 
+            schedBlockDao.findSchedBlocksWithVisibleRepresentativeTarget(lst);
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
     }
