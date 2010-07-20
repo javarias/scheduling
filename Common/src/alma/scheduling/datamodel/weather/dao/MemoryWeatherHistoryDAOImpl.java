@@ -10,6 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 
+/**
+ * Cached Weather DAO. This class load  all the data from DB and store them in the memory
+ * during all the execution of the simulation.
+ * 
+ * @author javarias
+ *
+ */
 public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
         implements WeatherHistoryDAO {
 

@@ -22,7 +22,7 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
 
     // --- Spring managed properties ---
     
-    private ConfigurationDao configurationDao;
+    protected ConfigurationDao configurationDao;
     public void setConfigurationDao(ConfigurationDao configurationDao) {
         this.configurationDao = configurationDao;
     }
@@ -104,7 +104,15 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
         
         logger.info("first record: " + temps.get(0).getTime() + ", " + temps.get(0).getValue());
         return temps.get(0);
-        // return new TemperatureHistRecord(0.0, 0.20, 0.1, 0.1);
+         //return new TemperatureHistRecord(0.0, 0.20, 0.1, 0.1);
     }
+
+    @SuppressWarnings("unchecked")
+    public List<TemperatureHistRecord> findAllOrdered() {
+        Query q = this.getSession().createQuery("from TemperatureHistRecord temp order by temp.time asc");
+        return q.list();
+    }
+    
+    
 
 }
