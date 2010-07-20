@@ -13,14 +13,14 @@
 
  	<bean id="dataSource2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName">
-<!--			<value>org.hsqldb.jdbcDriver</value> -->
-            <value>oracle.jdbc.driver.OracleDriver</value>
+			<value>org.hsqldb.jdbcDriver</value>
+<!--            <value>oracle.jdbc.driver.OracleDriver</value> -->
 		</property>
 		<property name="url">
 <!--			<value>jdbc:hsqldb:mem:data_model</value> -->
-<!-- 			<value>jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model</value> -->
+ 			<value>jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model</value>
 <!--   		<value>jdbc:hsqldb:hsql://localhost:8090/data_model</value> -->
-            <value>jdbc:oracle:thin:@localhost:1521:xe</value>
+<!--            <value>jdbc:oracle:thin:@localhost:1521:xe</value> -->
 		</property>
 		<property name="username">
 <!--			<value>sa</value> -->
@@ -36,12 +36,12 @@
 <!--  		<property name="user" value="hibernate" />
 		<property name="password" value="aprc" />
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" />-->
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" /> -->
 		<property name="user" value="sa" />
 		<property name="password" value="" />
 		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
-		<property name="jdbcUrl" value="jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model" />
-		<property name="initialPoolSize" value="5" />
+		<property name="jdbcUrl" value="jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model" /> 
+        <property name="initialPoolSize" value="5" />
 		<property name="maxPoolSize" value="20" />
 		<property name="minPoolSize" value="1" />
 		<property name="acquireIncrement" value="1" />
@@ -69,7 +69,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
-				<!-- <prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
+<!--                 <prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.transaction.factory_class"
@@ -80,7 +80,7 @@
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
 				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
 				<prop key="hibernate.transaction.flush_before_completion">true</prop>
-				<prop key="hibernate.transaction.auto_close_session">true</prop>
+				<prop key="hibernate.transaction.auto_close_session">false</prop>
 				<prop key="hibernate.max_fetch_depth">5</prop>
 				<prop key="hibernate.default_batch_fetch_size">16</prop>
 				<prop key="hibernate.jdbc.batch_size">25</prop>
@@ -104,10 +104,10 @@
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-	
-	<!-- ResultComposer -->
-	<bean id="resultComposer" class="alma.scheduling.psm.sim.ResultComposer">
-	</bean>
+
+    <!-- ResultComposer -->
+    <bean id="resultComposer" class="alma.scheduling.psm.sim.ResultComposer">
+    </bean>
 
 	<!-- DAO Beans -->
 	<bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
@@ -119,7 +119,7 @@
 	<bean id="sbDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-	<bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.WeatherHistoryDAOImpl">
+	<bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.MemoryWeatherHistoryDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="configurationDao" ref="configDao"/>
 	</bean>
