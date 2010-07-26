@@ -33,7 +33,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
  * alma.scheduling.datamodel.obsproject.ObsProjects.
  * 
  * @author dclarke
- * $Id: ObsProjectTableModel.java,v 1.1 2010/07/26 16:36:19 dclarke Exp $
+ * $Id: ObsProjectTableModel.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class ObsProjectTableModel extends AbstractTableModel {
@@ -200,11 +200,14 @@ public class ObsProjectTableModel extends AbstractTableModel {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.table.TableModel#getColumnName(int)
+	/**
+	 * Return the text of the column's name. Leave it up to
+	 * getColumnName() to apply any HTML formatting.
+	 * 
+	 * @param columnIndex
+	 * @return
 	 */
-	@Override
-	public String getColumnName(int columnIndex) {
+	private String getColumnInnerName(int columnIndex) {
 		switch (columnIndex) {
 		case Column_EntityId:
 			return "Entity ID";
@@ -228,6 +231,28 @@ public class ObsProjectTableModel extends AbstractTableModel {
 			return "";
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.table.TableModel#getColumnName(int)
+	 */
+	@Override
+	public String getColumnName(int columnIndex) {
+		return String.format("<html><b>%s</b></html>",
+				getColumnInnerName(columnIndex));
+	}
 	/* End TableModel implementation
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * External interface specific to this class
+	 * ================================================================
+	 */
+	public String getProjectId(int row) {
+		return (String) getValueAt(row, Column_EntityId);
+	}
+	/* End External interface specific to this class
 	 * ============================================================= */
 }

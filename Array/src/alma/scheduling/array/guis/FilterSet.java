@@ -33,7 +33,7 @@ import javax.swing.table.TableModel;
 /**
  * A set of filters for the columns of a TableModel
  * @author dclarke
- * $Id: FilterSet.java,v 1.1 2010/07/26 16:36:19 dclarke Exp $
+ * $Id: FilterSet.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
  */
 public class FilterSet {
 	/*
@@ -42,6 +42,8 @@ public class FilterSet {
 	 * ================================================================
 	 */
 	private static String defaultFilter = ".*";
+	private static Pattern defaultPattern
+									  = Pattern.compile(defaultFilter);
 	/* End Constants
 	 * ============================================================= */
 	
@@ -101,13 +103,14 @@ public class FilterSet {
 		return table.getColumnCount();
 	}
 	
-	/**
-	 * Clear the given filter for this set
-	 */
-	public void resetNoPublish(int col) {
-		filters.set(col, defaultFilter);
-		patterns.set(col, Pattern.compile(defaultFilter));
-		inUse.set(col, false);
+	private String stripXMLTags(String s) {
+		while (s.startsWith("<")) {
+			s = s.substring(s.indexOf('>')+1);
+		}
+		while (s.endsWith(">")) {
+			s = s.substring(0, s.lastIndexOf('<'));
+		}
+		return s;
 	}
 	/* End Utility methods
 	 * ============================================================= */
@@ -119,10 +122,14 @@ public class FilterSet {
 	 * Public Interface
 	 * ================================================================
 	 */
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * A bit like toString(), but with some HTML tags to do a wee bit
+	 * of formatting.
+	 * 
+	 * @return An HTML representation of this FilterSet, complete with
+	 * <code>&lt;html&gt;</code> &amp; <code>&lt;/html&gt;</code>
 	 */
-	public String toString() {
+	public String toHTML() {
 		StringBuilder b = new StringBuilder();
 		Formatter     f = new Formatter(b);
 		boolean doneSome = false;
@@ -134,7 +141,7 @@ public class FilterSet {
 					b.append("; ");
 				}
 				f.format("<font color=#7f7fff>%s:</font> %s",
-						table.getColumnName(i),
+						stripXMLTags(table.getColumnName(i)),
 						filters.get(i));
 				doneSome = true;
 			}
@@ -146,22 +153,26 @@ public class FilterSet {
 		return b.toString();
 	}
 	
-	/**
-	 * Clear the given filter for this set
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
 	 */
-	public void reset(int col) {
-		resetNoPublish(col);
-		publish();
-	}
-	
-	/**
-	 * Clear all the filters for this set
-	 */
-	public void reset() {
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		boolean doneSome = false;
+
 		for (int i = 0; i < numCols(); i++) {
-			resetNoPublish(i);
+			if (inUse.get(i)) {
+				if (doneSome) {
+					b.append("; ");
+				}
+				b.append(stripXMLTags(table.getColumnName(i)));
+				doneSome = true;
+			}
 		}
-		publish();
+		if (!doneSome) {
+			b.append("No filtering");
+		}
+		return b.toString();
 	}
 	
 	/**
@@ -173,7 +184,66 @@ public class FilterSet {
 		
 		filters.set(col, regexp);
 		patterns.set(col, p);
+		publish();
+	}
+	
+	/**
+	 * Reset the filter for the given column back to the default.
+	 */
+	public void reset(int col) {
+		filters.set(col, defaultFilter);
+		patterns.set(col, defaultPattern);
+		publish();
+	}
+	
+	/**
+	 * Reset the filter for all columns back to the default.
+	 */
+	public void reset() {
+		for (int col = 0; col < numCols(); col++) {
+			filters.set(col, defaultFilter);
+			patterns.set(col, defaultPattern);
+		}
+		publish();
+	}
+	
+	/**
+	 * Activate the filter in the given column
+	 * 
+	 * @param col
+	 */
+	public void activate(int col) {
 		inUse.set(col, true);
+		publish();
+	}
+	
+	/**
+	 * Deactivate the filter in the given column
+	 * 
+	 * @param col
+	 */
+	public void deactivate(int col) {
+		inUse.set(col, false);
+		publish();
+	}
+	
+	/**
+	 * Activate the filter in all the columns
+	 */
+	public void activate() {
+		for (int col = 0; col < numCols(); col++) {
+			inUse.set(col, true);
+		}
+		publish();
+	}
+	
+	/**
+	 * Deactivate the filter in all the columns
+	 */
+	public void deactivate() {
+		for (int col = 0; col < numCols(); col++) {
+			inUse.set(col, false);
+		}
 		publish();
 	}
 	

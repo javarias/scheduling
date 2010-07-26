@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 
 import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 /**
@@ -33,7 +35,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.1 2010/07/26 16:36:19 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -102,15 +104,46 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/*
 	 * ================================================================
+	 * Support methods
+	 * ================================================================
+	 */
+	private ObsProject project(ObsUnitSet ous) {
+		ObsProject op = ous.getProject();
+		if (op == null) {
+			op = project(ous.getParent());
+		}
+		return op;
+	}
+	
+	private ObsProject project(SchedBlock schedBlock) {
+		ObsProject op = schedBlock.getProject();
+		if (op == null) {
+			op = project(schedBlock.getParent());
+		}
+		return op;
+	}
+	
+	private String projectId(SchedBlock schedBlock) {
+		ObsProject op = project(schedBlock);
+		return op.getUid();
+	}
+	/* End Support methods
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
 	 * TableModel implementation
 	 * ================================================================
 	 */
-	private static final int           Column_EntityId = 0;
-	private static final int                 Column_PI = 1;
-	private static final int          Column_Executive = 2;
-	private static final int               Column_Name = 3;
-	private static final int              Column_State = 4;
-	private static final int               NUM_COLUMNS = 5;
+	private static final int  Column_EntityId = 0;
+	private static final int        Column_PI = 1;
+	private static final int Column_Executive = 2;
+	private static final int      Column_Name = 3;
+	private static final int     Column_State = 4;
+	private static final int   Column_Project = 5;
+	private static final int      NUM_COLUMNS = 6;
 	
 
 	/* (non-Javadoc)
@@ -156,6 +189,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Not yet implemented"; // TODO: SchedBlock name
 		case Column_State:
 			return "Not yet implemented"; // TODO: SchedBlock state
+		case Column_Project:
+			return projectId(schedBlock);
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -164,7 +199,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return null;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnClass(int)
 	 */
@@ -181,6 +216,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return String.class;
 		case Column_State:
 			return String.class;
+		case Column_Project:
+			return String.class;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnClass(%d)",
@@ -190,11 +227,14 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.table.TableModel#getColumnName(int)
+	/**
+	 * Return the text of the column's name. Leave it up to
+	 * getColumnName() to apply any HTML formatting.
+	 * 
+	 * @param columnIndex
+	 * @return
 	 */
-	@Override
-	public String getColumnName(int columnIndex) {
+	private String getColumnInnerName(int columnIndex) {
 		switch (columnIndex) {
 		case Column_EntityId:
 			return "Entity ID";
@@ -206,6 +246,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Name";
 		case Column_State:
 			return "State";
+		case Column_Project:
+			return "Project";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
@@ -214,6 +256,28 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "";
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.table.TableModel#getColumnName(int)
+	 */
+	@Override
+	public String getColumnName(int columnIndex) {
+		return String.format("<html><b>%s</b></html>",
+				getColumnInnerName(columnIndex));
+	}
 	/* End TableModel implementation
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * External interface specific to this class
+	 * ================================================================
+	 */
+	public static int projectIdColumn() {
+		return Column_Project;
+	}
+	/* End External interface specific to this class
 	 * ============================================================= */
 }
