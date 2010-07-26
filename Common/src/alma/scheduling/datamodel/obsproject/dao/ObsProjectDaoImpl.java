@@ -24,7 +24,13 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
         logger.trace("hydrating ObsProject");
         getHibernateTemplate().lock(prj, LockMode.NONE);
         Long id = prj.getObsUnit().getId();
-        ObsUnit ou = (ObsUnit) getHibernateTemplate().get(ObsUnit.class, id);
+        ObsUnit ou = null;
+        try {
+        	ou = (ObsUnitSet) getHibernateTemplate().get(ObsUnitSet.class, id);
+        } catch (org.hibernate.ObjectNotFoundException ex) {
+            ou = (SchedBlock) getHibernateTemplate().get(SchedBlock.class, id);        	
+        }
+        prj.setObsUnit(ou); // replace the java_assist proxy by the real thing
         hydrateObsUnit(ou);
     }
 
