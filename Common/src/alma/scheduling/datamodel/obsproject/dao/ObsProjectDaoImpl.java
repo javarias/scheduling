@@ -30,10 +30,25 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
         } catch (org.hibernate.ObjectNotFoundException ex) {
             ou = (SchedBlock) getHibernateTemplate().get(SchedBlock.class, id);        	
         }
+        // ATTENTION -- WEIRD CODE ALARM -- ATTENTION -- WEIRD CODE ALARM -- ATTENTION
         prj.setObsUnit(ou); // replace the java_assist proxy by the real thing
+        // ATTENTION -- WEIRD CODE ALARM -- ATTENTION -- WEIRD CODE ALARM -- ATTENTION
         hydrateObsUnit(ou);
     }
 
+
+    public ObsUnit getObsUnitForProject(ObsProject prj) {
+        Long id = prj.getObsUnit().getId();
+        ObsUnit ou = null;
+        try {
+        	ou = (ObsUnitSet) getHibernateTemplate().get(ObsUnitSet.class, id);
+        } catch (org.hibernate.ObjectNotFoundException ex) {
+            ou = (SchedBlock) getHibernateTemplate().get(SchedBlock.class, id);        	
+        }
+        hydrateObsUnit(ou);
+        return ou;
+    }
+    
     private void hydrateObsUnit(ObsUnit ou) {
         getHibernateTemplate().lock(ou, LockMode.NONE);
         
