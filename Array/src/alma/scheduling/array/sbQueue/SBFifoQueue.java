@@ -27,7 +27,7 @@ import alma.scheduling.SchedBlockQueueManagerOperations;
  * support promotion & demotion of SchedBlocks up & down the queue).
  * 
  * @author dclarke
- * $Id: SBFifoQueue.java,v 1.1 2010/07/19 21:08:29 dclarke Exp $
+ * $Id: SBFifoQueue.java,v 1.2 2010/07/27 16:43:13 rhiriart Exp $
  */
 public class SBFifoQueue implements SchedBlockQueueManagerOperations {
 
@@ -141,5 +141,17 @@ public class SBFifoQueue implements SchedBlockQueueManagerOperations {
 			PriorityPair[] array = pq.toArray(new PriorityPair[0]);
 			promote(array, label);
 		}
+	}
+
+	@Override
+	public void delete(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String[] getQueue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -23,13 +23,15 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.ArrayOperations;
+import alma.scheduling.array.util.NameTranslator;
+import alma.scheduling.array.util.NameTranslator.TranslationException;
 
 
 /**
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.1 2010/07/26 16:36:19 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.2 2010/07/27 16:43:13 rhiriart Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -68,7 +70,11 @@ public abstract class AbstractArrayPanel extends JPanel
 	public void setServices(PluginContainerServices services) {
 		this.services = services;
 		final SessionProperties properties = services.getSessionProperties();
-		final String arrayCompName = properties.getArrayCompName();
+		try {
+			final String arrayCompName = NameTranslator.arrayToComponentName(properties.getArrayName());
+		} catch (TranslationException e) {
+			e.printStackTrace();
+		}
 		final String arrayName     = properties.getArrayName();
 	}
 

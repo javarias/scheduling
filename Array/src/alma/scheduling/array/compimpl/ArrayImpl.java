@@ -24,6 +24,7 @@ import alma.ACS.ComponentStates;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArrayOperations;
+import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockScore;
 
@@ -133,5 +134,23 @@ public class ArrayImpl implements ComponentLifecycle,
 	public String getRunningSchedBlock() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void delete(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String[] getQueue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setMode(ArraySchedulerMode arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingArray.idl,v 1.1 2010/07/14 00:33:30 rhiriart Exp $
+ * $Id: SchedulingArray.idl,v 1.2 2010/07/27 16:43:13 rhiriart Exp $
  */
 
 #ifndef _SCHEDULINGARRAY_IDL_
@@ -34,7 +34,15 @@
 
 module scheduling {
 
+    enum ArraySchedulerMode {
+        INTERACTIVE,
+        QUEUE,
+        DYNAMIC_PASSIVE,
+        DYNAMIC_ACTIVE
+    };
+
     typedef string SchedBlockUID;
+    typedef sequence<SchedBlockUID> SchedBlockUIDSeq;
 
     struct SchedBlockScore {
         SchedBlockUID uid;
@@ -64,6 +72,8 @@ module scheduling {
         SchedBlockUID pull();
         void moveUp(in SchedBlockUID uid); 
         void moveDown(in SchedBlockUID uid);
+        void delete(in SchedBlockUID uid);
+        SchedBlockUIDSeq getQueue();
     };
 
     /**
@@ -85,7 +95,9 @@ module scheduling {
     };
 
     interface Array : ACS::ACSComponent, SchedBlockQueueManager,
-                      SchedBlockExecutionManager, DSA { };
+                      SchedBlockExecutionManager, DSA {
+        void setMode(in ArraySchedulerMode mode);
+    };
 
 };
 #endif // _SCHEDULINGARRAY_IDL_

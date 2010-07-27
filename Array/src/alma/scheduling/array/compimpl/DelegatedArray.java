@@ -24,6 +24,7 @@ import alma.ACS.ComponentStates;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArrayOperations;
+import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.DSAOperations;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionManagerOperations;
@@ -36,7 +37,7 @@ import alma.scheduling.SchedBlockScore;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.1 2010/07/19 21:08:29 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.2 2010/07/27 16:43:13 rhiriart Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
@@ -240,4 +241,22 @@ public class DelegatedArray implements ComponentLifecycle,
 	}
     /* End Delegation of SchedBlockQueueManagerOperations
      * ============================================================= */
+
+	@Override
+	public void delete(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String[] getQueue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setMode(ArraySchedulerMode arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
