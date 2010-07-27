@@ -1,4 +1,4 @@
-# $Id: sqltool.rc,v 1.1 2010/07/14 00:33:30 rhiriart Exp $
+# $Id: sqltool.rc,v 1.2 2010/07/27 16:50:28 rhiriart Exp $
 
 # This is a sample RC configuration file used by SqlTool, DatabaseManager,
 # and any other program that uses the org.hsqldb.util.RCData class.
@@ -32,8 +32,8 @@
 
 # This is for a hsqldb Server running with default settings on your local
 # computer (and for which you have not changed the password for "sa").
-urlid statearchive
-url jdbc:hsqldb:hsql://localhost:9001/statearchive
+urlid data_model
+url jdbc:hsqldb:hsql://localhost:9001/data_model
 username sa
 password
 

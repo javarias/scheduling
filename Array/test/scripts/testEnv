@@ -13,6 +13,7 @@ export ACS_CDB
 export ACS_LOG_STDOUT=2
 export RUNLOCATION
 export JAVA_OPTIONS
+export APRC_WORK_DIR
 
 RETVAL=0
 
@@ -76,6 +77,16 @@ startHSQLDB() {
     # allow some time for the database to start
     sleep 5
     acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server "$DBNAME" //localhost:$DBPORT sql/hsqldb-ddl.sql &> $ACS_TMP/hsqldb-ddl.log
+    # unpack input XML files
+    printf "Populating HSQLDB database\n"
+    if test -n "$SCHED_XML_PACKED_FILE"; then
+        SCHED_XML_ABS_LOC=`pwd`/$SCHED_XML_PACKED_FILE
+        cd $ACS_TMP
+        tar xvzf "$SCHED_XML_ABS_LOC" &> /dev/null
+        cd - &> /dev/null
+    fi
+    export CLASSPATH=../lib/../lib/SchedulingArrayImplTest.jar:ehcache-1.4.1.jar:../lib/backport-util-concurrent.jar:../lib/slf4j-log4j12-1.5.2.jar:$CLASSPATH
+    acsStartJava -endorsed alma.scheduling.testutils.XmlDBLoader &> tmp/XmlDBLoader.log
 }
 
 stopHSQLDB() {
