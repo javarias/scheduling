@@ -141,7 +141,7 @@ public class Simulator extends PsmContext {
     
     @Transactional
     public void run() throws IllegalArgumentException{
-    	ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
+    	ApplicationContext ctx = getApplicationContext();
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
@@ -162,7 +162,8 @@ public class Simulator extends PsmContext {
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
         
         // Initialization of Result Composer
-        ResultComposer rc = (ResultComposer) ctx.getBean("resultComposer");
+        //ResultComposer rc = (ResultComposer) ctx.getBean("resultComposer");
+        ResultComposer rc = new ResultComposer();
         rc.notifyExecutiveData(
         		ctx,
         		execDao.getCurrentSeason().getStartDate(), 
@@ -282,10 +283,11 @@ public class Simulator extends PsmContext {
                 logger.info("Obtaining scheduling block for array: " + ev.getArray().getId());
                 SchedBlock sb = dsa.getSelectedSchedBlock();
                 logger.info("Executing scheduling block for array: " + ev.getArray().getId());
+                TimeHandler.getHandler().step( ev.getTime() );
+                // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                rc.notifySchedBlockStart(sb, ev.getArray().getId() );
                 logger.info("Notification: " + ev.getArray().getId());
-                TimeHandler.getHandler().step(d);
-                rc.notifySchedBlockStart(sb);
                 // Create a new EventTime to check the SB execution termination
                 // in the future
                 logger.info("Simulating passed time for array: " + ev.getArray().getId());
@@ -294,8 +296,9 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
-                rc.notifySchedBlockStop(sb);
-                timesToCheck.add(sbEndEv);
+                TimeHandler.getHandler().step( d );
+                rc.notifySchedBlockStop(sb, sb.getObsUnitControl().getEstimatedExecutionTime());
+                timesToCheck.add(sbEndEv);                
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println(TimeUtil.getUTString(time)
@@ -334,9 +337,10 @@ public class Simulator extends PsmContext {
                 dsa.updateCandidateSB(time);
                 dsa.rankSchedBlocks(time);
                 SchedBlock sb = dsa.getSelectedSchedBlock();
+                TimeHandler.getHandler().step( ev.getTime() );
+                // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                TimeHandler.getHandler().step(d);
-                rc.notifySchedBlockStart(sb);
+                rc.notifySchedBlockStart(sb, ev.getArray().getId());
                 // Create a new EventTime to check the SB execution termination
                 // in the future
                 TimeEvent sbEndEv = new TimeEvent();
@@ -345,7 +349,8 @@ public class Simulator extends PsmContext {
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
                 timesToCheck.add(sbEndEv);
-                rc.notifySchedBlockStop(sb);
+                TimeHandler.getHandler().step( d );
+                rc.notifySchedBlockStop(sb, sb.getObsUnitControl().getEstimatedExecutionTime());
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println("DSA for array "
@@ -386,9 +391,11 @@ public class Simulator extends PsmContext {
                 dsa.rankSchedBlocks(time);
                 // System.out.println("After rankers " + new Date());
                 SchedBlock sb = dsa.getSelectedSchedBlock();
+                
+                TimeHandler.getHandler().step( ev.getTime() );
+                // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
-                TimeHandler.getHandler().step(d);
-                rc.notifySchedBlockStart(sb);
+                rc.notifySchedBlockStart(sb, ev.getArray().getId() );
                 // Create a new EventTime to check the SB execution termination
                 // in the future
                 TimeEvent sbEndEv = new TimeEvent();
@@ -396,8 +403,10 @@ public class Simulator extends PsmContext {
                 sbEndEv.setSb(sb);
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
-                rc.notifySchedBlockStop(sb);
                 timesToCheck.add(sbEndEv);
+                TimeHandler.getHandler().step( d );
+                rc.notifySchedBlockStop(sb, sb.getObsUnitControl().getEstimatedExecutionTime());           
+                
             } catch (NoSbSelectedException ex) {
                 System.out.println("DSA for array "
                         + ev.getArray().getId().toString()

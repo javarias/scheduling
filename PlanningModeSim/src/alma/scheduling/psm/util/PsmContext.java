@@ -8,6 +8,9 @@ import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.input.config.generated.Configuration;
@@ -19,13 +22,13 @@ public class PsmContext {
 	protected String reportDir = null;
 	protected String contextFile = null;
     protected VerboseLevel verboseLvl = null;
+    static protected ApplicationContext ctx = null;
 
-	
 	public PsmContext(String workDir){
 		this.workDir = workDir;
 		this.loadAprcConfig();
 	}
-
+	
 	protected void loadAprcConfig(){
 		Configuration config = new Configuration();
         File configFile = new File(workDir + "/aprc-config.xml");
@@ -93,4 +96,22 @@ public class PsmContext {
 	public void setVerboseLvl(VerboseLevel verboseLvl) {
 		this.verboseLvl = verboseLvl;
 	}
+	
+	public static void setApplicationContext( ApplicationContext context ){
+		if( ctx == null )
+			ctx = context;
+		else{
+			System.out.println("Error, ApplicationContext already has been set");
+			System.exit(6);
+		}
+	}
+	
+	public static ApplicationContext getApplicationContext(){
+		if( ctx == null ){
+			System.out.println("Error, ApplicationContext has not been set");
+			System.exit(7);
+		}
+		return ctx;
+	}
+	
 }

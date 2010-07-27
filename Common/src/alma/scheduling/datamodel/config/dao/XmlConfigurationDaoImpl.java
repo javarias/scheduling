@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.12 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.13 2010/07/27 22:38:00 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
@@ -42,15 +42,23 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
 
     public static final String APRC_WORK_DIR = "APRC_WORK_DIR";
     public static final String APRC_CONF_FILE = "aprc-config.xml";
+    public static String workDir = "";
     
     private Configuration config = null;
     
     private static Logger logger = LoggerFactory.getLogger(XmlConfigurationDaoImpl.class);
     
+	private static String getWorkDir(){
+		if( workDir != "" )
+			return workDir;
+		else 
+			return System.getenv(APRC_WORK_DIR);
+	}
+    
     @Override
     public Configuration getConfiguration() {
         logger.trace("entering getConfiguration");
-        String confFileName = System.getenv(APRC_WORK_DIR) + "/" + APRC_CONF_FILE;
+        String confFileName = getWorkDir() + "/" + APRC_CONF_FILE;
         File confFile = new File(confFileName);
         
         if (!confFile.exists()) {

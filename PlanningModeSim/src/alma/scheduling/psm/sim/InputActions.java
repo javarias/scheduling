@@ -46,7 +46,7 @@ public class InputActions extends PsmContext {
 	}
 	
     public void fullLoad() {
-        ApplicationContext ctx = new FileSystemXmlApplicationContext( contextFile );
+        ApplicationContext ctx = getApplicationContext();
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         if(cfgBeans.length == 0){
@@ -69,7 +69,7 @@ public class InputActions extends PsmContext {
     }
 
     public void load(){
-        ApplicationContext ctx = new FileSystemXmlApplicationContext(contextFile);
+    	ApplicationContext ctx = getApplicationContext();
         String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
         try {
@@ -83,13 +83,13 @@ public class InputActions extends PsmContext {
     }
 
     public void unload() {
-        ApplicationContext ctx = new FileSystemXmlApplicationContext(contextFile);
+    	ApplicationContext ctx = getApplicationContext();
         DataUnloader loader = (DataUnloader) ctx.getBean("fullDataUnloader");
         loader.unload();
     }
 
     public void clean() {
-        ApplicationContext ctx = new FileSystemXmlApplicationContext(contextFile);
+    	ApplicationContext ctx = getApplicationContext();
         String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
         String[] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         if (cfgBeans.length == 0) {
@@ -104,5 +104,19 @@ public class InputActions extends PsmContext {
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
         configDao.deleteAll();
     }
+    
+    public boolean isWeatherLoaded(){
+    	return false;
+    }
+    
+    public boolean isDataLoaded(){
+    	return false;
+    }
+    
+    public boolean hasSimulationRan(){
+    	return false;
+    }
+    
+    
 
 }

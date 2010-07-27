@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.LoggerFactory;
@@ -77,16 +78,18 @@ public class ResultComposer {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ResultComposer.class);
 	private Results results;
 	private ApplicationContext context = null;
-	private HashMap<Long,ArrayList<Date>> startDates;
-	private HashMap<Long,LinkedHashMap<Date,Double>> endDates;
+	// Long = SB.id, Date = SBexec Start date, Long = Array ID
+	private HashMap<Long,LinkedHashMap<Date,Long>> startDates;
+	// Long = SB.id, Date = SBexec End date, {Double = sb.achievedSentivity, Double = sb.executionTime}
+	private HashMap<Long,LinkedHashMap<Date,ArrayList<Double>>> endDates;
 	
 	
 	public ResultComposer(){
 		results = new Results();
 		results.setArray( new HashSet<Array>() );
 		results.setObservationProject( new HashSet<ObservationProject>() );
-		startDates = new HashMap<Long,ArrayList<Date>>();
-		endDates = new HashMap<Long,LinkedHashMap<Date,Double>>();
+		startDates = new HashMap<Long,LinkedHashMap<Date,Long>>();
+		endDates = new HashMap<Long,LinkedHashMap<Date,ArrayList<Double>>>();
 	}
 	
 	public void notifyExecutiveData(ApplicationContext ctx, Date obsSeasonStart, Date obsSeasonEnd, Date simStart, Date simStop){
@@ -119,186 +122,104 @@ public class ResultComposer {
 	 * @param sb SchedulingBlock (class from datamodel) that needs to be informed of its execution.
 	 */
     @Transactional(readOnly=true)
-	public void notifySchedBlockStart(SchedBlock sb){
-		// TODO Implement distinction of types of SB. If maintenance, account to a ghost ObsProject.
-		
-		// Creation of SchedBlockResult
-		SchedBlockResult sbr = new SchedBlockResult();
-		Iterator<Array> it = results.getArray().iterator();
-		sbr.setArrayRef( it.next() );
-		sbr.setStartDate( TimeHandler.now() );
-		sbr.setExecutionTime( sb.getObsUnitControl().getEstimatedExecutionTime() );
-		sbr.setStatus( ExecutionStatus.INCOMPLETE );
-		sbr.setRepresentativeFrequency( sb.getSchedulingConstraints().getRepresentativeFrequency() );
-		//TODO: Implement modes in data-model
-		// In the XSD, there is a spec: InstrumentSpecT, and ObservingMode
-		sbr.setMode( "Single Dish" ); 
-		//TODO: Waiting for SB type implementation on data-model.
-		sbr.setType( "SCIENTIFIC" ); 
-		sbr.setOriginalId( sb.getId() );
-		
-		// Obtaining reference from the SchedBlock to the Observation Project.
-		ObsProject inputObsProjectRef = sb.getProject();
-				
-		// Check if the Observation Project already exists in the results collection of obsprojects.
-		// TODO: add to the datamodel an attribute that saves the original obsproject ID
-		boolean isPresent = false;
-		ObservationProject outputObservationProjectRef = null;
-		for( ObservationProject tmpOp : results.getObservationProject() ){
-			if( tmpOp.getOriginalId() == inputObsProjectRef.getId() ){
-				isPresent = true;
-				outputObservationProjectRef = tmpOp;
-				break;
-			}
-		}
-		
-		// If false, add the observation project.
-		if( !isPresent ){
-			// Create the Observation Project
-			ObservationProject newObsProject = new ObservationProject();
-			newObsProject.setScienceRank( inputObsProjectRef.getScienceRank() );
-			newObsProject.setScienceScore( inputObsProjectRef.getScienceScore() );
-			newObsProject.setOriginalId( inputObsProjectRef.getId() );
-			newObsProject.setStatus( ExecutionStatus.INCOMPLETE );
-			
-			// Create the Affiliations Set and their Affiliations			
-			newObsProject.setAffiliation(new HashSet<Affiliation>());
-			Affiliation newAffiliation = new Affiliation();
-			ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
-			// newAffiliation.setExecutive( execDao.getExecutive( inputObsProjectRef.getPrincipalInvestigator() ).getName() );
-			logger.info("Passing 001");
-			//newAffiliation.setExecutive(sb.getExecutive().getName());
-			newAffiliation.setExecutive(execDao.getExecutive(sb.getPiName()).getName());
-//			newAffiliation.setPercentage( 
-//					execDao.getPIFromEmail( 
-//							inputObsProjectRef.getPrincipalInvestigator() )
-//							.getPIMembership()
-//							.iterator()
-//							.next()
-//							.getMembershipPercentage() );
-			//TODO: Fix affiliation percentage.
-			newAffiliation.setPercentage(1.0f);
-			newObsProject.getAffiliation().add( newAffiliation );
-			
-			// Create the SchedBlock Set and add the new ObservationProject to the Results
-			newObsProject.setSchedBlock(new HashSet<SchedBlockResult>());
-
-			results.getObservationProject().add( newObsProject );
-			// Save the reference for further use
-			outputObservationProjectRef = newObsProject;
-		}
-		
-		// Add the SchedBlock to the corresponding ObservationProject
-		outputObservationProjectRef.getSchedBlock().add(sbr);
-		
-		TimeHandler.stepAhead( sb.getObsUnitControl().getEstimatedExecutionTime() );
-		sbr.setEndDate( TimeHandler.now() );
-	}
-	
-    @Transactional(readOnly=true)
-	public void notifySchedBlockStop(SchedBlock sb){
-		// private HashMap<Long,LinkedHashMap<Date,Double>> endDates;
-		
-		//Saving schedblock id and their end dates
-		LinkedHashMap<Date, Double> entry = endDates.get( sb.getId() );
+	public void notifySchedBlockStart(SchedBlock sb, long arrayId){
+    	
+		//Saving schedblock id and its end date
+		LinkedHashMap<Date, Long> entry = startDates.get( sb.getId() );
 		if( entry == null ){
-			entry = new LinkedHashMap<Date, Double>( );
-			endDates.put(sb.getId(), entry );
+			entry = new LinkedHashMap<Date, Long>();
+			startDates.put(sb.getId(), entry );
 		}		
-		entry.put( TimeHandler.now(), sb.getSchedBlockControl().getAchievedSensitivity() );
-		
+		entry.put( TimeHandler.now(), arrayId);		
 	}
-	
+    
     @Transactional(readOnly=true)
-	public void calculateCompletion(SchedBlock sb, Date d, Double s){
-		
-	
-		// Obtaining reference from the SchedBlock to the Observation Project.
-		ObsProject inputObsProjectRef = sb.getProject();
-				
-		// Check if the Observation Project already exists in the results collection of obsprojects.
-		// TODO: add to the datamodel an attribute that saves the original obsproject ID
-		boolean isPresent = false;
-		ObservationProject outputObservationProjectRef = null;
-		for( ObservationProject tmpOp : results.getObservationProject() ){
-			if( tmpOp.getOriginalId() == inputObsProjectRef.getId() ){
-				isPresent = true;
-				outputObservationProjectRef = tmpOp;
-				break;
-			}
+	public void notifySchedBlockStop(SchedBlock sb, double executionTime){
+
+		//Saving schedblock id and their end dates
+		LinkedHashMap<Date, ArrayList<Double>> entry = endDates.get( sb.getId() );
+		if( entry == null ){
+			entry = new LinkedHashMap<Date, ArrayList<Double>>();
+			endDates.put(sb.getId(), entry );
 		}
-		
-		long completedSbs = 0;
-		for( SchedBlockResult sbr : outputObservationProjectRef.getSchedBlock() ){
-			if( sbr.getOriginalId() == sb.getId() ){
-				if( sb.getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
-					sbr.setStatus( ExecutionStatus.COMPLETE );
-					sbr.setEndDate( d );
-					completedSbs += 1;
-					// Obtaining Sensitivities
-					Set<ObservingParameters> ops = sb.getObservingParameters();
-			        double sensGoalJy = 10.0;
-			        for (Iterator<ObservingParameters> iter = ops.iterator(); iter.hasNext();) {
-			            ObservingParameters params = iter.next();
-			            if (params instanceof ScienceParameters) {
-			                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
-			            }
-			        }
-			        sbr.setAchievedSensitivity(s);
-				}
-				//TODO: See what are the other status.
-			}
-		}		
-		
-		long totalSbs = this.numberOfSchedBlocks( inputObsProjectRef.getObsUnit() );
-		if( completedSbs == totalSbs )
-			outputObservationProjectRef.setStatus( ExecutionStatus.COMPLETE );
-		else if( completedSbs > 0 )
-			outputObservationProjectRef.setStatus( ExecutionStatus.INCOMPLETE );
-		else{
-			// TODO: This should never happen. Illegal state reached, throw exception
-			outputObservationProjectRef.setStatus( ExecutionStatus.NOT_STARTED );
-		}
+		ArrayList<Double> tmpAl = new ArrayList<Double>();
+		tmpAl.add(sb.getSchedBlockControl().getAchievedSensitivity() );
+		tmpAl.add(executionTime );
+		entry.put( TimeHandler.now(), tmpAl );
 	}
 	
     @Transactional(readOnly=true)
 	private long numberOfSchedBlocks( ObsUnit ouRef ){
-		if( ouRef instanceof SchedBlock ){
+		if( getInheritance( ouRef ).contains("SchedBlock") ){
 			return 1;
-		}
+		}else if( getInheritance( ouRef ).contains("ObsUnitSet") ){
 		
-		long numberSbs = 0;
-		ObsUnitSet ouSet = (ObsUnitSet)ouRef;
-				
-		for( ObsUnit ouTmp : ouSet.getObsUnits() ){
-			if( ouTmp instanceof SchedBlock ){
-				numberSbs += 1;
-			}else if( ouTmp instanceof ObsUnitSet ){
-				numberSbs += numberOfSchedBlocks( ouTmp );
-			}
+			long numberSbs = 0;
+			ObsUnitSet ouSet = (ObsUnitSet)ouRef;
+					
+			for( ObsUnit ouTmp : ouSet.getObsUnits() ){
+				if( ouTmp instanceof SchedBlock ){
+					numberSbs += 1;
+				}else if( ouTmp instanceof ObsUnitSet ){
+					numberSbs += numberOfSchedBlocks( ouTmp );
+				}
+			}			
+			return numberSbs;
+		}else{
+			System.out.println("Error, ouRef ObsUnit reference is neither a SchedBlock nor a ObsUnitSet");
+			System.out.println( ouRef.getClass() );
+			if( ouRef == null )
+				System.out.println("OutRef is null");
 		}
-		
-		return numberSbs;
+		return 0;
 	}
 		
 	/**
 	 * Gathers data at the end of simulation to complete the output data.
 	 */
-    @Transactional(readOnly=true)
+    @Transactional
 	public void completeResults(){
 		System.out.println("Completing results");
-		
-		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");		
-		Set<Long> sbIDs = endDates.keySet();
-		for( Long id : sbIDs ){
-			SchedBlock sb = schedBlockDao.findById(SchedBlock.class, id);
-			for( Date d : endDates.get(id).keySet()){
-				calculateCompletion(sb, d, endDates.get(id).get(d));
-			}
-			
-		}
-		
 		results.setStopRealDate( new Date() );
+		
+		ObsProjectDao obsProjectDao = (ObsProjectDao) context.getBean("obsProjectDao");
+		SchedBlockDao schedBlockDao = (SchedBlockDao) context.getBean("sbDao");
+		ExecutiveDAO execDao = (ExecutiveDAO) context.getBean("execDao");
+		
+		// Bring one by one observation project and create the output object for them
+		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){
+			System.out.println("\\-Completing observation project #" + op.getId());
+			ObservationProject outputOp = new ObservationProject();
+			// Filling what can be filled before calculations
+			outputOp.setOriginalId( op.getId() );
+			outputOp.setScienceRank( op.getScienceRank());
+			outputOp.setScienceScore( op.getScienceScore() );
+
+			HashSet<SchedBlockResult> sbrSet = new HashSet<SchedBlockResult>();
+			obsProjectDao.hydrateSchedBlocks(op);
+			prepareSbrSet( op.getObsUnit(), sbrSet ); 
+			outputOp.setSchedBlock( sbrSet );
+			
+			outputOp.setAffiliation(new HashSet<Affiliation>());
+			Affiliation newAffiliation = new Affiliation();
+			newAffiliation.setExecutive( execDao.getExecutive( op.getPrincipalInvestigator()).getName() );
+			//TODO: Fix affiliation percentage.
+			newAffiliation.setPercentage(100.0f);
+			outputOp.getAffiliation().add( newAffiliation );
+
+			// TODO: Calculate completion of obsproject
+			long completedSbs = 0;			
+			long totalSbs = numberOfSchedBlocks( op.getObsUnit() );
+			if( completedSbs == totalSbs )
+				outputOp.setStatus( ExecutionStatus.COMPLETE );
+			else if( completedSbs > 0 )
+				outputOp.setStatus( ExecutionStatus.INCOMPLETE );
+			else{
+				// TODO: This should never happen. Illegal state reached, throw exception
+				outputOp.setStatus( ExecutionStatus.NOT_STARTED );
+			}
+			results.getObservationProject().add(outputOp);
+		}
 		
 		for( ObservationProject op : results.getObservationProject()){
 			double execTime = 0;
@@ -315,7 +236,6 @@ public class ResultComposer {
 		
 		//TODO: According to actual structure, SBs need to belongs to a ObsProject. What about maintenance SBs?
 		for( ObservationProject op : results.getObservationProject()){
-			System.out.println("\\-Completing observation project #" + op.getId() + ": " + op.getExecutionTime() );
 			for( SchedBlockResult sbr : op.getSchedBlock()){
 				if( sbr.getType() == "SCIENTIFIC")
 					sbr.getArrayRef().setScientificTime( sbr.getArrayRef().getScientificTime() + sbr.getExecutionTime() );
@@ -330,14 +250,84 @@ public class ResultComposer {
 		}
 				
 	}
+    
+    @Transactional
+    void prepareSbrSet( ObsUnit ptrOu, HashSet<SchedBlockResult> sbrSet ){
+//    	if( ptrOu instanceof SchedBlock){
+    	if( getInheritance( ptrOu ).contains("SchedBlock") ){
+    		long sbId = ((SchedBlock)ptrOu).getId();
+    		
+    		// We have to create as many SchedBlockResults as executions of the single SB
+    		LinkedHashMap<Date, Long> lhmStart = startDates.get( sbId );
+    		LinkedHashMap<Date, ArrayList<Double>> lhmEnd = endDates.get( sbId );
+    		
+    		for( Date d : lhmStart.keySet() ){
+    			SchedBlockResult sbr = new SchedBlockResult();
+    			
+    			sbr.setStartDate( d );
+        		//TODO: Create arrays
+        		sbr.setArrayRef( null );
+        		
+        		// Obtaining Goal Sensitivity
+				Set<ObservingParameters> ops = ((SchedBlock)ptrOu).getObservingParameters();
+		        for (Iterator<ObservingParameters> iter = ops.iterator(); iter.hasNext();) {
+		            ObservingParameters params = iter.next();
+		            if (params instanceof ScienceParameters) {
+		                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
+		            }
+		        }
+		        sbr.setOriginalId( sbId );
+		        sbr.setMode( "NOT YET IMPLEMENTED");
+		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
+		        //TODO: Add frequency band
+		        sbr.setType( "NOT YET IMPLEMENTED");
+        		
+        		sbrSet.add( sbr );
+    		}
+    		
+    		
+    		Iterator<Date> itEndDate = lhmEnd.keySet().iterator();
+    		for( SchedBlockResult sbr : sbrSet ){
+    			sbr.setEndDate( itEndDate.next() );
+    			sbr.setAchievedSensitivity( lhmEnd.get( sbr.getEndDate()).get(0) );
+    			sbr.setExecutionTime( lhmEnd.get( sbr.getEndDate()).get(1) );
+    			if( sbr.getAchievedSensitivity() >= sbr.getGoalSensitivity() )
+    				sbr.setStatus( ExecutionStatus.COMPLETE);
+    			else
+    				sbr.setStatus( ExecutionStatus.INCOMPLETE);
+    		}
+    	}else if( getInheritance( ptrOu ).contains("ObsUnitSet") ){
+//    	}else{
+    		for( ObsUnit forOu : ((ObsUnitSet)ptrOu).getObsUnits() ){
+    			prepareSbrSet( forOu, sbrSet );
+    		}
+    	}    	
+    }
 	
 	/**
 	 * Saves results into the database.
 	 */
 	public Results getResults(){
-		return this.results;
-		
+		return this.results;		
 	}
-
-
+	
+	private static void printAncestor(Class<?> c, List<Class> l) {
+		Class<?> ancestor = c.getSuperclass();
+	 	if (ancestor != null) {
+		    l.add(ancestor);
+		    printAncestor(ancestor, l);
+	 	}
+	}
+	
+	private String getInheritance(Object o){
+    	Class<?> c = o.getClass();
+	    List<Class> l = new ArrayList<Class>();
+	    printAncestor(c, l);
+	    if (l.size() != 0) {
+	    	for (Class<?> cl : l)
+	    		System.out.println(cl.getCanonicalName());
+	    	return l.get(0).getCanonicalName();
+	    }
+	    return null;
+	}
 }

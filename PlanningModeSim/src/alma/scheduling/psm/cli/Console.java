@@ -29,12 +29,15 @@ import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.Simulator;
 import alma.scheduling.psm.util.Ph1mSynchronizer;
+import alma.scheduling.psm.util.PsmContext;
 
 public class Console {
 
@@ -68,6 +71,8 @@ public class Console {
     }
     
     private void selectAction(String[] args) throws IllegalArgumentException{
+    	//TODO Obtain context.xml location properly
+    	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
     	
         if(args[0].compareTo("createWorkDir") == 0){
         	Simulator simulator = new Simulator( workDir );

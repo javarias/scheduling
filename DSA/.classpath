@@ -4,6 +4,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACS"/>
+	<classpathentry kind="lib" path="/home/ahoffsta/introot/lib/spring.jar"/>
+	<classpathentry kind="src" path="/Common"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

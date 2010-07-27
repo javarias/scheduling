@@ -58,7 +58,7 @@ public class ReportGenerator extends PsmContext {
     public void crowdingReport() {
         System.out.println("Band\t\tNumber of SchedBlocks\tList of SchedBlocks");
         
-        ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
+        ApplicationContext ctx = this.getApplicationContext();
         SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
        
         for (int i = 3; i < ReportGenerator.ReceiverBandsRange.length; i++) {
@@ -78,7 +78,7 @@ public class ReportGenerator extends PsmContext {
     public void printLSTRangesReport() {
         System.out.println("LST Range\tNumber of SchedBlocks\tList of SchedBlocks");
         
-        ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
+        ApplicationContext ctx = this.getApplicationContext();
         SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
         
         List<SchedBlock> sbs = sbDao.findAll();
@@ -111,7 +111,7 @@ public class ReportGenerator extends PsmContext {
     
    
     public void finalreport(){
-        ApplicationContext ctx = new FileSystemXmlApplicationContext( this.getContextFile() );
+    	ApplicationContext ctx = this.getApplicationContext();
         OutputDao outDao = (OutputDao) ctx.getBean("outDao");
         Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
         
