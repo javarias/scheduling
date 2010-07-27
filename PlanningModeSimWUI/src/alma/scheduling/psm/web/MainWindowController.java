@@ -22,7 +22,8 @@ public class MainWindowController extends GenericForwardComposer {
     private Button buttonClick;
     private Toolbarbutton toolbarButtonOpen;
  
-    public void onClick$menuItemNew(Event event) { 
+    public void onClick$menuItemNew(Event event) {
+       	System.out.println("menuItemNew pressed");
     	Window mainWindow = (Window) Path.getComponent("//");
     	if( mainWindow == null ){
     		System.out.println("mainWindow is null");
@@ -31,13 +32,21 @@ public class MainWindowController extends GenericForwardComposer {
     	try {
     		configurationWindow.doModal();
 		} catch (SuspendNotAllowedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+    }
+    
+    public void onClick$menuItemOpen(Event event) { 
+    	System.out.println("menuItemOpen pressed");
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	Window simulationWindow = (Window) Executions.createComponents("simulation.zul", mainWindow, null);
+		simulationWindow.doOverlapped();
     } 
  
 }

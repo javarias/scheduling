@@ -27,6 +27,7 @@ cp spring-framework-2.5.5/lib/jruby/jruby.jar $TARGET/;
 cp spring-framework-2.5.5/lib/j2ee/jta.jar $TARGET/;
 cp spring-framework-2.5.5/lib/log4j/log4j-1.2.15.jar $TARGET/;
 cp spring-framework-2.5.5/dist/spring.jar $TARGET/;
+cp spring-framework-2.5.5/dist/modules/spring-web.jar $TARGET;
 
 echo "Copying HSQLDB libraries from ACS..."
 cp $ACSROOT/lib/hsqldb.jar $TARGET

@@ -34,27 +34,6 @@
 	<echo message="INTROOT=${INTROOT}"/>
 
 
-	<!-- cleanup  -->
-	<target name="clean" depends="clear-dist">
-		<delete file="${warfile}" />
-		<delete dir="${bin}" />
-	</target>
-
-	<target name="clear-dist">
-		<delete dir="${dist}" />
-	</target>
-
-	<!-- create the distribution directory -->
-	<target name="dist" depends="clear-dist">
-		<delete dir="${dist}" />
-		<mkdir dir="${dist}" />
-	</target>
-
-	<!-- create the distribution directory -->
-	<target name="bin">
-		<delete dir="${bin}" />
-		<mkdir dir="${bin}" />
-	</target>
 
 	<!-- Build our classpath: depends on ALMA environment -->
 	<path id="PlanningModeSimulatorWUI.class.path">
@@ -94,7 +73,9 @@
 		<pathelement location="${lib}/lib/jython.jar" />
 		<pathelement location="${lib}/lib/slf4j-log4j12-1.5.2-jar" />
 		<pathelement location="${lib}/lib/spring.jar" />
+		<pathelement location="${lib}/lib/spring-web.jar" />
 		<pathelement location="${lib}/lib/ehcache-core-2.1.0.jar" />
+		<pathelement location="${lib}/lib/castor.jar" />
 
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommon.jar" />
@@ -108,6 +89,30 @@
 	</path>
 
 
+
+	<!-- cleanup  -->
+	<target name="clean" depends="clear-dist">
+		<delete file="${warfile}" />
+		<delete dir="${bin}" />
+	</target>
+
+	<target name="clear-dist">
+		<delete dir="${dist}" />
+	</target>
+
+	<!-- create the distribution directory -->
+	<target name="dist" depends="clear-dist">
+		<delete dir="${dist}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<!-- create the distribution directory -->
+	<target name="bin">
+		<delete dir="${bin}" />
+		<mkdir dir="${bin}" />
+	</target>
+
+	
 	<!-- 
 	   WARNING
 	       The following task only works on Linux in the ALMA environment

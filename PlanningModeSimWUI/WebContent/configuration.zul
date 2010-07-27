@@ -1,15 +1,14 @@
 <?init class="alma.scheduling.psm.web.ConfigurationController"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./configurationWindow" ?>
 <?page title="Configuration" contentType="text/html;charset=UTF-8" id="configurationPage"?>
-<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
 <zk>
 	<window title="Simulation Configuration" border="normal"
 		mode="overlapped" sizable="true" maximizable="true" closable="true"
-		width="600px" apply="${sessionScope.configurationController}"
-		id="configurationWindow">
+		width="600px" apply="${sessionScope.configurationController}" id="configurationWindow">
 
-		<panel border="none">
+		<panel border="normal" title="Basic configuration" framable="true" style="margin-bottom:10px; margin-right:5px" collapsible="true">
 			<panelchildren>
-
 				<grid>
 					<columns sizable="true">
 						<column label="Attribute" align="right" />
@@ -23,62 +22,9 @@
 							<textbox id="name" width="99%" />
 						</row>
 						<row>
-							APRC work directory:
-							<textbox id="workDirectory" width="99%" />
-							Directory in which APRC XML data files are
-							located.
-						</row>
-						<row>
-							Observation projects directory:
-							<textbox id="projectDirectory" width="99%" />
-							Directory in which observation projects are
-							located. Usually inside "Work Directory".
-						</row>
-						<row>
-							Weather statistics directory:
-							<textbox id="weatherDirectory" width="99%" />
-							Contains date-normalized statistics of
-							weather used during simulations. Usually
-							inside "Work Directory".
-						</row>
-						<row>
-							Observatory configuration and
-							characteristics directory:
-							<textbox id="observatoryDirectory"
-								width="99%" />
-							This directory contains the configuration of
-							the virtual observatory being used for
-							simulation. Usually inside "Work Directory".
-						</row>
-						<row>
-							Executive information directory:
-							<textbox id="executiveDirectory"
-								width="99%" />
-							Indicates the directory in which can be
-							found executive, observing season and user
-							data. Usually inside "Work Directory".
-						</row>
-						<row>
-							Output XML directory:
-							<textbox id="outputDirectory" width="99%" />
-							Contains results particular to a determined
-							execution of a simulation. Usually inside
-							"Work Directory".
-						</row>
-						<row>
-							Generated reports output directory:
-							<textbox id="reportDirectory" width="99%" />
-							Directory in which generated reports get
-							allocated. Usually inside "Work Directory".
-							This is where you can find information on
-							the results of simulations.
-						</row>
-						<row>
-							Context file:
-							<textbox id="contextFilePath" width="99%" />
-							Indicates the Spring context file, which
-							configuration data persistance of the
-							application.
+							Description:
+							<textbox id="description" width="99%" value=" " />
+							
 						</row>
 						<row>
 							Array center:
@@ -88,31 +34,121 @@
 								</vbox>
 								<vbox>
 									<textbox id="arrayCenterLatitude"
-										cols="10" />
+										cols="10" value="@{configuration.arrayCenterLatitude}"  />
 									<textbox id="arrayCenterLongitude"
-										cols="10" />
+										cols="10" value="@{configuration.arrayCenterLongitude}"  />
 								</vbox>
 							</hbox>
 							Specifies the center of the array.
 						</row>
 						<row>
-							Maximum Wind Speed:
-							<textbox id="maxWindSpeed" width="99%" />
+							Maximum wind speed:
+							<textbox id="maxWindSpeed" width="99%" value="@{configuration.maxWindSpeed}" />
 							Set the top wind speed for observatory
 							operations.
 						</row>
+						<row>
+							Observing season start:
+							<textbox id="obsSeasonStart" width="99%" value="@{configuration.obsSeasonStart}" />
+							Set the top wind speed for observatory
+							operations.
+						</row>
+						<row>
+							Grade A percentage:
+							<textbox id="gradeA" width="99%" value="@{configuration.gradeA}" />
+							
+						</row>
+						<row>
+							Grade B percentage:
+							<textbox id="gradeB" width="99%" value="@{configuration.gradeB}" />
+							
+						</row>
+						<row>
+							Grade C percentage:
+							<textbox id="gradeC" width="99%" value="@{configuration.gradeC}" />
+							
+						</row>
 					</rows>
 				</grid>
+			</panelchildren>
+		</panel>
+	
+		<panel border="normal" title="Advanced configuration" framable="true" style="margin-bottom:10px; margin-right:5px" collapsible="true" id="advancedConfiguration">
+			<panelchildren>
+				<grid>
+					<columns sizable="true">
+						<column label="Attribute" align="right" />
+						<column label="Value" />
+						<column label="Description" />
+					</columns>
+					<rows>
+						<row>
+							Observation projects directory:
+							<textbox id="projectDirectory" width="99%" value="@{configuration.projectDirectory}" />
+							Directory in which observation projects are
+							located. Usually inside "Work Directory".
+						</row>
+						<row>
+							Weather statistics directory:
+							<textbox id="weatherDirectory" width="99%" value="@{configuration.weatherDirectory}" />
+							Contains date-normalized statistics of
+							weather used during simulations. Usually
+							inside "Work Directory".
+						</row>
+						<row>
+							Observatory configuration and
+							characteristics directory:
+							<textbox id="observatoryDirectory"
+								width="99%"  value="@{configuration.observatoryDirectory}"/>
+							This directory contains the configuration of
+							the virtual observatory being used for
+							simulation. Usually inside "Work Directory".
+						</row>
+						<row>
+							Executive information directory:
+							<textbox id="executiveDirectory"
+								width="99%"  value="@{configuration.executiveDirectory}"/>
+							Indicates the directory in which can be
+							found executive, observing season and user
+							data. Usually inside "Work Directory".
+						</row>
+						<row>
+							Output XML directory:
+							<textbox id="outputDirectory" width="99%"  value="@{configuration.outputDirectory}"/>
+							Contains results particular to a determined
+							execution of a simulation. Usually inside
+							"Work Directory".
+						</row>
+						<row>
+							Generated reports output directory:
+							<textbox id="reportDirectory" width="99%" value="@{configuration.reportDirectory}" />
+							Directory in which generated reports get
+							allocated. Usually inside "Work Directory".
+							This is where you can find information on
+							the results of simulations.
+						</row>
+						<row>
+							Context file:
+							<textbox id="contextFilePath" width="99%" value="@{configuration.contextFilePath}" />
+							Indicates the Spring context file, which
+							configuration data persistance of the
+							application.
+						</row>
+					</rows>
+				</grid>
+			</panelchildren>
+		</panel>
+		<panel>
+			<panelchildren>
 				<hbox width="600px" align="center"
 					widths="33%, 33%, 33%">
 					<button label="Cancel" id="buttonCancel" />
 					<button label="Default values" id="buttonReset" />
-					<button label="Save" id="buttonSave" />
+					<button label="Accept" id="buttonAccept" />
 				</hbox>
 			</panelchildren>
 		</panel>
 
-
-
+		
 	</window>
 </zk>

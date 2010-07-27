@@ -1,10 +1,13 @@
+<?init class="alma.scheduling.psm.web.SimulationController"?>
+<!-- <?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?> -->
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./simulationWindow" ?>
+
 <?page title="Simulation" contentType="text/html;charset=UTF-8" id="simulationPage"?>
-<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
 
 <zk>
 	<window title="Simulation" border="normal" mode="overlapped"
 		sizable="true" maximizable="true" closable="true" width="600px"
-		height="600px" apply="alma.scheduling.psm.web.SimulationController"
+		height="600px" apply="${sessionScope.simulationController}"
 		id="simulationWindow">
 
 		<borderlayout>
@@ -14,11 +17,11 @@
 					<north border="none">
 						<panel title="Status" border="normal"
 							framable="true" style="margin-bottom:10px; margin-right:5px">
-							<panelchildren>
+							<panelchildren id="panelChildrenStatus">
 								This simulation hasn't been ran yet.
 								Please load the data using the button
 								bellow or the menu, so that simulation
-								can be properly made.
+								can be properly made.						
 							</panelchildren>
 						</panel>
 					</north>
@@ -39,18 +42,24 @@
 												id="buttonDataSources" />
 										</row>
 										<row>
-											<button label="Load data"
+											<button label="Load all data"
 												width="100%" id="buttonLoad" />
 										</row>
 										<row>
-											<button
-												label="Run simulation" width="100%" disabled="true"
-												id="buttonRun" />
+											<button label="Unload simulation data"
+												width="100%" id="buttonUnload" />
+										</row>
+										<row>
+											<button label="Unload all data"
+												width="100%" id="buttonClean" />
 										</row>
 										<row>
 											<button
-												label="Generate reports" width="100%" disabled="true"
-												id="buttonReports" />
+												label="Run simulation" width="100%" id="buttonRun" />
+										</row>
+										<row>
+											<button
+												label="Generate reports" width="100%" id="buttonReports" />
 										</row>
 									</rows>
 								</grid>
