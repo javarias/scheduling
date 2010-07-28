@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.19 2010/07/27 22:38:00 ahoffsta Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.20 2010/07/28 22:11:54 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import alma.scheduling.algorithm.SchedBlockExecutorImpl;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
@@ -41,7 +40,6 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.PIMembership;
-import alma.scheduling.psm.sim.Simulator;
 
 public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
