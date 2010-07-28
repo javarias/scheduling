@@ -25,7 +25,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -36,13 +38,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.RowFilter.Entry;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import alma.scheduling.array.util.FilterSet;
+import alma.scheduling.array.util.FilterSetPanel;
+import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -52,7 +60,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.3 2010/07/28 21:29:36 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -91,6 +99,8 @@ public class InteractivePanel extends AbstractArrayPanel
 	private TableRowSorter<ObsProjectTableModel> opSorter;
 	/** The filters we use to select which ObsProjects to show */
 	private FilterSet opFilters;
+	/** The panel for editing the ObsProject filters */
+	private FilterSetPanel opFilterPanel;
 	/** Used to convey information concerning ObsProjects stuff */
 	private JLabel opMessage;
 	
@@ -108,8 +118,12 @@ public class InteractivePanel extends AbstractArrayPanel
 	private TableRowSorter<SchedBlockTableModel> sbSorter;
 	/** The filters we use to select which SchedBlocks to show */
 	private FilterSet sbFilters;
+	/** The panel for editing the SchedBlock filters */
+	private FilterSetPanel sbFilterPanel;
 	/** Used to convey information concerning SchedBlocks stuff */
 	private JLabel sbMessage;
+	/** The filter in use to select SBs by Project Id, null if none */
+	private RowFilter<SchedBlockTableModel, Integer> sbFilterFromOPTable;
 
 	private JButton search;
 	/* End Fields for widgets &c
@@ -152,15 +166,19 @@ public class InteractivePanel extends AbstractArrayPanel
 		opSorter = new TableRowSorter<ObsProjectTableModel>(opModel);
 		opTable.setRowSorter(opSorter);
 		opFilters = new FilterSet(opModel);
-		opFilterSummary = new JLabel(opFilters.toString());
+		opFilterSummary = new JLabel(opFilters.toHTML());
 		opFilterChange = new JButton("Change");
 		opFilterReset = new JButton("Reset");
+		opFilterPanel = FilterSetPanel.createGUI(
+				"Filters for the Project Table",
+				opFilters);
 		opMessage = new JLabel(BlankLabel);
 		
 		addActionListeners(opModel,
 				           opFilterChange,
 				           opFilterReset,
-				           opFilters);
+				           opFilters,
+				           opFilterPanel);
 		opFilters.addChangeListener(this);
 		opTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
@@ -169,18 +187,23 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbSorter = new TableRowSorter<SchedBlockTableModel>(sbModel);
 		sbTable.setRowSorter(sbSorter);
 		sbFilters = new FilterSet(sbModel);
-		sbFilterSummary = new JLabel(sbFilters.toString());
+		sbFilterSummary = new JLabel(sbFilters.toHTML());
 		sbFilterChange = new JButton("Change");
 		sbFilterReset = new JButton("Reset");
+		sbFilterPanel = FilterSetPanel.createGUI(
+				"Filters for the SchedBlock Table",
+				sbFilters);
 		sbMessage = new JLabel(BlankLabel);
 		
 		addActionListeners(sbModel,
-		           sbFilterChange,
-		           sbFilterReset,
-		           sbFilters);
+				   		   sbFilterChange,
+				   		   sbFilterReset,
+				   		   sbFilters,
+				   		   sbFilterPanel);
 		sbFilters.addChangeListener(this);
 
-		addLinkingListener(opTable, sbTable);
+		sbFilterFromOPTable = null;
+		addLinkingListener(opTable, opSorter, sbTable);
 		fakeData(opModel, sbModel);
 
 		search  = new JButton("Search");
@@ -195,66 +218,81 @@ public class InteractivePanel extends AbstractArrayPanel
 		return modelRows;
 	}
 
-	private String[] getProjectIDs(int[]                modelRows,
-								   ObsProjectTableModel table) {
-		final String[] projectIDs = new String[modelRows.length];
-	
-		for (int i = 0; i < modelRows.length; i++) {
-			projectIDs[i] = table.getProjectId(modelRows[i]);
-		}
-		return projectIDs;
-	}
-
 	private String format(int[] ints) {
 		StringBuilder b = new StringBuilder();
-		String        sep = "[";
+		String        sep = "";
 		
+		b.append("[");
 		for (int i : ints) {
 			b.append(sep);
 			b.append(i);
-			sep = ". ";
+			sep = ", ";
 		}
 		b.append("]");
 		return b.toString();
 	}
 
-	private String regexp(String[] patterns) {
-		StringBuilder b = new StringBuilder();
-		String        sep = "";
-		
-		for (String p : patterns) {
-			b.append(sep);
-			b.append(p);
-			sep = "|";
-		}
-		return b.toString();
+	private RowFilter<SchedBlockTableModel, Integer> rowFilterForSBs(final Set<String> pids) {
+		final CallbackFilter.Callee callee = new CallbackFilter.Callee() {
+
+			@Override
+			public boolean include(
+					Entry<? extends Object, ? extends Object> value, int index) {
+				final String pid =
+					value.getValue(SchedBlockTableModel.projectIdColumn()).toString();
+				return pids.contains(pid);
+			}
+		};
+
+		return CallbackFilter.callbackFilter(callee, SchedBlockTableModel.projectIdColumn());
 	}
 
-	private RowFilter<SchedBlockTableModel, Integer> regexpForSB(String[] patterns) {
-		final String re = regexp(patterns);
-		setSBMessage(re);
-		return RowFilter.regexFilter(re, SchedBlockTableModel.projectIdColumn());
+	private void setFilterForSBs(JTable table) {
+		final Set<Integer> viewRows = new HashSet<Integer>();
+		final Set<String> pids = new HashSet<String>();
+		final ObsProjectTableModel model = (ObsProjectTableModel)table.getModel();
+		
+		if (table.getSelectedRows().length != 0) {
+			// There is a selection in the table, use the selected rows
+			int[] vr = table.getSelectedRows();
+			for (int viewRow : vr) {
+				viewRows.add(viewRow);
+			}
+		} else {
+			// No selection, used all the view rows.
+			final int numViewRows = table.getRowSorter().getViewRowCount();
+			for (int viewRow = 0; viewRow < numViewRows; viewRow++) {
+				viewRows.add(viewRow);
+			}
+		}
+		
+		for (int viewRow : viewRows) {
+			try {
+				int modelRow = table.convertRowIndexToModel(viewRow);
+				pids.add(model.getProjectId(modelRow));
+			} catch (ArrayIndexOutOfBoundsException e) {
+			}
+		}
+		sbFilterFromOPTable = rowFilterForSBs(pids);
+		sbSorter.setRowFilter(sbFilterFromOPTable);
 	}
 	
-	private void addLinkingListener(final JTable opTable,
-									final JTable sbTable) {
+	private void addLinkingListener(
+			final JTable                               opTable,
+			final TableRowSorter<ObsProjectTableModel> opSorter,
+			final JTable                               sbTable) {
 		opTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 					@Override
 					public void valueChanged(ListSelectionEvent e) {
-						int[] vRows = opTable.getSelectedRows();
-						int[] mRows = convertToModel(vRows,
-													 opTable);
-						String[] pids = getProjectIDs(mRows,
-								(ObsProjectTableModel)opTable.getModel());
-						String re = regexp(pids);
-						setOPMessage(String.format("v: %s, m: %s, p: %s",
-												   format(vRows),
-												   format(mRows),
-												   re));
-						sbSorter.setRowFilter(regexpForSB(pids));
-						
+						setFilterForSBs(opTable);
 					}});
+		opSorter.addRowSorterListener(new RowSorterListener() {
+			@Override
+			public void sorterChanged(RowSorterEvent e) {
+				setFilterForSBs(opTable);
+			}
+		});
 		sbTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 					@Override
@@ -262,34 +300,27 @@ public class InteractivePanel extends AbstractArrayPanel
 						final int[] vRows = sbTable.getSelectedRows();
 						final int[] mRows = convertToModel(vRows,
 														   sbTable);
-						setSBMessage(String.format("v: %s, m: %s",
-												   format(vRows),
-												   format(mRows)));
 					}});
 	}
 
 	/**
 	 * 
 	 */
-	private void addActionListeners(final TableModel model,
-									final JButton    change,
-			                        final JButton    reset,
-			                        final FilterSet  filters) {
+	private void addActionListeners(final TableModel     model,
+									final JButton        change,
+			                        final JButton        reset,
+			                        final FilterSet      filters,
+			                        final FilterSetPanel panel) {
 		
 		change.addActionListener(new ActionListener(){
-			int filterCount = 0;
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filters.set(filterCount, ".*[aeiou].*");
-				filterCount ++;
-				if (filterCount >= model.getColumnCount()) {
-					filterCount = 0;
-				}
+				panel.setVisible(true);
 			}});
 		reset.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filters.reset();
+				panel.reset();
 			}});
 	}
 	
@@ -400,8 +431,8 @@ public class InteractivePanel extends AbstractArrayPanel
 		x = 0 ; y ++; // New row
 		addSingleWidget(new JLabel("SchedBlocks"), x++, y, 0.0, 0.0);
 		addSingleWidget(sbFilterSummary,           x++, y, 1.0, 0.0);
-		addSingleWidget(sbFilterReset,             x++, y, 0.0, 0.0);
-		addSingleWidget(sbFilterChange,            x++, y, 0.0, 0.0);
+//		addSingleWidget(sbFilterReset,             x++, y, 0.0, 0.0);
+//		addSingleWidget(sbFilterChange,            x++, y, 0.0, 0.0);
 		
 		x = 0 ; y ++; // New row
 		addFullWidthWidget(sbTable, y, 1.0, 0.3, true);
@@ -451,10 +482,9 @@ public class InteractivePanel extends AbstractArrayPanel
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource() == opFilters) {
 			setOPFilterSummary(opFilters.toHTML());
-			setOPMessage(opFilters.toHTML());
+			opSorter.setRowFilter(opFilters.rowFilter());
 		} else if (e.getSource() == sbFilters) {
-			setSBFilterSummary(sbFilters.toHTML());
-			setSBMessage(sbFilters.toHTML());
+//			setSBFilterSummary(sbFilters.toHTML());
 		}
 	}
 	/* End Listening to the filters (and anything else)
@@ -481,7 +511,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	};
 	
 	private static final int sbPerOP[] = {
-		1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 6, 1, 1, 1, 21
+		1, 1, 2, 1, 1, 1, 1, 4, 1, 6, 1, 1, 21, 1, 1, 1
 	};
 	
 	private void fakeData(ObsProjectTableModel opModel,

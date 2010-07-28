@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
-package alma.scheduling.array.guis;
+package alma.scheduling.array.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
@@ -26,14 +28,17 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.swing.RowFilter;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableModel;
 
+import alma.scheduling.swingx.CaseInsensitiveRegexpFilter;
+
 /**
  * A set of filters for the columns of a TableModel
  * @author dclarke
- * $Id: FilterSet.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
+ * $Id: FilterSet.java,v 1.1 2010/07/28 21:29:36 dclarke Exp $
  */
 public class FilterSet {
 	/*
@@ -77,13 +82,23 @@ public class FilterSet {
 	}
 	
 	/**
+	 * Copy constructor
+	 * 
+	 * @param that
+	 */
+	public FilterSet(FilterSet that) {
+		this(that.table);
+		restore(that);
+	}
+	
+	/**
 	 * Clear all the filters for this set
 	 */
 	public void initialise() {
-		filters  = new Vector<String>(numCols());
-		patterns = new Vector<Pattern>(numCols());
-		inUse    = new Vector<Boolean>(numCols());
-		for (int i = 0; i < numCols(); i++) {
+		filters  = new Vector<String>(size());
+		patterns = new Vector<Pattern>(size());
+		inUse    = new Vector<Boolean>(size());
+		for (int i = 0; i < size(); i++) {
 			filters.add(defaultFilter);
 			patterns.add(Pattern.compile(defaultFilter));
 			inUse.add(false);
@@ -99,10 +114,6 @@ public class FilterSet {
 	 * Utility methods
 	 * ================================================================
 	 */
-	private int numCols() {
-		return table.getColumnCount();
-	}
-	
 	private String stripXMLTags(String s) {
 		while (s.startsWith("<")) {
 			s = s.substring(s.indexOf('>')+1);
@@ -123,6 +134,15 @@ public class FilterSet {
 	 * ================================================================
 	 */
 	/**
+	 * How many filters do we have?
+	 * 
+	 * @return
+	 */
+	public int size() {
+		return table.getColumnCount();
+	}
+	
+	/**
 	 * A bit like toString(), but with some HTML tags to do a wee bit
 	 * of formatting.
 	 * 
@@ -135,13 +155,13 @@ public class FilterSet {
 		boolean doneSome = false;
 
 		b.append("<html>");
-		for (int i = 0; i < numCols(); i++) {
+		for (int i = 0; i < size(); i++) {
 			if (inUse.get(i)) {
 				if (doneSome) {
 					b.append("; ");
 				}
 				f.format("<font color=#7f7fff>%s:</font> %s",
-						stripXMLTags(table.getColumnName(i)),
+						getName(i),
 						filters.get(i));
 				doneSome = true;
 			}
@@ -160,7 +180,7 @@ public class FilterSet {
 		StringBuilder b = new StringBuilder();
 		boolean doneSome = false;
 
-		for (int i = 0; i < numCols(); i++) {
+		for (int i = 0; i < size(); i++) {
 			if (inUse.get(i)) {
 				if (doneSome) {
 					b.append("; ");
@@ -178,7 +198,7 @@ public class FilterSet {
 	/**
 	 * Set the given filter
 	 */
-	public void set(int col, String regexp)
+	public void setFilter(int col, String regexp)
 										throws PatternSyntaxException {
 		final Pattern p = Pattern.compile(regexp);
 		
@@ -200,7 +220,7 @@ public class FilterSet {
 	 * Reset the filter for all columns back to the default.
 	 */
 	public void reset() {
-		for (int col = 0; col < numCols(); col++) {
+		for (int col = 0; col < size(); col++) {
 			filters.set(col, defaultFilter);
 			patterns.set(col, defaultPattern);
 		}
@@ -231,7 +251,7 @@ public class FilterSet {
 	 * Activate the filter in all the columns
 	 */
 	public void activate() {
-		for (int col = 0; col < numCols(); col++) {
+		for (int col = 0; col < size(); col++) {
 			inUse.set(col, true);
 		}
 		publish();
@@ -241,7 +261,7 @@ public class FilterSet {
 	 * Deactivate the filter in all the columns
 	 */
 	public void deactivate() {
-		for (int col = 0; col < numCols(); col++) {
+		for (int col = 0; col < size(); col++) {
 			inUse.set(col, false);
 		}
 		publish();
@@ -251,7 +271,22 @@ public class FilterSet {
 	 * Get the name of the given filter
 	 */
 	public String getName(int col) {
+		return stripXMLTags(table.getColumnName(col));
+	}
+	
+	/**
+	 * Get the name of the given filter as an HTML snippet (including
+	 * the <code>&lt;html&gt;</code> & <code>&lt;/html&gt;</code>).
+	 */
+	public String getTitle(int col) {
 		return table.getColumnName(col);
+	}
+	
+	/**
+	 * Get whether or not the given filter is activated.
+	 */
+	public boolean isActive(int col) {
+		return inUse.get(col);
 	}
 	
 	/**
@@ -260,7 +295,51 @@ public class FilterSet {
 	public String getFilter(int col) {
 		return filters.get(col);
 	}
+	
+	public RowFilter<TableModel, Integer> rowFilter(RowFilter<TableModel, Integer> initial) {
+		Collection<RowFilter<TableModel, Integer>> list = new ArrayList<RowFilter<TableModel, Integer>>();
+		if (initial != null) {
+			list.add(initial);
+		}
+
+		for (int col = 0; col < size(); col++) {
+			if (isActive(col)) {
+				final RowFilter<TableModel, Integer> colFilter =
+					RowFilter.regexFilter(getFilter(col), col);
+				final RowFilter<TableModel, Integer> colFilter2 =
+					CaseInsensitiveRegexpFilter.regexFilter(getFilter(col), col);
+				list.add(colFilter2);
+			}
+		}
+		
+		return RowFilter.andFilter(list);
+	}
+	
+	public RowFilter<TableModel, Integer>  rowFilter() {
+		return rowFilter(null);
+	}
+
 	/* End Public Interface
+	 * ============================================================= */
+	
+	
+	
+	/*
+	 * ================================================================
+	 * Restore
+	 * ================================================================
+	 */
+	public void restore(FilterSet that) {
+		for (int col = 0; col < size(); col++) {
+			this.setFilter(col, that.getFilter(col));
+			if (that.isActive(col)) {
+				this.activate(col);
+			} else {
+				this.deactivate(col);
+			}
+		}
+	}
+	/* End Restore
 	 * ============================================================= */
 	
 	
