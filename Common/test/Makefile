@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2010/01/28 18:37:15 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.3 2010/07/29 17:49:22 rhiriart Exp $"
 #
 # Makefile of ........
 #
@@ -66,7 +66,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         =
+SCRIPTS         = generateProjects
 SCRIPTS_L       =
 
 #
@@ -81,7 +81,7 @@ TCL_SCRIPTS_L   =
 PY_SCRIPTS         =
 PY_SCRIPTS_L       =
 
-PY_MODULES         =
+PY_MODULES         = sensitivity users
 PY_MODULES_L       =
 
 PY_PACKAGES        =
