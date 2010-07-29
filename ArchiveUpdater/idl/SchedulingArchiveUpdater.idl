@@ -1,0 +1,61 @@
+/*
+ * ALMA - Atacama Large Millimeter Array
+ * (c) European Southern Observatory, 2002
+ * (c) Associated Universities Inc., 2002
+ * Copyright by ESO (in the framework of the ALMA collaboration),
+ * Copyright by AUI (in the framework of the ALMA collaboration),
+ * All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY, without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307  USA
+ *
+ * $Id: SchedulingArchiveUpdater.idl,v 1.1 2010/07/29 21:09:38 rhiriart Exp $
+ */
+
+#ifndef _SCHEDULING_ARCHIVE_UPDATER_IDL_
+#define _SCHEDULING_ARCHIVE_UPDATER_IDL_
+
+#include <acscomponent.idl>
+#include <ControlInterfaces.idl>
+
+#pragma prefix "alma"
+
+module scheduling {
+
+    /**
+     * The ArchiveUpdater component updates the Scheduling (internal)
+     * relational database from APDM entities stored in the XML Store.
+     *   The actual mechanism for doing this is not completely defined
+     * yet. The current plan is for the ArchiveUpdater to initialize
+     * the database with all the entities found in the XML Store only
+     * the first time it is ran. From then on it will update the database
+     * incrementally, i.e., bringing only the changes performed and the
+     * new entities stored since the time of the last update. In practical
+     * terms, the ArchiveUpdater will include a thread that will poll the
+     * XML Store and the State Archive periodically. 
+     *   An alternative implementation would be for the ArchiveUpdater to
+     * receive a notification when changes are made in the XML Store/State
+     * Archive. This mechanism doesn't exist yet.
+     *   Another alternative is for the XML Store to implement a plugin
+     * interface. These alternatives are being debated with the Archive
+     * subsystem.
+     */
+    interface ArchiveUpdater : ACS::ACSComponent {
+        /** Perform the update incrementally */
+        void update();
+    };
+
+};
+#endif // _SCHEDULING_ARCHIVE_UPDATER_IDL_
