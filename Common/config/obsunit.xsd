@@ -3,6 +3,9 @@
     <xs:element name="ObsProject">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="ArchiveUID" type="xs:string"/>
+                <xs:element name="Code" type="xs:string"/>
+                <xs:element name="Name" type="xs:string"/>
                 <xs:element name="PrincipalInvestigator" type="xs:string"/>
                 <xs:element name="ScientificScore" type="xs:float"/>
                 <xs:element name="ScientificRank" type="xs:int"/>
@@ -58,6 +61,8 @@
         <xs:complexContent>
             <xs:extension base="ObsUnitT">
                 <xs:sequence>
+                    <xs:element name="ArchiveUID" type="xs:string"/>
+                    <xs:element name="Name" type="xs:string"/>
                     <xs:element name="WeatherConstraints" type="WeatherConstraintsT"/>
                     <xs:element name="SchedulingConstraints" type="SchedulingConstraintsT"/>
                     <xs:element name="Preconditions" type="PreconditionsT"/>
