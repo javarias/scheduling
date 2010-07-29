@@ -12,6 +12,7 @@ if [ ! -f $ACSROOT/lib/castor.jar ] ; then
 	echo "   * Not present in ACS distribution, please correct this error.";
 fi
 cp $ACSROOT/lib/castor.jar $TARGET/lib/castor-1.3.1/castor.jar;
+cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET/lib/alma-7.1/c3p0-0.9.1.2.jar;
 
 echo "Checking for Xerces-J library..."
 #if [ ! -f Xerces-J-bin.2.9.1.tar.gz ] ; then
@@ -43,6 +44,15 @@ fi
 unzip -o slf4j-1.5.2.zip > /dev/null;
 #cp slf4j-1.5.2/slf4j-simple-1.5.2.jar $TARGET/lib/alma-7.1/;
 #rm -rf $TARGET/lib/spring-2.5.5/slf4j/slf4j-log4j12-1.5.0.jar
+
+echo "Checking for EHCache libraries..."
+if [ ! -f ehcache-core-2.1.0-distribution.tar.gz ] ; then
+        echo "   * Not present, downloading...";
+        wget http://sourceforge.net/projects/ehcache/files/ehcache-core/ehcache-core-2.1.0/ehcache-core-2.1.0-distribution.tar.gz/download;
+fi
+tar xfz ehcache-core-2.1.0-distribution.tar.gz;
+cp ehcache-core-2.1.0/ehcache-core-2.1.0.jar $TARGET/lib/alma-7.1/;
+
 
 echo "Getting jars from INTROOT..."
 cp $INTROOT/lib/SchedulingPSM.jar $INTROOT/lib/SchedulingPSMCli.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET/lib/alma-7.1/;
