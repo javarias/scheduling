@@ -87,6 +87,7 @@ startHSQLDB() {
     fi
     export CLASSPATH=../lib/../lib/SchedulingArrayImplTest.jar:ehcache-1.4.1.jar:../lib/backport-util-concurrent.jar:../lib/slf4j-log4j12-1.5.2.jar:$CLASSPATH
     acsStartJava -endorsed alma.scheduling.testutils.XmlDBLoader &> tmp/XmlDBLoader.log
+    acsStartJava -endorsed alma.scheduling.testutils.StateArchivePopulator &> tmp/StateArchivePopulator.log
 }
 
 stopHSQLDB() {
