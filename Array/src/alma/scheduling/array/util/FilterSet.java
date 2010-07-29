@@ -38,7 +38,7 @@ import alma.scheduling.swingx.CaseInsensitiveRegexpFilter;
 /**
  * A set of filters for the columns of a TableModel
  * @author dclarke
- * $Id: FilterSet.java,v 1.1 2010/07/28 21:29:36 dclarke Exp $
+ * $Id: FilterSet.java,v 1.2 2010/07/29 15:55:39 dclarke Exp $
  */
 public class FilterSet {
 	/*
@@ -146,15 +146,14 @@ public class FilterSet {
 	 * A bit like toString(), but with some HTML tags to do a wee bit
 	 * of formatting.
 	 * 
-	 * @return An HTML representation of this FilterSet, complete with
+	 * @return An HTML representation of this FilterSet, without
 	 * <code>&lt;html&gt;</code> &amp; <code>&lt;/html&gt;</code>
 	 */
-	public String toHTML() {
+	public String toHTMLSnippet() {
 		StringBuilder b = new StringBuilder();
 		Formatter     f = new Formatter(b);
 		boolean doneSome = false;
 
-		b.append("<html>");
 		for (int i = 0; i < size(); i++) {
 			if (inUse.get(i)) {
 				if (doneSome) {
@@ -169,6 +168,21 @@ public class FilterSet {
 		if (!doneSome) {
 			b.append("<em>&lt;No filtering&gt;</em>");
 		}
+		return b.toString();
+	}
+	
+	/**
+	 * A bit like toString(), but with some HTML tags to do a wee bit
+	 * of formatting.
+	 * 
+	 * @return An HTML representation of this FilterSet, complete with
+	 * <code>&lt;html&gt;</code> &amp; <code>&lt;/html&gt;</code>
+	 */
+	public String toHTML() {
+		StringBuilder b = new StringBuilder();
+
+		b.append("<html>");
+		b.append(toHTMLSnippet());
 		b.append("</html>");
 		return b.toString();
 	}
@@ -305,10 +319,8 @@ public class FilterSet {
 		for (int col = 0; col < size(); col++) {
 			if (isActive(col)) {
 				final RowFilter<TableModel, Integer> colFilter =
-					RowFilter.regexFilter(getFilter(col), col);
-				final RowFilter<TableModel, Integer> colFilter2 =
 					CaseInsensitiveRegexpFilter.regexFilter(getFilter(col), col);
-				list.add(colFilter2);
+				list.add(colFilter);
 			}
 		}
 		

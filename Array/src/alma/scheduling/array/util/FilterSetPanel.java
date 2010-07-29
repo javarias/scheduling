@@ -44,7 +44,7 @@ import alma.scheduling.array.guis.ObsProjectTableModel;
 /**
  *
  * @author dclarke
- * $Id: FilterSetPanel.java,v 1.1 2010/07/28 21:29:36 dclarke Exp $
+ * $Id: FilterSetPanel.java,v 1.2 2010/07/29 15:55:39 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class FilterSetPanel extends JPanel {
@@ -205,7 +205,6 @@ public class FilterSetPanel extends JPanel {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				System.out.format("%n%nFilter %d is %s%n", i, regexps[i].getText());
 				enabled[i].setSelected(true);
 				filterSet.activate(i);
 				try {
@@ -416,7 +415,7 @@ public class FilterSetPanel extends JPanel {
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	final FilterSetPanel panel =  createGUI("Filter Panel", 
+            	final FilterSetPanel panel = createGUI("Filter Panel", 
                 		new FilterSet(
                 				new ObsProjectTableModel()));
             	panel.setVisible(true);

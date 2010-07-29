@@ -35,7 +35,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.3 2010/07/29 15:55:39 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -277,6 +277,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	public static int projectIdColumn() {
 		return Column_Project;
+	}
+	
+	public String getSchedBlockId(int row) {
+		return (String) getValueAt(row, Column_EntityId);
 	}
 	/* End External interface specific to this class
 	 * ============================================================= */
