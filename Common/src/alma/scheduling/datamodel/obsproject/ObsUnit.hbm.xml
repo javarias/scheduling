@@ -29,6 +29,7 @@
         
         <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
             <key column="SCHEDBLOCKID"/>
+            <property name="name" column="NAME"/>
             <property name="piName" column="PINAME"/>
             <property name="scienceScore" column="SCIENCE_SCORE" />
         	<property name="scienceRank" column="SCIENCE_RANK"/>

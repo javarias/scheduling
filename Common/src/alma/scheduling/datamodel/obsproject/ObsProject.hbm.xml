@@ -14,6 +14,8 @@
             <generator class="native"/>
         </id>
         <property name="uid" column="OBSPROJECT_UID"/>
+        <property name="code" column="CODE"/>
+        <property name="name" column="NAME"/>
         <property name="principalInvestigator" column="PI"/>
         <property name="scienceScore" column="SCIENCE_SCORE" />
         <property name="scienceRank" column="SCIENCE_RANK"/>

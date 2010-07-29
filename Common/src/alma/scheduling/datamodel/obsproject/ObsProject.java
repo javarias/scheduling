@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.7 2010/05/28 19:13:58 javarias Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.8 2010/07/29 17:50:14 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -32,6 +32,17 @@ public class ObsProject {
     
     /** ALMA Archive unique identifier*/
     private String uid;
+    
+    /**
+     * The project code - a user friendly, unique, identification code for
+     * the project. To be assigned by the Observatory on proposal submission.
+     * Intended to be read-only for the user, but at the moment is writable for
+     * AIV/CSV use.
+     */
+    private String code;
+    
+	/** The user-entered name of the Project. To be used as a mnemonic for the user */
+    private String name;
     
     /**
      * The principal investigator (PI).
@@ -94,6 +105,22 @@ public class ObsProject {
         Id = id;
     }
 
+    public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+    
     public String getPrincipalInvestigator() {
         return principalInvestigator;
     }

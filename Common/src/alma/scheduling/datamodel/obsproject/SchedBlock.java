@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.7 2010/07/19 23:42:20 javarias Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.8 2010/07/29 17:50:14 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -35,7 +35,10 @@ public class SchedBlock extends ObsUnit {
     /** Principal investigator name */
     private String piName;
 
-    /** Weather constraints */
+    /** User friendly name */
+    private String name;
+    
+	/** Weather constraints */
     private WeatherConstraints weatherConstraints;
     
     /** Polymorphic observing parameters, the type depends on the type of the observation */
@@ -64,33 +67,17 @@ public class SchedBlock extends ObsUnit {
     
     private Float scienceScore;
     
-    public Integer getScienceRank() {
-        return scienceRank;
-    }
-
-    public void setScienceRank(Integer scienceRank) {
-        this.scienceRank = scienceRank;
-    }
-
-    public ScienceGrade getLetterGrade() {
-        return letterGrade;
-    }
-
-    public void setLetterGrade(ScienceGrade letterGrade) {
-        this.letterGrade = letterGrade;
-    }
-
-    public Float getScienceScore() {
-        return scienceScore;
-    }
-
-    public void setScienceScore(Float scienceScore) {
-        this.scienceScore = scienceScore;
-    }
-
     /** Default constructor */
     public SchedBlock() { }
     
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
     public String getPiName() {
         return piName;
     }
@@ -170,6 +157,30 @@ public class SchedBlock extends ObsUnit {
 
     public void setExecutive(Executive executive) {
         this.executive = executive;
+    }
+
+    public Integer getScienceRank() {
+        return scienceRank;
+    }
+
+    public void setScienceRank(Integer scienceRank) {
+        this.scienceRank = scienceRank;
+    }
+
+    public ScienceGrade getLetterGrade() {
+        return letterGrade;
+    }
+
+    public void setLetterGrade(ScienceGrade letterGrade) {
+        this.letterGrade = letterGrade;
+    }
+
+    public Float getScienceScore() {
+        return scienceScore;
+    }
+
+    public void setScienceScore(Float scienceScore) {
+        this.scienceScore = scienceScore;
     }
 
     public ObsProject getProject(){

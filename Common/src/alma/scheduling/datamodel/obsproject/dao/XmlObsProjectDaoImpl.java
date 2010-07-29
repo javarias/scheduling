@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.18 2010/06/10 21:26:36 javarias Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.19 2010/07/29 17:50:14 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -137,6 +137,9 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 alma.scheduling.input.obsproject.generated.ObsProject xmlPrj =
                     alma.scheduling.input.obsproject.generated.ObsProject.unmarshalObsProject(new FileReader(prjFile));
                 ObsProject prj = new ObsProject();
+                prj.setUid(xmlPrj.getArchiveUID());
+                prj.setCode(xmlPrj.getCode());
+                prj.setName(xmlPrj.getName());
                 prj.setScienceScore(xmlPrj.getScientificScore());
                 prj.setScienceRank(xmlPrj.getScientificRank());
                 prj.setPrincipalInvestigator(xmlPrj.getPrincipalInvestigator());
@@ -174,6 +177,8 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             xmlObsUnitSet.getSchedBlock();
         for (SchedBlockT xmlSchedBlock : xmlSchedBlocks) {
             SchedBlock schedBlock = new SchedBlock();
+            schedBlock.setUid(xmlSchedBlock.getArchiveUID());
+            schedBlock.setName(xmlSchedBlock.getName());
             schedBlock.setPiName(piName);
             WeatherConstraints wc = new WeatherConstraints(
                     xmlSchedBlock.getWeatherConstraints().getMaxWindVelocity(),
