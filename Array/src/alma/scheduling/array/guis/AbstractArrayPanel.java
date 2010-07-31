@@ -17,6 +17,7 @@
  */
 package alma.scheduling.array.guis;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
@@ -31,7 +32,7 @@ import alma.scheduling.array.util.NameTranslator.TranslationException;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.2 2010/07/27 16:43:13 rhiriart Exp $
+ * $Id: AbstractArrayPanel.java,v 1.3 2010/07/31 00:17:38 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -43,7 +44,13 @@ public abstract class AbstractArrayPanel extends JPanel
 	 * ================================================================
 	 */
 	private PluginContainerServices services = null;
+	/** The access to the project models */
+	private ModelAccessor models = null;
+	/** The access to the Array for which we are a panel */
+	// Will become an ArrayAccessor in due course 
 	private ArrayOperations         array = null;
+	/** Is this panel running in control mode (or monitor mode)? */
+	private boolean                 controlPanel = false;
 	/* End Fields
 	 * ============================================================= */
 
@@ -59,8 +66,8 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	@Override
 	public boolean runRestricted(boolean restricted) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		this.controlPanel = !restricted;
+		return restricted;
 	}
 
 	/* (non-Javadoc)
@@ -76,6 +83,9 @@ public abstract class AbstractArrayPanel extends JPanel
 			e.printStackTrace();
 		}
 		final String arrayName     = properties.getArrayName();
+		
+		arrayAvailable();
+		modelsAvailable();
 	}
 
 	/* (non-Javadoc)
@@ -107,6 +117,16 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	protected AbstractArrayPanel() {
 		super();
+		try {
+			models = new ModelAccessor();
+		} catch (Exception e) {
+			models = null;
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					String.format("Cannot connect to project data - %s", e.getMessage()),
+					"Initialisation Error,",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -118,8 +138,41 @@ public abstract class AbstractArrayPanel extends JPanel
 	 * Stuff to do with being a superclass
 	 * ================================================================
 	 */
+	/**
+	 * Lets subclass instances know that the array is has become
+	 * available.
+	 */
+	protected abstract void arrayAvailable();
+	
+	/**
+	 * Lets subclass instances know that the project models have become
+	 * available.
+	 */
+	protected abstract void modelsAvailable();
+	
+	/**
+	 * Get access to the array for which we are a panel.
+	 * @return
+	 */
 	protected ArrayOperations getArray() {
 		return array;
+	}
+	
+	/**
+	 * Get access to the project models
+	 * @return
+	 */
+	protected ModelAccessor getModels() {
+		return models;
+	}
+	
+	/**
+	 * Are we a controlling panel or a monitor panel?
+	 * @return <code>true</code> if we're a control panel, and
+	 *         <code>false</code> if we're a monitor panel.
+	 */
+	protected boolean isControl() {
+		return controlPanel;
 	}
 	/* End Stuff to do with being a superclass
 	 * ============================================================= */
