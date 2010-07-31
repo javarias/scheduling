@@ -29,13 +29,14 @@ import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 
 /**
  * A model for a table showing a collection of
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.3 2010/07/29 15:55:39 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.4 2010/07/31 00:15:56 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -81,6 +82,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	private void initialiseData() {
 		this.data = new ArrayList<SchedBlock>();
+		this.fireTableDataChanged();
 	}
 	
 	/**
@@ -89,6 +91,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	public void setData(Collection<SchedBlock> schedBlocks) {
 		this.data.clear();
 		this.data.addAll(schedBlocks);
+		this.fireTableDataChanged();
 	}
 	
 	/**
@@ -143,7 +146,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int      Column_Name = 3;
 	private static final int     Column_State = 4;
 	private static final int   Column_Project = 5;
-	private static final int      NUM_COLUMNS = 6;
+	private static final int       Column_OUS = 6;
+	private static final int      NUM_COLUMNS = 7;
 	
 
 	/* (non-Javadoc)
@@ -188,9 +192,11 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_Name:
 			return "Not yet implemented"; // TODO: SchedBlock name
 		case Column_State:
-			return "Not yet implemented"; // TODO: SchedBlock state
+			return schedBlock.getSchedBlockControl().getState();
 		case Column_Project:
 			return projectId(schedBlock);
+		case Column_OUS:
+			return schedBlock.getParent().getUid();
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -215,8 +221,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_Name:
 			return String.class;
 		case Column_State:
-			return String.class;
+			return SchedBlockState.class;
 		case Column_Project:
+			return String.class;
+		case Column_OUS:
 			return String.class;
 		default:
 			logger.severe(String.format(
@@ -248,6 +256,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "State";
 		case Column_Project:
 			return "Project";
+		case Column_OUS:
+			return "ObsUnitSet";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
