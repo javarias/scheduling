@@ -33,7 +33,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
  * alma.scheduling.datamodel.obsproject.ObsProjects.
  * 
  * @author dclarke
- * $Id: ObsProjectTableModel.java,v 1.2 2010/07/26 23:37:23 dclarke Exp $
+ * $Id: ObsProjectTableModel.java,v 1.3 2010/07/31 00:16:12 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class ObsProjectTableModel extends AbstractTableModel {
@@ -79,6 +79,7 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	 */
 	private void initialiseData() {
 		this.data = new ArrayList<ObsProject>();
+		this.fireTableDataChanged();
 	}
 	
 	/**
@@ -87,6 +88,7 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	public void setData(Collection<ObsProject> obsProjects) {
 		this.data.clear();
 		this.data.addAll(obsProjects);
+		this.fireTableDataChanged();
 	}
 	
 	/**
