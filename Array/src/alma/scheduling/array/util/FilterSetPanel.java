@@ -18,6 +18,7 @@
 
 package alma.scheduling.array.util;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -25,6 +26,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.regex.PatternSyntaxException;
@@ -38,13 +41,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.text.Caret;
 
 import alma.scheduling.array.guis.ObsProjectTableModel;
 
 /**
  *
  * @author dclarke
- * $Id: FilterSetPanel.java,v 1.2 2010/07/29 15:55:39 dclarke Exp $
+ * $Id: FilterSetPanel.java,v 1.3 2010/07/31 00:15:16 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class FilterSetPanel extends JPanel {
@@ -153,7 +157,8 @@ public class FilterSetPanel extends JPanel {
 			
 			enabled[i].addActionListener(enableListener(i));
 			enabled[i].setToolTipText("If checked, this filter will be used");
-			regexps[i].addKeyListener(regexpsListener(i));
+			regexps[i].addKeyListener(regexpsKeyListener(i));
+			regexps[i].addFocusListener(regexpsFocusListener(i));
 			regexps[i].setToolTipText(String.format(
 					"The regular expression to use to select projects by %s.",
 					label));
@@ -197,7 +202,7 @@ public class FilterSetPanel extends JPanel {
 	 * @param i
 	 * @return
 	 */
-	private KeyListener regexpsListener(final int i) {
+	private KeyListener regexpsKeyListener(final int i) {
 		final KeyListener result = new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -219,6 +224,27 @@ public class FilterSetPanel extends JPanel {
 			@Override
 			public void keyTyped(KeyEvent e) {
 			}};
+		return result;
+	}
+
+	/**
+	 * Creates and returns a FocusListener which will deal with
+	 * events on the text field in the indicated row.
+	 * @param i
+	 * @return
+	 */
+	private FocusListener regexpsFocusListener(final int i) {
+		final FocusListener result = new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				final Caret c = regexps[i].getCaret();
+				c.setDot(0);
+				c.moveDot(regexps[i].getText().length());
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) { /* don't care */}
+		};
 		return result;
 	}
 
@@ -265,8 +291,9 @@ public class FilterSetPanel extends JPanel {
 		buttonPanel.add(resetButton);
 		buttonPanel.add(revertButton);
 
-		this.add(new JScrollPane(rowPanel));
-		this.add(buttonPanel);
+		this.setLayout(new BorderLayout());
+		this.add(new JScrollPane(rowPanel), BorderLayout.CENTER);
+		this.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -395,7 +422,7 @@ public class FilterSetPanel extends JPanel {
     public static FilterSetPanel createGUI(String title, FilterSet filters) {
         //Create and set up the window.
         JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
         //Add the stuff.
         FilterSetPanel panel = new FilterSetPanel(filters);
