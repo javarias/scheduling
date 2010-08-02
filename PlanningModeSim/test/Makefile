@@ -6,7 +6,7 @@ dist:
 	sh create_distribution.sh
 
 clean:
-	rm -rf castor* slf* spring* xerces* Xerces*
+	rm -rf tmp
 
 dist-clean: clean
 	rm -rf APRC

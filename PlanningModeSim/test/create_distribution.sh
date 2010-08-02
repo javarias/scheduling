@@ -1,28 +1,29 @@
 #! /bin/bash
 
-TARGET='APRC';
+TARGET='../APRC';
+TMP='tmp'
 # TODO: Create a temporary directory to save all download and decompressed directories.
+
+mkdir -p $TMP;
+cd $TMP;
 
 mkdir -p $TARGET/lib/castor-1.3.1;
 mkdir -p $TARGET/lib/spring-2.5.5;
 mkdir -p $TARGET/lib/alma-7.1;
 
+
 echo "Checking for Castor library..."
 if [ ! -f $ACSROOT/lib/castor.jar ] ; then
 	echo "   * Not present in ACS distribution, please correct this error.";
+	exit
 fi
 cp $ACSROOT/lib/castor.jar $TARGET/lib/castor-1.3.1/castor.jar;
 cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET/lib/alma-7.1/c3p0-0.9.1.2.jar;
 
 echo "Checking for Xerces-J library..."
-#if [ ! -f Xerces-J-bin.2.9.1.tar.gz ] ; then
-#	echo "   * Not present, downloading...";
-#	wget http://apache.freeby.pctools.cl/xerces/j/Xerces-J-bin.2.9.1.tar.gz;
-#	tar xfz Xerces-J-bin.2.9.1.tar.gz;
-#fi
-#cp xerces-2_9_1/xercesImpl.jar $TARGET/lib/castor-1.3.1;
 if [ ! -f $ACSROOT/lib/endorsed/xercesImpl.jar ] ; then
         echo "   * Not present in ACS distribution, please correct this error.";
+	exit
 fi
 cp $ACSROOT/lib/endorsed/xercesImpl.jar $TARGET/lib/castor-1.3.1/xercesImpl.jar;
 
@@ -42,8 +43,6 @@ if [ ! -f slf4j-1.5.2.zip ] ; then
 	wget http://www.slf4j.org/dist/slf4j-1.5.2.zip;
 fi
 unzip -o slf4j-1.5.2.zip > /dev/null;
-#cp slf4j-1.5.2/slf4j-simple-1.5.2.jar $TARGET/lib/alma-7.1/;
-#rm -rf $TARGET/lib/spring-2.5.5/slf4j/slf4j-log4j12-1.5.0.jar
 
 echo "Checking for EHCache libraries..."
 if [ ! -f ehcache-core-2.1.0-distribution.tar.gz ] ; then
@@ -60,8 +59,8 @@ cp $INTROOT/lib/SchedulingPSM.jar $INTROOT/lib/SchedulingPSMCli.jar $INTROOT/lib
 
 
 echo "Adding scripts and directories structures...";
-cp -r create_distribution_files/getJarsFromIntroot.sh $TARGET/lib/alma-7.1/;
-cp -r create_distribution_files/bin create_distribution_files/config create_distribution_files/OO $TARGET/;
+cp -r ../create_distribution_files/getJarsFromIntroot.sh $TARGET/lib/alma-7.1/;
+cp -r ../create_distribution_files/bin ../create_distribution_files/config ../create_distribution_files/OO $TARGET/;
 mkdir $TARGET/doc;
 chmod a+x $TARGET/bin/*;
 chown -R $USER:$GROUP $TARGET;
