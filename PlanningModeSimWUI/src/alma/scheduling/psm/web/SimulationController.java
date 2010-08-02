@@ -35,8 +35,6 @@ public class SimulationController extends GenericForwardComposer implements Init
 	private Button buttonReports;
 	
 	private Panelchildren panelChildrenStatus;
-	private String workDir = "";
-	
 
 	
 	public void onClick$buttonBasicConfiguration(Event event) {

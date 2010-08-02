@@ -12,7 +12,7 @@
 	
 	<!-- SESSION CONFIG -->
 	<listener>
-		<description>MyController Session Initialiser</description>
+		<description>MyController Session Initializer</description>
 		<listener-class>alma.scheduling.psm.web.MySessionInit</listener-class>
 	</listener>
 	<!-- END SESSION CONFIG -->

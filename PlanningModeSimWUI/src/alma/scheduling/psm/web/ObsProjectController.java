@@ -16,21 +16,17 @@ public class ObsProjectController extends GenericForwardComposer implements Init
 
 	@Override
 	public void doAfterCompose(Page arg0) throws Exception {
-		// TODO Auto-generated method stub
 		System.out.println("doAfterCompose(page) called");
 
 	}
 
 	@Override
 	public boolean doCatch(Throwable arg0) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void doFinally() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void doInit(Page arg0, Map arg1) throws Exception {

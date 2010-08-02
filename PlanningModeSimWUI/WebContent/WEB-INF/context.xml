@@ -11,22 +11,42 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+ 	<bean id="dataSource2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName">
 			<value>org.hsqldb.jdbcDriver</value>
+<!--            <value>oracle.jdbc.driver.OracleDriver</value> -->
 		</property>
 		<property name="url">
 <!--			<value>jdbc:hsqldb:mem:data_model</value> -->
- 			<value>jdbc:hsqldb:file:/home/ahoffsta/.aprc/hsqldb/data_model</value>
-<!--   		<value>jdbc:hsqldb:hsql://localhost:8090/data_model</value> -->   
+ 			<value>jdbc:hsqldb:file:/home/ahoffsta/.aprc/psmWUI/data_model</value>
+<!--   		<value>jdbc:hsqldb:hsql://localhost:8090/data_model</value> -->
+<!--            <value>jdbc:oracle:thin:@localhost:1521:xe</value> -->
 		</property>
 		<property name="username">
-			<value>sa</value>
+<!--			<value>sa</value> -->
+            <value>hibernate</value>
 		</property>
 		<property name="password">
-			<value/>
+			<value>aprc</value>
 		</property>
-	</bean>
+	</bean> 
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+<!--  		<property name="user" value="hibernate" />
+		<property name="password" value="aprc" />
+		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" /> -->
+		<property name="user" value="sa" />
+		<property name="password" value="" />
+		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
+		<property name="jdbcUrl" value="jdbc:hsqldb:file:/home/ahoffsta/.aprc/psmWUI/data_model" /> 
+        <property name="initialPoolSize" value="5" />
+		<property name="maxPoolSize" value="20" />
+		<property name="minPoolSize" value="1" />
+		<property name="acquireIncrement" value="1" />
+		<property name="acquireRetryAttempts" value="0" />
+	</bean> 
 
 	<!-- Hibernate SessionFactory -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -49,6 +69,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+<!--                 <prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.transaction.factory_class"
@@ -58,16 +79,16 @@
 				<prop key="hibernate.cache.use_query_cache">true</prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
 				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-				<prop key="hibernate.transaction.flush_before_completion">false</prop>
+				<prop key="hibernate.transaction.flush_before_completion">true</prop>
 				<prop key="hibernate.transaction.auto_close_session">false</prop>
-				<prop key="hibernate.max_fetch_depth">0</prop>
+				<prop key="hibernate.max_fetch_depth">5</prop>
 				<prop key="hibernate.default_batch_fetch_size">16</prop>
 				<prop key="hibernate.jdbc.batch_size">25</prop>
 				<prop key="hibernate.jdbc.fetch_size">8</prop>
 
 				<!-- Use the C3P0 connection pool provider -->
 				<prop key="hibernate.c3p0.min_size">5</prop>
-				<prop key="hibernate.c3p0.max_size">20</prop>
+				<prop key="hibernate.c3p0.max_size">10</prop>
 				<prop key="hibernate.c3p0.timeout">300</prop>
 				<prop key="hibernate.c3p0.max_statements">50</prop>
 				<prop key="hibernate.c3p0.idle_test_period">3000</prop>
@@ -84,6 +105,10 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
+    <!-- ResultComposer -->
+    <bean id="resultComposer" class="alma.scheduling.psm.sim.ResultComposer">
+    </bean>
+
 	<!-- DAO Beans -->
 	<bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
@@ -94,7 +119,7 @@
 	<bean id="sbDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-	<bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.WeatherHistoryDAOImpl">
+	<bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.MemoryWeatherHistoryDAOImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="configurationDao" ref="configDao"/>
 	</bean>

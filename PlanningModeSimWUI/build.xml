@@ -63,19 +63,19 @@
 		<pathelement location="${ACSROOT}/lib/jta-1.1.jar" />
 		<pathelement location="${ACSROOT}/lib/log4j-1.2.15.jar" />
 		<pathelement location="${ACSROOT}/lib/slf4j-api-1.5.8.jar" />
+		<pathelement location="${ACSROOT}/lib/c3p0-0.9.1.2.jar" />
 
-		<pathelement location="${lib}/lib/bsh.jar" />
-		<pathelement location="${lib}/lib/cglib-nodep-2.1_3.jar" />
-		<pathelement location="${lib}/lib/fckez.jar" />
-		<pathelement location="${lib}/lib/groovy.jar" />
-		<pathelement location="${lib}/lib/jruby.jar" />
-		<pathelement location="${lib}/lib/js.jar" />
-		<pathelement location="${lib}/lib/jython.jar" />
-		<pathelement location="${lib}/lib/slf4j-log4j12-1.5.2-jar" />
-		<pathelement location="${lib}/lib/spring.jar" />
-		<pathelement location="${lib}/lib/spring-web.jar" />
-		<pathelement location="${lib}/lib/ehcache-core-2.1.0.jar" />
-		<pathelement location="${lib}/lib/castor.jar" />
+		<pathelement location="${lib}/bsh.jar" />
+		<pathelement location="${lib}/cglib-nodep-2.1_3.jar" />
+		<pathelement location="${lib}/fckez.jar" />
+		<pathelement location="${lib}/groovy.jar" />
+		<pathelement location="${lib}/jruby.jar" />
+		<pathelement location="${lib}/js.jar" />
+		<pathelement location="${lib}/jython.jar" />
+		<pathelement location="${lib}/slf4j-log4j12-1.5.2-jar" />
+		<pathelement location="${lib}/spring.jar" />
+		<pathelement location="${lib}/ehcache-core-2.1.0.jar" />
+		<pathelement location="${lib}/castor.jar" />
 
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommon.jar" />
@@ -120,7 +120,6 @@
 	   Compile all our sources 
 	-->
 	<target name="compile" depends="bin">
-		<exec dir="." executable="scripts/prepare_war.sh" />
 		<javac srcdir="${src}" destdir="${bin}" debug="on">
 			<classpath refid="PlanningModeSimulatorWUI.class.path" />
 		</javac>
@@ -147,15 +146,11 @@
            ********************************************************
         -->
 	<target name="copy" depends="dist">
+		<mkdir dir="${lib}" />
+		<exec dir="." executable="scripts/prepare_war.sh" />
 		<copy todir="${dist}">
 			<!-- copy resources and config files -->
 			<fileset dir="${webcontent}" />
-		</copy>
-		<copy todir="${dist}/WEB-INF/classes">
-			<fileset dir="${src}">
-			</fileset>
-			<fileset dir="${bin}">
-			</fileset>
 		</copy>
 	</target>
 
@@ -166,7 +161,13 @@
            of that)
            ********************************************************
         -->
-	<target name="warfile" depends="compile,copy,jarfile" >
+	<target name="warfile" depends="copy,compile,jarfile" >
+		<copy todir="${dist}/WEB-INF/classes">
+			<fileset dir="${src}">
+			</fileset>
+			<fileset dir="${bin}">
+			</fileset>
+		</copy>
 
 		<war destfile="${warfile}" >
 			<fileset dir="${dist}" />

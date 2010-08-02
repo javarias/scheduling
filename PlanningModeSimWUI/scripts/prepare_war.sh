@@ -27,7 +27,6 @@ cp spring-framework-2.5.5/lib/jruby/jruby.jar $TARGET/;
 cp spring-framework-2.5.5/lib/j2ee/jta.jar $TARGET/;
 cp spring-framework-2.5.5/lib/log4j/log4j-1.2.15.jar $TARGET/;
 cp spring-framework-2.5.5/dist/spring.jar $TARGET/;
-cp spring-framework-2.5.5/dist/modules/spring-web.jar $TARGET;
 
 echo "Copying HSQLDB libraries from ACS..."
 cp $ACSROOT/lib/hsqldb.jar $TARGET
@@ -75,4 +74,5 @@ if [ ! -f $ACSROOT/lib/castor.jar ] ; then
         echo "   * Not present in ACS distribution, please correct this error.";
 fi
 cp $ACSROOT/lib/castor.jar $TARGET;
+cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET;
 
