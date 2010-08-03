@@ -75,4 +75,6 @@ if [ ! -f $ACSROOT/lib/castor.jar ] ; then
 fi
 cp $ACSROOT/lib/castor.jar $TARGET;
 cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET;
+cp $ACSROOT/lib/xalan.jar $TARGET;
+cp $ACSROOT/lib/xalan_serializer.jar $TARGET;
 

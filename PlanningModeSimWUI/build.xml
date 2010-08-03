@@ -76,6 +76,8 @@
 		<pathelement location="${lib}/spring.jar" />
 		<pathelement location="${lib}/ehcache-core-2.1.0.jar" />
 		<pathelement location="${lib}/castor.jar" />
+		<pathelement location="${lib}/xalan.jar" />
+		<pathelement location="${lib}/xalan_serializer.jar" />
 
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommon.jar" />
@@ -94,6 +96,7 @@
 	<target name="clean" depends="clear-dist">
 		<delete file="${warfile}" />
 		<delete dir="${bin}" />
+		<delete dir="${lib}" />
 	</target>
 
 	<target name="clear-dist">
