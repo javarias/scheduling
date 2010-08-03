@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.12 2010/07/14 21:08:53 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.13 2010/08/03 18:04:09 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -119,8 +119,8 @@ USER_IDL =
 # Jarfiles and their directories
 #
 JARFILES=SchedulingPSM SchedulingPSMCli
-SchedulingPSM_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim
-SchedulingPSM_EXTRAS=alma/scheduling/psm/reports/general_report.xsl ph1mContext.xml
+SchedulingPSM_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim alma/scheduling/psm/reports
+SchedulingPSM_EXTRAS=alma/scheduling/psm/reports/general_report.xsl ph1mContext.xml alma/scheduling/psm/reports/crowdingReport.jasper
 SchedulingPSMCli_DIRS=alma/scheduling/psm/cli
 
 #
@@ -190,7 +190,7 @@ endif
 #
 # TARGETS
 # -------
-all:	do_all
+all: build_compiler build_reports do_all
 	@echo $(CLASSPATH)
 	@echo " . . . 'all' done" 
 
@@ -206,5 +206,12 @@ man   : do_man
 install : install_all
 	@echo " . . . installation done"
 
+build_compiler: alma/util/JasperReportsCompiler.java
+	@javac -cp $(shell vltMakeJavaClasspath) $^
+	@jar cf ../lib/jasperCompiler.jar alma/util/*.class
 
+build_reports: alma/scheduling/psm/reports/crowdingReport.jasper 
+	
+%.jasper: %.jrxml
+	acsStartJava alma.util.JasperReportsCompiler $^
 #___oOo___

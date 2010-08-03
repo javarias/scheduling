@@ -25,10 +25,23 @@
 
 package alma.scheduling.psm.sim;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperRunManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -41,6 +54,7 @@ import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.dao.OutputDao;
+import alma.scheduling.psm.reports.domain.SchedBlockReportBean;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.util.PsmContext;
 import alma.scheduling.psm.util.XsltTransformer;
@@ -55,10 +69,45 @@ public class ReportGenerator extends PsmContext {
     	super(workDir);
     }
     
+	public JasperPrint createCrowdingReport() throws JRException{
+    	JRBeanCollectionDataSource dataSource = null;
+        ApplicationContext ctx = ReportGenerator.getApplicationContext();
+        SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
+        ArrayList<SchedBlockReportBean> data =  new ArrayList<SchedBlockReportBean>();
+        for (int i = 3; i < ReportGenerator.ReceiverBandsRange.length; i++) {
+        	System.out.println("Retrieving Data...");
+            List<SchedBlock> sbs = sbDao.findSchedBlockBetweenFrequencies(
+                    ReportGenerator.ReceiverBandsRange[i][0],
+                    ReportGenerator.ReceiverBandsRange[i][1]);
+            for(SchedBlock sb: sbs){
+            	SchedBlockReportBean sbr = new SchedBlockReportBean();
+            	sbr.setBand("Band " + i);
+            	data.add(sbr);
+            }
+        }
+        dataSource =  new JRBeanCollectionDataSource(data);
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/crowdingReport.jasper");
+        System.out.println("Creating report");
+        return JasperFillManager.fillReport(reportStream, new HashMap(),dataSource);
+    }
+    
     public void crowdingReport() {
+    	try {
+			JasperViewer.viewReport(createCrowdingReport());
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
         System.out.println("Band\t\tNumber of SchedBlocks\tList of SchedBlocks");
         
-        ApplicationContext ctx = this.getApplicationContext();
+        ApplicationContext ctx = ReportGenerator.getApplicationContext();
         SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
        
         for (int i = 3; i < ReportGenerator.ReceiverBandsRange.length; i++) {

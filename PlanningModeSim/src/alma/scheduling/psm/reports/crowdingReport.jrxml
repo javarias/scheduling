@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+	name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="555"
+	leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
+	
+	<field name="band" class="java.lang.String"/>
+	<variable name="totalSchedBlocks" class="java.lang.Integer" calculation="Count" resetType="Group" resetGroup="bandGroup">
+		<variableExpression>
+			<![CDATA[$F{band}]]>
+		</variableExpression>
+		<initialValueExpression>
+			<![CDATA[new java.lang.Integer(0)]]>
+		</initialValueExpression>
+	</variable>	
+	<group name="bandGroup">
+		<groupExpression>
+			<![CDATA[$F{band}]]>
+		</groupExpression>
+		<groupFooter>
+			<band height="20">
+			 <textField>
+			 	<reportElement width="50" y="0" x="0" height="15"/>
+			 	<textElement><font/></textElement>
+			 	<textFieldExpression>$F{band}</textFieldExpression>
+			 </textField>
+			 <textField>
+			 	<reportElement width="50" y="0" x="80" height="15"/>
+			 	<textFieldExpression><![CDATA[$V{totalSchedBlocks}.toString()]]></textFieldExpression>
+			 </textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="40">
+			<staticText>
+				<reportElement width="555" y="0" x="0" height="40"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text>
+					<![CDATA[Requested Time per ALMA Band]]>
+				</text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="40">
+			<staticText >
+				<reportElement width="70" y="0" x="0" height="25"/>
+				<textElement ><font isBold="true"/></textElement>
+				<text>
+					<![CDATA[Band]]>
+				</text>
+			</staticText>
+			<staticText>
+				<reportElement width="100" y="0" x="80" height="25"></reportElement>
+				<textElement ><font isBold="true"/></textElement>
+				<text><![CDATA[Number of SchedBlocks]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<summary>
+		<band height="450">
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement width="555" y="0" x="0" height="350"/>
+				</chart>
+				<pieDataset>
+					<dataset/>
+					<keyExpression><![CDATA[$F{band}]]></keyExpression>
+					<valueExpression><![CDATA[$V{totalSchedBlocks}]]></valueExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+				</piePlot>
+			</pieChart>
+		</band>
+	</summary>
+</jasperReport>
