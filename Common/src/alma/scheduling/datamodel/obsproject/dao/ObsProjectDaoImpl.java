@@ -87,8 +87,12 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
 
     @Override
     public ObsProject getObjsProject(ObsUnit ou) {
+        ObsUnit oun = ou;
+        while (oun.getParent() != null) {
+            oun = oun.getParent();
+        }
         Query query = getSession().createQuery("select p from ObsProject p join p.obsUnit ou where ou.id = ?");
-        query.setParameter(0, ou.getId().toString());
+        query.setParameter(0, oun.getId());
         return (ObsProject) query.uniqueResult();
     }
     
