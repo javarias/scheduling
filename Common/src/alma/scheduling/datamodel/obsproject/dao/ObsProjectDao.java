@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDao.java,v 1.5 2010/07/27 17:22:50 rhiriart Exp $"
+ * "@(#) $Id: ObsProjectDao.java,v 1.6 2010/08/04 14:58:07 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -40,4 +40,6 @@ public interface ObsProjectDao extends GenericDao {
     List<ObsProject> getObsProjectsOrderBySciRank();
     
     void saveOrUpdate(ObsProject prj);
+    
+    ObsProject getObjsProject(ObsUnit ou);
 }
