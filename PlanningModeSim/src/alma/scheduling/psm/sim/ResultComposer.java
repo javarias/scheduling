@@ -107,7 +107,7 @@ public class ResultComposer {
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
 		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/1000);
-		arr.setId(arrcfg.getId());
+		arr.setOriginalId(arrcfg.getId());
 		arr.setResolution( arrcfg.getResolution());
 		arr.setUvCoverage(arrcfg.getUvCoverage());
 		results.getArray().add(arr);
@@ -150,9 +150,9 @@ public class ResultComposer {
 	
     @Transactional(readOnly=true)
 	private long numberOfSchedBlocks( ObsUnit ouRef ){
-		if( getInheritance( ouRef ).contains("SchedBlock") ){
+		if( ouRef instanceof SchedBlock ){
 			return 1;
-		}else if( getInheritance( ouRef ).contains("ObsUnitSet") ){
+		}else if( ouRef instanceof ObsUnitSet ){
 		
 			long numberSbs = 0;
 			ObsUnitSet ouSet = (ObsUnitSet)ouRef;
@@ -196,7 +196,7 @@ public class ResultComposer {
 			outputOp.setScienceScore( op.getScienceScore() );
 
 			HashSet<SchedBlockResult> sbrSet = new HashSet<SchedBlockResult>();
-			obsProjectDao.hydrateSchedBlocks(op);
+			obsProjectDao.hydrateSchedBlocks(op);			
 			prepareSbrSet( op.getObsUnit(), sbrSet ); 
 			outputOp.setSchedBlock( sbrSet );
 			
@@ -253,51 +253,66 @@ public class ResultComposer {
     
     @Transactional
     void prepareSbrSet( ObsUnit ptrOu, HashSet<SchedBlockResult> sbrSet ){
-//    	if( ptrOu instanceof SchedBlock){
-    	if( getInheritance( ptrOu ).contains("SchedBlock") ){
+    	if( ptrOu instanceof SchedBlock ){
     		long sbId = ((SchedBlock)ptrOu).getId();
     		
     		// We have to create as many SchedBlockResults as executions of the single SB
     		LinkedHashMap<Date, Long> lhmStart = startDates.get( sbId );
     		LinkedHashMap<Date, ArrayList<Double>> lhmEnd = endDates.get( sbId );
     		
-    		for( Date d : lhmStart.keySet() ){
-    			SchedBlockResult sbr = new SchedBlockResult();
+    		try{
+    			for( Date d : lhmStart.keySet() ){
+        			SchedBlockResult sbr = new SchedBlockResult();
+        			
+        			sbr.setStartDate( d );
+            		//TODO: Create arrays
+        			Array arrayRef = null;
+        			for( Array tmpArr : results.getArray() ){
+        				if( tmpArr.getOriginalId() == lhmStart.get(d) ){
+        					arrayRef = tmpArr;
+        					break;
+        				}
+        			}
+        			
+        			if( arrayRef == null ){
+        				System.out.println("Output: Array not found. Critical Error");
+        				System.exit(8); //Exit code 8, no correnponding Array object found in output.
+        			}
+        			sbr.setArrayRef( arrayRef );
+        			
+            		
+            		// Obtaining Goal Sensitivity
+    				Set<ObservingParameters> ops = ((SchedBlock)ptrOu).getObservingParameters();
+    		        for (Iterator<ObservingParameters> iter = ops.iterator(); iter.hasNext();) {
+    		            ObservingParameters params = iter.next();
+    		            if (params instanceof ScienceParameters) {
+    		                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
+    		            }
+    		        }
+    		        sbr.setOriginalId( sbId );
+    		        sbr.setMode( "NOT YET IMPLEMENTED");
+    		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
+    		        //TODO: Add frequency band
+    		        sbr.setType( "NOT YET IMPLEMENTED");
+            		
+            		sbrSet.add( sbr );
+    			}
     			
-    			sbr.setStartDate( d );
-        		//TODO: Create arrays
-        		sbr.setArrayRef( null );
-        		
-        		// Obtaining Goal Sensitivity
-				Set<ObservingParameters> ops = ((SchedBlock)ptrOu).getObservingParameters();
-		        for (Iterator<ObservingParameters> iter = ops.iterator(); iter.hasNext();) {
-		            ObservingParameters params = iter.next();
-		            if (params instanceof ScienceParameters) {
-		                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
-		            }
-		        }
-		        sbr.setOriginalId( sbId );
-		        sbr.setMode( "NOT YET IMPLEMENTED");
-		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
-		        //TODO: Add frequency band
-		        sbr.setType( "NOT YET IMPLEMENTED");
-        		
-        		sbrSet.add( sbr );
+    			Iterator<Date> itEndDate = lhmEnd.keySet().iterator();
+        		for( SchedBlockResult sbr : sbrSet ){
+        			sbr.setEndDate( itEndDate.next() );
+        			sbr.setAchievedSensitivity( lhmEnd.get( sbr.getEndDate()).get(0) );
+        			sbr.setExecutionTime( lhmEnd.get( sbr.getEndDate()).get(1) );
+        			if( sbr.getAchievedSensitivity() <= sbr.getGoalSensitivity() )
+        				sbr.setStatus( ExecutionStatus.COMPLETE);
+        			else
+        				sbr.setStatus( ExecutionStatus.INCOMPLETE);
+        		}
+    		}catch(NullPointerException e){
+    			// Do nothing, The SB was not executed in this simulation
     		}
     		
-    		
-    		Iterator<Date> itEndDate = lhmEnd.keySet().iterator();
-    		for( SchedBlockResult sbr : sbrSet ){
-    			sbr.setEndDate( itEndDate.next() );
-    			sbr.setAchievedSensitivity( lhmEnd.get( sbr.getEndDate()).get(0) );
-    			sbr.setExecutionTime( lhmEnd.get( sbr.getEndDate()).get(1) );
-    			if( sbr.getAchievedSensitivity() >= sbr.getGoalSensitivity() )
-    				sbr.setStatus( ExecutionStatus.COMPLETE);
-    			else
-    				sbr.setStatus( ExecutionStatus.INCOMPLETE);
-    		}
-    	}else if( getInheritance( ptrOu ).contains("ObsUnitSet") ){
-//    	}else{
+    	}else if( ptrOu instanceof ObsUnitSet ){
     		for( ObsUnit forOu : ((ObsUnitSet)ptrOu).getObsUnits() ){
     			prepareSbrSet( forOu, sbrSet );
     		}

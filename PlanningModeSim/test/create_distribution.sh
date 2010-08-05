@@ -11,6 +11,12 @@ mkdir -p $TARGET/lib/castor-1.3.1;
 mkdir -p $TARGET/lib/spring-2.5.5;
 mkdir -p $TARGET/lib/alma-7.1;
 
+echo "Checking for JasperReports library..."
+if [ ! -f jasperreports-3.7.4.jar ] ; then
+        echo "   * Not present, downloading .";
+	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.4/jasperreports-3.7.4.jar/download
+fi
+cp jasperreports-3.7.4.jar $TARGET/lib/alma-7.1/;
 
 echo "Checking for Castor library..."
 if [ ! -f $ACSROOT/lib/castor.jar ] ; then
