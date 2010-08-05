@@ -1,5 +1,6 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.LockMode;
@@ -12,7 +13,9 @@ import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
+import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.ScienceParameters;
 
 @Transactional
 public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
@@ -60,6 +63,10 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
             logger.trace("hydrating SchedBlock");
             SchedBlock sb = (SchedBlock) ou;
             sb.getSchedulingConstraints().getMaxAngularResolution();
+            for (Iterator<ObservingParameters> iter = sb.getObservingParameters().iterator(); iter.hasNext();) {
+	            ObservingParameters params = iter.next();
+	            params.getId();
+	        }
             logger.debug("successfully casted SchedBlock");
             return;
         } else if (ou instanceof ObsUnitSet) {

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Array.java,v 1.4 2010/04/19 22:24:12 ahoffsta Exp $"
+ * "@(#) $Id: Array.java,v 1.5 2010/08/05 19:43:10 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -38,6 +38,7 @@ public class Array {
 	private Date creationDate;
 	private Date deletionDate;
 	private long id;
+	private long originalId;
 	private double maintenanceTime;
 	private double scientificTime;
 	private double resolution;
@@ -109,5 +110,13 @@ public class Array {
 
 	public void setUvCoverage(double uvCoverage) {
 		this.uvCoverage = uvCoverage;
+	}
+
+	public long getOriginalId() {
+		return originalId;
+	}
+
+	public void setOriginalId(long originalId) {
+		this.originalId = originalId;
 	}
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.9 2010/08/04 23:23:01 javarias Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.10 2010/08/05 19:43:10 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -182,4 +182,5 @@ public class SchedBlock extends ObsUnit {
     public void setScienceScore(Float scienceScore) {
         this.scienceScore = scienceScore;
     }
+
 }
