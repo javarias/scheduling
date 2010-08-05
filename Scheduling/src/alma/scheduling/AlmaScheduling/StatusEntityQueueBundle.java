@@ -25,8 +25,6 @@
  */
 package alma.scheduling.AlmaScheduling;
 
-import java.util.logging.Logger;
-
 import alma.acs.logging.AcsLogger;
 import alma.entity.xmlbinding.ousstatus.OUSStatusChoice;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
@@ -43,7 +41,7 @@ import alma.scheduling.Define.SchedulingException;
  * A convenience class to hold the various ??Status entities we use
  * 
  * @author dclarke
- * @version $Id: StatusEntityQueueBundle.java,v 1.4 2010/06/18 15:09:45 dclarke Exp $
+ * @version $Id: StatusEntityQueueBundle.java,v 1.5 2010/08/05 15:27:29 dclarke Exp $
  */
 public class StatusEntityQueueBundle {
 
@@ -239,6 +237,12 @@ public class StatusEntityQueueBundle {
 		remove(that.getProjectStatusQueue());
 		remove(that.getOUSStatusQueue());
 		remove(that.getSBStatusQueue());	    
+	}
+	
+	public void clear() {
+		getProjectStatusQueue().clear();
+		getOUSStatusQueue().clear();
+		getSBStatusQueue().clear();	    
 	}
     /* Queue management
      * ============================================================= */

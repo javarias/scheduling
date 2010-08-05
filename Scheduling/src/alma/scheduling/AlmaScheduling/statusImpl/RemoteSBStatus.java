@@ -21,7 +21,7 @@
  * MA 02111-1307  USA
  * 
  * File ALMASBStatus.java
- * $Id: RemoteSBStatus.java,v 1.3 2010/06/18 15:09:45 dclarke Exp $
+ * $Id: RemoteSBStatus.java,v 1.4 2010/08/05 15:27:29 dclarke Exp $
  */
 package alma.scheduling.AlmaScheduling.statusImpl;
 
@@ -689,7 +689,7 @@ public class RemoteSBStatus extends RemoteStatusBase implements SBStatusI {
 	 */
 	public boolean isRunnable() {
 		final String myState = getStatus().getState().toString();
-		for (final String runnableState : ALMAArchivePoller.SBRunnableStates) {
+		for (final String runnableState : ALMAArchivePoller.sbRunnableStates) {
 			if (myState.equals(runnableState)) {
 				return true;
 			}

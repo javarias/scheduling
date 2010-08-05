@@ -116,7 +116,7 @@ import alma.scheduling.utils.Profiler;
  * </ul> 
  * 
  * @version 2.2 Oct 15, 2004
- * @version $Id: ProjectUtil.java,v 1.85 2010/03/30 17:52:08 dclarke Exp $
+ * @version $Id: ProjectUtil.java,v 1.86 2010/08/05 15:27:29 dclarke Exp $
  * @author Allen Farris
  */
 public class ProjectUtil {
@@ -1221,8 +1221,9 @@ public class ProjectUtil {
                 fs_id = targets[i].getFieldSourceRef().getPartId();
                 fs = getFieldSourceFromList(fieldSources, fs_id);
 //////////////////
-// Can't do the following with out a field source..
-                if(fs != null){
+// Can't do the following with out a field source or with a query field source..
+                if (!(fs == null || fs.getIsQuery())) {
+
                     coord = fs.getSourceCoordinates();
         	        if (coord == null){
             	       	throw new SchedulingException(

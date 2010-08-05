@@ -701,7 +701,7 @@ public class CachedSBStatus extends CachedStatusBase implements SBStatusI {
 	 */
 	public boolean isRunnable() {
 		final String myState = getStatus().getState().toString();
-		for (final String runnableState : ALMAArchivePoller.SBRunnableStates) {
+		for (final String runnableState : ALMAArchivePoller.sbRunnableStates) {
 			if (myState.equals(runnableState)) {
 				return true;
 			}

@@ -30,9 +30,11 @@ package alma.scheduling.AlmaScheduling;
 import java.io.StringReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -111,10 +113,8 @@ import alma.xmlstore.ArchiveConnectionPackage.ArchiveException;
 import alma.xmlstore.ArchiveConnectionPackage.PermissionException;
 import alma.xmlstore.ArchiveConnectionPackage.UserDoesNotExistException;
 import alma.xmlstore.CursorPackage.QueryResult;
-import alma.xmlstore.OperationalPackage.DirtyEntity;
 import alma.xmlstore.OperationalPackage.MalformedURI;
 import alma.xmlstore.OperationalPackage.NotFound;
-import alma.xmlstore.OperationalPackage.StatusStruct;
 
 /**
  * This class provides all the functionalitiy from the archvie which 
@@ -122,10 +122,16 @@ import alma.xmlstore.OperationalPackage.StatusStruct;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.101 2010/06/18 15:09:45 dclarke Exp $
+ * @version $Id: ALMAArchive.java,v 1.102 2010/08/05 15:27:29 dclarke Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
+	
+    private static String projectQuery  = "/prj:ObsProject";
+    private static String projectSchema = "ObsProject";
+    private static String sbQuery       = "/sbl:SchedBlock";
+    private static String sbSchema      = "SchedBlock";
+
     //The container services
     private ContainerServices containerServices;
     // The archive's components
@@ -145,7 +151,7 @@ public class ALMAArchive implements Archive {
     private DateTime lastSpecialSBQuery;
     private DateTime lastSBQuery;
     private DateTime lastProjectQuery;
-    private long lastProjectStatusQuery = -1;
+    private DateTime lastProjectStatusQuery;
     
     //ALMA Clock
     private ALMAClock clock;
@@ -194,9 +200,11 @@ public class ALMAArchive implements Archive {
     protected void getDatamodelInstanceChecker(){
         dic = new DatamodelInstanceChecker();
     }
-
-    public void setLastProjectQuery(DateTime lastProjectQuery) {
-        this.lastProjectQuery = lastProjectQuery;
+   
+    public void setLastQueryTime(DateTime dt) {
+        this.lastProjectQuery = dt;
+        this.lastProjectStatusQuery = dt;
+        this.lastSBQuery = dt;
     }
     
     public void sendAlarm(String ff, String fm, int fc, String fs) {
@@ -231,7 +239,7 @@ public class ALMAArchive implements Archive {
     
     //Special SB stuff (TODO right now its temporary)
     public SpecialSB[] querySpecialSBs() throws SchedulingException {
-        Vector tmpSpecialSBs = new Vector();
+        Vector<SpecialSB> tmpSpecialSBs = new Vector<SpecialSB>();
         SpecialSB[] sbs=null;
         String query = new String("/ssb:SpecialSB");
         String schema = new String("SpecialSB");
@@ -258,10 +266,7 @@ public class ALMAArchive implements Archive {
                 }
             }
             cursor.close();
-            sbs = new SpecialSB[tmpSpecialSBs.size()];
-            for(int i=0; i < tmpSpecialSBs.size();i++) {
-                sbs[i] = (SpecialSB)tmpSpecialSBs.elementAt(i);
-            }
+            sbs = tmpSpecialSBs.toArray(new SpecialSB[0]);
             logger.fine("SCHEDULING: Scheduling found "+sbs.length+" special SBs archived");
             lastSpecialSBQuery = clock.getDateTime();
         } catch(ArchiveInternalError e) {
@@ -403,10 +408,8 @@ public class ALMAArchive implements Archive {
       * retruns all the ObsProjects in the archive.
       */
     public ObsProject[] getAllObsProjects(ProjectStatusQueue prjStatusQueue) throws SchedulingException {
-        Vector tmpObsProject = new Vector();
+        Vector<ObsProject> tmpObsProject = new Vector<ObsProject>();
         ObsProject[] projects=null;
-        String query = new String("/prj:ObsProject");
-        String schema = new String("ObsProject");
         XmlEntityStruct xml =null;
         try {
             checkArchiveStillActive();
@@ -416,14 +419,13 @@ public class ALMAArchive implements Archive {
                     String[] newArchUpdates =new String[0];
                     try {
                         logger.fine("SCHEDULING: sent to archive as "+lastProjectQuery.toString()+".000");
-                        newArchUpdates = archOperationComp.queryRecent(schema, lastProjectQuery.toString()+".000");
+                        newArchUpdates = archOperationComp.queryRecent(projectSchema, lastProjectQuery.toString()+".000");
                         logger.fine("There are "+newArchUpdates.length+" new project updates!");
                     } catch(Exception e){
                         sendAlarm("Scheduling","SchedArchiveConnAlarm",1,ACSFaultState.ACTIVE);
                         e.printStackTrace(System.out);
                     }
                     ObsProject p=null;
-                    StatusStruct status=null;
                     for(int i=0; i <  newArchUpdates.length; i++) {
                         
                         // Check that the ObsProject is in the status queue.
@@ -460,7 +462,7 @@ public class ALMAArchive implements Archive {
                 }
             } else {
                 //nothing's been queried yet 
-                Cursor cursor = archOperationComp.queryDirty(query,schema);
+                Cursor cursor = archOperationComp.queryDirty(projectQuery,projectSchema);
                 if(cursor == null) {
                     logger.severe("SCHEDULING: cursor was null when querying ObsProjects");
                     return null;
@@ -511,10 +513,7 @@ public class ALMAArchive implements Archive {
                 }
                 cursor.close();
             }
-            projects = new ObsProject[tmpObsProject.size()];
-            for(int i=0; i < tmpObsProject.size();i++) {
-                projects[i] = (ObsProject)tmpObsProject.elementAt(i);
-            }
+            projects = tmpObsProject.toArray(new ObsProject[0]);
             lastProjectQuery = clock.getDateTime();
             logger.fine("SCHEDULING: Scheduling found "+projects.length+" projects archived.");
         } catch(ArchiveInternalError e) {
@@ -545,11 +544,20 @@ public class ALMAArchive implements Archive {
 	 * @throws SchedulingException 
 	 */
 	public void convertProjects(StatusTStateType from,
-			                    StatusTStateType to) throws SchedulingException {
+			                    StatusTStateType to) {
 		final String[] fromStates = new String[1];
 		fromStates[0] = from.toString();
 		
-    	final ProjectStatusQueue fromPSs = getProjectStatusesByState(fromStates);
+    	final ProjectStatusQueue fromPSs;
+    	
+    	try {
+			fromPSs = getProjectStatusesByState(fromStates);
+		} catch (SchedulingException e) {
+			logger.warning(String.format(
+					"cannot get project statuses from State Archive - %s",
+					e.getMessage()));
+			return;
+		}
     	
     	int worked = 0;
     	int failed = 0;
@@ -717,7 +725,7 @@ public class ALMAArchive implements Archive {
         
         return result;
     }
-    
+ 
     private boolean isWanted(StatusBaseT statusEntity, String[] wantedStates) {
     	final String state = statusEntity.getStatus().getState().toString();
     	
@@ -923,32 +931,32 @@ public class ALMAArchive implements Archive {
      * @param p - the ObsProject for which we want the SchedBlocks
      * @param sbsQ - the status queue containing the SBStatuses for
      *               SchedBlocks we care about.
+     * @param sbCache 
      * @return an array of SchedBlocks matching the criteria given.
      * 
      * @throws SchedulingException
      */
-    public SchedBlock[] getSelectedSBsFromObsProject(ObsProject     p,
-    		                                         SBStatusQueue sbsQ)
-    		throws SchedulingException {
-    	SchedBlock[] sbs=null;
+    public SchedBlock[] getSelectedSBsFromObsProject(
+    								ObsProject              p,
+    								SBStatusQueue           sbsQ,
+    								Map<String, SchedBlock> sbCache) {
+    	Collection<SchedBlock> sbs = new ArrayList<SchedBlock>();
         if(p.getObsProgram().getObsPlan().getObsUnitSetTChoice() == null) {
             logger.severe("SCHEDULING: no sbs stuff available in project");
             //throw new SchedulingException("No SB info in ObsProject");
         } else {
             SchedBlockRefT[] sbs_refs = getSBRefs(p.getObsProgram().getObsPlan().getObsUnitSetTChoice());
-            //SchedBlock[] sbs = new SchedBlock[sbs_refs.length];
-            sbs = new SchedBlock[sbs_refs.length];
             for(int i=0; i < sbs_refs.length; i++){
                 //get the sb
             	if (sbsQ.getStatusFromSBId(sbs_refs[i].getEntityId()) != null) {
-            		sbs[i] = getSchedBlock(sbs_refs[i].getEntityId());
-            		if(sbs[i]==null) {
-            			// this means the xml deserializeEntity got
+            		final String     sbId = sbs_refs[i].getEntityId();
+            		final SchedBlock sb   = getSchedBlock(sbId, sbCache);
+            		if (sb == null) {
+            			// this means the xml deserializeEntity had a
             			// problem and we should ignore this objproject
             			return null;
             		}
-            	} else {
-            		sbs[i] = null;
+            		sbs.add(sb);
             	}
             }
             /*
@@ -958,7 +966,7 @@ public class ALMAArchive implements Archive {
                     */
             //return sbs;
         }
-        return sbs;
+        return sbs.toArray(new SchedBlock[0]);
     }
 
     /**
@@ -993,7 +1001,7 @@ public class ALMAArchive implements Archive {
     /**
       * Gets all the schedblock references from the ObsUnitSetTChoice.
       */
-    private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) throws SchedulingException {
+    private SchedBlockRefT[] getSBRefs(ObsUnitSetTChoice choice) {
         if(choice == null) {
             logger.severe("SCHEDULING: choice is null..");
             //throw new SchedulingException("ObsUnitSetTChoice == null");
@@ -1001,12 +1009,12 @@ public class ALMAArchive implements Archive {
         if(choice.getObsUnitSetCount() == 0) {
             return choice.getSchedBlockRef();
         } else {
-            Vector tmpSBRefs = new Vector();
+            Vector<SchedBlockRefT[]> tmpSBRefs = new Vector<SchedBlockRefT[]>();
             ObsUnitSetT[] sets = choice.getObsUnitSet();
             for(int i=0; i < sets.length; i++) {
                 tmpSBRefs.add(getSBRefs(sets[i].getObsUnitSetTChoice()));
             }
-            Vector tmpsbs = new Vector();
+            Vector<SchedBlockRefT> tmpsbs = new Vector<SchedBlockRefT>();
             for(int j=0; j < tmpSBRefs.size(); j++){
                 SchedBlockRefT[] refs = (SchedBlockRefT[])tmpSBRefs.elementAt(j);
                 for(int k=0; k < refs.length; k++) {
@@ -1024,7 +1032,7 @@ public class ALMAArchive implements Archive {
     /**
       * Gets the SchedBlock with the given id from the archive
       */
-    private SchedBlock getSchedBlock(String id) throws SchedulingException {
+    public SchedBlock getSchedBlock(String id) {
         
         SchedBlock sb = null;
         try {
@@ -1035,7 +1043,7 @@ public class ALMAArchive implements Archive {
             prof.start("deserializing SB XML");
             sb = (SchedBlock) entityDeserializer.deserializeEntity(xml, SchedBlock.class);
             prof.end();
-        }catch(Exception e){
+        } catch(Exception e) {
         	logger.severe("SchedBlock id:"+id);
         	logger.severe("Trying to deserialize xml file to SchedBlock fail!! check if APDM update");
         	return null;
@@ -1043,6 +1051,26 @@ public class ALMAArchive implements Archive {
         return sb;
     }
 
+	/**
+     * Get the SchedBlock with the given id, looking first in our cache
+     * and only fetching it from the archives if it's not there (and if
+     * we do fetch it, cache it for later use).
+     * 
+     * @param id
+     * @param cache
+     * @return
+     */
+    public SchedBlock getSchedBlock(String id,
+    								 Map<String, SchedBlock> cache) {
+    	SchedBlock result = null;
+    	if (cache.containsKey(id)) {
+    		result = cache.get(id);
+    	} else {
+    		result = getSchedBlock(id);
+    		cache.put(id, result);
+    	}
+    	return result;
+    }
 
 
     /**
@@ -1075,42 +1103,6 @@ public class ALMAArchive implements Archive {
      */
 	public Project[] getNewProject(DateTime time) throws SchedulingException{
         return null;
-    }
-
-    /**
-     * Gets one ObsProject (with the given id) and the SchedBlocks
-     * that it contains and that we are interested in, and maps it
-     * using the projectUtil.
-     * @param projectId The id of the ObsProject
-     * @param sbsQ      Filter the SBs with this - we only care about
-     *                  SBs which have a filter in here.
-     * @return Project
-     * @throws SchedulingException
-     */
-    public Project getFilteredProject(String        projectId,
-    		                          SBStatusQueue sbsQ)
-    			throws SchedulingException {
-        Project project = null;
-        try {
-            XmlEntityStruct xml = archOperationComp.retrieve(projectId);
-            ObsProject obsProj= (ObsProject)
-                entityDeserializer.deserializeEntity(xml, ObsProject.class);
-            project = projectUtil.map(obsProj,
-            		getSelectedSBsFromObsProject(obsProj, sbsQ), 
-            		getProjectStatusForObsProject(obsProj),
-            		clock.getDateTime());
-        } catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(NotFound e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        } catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        //} catch(DirtyEntity e) {
-        //    logger.severe("SCHEDULING: "+e.toString());
-        } catch(Exception e) {
-            logger.severe("SCHEDULING: "+e.toString());
-        }
-        return project;
     }
 
     /**
@@ -1233,74 +1225,98 @@ public class ALMAArchive implements Archive {
 //    }
 
 	// SB
-    public SchedBlock[] queryRecentSBs() throws SchedulingException {
-        String schema = new String("SchedBlock");
-        String query = new String("/sbl:SchedBlock");
+    public SchedBlock[] queryRecentSBs() {
         SchedBlock[] sbs=new SchedBlock[0];
+        Collection<SchedBlock> cache = new Vector<SchedBlock>();
+        
         XmlEntityStruct xml;
-        try {
-            if (lastSBQuery != null){
-                String[] ids = archOperationComp.queryRecent(schema, lastSBQuery.toString()+".000");
-		logger.info("<queryRecentSB> amount:"+ids.length);
-                if(ids.length > 0){
-                    sbs = new SchedBlock[ids.length];
-                    for(int i=0; i < ids.length; i++){
-                        xml = archOperationComp.retrieve(ids[i]);
-                        sbs[i] = (SchedBlock)entityDeserializer.deserializeEntity(xml, SchedBlock.class);
-                    }
-                }
-            } else {
-                Cursor cursor = archOperationComp.query(query, schema);
-                Vector tmp = new Vector();
-                while(cursor.hasNext()){
-                    QueryResult res = cursor.next();
-                    xml = archOperationComp.retrieve(res.identifier);
-                    tmp.add((SchedBlock)entityDeserializer.deserializeEntity(xml, SchedBlock.class));
-                }
-                sbs = new SchedBlock[tmp.size()];
-                sbs = (SchedBlock[])tmp.toArray(sbs);
-            }
-            lastSBQuery = clock.getDateTime();
-            //return sbs;
-        }catch(NotFound e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            //throw new SchedulingException (e);
-        }catch(MalformedURI e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            //throw new SchedulingException (e);
-        }catch(EntityException e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            //throw new SchedulingException (e);
-        }catch(DirtyEntity e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            //throw new SchedulingException (e);
-        }catch(ArchiveInternalError e) {
-            logger.severe("SCHEDULING: "+e.toString());
-            //throw new SchedulingException (e);
+        if (lastSBQuery != null) {
+        	String[] ids;
+        	try {
+        		ids = archOperationComp.queryRecent(sbSchema, lastSBQuery.toString()+".000");
+        	} catch (UserException e) {
+        		logger.warning(String.format(
+        				"Cannot get list of changed SchedBlocks from archive - %s",
+        				e.getMessage()));
+        		return sbs;
+        	}
+        	logger.info("<queryRecentSB> amount:"+ids.length);
+        	for (final String id : ids) {
+        		try {
+        			xml = archOperationComp.retrieve(id);
+        			cache.add((SchedBlock)entityDeserializer.
+        					deserializeEntity(xml, SchedBlock.class));
+        		} catch (UserException e) {
+        			logger.warning(String.format(
+        					"Cannot get SchedBlock %s from archive - %s",
+        					id,
+        					e.getMessage()));
+        		} catch (EntityException e) {
+        			logger.warning(String.format(
+        					"Cannot deserialize SchedBlock %s from archive - %s",
+        					id,
+        					e.getMessage()));
+        		}
+        	}
+        } else {
+        	Cursor cursor;
+        	try {
+                cursor = archOperationComp.query(sbQuery, sbSchema);
+        	} catch (UserException e) {
+        		logger.warning(String.format(
+        				"Cannot get list of SchedBlocks from archive - %s",
+        				e.getMessage()));
+        		return sbs;
+        	}
+        	try {
+				while (cursor.hasNext()) {
+					QueryResult res = cursor.next();
+	        		try {
+						xml = archOperationComp.retrieve(res.identifier);
+	        			cache.add((SchedBlock)entityDeserializer.
+	        					deserializeEntity(xml, SchedBlock.class));
+	        		} catch (UserException e) {
+	        			logger.warning(String.format(
+	        					"Cannot get SchedBlock %s from archive - %s",
+	        					res.identifier,
+	        					e.getMessage()));
+	        		} catch (EntityException e) {
+	        			logger.warning(String.format(
+	        					"Cannot deserialize SchedBlock %s from archive - %s",
+	        					res.identifier,
+	        					e.getMessage()));
+	        		}
+				}
+			} catch (UserException e) {
+        		logger.warning(String.format(
+        				"Error processing list of SchedBlocks from archive - %s",
+        				e.getMessage()));
+			}
         }
-        return sbs;
+        lastSBQuery = clock.getDateTime();
+
+        return cache.toArray(sbs);
     }
 
     /**
-     * True if there are new ObsProject in the XML Store since
-     * the last time that the ObsProjects were retrieved, therefore
-     * an update is necessary.
-     * <P>
-     * Used to decide whether to call or not the State Archive.
-     *  
-     * @return True if an update is necessary, false otherwise
+     * Get the entity ids of ObsProjects which have changed since last
+     * we looked.
+     * 
+     * @return a Collection of ObsProject entity ids.
+     * @throws SchedulingException
      */
-    public String[] getProjectsToUpdate() throws SchedulingException {
+    public String[] getProjectsToUpdate() {
         if ( lastProjectQuery == null ) return null;
         String[] ids = null;
         try {
             ids = archOperationComp
-                  .queryRecent("ObsProject",
+                  .queryRecent(projectSchema,
                                lastProjectQuery.toString() + ".000");
-        } catch (ArchiveInternalError ex) {
-            ex.printStackTrace();
-            throw new SchedulingException("Error querying Archive for recent ObsProjects");
-        }
+    	} catch (UserException e) {
+    		logger.warning(String.format(
+    				"Cannot get list of ObsProjects from archive - %s",
+    				e.getMessage()));
+    	}
         return ids;
     }
     
@@ -1309,10 +1325,9 @@ public class ALMAArchive implements Archive {
      */
 	public SB[] getAllSB() throws SchedulingException{
         SB sbs[]=null;
-        Vector tmp_sbs = new Vector();
-        int i = 0;// the index of the SB array, sbs
+        Vector<SB> tmp_sbs = new Vector<SB>();
         try {
-            Cursor cursor = archOperationComp.query("/sbl:ScheduBlock", "SchedBlock");
+            Cursor cursor = archOperationComp.query(sbQuery, sbSchema);
             while (cursor.hasNext()){
                 QueryResult res = cursor.next();
                 try {
@@ -1321,12 +1336,7 @@ public class ALMAArchive implements Archive {
                     throw new SchedulingException (e);
                 }
             }  
-            int size = tmp_sbs.size();
-            sbs = new SB[size];
-            for (int x=0; x < size; x++) {
-                sbs[x] = (SB)tmp_sbs.elementAt(x);
-		//logger.info("<ALL SB>SB names:"+sbs[x].getSBName());
-            }
+            sbs = tmp_sbs.toArray(new SB[0]);
             cursor.close();
         }catch(ArchiveInternalError e) {
             logger.severe("SCHEDULING: "+e.toString());
@@ -1874,41 +1884,68 @@ public class ALMAArchive implements Archive {
 	
     /*
      * ================================================================
-     * New stuff for Lifecycle II FBT
+     * New stuff for Lifecycle FBTs II & III
      * ================================================================
      */
 	/**
-	 * Find the UIDs of the Statuses of the given type for which there
-	 * are change records
+	 * Get the state changes since the last query and find the latest
+	 * one for each changed Status Entity.
 	 * 
-	 * @return Set<String> - a set of status UIDs
+	 * @return Map<String, StateChangeData> - the last change for each
+	 *                                        changed status id.
 	 */
-	private Set<String> getUIDsForChangedStatuses(final StateEntityType prj) {
-		final Set<String> result = new HashSet<String>();
-
-		final IDLArrayTime start = new IDLArrayTime(lastProjectStatusQuery);
+	public Map<String, StateChangeData> getStatusChanges(final StateEntityType prj) {
+		final Map<String, StateChangeData> result =
+			new HashMap<String, StateChangeData>();
+		
+		final IDLArrayTime start = new IDLArrayTime(lastProjectStatusQuery.getMillisec());
 		final IDLArrayTime end   = new IDLArrayTime(System.currentTimeMillis());
 
 		try {
-			StateChangeData[] stateChanges =
+			final StateChangeData[] stateChanges =
 				stateSystemComp.findStateChangeRecords(
 						start,
 						end, "", "", "",
 						prj.toString());
+			
 			logger.finer(String.format(
 					"stateChanges(%s).length: %d (start = %d, end = %d)",
 					prj.toString(), stateChanges.length, start.value, end.value));
+			
 			for (StateChangeData sc : stateChanges) {
-				logger.finer("domainEntityId: " + sc.domainEntityId);
-				logger.finer("domainEntityState: " + sc.domainEntityState);
-				logger.finer("statusEntityId: " + sc.statusEntityId);
-				result.add(sc.statusEntityId);
+//				logger.finer(String.format(
+//						"timestamp: %s, domainEntityId: %s, domainEntityState: %s, statusEntityId: %s",
+//						sc.timestamp, sc.domainEntityId, sc.domainEntityState, sc.statusEntityId));
+				
+				if (result.containsKey(sc.statusEntityId)) {
+					final StateChangeData previous = result.get(sc.statusEntityId);
+					if (previous.timestamp.value < sc.timestamp.value) {
+//						logger.finest("latest change so far for this entity - storing");
+						result.put(sc.statusEntityId, sc);
+//					} else {
+//						logger.finest("earlier change for this entity - skipping");
+					}
+				} else {
+//					logger.finest("first change for this entity - storing");
+					result.put(sc.statusEntityId, sc);
+				}
+				
 			}
 		} catch (StateIOFailedEx e) {
 			e.printStackTrace();
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Find the UIDs of the Statuses of the given type for which there
+	 * are change records
+	 * 
+	 * @return Set<String> - a set of status UIDs
+	 */
+	public Set<String> getUIDsForChangedStatuses(final StateEntityType prj) {
+		return getStatusChanges(prj).keySet();
 	}
 
 	
@@ -1945,9 +1982,9 @@ public class ALMAArchive implements Archive {
     		String[] sbRunnableStates) throws SchedulingException {
         logger.info("entering determineRunnablesByStatus");
         
-        if (lastProjectStatusQuery < 0) {
-            lastProjectStatusQuery = System.currentTimeMillis();
-            logger.info("new lastProjectStatusQuery: " + (new Date(lastProjectStatusQuery)));
+        if (lastProjectStatusQuery == null) {
+            lastProjectStatusQuery = clock.getDateTime();
+            logger.info("new lastProjectStatusQuery: " + lastProjectStatusQuery.toString());
         }
         
         // Start with the ProjectStatuses and SBStatuses which are
@@ -1998,14 +2035,6 @@ public class ALMAArchive implements Archive {
     }
 
     
-    private<E> Set<E> toSet(E[] array) {
-        final Set<E> set = new HashSet<E>();
-        for (final E state : array) {
-        	set.add(state);
-        }
-        return set;
-    }
-    
     public StatusEntityQueueBundle determineRunnablesByStatusIncr(
             String[] opRunnableStatesArray,
             String[] sbRunnableStatesArray,
@@ -2014,18 +2043,18 @@ public class ALMAArchive implements Archive {
         
         Set<String> changedPSUids;
         
-        if (lastProjectStatusQuery > 0) {
+        if (lastProjectStatusQuery != null) {
         	// Note the time just before the queries and use this as
         	// the time of the query. This means a slight overlap next
         	// time we do this, which in turn means that no updates
         	// made while the query results are being processed will be
         	// missed.
-        	final long now = System.currentTimeMillis();
+        	final DateTime now = clock.getDateTime();
         	changedPSUids   = getUIDsForChangedStatuses(StateEntityType.PRJ);
             lastProjectStatusQuery = now;
         } else {
-            lastProjectStatusQuery = System.currentTimeMillis();
-            logger.info("new lastProjectStatusQuery: " + (new Date(lastProjectStatusQuery)));
+            lastProjectStatusQuery = clock.getDateTime();
+            logger.info("new lastProjectStatusQuery: " + lastProjectStatusQuery.toString());
             changedPSUids  = new HashSet<String>();
         }
         
@@ -2130,20 +2159,16 @@ public class ALMAArchive implements Archive {
 	}
     
 	/**
-	 * Get all the OUSStatuses that are associated with the provided
-	 * ProjectStatuses' ObsProjects' ObsUnitSets.
+	 * Get all the OUSStatuses and SBStatuses which are associated with
+	 * the provided ProjectStatuses' ObsProjects' ObsUnitSets and
+	 * SchedBlocks.
 	 * 
-	 * @param runnablePSs - the queue of ProjectStatuses to use as a
-	 *                      starting point for the search for
-	 *                      OUSStatuses.
-	 * @return an StatusEntityQueue<SBStatusI, SBStatusRefT> containing
-	 *         all the OSUStatus entities found
-	 * 
-	 * @throws SchedulingException
+	 * @param bundle - the <code>StatusEntityQueueBundle</code> which
+	 *                 contains the ProjectStatuses to use as starting
+	 *                 points for the search. The OUSStatuses and
+	 *                 SBSStatuses found are put in this bundle.
 	 */
-	public void getOUSandSBStatusesFor(StatusEntityQueueBundle bundle)
-				throws SchedulingException {
-		
+	public void getOUSandSBStatusesFor(StatusEntityQueueBundle bundle) {
 		for (final ProjectStatusI ps : bundle.getProjectStatusQueue().getAll()) {
 			try {
 				final XmlEntityStruct[] xml
@@ -2180,28 +2205,91 @@ public class ALMAArchive implements Archive {
 						e.getMessage()));
 			}
 		}
-        
-//        for (final ProjectStatusI ps : runnablePSs.getAll()) {
-//    		try {
-//    			addAllOUSStatuses(ps.getObsProgramStatus(), result);
-//    		} catch (SchedulingException e) {
-//    			logger.warning(String.format(
-//    					"Cannot get OUSStatuses for ProjectStatus %s (for ObsProject %s) - %s",
-//    					ps.getProjectStatusEntity().getEntityId(),
-//    					ps.getObsProjectRef().getEntityId(),
-//    					e.getLocalizedMessage()));
-//    		}
-//        }
 	}
-	
-//	private void addAllOUSStatuses(OUSStatusI     ouss,
-//			                       OUSStatusQueue result)
-//							throws SchedulingException {
-//		result.add(ouss);
-//			for (final OUSStatusI child : ouss.getOUSStatus()) {
-//				addAllOUSStatuses(child, result);
-//			}
-//	}
+    
+	/**
+	 * Get all the status entities which are part of the status
+	 * hierarchy under the <code>ProjectStatus</code> with the given
+	 * entity id and return a <code>StatusEntityQueueBundle</code> with
+	 * them in. Only add in the <code>ProjectStatus</code> if it is
+	 * <em>active</em>, and similarly only add <em>active</em>
+	 * </code>SBStatuses</code>.
+	 * 
+	 * @param psId - the entity id of the <code>ProjectStatus</code> at
+	 *               the top of the hierarchy in which we're interested
+	 * @return - a <code>StatusEntityQueueBundle</code> which contains
+	 *           the statuses
+	 */
+	public StatusEntityQueueBundle getActiveStatusesFor(String psId) {
+		final StatusEntityQueueBundle result
+								= new StatusEntityQueueBundle(logger);
+		
+		try {
+			final XmlEntityStruct[] xml = stateSystemComp.
+										getProjectStatusList(psId);
+			logger.fine(String.format(
+					"Got %d status%s for ProjectStatus %s",
+					xml.length,
+					(xml.length == 1? "": "es"),
+					psId));
+			for (XmlEntityStruct xes : xml) {
+				logger.fine(String.format(
+						"\t%s %s",
+						xes.entityTypeName,
+						xes.entityId));
+				try {
+					if (xes.entityTypeName.equals("OUSStatus")) {
+						final OUSStatus ouss = (OUSStatus) entityDeserializer.
+								deserializeEntity(xes, OUSStatus.class);
+						result.getOUSStatusQueue().add(new CachedOUSStatus(ouss));
+					} else if (xes.entityTypeName.equals("SBStatus")) {
+						final SBStatus sbs = (SBStatus) entityDeserializer.
+								deserializeEntity(xes, SBStatus.class);
+						final String sbsState = sbs.getStatus().getState().toString();
+						if (ALMAArchivePoller.sbInterestingStates.contains(sbsState)) {
+							result.getSBStatusQueue().add(new CachedSBStatus(sbs));
+						} else {
+							logger.warning(String.format(
+									"SchedBlock %s is not runnable (according to SBStatus %s it is in state %s) - skipping SchedBlock",
+									sbs.getSchedBlockRef().getEntityId(),
+									sbs.getSBStatusEntity().getEntityId(),
+									sbsState));
+						}
+					} else if (xes.entityTypeName.equals("ProjectStatus")) {
+						final ProjectStatus ps = (ProjectStatus) entityDeserializer.
+								deserializeEntity(xes, ProjectStatus.class);
+						final String psState = ps.getStatus().getState().toString();
+						if (ALMAArchivePoller.opInterestingStates.contains(psState)) {
+							result.getProjectStatusQueue().add(new CachedProjectStatus(ps));
+						} else {
+							logger.warning(String.format(
+									"ObsProject %s is not runnable (according to ProjectStatus %s it is in state %s) - skipping project",
+									ps.getObsProjectRef().getEntityId(),
+									psId,
+									psState));
+						}
+					} else {
+						logger.warning(String.format(
+								"Unrecognised entity type for entity %s from State System - type is %s",
+								xes.entityId,
+								xes.entityTypeName));
+					}
+				} catch (Exception e) {
+					logger.warning(String.format(
+							"Can not deserialise %s %s from State System - %s",
+							xes.entityTypeName,
+							xes.entityId,
+							e.getMessage()));
+				}
+			}
+		} catch (Exception e) {
+			logger.warning(String.format(
+					"Can not pull child statuses for ProjectStatus %s from State System - %s",
+					psId,
+					e.getMessage()));
+		}
+		return result;
+	}
 	
 	public void setSBState(String sbsId, StatusTStateType status) {
 		try {
@@ -2230,7 +2318,55 @@ public class ALMAArchive implements Archive {
 		}
 //		updateProjectStatus(ps);
 	}
-    /* end of New stuff for Lifecycle II FBT
+    
+    public void setProjectUtilStatusQueue(StatusEntityQueueBundle queue) {
+        projectUtil.setStatusQueue(queue);
+    }
+
+	/**
+	 * Find the SchedBlocks which have changed since we last looked and
+	 * extract the entity id of their ObsProjects. The SchedBlocks have
+	 * to be fetched in order to do this, so cache them to prevent
+	 * multiple retrievals.
+	 *
+	 * @param sbCache
+	 * @return a Collection of ObsProject entity ids.
+	 */
+	public Collection<String> getProjectIdsForChangedSchedBlocks(
+			Map<String, SchedBlock> sbCache) {
+		checkArchiveStillActive();
+		final SchedBlock[] changedSBs = queryRecentSBs();
+		
+		Collection<String> result = new HashSet<String>();
+		for (final SchedBlock sb : changedSBs) {
+			sbCache.put(sb.getSchedBlockEntity().getEntityId(), sb);
+			final String projectId = sb.getObsProjectRef().getEntityId();
+			result .add(projectId);
+		}
+		return result;
+	}
+
+
+	/**
+	 * Find the entity ids of the ObsProjecs which have changed since
+	 * we last looked. Does not retrieve any entities.
+	 *
+	 * @return a Collection of ObsProject entity ids.
+	 */
+	public Collection<String> getProjectIdsForChangedObsProjects() {
+		checkArchiveStillActive();
+		final String[] changedOPs = getProjectsToUpdate();
+		
+		Collection<String> result = new HashSet<String>();
+		
+		if (changedOPs != null) {
+			for (final String projectId : changedOPs) {
+				result .add(projectId);
+			}
+		}
+		return result;
+	}    
+    /* end of New stuff for Lifecycle FBTs II & III
      * ============================================================= */
 	
 	
@@ -2408,9 +2544,5 @@ public class ALMAArchive implements Archive {
 	}
 	/* End of Initialisation of Status Entities
 	 * ============================================================= */
-    
-    public void setProjectUtilStatusQueue(StatusEntityQueueBundle queue) {
-        projectUtil.setStatusQueue(queue);
-    }    
 }
 

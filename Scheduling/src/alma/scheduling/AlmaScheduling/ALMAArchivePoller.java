@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -16,7 +18,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import alma.SchedulingExceptions.wrappers.AcsJObsProjectRejectedEx;
-import alma.SchedulingExceptions.wrappers.AcsJSchedBlockRejectedEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
@@ -24,8 +25,12 @@ import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
 import alma.entities.commonentity.EntityRefT;
 import alma.entity.xmlbinding.obsproject.ObsProject;
+import alma.entity.xmlbinding.ousstatus.OUSStatusChoice;
+import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.lifecycle.persistence.domain.StateEntityType;
+import alma.projectlifecycle.StateChangeData;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.SBLite;
 import alma.scheduling.AlmaScheduling.statusIF.OUSStatusI;
@@ -66,24 +71,34 @@ public class ALMAArchivePoller {
      * We are interested in ObsProjects with the following states -
      * getting them from the archive and showing them to the user.
      */
-   final public static String[] OPInterestingStates = {
+   final private static String[] OPInterestingStates = {
         StatusTStateType.READY.toString(),              
-        StatusTStateType.PARTIALLYOBSERVED.toString()               
+        StatusTStateType.PARTIALLYOBSERVED.toString(),          
+        StatusTStateType.CSVREADY.toString()             
     };
     /**
      * We are interested in SchedBlocks with the following states -
      * getting them from the archive and showing them to the user.
      */
-    final public static String[] SBInterestingStates = {
+    final private static String[] SBInterestingStates = {
         StatusTStateType.READY.toString(),            
-        StatusTStateType.RUNNING.toString()             
+        StatusTStateType.RUNNING.toString(),          
+        StatusTStateType.CSVREADY.toString(),            
+        StatusTStateType.CSVRUNNING.toString()             
     };
     /**
      * We can execute SchedBlocks with the following states.
      */
-    final public static String[] SBRunnableStates = {
-        StatusTStateType.READY.toString()             
+    final private static String[] SBRunnableStates = {
+        StatusTStateType.READY.toString(),             
+        StatusTStateType.CSVREADY.toString()             
     };
+    /*
+     * Set versions of the above.
+     */
+    public static Set<String> opInterestingStates = toSet(OPInterestingStates);
+    public static Set<String> sbInterestingStates = toSet(SBInterestingStates);
+    public static Set<String> sbRunnableStates    = toSet(SBRunnableStates);
     
     private AcsLogger                   logger;
     private SBQueue                     sbQueue;
@@ -149,287 +164,509 @@ public class ALMAArchivePoller {
     public void pollArchive() throws SchedulingException {
         pollArchive(null);
     }
-    
-    synchronized public void pollArchive(String prjuid) throws SchedulingException {
-        logger.fine(String.format(
-        		"polling archive for runnable projects, prjuid = %s",
-        		prjuid==null? "null": prjuid));
 
-        schedBlockBuffer.clear();
-        obsProjectBuffer.clear();
-        
-        String[] prjToUpd;
-        if (prjuid == null) {
-            prjToUpd = archive.getProjectsToUpdate();
-            if ( prjToUpd != null ) { 
-                logger.info("# of projects to update: " + prjToUpd.length);
-                for ( String prj : prjToUpd )
-                    logger.info("updating project: " + prj);
-            }
-        } else {
-            prjToUpd = new String[] { prjuid };
-            logger.info("updating just project " + prjuid);
-        }
-        // Asks the State Archive to convert all the Phase2Submitted projects
-        // and sbs to Ready
-        archive.convertProjects(StatusTStateType.PHASE2SUBMITTED,
-                StatusTStateType.READY);
-        // This is not working yet. The State Archive will throw a NotAuthorizedEx
-        // exception.
-        // archive.convertSchedBlocks(StatusTStateType.PHASE2SUBMITTED,
-        //         StatusTStateType.READY);        
-        if ( prjToUpd == null ) { // First update. Full load.
-            // Asks the State Archive for the statuses and works out which ones
-            // are runnable
-            final StatusEntityQueueBundle newQs =
-                archive.determineRunnablesByStatus(OPInterestingStates,
-                        SBInterestingStates);
-            statusQs.updateIncrWith(newQs);
-            archive.setProjectUtilStatusQueue(statusQs);
-        } else /* if ( prjToUpd.length > 0 )*/ { // Incremental load
-        	StatusEntityQueueBundle zapQs = new StatusEntityQueueBundle(logger);
-            StatusEntityQueueBundle newQs =
-                archive.determineRunnablesByStatusIncr(OPInterestingStates,
-                		SBInterestingStates, zapQs);
-            statusQs.updateIncrWith(newQs);
-            forget(zapQs);
-//            logProjectStatuses("After determineRunnablesByStatusIncr",
-//            				   statusQs.getProjectStatusQueue(),
-//            				   newQs.getProjectStatusQueue(),
-//            				   zapQs.getProjectStatusQueue());
-            archive.setProjectUtilStatusQueue(statusQs);
-        }
- 
-        OLD_PollArchive(prjToUpd);
-        logger.info("The Scheduling Subsystem is currently managing "
-                        + projectQueue.size() + " projects, "
-                        + sbQueue.size() + " SBs, "
-                        + statusQs.getProjectStatusQueue().size() + " project statuses and "
-                        + statusQs.getSBStatusQueue().size() + " SB statuses");
-//         logNumbers("at end of pollArchive");
-//         logDetails("at end of pollArchive");
+    private static Set<String> toSet(String[] strings) {
+    	final Set<String> result = new HashSet<String>();
+    	for (final String string : strings) {
+    		result.add(string);
+    	}
+    	return result;
     }
 
-	private void forget(StatusEntityQueueBundle zapQs) {
-		statusQs.remove(zapQs);
-		for (final ProjectStatusI ps : zapQs.getProjectStatusQueue().getAll()) {
-			final String domainId = ps.getDomainEntityId();
-			projectQueue.remove(domainId);
-			logger.fine(String.format(
-					"Removing ObsProject %s from queue (its state is %s)",
-					ps.getDomainEntityId(),
-					ps.getStatus().getState().toString()));
-		}
-		for (final SBStatusI sbs : zapQs.getSBStatusQueue().getAll()) {
-			final String domainId = sbs.getDomainEntityId();
-			sbQueue.remove(domainId);
-			ProjectStatusI ps = zapQs.getProjectStatusQueue().get(sbs.getProjectStatusRef().getEntityId());
-			logger.fine(String.format(
-					"Removing SchedBlock %s from queue (its state is %s, its ObsProject's state is %s)",
-					sbs.getDomainEntityId(),
-					sbs.getStatus().getState().toString(),
-					ps.getStatus().getState().toString()));
+
+    
+    /*
+     * ================================================================
+     * The initial poll of the archive
+     * ================================================================
+     */
+    // Some of these methods are also used during the incremental poll.
+	/**
+	 * Clear the pools of domain and status objects
+	 */
+	private void clearPools() {
+        statusQs.clear();
+        sbQueue.clear();
+        projectQueue.clear();
+	}
+    
+	/**
+	 * Clear the buffers used during polling of the archive
+	 */
+	private void clearBuffers() {
+        schedBlockBuffer.clear();
+        obsProjectBuffer.clear();
+	}
+    
+    /**
+	 * Work out the EntityId of the ObsProject to which the SchedBlock
+	 * corresponding to the given SBStatusI is affiliated.
+	 * 
+     * @param sbs - the status of the SchedBlock in who's project we're
+     *              interested.
+     * @param statusQs - all the various status entities through which
+     *                   to navigate.
+     * @return - the resultant ObsProject Id (or null if something went
+     *           wrong - in which case we log something pertinent).
+     */
+    private String findProjectId(SBStatusI               sbs,
+    		                     StatusEntityQueueBundle statusQs) {
+    	String         psId = sbs.getProjectStatusRef().getEntityId();
+    	ProjectStatusI ps   = statusQs.getProjectStatusQueue().get(psId);
+    	String result;
+    	
+    	try {
+    		result = ps.getDomainEntityId();
+    	} catch (NullPointerException e) {
+    		result = null;
+    	}
+    	
+    	return result;
+	}
+
+	/**
+	 * Get, from the Archive, the ObsProjects corresponding to the
+	 * ProjectStatusIs in the supplied StatusEntityQueueBundle. Put
+	 * them into the supplied Map. Report any errors, but carry on
+	 * anyway. 
+	 * 
+	 * @param statusQs
+	 * @param projectSchedBlocks
+	 */
+	private void getObsProjects(
+			final StatusEntityQueueBundle statusQs,          
+			final Map<String, ObsProject> obsProjectBuffer) {
+		
+		for (final ProjectStatusI ps : statusQs.getProjectStatusQueue().getAll()) {
+        	final String projectId = ps.getDomainEntityId();
+
+        	logger.fine(String.format(
+        			"getting ObsProject %s for ProjectStatus %s",
+        			projectId, ps.getUID()));
+			try {
+				final ObsProject obsProject = archive.getObsProject(projectId);
+	        	obsProjectBuffer.put(projectId, obsProject);
+			} catch (SchedulingException e) {
+				logger.warning(String.format(
+						"Could not get ObsProject %s from the archive - %s",
+						projectId,
+						e.getMessage()));
+			}
+        }
+	}
+
+	/**
+	 * Map the given ObsProject and SchedBlocks in a Project and some
+	 * SBs, then add the new objects to the project and SB queues.
+	 * 
+	 * @param projectId
+	 * @param op
+	 * @param sb
+	 * @param ps
+	 * @param now
+	 */
+	private void mapAndAddProject(final String         projectId,
+			                      final ObsProject     op,
+			                      final SchedBlock[]   sb,
+			                      final ProjectStatusI ps,
+			                      final DateTime       now) {
+		Project project;
+		
+		// Map the project
+		try {
+			logger.info(String.format(
+					"Mapping ObsProject %s and %d SchedBlock%s",
+					projectId,
+					sb.length,
+					(sb.length == 1)? "": "s"));
+			project = projectUtil.map(op, sb, ps, now);
+
+			if (project != null) {
+				// Add the objects to the queues
+				projectQueue.add(project);
+				sbQueue.add(project.getAllSBs());
+			} else {
+				logger.warning(String.format(
+						"Skipping ObsProject %s",
+						projectId));
+			}
+		} catch (SchedulingException e) {
+			logger.warning(String.format(
+					"Could not map ObsProject %s - %s",
+					projectId,
+					e.getMessage()));
 		}
 	}
 
 	/**
-     * polls the archive for new/updated projects
-     * then updates the queues (project queue, sb queue & project status queue)
+	 * Get, from the Archive, the SchedBlocks corresponding to the
+	 * SBStatusIs in the supplied StatusEntityQueueBundle. Don't get
+	 * SchedBlocks for ObsProjects which are not in the supplied Map,
+	 * obsProjectBuffer. Bundle the SchedBlocks up by ObsProject and
+	 * put them into schedBlockBuffer. Report any errors, but carry on
+	 * anyway. 
+	 * 
+     * @param statusQs
+     * @param obsProjectBuffer
+     * @param schedBlockBuffer
      */
-   private void OLD_PollArchive(String[] prjuids) throws SchedulingException {
-       Project[] projectList = new Project[0];
-       Vector<SB> tmpSBs = new Vector<SB>();
-       final ProjectStatusQueue psQ  = statusQs.getProjectStatusQueue();
-       final SBStatusQueue      sbsQ = statusQs.getSBStatusQueue();
+    private void getSchedBlocks(StatusEntityQueueBundle statusQs,
+			Map<String, ObsProject> obsProjectBuffer,
+			Map<String, SchedBlock[]> schedBlockBuffer) {
+    	
+    	// Variable to make bundling of the SchedBlocks easier.
+    	final Map<String, Set<SchedBlock>> bundles
+    						= new HashMap<String, Set<SchedBlock>>();
+    	for (final String pid: obsProjectBuffer.keySet()) {
+    		bundles.put(pid, new HashSet<SchedBlock>());
+    	}
+    	
+    	
+    	// Now actually get the things...
+        for (final SBStatusI sbs : statusQs.getSBStatusQueue().getAll()) {
+        	final String sbId      = sbs.getDomainEntityId();
+        	final String projectId = findProjectId(sbs, statusQs);
 
-       try {
-           if (prjuids == null) {
-        	   logger.finest("OLD_PollArchive(null)");
-               projectList = getAllProject(psQ, sbsQ);
-           } else {
-        	   logger.finest(String.format(
-        			   "OLD_PollArchive(%s)", formatArray(prjuids)));
-               projectList = new Project[prjuids.length];
-               int i = 0;
-               for ( String prjuid : prjuids ) {
-            	   // Refresh the status info from the state archive,
-            	   // which ensures that we have the up to date version
-            	   // which reflects the latest structure of the
-            	   // changed project.
-            	   statusQs.refreshProject(prjuid,
-            			   CachedStatusFactory.getInstance());
-                   Project prj = getProject(prjuid, sbsQ);
-                   if ( prj != null ) {
-                       projectList[i++] = prj;
-                   }
-               }
-           }
-           archive.setLastProjectQuery(clock.getDateTime());
-           
-           logger.finest("ProjectList size =  " + projectList.length);
-           ArrayList<Project> projects = new ArrayList<Project>(
-                   projectList.length);
-           for (final Project project : projectList) {
-               if (psQ.isExists(project.getProjectStatusId())) {
-                   projects.add(project);
-                   logger.info(String.format(
-                           "Including project %s (status is %s)",
-                           project.getId(),
-                           project.getStatus().getState()));
-               } else {
-                   logger.info(String.format(
-                           "Rejecting project %s (not in status queue, status = %s)",
-                           project.getId(),
-                           project.getStatus().getState()));
-                   AcsJObsProjectRejectedEx ex = new AcsJObsProjectRejectedEx();
-                   ex.setProperty("UID", project.getId());
-                   ex.setProperty("Reason", "Not in status queue");
-                   ex.log(logger);
-               }
-           }
+        	if (obsProjectBuffer.containsKey(projectId)) {
+        		final SchedBlock schedBlock = archive.getSchedBlock(sbId);
+        		bundles.get(projectId).add(schedBlock);
+        	} else {
+				logger.warning(String.format(
+						"Not getting SchedBlock %s from archive as we didn't get its containing ObsProject %s",
+						sbId,
+						projectId));
+        	}
+        }
+        
+        // Finally, convert the bundles of SchedBlocks to arrays (sigh!).
+    	for (final String pid: bundles.keySet()) {
+    		final Set<SchedBlock> bundle = bundles.get(pid);
+    		schedBlockBuffer.put(pid, bundle.toArray(new SchedBlock[0]));
+    	}
+	}
+	
+    /**
+     * Get all projects that we're interested in, starting afresh.
+     * 
+     * @param now - timestamp to use for any created objects.
+     * @throws SchedulingException
+     */
+    synchronized public void initialPollArchive(DateTime now) {
+     	logger.info("Starting initial poll of the archive");
+       
+        clearPools();
+        clearBuffers();
+        
+        // Get the status objects for domain objects in which we're
+        // interested.
+        try {
+			final StatusEntityQueueBundle newQs
+				= archive.determineRunnablesByStatus(
+						            OPInterestingStates,
+									SBInterestingStates);
+			statusQs.updateWith(newQs);
+		} catch (SchedulingException e) {
+			logger.warning(String.format(
+					"Unable to get Status Entities from State Archive - %s",
+					e.getMessage()));
+		}
+		
+        archive.setProjectUtilStatusQueue(statusQs);
+        logger.info(String.format(
+        		"Found %d ProjectStatus%s, %d OUSStatus%s and %d SBStatus%s",
+        		statusQs.getProjectStatusQueue().size(),
+        		(statusQs.getProjectStatusQueue().size() == 1)? "": "es",
+                statusQs.getOUSStatusQueue().size(),
+                (statusQs.getOUSStatusQueue().size() == 1)? "": "es",
+                statusQs.getSBStatusQueue().size(),
+                (statusQs.getSBStatusQueue().size() == 1)? "": "es"));
+     
+        // Now get all the corresponding domain objects.
+        getObsProjects(statusQs, obsProjectBuffer);
+        getSchedBlocks(statusQs, obsProjectBuffer, schedBlockBuffer);
+        
+        // Map the domain objects to the scheduling.Define stuff
+        for (final ProjectStatusI ps : statusQs.getProjectStatusQueue().getAll()) {
+        	final String projectId = ps.getDomainEntityId();
+        	
+        	if (obsProjectBuffer.containsKey(projectId)) {
+        		final ObsProject op = obsProjectBuffer.get(projectId);
+        		final SchedBlock[] sb = schedBlockBuffer.get(projectId);
+        		
+        		mapAndAddProject(projectId, op, sb, ps, now);
+        	}
+        }
+    }
+    /* End The initial poll of the archive
+     * ============================================================= */
 
-           logger.finest("Projects size =  " + projects.size());
-           for (final Project p : projects) {
-               
-               ObsProject obsProj = obsProjectBuffer.get(p.getId());
-               SchedBlock[] schedblks = schedBlockBuffer.get(p.getId());
-               ProjectStatusI prjStatus = psQ.get(obsProj.getProjectStatusRef());
-               Project p2 = projectUtil.map(obsProj,
-                                            schedblks,
-                                            prjStatus,
-                                            clock.getDateTime());
-               SB[] sbs = p2.getAllSBs();
-               
-               // !!! This will query another ObsProject retrieval and
-               // another retrieval for all its SBs. Replacing this call
-               // for the call above.
-               // SB[] sbs = archive.getSBsForProject(p.getId());
-               
-               for (final SB sb : sbs) {
-                   if (sbsQ.isExists(sb.getSbStatusId())) {
-                       // Only worry about SBs for which there is
-                       // a status (which means the SB is in a
-                       // runnable state.
-                       tmpSBs.add(sb);
-                   } else {
-                       logger.fine(String.format(
-                               "Rejecting SchedBlock %s (not in status queue, status = %s)",
-                               sb.getId(),
-                               sb.getStatus().getState()));
-                       AcsJSchedBlockRejectedEx ex = new AcsJSchedBlockRejectedEx();
-                       ex.setProperty("UID", sb.getId());
-                       ex.setProperty("Reason", "Not in status queue");
-                       ex.log(logger);
-                   }
-               }
-           }
+    
 
-           logger.finest("projects = " + projects.size());
-           logger.finest("tmp sbs " + tmpSBs.size());
+	/*
+     * ================================================================
+     * Incremental polling of the archive
+     * ================================================================
+     */
+    /**
+     * Remove the given Project, affiliated SBs and status entities
+     * from the relevant queues.
+     * 
+     * @param project
+     */
+    private void disposeOf(Project project) {
+    	// Shortcut the various status queues
+		final ProjectStatusQueue psQ   = statusQs.getProjectStatusQueue();
+		final OUSStatusQueue     oussQ = statusQs.getOUSStatusQueue();
+		final SBStatusQueue      sbsQ  = statusQs.getSBStatusQueue();
 
-           // For all the stuff gotten above from the archive, determine if
-           // they are new (then add them), if they are updated (then
-           // updated) or the same (then do nothing)
-           for (final Project newProject : projects) {
+		// Get rid of the Project and the ProjectStatus. Hold on to the
+		// ProjectStatus for now so we can find the OUSStatuses.
+		projectQueue.remove(project.getId());
+		final String psId = project.getProjectStatusId();
+		final ProjectStatusI ps = psQ.get(psId);
+		psQ.remove(psId);
+		
+		// Get rid of the OUSStatuses. Start at the topmost and iterate
+		// down until there are no more left.
+		final List<String> oussIds = new ArrayList<String>();
+		oussIds.add(ps.getObsProgramStatusRef().getEntityId());
+		
+		while (!oussIds.isEmpty()) {
+			final String oussId = oussIds.remove(0);
+			final OUSStatusI ouss = oussQ.get(oussId);
+			final OUSStatusChoice choice = ouss.getOUSStatusChoice();
+			for (final OUSStatusRefT childRef : choice.getOUSStatusRef()) {
+				oussIds.add(childRef.getEntityId());
+			}
+			
+			oussQ.remove(oussId);
+		}
+		
+		// Get rid of the SBs and the SBStatuses.
+		final SB[] schedBlocks = project.getAllSBs();
+		for (final SB sb : schedBlocks) {
+			sbQueue.remove(sb.getId());
+			sbsQ.remove(sb.getSbStatusId());
+		}
+    }
 
-               // does project exist in queue?
-               if (projectQueue.isExists(newProject.getId())) {
-                   final Project oldProject = projectQueue.get(newProject.getId());
-                   // logger.finest("(old project)number of program in
-                   // pollarchive:"+oldProject.getAllSBs().length);
-                   // yes it is so check if project needs to be updated,
-                   // check if
-                   if (newProject.getTimeOfUpdate().compareTo(
-                           oldProject.getTimeOfUpdate()) == 1) {
-                       // needs updating
-                       projectQueue.replace(newProject);
-                   } else if (newProject.getTimeOfUpdate().compareTo(
-                           oldProject.getTimeOfUpdate()) == 0) {
-                       // DO NOTHING hasn't been updated
-                   } else if (newProject.getTimeOfUpdate().compareTo(
-                           oldProject.getTimeOfUpdate()) == -1) {
-                       // TODO should throw an error coz the old project
-                       // has been updated and the new one hasnt
-                   } else {
-                       // TODO Throw an error here
-                   }
+    /**
+     * Load the given Project, affiliated SBs and status entities
+     * into the relevant queues.
+     * 
+     * @param projectId - the entity id of the project to load
+     * @param ps        - the ProjectStatus of the project (if we have
+     *                    it, if not, then <code>null</code>)
+     * @param sbCache   - a cache of SchedBlocks we've got so far
+     * @param now       - the timestamp to use as the creation time
+     */
+    private void loadProject(String                  projectId,
+    						 Map<String, SchedBlock> sbCache,
+    						 DateTime                now) {
+    	
+    	final ObsProject obsProject;
+    	
+    	// Get the ObsProject from the archive
+    	try {
+			obsProject = archive.getObsProject(projectId);
+		} catch (SchedulingException e) {
+			logger.warning(String.format(
+					"Could not get ObsProject %s from the archive - %s, skipping project",
+					projectId,
+					e.getMessage()));
+			return;
+		}
+		
+		// Get the affiliated OUSStatuses and SBStatuses, filtering out
+		// the SBStatuses which are in an inactive state.
+		final String psId = obsProject.getProjectStatusRef().getEntityId();
+		final StatusEntityQueueBundle bundle
+								=  archive.getActiveStatusesFor(psId);
+		
+		if (bundle.getProjectStatusQueue().size() > 0) {
+			// Don't bother if we didn't get the ProjectStatus - which
+			// might be due to an already logged fault or because the
+			// project is not active.
+			statusQs.updateIncrWith(bundle);
+		
+			// Now get the SBs
+			final SchedBlock[] sb = archive.getSelectedSBsFromObsProject(
+												obsProject,
+												bundle.getSBStatusQueue(),
+												sbCache);
 
-                   // TODO if the sbs need updating and if there are new
-                   // ones to add
-                   SB[] currSBs = getSBs(tmpSBs, newProject.getId());
-                   SB newSB, oldSB;
-                   for (int j = 0; j < currSBs.length; j++) {
-                       newSB = currSBs[j];
-                       if (sbQueue.isExists(newSB.getId())) {
-                           logger.finest("Sb not new");
-                           oldSB = sbQueue.get(newSB.getId());
+			mapAndAddProject(projectId,
+					obsProject,
+					sb,
+					bundle.getProjectStatusQueue().get(psId),
+					now);
+		}
+    }
 
-                           // check if it needs to be updated, if yes then
-                           // update
-                           if (newSB.getTimeOfUpdate().compareTo(
-                                   oldSB.getTimeOfUpdate()) == 1) {
-                               logger.finest("Sb needs updating");
-                               sbQueue.replace(newSB);
-                               projectQueue.replace(newProject);
-                           } else if (newSB.getTimeOfUpdate().compareTo(
-                                   oldSB.getTimeOfUpdate()) == 0) {
-                               // DO NOTHING, hasn't been updated
-                           } else if (newSB.getTimeOfUpdate().compareTo(
-                                   oldSB.getTimeOfUpdate()) == -1) {
-                               // TODO should throw an error coz the old sb
-                               // has been updated and the new one hasnt
-                           } else {
-                               // TODO Throw an error
-                           }
-                       } else {
-                           // not in queue, so add it.
-                           logger.finest("SB new, adding");
-                           sbQueue.add(newSB);
-                           projectQueue.replace(newProject);
-                       }
-                   }
-               } else {
-                   logger.finest("Project new, adding");
-                   // no it isn't so add project to queue,
-                   projectQueue.add(newProject);
-                   // and sbs to sbqueue
-                   SB[] schedBlocks = getSBs(tmpSBs, newProject.getId());
-                   if (schedBlocks.length > 0) {
-                       sbQueue.add(schedBlocks);
-                       Program p = (schedBlocks[0]).getParent();
-                       logger.finest("Program's session " + p.getId()
-                               + "has " + p.getNumberSession()
-                               + " session");
-                   } else {
-                       logger
-                               .info("HSO hotfix 2008-06-07: new project "
-                                       + newProject.getId()
-                                       + " does not have any schedblocks. Not sure if this is OK.");
-                   }
-               }
-           }
+	/**
+	 * Refresh our view of the given project.
+	 * 
+	 * @param now
+	 * @param sbCache
+	 * @param projectId
+	 */
+	private void refreshProject(final String                  projectId,
+								final Map<String, SchedBlock> sbCache,
+								final DateTime                now) {
+		final Project project = projectQueue.get(projectId);
+		if (project != null) {
+			disposeOf(project);
+		}
+		
+		// Load the new project bumf - does nothing if the project is
+		// not in a suitable state.
+		loadProject(projectId, sbCache, now);
+	}
+    
+    /**
+     * Work out what relevant changes have happened in the XML Store
+     * and the State Archive and then change the Scheduler's pool of
+     * Projects and SBs to match.
+     * 
+     * "Relevant changes" is a strangely complicated thing. As a first
+     * stab we'll update any project which:
+     * <ul>
+     * <li>has a SchedBlock whose XML has changed;
+     * <li>has changed XML;
+     * <li>has an SBStatus which has changed state;
+     * <li>has an OUSStatus which has changed state;
+     * <li>has changed its status.
+     * </ul>
+     * To "update" a project we
+     * <ol>
+     * <li>unload any current information we are holding on that
+     * project;
+     * <li>load it from the archives <code>if</code> it is active.
+     * </ol>
+     * 
+     * We also cache SchedBlocks we've just got in order to avoid
+     * fetching them multiple times, which would be a real performance
+     * hit. Although it might look like we could apply the same sort of
+     * caching to SBStatuses and OUSStatuses, the payback for so doing
+     * would be very slight as the SBStatuses and OUSStatuses for each
+     * ObsProjects are obtained with one CORBA call regardless of how
+     * many of them the project has. It is the CORBA calls which are
+     * the performance hit.
+     * 
+     * @param now - timestamp to use for any created objects.
+     * @throws SchedulingException
+     */
+    synchronized public void incrementalPollArchive(DateTime now) {
+    	logger.info("Starting incremental poll of the archive");
+		
+		// Initialisation
+		//	In order to prevent duplicate retrieval of SchedBlocks,
+    	//	SBStatuses and OUSStatuses we cache ones we have just got.
+		final Map<String, SchedBlock> sbCache
+								= new HashMap<String, SchedBlock>();
+		
+		//	The store for the ids of the changed projects.
+		final Set<String> changedProjects = new HashSet<String>();
+		
+		clearBuffers();
+		
+		// Work out which projects have changed and record their ids.
+		changedProjects.addAll(
+				archive.getProjectIdsForChangedSchedBlocks(sbCache));
+		changedProjects.addAll(
+				archive.getProjectIdsForChangedObsProjects());
+		final Map<String, StateChangeData> sbsChanges
+					= archive.getStatusChanges(StateEntityType.SBK);
+		final Map<String, StateChangeData> oussChanges
+					= archive.getStatusChanges(StateEntityType.OUT);
+		final Map<String, StateChangeData> psChanges
+					= archive.getStatusChanges(StateEntityType.PRJ);
 
-           // checkSBUpdates();
-       } catch (Exception e) {
-           e.printStackTrace();
-           throw new SchedulingException(e);
-       }
-   }
-   
-   private String formatArray(String[] prjuids) {
-	   final StringBuilder b = new StringBuilder();
-	   String sep = "";
-	   b.append("[");
-	   for (final String s : prjuids) {
-		   b.append(sep);
-		   b.append(s);
-		   sep = ", ";
-	   }
-	   b.append("]");
-	   return b.toString();
-   }
+		for (String psId : psChanges.keySet()) {
+			String projectId = psChanges.get(psId).domainEntityId;
+			changedProjects.add(projectId);
+		}
+		for (String oussId : oussChanges.keySet()) {
+			String projectId = oussChanges.get(oussId).domainEntityId;
+			changedProjects.add(projectId);
+		}
+		for (String sbsId : sbsChanges.keySet()) {
+			String sbId = sbsChanges.get(sbsId).domainEntityId;
+			SchedBlock sb = archive.getSchedBlock(sbId, sbCache);
+			String projectId = sb.getObsProjectRef().getEntityId();
+			changedProjects.add(projectId);
+		}
 
-@SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+		for (final String projectId : changedProjects) {
+			try {
+				logger.info(String.format(
+						"Initialising ObsProject %s",
+						projectId));
+				refreshProject(projectId, sbCache, now);
+				logger.info(String.format(
+						"Initialised ObsProject %s succesfully",
+						projectId));
+			} catch (Exception e) {
+				logger.warning(String.format(
+						"Could not initialise ObsProject %s - %s, skipping",
+						projectId,
+						e.getMessage()));
+			}
+		}
+		
+    }
+    /* End Incremental polling of the archive
+     * ============================================================= */
+    
+    private boolean donePollArchive = false;
+    
+    synchronized public void pollArchive(String prjuid) throws SchedulingException {
+        // Use the State Archive to convert all the Phase2Submitted
+    	// ObsProjects and SchedBlocks to Ready
+		archive.convertProjects(StatusTStateType.PHASE2SUBMITTED,
+		                        StatusTStateType.READY);
+
+		logger.fine(String.format(
+        		"polling archive for runnable projects, prjuid = %s",
+        		prjuid==null? "null": prjuid));
+        final DateTime now = clock.getDateTime();
+        
+        if (prjuid != null) {
+         	logger.info(String.format(
+         			"Polling the archive for project %s", prjuid));
+        	refreshProject(prjuid, null, now);
+        } else if (!donePollArchive) {
+    		initialPollArchive(now);
+    		donePollArchive = true;
+    	} else if (prjuid == null) {
+    		incrementalPollArchive(now);
+    	}
+        archive.setLastQueryTime(now);
+        logger.info("The Scheduling Subsystem is currently managing "
+                + projectQueue.size() + " projects, "
+                + sbQueue.size() + " SBs, "
+                + statusQs.getProjectStatusQueue().size() + " project statuses and "
+                + statusQs.getSBStatusQueue().size() + " SB statuses");
+//        logNumbers(String.format("at end of pollArchive(%s)", prjuid));
+//        logDetails(String.format("at end of pollArchive(%s)", prjuid));
+    }
+
+
+    @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+    private String formatArray(String[] prjuids) {
+    	final StringBuilder b = new StringBuilder();
+    	String sep = "";
+    	b.append("[");
+    	for (final String s : prjuids) {
+    		b.append(sep);
+    		b.append(s);
+    		sep = ", ";
+    	}
+    	b.append("]");
+    	return b.toString();
+    }
+
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
    private void logNumbers(String when) {
        logger.fine(String.format(
                "ObsProject    queue size %s = %d",
@@ -455,9 +692,25 @@ public class ALMAArchivePoller {
    
    @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
    private void logDetails(String when) {
-       logProjectsAndStatuses(projectQueue, statusQs.getProjectStatusQueue());
-       logOUSsAndStatuses(projectQueue, statusQs.getOUSStatusQueue());
-       logSBsAndStatuses(sbQueue, statusQs.getSBStatusQueue());
+	   if (projectQueue.size() <= 30) {
+		   logProjectsAndStatuses(projectQueue, statusQs.getProjectStatusQueue());
+		   logOUSsAndStatuses(projectQueue, statusQs.getOUSStatusQueue());
+		   logSBsAndStatuses(sbQueue, statusQs.getSBStatusQueue());
+	   } else {
+	       logger.fine("Too many projects to log all the gory details");
+	   }
+       logger.fine(String.format(
+    		   "StatusEntityQueueBundle @ %h",
+    		   statusQs.hashCode()));
+       logger.fine(String.format(
+    		   "ProjectStatusQueue @ %h",
+    		   statusQs.getProjectStatusQueue().hashCode()));
+       logger.fine(String.format(
+    		   "OUSStatusQueue @ %h",
+    		   statusQs.getOUSStatusQueue().hashCode()));
+       logger.fine(String.format(
+    		   "SBStatusQueue @ %h",
+    		   statusQs.getSBStatusQueue().hashCode()));
    }
 
    private void logProjectsAndStatuses(ProjectQueue       domainQueue,
@@ -477,6 +730,7 @@ public class ALMAArchivePoller {
                f.format("\tProject ID = %s, Status ID = %s", domainId, statusId);
                final ProjectStatusI status = statusQueue.get(statusId);
                if (status != null) {
+                   f.format(", Status = %s", status.getStatus().getState().toString());
                    final EntityRefT ref = status.getObsProjectRef();
                    if (ref != null) {
                        final String id = ref.getEntityId();
@@ -503,6 +757,7 @@ public class ALMAArchivePoller {
                final String statusId = ps.getUID();
                if (!haveLogged.contains(statusId)) {
                    f.format("\tStatus ID = %s", statusId);
+                   f.format(", Status = %s", ps.getStatus().getState().toString());
                    final EntityRefT ref = ps.getObsProjectRef();
 
                    if (ref != null) {
@@ -538,6 +793,7 @@ public class ALMAArchivePoller {
                    f.format("\tOUS ID = %s in %s, Status ID = %s", domainId, projectId, statusId);
                    final OUSStatusI status = statusQueue.get(statusId);
                    if (status != null) {
+                       f.format(", Status = %s", status.getStatus().getState().toString());
                        final EntityRefT ref = status.getObsUnitSetRef();
                        if (ref != null) {
                            final String id = ref.getEntityId();
@@ -566,6 +822,7 @@ public class ALMAArchivePoller {
                final String statusId = ps.getUID();
                if (!haveLogged.contains(statusId)) {
                    f.format("\tStatus ID = %s", statusId);
+                   f.format(", Status = %s", ps.getStatus().getState().toString());
                    final EntityRefT ref = ps.getObsUnitSetRef();
 
                    if (ref != null) {
@@ -600,6 +857,7 @@ public class ALMAArchivePoller {
                f.format("\tSchedBlock ID = %s, Status ID = %s", domainId, statusId);
                final SBStatusI status = statusQueue.get(statusId);
                if (status != null) {
+                   f.format(", Status = %s", status.getStatus().getState().toString());
                    final EntityRefT ref = status.getSchedBlockRef();
                    if (ref != null) {
                        final String id = ref.getEntityId();
@@ -626,7 +884,8 @@ public class ALMAArchivePoller {
                final String statusId = ps.getUID();
                if (!haveLogged.contains(statusId)) {
                    f.format("\tStatus ID = %s", statusId);
-                   final EntityRefT ref = ps.getSchedBlockRef();
+                   f.format(", Status = %s", ps.getStatus().getState().toString());
+                  final EntityRefT ref = ps.getSchedBlockRef();
 
                    if (ref != null) {
                        f.format(", SchedBlock ID = %s", ref.getEntityId());
@@ -686,22 +945,121 @@ public class ALMAArchivePoller {
 	   }
 	   logger.fine(b.toString());
    }
+   
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+   private void logStatuses(String                  when,
+							StatusEntityQueueBundle bundle) {
 
-    private static SB[] getSBs(Vector<SB> v, String s) {
-        Vector<SB> sbsV = new Vector<SB>();
-        SB sb;
-        for (int i = 0; i < v.size(); i++) {
-            sb = (SB) v.elementAt(i);
-            if (sb.getProject().getId().equals(s)) {
-                sbsV.add(sb);
-            }
-        }
-        SB[] sbs = new SB[sbsV.size()];
-        for (int i = 0; i < sbsV.size(); i++) {
-            sbs[i] = (SB) sbsV.elementAt(i);
-        }
-        return sbs;
-    }
+	   final StringBuilder b = new StringBuilder();
+	   final Formatter     f = new Formatter(b);
+
+	   f.format("%s%n%n", when);
+	   f.format("Project Statuses%n%n%32s %32s %s%n",
+			   "Status UID",
+			   "Domain UID",
+			   "State");
+	   for (final ProjectStatusI s : bundle.getProjectStatusQueue().getAll()) {
+		   f.format("%32s %32s %s%n",
+				   s.getUID(),
+				   s.getDomainEntityId(),
+				   s.getStatus().getState().toString());
+	   }
+	   f.format("OUS Statuses%n%n%32s %32s %32s %s%n",
+			   "Status UID",
+			   "Domain UID",
+			   "Project Status ID",
+			   "State");
+	   for (final OUSStatusI s : bundle.getOUSStatusQueue().getAll()) {
+		   f.format("%32s %32s %32s %s%n",
+				   s.getUID(),
+				   s.getDomainEntityId(),
+				   s.getProjectStatusRef().getEntityId(),
+				   s.getStatus().getState().toString());
+	   }
+	   f.format("SB Statuses%n%n%32s %32s %32s %32s %s%n",
+			   "Status UID",
+			   "Domain UID",
+			   "Project Status ID",
+			   "OUS Status ID",
+			   "State");
+	   for (final SBStatusI s : bundle.getSBStatusQueue().getAll()) {
+		   f.format("%32s %32s %32s %32s %s%n",
+				   s.getUID(),
+				   s.getDomainEntityId(),
+				   s.getProjectStatusRef().getEntityId(),
+				   s.getContainingObsUnitSetRef().getEntityId(),
+				   s.getStatus().getState().toString());
+	   }
+	   logger.fine(b.toString());
+   }
+   
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+   private void logSBQueue(String  when,
+						   SBQueue queue) {
+
+	   final StringBuilder b = new StringBuilder();
+	   final Formatter     f = new Formatter(b);
+
+	   f.format("%s%n%n", when);
+	   f.format("SchedBlocks%n%n%32s %32s %32s %s%n",
+			   "Status UID",
+			   "Domain UID",
+			   "Project UID",
+			   "State");
+	   for (final SB s :queue.getAll()) {
+		   f.format("%32s %32s %32s %s%n",
+				   s.getId(),
+				   s.getSbStatusId(),
+				   s.getProject().getId(),
+				   s.getStatus().getState().toString());
+	   }
+	   logger.fine(b.toString());
+   }
+   
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+   private void logProjectQueue(String       when,
+						        ProjectQueue queue) {
+
+	   final StringBuilder b = new StringBuilder();
+	   final Formatter     f = new Formatter(b);
+
+	   f.format("%s%n%n", when);
+	   f.format("Projects%n%n%32s %32s %s%n",
+			   "Status UID",
+			   "Domain UID",
+			   "State");
+	   for (final Project p :queue.getAll()) {
+		   f.format("%32s %32s %s%n",
+				   p.getId(),
+				   p.getProjectStatusId(),
+				   p.getStatus().getState().toString());
+	   }
+	   logger.fine(b.toString());
+   }
+
+   
+   @SuppressWarnings("unused") // Sometimes we don't log, and that's OK
+   private void logProject(Project project) {
+	   final StringBuilder b = new StringBuilder();
+	   final Formatter     f = new Formatter(b);
+	   
+	   f.format("Project %s%n", project.getId());
+	   f.format("\tState:\t%s%n", project.getStatus().getState());
+	   f.format("\tName:\t%s%n", project.getProjectName());
+	   f.format("\tPI:\t%s%n", project.getPI());
+	   f.format("\ttimeOfCreation:\t%s%n", project.getTimeOfCreation());
+	   f.format("\ttimeOfUpdate:\t%s%n", project.getTimeOfUpdate());
+	   for (final SB sb : project.getAllSBs()) {
+		   f.format("\tSB %s%n", sb.getId());
+		   f.format("\t\tState:\t%s%n", sb.getStatus().getState());
+		   f.format("\t\tName:\t%s%n", sb.getSBName());
+		   f.format("\t\ttimeOfCreation:\t%s%n", project.getTimeOfCreation());
+		   f.format("\t\ttimeOfUpdate:\t%s%n", project.getTimeOfUpdate());
+		   f.format("\tend SB %s%n", project.getId());
+	   }
+	   f.format("end Project %s%n", project.getId());
+	   logger.fine(b.toString());
+	}
     
     public Project getProject(String uid, SBStatusQueue sbStatusQueue) throws SchedulingException {
         Project prj = null;
@@ -787,7 +1145,6 @@ public class ALMAArchivePoller {
                         }
                         prof2.end();
 
-                        //TODO should check project queue.. if project exists don't map a new one.
                         prof2.start("getSBsFromObsProject");
                         SchedBlock[] sbs = archive.getSBsFromObsProject(project, sbStatusQueue);
                         prof2.end();
@@ -987,10 +1344,10 @@ public class ALMAArchivePoller {
         }
 
         protected SBLite createSBLite(String id) {
-            logger.info("entering createSBLite"); // changel level later
-            String sid,pid,sname,pname,pi,pri;
-            double ra,dec,freq,score,success,rank;
-            long maxT;
+            logger.fine("entering createSBLite");
+            String pid,sname,pname,pi,pri;
+            double ra,dec;
+
             logger.info("createSBLite: sbQueue.get");
             SB sb = sbQueue.get(id);
             if (sb == null) {
@@ -999,7 +1356,6 @@ public class ALMAArchivePoller {
             logger.info("createSBLite: sbQueue get complete");
             
             SBLite sblite = new SBLite();
-            sid = sb.getId();
             if(id == null || id =="") {
                 id = "WARNING: Problem with SB id";
             }
