@@ -39,6 +39,7 @@
 			<xs:element name="resolution" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="scientificTime" type="xs:double" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="uvCoverage" type="xs:double" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="originalId" type="xs:long" minOccurs="1" maxOccurs="1"/>
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:NCName" use="required"/>		
 	</xs:complexType>

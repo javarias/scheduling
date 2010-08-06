@@ -135,8 +135,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             a[i].setCreationDate(tmpA.getCreationDate());
             a[i].setDeletionDate(tmpA.getDeletionDate());
             // Id needs to be a string, as it is used for XPath reference check in XML schema.
-            a[i].setId(Long.toString(tmpA.getId()));
-            a[i].setOriginalId( tmpA.getOriginalId() );
+            a[i].setOriginalId( Long.toString(tmpA.getId()) );
             a[i].setMaintenanceTime(tmpA.getMaintenanceTime());
             a[i].setScientificTime(tmpA.getScientificTime());
             a[i].setResolution( tmpA.getResolution());
