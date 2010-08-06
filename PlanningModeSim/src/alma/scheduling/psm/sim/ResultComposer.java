@@ -52,6 +52,7 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
@@ -150,20 +151,47 @@ public class ResultComposer {
 	
     @Transactional(readOnly=true)
 	private long numberOfSchedBlocks( ObsUnit ouRef ){
-		if( ouRef instanceof SchedBlock ){
-			return 1;
-		}else if( ouRef instanceof ObsUnitSet ){
-		
+    	if( ouRef instanceof ObsUnitSet ){
+    		System.out.println("   * ObsUnitSet");
+    		
 			long numberSbs = 0;
 			ObsUnitSet ouSet = (ObsUnitSet)ouRef;
 					
 			for( ObsUnit ouTmp : ouSet.getObsUnits() ){
 				if( ouTmp instanceof SchedBlock ){
-					numberSbs += 1;
+		    		System.out.println("   * SchedBlock");
+					numberSbs = numberSbs + 1;
 				}else if( ouTmp instanceof ObsUnitSet ){
-					numberSbs += numberOfSchedBlocks( ouTmp );
+					numberSbs = numberSbs + numberOfSchedBlocks( ouTmp );
 				}
-			}			
+			}
+			return numberSbs;
+		}else{
+			System.out.println("Error, ouRef ObsUnit reference is neither a SchedBlock nor a ObsUnitSet");
+			System.out.println( ouRef.getClass() );
+			if( ouRef == null )
+				System.out.println("OutRef is null");
+		}
+		return 0;
+	}
+    
+    @Transactional(readOnly=true)
+	private long numberOfCompletedSchedBlocks( ObsUnit ouRef ){
+    	if( ouRef instanceof ObsUnitSet ){
+    		System.out.println("   * ObsUnitSet");
+    		
+			long numberSbs = 0;
+			ObsUnitSet ouSet = (ObsUnitSet)ouRef;
+					
+			for( ObsUnit ouTmp : ouSet.getObsUnits() ){
+				if( ouTmp instanceof SchedBlock ){
+		    		System.out.println("   * SchedBlock");
+		    		if( ((SchedBlock)ouTmp).getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED )
+		    			numberSbs = numberSbs + 1;
+				}else if( ouTmp instanceof ObsUnitSet ){
+					numberSbs = numberSbs + numberOfCompletedSchedBlocks( ouTmp );
+				}
+			}
 			return numberSbs;
 		}else{
 			System.out.println("Error, ouRef ObsUnit reference is neither a SchedBlock nor a ObsUnitSet");
@@ -208,14 +236,14 @@ public class ResultComposer {
 			outputOp.getAffiliation().add( newAffiliation );
 
 			// TODO: Calculate completion of obsproject
-			long completedSbs = 0;			
+			long completedSbs = numberOfCompletedSchedBlocks( op.getObsUnit() );			
 			long totalSbs = numberOfSchedBlocks( op.getObsUnit() );
+			System.out.println("   * Number of SBs: " +  totalSbs );
 			if( completedSbs == totalSbs )
 				outputOp.setStatus( ExecutionStatus.COMPLETE );
 			else if( completedSbs > 0 )
 				outputOp.setStatus( ExecutionStatus.INCOMPLETE );
 			else{
-				// TODO: This should never happen. Illegal state reached, throw exception
 				outputOp.setStatus( ExecutionStatus.NOT_STARTED );
 			}
 			results.getObservationProject().add(outputOp);
@@ -293,7 +321,7 @@ public class ResultComposer {
     		        sbr.setMode( "NOT YET IMPLEMENTED");
     		        sbr.setRepresentativeFrequency( ((SchedBlock)ptrOu).getSchedulingConstraints().getRepresentativeFrequency() );
     		        //TODO: Add frequency band
-    		        sbr.setType( "NOT YET IMPLEMENTED");
+    		        sbr.setType( "SCIENTIFIC");
             		
             		sbrSet.add( sbr );
     			}

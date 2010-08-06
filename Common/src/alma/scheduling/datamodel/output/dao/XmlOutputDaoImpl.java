@@ -81,7 +81,7 @@ public class XmlOutputDaoImpl implements OutputDao {
             op[i].setId(tmpOp.getId());
             op[i].setOriginalId(tmpOp.getOriginalId());
             //TODO: Fix this presseted status. Using valueof() method returns null pointer.
-            op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.COMPLETE );
+            op[i].setStatus( alma.scheduling.output.generated.types.ExecutionStatus.valueOf( tmpOp.getStatus().toString() ) );
             
             // Setting affiliations
             alma.scheduling.output.generated.Affiliation aff[] = 
