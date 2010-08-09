@@ -27,7 +27,9 @@
  */
 package alma.scheduling.AlmaScheduling;
 
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,7 +124,7 @@ import alma.xmlstore.OperationalPackage.NotFound;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.102 2010/08/05 15:27:29 dclarke Exp $
+ * @version $Id: ALMAArchive.java,v 1.103 2010/08/09 16:12:01 dclarke Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1028,6 +1030,12 @@ public class ALMAArchive implements Archive {
             return sbRefs;
         }
     }
+
+    private String printedStackTrace(Exception e) {
+    	final StringWriter sw = new StringWriter();
+    	e.printStackTrace(new PrintWriter(sw));
+    	return sw.toString();
+    }
     
     /**
       * Gets the SchedBlock with the given id from the archive
@@ -1035,17 +1043,29 @@ public class ALMAArchive implements Archive {
     public SchedBlock getSchedBlock(String id) {
         
         SchedBlock sb = null;
+        Profiler prof = new Profiler(logger);
+        XmlEntityStruct xml = null;
+        
         try {
-            Profiler prof = new Profiler(logger);
             prof.start("about to retrieve SB with uid " + id);
-            XmlEntityStruct xml = archOperationComp.retrieveDirty(id);
+            xml = archOperationComp.retrieveDirty(id);
             prof.end();
+        } catch(Exception e) {
+        	logger.severe(String.format(
+        			"Error retrieving SchedBlock %s - %s",
+        			id, e.getMessage()));
+        	logger.severe(printedStackTrace(e));
+        	return null;
+        }
+        try {
             prof.start("deserializing SB XML");
             sb = (SchedBlock) entityDeserializer.deserializeEntity(xml, SchedBlock.class);
             prof.end();
         } catch(Exception e) {
-        	logger.severe("SchedBlock id:"+id);
-        	logger.severe("Trying to deserialize xml file to SchedBlock fail!! check if APDM update");
+        	logger.severe(String.format(
+        			"Error deserializing SchedBlock %s - %s",
+        			id, e.getMessage()));
+        	logger.severe(printedStackTrace(e));
         	return null;
         }
         return sb;
