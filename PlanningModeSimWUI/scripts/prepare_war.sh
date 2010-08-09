@@ -59,7 +59,7 @@ cp slf4j-1.5.2/slf4j-log4j12-1.5.2.jar $TARGET;
 #cp zk-bin-5.0.3/dist/lib/zkforge/fckez.jar $TARGET;
 
 echo "Checking for ZK Enterprise libraries..."
-if [ ! -f zk-bin-5.0.3.tar.gz ] ; then
+if [ ! -f zkpe-bin-eval-5.0.3.zip ] ; then
         echo "   * Not present, downloading...";
         wget http://www.zkoss.org/zkdownload/downloadEvalFile?id=1682440901;
 	mv downloadEvalFile\?id\=1682440901 zkpe-bin-eval-5.0.3.zip
