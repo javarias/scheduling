@@ -124,7 +124,7 @@ import alma.xmlstore.OperationalPackage.NotFound;
  * interface from the scheduling's define package and it connects via
  * the container services to the real archive used by all of alma.
  *
- * @version $Id: ALMAArchive.java,v 1.103 2010/08/09 16:12:01 dclarke Exp $
+ * @version $Id: ALMAArchive.java,v 1.104 2010/08/09 22:34:58 dclarke Exp $
  * @author Sohaila Lucero
  */
 public class ALMAArchive implements Archive {
@@ -1031,12 +1031,19 @@ public class ALMAArchive implements Archive {
         }
     }
 
-    private String printedStackTrace(Exception e) {
+    /**
+     * Print the stack trace of the given Throwable onto a String and
+     * return that String.
+     * 
+     * @param t - a Throwable, the details of which we're interested  
+     * @return a String with the details.
+     */
+    public String printedStackTrace(Throwable t) {
     	final StringWriter sw = new StringWriter();
-    	e.printStackTrace(new PrintWriter(sw));
+    	t.printStackTrace(new PrintWriter(sw));
     	return sw.toString();
     }
-    
+
     /**
       * Gets the SchedBlock with the given id from the archive
       */
@@ -1054,7 +1061,7 @@ public class ALMAArchive implements Archive {
         	logger.severe(String.format(
         			"Error retrieving SchedBlock %s - %s",
         			id, e.getMessage()));
-        	logger.severe(printedStackTrace(e));
+        	logger.finest(printedStackTrace(e));
         	return null;
         }
         try {
@@ -1065,7 +1072,7 @@ public class ALMAArchive implements Archive {
         	logger.severe(String.format(
         			"Error deserializing SchedBlock %s - %s",
         			id, e.getMessage()));
-        	logger.severe(printedStackTrace(e));
+        	logger.finest(printedStackTrace(e));
         	return null;
         }
         return sb;

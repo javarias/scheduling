@@ -582,19 +582,28 @@ public class ALMAArchivePoller {
 		final Map<String, StateChangeData> psChanges
 					= archive.getStatusChanges(StateEntityType.PRJ);
 
-		for (String psId : psChanges.keySet()) {
-			String projectId = psChanges.get(psId).domainEntityId;
+		for (StateChangeData scd : psChanges.values()) {
+			String projectId = scd.domainEntityId;
 			changedProjects.add(projectId);
 		}
-		for (String oussId : oussChanges.keySet()) {
-			String projectId = oussChanges.get(oussId).domainEntityId;
+		for (StateChangeData scd : oussChanges.values()) {
+			String projectId = scd.domainEntityId;
 			changedProjects.add(projectId);
 		}
-		for (String sbsId : sbsChanges.keySet()) {
-			String sbId = sbsChanges.get(sbsId).domainEntityId;
+		for (StateChangeData scd : sbsChanges.values()) {
+			String sbId = scd.domainEntityId;
 			SchedBlock sb = archive.getSchedBlock(sbId, sbCache);
-			String projectId = sb.getObsProjectRef().getEntityId();
-			changedProjects.add(projectId);
+			if (sb != null) {
+				try {
+					String projectId = sb.getObsProjectRef().getEntityId();
+					changedProjects.add(projectId);
+				} catch (Exception e) {
+			    	logger.severe(String.format(
+			    			"Error finding ObsProject for SchedBlock %s - %s",
+			    			sbId, e.getMessage()));
+			    	logger.finest(archive.printedStackTrace(e));
+				}
+			}
 		}
 
 		for (final String projectId : changedProjects) {
