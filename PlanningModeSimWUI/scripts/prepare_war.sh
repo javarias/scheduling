@@ -40,23 +40,44 @@ unzip -o slf4j-1.5.2.zip > /dev/null;
 cp slf4j-1.5.2/slf4j-api-1.5.2.jar $TARGET;
 cp slf4j-1.5.2/slf4j-log4j12-1.5.2.jar $TARGET;
 
-echo "Checking for ZK libraries..."
+#echo "Checking for ZK libraries..."
+#if [ ! -f zk-bin-5.0.3.tar.gz ] ; then
+#	echo "   * Not present, downloading...";
+#	wget https://sourceforge.net/projects/zk1/files/ZK/zk-5.0.3/zk-bin-5.0.3.tar.gz/download;
+#fi
+#tar xfz zk-bin-5.0.3.tar.gz;
+#cp zk-bin-5.0.3/dist/lib/zcommon.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zcommons-el.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zhtml.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zk.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zkplus.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zul.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zweb.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/ext/bsh.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/ext/js.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/ext/jython.jar $TARGET;
+#cp zk-bin-5.0.3/dist/lib/zkforge/fckez.jar $TARGET;
+
+echo "Checking for ZK Enterprise libraries..."
 if [ ! -f zk-bin-5.0.3.tar.gz ] ; then
-	echo "   * Not present, downloading...";
-	wget https://sourceforge.net/projects/zk1/files/ZK/zk-5.0.3/zk-bin-5.0.3.tar.gz/download;
+        echo "   * Not present, downloading...";
+        wget http://www.zkoss.org/zkdownload/downloadEvalFile?id=1682440901;
+	mv downloadEvalFile\?id\=1682440901 zkpe-bin-eval-5.0.3.zip
 fi
-tar xfz zk-bin-5.0.3.tar.gz;
-cp zk-bin-5.0.3/dist/lib/zcommon.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zcommons-el.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zhtml.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zk.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zkplus.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zul.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zweb.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/ext/bsh.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/ext/js.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/ext/jython.jar $TARGET;
-cp zk-bin-5.0.3/dist/lib/zkforge/fckez.jar $TARGET;
+unzip -o zkpe-bin-eval-5.0.3.zip > /dev/null;
+cp zkpe-bin-eval-5.0.3/dist/lib/zcommon.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zcommons-el.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zhtml.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zkex.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zk.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zkplus.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zml.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zul.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zweb.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/ext/bsh.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/ext/js.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/ext/jython.jar $TARGET;
+cp zkpe-bin-eval-5.0.3/dist/lib/zkforge/fckez.jar $TARGET;
 
 echo "Getting jars from INTROOT..."
 cp $INTROOT/lib/SchedulingPSM.jar $INTROOT/lib/SchedulingPSMCli.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET;

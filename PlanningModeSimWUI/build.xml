@@ -83,8 +83,10 @@
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommons-el.jar" />
 		<pathelement location="${lib}/zhtml.jar" />
+		<pathelement location="${lib}/zkex.jar" />
 		<pathelement location="${lib}/zk.jar" />
 		<pathelement location="${lib}/zkplus.jar" />
+		<pathelement location="${lib}/zml.jar" />
 		<pathelement location="${lib}/zul.jar" />
 		<pathelement location="${lib}/zweb.jar" />	
 		
