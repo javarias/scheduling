@@ -23,7 +23,7 @@ public class PsmContext {
 	protected String contextFile = null;
     protected VerboseLevel verboseLvl = null;
     static private ApplicationContext ctx = null;
-
+    
 	public PsmContext(String workDir){
 		this.workDir = workDir;
 		this.loadAprcConfig();

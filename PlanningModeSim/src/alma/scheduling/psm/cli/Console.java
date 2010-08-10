@@ -121,7 +121,9 @@ public class Console {
                 else if(args[1].compareTo("2") == 0)
                 	reportGenerator.finalreport();
                 else if(args[1].compareTo("3") == 0)
-                	reportGenerator.printLSTRangesReport();                
+                	reportGenerator.printLSTRangesReport();
+                else if(args[1].compareTo("4") == 0)
+                	reportGenerator.executiveReport();
                 else
                     reportHelp();
             
