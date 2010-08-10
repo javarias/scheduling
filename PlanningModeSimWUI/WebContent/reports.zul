@@ -1,0 +1,25 @@
+<?init class="alma.scheduling.psm.web.ReportsController"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./reportsWindow" ?>
+
+<?page title="Reports" contentType="text/html;charset=UTF-8" id="reportsPage"?>
+<zk>
+	<window title="Reports" border="normal"
+		apply="${sessionScope.reportController}" id="reportsWindow" height="1000">
+		<button label="Report!" id="buttonReport" />
+		<jasperreport id="report" height="800" visible="true"/>
+	</window>
+	<!--	<zscript><![CDATA[
+		import org.zkoss.zkplus.spring.SpringUtil;
+		import alma.scheduling.psm.sim.ReportGenerator;
+		void showReport() {
+		String workDir = System.getenv("APRC_WORK_DIR");
+		ReportGenerator rg = new ReportGenerator(workDir);
+		ReportGenerator.setApplicationContext(SpringUtil
+		.getApplicationContext());
+		report.setSrc("/alma/scheduling/psm/reports/crowdingReport.jasper");
+		report.setDatasource(rg.getCrowdingReportData());
+		report.setParameters(new HashMap());
+		}
+		]]>
+		</zscript> -->
+</zk>

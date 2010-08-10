@@ -11,6 +11,7 @@ import org.zkoss.zk.ui.SuspendNotAllowedException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zk.ui.util.Initiator;
+import org.zkoss.zkex.zul.api.Jasperreport;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.api.Button;
 import org.zkoss.zul.api.Panelchildren;

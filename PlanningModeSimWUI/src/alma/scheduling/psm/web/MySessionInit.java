@@ -38,6 +38,7 @@ public class MySessionInit implements SessionInit {
 		session.setAttribute("mainWindowController", new MainWindowController());
 		session.setAttribute("configurationController", new ConfigurationController());
 		session.setAttribute("simulationController", new SimulationController());
+		session.setAttribute("reportController", new ReportsController());
 		return;
 	}
 }
