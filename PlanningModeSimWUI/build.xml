@@ -88,7 +88,10 @@
 		<pathelement location="${lib}/zkplus.jar" />
 		<pathelement location="${lib}/zml.jar" />
 		<pathelement location="${lib}/zul.jar" />
-		<pathelement location="${lib}/zweb.jar" />	
+		<pathelement location="${lib}/zweb.jar" />
+
+		<pathelement location="${lib}/jasperreports-3.7.0.jar" />
+		<pathelement location="${lib}/jasperreports-fonts-3.7.0.jar" />
 		
 	</path>
 
