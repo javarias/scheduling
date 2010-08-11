@@ -35,7 +35,7 @@
 
 	<servlet-mapping>
 		<servlet-name>ImageServlet</servlet-name>
-		<url-pattern>/servlets/image</url-pattern>
+		<url-pattern>/servlets/jasperimage</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

@@ -62,6 +62,7 @@
 	    void showReport(JasperPrint print, org.zkoss.zul.api.Iframe report){
 	    	JRHtmlExporter exporter = new JRHtmlExporter();
 			final StringBuffer out = new StringBuffer();
+			String contextPath = Executions.getCurrent().getContextPath();
 			
 			Sessions.getCurrent().setAttribute(
 					ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print);
@@ -70,7 +71,7 @@
 					Iframe.SESSION_SCOPE);
 			exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STRING_BUFFER, out);
 			exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI,
-					"/PlanningModeSimWUI/servlets/image?image=");
+					contextPath + "/servlets/jasperimage?image=");
 			exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
 			try {
 				exporter.exportReport();
