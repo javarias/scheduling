@@ -1,25 +1,92 @@
 <?init class="alma.scheduling.psm.web.ReportsController"?>
-<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./reportsWindow" ?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./${arg.id}" ?>
 
 <?page title="Reports" contentType="text/html;charset=UTF-8" id="reportsPage"?>
 <zk>
-	<window title="Reports" border="normal"
-		apply="${sessionScope.reportController}" id="reportsWindow" height="1000">
-		<button label="Report!" id="buttonReport" />
-		<jasperreport id="report" height="800" visible="true"/>
-	</window>
-	<!--	<zscript><![CDATA[
-		import org.zkoss.zkplus.spring.SpringUtil;
-		import alma.scheduling.psm.sim.ReportGenerator;
-		void showReport() {
+	<window title="${arg.title}" border="normal"
+		apply="${sessionScope.reportController}" id="${arg.id}"
+		height="600px" width="600px" closable="true" maximizable="true"
+		sizable="true" onCreate="showReport()">
+		<borderlayout >
+			<north maxsize="24" size="24" border="0">
+				<button label="Report!" onClick="showReport()" />
+			</north>
+			<center border="none" flex="true" autoscroll="true" >
+				<iframe id="report" />
+			</center>
+		</borderlayout>
+		<zscript><![CDATA[
+	import org.zkoss.zkplus.spring.SpringUtil;
+	import alma.scheduling.psm.sim.ReportGenerator;
+	import net.sf.jasperreports.engine.JRException;
+	import net.sf.jasperreports.engine.export.JRHtmlExporter;
+	import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+	import net.sf.jasperreports.j2ee.servlets.ImageServlet;
+	import java.io.ByteArrayInputStream;
+	import java.io.InputStream;
+	import org.zkoss.util.media.AMedia;
+	void showReport() {
+		Component parent = Path.getComponent("//");
+		Window w;
+		for(Object o: parent.getChildren()){
+			try{
+				w = (Window)o;
+			}catch(ClassCastException ex){
+				
+			}
+		}
+		System.out.println(w.getId());
 		String workDir = System.getenv("APRC_WORK_DIR");
 		ReportGenerator rg = new ReportGenerator(workDir);
-		ReportGenerator.setApplicationContext(SpringUtil
-		.getApplicationContext());
-		report.setSrc("/alma/scheduling/psm/reports/crowdingReport.jasper");
-		report.setDatasource(rg.getCrowdingReportData());
-		report.setParameters(new HashMap());
+		JasperPrint print = null;
+		if(w.getId().compareTo("reportWindowBeforeSimBand") == 0)
+			print = rg.createCrowdingReport();
+		else if(w.getId().compareTo("reportWindowAfterSimExec") == 0)
+			print = rg.createExecutiveReport();
+		showReport(print, report);
+	}
+]]>
+	</zscript>
+	</window>
+	
+	<zscript><![CDATA[
+	    import net.sf.jasperreports.engine.JRException;
+	    import net.sf.jasperreports.engine.JasperPrint;
+		import net.sf.jasperreports.engine.export.JRHtmlExporter;
+		import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+		import net.sf.jasperreports.j2ee.servlets.ImageServlet;	
+		import java.io.ByteArrayInputStream;
+		import java.io.InputStream;
+		import org.zkoss.util.media.AMedia;
+		
+	    void showReport(JasperPrint print, org.zkoss.zul.api.Iframe report){
+	    	JRHtmlExporter exporter = new JRHtmlExporter();
+			final StringBuffer out = new StringBuffer();
+			
+			Sessions.getCurrent().setAttribute(
+					ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print);
+			report.setAttribute(
+					ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print,
+					Iframe.SESSION_SCOPE);
+			exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STRING_BUFFER, out);
+			exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI,
+					"/PlanningModeSimWUI/servlets/image?image=");
+			exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
+			try {
+				exporter.exportReport();
+			} catch (JRException e) {
+				e.printStackTrace();
+				return;
+			}
+			InputStream mediais = new ByteArrayInputStream(out.toString()
+					.getBytes());
+			AMedia amedia = new AMedia("report.html", "html", "text/html", mediais);
+			try {
+				report.setContent(amedia);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 		]]>
-		</zscript> -->
+	</zscript>
 </zk>

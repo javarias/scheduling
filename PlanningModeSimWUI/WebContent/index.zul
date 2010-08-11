@@ -17,6 +17,23 @@
 					<menuitem label="Exit" id="menuItemExit" />
 				</menupopup>
 			</menu>
+			<menu label="Reports">
+				<menupopup>
+					<menu label="Before Simulation">
+						<menupopup>
+							<menuitem label="Requested time per ALMA band" id="menuItemBeforeSimBand"/>
+							<menuitem label="Requested time per LST Ranges" id="menuItemBeforeSimLST"/>
+						</menupopup>
+					</menu>
+					<menu label="After Simulation">
+						<menupopup>
+							<menuitem label="Executed time per ALMA band" id="menuItemAfterSimBand"/>
+							<menuitem label="Executed time per LST Ranges" id="menuItemAfterSimLST"/>
+							<menuitem label="Executive Percentage Balancing" id="menuItemAfterSimExec"/>
+						</menupopup>
+					</menu>
+				</menupopup>
+			</menu>
 			<menu label="View">
 				<menupopup>
 					<menuitem label="Cascade" />
