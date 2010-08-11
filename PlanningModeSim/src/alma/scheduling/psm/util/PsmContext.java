@@ -9,8 +9,6 @@ import java.io.IOException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.input.config.generated.Configuration;
@@ -102,14 +100,12 @@ public class PsmContext {
 			ctx = context;
 		else{
 			System.out.println("Error, ApplicationContext already has been set");
-			System.exit(6);
 		}
 	}
 	
 	public static ApplicationContext getApplicationContext(){
 		if( ctx == null ){
 			System.out.println("Error, ApplicationContext has not been set");
-			System.exit(7);
 		}
 		return ctx;
 	}
