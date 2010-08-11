@@ -25,6 +25,7 @@
 
 package alma.scheduling.psm.sim;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.view.JasperViewer;
 
 import org.springframework.context.ApplicationContext;
@@ -91,7 +94,8 @@ public class ReportGenerator extends PsmContext {
         InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/crowdingReport.jasper");
         System.out.println("Creating report");
         try {
-			return JasperFillManager.fillReport(reportStream, new HashMap<Object, Object>(),dataSource);
+			JasperPrint print = JasperFillManager.fillReport(reportStream, new HashMap<Object, Object>(),dataSource);
+			return print;
 		} catch (JRException e) {
 			e.printStackTrace();
 			return null;
@@ -140,20 +144,27 @@ public class ReportGenerator extends PsmContext {
         return dataSource;
 	}
 	
+	public JasperPrint createExecutiveReport() {
+		HashMap<String, String> param = new HashMap<String, String>();
+		JRDataSource dataSource = getExecutiveUsageOutputData();
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/executiveReport.jasper");
+        try {
+			return JasperFillManager.fillReport(reportStream, param,dataSource);
+		} catch (JRException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	/**
 	 * This method requires a complete simulation   
 	 * 
 	 */
 	public void executiveReport() {
-		HashMap<String, String> param = new HashMap<String, String>();
-		JRDataSource dataSource = getExecutiveUsageOutputData();
-        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/executiveReport.jasper");
-        System.out.println("Creating report");
+	    System.out.println("Creating report");
         try {
-        	JasperViewer.viewReport(JasperFillManager.fillReport(reportStream, param,dataSource));
+        	JasperViewer.viewReport(createExecutiveReport());
         	Thread.currentThread().join();
-		} catch (JRException e) {
-			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
