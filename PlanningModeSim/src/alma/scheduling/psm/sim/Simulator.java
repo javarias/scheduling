@@ -81,9 +81,16 @@ public class Simulator extends PsmContext {
     private String DSAName = null;
     private boolean toBeInterrupted = false;
     private Configuration config = null;
+    private SimulatorThread simThread= null;
     
     public Simulator(String workDir) {
 		super(workDir);
+	}
+    
+    public Simulator(String workDir, SimulatorThread simThread) {
+		super(workDir);
+		this.simThread = simThread;
+		
 	}
       
     public void createWorkDir(String newWorkDir){
@@ -155,6 +162,11 @@ public class Simulator extends PsmContext {
         logger.info( TimeUtil.getUTString(time) + "Starting Simulation" );
         Date stopTime = execDao.getCurrentSeason().getEndDate();
         configDao.getConfiguration().setSimulationStartTime(new Date());
+        if( simThread != null ){
+        	simThread.setStartDate( time );
+        	simThread.setStopDate( stopTime );
+        	simThread.setCurrentDate( time );
+        }
                 
         setPreconditions(ctx, new Date());
         SchedBlockExecutor sbExecutor =
@@ -253,10 +265,13 @@ public class Simulator extends PsmContext {
             Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm> arraysCreated,
             ArrayList<ArrayConfiguration> freeArrays,
             SchedBlockExecutor sbExecutor) throws IllegalArgumentException {
-    	
+
 		TimeEvent ev = timesToCheck.remove();
         // Change the current simulation time to event time
         time = ev.getTime();
+        if( simThread != null ){
+        	simThread.setCurrentDate( time );
+        }
         switch (ev.getType()) {
         case ARRAY_CREATION:
             TimeHandler.getHandler().step(ev.getTime());
