@@ -13,17 +13,17 @@
 		<groupFooter>
 			<band height="20">
 				<textField>
-					<reportElement x="0" y="0" width="50" height="15"/>
+					<reportElement x="0" y="0" width="80" height="15"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{band}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="80" y="0" width="50" height="15"/>
+					<reportElement x="100" y="0" width="80" height="15"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$V{totalSchedBlocks}.toString()]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="160" y="0" width="50" height="15"/>
+					<reportElement x="200" y="0" width="80" height="15"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[Double.toString($V{totalSchedBlocks}.intValue() * 0.5)]]></textFieldExpression>
 				</textField>
@@ -58,23 +58,24 @@
 				]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="80" y="0" width="100" height="25"/>
+				<reportElement x="100" y="0" width="100" height="25"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Number of SchedBlocks]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="160" y="0" width="70" height="25"/>
+				<reportElement x="200" y="0" width="1000" height="25"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[Hours requested]]></text>
+				<text><![CDATA[
+				Hours requested]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
 	<summary>
-		<band height="450">
+		<band height="350">
 			<pieChart>
 				<chart isShowLegend="true" evaluationTime="Report">
 					<reportElement x="0" y="0" width="572" height="350"/>
