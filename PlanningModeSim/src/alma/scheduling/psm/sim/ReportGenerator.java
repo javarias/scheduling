@@ -25,7 +25,6 @@
 
 package alma.scheduling.psm.sim;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,8 +36,6 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRHtmlExporter;
-import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.view.JasperViewer;
 
 import org.springframework.context.ApplicationContext;
@@ -53,7 +50,6 @@ import alma.scheduling.datamodel.output.ObservationProject;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.datamodel.output.dao.OutputDao;
-import alma.scheduling.psm.reports.domain.ObsProjectReportBean;
 import alma.scheduling.psm.reports.domain.SchedBlockReportBean;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.util.PsmContext;
