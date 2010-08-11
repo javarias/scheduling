@@ -27,6 +27,23 @@
 	</resource-ref>
 	<!--  END JDBC -->
 
+<!-- Jasper Report Handling -->
+	<servlet>
+		<servlet-name>ImageServlet</servlet-name>
+		<servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>ImageServlet</servlet-name>
+		<url-pattern>/servlets/image</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>JasperPrintServlet</servlet-name>
+		<servlet-class>servlets.JasperPrintServlet</servlet-class>
+	</servlet>
+<!-- END Jasper handling -->
+
 	<servlet>
 		<description>
 		The ZK loader for ZUML pages</description>
