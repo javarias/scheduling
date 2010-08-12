@@ -9,6 +9,22 @@
 		sizable="true" maximizable="true" closable="true" width="600px"
 		height="600px" apply="${sessionScope.simulationController}"
 		id="simulationWindow">
+		
+		<zscript>
+	    import alma.scheduling.psm.web.SimRunner;
+	    import java.util.Date;
+	    
+	    SimRunner thread;
+	    
+	    void startServerpush(){    
+	        //enable server push        
+	        desktop.enableServerPush(true);
+ 
+	        //invoke working thread and passing required component as parameter (in this case we are passing the desktop)            
+	        thread= new SimRunner(desktop);
+	        thread.start();        
+	    }       
+		</zscript>
 
 		<borderlayout>
 			<west border="none" splittable="true" width="200"
@@ -55,7 +71,7 @@
 										</row>
 										<row>
 											<button
-												label="Run simulation" width="100%" id="buttonRun" />
+												label="Run simulation" width="100%" onClick="startServerpush()" />
 										</row>
 										<row>
 											<button

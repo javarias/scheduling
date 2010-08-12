@@ -91,13 +91,24 @@ tar xfz ehcache-core-2.1.0-distribution.tar.gz;
 cp ehcache-core-2.1.0/ehcache-core-2.1.0.jar $TARGET;
 
 echo "Checking for JasperReports library..."
-if [ ! -f jasperreports-3.7.0.jar || ! -f jasperreports-fonts-3.7.0.jar ] ; then
+if [ ! -f jasperreports-3.7.0.jar ] ; then
         echo "   * Not present, downloading...";
 	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.0/jasperreports-3.7.0.jar/download
+fi
+if [ ! -f jasperreports-fonts-3.7.0.jar ]; then
+        echo "   * Not present, downloading...";
 	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.0/jasperreports-fonts-3.7.0.jar/download
 fi
 cp jasperreports-3.7.0.jar $TARGET;
 cp jasperreports-fonts-3.7.0.jar $TARGET;
+
+echo "Checking for JFreeChart library..."
+if [ ! -f jfreechart-1.0.13.tar.gz ] ; then
+        echo "   * Not present, downloading...";
+        wget http://sourceforge.net/projects/jfreechart/files/1.%20JFreeChart/1.0.13/jfreechart-1.0.13.tar.gz/download
+fi
+tar xfz jfreechart-1.0.13.tar.gz
+cp jfreechart-1.0.13/lib/jfreechart-1.0.13-experimental.jar jfreechart-1.0.13/lib/jfreechart-1.0.13.jar jfreechart-1.0.13/lib/jfreechart-1.0.13-swt.jar jfreechart-1.0.13/lib/jcommon-1.0.16.jar $TARGET;
 
 echo "Checking for Castor library..."
 if [ ! -f $ACSROOT/lib/castor.jar ] ; then

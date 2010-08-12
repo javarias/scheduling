@@ -22,6 +22,7 @@ import alma.scheduling.input.config.generated.Configuration;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.Simulator;
+import alma.scheduling.psm.sim.SimulatorThread;
 
 public class SimulationController extends GenericForwardComposer implements Initiator {
 
@@ -81,15 +82,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println("Clean finished");
 	}
 	
-	public void onClick$buttonRun(Event event){
-		System.out.println("Run button pressed, running simulation");
-		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
-		Simulator simulator = new Simulator( (String)Sessions.getCurrent().getAttribute("workDir") );
-		simulator.setVerboseLvl( VerboseLevel.LOW );
-		simulator.run();
-		System.out.println("Simulation finished");
-	}
-	
+
 	public void onClick$buttonReports(Event event){
 		System.out.println("Reports button pressed, creating reports");
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
