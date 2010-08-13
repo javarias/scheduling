@@ -10,7 +10,7 @@
     </typedef>
     
     <class name="Results" table="OUTPUT_RESULTS">
-        <id column="ID" type="long">
+        <id column="ID" type="long" name="id">
         	<generator class="native"/>
         </id>
         
@@ -71,8 +71,8 @@
 		<property name="startDate" type="timestamp" column="START_DATE" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="type" type="string" column="TYPE"/>
-		<many-to-one name="ArrayRef" column="ARRAY_REF" 
-        	 not-null="true" class="Array" lazy="false"/>
+		<many-to-one name="ArrayRef" column="ARRAY_REF"  
+        	 not-null="false" class="Array" cascade="save-update,lock, delete" lazy="false"/>
 	</class>
 	
 	<class name="Array" table="OUTPUT_ARRAY">

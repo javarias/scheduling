@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDaoImpl.java,v 1.3 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: OutputDaoImpl.java,v 1.4 2010/08/13 21:52:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
@@ -54,4 +54,8 @@ public class OutputDaoImpl extends GenericDaoImpl implements OutputDao{
         return findAll(Results.class);
     }
 
+    @Override
+    public void deleteAll() {
+        super.deleteAll(getResults());
+    }
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: OutputDao.java,v 1.3 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: OutputDao.java,v 1.4 2010/08/13 21:52:12 javarias Exp $"
  */
 package alma.scheduling.datamodel.output.dao;
 
@@ -54,4 +54,6 @@ public interface OutputDao {
      * @return The results obtained from DB, can be null if there are no results in the DB
      */
     public List<Results> getResults();
+    
+    public void deleteAll();
 }

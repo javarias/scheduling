@@ -201,4 +201,10 @@ public class XmlOutputDaoImpl implements OutputDao {
         fw = null;
     }
 
+    @Override
+    public void deleteAll() {
+        // TODO Do nothing?
+        
+    }
+
 }
