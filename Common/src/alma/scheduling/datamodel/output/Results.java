@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Results.java,v 1.5 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: Results.java,v 1.6 2010/08/13 21:52:48 javarias Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -35,6 +35,7 @@ import java.util.Set;
  */
 public class Results {
 
+    private Long id;
 	private double availableTime;
 	private double maintenanceTime;
 	private double operationTime;
@@ -147,5 +148,13 @@ public class Results {
 	public void setStopRealDate(Date stopRealDate) {
 		this.stopRealDate = stopRealDate;
 	}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 }
