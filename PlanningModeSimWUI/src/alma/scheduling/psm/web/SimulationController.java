@@ -55,12 +55,21 @@ public class SimulationController extends GenericForwardComposer implements Init
 		}		
 	}
 	
-	public void onClick$buttonLoad(Event event){
+	public void onClick$buttonFullLoad(Event event){
 		System.out.println("Load button pressed, starting fullload");
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
 		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
 		inputActions.fullLoad();
+		System.out.println("Fullload finished");
+	}
+	
+	public void onClick$buttonLoad(Event event){
+		System.out.println("Load button pressed, starting fullload");
+		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
+		
+		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
+		inputActions.load();
 		System.out.println("Fullload finished");
 	}
 	

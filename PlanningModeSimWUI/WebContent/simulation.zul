@@ -58,7 +58,11 @@
 												id="buttonDataSources" />
 										</row>
 										<row>
-											<button label="Load all data"
+											<button label="Full Load data"
+												width="100%" id="buttonFullLoad" />
+										</row>
+										<row>
+											<button label="Load data"
 												width="100%" id="buttonLoad" />
 										</row>
 										<row>
