@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CompositeDataLoader.java,v 1.4 2010/07/13 21:53:35 javarias Exp $"
+ * "@(#) $Id: CompositeDataLoader.java,v 1.5 2010/08/13 21:50:59 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -47,6 +47,7 @@ public class CompositeDataLoader implements DataLoader {
     }
     
     @Override
+    @Transactional
     public void clear() {
         for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
             iter.next().clear();
