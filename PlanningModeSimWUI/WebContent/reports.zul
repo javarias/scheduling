@@ -9,7 +9,7 @@
 		sizable="true" onCreate="showReport()">
 		<borderlayout >
 			<north maxsize="24" size="24" border="0">
-				<button label="Report!" onClick="showReport()" />
+				<button label="Export report" onClick="exportReport()" />
 			</north>
 			<center border="none" flex="true" autoscroll="true" >
 				<iframe id="report" />
@@ -26,6 +26,14 @@
 	import java.io.InputStream;
 	import org.zkoss.util.media.AMedia;
 	void showReport() {
+		showReport("html");
+	}
+	
+	void exportReport(){
+		showReport("pdf");
+	}
+	
+	void showReport (String format){
 		Component parent = Path.getComponent("//");
 		Window w;
 		for(Object o: parent.getChildren()){
@@ -43,7 +51,9 @@
 			print = rg.createCrowdingReport();
 		else if(w.getId().compareTo("reportWindowAfterSimExec") == 0)
 			print = rg.createExecutiveReport();
-		showReport(print, report);
+		else if(w.getId().compareTo("reportWindowAfterSimBand") == 0)
+			print = rg.createBandUsageReport();
+		showReport(print, report, format);
 	}
 ]]>
 	</zscript>
@@ -52,27 +62,40 @@
 	<zscript><![CDATA[
 	    import net.sf.jasperreports.engine.JRException;
 	    import net.sf.jasperreports.engine.JasperPrint;
+	    import net.sf.jasperreports.engine.export.JRPdfExporter;
 		import net.sf.jasperreports.engine.export.JRHtmlExporter;
+		import net.sf.jasperreports.engine.JRExporter;
 		import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+		import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 		import net.sf.jasperreports.j2ee.servlets.ImageServlet;	
+		import java.io.ByteArrayOutputStream;
 		import java.io.ByteArrayInputStream;
 		import java.io.InputStream;
 		import org.zkoss.util.media.AMedia;
 		
-	    void showReport(JasperPrint print, org.zkoss.zul.api.Iframe report){
-	    	JRHtmlExporter exporter = new JRHtmlExporter();
-			final StringBuffer out = new StringBuffer();
-			String contextPath = Executions.getCurrent().getContextPath();
-			
-			Sessions.getCurrent().setAttribute(
-					ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print);
-			report.setAttribute(
-					ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print,
-					Iframe.SESSION_SCOPE);
-			exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STRING_BUFFER, out);
-			exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI,
-					contextPath + "/servlets/jasperimage?image=");
-			exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
+	    void showReport(JasperPrint print, org.zkoss.zul.api.Iframe report, String format){
+	    	JRExporter exporter = null;
+	    	//StringBuffer out = new StringBuffer();
+	    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    	if(format.compareTo("html") == 0){
+				String contextPath = Executions.getCurrent().getContextPath();
+	    		exporter = new JRHtmlExporter();
+				Sessions.getCurrent().setAttribute(
+						ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print);
+				report.setAttribute(
+						ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print,
+						Iframe.SESSION_SCOPE);
+				exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI,
+						contextPath + "/servlets/jasperimage?image=");
+				exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STREAM, out);
+				exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
+	    	}
+	    	else if(format.compareTo("pdf") == 0){
+	    		System.out.println("LALA");
+	    		exporter = new JRPdfExporter();
+	    		exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, out);
+	    		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+	    	}
 			try {
 				exporter.exportReport();
 			} catch (JRException e) {
@@ -81,7 +104,11 @@
 			}
 			InputStream mediais = new ByteArrayInputStream(out.toString()
 					.getBytes());
-			AMedia amedia = new AMedia("report.html", "html", "text/html", mediais);
+			AMedia amedia = null;
+			if(format.compareTo("html") == 0)
+				amedia = new AMedia("report.html", "html", "text/html", mediais);
+			else if(format.compareTo("pdf") == 0)
+				amedia = new AMedia("report.pdf", "pdf", "application/pdf", mediais);
 			try {
 				report.setContent(amedia);
 			} catch (Exception ex) {
