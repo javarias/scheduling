@@ -15,24 +15,24 @@
 		<groupFooter>
 			<band height="20">
 				<textField>
-					<reportElement x="0" y="0" width="100" height="15"/>
+					<reportElement x="0" y="0" width="150" height="15"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{executive}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="100" y="0" width="100" height="15"/>
+					<reportElement x="150" y="0" width="100" height="15"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$V{totalHoursExec}.toString()]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="220" y="0" width="50" height="15"/>
+					<reportElement x="270" y="0" width="50" height="15"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String">
 					<![CDATA[Double.toString($V{totalHoursExec}.doubleValue() / $F{totalExecutionTime}.doubleValue() * 100)]]>
 					</textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement width="20" y="0" x="270" height="15"/>
+					<reportElement width="20" y="0" x="320" height="15"/>
 					<textElement/>
 					<text>%</text>
 				</staticText>
@@ -98,7 +98,7 @@
 					<keyExpression><![CDATA[$F{executive}]]></keyExpression>
 					<valueExpression><![CDATA[$V{totalHoursExec}]]></valueExpression>
 				</pieDataset>
-				<piePlot isCircular="true">
+				<piePlot isCircular="true" legendLabelFormat="{0} ({2})">
 					<plot/>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 				</piePlot>

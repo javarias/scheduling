@@ -2,11 +2,19 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="189"/>
+	<property name="ireport.y" value="107"/>
+	<parameter name="title" class="java.lang.String">
+		<defaultValueExpression><![CDATA[new java.lang.String("")]]></defaultValueExpression>
+	</parameter>
 	<field name="band" class="java.lang.String"/>
+	<field name="executionTime" class="java.lang.Double"/>
 	<variable name="totalSchedBlocks" class="java.lang.Integer" resetType="Group" resetGroup="bandGroup" calculation="Count">
 		<variableExpression><![CDATA[$F{band}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="totalHoursExec" class="java.lang.Double" resetType="Group" resetGroup="bandGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
 	<group name="bandGroup">
 		<groupExpression><![CDATA[$F{band}]]></groupExpression>
@@ -23,23 +31,23 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$V{totalSchedBlocks}.toString()]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="200" y="0" width="80" height="15"/>
+					<reportElement x="200" y="0" width="50" height="15"/>
 					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[Double.toString($V{totalSchedBlocks}.intValue() * 0.5)]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{totalHoursExec}.toString()]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
 	</group>
 	<title>
 		<band height="110">
-			<staticText>
+			<textField>
 				<reportElement x="75" y="75" width="497" height="30"/>
 				<textElement textAlignment="Center">
 					<font size="20" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Requested Time per ALMA Band
-				]]></text>
-			</staticText>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{title}
+				]]></textFieldExpression>
+			</textField>
 			<image>
 				<reportElement x="0" y="0" width="75" height="100"/>
 				<imageExpression class="java.lang.String"><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
@@ -70,7 +78,7 @@
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[
-				Hours requested]]></text>
+				Hours]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
@@ -87,7 +95,7 @@
 					<keyExpression><![CDATA[$F{band}]]></keyExpression>
 					<valueExpression><![CDATA[$V{totalSchedBlocks}]]></valueExpression>
 				</pieDataset>
-				<piePlot isCircular="true">
+				<piePlot isCircular="true" legendLabelFormat="{0} ({2})">
 					<plot/>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 				</piePlot>

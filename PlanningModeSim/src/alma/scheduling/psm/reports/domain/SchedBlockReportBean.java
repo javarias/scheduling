@@ -6,7 +6,7 @@ public class SchedBlockReportBean {
 	private String executive;
 	private double executionTime;
 	
-	private static double totalExecutionTime;
+	public static double totalExecutionTime;
 
 	public String getBand() {
 		return band;

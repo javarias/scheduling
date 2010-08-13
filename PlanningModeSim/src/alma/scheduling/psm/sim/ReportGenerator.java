@@ -76,9 +76,10 @@ public class ReportGenerator extends PsmContext {
                     ReportGenerator.ReceiverBandsRange[i][0],
                     ReportGenerator.ReceiverBandsRange[i][1]);
             for(SchedBlock sb: sbs){
-            	SchedBlockReportBean sbr = new SchedBlockReportBean();
-            	sbr.setBand("Band " + i);
-            	data.add(sbr);
+            	SchedBlockReportBean sbrb = new SchedBlockReportBean();
+            	sbrb.setExecutionTime(sb.getObsUnitControl().getMaximumTime());
+            	sbrb.setBand("Band " + i);
+            	data.add(sbrb);
             }
         }
         dataSource =  new JRBeanCollectionDataSource(data);
@@ -86,11 +87,13 @@ public class ReportGenerator extends PsmContext {
     }
     
 	public JasperPrint createCrowdingReport(){
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("title", "Requested Time per ALMA Band");
 		JRDataSource dataSource = getCrowdingReportData();
         InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/crowdingReport.jasper");
         System.out.println("Creating report");
         try {
-			JasperPrint print = JasperFillManager.fillReport(reportStream, new HashMap<Object, Object>(),dataSource);
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
 			return print;
 		} catch (JRException e) {
 			e.printStackTrace();
@@ -108,6 +111,7 @@ public class ReportGenerator extends PsmContext {
         }
     }
 	
+	
 	public JRDataSource getExecutiveUsageOutputData() {
 		JRBeanCollectionDataSource dataSource = null;
         ApplicationContext ctx = ReportGenerator.getApplicationContext();
@@ -117,6 +121,7 @@ public class ReportGenerator extends PsmContext {
         System.out.println("Retrieving Data...");
         List<Results> results = outDao.getResults();
         System.out.println("Processing Data...");
+        SchedBlockReportBean.totalExecutionTime = 0;
         for(Results r: results)
         	for(ObservationProject op: r.getObservationProject()){
         		String exec = op.getAffiliation().iterator().next().getExecutive();
@@ -142,14 +147,22 @@ public class ReportGenerator extends PsmContext {
 	
 	public JasperPrint createExecutiveReport() {
 		HashMap<String, String> param = new HashMap<String, String>();
-		JRDataSource dataSource = getExecutiveUsageOutputData();
-        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/executiveReport.jasper");
-        try {
-			return JasperFillManager.fillReport(reportStream, param,dataSource);
-		} catch (JRException e) {
-			e.printStackTrace();
-			return null;
+		JasperPrint print = null;
+		InputStream reportStream = getClass()
+		.getClassLoader()
+		.getResourceAsStream(
+				"alma/scheduling/psm/reports/executiveReport.jasper");
+		synchronized (this) {
+			JRDataSource dataSource = getExecutiveUsageOutputData();
+			try {
+				print = JasperFillManager.fillReport(reportStream, param,
+						dataSource);
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+			}
 		}
+		return print;
 	}
 	
 	/**
@@ -166,6 +179,71 @@ public class ReportGenerator extends PsmContext {
 		}
 	}
     
+	public JRDataSource getBandUsageOutputData() {
+		JRBeanCollectionDataSource dataSource = null;
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
+		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerBand = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		System.out.println("Retrieving Data...");
+		List<Results> results = outDao.getResults();
+		System.out.println("Processing Data...");
+		SchedBlockReportBean.totalExecutionTime = 0;
+		for (Results r : results)
+			for (ObservationProject op : r.getObservationProject()) {
+				for (SchedBlockResult sbr : op.getSchedBlock()) {
+					for (int i = 3; i < ReportGenerator.ReceiverBandsRange.length; i++) {
+						if (sbr.getRepresentativeFrequency() >= ReportGenerator.ReceiverBandsRange[i][0]
+								&& sbr.getRepresentativeFrequency() < ReportGenerator.ReceiverBandsRange[i][1]) {
+							ArrayList<SchedBlockReportBean> list = SBPerBand
+									.get("Band " + i);
+							if (list == null){
+								list = new ArrayList<SchedBlockReportBean>();
+								SBPerBand.put("Band " + i, list);
+							}
+							
+							SchedBlockReportBean sbrb = new SchedBlockReportBean();
+							sbrb.setBand("Band " + i);
+							double execTime = (sbr.getEndDate().getTime() - sbr
+									.getStartDate().getTime()) / 1000.0 / 3600.0;
+							sbrb.setExecutionTime(execTime);
+							list.add(sbrb);
+							break;
+						}
+					}
+				}
+			}
+		for (ArrayList<SchedBlockReportBean> list : SBPerBand.values())
+			data.addAll(list);
+		dataSource = new JRBeanCollectionDataSource(data);
+		return dataSource;
+	}
+	
+	public JasperPrint createBandUsageReport(){
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("title", "Executed time per ALMA band");
+		JRDataSource dataSource = getBandUsageOutputData();
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/crowdingReport.jasper");
+        System.out.println("Creating report");
+        try {
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			return print;
+		} catch (JRException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+	
+	public void bandUsageReport() {
+		JasperViewer.viewReport(createBandUsageReport());
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+        }
+    }
+	
     @SuppressWarnings("unchecked")
     public void printLSTRangesReport() {
         System.out.println("LST Range\tNumber of SchedBlocks\tList of SchedBlocks");

@@ -124,6 +124,8 @@ public class Console {
                 	reportGenerator.printLSTRangesReport();
                 else if(args[1].compareTo("4") == 0)
                 	reportGenerator.executiveReport();
+                else if(args[1].compareTo("5") == 0)
+                	reportGenerator.bandUsageReport();
                 else
                     reportHelp();
             
