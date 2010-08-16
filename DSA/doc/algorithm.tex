@@ -515,25 +515,48 @@ Finally, $Tsys$ is moved to a scale outside the atmosphera:
 $$
 T_{sys}' = T_{sys} e^{\tau/\sin(el)}
 $$
+
+\item The selection operation filters out all the SBs that don't comply with
+$$
+\frac{T_{sys}(t+\Delta t) - T_{sys}(t)}{T_{sys}(t)} < 0.15
+$$
 \end{enumerate}
 
-Besides this criteria, that ensures some degree of weather stability during the execution
+\subsection{Current $T_{sys}$ selection and scoring}
+
+Besides above criteria, that ensures some degree of weather stability during the execution
 of a SB, the algorithm should
 favour the SBs that require the most stringent conditions. The stringency of the
 required weather conditions can be defined in terms of the opacity and/or $T_{sys}$,
 and the phase stability.
 
 Regarding the opacity, a scoring function should be defined to push up SBs with
-representative frequency in the higher bands, considering losses in transparency
-in the edges of the bands as well. In the same way, SBs with representative targets
+representative frequency in the higher bands, considering in addition the losses in transparency
+in the edges of the bands. In the same way, SBs with representative targets
 at low elevations will require better opacity. The exact form of these scoring functions
 haven't been defined yet.
 
-Besides this, it will be necessary to filter out SBs for which the {\it current}
-atmospheric conditions are too bad to observe. A opacity value of 1-2 nepers is usually
-regarded as too bad to observe (the exact limit is under discussion and it will most
-probably be configurable). Similar criterias should be applied for the phase
-stability and the wind speed. These filters haven't been implemented yet.  
+A possibility would be to invert the $T_{sys}$ equation for the argument $\tau_\nu/\sin(el)$
+(see Figure~\ref{fig:tsyscrit}),
+so for a given $T_{sys}^{max}$ the corresponding $x^{max}$ is calculated.
+Then the algorithm
+\begin{enumerate}
+\item Filters out all the SBs for which $\tau_\nu/\sin(el) > x^{max}$.
+\item Applies a scoring function that prioritize the SBs with higher
+$(\tau_\nu/\sin(el))$. The higher this parameter, the more stringent are 
+the weather conditions that the SB require.
+\end{enumerate}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{tsyscrit.mps}
+\caption{$T_{sys}$ based selection and scoring.}
+\label{fig:tsyscrit}
+\end{figure}
+
+
+Besides this, it will be necessary to filter out SBs for which the
+current phase stability  and wind speed are to bad to observe.
+The APDM directly defines requirements for these parameters.
 
 The APDM required fields are:
 \begin{itemize}
