@@ -2,7 +2,6 @@ beginfig(0);
 numeric u;
 u = 1cm;
 draw (0,2.3u)--(0,0)--(4u,0);
-draw (0,2u)--(4u,2u);
 draw (0,1.91u)--(3u,1.91u);
 draw (3u,1.91u)--(3u,0);
 pickup pencircle scaled 1pt;
