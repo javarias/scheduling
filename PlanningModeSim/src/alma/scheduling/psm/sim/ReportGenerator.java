@@ -40,6 +40,7 @@ import net.sf.jasperreports.view.JasperViewer;
 
 import org.springframework.context.ApplicationContext;
 
+import alma.ControlSB.SB;
 import alma.scheduling.algorithm.astro.Constants;
 import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
@@ -207,6 +208,7 @@ public class ReportGenerator extends PsmContext {
 							double execTime = (sbr.getEndDate().getTime() - sbr
 									.getStartDate().getTime()) / 1000.0 / 3600.0;
 							sbrb.setExecutionTime(execTime);
+							sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
 							list.add(sbrb);
 							break;
 						}
@@ -219,20 +221,25 @@ public class ReportGenerator extends PsmContext {
 		return dataSource;
 	}
 	
-	public JasperPrint createBandUsageReport(){
+	public JasperPrint createBandUsageReport() {
 		HashMap<String, String> props = new HashMap<String, String>();
 		props.put("title", "Executed time per ALMA band");
 		JRDataSource dataSource = getBandUsageOutputData();
-        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/crowdingReport.jasper");
-        System.out.println("Creating report");
-        try {
-			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
-			return print;
-		} catch (JRException e) {
-			e.printStackTrace();
-			return null;
+		InputStream reportStream = getClass().getClassLoader()
+				.getResourceAsStream(
+						"alma/scheduling/psm/reports/crowdingReport.jasper");
+		synchronized (this) {
+			System.out.println("Creating report");
+			try {
+				JasperPrint print = JasperFillManager.fillReport(reportStream,
+						props, dataSource);
+				return print;
+			} catch (JRException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
-    }
+	}
 	
 	public void bandUsageReport() {
 		JasperViewer.viewReport(createBandUsageReport());
@@ -243,6 +250,134 @@ public class ReportGenerator extends PsmContext {
 			e.printStackTrace();
         }
     }
+	
+	public JRDataSource getLstRangeBeforeSimData() {
+		JRBeanCollectionDataSource dataSource = null;
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
+		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
+		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerLST = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		for (int i = 0; i < 24; i++)
+			SBPerLST.put(i + " - " + (i + 1),
+					new ArrayList<SchedBlockReportBean>());
+		List<SchedBlock> sbs = sbDao.findAll();
+		for (SchedBlock sb : sbs) {
+			sbDao.hydrateSchedBlockObsParams(sb);
+			double ra = sb.getSchedulingConstraints().getRepresentativeTarget()
+					.getSource().getCoordinates().getRA() * 24 / 360;
+			for (int i = 0; i < 24; i++) {
+				if (ra >= i && ra <= (i + 1)) {
+					ArrayList<SchedBlockReportBean> list;
+					list = SBPerLST.get(i + " - " + (i + 1));
+					SchedBlockReportBean sbrb = new SchedBlockReportBean();
+					sbrb.setLstRange(i + " - " + (i + 1));
+					sbrb.setExecutionTime(sb.getObsUnitControl()
+							.getMaximumTime());
+					sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime()
+							+ sb.getObsUnitControl().getMaximumTime());
+					list.add(sbrb);
+					break;
+				}
+			}
+		}
+        
+        for(int i = 0; i < 24; i++)
+        	data.addAll(SBPerLST.get(i + " - " + (i+1)));
+        dataSource = new JRBeanCollectionDataSource(data);
+        return dataSource;
+	}
+	
+
+	
+	public JasperPrint createLstRangeBeforeSimReport() {
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("title", "Requested time per LST range ");
+		JRDataSource dataSource = getLstRangeBeforeSimData();
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/LSTRangesReport.jasper");
+        System.out.println("Creating report");
+        try {
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			return print;
+		} catch (JRException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public void lstRangeBeforeSimReport() {
+		JasperViewer.viewReport(createLstRangeBeforeSimReport());
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+        }
+	}
+	
+	public JRDataSource getLstRangeAfterSimData(){
+		JRBeanCollectionDataSource dataSource = null;
+        ApplicationContext ctx = ReportGenerator.getApplicationContext();
+        SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
+        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+        ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
+        HashMap<String, ArrayList<SchedBlockReportBean>> SBPerLST = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+        for(int i = 0; i < 24; i++)
+        	SBPerLST.put(i + " - " + (i+1), new ArrayList<SchedBlockReportBean>());
+		List<Results> result = outDao.getResults();
+		for (Results r : result) {
+			for (ObservationProject p : r.getObservationProject()) {
+				for (SchedBlockResult sbr : p.getSchedBlock()) {
+					SchedBlock sb = sbDao.findById(SchedBlock.class, sbr.getOriginalId());
+					sbDao.hydrateSchedBlockObsParams(sb);
+					double ra = sb.getSchedulingConstraints()
+							.getRepresentativeTarget().getSource()
+							.getCoordinates().getRA() * 24 / 360;
+					for (int i = 0; i < 24; i++) {
+						if (ra >= i && ra <= (i + 1)) {
+							ArrayList<SchedBlockReportBean> list;
+							list = SBPerLST.get(i + " - " + (i + 1));
+							SchedBlockReportBean sbrb = new SchedBlockReportBean();
+							sbrb.setLstRange(i + " - " + (i + 1));
+							double execTime = (sbr.getEndDate().getTime() - sbr
+									.getStartDate().getTime()) / 1000.0 / 3600.0;
+							sbrb.setExecutionTime(execTime);
+							sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
+							list.add(sbrb);
+							break;
+						}
+					}
+				}
+			}
+		}
+        
+        for(int i = 0; i < 24; i++)
+        	data.addAll(SBPerLST.get(i + " - " + (i+1)));
+        dataSource = new JRBeanCollectionDataSource(data);
+        return dataSource;
+	}
+	
+	public JasperPrint createLstRangeAfterSimReport() {
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("title", "Executed time per LST range ");
+		JRDataSource dataSource = getLstRangeAfterSimData();
+        InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/LSTRangesReport.jasper");
+        System.out.println("Creating report");
+        try {
+			JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+			return print;
+		} catch (JRException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public void lstRangeAfterSimReport() {
+		JasperViewer.viewReport(createLstRangeAfterSimReport());
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+        }
+	}
 	
     @SuppressWarnings("unchecked")
     public void printLSTRangesReport() {

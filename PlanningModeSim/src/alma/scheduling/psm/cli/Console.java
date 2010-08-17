@@ -126,6 +126,10 @@ public class Console {
                 	reportGenerator.executiveReport();
                 else if(args[1].compareTo("5") == 0)
                 	reportGenerator.bandUsageReport();
+                else if(args[1].compareTo("6") == 0)
+                	reportGenerator.lstRangeBeforeSimReport();
+                else if(args[1].compareTo("7") == 0)
+                	reportGenerator.lstRangeAfterSimReport();
                 else
                     reportHelp();
             

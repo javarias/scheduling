@@ -32,7 +32,6 @@
 				<value>alma.obops.dam.ph1m.domain.ProposalAuthor</value>
 				<value>alma.obops.dam.ph1m.domain.ProposalPackage</value>
 				<value>alma.obops.dam.ph1m.domain.Recommendation</value>
-				<value>alma.obops.dam.ph1m.domain.RecommendationType</value>
 				<value>alma.obops.dam.ph1m.domain.ScienceAssessor</value>
 				<value>alma.obops.dam.ph1m.domain.TechnicalAssessor</value>
                 <value>alma.obops.dam.ph1m.domain.Ph1mUser</value>
@@ -52,10 +51,11 @@
                 <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
                 
                 <!--  connection pool properties -->
-				<prop key="hibernate.c3p0.min_size" >5</prop>
+                <prop key="hibernate.connection.provider_class" >org.hibernate.connection.C3P0ConnectionProvider</prop>
+				<prop key="hibernate.c3p0.min_size" >1</prop>
 				<prop key="hibernate.c3p0.max_size" >20</prop>
 				<prop key="hibernate.c3p0.timeout" >300</prop>
-				<prop key="hibernate.c3p0.max_statements" >50</prop>
+				<prop key="hibernate.c3p0.max_statements" >0</prop>
 				<prop key="hibernate.c3p0.idle_test_period" >3000</prop>
                 
         	    <prop key="hibernate.jdbc.batch_size">0</prop>
