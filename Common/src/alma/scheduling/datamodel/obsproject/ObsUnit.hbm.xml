@@ -18,6 +18,7 @@
         </id>
         <property name="uid" column="OBSUNIT_UID"/>
         <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
+        <property name="projectUid" type="string" column="OBSUNIT_PROJECT_UID"/>
 <!--    <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>  -->
         <component name="obsUnitControl" class="ObsUnitControl">
             <property name="lastUpdate" type="date" column="OBSUNIT_CTRL_LAST_UPDATE"/>
