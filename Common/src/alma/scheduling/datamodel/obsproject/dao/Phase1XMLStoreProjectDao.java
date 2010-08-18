@@ -150,4 +150,78 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		return proposal.getObsPlan();
 	}
 
+	protected void getAPDMSchedBlocksFor(
+			ArchiveInterface                              archive,
+			alma.entity.xmlbinding.obsproject.ObsUnitSetT apdmOUS) {
+		
+		// Get the choice object for convenience
+		final alma.entity.xmlbinding.obsproject.ObsUnitSetTChoice choice =
+			apdmOUS.getObsUnitSetTChoice();
+
+		if (choice != null) {
+			// Recurse down child ObsUnitSetTs
+			for (final alma.entity.xmlbinding.obsproject.ObsUnitSetT childOUS : choice.getObsUnitSet()) {
+				getAPDMSchedBlocksFor(archive, childOUS);
+			}
+
+			// Get any referred SchedBlocks
+			for (final alma.entity.xmlbinding.schedblock.SchedBlockRefT childSBRef : choice.getSchedBlockRef()) {
+				final String id = childSBRef.getEntityId();
+				try {
+					archive.getSchedBlock(id);
+					logger.info(String.format(
+							"Succesfully got APDM SchedBlock %s",
+							id));
+				} catch (EntityException deserialiseEx) {
+					logger.warning(String.format(
+							"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+							id,
+							deserialiseEx.getMessage()));
+				} catch (UserException retrieveEx) {
+					logger.warning(String.format(
+							"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+							id,
+							retrieveEx.getMessage()));
+				}
+			}
+		} else {
+			String projectLabel;
+			
+			if (apdmOUS.getObsProjectRef() != null) {
+				projectLabel = String.format("APDM ObsProject %s", apdmOUS.getObsProjectRef().getEntityId());
+			} else {
+				projectLabel = "unknown APDM ObsProject";
+			}
+
+			logger.warning(String.format(
+					"APDM ObsUnitSet %s in %s has no children, (skipping it)",
+					apdmOUS.getEntityPartId(),
+					projectLabel
+			));
+		}	
+	}
+	
+    
+    /**
+	 * Ensure that all the APDM ScheBlocks that correspond to the given
+	 * APDM ObsProject are cached in the given ArchiveInterface.
+	 * 
+     * @param archive
+     * @param apdmProject
+     */
+	@Override
+	protected void getAPDMSchedBlocksFor(
+			ArchiveInterface                             archive,
+			alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
+		
+		final alma.entity.xmlbinding.obsproject.ObsUnitSetT top =
+			getTopLevelOUSForProject(archive, apdmProject);
+		
+		getAPDMSchedBlocksFor(archive, top);
+	}
+
+	@Override
+	protected boolean interestedInObsProject(String whoCares) {
+		return true;
+	}
 }

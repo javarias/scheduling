@@ -3,11 +3,16 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.omg.CORBA.UserException;
 
+import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.obsproject.ObsProject;
@@ -23,7 +28,13 @@ import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
 import alma.projectlifecycle.StateSystemOperations;
+import alma.scheduling.Define.DateTime;
+import alma.scheduling.Define.SchedulingException;
+import alma.statearchiveexceptions.InappropriateEntityTypeEx;
+import alma.statearchiveexceptions.NoSuchEntityEx;
+import alma.statearchiveexceptions.NullEntityIdEx;
 import alma.xmlentity.XmlEntityStruct;
+import alma.xmlstore.ArchiveInternalError;
 import alma.xmlstore.OperationalOperations;
 
 /**
@@ -31,7 +42,23 @@ import alma.xmlstore.OperationalOperations;
  *
  */
 public class ArchiveInterface  {
+    
+	/*
+	 * ================================================================
+	 * Constants
+	 * ================================================================
+	 */
+    @SuppressWarnings("unused") // field is here for the future
+	private static String projectQuery  = "/prj:ObsProject";
+    private static String projectSchema = "ObsProject";
+    @SuppressWarnings("unused") // field is here for the future
+	private static String sbQuery       = "/sbl:SchedBlock";
+    private static String sbSchema      = "SchedBlock";
+	/* End of Constants
+	 * ============================================================= */
 
+    
+    
 	/*
 	 * ================================================================
 	 * Caches for the various Entities
@@ -868,6 +895,100 @@ public class ArchiveInterface  {
 	
 	/*
 	 * ================================================================
+	 * Compound operations
+	 * ================================================================
+	 */
+	/**
+	 * Get the ids of all the project statuses that are in the state
+	 * archive in a given set of states.
+	 * 
+	 * @param states - we are interested in ProjectStatuses in any of
+	 *                these states.
+	 * @return a Collection<String> containing the ids of all the
+	 *         ProjectStatus entities found
+	 * @throws IllegalArgumentEx 
+	 * @throws InappropriateEntityTypeEx 
+	 * 
+	 * @throws SchedulingException
+	 */
+    public Collection<String> getProjectStatusIdsByState(String[] states)
+    		throws InappropriateEntityTypeEx, IllegalArgumentEx {
+        final Collection<String> result = new ArrayList<String>();
+        
+		XmlEntityStruct xml[] = null;
+		xml = stateSystem.findProjectStatusByState(states);
+		
+		for (final XmlEntityStruct xes : xml) {
+			result.add(xes.entityId);
+		}
+		return result;
+	}
+	
+    /**
+     * Get all of the SBStatuses associated with the given ProjectStatus.
+     * 
+     * @param projectStatusId - the id of the ProjectStatus under which
+     *                          to search.
+     * @return - the collected SBStatuses.
+     * 
+     * @throws InappropriateEntityTypeEx
+     * @throws NullEntityIdEx
+     * @throws NoSuchEntityEx
+     * @throws EntityException
+     */
+    Collection<SBStatus> getSBStatusesForProjectStatus(String projectStatusId)
+    		throws InappropriateEntityTypeEx,
+    			   NullEntityIdEx,
+    			   NoSuchEntityEx,
+    			   EntityException {
+        final Collection<SBStatus> result = new ArrayList<SBStatus>();
+        final XmlEntityStruct[] xmlList =
+        	stateSystem.getSBStatusListForProjectStatus(projectStatusId);
+        
+        for (final XmlEntityStruct xml : xmlList) {
+			final SBStatus sbs = (SBStatus) entityDeserializer.
+				deserializeEntity(xml, SBStatus.class);
+			sbStatuses.put(sbs.getSBStatusEntity().getEntityId(), sbs);
+        }
+        
+		return result;
+    }
+
+	/**
+	 * Return the ids of all the ObsProjects which have changed since
+	 * the given time.
+	 * 
+	 * @param since
+	 * @return
+	 * @throws ArchiveInternalError 
+	 */
+	public List<String> getIdsOfChangedProjects(DateTime since)
+												 throws UserException {
+    	String[] ids = archive.queryRecent(projectSchema,
+    										since.toString()+".000");
+ 		return Arrays.asList(ids);
+	}
+
+	/**
+	 * Return the ids of all the SchedBlocks which have changed since
+	 * the given time.
+	 * 
+	 * @param since
+	 * @return
+	 */
+	public List<String> getIdsOfChangedSBs(DateTime since)
+												 throws UserException {
+    	String[] ids = archive.queryRecent(sbSchema,
+    									   since.toString()+".000");
+ 		return Arrays.asList(ids);
+	}
+	/* End of Compound operations
+	 * ============================================================= */
+
+
+	
+	/*
+	 * ================================================================
 	 * Iteration
 	 * ================================================================
 	 */
@@ -894,7 +1015,6 @@ public class ArchiveInterface  {
 	public Iterable<SBStatus> sbStatuses() {
 		return sbStatuses.values();
 	}
-	
 	/* End of iteration
 	 * ============================================================= */
 }

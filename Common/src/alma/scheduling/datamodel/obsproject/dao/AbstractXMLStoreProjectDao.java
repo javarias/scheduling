@@ -3,10 +3,13 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -15,12 +18,17 @@ import org.omg.CORBA.UserException;
 import alma.acs.component.client.ComponentClient;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
+import alma.asdmIDLTypes.IDLArrayTime;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
+import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.lifecycle.persistence.domain.StateEntityType;
+import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemOperations;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.acsFacades.ACSComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory;
@@ -28,6 +36,8 @@ import alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.utils.ErrorHandling;
+import alma.statearchiveexceptions.StateIOFailedEx;
 import alma.xmlstore.OperationalOperations;
 
 /**
@@ -108,7 +118,7 @@ public abstract class AbstractXMLStoreProjectDao
 		this.componentFactory = new ACSComponentFactory(getContainerServices());
 		this.logger = getContainerServices().getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
-		// this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
+		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		getContainerServices().getLogger());
 		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer);
@@ -133,83 +143,19 @@ public abstract class AbstractXMLStoreProjectDao
 	protected abstract List<ObsProject> convertAPDMProjectsToDataModel(
 			ArchiveInterface archive,
 			Logger logger);
+	protected abstract boolean interestedInObsProject(String state);
 
-	// Stuff we do here.
-    
-    /**
-	 * Ensure that all the APDM ScheBlocks that correspond to the given
-	 * APDM ObsProject are cached in the given ArchiveInterface.
+	/**
+	 * Ensure that all the APDM ScheBlocks that we care about and which
+	 * correspond to the given APDM ObsProject are cached in the given
+	 * ArchiveInterface.
 	 * 
      * @param archive
      * @param apdmProject
      */
-	private void getAPDMSchedBlocksFor(
+	protected abstract void getAPDMSchedBlocksFor(
 			ArchiveInterface                             archive,
-			alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
-		
-		final alma.entity.xmlbinding.obsproject.ObsUnitSetT top =
-			getTopLevelOUSForProject(archive, apdmProject);
-		
-		getAPDMSchedBlocksFor(archive, top);
-	}
-
-    /**
-	 * Ensure that all the APDM ScheBlocks that correspond to the given
-	 * APDM ObsUnitSet are cached in the given ArchiveInterface.
-	 * 
-     * @param archive
-     * @param apdmProject
-     */
-	private void getAPDMSchedBlocksFor(
-			ArchiveInterface                              archive,
-			alma.entity.xmlbinding.obsproject.ObsUnitSetT apdmOUS) {
-		
-		// Get the choice object for convenience
-		final alma.entity.xmlbinding.obsproject.ObsUnitSetTChoice choice =
-			apdmOUS.getObsUnitSetTChoice();
-
-		if (choice != null) {
-			// Recurse down child ObsUnitSetTs
-			for (final alma.entity.xmlbinding.obsproject.ObsUnitSetT childOUS : choice.getObsUnitSet()) {
-				getAPDMSchedBlocksFor(archive, childOUS);
-			}
-
-			// Get any referred SchedBlocks
-			for (final alma.entity.xmlbinding.schedblock.SchedBlockRefT childSBRef : choice.getSchedBlockRef()) {
-				final String id = childSBRef.getEntityId();
-				try {
-					archive.getSchedBlock(id);
-					logger.info(String.format(
-							"Succesfully got APDM SchedBlock %s",
-							id));
-				} catch (EntityException deserialiseEx) {
-					logger.warning(String.format(
-							"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
-							id,
-							deserialiseEx.getMessage()));
-				} catch (UserException retrieveEx) {
-					logger.warning(String.format(
-							"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
-							id,
-							retrieveEx.getMessage()));
-				}
-			}
-		} else {
-			String projectLabel;
-			
-			if (apdmOUS.getObsProjectRef() != null) {
-				projectLabel = String.format("APDM ObsProject %s", apdmOUS.getObsProjectRef().getEntityId());
-			} else {
-				projectLabel = "unknown APDM ObsProject";
-			}
-
-			logger.warning(String.format(
-					"APDM ObsUnitSet %s in %s has no children, (skipping it)",
-					apdmOUS.getEntityPartId(),
-					projectLabel
-			));
-		}	
-	}
+			alma.entity.xmlbinding.obsproject.ObsProject apdmProject);
 	/* End Steps from which the main operations are made
 	 * ============================================================= */
 
@@ -217,18 +163,9 @@ public abstract class AbstractXMLStoreProjectDao
     
     /*
      * ================================================================
-     * Implementation of ProjectIncrementalDao
+     * Implementation of ProjectDao
      * ================================================================
      */
-	/* (non-Javadoc)
-	 * @see alma.scheduling.datamodel.obsproject.dao.ProjectIncrementalDao#getNewObsProjects()
-	 */
-	@Override
-	public List<ObsProject> getNewObsProjects() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/* (non-Javadoc)
 	 * @see alma.scheduling.datamodel.obsproject.dao.ProjectDao#getAllObsProjects()
 	 */
@@ -268,7 +205,7 @@ public abstract class AbstractXMLStoreProjectDao
 	public List<ObsProject> getSomeObsProjects(String... ids)
 			throws DAOException {
         
-        logger.info(String.format("%getSomeObsProjects()",
+        logger.info(String.format("%s.getSomeObsProjects()",
         		this.getClass().getSimpleName()));
         
         // For each project in which we're interested....
@@ -313,7 +250,284 @@ public abstract class AbstractXMLStoreProjectDao
 			throws DAOException {
         return getSomeObsProjects(ids.toArray(new String[0]));
 	}
-    /* End Implementation of ProjectIncrementalDao
+     /* End Implementation of ProjectDao
+     * ============================================================= */
+
+    
+    
+    /*
+     * ================================================================
+     * Implementation of ProjectIncrementalDao
+     * ================================================================
+     */
+	/* (non-Javadoc)
+	 * @see alma.scheduling.datamodel.obsproject.dao.ProjectIncrementalDao#getObsProjectChanges(alma.scheduling.Define.DateTime, java.util.List, java.util.List)
+	 */
+	@Override
+	public void getObsProjectChanges(
+    		final DateTime     since,
+    		final List<String> newOrModifiedIds,
+    		final List<String> deletedIds) throws DAOException {
+		
+		// Collect the id in sets so we don't have to worry about
+		// duplication
+		final Set<String> changedProjects = new HashSet<String>();
+		final Set<String> deletedProjects = new HashSet<String>();
+		
+		// A change in ProjectStatus is the only way that an ObsProject
+		// can be deleted, so we differentiate these two cases in the
+		// search for changed ProjectStatuses
+		getProjectIdsForChangedProjectStatuses(since,
+											   changedProjects,
+											   deletedProjects);
+		
+		// Other changes - in SBStatuses, OUSStatuses, SchedBlocks and
+		// ObsProjects - just result in modified projects, so no need
+		// to do the same differentiation.
+		changedProjects.addAll(getProjectIdsForChangedSchedBlocks(since));
+		changedProjects.addAll(getProjectIdsForChangedObsProjects(since));
+		changedProjects.addAll(getProjectIdsForChangedSBStatuses(since));
+		changedProjects.addAll(getProjectIdsForChangedOUSStatuses(since));
+		
+		// Take any deleted project ids out of the changed project id
+		// collection just in case there are duplications there.
+		changedProjects.removeAll(deletedProjects);
+		
+		// Now add the ids we've found to the collections in which
+		// we've been asked to put them.
+		newOrModifiedIds.addAll(changedProjects);
+		deletedIds.addAll(deletedProjects);
+	}
+
+	/**
+	 * Work out which SchedBlocks have changed in the XMLStore since
+	 * the given time, then collect and return the Entity Ids of their
+	 * ObsProjects.
+	 * 
+	 * @param since
+	 * @return
+	 */
+	private List<String> getProjectIdsForChangedSchedBlocks(
+			final DateTime since) {
+		final List<String> result = new ArrayList<String>();
+		List<String> changedSBs;
+		try {
+			changedSBs = archive.getIdsOfChangedSBs(since);
+		} catch (UserException e) {
+	    	ErrorHandling.warning(
+	    			logger,
+	    			String.format(
+	    				"Error finding changed SchedBlocks - %s",
+	    				e.getMessage()),
+	    			e);
+	    	return result;
+		}
+		
+		for (final String sbId : changedSBs) {
+			final SchedBlock sb;
+			try {
+				sb = archive.getSchedBlock(sbId);
+			} catch (Exception e) {
+		    	ErrorHandling.warning(
+		    			logger,
+		    			String.format(
+		    				"Error finding changed SchedBlock %s - %s",
+		    				sbId,
+		    				e.getMessage()),
+		    			e);
+		    	continue; // move on to next SB id
+			}
+			final String projectId = sb.getObsProjectRef().getEntityId();
+			result .add(projectId);
+		}
+		return result;
+	}
+
+	/**
+	 * Work out which ObsProjects have changed in the XMLStore since
+	 * the given time, then collect and return their Entity Ids.
+	 * 
+	 * @param since
+	 * @return
+	 */
+	private List<String> getProjectIdsForChangedObsProjects(
+			final DateTime since) {
+		final List<String> result = new ArrayList<String>();
+		List<String> changedOPs = null;
+		try {
+			changedOPs = archive.getIdsOfChangedProjects(since);
+		} catch (UserException e) {
+	    	ErrorHandling.warning(
+	    			logger,
+	    			String.format(
+	    				"Error finding changed ObsProjects - %s",
+	    				e.getMessage()),
+	    			e);
+	    	return result;
+		}
+		
+		for (final String projectId : changedOPs) {
+			result.add(projectId);
+		}
+		return result;
+	}
+	
+	/**
+	 * Work out which SBStatuses have changed in the XMLStore since
+	 * the given time, then collect and return the Entity Ids of their
+	 * ObsProjects.
+	 * 
+	 * @param since
+	 * @return
+	 */
+	private List<String> getProjectIdsForChangedSBStatuses(
+			final DateTime since) {
+		final List<String> result = new ArrayList<String>();
+		final List<StateChangeData> changes = getStatusChanges(
+				StateEntityType.SBK,
+				since);
+		
+		for (StateChangeData scd :changes) {
+			String sbId = scd.domainEntityId;
+			SchedBlock sb = null;
+			
+			try {
+				sb = archive.getSchedBlock(sbId);
+			} catch (Exception e) {
+		    	ErrorHandling.severe(
+		    			logger,
+		    			String.format(
+		    				"Error finding changed SchedBlock %s from StateChange %d - %s",
+		    				sbId,
+		    				scd.id,
+		    				e.getMessage()),
+		    			e);
+		    	continue; // move on to next change data
+			}
+			try {
+				String projectId = sb.getObsProjectRef().getEntityId();
+				result.add(projectId);
+			} catch (Exception e) {
+				ErrorHandling.severe(
+						logger,
+						String.format(
+							"Error finding ObsProject for SchedBlock %s - %s",
+							sbId,
+							e.getMessage()),
+						e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Work out which OUSStatuses have changed in the XMLStore since
+	 * the given time, then collect and return the Entity Ids of their
+	 * ObsProjects.
+	 * 
+	 * @param since
+	 * @return
+	 */
+	private List<String> getProjectIdsForChangedOUSStatuses(
+			final DateTime since) {
+		final List<String> result = new ArrayList<String>();
+		final List<StateChangeData> changes = getStatusChanges(
+				StateEntityType.OUT,
+				since);
+		
+		for (StateChangeData scd : changes) {
+			String projectId = scd.domainEntityId;
+			result.add(projectId);
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Work out which ProjectStatuses have changed in the XMLStore
+	 * since the given time. Sort the Entity Ids of their ObsProjects
+	 * into by whether they are now deleted (from a scheduling
+	 * perspective) or simply changed.
+	 * 
+	 * @param since - the time of the last search
+	 * @param changedProjects - projects which have been modified
+	 * @param deletedProjects - projects which are no longer of
+	 *                          interest to the Scheduler.
+	 */
+	private void getProjectIdsForChangedProjectStatuses(
+			final DateTime    since,
+			final Set<String> changedProjects,
+			final Set<String> deletedProjects) {
+		final List<StateChangeData> changes = getStatusChanges(
+				StateEntityType.PRJ,
+				since);
+		
+		for (StateChangeData scd : changes) {
+			final String projectId = scd.domainEntityId;
+			final String state     = scd.domainEntityState;
+			if (interestedInObsProject(state)) {
+				changedProjects.add(projectId);
+			} else {
+				deletedProjects.add(projectId);
+			}
+		}
+	}
+	
+	/**
+	 * Get the state changes since the last query and find the latest
+	 * one for each changed Status Entity.
+	 * 
+	 * @return List<StateChangeData> - the last change for each changed
+	 *                                 status id.
+	 */
+	private List<StateChangeData> getStatusChanges(
+			final StateEntityType type,
+			final DateTime        since) {
+		
+		final Map<String, StateChangeData> build =
+			new HashMap<String, StateChangeData>();
+		final List<StateChangeData> result =
+			new ArrayList<StateChangeData>();
+		
+		final IDLArrayTime start =
+			new IDLArrayTime(since.getMillisec());
+		final IDLArrayTime end   =
+			new IDLArrayTime(System.currentTimeMillis());
+
+		try {
+			final StateChangeData[] stateChanges =
+				stateSystem.findStateChangeRecords(
+						start,
+						end, "", "", "",
+						type.toString());
+			
+			logger.finer(String.format(
+					"stateChanges(%s).length: %d (start = %d, end = %d)",
+					type.toString(), stateChanges.length, start.value, end.value));
+			
+			for (StateChangeData sc : stateChanges) {
+				if (build.containsKey(sc.statusEntityId)) {
+					final StateChangeData previous = build.get(sc.statusEntityId);
+					if (previous.timestamp.value < sc.timestamp.value) {
+						build.put(sc.statusEntityId, sc);
+					}
+				} else {
+					build.put(sc.statusEntityId, sc);
+				}
+				
+			}
+		} catch (StateIOFailedEx e) {
+			ErrorHandling.warning(
+					logger,
+					String.format("Can not get changes(%s) from State Archive - %s",
+							type, e.getMessage()),
+					e);
+		}
+
+		result.addAll(build.values());
+		return result;
+	}
+   /* End Implementation of ProjectIncrementalDao
      * ============================================================= */
 
     
@@ -528,6 +742,10 @@ public abstract class AbstractXMLStoreProjectDao
 	}
 
 	private void logObsProjects(List<ObsProject> result) {
+        logger.info(String.format(
+        		"Converted %d Project%s",
+        		result.size(),
+        		(result.size() == 1)? "": "s"));
 	}
 	/* End Logging
 	 * ============================================================= */

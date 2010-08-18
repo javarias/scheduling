@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.12 2010/07/13 21:38:16 javarias Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.13 2010/08/18 16:31:10 dclarke Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,5 +92,4 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     public <T> List<T> findAll(Class<T> obj) {
         return (List<T>)getHibernateTemplate().find("from " + obj.getName());
     }
-
 }

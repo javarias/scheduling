@@ -3,18 +3,26 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityException;
-import alma.entity.xmlbinding.obsproject.ObsUnitSetT;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.lifecycle.stateengine.constants.Role;
+import alma.lifecycle.stateengine.constants.Subsystem;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.utils.ErrorHandling;
 import alma.xmlentity.XmlEntityStruct;
 
 /**
@@ -24,11 +32,32 @@ import alma.xmlentity.XmlEntityStruct;
 public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	
     final private static String[] OPPhase2RunnableStates = {
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED.toString(),
     	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),              
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PARTIALLYOBSERVED.toString()               
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PARTIALLYOBSERVED.toString(),
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.CSVREADY.toString()
+    };
+	
+    final private static String[] SBPhase2RunnableStates = {
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),              
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.RUNNING.toString(),
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.CSVREADY.toString(),
+    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.CSVRUNNING.toString()
     };
 
+    private static Set<String> opPhase2RunnableStates = null;
+    private static Set<String> sbPhase2RunnableStates = null;
+    
+    static {
+    	opPhase2RunnableStates = new HashSet<String>();
+    	for (final String state : OPPhase2RunnableStates) {
+    		opPhase2RunnableStates.add(state);
+    	}
+    	sbPhase2RunnableStates = new HashSet<String>();
+    	for (final String state : SBPhase2RunnableStates) {
+    		sbPhase2RunnableStates.add(state);
+    	}
+    }
+    
 	public Phase2XMLStoreProjectDao() throws Exception {
 		super(Phase2XMLStoreProjectDao.class.getSimpleName());
 	}
@@ -182,15 +211,190 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	protected void getInterestingProjects(ArchiveInterface archive) {
 		List<ProjectStatus> apdmProjectStatuses;
 		
+		convertProjects(
+				alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED,
+				alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY);
+		
 		apdmProjectStatuses = fetchAppropriateAPDMProjectStatuses(archive);
 		getAPDMProjectsFor(archive, apdmProjectStatuses);
 	}
 
 	@Override
-	protected ObsUnitSetT getTopLevelOUSForProject(
+	protected alma.entity.xmlbinding.obsproject.ObsUnitSetT getTopLevelOUSForProject(
 			ArchiveInterface                             archive,
 			alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
 		return apdmProject.getObsProgram().getObsPlan();
 	}
+
 	
+	/**
+	 * Convert all the projects in the archive which are in state
+	 * "from" to stat "to". This is a hideous frig for R7.0 to help
+	 * AIV staff during commissioning. As such it is probably with
+	 * us forever...
+	 * 
+	 * @param from - the state from which we wish to convert
+	 * @param to   - the state to which we wish to convert projects
+	 * @throws SchedulingException 
+	 * @throws SchedulingException 
+	 */
+	public void convertProjects(
+			alma.entity.xmlbinding.valuetypes.types.StatusTStateType from,
+			alma.entity.xmlbinding.valuetypes.types.StatusTStateType to) {
+		final String[] fromStates = new String[1];
+		fromStates[0] = from.toString();
+		
+    	final Collection<String> fromPSIds;
+    	
+    	try {
+    		fromPSIds = archive.getProjectStatusIdsByState(fromStates);
+		} catch (Exception e) {
+			ErrorHandling.warning(
+					logger,
+					String.format(
+							"cannot get project statuses from State Archive - %s",
+							e.getMessage()),
+					e);
+			return;
+		}
+    	
+    	int worked = 0;
+    	int failed = 0;
+
+    	for (final String psID : fromPSIds) {
+    		try {
+				stateSystem.changeProjectStatus(
+						psID,
+						to.toString(),
+						Subsystem.SCHEDULING,
+						Role.AOD);
+				worked ++;
+			} catch (UserException e) {
+				logger.warning(String.format(
+						"cannot convert project status %s from %s to %s - %s",
+						psID, from, to, e.getLocalizedMessage()));
+				failed ++;
+			}
+    	}
+    	
+    	if (worked + failed == 0) {
+    		// there were no projects to convert
+    		logger.info(String.format(
+    				"on-the-fly conversion of projects from %s to %s: no candidate projects found.",
+    				from, to));
+    	} else if (failed == 0) {
+    		// Don't admit to even the possibility of failure if you
+    		// don't have to.
+    		logger.info(String.format(
+    				"on-the-fly conversion of projects from %s to %s: %d converted.",
+    				from, to, worked));
+    	} else {
+    		logger.warning(String.format(
+    				"on-the-fly conversion of projects from %s to %s: %d converted, %d failed.",
+    				from, to, worked, failed));
+    	}
+	}
+
+	protected void getAPDMSchedBlocksFor(
+			ArchiveInterface                              archive,
+			alma.entity.xmlbinding.obsproject.ObsUnitSetT apdmOUS,
+			Map<String, SBStatus>                         sbsByDomainId) {
+		
+		// Get the choice object for convenience
+		final alma.entity.xmlbinding.obsproject.ObsUnitSetTChoice choice =
+			apdmOUS.getObsUnitSetTChoice();
+
+		if (choice != null) {
+			// Recurse down child ObsUnitSetTs
+			for (final alma.entity.xmlbinding.obsproject.ObsUnitSetT childOUS : choice.getObsUnitSet()) {
+				getAPDMSchedBlocksFor(archive, childOUS, sbsByDomainId);
+			}
+
+			// Get any referred SchedBlocks which are runnable.
+			for (final alma.entity.xmlbinding.schedblock.SchedBlockRefT childSBRef : choice.getSchedBlockRef()) {
+				final String id = childSBRef.getEntityId();
+				final alma.entity.xmlbinding.sbstatus.SBStatus sbs = sbsByDomainId.get(id);
+				final String state = sbs.getStatus().getState().toString();
+				if (sbPhase2RunnableStates.contains(state)) {
+					try {
+						archive.getSchedBlock(id);
+						logger.info(String.format(
+								"Succesfully got APDM SchedBlock %s",
+								id));
+					} catch (EntityException deserialiseEx) {
+						logger.warning(String.format(
+								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+								id,
+								deserialiseEx.getMessage()));
+					} catch (UserException retrieveEx) {
+						logger.warning(String.format(
+								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+								id,
+								retrieveEx.getMessage()));
+					}
+				} else {
+					logger.info(String.format(
+							"APDM SchedBlock %s is in an uninteresting state (%s) - skipping it",
+							id, state));
+				}
+			}
+		} else {
+			String projectLabel;
+			
+			if (apdmOUS.getObsProjectRef() != null) {
+				projectLabel = String.format("APDM ObsProject %s", apdmOUS.getObsProjectRef().getEntityId());
+			} else {
+				projectLabel = "unknown APDM ObsProject";
+			}
+
+			logger.warning(String.format(
+					"APDM ObsUnitSet %s in %s has no children, (skipping it)",
+					apdmOUS.getEntityPartId(),
+					projectLabel
+			));
+		}	
+	}
+    
+    /**
+	 * Ensure that all the APDM ScheBlocks that correspond to the given
+	 * APDM ObsProject are cached in the given ArchiveInterface.
+	 * 
+     * @param archive
+     * @param apdmProject
+     */
+	@Override
+	protected void getAPDMSchedBlocksFor(
+			ArchiveInterface                             archive,
+			alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
+		
+		final alma.entity.xmlbinding.obsproject.ObsUnitSetT top =
+			getTopLevelOUSForProject(archive, apdmProject);
+		final String apdmProjectId =
+			apdmProject.getObsProjectEntity().getEntityId();
+		final Collection<SBStatus> sbStatuses;
+		
+		try {
+			sbStatuses = archive.getSBStatusesForProjectStatus(apdmProjectId);
+		} catch (Exception e) {
+			ErrorHandling.warning(
+					logger,
+					String.format("Cannot get SBStatuses for APDM Project %s - %s",
+							apdmProjectId,
+							e.getMessage()),
+					e);
+			return;
+		}
+		final Map<String, SBStatus> sbsByDomainId =
+			new HashMap<String, SBStatus>();
+		for (final SBStatus sbs : sbStatuses) {
+			sbsByDomainId.put(sbs.getSchedBlockRef().getEntityId(), sbs);
+		}
+		
+		getAPDMSchedBlocksFor(archive, top, sbsByDomainId);
+	}
+
+	@Override
+	protected boolean interestedInObsProject(String state) {
+		return opPhase2RunnableStates.contains(state);
+	}
 }

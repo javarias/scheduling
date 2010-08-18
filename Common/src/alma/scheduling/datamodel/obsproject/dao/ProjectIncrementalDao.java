@@ -21,28 +21,39 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ProjectIncrementalDao.java,v 1.2 2010/05/17 23:34:16 dclarke Exp $"
+ * "@(#) $Id: ProjectIncrementalDao.java,v 1.3 2010/08/18 16:31:10 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.List;
 
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.datamodel.DAOException;
-import alma.scheduling.datamodel.obsproject.ObsProject;
 
 /**
  * @author dclarke
  *
  */
 public interface ProjectIncrementalDao extends ProjectDao {
-
     /**
-     * Get all the ObsProjects that are changed in or new to the
-     * implementor's data set.
+     * Work out all the ObsProjects that have changed since the given
+     * time. For new or modified projects, stick their entity ids into
+     * <code>newOrModifiedIds</code> and for those which are deleted,
+     * stick their entity ids into <code>deleted</code>.
      * 
-     * @return A <code>List</code> of all the ObsProjects.
+     * @param since - the time of the last search, we're looking for
+     *                changes since then.
+     * @param newOrModifiedIds - used to return the entity ids of
+     *                           projects which are new or have been
+     *                           modified.
+     * @param deletedIds - used to return the entity ids of projects
+     *                     which have been deleted (or become inactive
+     *                     in some way).
      * @throws DAOException - if there's a non-recoverable problem (but
      *                        not if individual projects fail).
      */
-    List<ObsProject> getNewObsProjects() throws DAOException;
+    void getObsProjectChanges(
+    		final DateTime     since,
+    		final List<String> newOrModifiedIds,
+    		final List<String> deletedIds) throws DAOException;
 }

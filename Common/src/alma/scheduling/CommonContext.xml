@@ -172,7 +172,7 @@
 					<property name="dao" ref="observatoryDao"/>
 					<property name="xmlDao" ref="xmlObservatoryDao"/>
 				</bean>
-				<ref bean="dataLinker"/>
+ 				<ref bean="dataLinker"/>
 			</list>
 		</property>
 	</bean>
