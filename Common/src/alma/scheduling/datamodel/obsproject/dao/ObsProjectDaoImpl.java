@@ -15,7 +15,6 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.ScienceParameters;
 
 @Transactional
 public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
@@ -93,7 +92,8 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
 
 
     @Override
-    public ObsProject getObjsProject(ObsUnit ou) {
+    @Transactional(readOnly=true)
+    public ObsProject getObsProject(ObsUnit ou) {
         ObsUnit oun = ou;
         while (oun.getParent() != null) {
             oun = oun.getParent();
@@ -104,5 +104,21 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
         query.setParameter(0, oun.getId());
         return (ObsProject) query.uniqueResult();
     }
-    
+
+    public ObsProject findByEntityId(String entityId) {
+        Query query = null;
+        query = getSession().createQuery("from ObsProject op " +
+        		"where op = ?");
+        query.setParameter(0, entityId);
+        return (ObsProject)query.uniqueResult();
+    }
+
+
+	@Override
+	public int countAll() {
+        Query query = null;
+        query = getSession().createQuery("select count(x) from ObsProject x ");
+        return (Integer)query.uniqueResult();
+	}
+
 }

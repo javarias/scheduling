@@ -2,16 +2,17 @@ package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 
 import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ObservingSeason;
+import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockDao extends GenericDao {
     List<SchedBlock> findAll();
+    int countAll();
     List<SchedBlock> findSchedBlocksWithVisibleRepresentativeTarget(double lst);
     List<SchedBlock> findSchedBlocksByEstimatedExecutionTime(double time);
     void hydrateSchedBlockObsParams(SchedBlock schedBlock);
@@ -31,4 +32,8 @@ public interface SchedBlockDao extends GenericDao {
     public List<SchedBlock> findSchedBlocks(Criterion crit);
     
     public List<SchedBlock> findSchedBlocks(Criterion crit, List<SchedBlock> sbs);
+    
+    public SchedBlock findByEntityId(String entityId);
+    
+    public List<SchedBlock> findSchedBlocksForProject(ObsProject project);
 }

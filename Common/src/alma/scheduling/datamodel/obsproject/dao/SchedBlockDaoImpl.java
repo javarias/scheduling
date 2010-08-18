@@ -17,6 +17,7 @@ import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.obsproject.FieldSource;
+import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
@@ -76,6 +77,8 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
             }
         }
         schedBlock.getSchedulingConstraints().getRepresentativeTarget().getSource().getCoordinates();
+        schedBlock.getExecutive().getName();
+        schedBlock.getProjectUid();
     }
     
     @SuppressWarnings("unchecked")
@@ -204,4 +207,30 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
                         "ep", FetchMode.JOIN);
         return criteria;
     }
+    
+    public SchedBlock findByEntityId(String entityId) {
+        Query query = null;
+        query = getSession().createQuery("from SchedBlock sb " +
+        		"where sb.uid = ?");
+        query.setParameter(0, entityId);
+        return (SchedBlock)query.uniqueResult();
+    }
+    
+    @SuppressWarnings("unchecked")
+	public List<SchedBlock> findSchedBlocksForProject(ObsProject project) {
+        Query query = null;
+        query = getSession().createQuery("from SchedBlock sb " +
+        		"where sb.projectUid = ?");
+        query.setParameter(0, project.getUid());
+        return query.list();
+    }
+
+
+	@Override
+	public int countAll() {
+        Query query = null;
+        query = getSession().createQuery("select count(x) from SchedBlock x ");
+        return (Integer)query.uniqueResult();
+	}
+
 }
