@@ -90,7 +90,7 @@ public class DataLinker implements DataLoader {
             System.out.println("sb.getPiName() = " + sb.getPiName());
             PI pi = execDao.getPIFromEmail(sb.getPiName());
             sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
-            ObsProject p = obsPrjDao.getObjsProject(sb);
+            ObsProject p = obsPrjDao.getObsProject(sb);
             sb.setScienceScore(p.getScienceScore());
             sb.setLetterGrade(p.getLetterGrade());
             sb.setScienceRank(p.getScienceRank());
