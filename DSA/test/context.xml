@@ -173,7 +173,7 @@
 	</bean>
 	
 	<bean id="obsProjectLoadingService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-    	<property name="serviceUrl" value="rmi://localhost:1099/archProjectDaoService"/>
+    	<property name="serviceUrl" value="rmi://localhost:1099/obsProjectDataLoader"/>
     	<property name="serviceInterface" value="alma.scheduling.dataload.DataLoader"/>
 	</bean>
 	
