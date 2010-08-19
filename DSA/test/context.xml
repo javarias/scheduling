@@ -163,28 +163,34 @@
 
 	<!-- Archive/XMLStore Data Loader -->
 	<bean id="archProjectDao"
-		class="alma.scheduling.datamodel.obsproject.dao.RemotePhase1XMLStoreProjectDao">
+		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
 	</bean>
 	
 	<!--  RMI Client -->
-	<bean id="archProjectDaoClient"
-		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDaoClient">
-		<property name="archDao" ref="archProjectDaoService"/>
+	<bean id="obsProjectDataLoaderClient"
+		class="alma.scheduling.dataload.DataLoaderClient">
+		<property name="obsProjectDataLoader" ref="obsProjectLoadingService"/>
 	</bean>
 	
-	<bean id="archProjectDaoService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+	<bean id="obsProjectLoadingService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
     	<property name="serviceUrl" value="rmi://localhost:1099/archProjectDaoService"/>
-    	<property name="serviceInterface" value="alma.scheduling.datamodel.obsproject.dao.RemoteProjectDao"/>
+    	<property name="serviceInterface" value="alma.scheduling.dataload.DataLoader"/>
 	</bean>
 	
 	<!--  RMI Exporting -->
 	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<property name="serviceName" value="archProjectDaoService"/>
-		<property name="service" ref="archProjectDao"/>
-		<property name="serviceInterface" value="alma.scheduling.datamodel.obsproject.dao.RemoteProjectDao"/>
+		<property name="serviceName" value="obsProjectLoadingService"/>
+		<property name="service" ref="obsProjectDataLoader"/>
+		<property name="serviceInterface" value="alma.scheduling.dataload.DataLoader"/>
 	</bean>
 
 	<!-- DataLoaders Beans -->
+	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
+		<!--    <property name="xmlDao" ref="xmlObsProjectDao"/> -->
+		<property name="archProjectDao" ref="archProjectDao" />
+		<property name="dao" ref="obsProjectDao" />
+	</bean>
+	
     <bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
         <property name="sbDao" ref="sbDao"/>
         <property name="execDao" ref="execDao"/>
@@ -195,11 +201,7 @@
     <bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
-				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-					<!--    <property name="xmlDao" ref="xmlObsProjectDao"/> -->
-					<property name="archProjectDao" ref="archProjectDaoClient" />
-					<property name="dao" ref="obsProjectDao"/>
-				</bean>
+				<ref bean="obsProjectDataLoaderClient"/>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao"/>
 					<property name="xmlDao" ref="xmlExecDao"/>
@@ -212,7 +214,6 @@
 			</list>
 		</property>
 	</bean>
-
 	
     <bean id="fullDataUnloader" class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
 	    <property name="xmlDao" ref="xmlObsProjectDao"/>
