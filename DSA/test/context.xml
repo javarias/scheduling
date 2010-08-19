@@ -40,7 +40,7 @@
 		<property name="user" value="sa" />
 		<property name="password" value="" />
 		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
-		<property name="jdbcUrl" value="jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model" /> 
+		<property name="jdbcUrl" value="jdbc:hsqldb:file:/home/almaproc/APRC/tmp/hsqldb/data_model" /> 
         <property name="initialPoolSize" value="5" />
 		<property name="maxPoolSize" value="20" />
 		<property name="minPoolSize" value="1" />
@@ -161,6 +161,29 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
+	<!-- Archive/XMLStore Data Loader -->
+	<bean id="archProjectDao"
+		class="alma.scheduling.datamodel.obsproject.dao.RemotePhase1XMLStoreProjectDao">
+	</bean>
+	
+	<!--  RMI Client -->
+	<bean id="archProjectDaoClient"
+		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDaoClient">
+		<property name="archDao" ref="archProjectDaoService"/>
+	</bean>
+	
+	<bean id="archProjectDaoService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+    	<property name="serviceUrl" value="rmi://localhost:1099/archProjectDaoService"/>
+    	<property name="serviceInterface" value="alma.scheduling.datamodel.obsproject.dao.RemoteProjectDao"/>
+	</bean>
+	
+	<!--  RMI Exporting -->
+	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="serviceName" value="archProjectDaoService"/>
+		<property name="service" ref="archProjectDao"/>
+		<property name="serviceInterface" value="alma.scheduling.datamodel.obsproject.dao.RemoteProjectDao"/>
+	</bean>
+
 	<!-- DataLoaders Beans -->
     <bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
         <property name="sbDao" ref="sbDao"/>
@@ -173,7 +196,8 @@
 		<property name="loaders">
 			<list>
 				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-					<property name="xmlDao" ref="xmlObsProjectDao"/>
+					<!--    <property name="xmlDao" ref="xmlObsProjectDao"/> -->
+					<property name="archProjectDao" ref="archProjectDaoClient" />
 					<property name="dao" ref="obsProjectDao"/>
 				</bean>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
