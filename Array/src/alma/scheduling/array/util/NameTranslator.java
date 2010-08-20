@@ -25,7 +25,7 @@ import alma.scheduling.Define.SchedulingException;
  * another, e.g. component names to and from array names.
  * 
  * @author dclarke
- * $Id: NameTranslator.java,v 1.2 2010/08/17 23:21:11 dclarke Exp $
+ * $Id: NameTranslator.java,v 1.3 2010/08/20 19:27:31 rhiriart Exp $
  */
 public abstract class NameTranslator {
 	/*
@@ -79,7 +79,7 @@ public abstract class NameTranslator {
 	 * Array names to/from Component names
 	 * ================================================================
 	 */
-	public final static String COMPONENT_PREFIX = "Scheduling/";
+	public final static String COMPONENT_PREFIX = "SCHEDULING/";
 	public final static String CONTROL_COMPONENT_PREFIX = "CONTROL/";
 	
 	/**

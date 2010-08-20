@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="lib/SchedulingArray.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
+	<classpathentry kind="lib" path="lib/SchedulingArrayExceptions.jar"/>
+	<classpathentry kind="output" path="object/SchedulingArrayImpl"/>
 </classpath>

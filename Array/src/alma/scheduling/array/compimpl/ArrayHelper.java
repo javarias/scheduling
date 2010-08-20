@@ -28,7 +28,6 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArrayPOATie;
-import alma.scheduling.array.compimpl.ArrayImpl;
 
 /**
  * Component helper class. 

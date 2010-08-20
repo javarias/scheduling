@@ -32,6 +32,7 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
 import alma.lifecycle.persistence.StateArchive;
+import alma.scheduling.array.util.LoggerFactory;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -57,17 +58,22 @@ public class ModelAccessor extends Observable {
 	public static final String SCHEDULING_OBS_PROJECT_DAO_BEAN = "obsProjectDao";
 	public static final String SCHEDULING_SCHED_BLOCK_BEAN = "schedBlockDao";
 	
-	private Logger logger = Logger.getAnonymousLogger();
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	private StateArchive stateArchive;
 	private ObsProjectDao projectDao;
 	private SchedBlockDao schedBlockDao;
 		
 	public ModelAccessor() throws Exception {
+	    // There should be only one instance of the stateArchive in the process.
+	    // An implication of this is that this component cannot coexist with
+	    // the OBOPS StateArchive in the same container.
 		if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
 			StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
 					new StateArchiveDbConfig(logger));
 			stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 			stateArchive.initStateArchive(logger);
+		} else {
+            stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 		}
 		
         ApplicationContext ctx =
@@ -107,4 +113,17 @@ public class ModelAccessor extends Observable {
 	public void hydrateSchedBlock(SchedBlock sb) {
 		schedBlockDao.hydrateSchedBlockObsParams(sb);
 	}
+	
+	public List<ObsProject> getRelevantProjects() {
+	    return null;
+	}
+	
+	public List<SchedBlock> getSchedBlocksForProject(ObsProject project) {
+	    return null;
+	}
+	
+	public SchedBlock getSchedBlockFromEntityId(String entityId) {
+	    return schedBlockDao.findByEntityId(entityId);
+	}
+	
 }

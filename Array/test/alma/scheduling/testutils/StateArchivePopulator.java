@@ -203,17 +203,23 @@ public class StateArchivePopulator {
 		return sbStatus;
 	}
 	
-	public void createStatuses(String obsProjectUID, String schedBlockUID)
+	public void createStatuses(ObsProject obsProject, ObsUnitSet obsUnitSet, SchedBlock schedBlock)
 		throws Exception {
-		String prjStatusUID = addToLastUIDPart(obsProjectUID, 10);
-		String ousStatusUID = addToLastUIDPart(obsProjectUID, 1);
-		String sbStatusUID = addToLastUIDPart(schedBlockUID, 10);
-		ProjectStatus opStatus = createProjectStatus(prjStatusUID, ousStatusUID, obsProjectUID,	
-				obsProjectUID); // using project UID as proposal UID
-		OUSStatus[] ousStatuses = { createOUSStatus(ousStatusUID, prjStatusUID,	obsProjectUID)};
+		String prjStatusUID = addToLastUIDPart(obsProject.getUid(), 10);
+		String ousStatusUID = addToLastUIDPart(obsProject.getUid(), 1);
+		String sbStatusUID = addToLastUIDPart(schedBlock.getUid(), 10);
+		ProjectStatus opStatus = createProjectStatus(prjStatusUID, ousStatusUID, obsProject.getUid(),	
+				obsProject.getUid()); // using project UID as proposal UID
+		OUSStatus[] ousStatuses = { createOUSStatus(ousStatusUID, prjStatusUID,	obsProject.getUid())};
 		SBStatus[] sbStatuses = { createSBStatus(sbStatusUID, ousStatusUID, prjStatusUID,
-				obsProjectUID, schedBlockUID) };
+				obsProject.getUid(), schedBlock.getUid()) };
 		modelAccessor.getStateArchive().insert(opStatus, ousStatuses, sbStatuses);
+		obsProject.setStatusEntity(opStatus.getProjectStatusEntity());
+		modelAccessor.getObsProjectDao().saveOrUpdate(obsProject);
+		obsUnitSet.setStatusEntity(ousStatuses[0].getOUSStatusEntity());
+		modelAccessor.getSchedBlockDao().saveOrUpdate(obsUnitSet);
+		schedBlock.setStatusEntity(sbStatuses[0].getSBStatusEntity());
+		modelAccessor.getSchedBlockDao().saveOrUpdate(schedBlock);
 	}
 	
 	
@@ -221,20 +227,21 @@ public class StateArchivePopulator {
 		List<ObsProject> projects = modelAccessor.getObsProjectDao().findAll(ObsProject.class);
 		for (ObsProject project : projects) {
 			ObsUnit obsUnit = modelAccessor.getObsProjectDao().getObsUnitForProject(project);
-			traverseObsUnit(obsUnit, project);
+			traverseObsUnit(obsUnit, null, project);
 		}
 	}
 	
-	public void traverseObsUnit(ObsUnit obsUnit, ObsProject obsProject) {
+	public void traverseObsUnit(ObsUnit obsUnit, ObsUnit parentObsUnit, ObsProject obsProject) {
 		if (obsUnit instanceof ObsUnitSet) {
 			ObsUnitSet ous = (ObsUnitSet) obsUnit;
 			for (ObsUnit ou : ous.getObsUnits()) {
-				traverseObsUnit(ou, obsProject);
+				traverseObsUnit(ou, ous, obsProject);
 			}
 		} else if (obsUnit instanceof SchedBlock) {
 			SchedBlock sb = (SchedBlock) obsUnit;
+			ObsUnitSet ous = (ObsUnitSet) parentObsUnit;
 			try {
-				createStatuses(obsProject.getUid(), sb.getUid());
+				createStatuses(obsProject, ous, sb);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

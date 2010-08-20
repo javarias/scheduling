@@ -20,7 +20,6 @@ package alma.scheduling.array.guis;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -33,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -45,8 +43,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
-import javax.swing.SwingUtilities;
 import javax.swing.RowFilter.Entry;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -70,7 +68,7 @@ import alma.scheduling.swingx.CallbackFilter;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.5 2010/07/31 00:18:11 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.6 2010/08/20 19:27:31 rhiriart Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
