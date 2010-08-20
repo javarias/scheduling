@@ -150,6 +150,7 @@ public class ExecutionContext {
     
     public void processASDMArchivedEvent(ASDMArchivedEvent event) {
         logger.info("processing ASDMArchivedEvent");
+        // throw something if the ExecBlockStartedEvent hasn't arrived yet.
         archivedTimestamp = System.currentTimeMillis();
         try {
             receptionLock.lock();

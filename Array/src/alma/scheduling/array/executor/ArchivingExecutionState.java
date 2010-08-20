@@ -34,8 +34,9 @@ public class ArchivingExecutionState extends ExecutionState {
         ASDMArchivedEvent event = context.waitForASDMArchivedEvent(3600000);
         if (event == null) {
             context.setState(new FailedExecutionState(context));
+        } else {
+            context.setState(new CompleteExecutionState(context));
         }
-        context.setState(new CompleteExecutionState(context));
     }
 
     @Override
