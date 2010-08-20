@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ehcache>
+	<defaultCache 
+	maxElementsInMemory="10000" 
+	eternal="true"
+	overflowToDisk="false" 
+	memoryStoreEvictionPolicy="LFU">
+	</defaultCache>
+	
+	<cache name="alma.scheduling.datamodel.obsproject.SchedBlock" 
+	maxElementsInMemory="10000"
+	eternal="true"
+	overflowToDisk="false" 
+	memoryStoreEvictionPolicy="LFU">
+	</cache>
+	<cache name="alma.scheduling.datamodel.obsproject.ObsUnit" 
+		maxElementsInMemory="40000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
+	<cache name="alma.scheduling.datamodel.obsproject.ObsProject" 
+		maxElementsInMemory="10000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
+		<cache name="org.hibernate.cache.UpdateTimestampsCache" 
+		maxElementsInMemory="10000"
+		eternal="true"
+		overflowToDisk="false" 
+		memoryStoreEvictionPolicy="LFU">
+	</cache>
+</ehcache>

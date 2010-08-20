@@ -9,7 +9,7 @@
     </typedef>
     
     <class name="ObsProject" table="OBSPROJECT">
-    <cache usage="read-write" region="alma.scheduling.datamodel.obsproject.ObsUnit"/>
+        <cache usage="read-write" region="alma.scheduling.datamodel.obsproject.ObsUnit"/>
         <id name="id" column="OBSPROJECTID">            
             <generator class="native"/>
         </id>
@@ -24,5 +24,13 @@
         <property name="totalExecutionTime" column="TOTAL_EXEC_TIME"/>
         <many-to-one name="obsUnit" class="ObsUnit" column="OBSUNITID"
             cascade="save-update" unique="true" not-null="false"/>
+        <component name="statusEntity" class="alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT">
+            <property name="entityId" type="string" column="STATUS_ENTITY_ID" not-null="false"/>
+            <property name="entityIdEncrypted" type="string" column="STATUS_ENTITY_ID_ENCRYPTED" not-null="false"/>
+            <property name="entityTypeName" type="string" column="STATUS_ENTITY_TYPE_NAME" not-null="false"/>
+            <property name="schemaVersion" type="string" column="STATUS_SCHEMA_VERSION" not-null="false"/>
+            <property name="documentVersion" type="string" column="STATUS_DOCUMENT_VERSION" not-null="false"/>
+            <property name="timestamp" type="string" column="STATUS_TIMESTAMP" not-null="false"/>
+        </component>
     </class>
 </hibernate-mapping>

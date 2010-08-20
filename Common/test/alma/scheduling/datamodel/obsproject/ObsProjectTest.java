@@ -5,6 +5,7 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
 import alma.scheduling.persistence.HibernateUtil;
 
 import junit.framework.TestCase;
@@ -38,6 +39,15 @@ public class ObsProjectTest extends TestCase {
             prj.setScienceRank(10);
             prj.setPrincipalInvestigator("me");
             prj.setStatus("ready");
+            ProjectStatusEntityT statusEntity = new ProjectStatusEntityT();
+            statusEntity.setEntityId("uid://X0/X0");
+            statusEntity.setEntityIdEncrypted("iud0831k");
+            statusEntity.setEntityTypeName("ProjectStatus");
+            statusEntity.setDatamodelVersion("1.0");
+            statusEntity.setDocumentVersion("1.0");
+            statusEntity.setSchemaVersion("1.0");
+            statusEntity.setTimestamp("0");
+            prj.setStatusEntity(statusEntity);
             session.save(prj);
             tx.commit();
         } catch(Exception ex) {

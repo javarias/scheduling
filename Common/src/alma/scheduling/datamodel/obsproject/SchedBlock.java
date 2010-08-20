@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.10 2010/08/05 19:43:10 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.11 2010/08/20 19:22:48 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.scheduling.datamodel.executive.Executive;
 
 public class SchedBlock extends ObsUnit {
@@ -66,6 +67,10 @@ public class SchedBlock extends ObsUnit {
     private ScienceGrade letterGrade;
     
     private Float scienceScore;
+    
+    private SBStatusEntityT statusEntity;
+    
+    private Boolean runQuicklook;
     
     /** Default constructor */
     public SchedBlock() { }
@@ -181,6 +186,22 @@ public class SchedBlock extends ObsUnit {
 
     public void setScienceScore(Float scienceScore) {
         this.scienceScore = scienceScore;
+    }
+
+    public SBStatusEntityT getStatusEntity() {
+        return statusEntity;
+    }
+
+    public void setStatusEntity(SBStatusEntityT statusEntity) {
+        this.statusEntity = statusEntity;
+    }
+
+    public Boolean getRunQuicklook() {
+        return runQuicklook;
+    }
+
+    public void setRunQuicklook(Boolean runQuicklook) {
+        this.runQuicklook = runQuicklook;
     }
 
 }

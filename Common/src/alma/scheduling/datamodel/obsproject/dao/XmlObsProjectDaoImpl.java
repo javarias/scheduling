@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.19 2010/07/29 17:50:14 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.20 2010/08/20 19:22:48 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -180,6 +180,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
             schedBlock.setUid(xmlSchedBlock.getArchiveUID());
             schedBlock.setName(xmlSchedBlock.getName());
             schedBlock.setPiName(piName);
+            schedBlock.setRunQuicklook(true);
             WeatherConstraints wc = new WeatherConstraints(
                     xmlSchedBlock.getWeatherConstraints().getMaxWindVelocity(),
                     xmlSchedBlock.getWeatherConstraints().getMaxOpacity(),

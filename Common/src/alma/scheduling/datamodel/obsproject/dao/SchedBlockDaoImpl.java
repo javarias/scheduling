@@ -18,6 +18,7 @@ import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
@@ -232,5 +233,11 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         query = getSession().createQuery("select count(x) from SchedBlock x ");
         return (Integer)query.uniqueResult();
 	}
+
+    @Override
+    public void hydrateObsUnitSet(ObsUnitSet ous) {
+        getHibernateTemplate().lock(ous, LockMode.NONE);
+        ous.getStatusEntity().getEntityId();
+    }
 
 }

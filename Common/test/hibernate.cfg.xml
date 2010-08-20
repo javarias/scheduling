@@ -29,6 +29,19 @@
         <!-- Show and print nice SQL on stdout -->
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
+        <property name="hibernate.transaction.factory_class"
+            >org.hibernate.transaction.JDBCTransactionFactory</property>
+        <property name="hibernate.connection.autocommit">false</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.cache.use_query_cache">false</property>
+        <property name="hibernate.cache.use_second_level_cache">false</property>
+        <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+        <property name="hibernate.transaction.flush_before_completion">true</property>
+        <property name="hibernate.transaction.auto_close_session">false</property>
+        <property name="hibernate.max_fetch_depth">5</property>
+        <property name="hibernate.default_batch_fetch_size">16</property>
+        <property name="hibernate.jdbc.batch_size">25</property>
+        <property name="hibernate.jdbc.fetch_size">8</property>
         
         <!-- List of XML mapping files -->
         <mapping resource="alma/scheduling/datamodel/executive/Executive.hbm.xml"/>  

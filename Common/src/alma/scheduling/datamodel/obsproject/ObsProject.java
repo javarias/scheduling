@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.8 2010/07/29 17:50:14 rhiriart Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.9 2010/08/20 19:22:48 rhiriart Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
+
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
 
 public class ObsProject {
 
@@ -90,6 +92,12 @@ public class ObsProject {
      * of all the SchedBlock in the ObsUnitSet.
      */
     private Double totalExecutionTime;
+    
+    /**
+     * Status entity. Use this field to retrieve the corresponding status from
+     * the StateArchive DAO.
+     */
+    private ProjectStatusEntityT statusEntity;
     
     // --- constructors ---
     
@@ -183,6 +191,14 @@ public class ObsProject {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public ProjectStatusEntityT getStatusEntity() {
+        return statusEntity;
+    }
+
+    public void setStatusEntity(ProjectStatusEntityT statusEntity) {
+        this.statusEntity = statusEntity;
     }
     
 }

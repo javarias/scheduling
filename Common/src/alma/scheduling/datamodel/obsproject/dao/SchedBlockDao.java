@@ -8,6 +8,7 @@ import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockDao extends GenericDao {
@@ -36,4 +37,6 @@ public interface SchedBlockDao extends GenericDao {
     public SchedBlock findByEntityId(String entityId);
     
     public List<SchedBlock> findSchedBlocksForProject(ObsProject project);
+    
+    public void hydrateObsUnitSet(ObsUnitSet ous);
 }
