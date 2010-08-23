@@ -102,12 +102,7 @@ public class InputActions extends PsmContext {
         }
         for(int i = 0; i < loadersNames.length; i++) {
         	DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
-            try {
-				loader.clear();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            loader.clear();
         }
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
         configDao.deleteAll();
@@ -130,6 +125,20 @@ public class InputActions extends PsmContext {
 		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
 		String[] args= new String[1];
 		args[0]="fullload";
+		try {
+			console.runTask(args);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public void remoteLoad() {
+		ApplicationContext ctx = getApplicationContext();
+		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
+		String[] args= new String[1];
+		args[0]="load";
 		try {
 			console.runTask(args);
 		} catch (RemoteException e) {

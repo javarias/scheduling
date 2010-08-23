@@ -115,6 +115,11 @@ public class Console {
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteFullLoad();
         }
+        else if (args[0].compareTo("remoteLoad") == 0){
+        	InputActions inputActions = new InputActions(workDir);
+        	inputActions.setVerboseLvl(verboseLvl);
+        	inputActions.remoteLoad();
+        }
         else if (args[0].compareTo("report")==0){
         	ReportGenerator reportGenerator = new ReportGenerator( workDir );
         		if(args.length == 1)
