@@ -25,7 +25,7 @@ import java.util.Observer;
 import java.util.logging.Logger;
 
 import alma.scheduling.SchedBlockQueueCallback;
-import alma.scheduling.array.util.LoggerFactory;
+import alma.scheduling.utils.LoggerFactory;
 
 /**
  * @author rhiriart

@@ -20,7 +20,7 @@ package alma.scheduling.array.executor;
 
 import java.util.logging.Logger;
 
-import alma.scheduling.array.util.LoggerFactory;
+import alma.scheduling.utils.LoggerFactory;
 
 public abstract class ExecutionState {
 

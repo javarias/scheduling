@@ -30,7 +30,7 @@ import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
 import alma.offline.ASDMArchivedEvent;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
-import alma.scheduling.array.util.LoggerFactory;
+import alma.scheduling.utils.LoggerFactory;
 
 /**
  * 

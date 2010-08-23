@@ -15,12 +15,15 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
-package alma.scheduling.array.guis;
+package alma.scheduling.datamodel.obsproject.dao;
 
 import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.springframework.context.ApplicationContext;
@@ -32,12 +35,11 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
 import alma.lifecycle.persistence.StateArchive;
-import alma.scheduling.array.util.LoggerFactory;
+import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
-import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.utils.LoggerFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 
 /**
@@ -94,7 +96,7 @@ public class ModelAccessor extends Observable {
 		return schedBlockDao;
 	}
 
-	public ProjectStatus[] getAllProjectstatuses()
+	public ProjectStatus[] getAllProjectStatuses()
 		throws AcsJIllegalArgumentEx, AcsJInappropriateEntityTypeEx {
 		String[] states = { StatusTStateType.ANYSTATE.toString() };
 		ProjectStatus[] prjstatuses =
@@ -106,12 +108,46 @@ public class ModelAccessor extends Observable {
 		return getObsProjectDao().findAll(ObsProject.class);
 	}
 	
+	public List<ObsProject> getProjects(String... ids) {
+		final ObsProjectDao dao = getObsProjectDao();
+		
+		final List<ObsProject> result = new Vector<ObsProject>();
+		for (final String id : ids) {
+			final ObsProject project = dao.findById(ObsProject.class, id);
+			result.add(project);
+		}
+		return result;
+	}
+	
 	public ObsUnit getObsUnitForProject(ObsProject project) {
 		return projectDao.getObsUnitForProject(project);
 	}
 	
 	public void hydrateSchedBlock(SchedBlock sb) {
 		schedBlockDao.hydrateSchedBlockObsParams(sb);
+//		final ObsProject p = projectDao.getObsProject(sb);
+//		sb.setProject(p);
+	}
+
+	public List<SchedBlock> getAllSchedBlocks() {
+		final List<SchedBlock> sbs = getSchedBlockDao().findAll(SchedBlock.class);
+		
+		for (final SchedBlock sb : sbs) {
+			hydrateSchedBlock(sb);
+		}
+		return sbs;
+	}
+	
+	public List<SchedBlock> getSchedBlocks(String... ids) {
+		final SchedBlockDao dao = getSchedBlockDao();
+		
+		final List<SchedBlock> result = new Vector<SchedBlock>();
+		for (final String id : ids) {
+			final SchedBlock schedBlock = dao.findByEntityId(id);
+			hydrateSchedBlock(schedBlock);
+			result.add(schedBlock);
+		}
+		return result;
 	}
 	
 	public List<ObsProject> getRelevantProjects() {

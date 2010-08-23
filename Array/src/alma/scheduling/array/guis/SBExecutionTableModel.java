@@ -26,20 +26,31 @@ import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
 
 import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.ObsUnitSet;
-import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 
 /**
- * A model for a table showing a collection of
+ * A model for a table showing a collection of executions of
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.5 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: SBExecutionTableModel.java,v 1.1 2010/08/23 23:07:36 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
-public class SchedBlockTableModel extends AbstractTableModel {
+public class SBExecutionTableModel extends AbstractTableModel {
+	/*
+	 * ================================================================
+	 * Types
+	 * ================================================================
+	 */
+	/** Is this for pending, current or past executions? */
+	public enum When {
+		Pending, Current, Past;
+	}
+	/* End Types
+	 * ============================================================= */
+
+	
+	
 	/*
 	 * ================================================================
 	 * Fields
@@ -47,6 +58,9 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	/** Of course, a Logger */
 	private Logger logger;
+	
+	/** Map the displayed columns to the internal logical columns */
+	private int viewToModelColumnMap[];
 	/* End Fields
 	 * ============================================================= */
 
@@ -58,16 +72,102 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 * ================================================================
 	 */
 	/**
-	 * The one and only constructor.
+	 * Hide the default constructor.
 	 */
-	public SchedBlockTableModel() {
+	@SuppressWarnings("unused")
+	private SBExecutionTableModel() {
+	}
+	
+	/**
+	 * The constructor to use.
+	 */
+	public SBExecutionTableModel(When when) {
 		super();
+		switch (when) {
+			case Pending:
+				viewToModelColumnMap = mapForPending();
+			break;
+			case Current:
+				viewToModelColumnMap = mapForCurrent();
+			break;
+			case Past:
+				viewToModelColumnMap = mapForPast();
+			break;
+		}
 		initialiseData();
 	}
 	/* End Construction
 	 * ============================================================= */
 
+
 	
+	/*
+	 * ================================================================
+	 * Managing models with different sets of columns
+	 * ================================================================
+	 */
+	/**
+	 * Create the map from view columns to logical columns for the
+	 * Pending model.
+	 * 
+	 * @return
+	 */
+	private int[] mapForPending() {
+		final int[] result = {
+				Column_Position,
+				Column_EntityId,
+				Column_PI,
+				Column_Executive,
+				Column_Name,
+				Column_State,
+				Column_Project
+		};
+		return result;
+	}
+
+	/**
+	 * Create the map from view columns to logical columns for the
+	 * Current model.
+	 * 
+	 * @return
+	 */
+	private int[] mapForCurrent() {
+		final int[] result = {
+				Column_EntityId,
+				Column_PI,
+				Column_Executive,
+				Column_Name,
+				Column_State,
+				Column_Project
+		};
+		return result;
+	}
+
+	/**
+	 * Create the map from view columns to logical columns for the
+	 * Past model.
+	 * 
+	 * @return
+	 */
+	private int[] mapForPast() {
+		final int[] result = {
+				Column_Project,
+				Column_EntityId,
+				Column_PI,
+				Column_Executive,
+				Column_Name,
+				Column_State,
+		};
+		return result;
+	}
+	
+	private int map(int viewColumn) {
+		return viewToModelColumnMap[viewColumn];
+	}
+	/* End Managing models with different sets of columns
+	 * ============================================================= */
+
+
 	
 	/*
 	 * ================================================================
@@ -75,29 +175,45 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 * ================================================================
 	 */
 	/** The underlying data for which we are providing a TableModel */
-	private List<SchedBlock> data;
+	private List<ManifestSchedBlockQueueItem> data;
 	
 	/**
 	 * Initialise our internal storage
 	 */
 	private void initialiseData() {
-		this.data = new ArrayList<SchedBlock>();
+		this.data = new ArrayList<ManifestSchedBlockQueueItem>();
 		this.fireTableDataChanged();
 	}
 	
 	/**
 	 * Set the data of the TableModel
 	 */
-	public void setData(Collection<SchedBlock> schedBlocks) {
+	public void setData(Collection<ManifestSchedBlockQueueItem> queue) {
 		this.data.clear();
-		this.data.addAll(schedBlocks);
+		this.data.addAll(queue);
 		this.fireTableDataChanged();
 	}
 	
 	/**
 	 * Get the data of the TableModel
 	 */
-	private List<SchedBlock> getData() {
+	public ManifestSchedBlockQueueItem getData(int rowIndex) {
+		final ManifestSchedBlockQueueItem schedBlock;
+		try {
+			schedBlock = getData().get(rowIndex);
+		} catch (IndexOutOfBoundsException e) {
+			logger.severe(String.format(
+					"row out of bounds in %getData(%d)",
+					this.getClass().getSimpleName()));
+			return null;
+		}
+		return schedBlock;
+	}
+	
+	/**
+	 * Get the data of the TableModel
+	 */
+	private List<ManifestSchedBlockQueueItem> getData() {
 		return this.data;
 	}
 	/* End Underlying data
@@ -126,7 +242,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int      Column_Name = 3;
 	private static final int     Column_State = 4;
 	private static final int   Column_Project = 5;
-	private static final int      NUM_COLUMNS = 6;
+	private static final int  Column_Position = 6;
 	
 
 	/* (non-Javadoc)
@@ -134,7 +250,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getColumnCount() {
-		return NUM_COLUMNS;
+		return viewToModelColumnMap.length;
 	}
 
 	/* (non-Javadoc)
@@ -150,7 +266,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		final SchedBlock schedBlock;
+		final ManifestSchedBlockQueueItem schedBlock;
 		try {
 			schedBlock = getData().get(rowIndex);
 		} catch (IndexOutOfBoundsException e) {
@@ -161,7 +277,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return null;
 		}
 		
-		switch (columnIndex) {
+		switch (map(columnIndex)) {
 		case Column_EntityId:
 			return schedBlock.getUid();
 		case Column_PI:
@@ -174,6 +290,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return schedBlock.getSchedBlockControl().getState();
 		case Column_Project:
 			return schedBlock.getProjectUid();
+		case Column_Position:
+			return rowIndex + 1;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -188,7 +306,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		switch (columnIndex) {
+		switch (map(columnIndex)) {
 		case Column_EntityId:
 			return String.class;
 		case Column_PI:
@@ -201,6 +319,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return SchedBlockState.class;
 		case Column_Project:
 			return String.class;
+		case Column_Position:
+			return Integer.class;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnClass(%d)",
@@ -218,7 +338,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 * @return
 	 */
 	private String getColumnInnerName(int columnIndex) {
-		switch (columnIndex) {
+		switch (map(columnIndex)) {
 		case Column_EntityId:
 			return "Entity ID";
 		case Column_PI:
@@ -231,6 +351,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "State";
 		case Column_Project:
 			return "Project";
+		case Column_Position:
+			return "Position";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
@@ -255,7 +377,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/*
 	 * ================================================================
-	 * External interface specific to this class
+	 * External interface specific to this class (uses view columns)
 	 * ================================================================
 	 */
 	public static int projectIdColumn() {

@@ -24,7 +24,7 @@ import org.omg.CORBA.portable.IDLEntity;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.acs.nc.CorbaNotificationChannel;
-import alma.scheduling.array.util.LoggerFactory;
+import alma.scheduling.utils.LoggerFactory;
 
 /**
  * A wrapper to send event to the Scheduling CORBA notification channel.

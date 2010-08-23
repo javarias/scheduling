@@ -21,8 +21,8 @@ import java.util.logging.Logger;
 
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
-import alma.scheduling.array.guis.ModelAccessor;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
 /**
  * @author rhiriart

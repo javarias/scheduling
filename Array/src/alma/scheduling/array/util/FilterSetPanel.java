@@ -20,10 +20,12 @@ package alma.scheduling.array.util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -48,7 +50,7 @@ import alma.scheduling.array.guis.ObsProjectTableModel;
 /**
  *
  * @author dclarke
- * $Id: FilterSetPanel.java,v 1.3 2010/07/31 00:15:16 dclarke Exp $
+ * $Id: FilterSetPanel.java,v 1.4 2010/08/23 23:07:36 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class FilterSetPanel extends JPanel {
@@ -395,6 +397,7 @@ public class FilterSetPanel extends JPanel {
 		for (int i = 0; i < labels.length; i++) {
 			enabled[i].setSelected(filterSet.isActive(i));
 			regexps[i].setText(filterSet.getFilter(i));
+			regexps[i].setForeground(okColour);
 		}
 		enableWidgets();
 	}
@@ -408,6 +411,29 @@ public class FilterSetPanel extends JPanel {
 			refreshWidgets();
 		}
 		frame.setVisible(b);
+	}
+
+	/**
+	 * Should the Frame in which this Panel lives be iconified, restore
+	 * it to it's former, open, state.   
+	 */
+	public void restoreWindow() {
+		Container up = getParent();
+		Frame  f = null;
+
+		while (up != null && f == null) {
+			if (up instanceof Frame) {
+				f = (Frame) up;
+				int currentState = f.getExtendedState();
+				if ((currentState&Frame.ICONIFIED) != 0) {
+					currentState |= Frame.NORMAL;
+					currentState ^= Frame.ICONIFIED;
+					f.setExtendedState(currentState);
+				}
+				return;
+			}
+			up = up.getParent();
+		}
 	}
 	/* End GUI Management
 	 * ============================================================= */

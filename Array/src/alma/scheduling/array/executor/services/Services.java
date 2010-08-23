@@ -17,7 +17,7 @@
  */
 package alma.scheduling.array.executor.services;
 
-import alma.scheduling.array.guis.ModelAccessor;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
 /**
  * @author rhiriart

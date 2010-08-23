@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: LoggerFactory.java,v 1.1 2010/08/20 19:27:31 rhiriart Exp $"
+ * "@(#) $Id: LoggerFactory.java,v 1.1 2010/08/23 23:05:12 dclarke Exp $"
  */
-package alma.scheduling.array.util;
+package alma.scheduling.utils;
 
 import java.util.logging.Logger;
 

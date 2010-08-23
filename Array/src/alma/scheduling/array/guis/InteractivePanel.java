@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,11 +69,11 @@ import alma.scheduling.swingx.CallbackFilter;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.6 2010/08/20 19:27:31 rhiriart Exp $
+ * $Id: InteractivePanel.java,v 1.7 2010/08/23 23:07:36 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
-											implements ChangeListener, MouseListener {
+							 implements ChangeListener, MouseListener {
 	/*
 	 * ================================================================
 	 * Constants
@@ -439,6 +440,15 @@ public class InteractivePanel extends AbstractArrayPanel
 	@Override
 	protected void modelsAvailable() {
 		fakeData(opModel, sbModel);
+//		final List<ObsProject> projects = getModels().getAllProjects();
+//		final List<SchedBlock> sbs = getModels().getAllSchedBlocks();
+//		
+//		opModel.setData(projects);
+//		
+//		for (final SchedBlock sb : sbs) {
+//			getModels().hydrateSchedBlock(sb);
+//		}
+//		sbModel.setData(sbs);
 		showConnectivity();
 	}
 	/* End Constructors and GUI building
@@ -569,6 +579,7 @@ public class InteractivePanel extends AbstractArrayPanel
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				panel.setVisible(true);
+				panel.restoreWindow();
 			}});
 		reset.addActionListener(new ActionListener(){
 			@Override
@@ -1044,7 +1055,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * Fake data
 	 * ================================================================
 	 */
-	final static int numFakeOP = 2500;
+	final static int numFakeOP = 5000;
 	private static final String pi[] = {
 		"David", "David", "David", "Andrew", "Andrew",
 		"Simon", "Simon", "Andrew", "Simon", "Mike",
@@ -1098,6 +1109,7 @@ public class InteractivePanel extends AbstractArrayPanel
 				sb.setUid(String.format("uid://X007/X%04x/X%02x", p, s+2));
 				sb.setPiName(pi[p % pi.length]);
 				sb.setExecutive(exs.get(ex[sc % ex.length]));
+				sb.setProjectUid(op.getUid());
 				
 				final SchedBlockControl sbc = new SchedBlockControl();
 				sbc.setAccumulatedExecutionTime(op.getTotalExecutionTime()/numSBs);

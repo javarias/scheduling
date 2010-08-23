@@ -24,10 +24,10 @@ import java.util.logging.Logger;
 
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
-import alma.scheduling.array.guis.ModelAccessor;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.Phase2XMLStoreProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
@@ -36,7 +36,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.1 2010/08/18 16:31:10 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.2 2010/08/23 23:05:12 dclarke Exp $
  */
 public class ArchivePoller {
 

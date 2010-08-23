@@ -34,11 +34,11 @@ import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
 import alma.entity.xmlbinding.valuetypes.StatusT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.obops.utils.DatetimeUtils;
-import alma.scheduling.array.guis.ModelAccessor;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
 public class StateArchivePopulator {
 

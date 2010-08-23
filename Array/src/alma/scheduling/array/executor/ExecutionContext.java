@@ -32,10 +32,10 @@ import alma.scheduling.array.executor.services.ControlArray;
 import alma.scheduling.array.executor.services.EventPublisher;
 import alma.scheduling.array.executor.services.Pipeline;
 import alma.scheduling.array.executor.services.Services;
-import alma.scheduling.array.guis.ModelAccessor;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
-import alma.scheduling.array.util.LoggerFactory;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.LoggerFactory;
 
 public class ExecutionContext {
     

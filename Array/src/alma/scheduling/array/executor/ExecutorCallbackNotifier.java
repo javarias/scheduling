@@ -28,7 +28,7 @@ import alma.ACSErr.Completion;
 import alma.ACSErr.ErrorTrace;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockQueueItem;
-import alma.scheduling.array.util.LoggerFactory;
+import alma.scheduling.utils.LoggerFactory;
 
 /**
  * @author rhiriart

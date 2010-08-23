@@ -45,8 +45,8 @@ import alma.scheduling.array.sbQueue.LinkedReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.ObservableReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sbQueue.SchedBlockQueueCallbackNotifier;
-import alma.scheduling.array.util.LoggerFactory;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.utils.LoggerFactory;
 
 public class ArrayImpl implements ComponentLifecycle,
         ArrayOperations {

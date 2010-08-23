@@ -24,15 +24,17 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.ArrayOperations;
+import alma.scheduling.array.compimpl.DelegatedArray;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
 
 /**
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.3 2010/07/31 00:17:38 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.4 2010/08/23 23:07:36 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -77,12 +79,12 @@ public abstract class AbstractArrayPanel extends JPanel
 	public void setServices(PluginContainerServices services) {
 		this.services = services;
 		final SessionProperties properties = services.getSessionProperties();
+		final String arrayName = properties.getArrayName();
 		try {
-			final String arrayCompName = NameTranslator.arrayToComponentName(properties.getArrayName());
+			final String arrayCompName = NameTranslator.arrayToComponentName(arrayName);
 		} catch (TranslationException e) {
 			e.printStackTrace();
 		}
-		final String arrayName     = properties.getArrayName();
 		
 		arrayAvailable();
 		modelsAvailable();
@@ -124,6 +126,19 @@ public abstract class AbstractArrayPanel extends JPanel
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
 					String.format("Cannot connect to project data - %s", e.getMessage()),
+					"Initialisation Error,",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		try {
+			array = new DelegatedArray(
+					null,
+					null,
+					null);
+		} catch (Exception e) {
+			array = null;
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					String.format("Cannot connect to array - %s", e.getMessage()),
 					"Initialisation Error,",
 					JOptionPane.ERROR_MESSAGE);
 		}
