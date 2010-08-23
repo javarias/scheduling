@@ -8,5 +8,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
 	<classpathentry kind="lib" path="lib/SchedulingArrayExceptions.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
 	<classpathentry kind="output" path="object/SchedulingArrayImpl"/>
 </classpath>

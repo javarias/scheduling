@@ -6,5 +6,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JACORB"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
