@@ -40,7 +40,7 @@
 		<property name="user" value="sa" />
 		<property name="password" value="" />
 		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
-		<property name="jdbcUrl" value="jdbc:hsqldb:file:/home/almaproc/APRC/tmp/hsqldb/data_model" /> 
+		<property name="jdbcUrl" value="jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model" /> 
         <property name="initialPoolSize" value="5" />
 		<property name="maxPoolSize" value="20" />
 		<property name="minPoolSize" value="1" />
@@ -167,27 +167,15 @@
 	</bean>
 	
 	<!--  RMI Client -->
-	<bean id="obsProjectDataLoaderClient"
-		class="alma.scheduling.dataload.DataLoaderClient">
-		<property name="obsProjectDataLoader" ref="obsProjectLoadingService"/>
+	<bean id="remoteConsoleService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+    	<property name="serviceUrl" value="rmi://localhost:1099/aprcSimConsoleService"/>
+    	<property name="serviceInterface" value="alma.scheduling.psm.cli.RemoteConsole"/>
 	</bean>
 	
-	<bean id="obsProjectLoadingService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
-    	<property name="serviceUrl" value="rmi://localhost:1099/obsProjectDataLoader"/>
-    	<property name="serviceInterface" value="alma.scheduling.dataload.DataLoader"/>
-	</bean>
-	
-	<!--  RMI Exporting -->
-	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
-		<property name="serviceName" value="obsProjectLoadingService"/>
-		<property name="service" ref="obsProjectDataLoader"/>
-		<property name="serviceInterface" value="alma.scheduling.dataload.DataLoader"/>
-	</bean>
-
 	<!-- DataLoaders Beans -->
 	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-		<!--    <property name="xmlDao" ref="xmlObsProjectDao"/> -->
-		<property name="archProjectDao" ref="archProjectDao" />
+		    <property name="xmlDao" ref="xmlObsProjectDao"/> 
+		<!-- <property name="archProjectDao" ref="archProjectDao" /> -->
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	
@@ -201,7 +189,7 @@
     <bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
-				<ref bean="obsProjectDataLoaderClient"/>
+				<ref bean="obsProjectDataLoader"/>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao"/>
 					<property name="xmlDao" ref="xmlExecDao"/>
