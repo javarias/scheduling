@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockState.java,v 1.2 2010/04/12 20:53:35 rhiriart Exp $"
+ * "@(#) $Id: SchedBlockState.java,v 1.3 2010/08/23 21:33:26 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 public enum SchedBlockState {
     READY,
     RUNNING,
-    FULLY_OBSERVED
+    FULLY_OBSERVED,
+    CANCELED
 }

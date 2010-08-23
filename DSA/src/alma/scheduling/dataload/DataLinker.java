@@ -15,6 +15,7 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
@@ -94,6 +95,8 @@ public class DataLinker implements DataLoader {
             sb.setScienceScore(p.getScienceScore());
             sb.setLetterGrade(p.getLetterGrade());
             sb.setScienceRank(p.getScienceRank());
+            if(p.getStatus().compareTo("CANCELLED") == 0)
+                sb.getSchedBlockControl().setState(SchedBlockState.CANCELED);
             sbDao.saveOrUpdate(sb);
         }
         
