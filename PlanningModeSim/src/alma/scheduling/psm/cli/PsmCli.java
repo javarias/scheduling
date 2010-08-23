@@ -31,20 +31,23 @@ public class PsmCli {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-        Console console = Console.getConsole();
-        console.run(args);
-        // Wait until HSQLDB thread is finished to do his job
-        // This case applies when the simulator is using HSQLDB in File mode
-        if(Thread.activeCount() > 1){
-            try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (args[0].compareTo("remote") == 0) {
+			RMIServer server = new RMIServer();
+			server.start();
+		} else {
+			Console console = Console.getConsole();
+			console.run(args);
+			// Wait until HSQLDB thread is finished to do his job
+			// This case applies when the simulator is using HSQLDB in File mode
+			if (Thread.activeCount() > 1) {
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-        }
-        System.exit(0);	// Exit code 0: normal termination
-
+		}
+		System.exit(0); // Exit code 0: normal termination
 	}
-
 }

@@ -110,6 +110,11 @@ public class Console {
         	simulator.setToBeInterrupted(true);
         	simulator.run();
         }
+        else if (args[0].compareTo("remoteFullLoad") == 0){
+        	InputActions inputActions = new InputActions(workDir);
+        	inputActions.setVerboseLvl(verboseLvl);
+        	inputActions.remoteFullLoad();
+        }
         else if (args[0].compareTo("report")==0){
         	ReportGenerator reportGenerator = new ReportGenerator( workDir );
         		if(args.length == 1)

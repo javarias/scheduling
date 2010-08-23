@@ -25,6 +25,8 @@
 
 package alma.scheduling.psm.sim;
 
+import java.rmi.RemoteException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -35,6 +37,7 @@ import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
+import alma.scheduling.psm.cli.RemoteConsole;
 import alma.scheduling.psm.util.PsmContext;
 
 public class InputActions extends PsmContext {
@@ -55,7 +58,7 @@ public class InputActions extends PsmContext {
             		"alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
             System.exit(3); // Exit code 3: No necessary bean in scheduling context file.
         }
-        for(int i = 0; i < loadersNames.length; i++){
+        for(int i = 0; i < loadersNames.length ; i++){
             DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
             try {
 				loader.load();
@@ -99,7 +102,12 @@ public class InputActions extends PsmContext {
         }
         for(int i = 0; i < loadersNames.length; i++) {
         	DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
-            loader.clear();
+            try {
+				loader.clear();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
         configDao.deleteAll();
@@ -116,6 +124,20 @@ public class InputActions extends PsmContext {
     public boolean hasSimulationRan(){
     	return false;
     }
+
+	public void remoteFullLoad() {
+		ApplicationContext ctx = getApplicationContext();
+		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
+		String[] args= new String[1];
+		args[0]="fullload";
+		try {
+			console.runTask(args);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
     
     
 
