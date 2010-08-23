@@ -46,12 +46,13 @@ public class Ph1mSynchronizer extends PsmContext {
     private Ph1mDao ph1mDao;
     private ObsProjectDao obsProjDao;
     private DataLoader linker;
+    private ApplicationContext simCtx;
     
     public Ph1mSynchronizer(String workDir){
     	super(workDir);
     	
         //Scheduling context init
-        ApplicationContext simCtx = new FileSystemXmlApplicationContext( this.getContextFile() );
+        simCtx = new FileSystemXmlApplicationContext( this.getContextFile() );
         obsProjDao = (ObsProjectDao) simCtx.getBean("obsProjectDao");
         linker = (DataLoader) simCtx.getBean("dataLinker");
         
@@ -85,7 +86,8 @@ public class Ph1mSynchronizer extends PsmContext {
         if (prop.getAssessment().getAprcScore() == null)
             throw new NullPointerException("aprc Score is null");
         p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
-        
+        if(prop.getCancelled())
+        	p.setStatus("CANCELLED");
         obsProjDao.saveOrUpdate(p);
     }
     
