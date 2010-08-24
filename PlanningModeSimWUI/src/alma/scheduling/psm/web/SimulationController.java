@@ -60,7 +60,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
 		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
-		inputActions.fullLoad();
+		inputActions.remoteFullLoad();
 		System.out.println("Fullload finished");
 	}
 	
@@ -69,7 +69,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
 		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
-		inputActions.load();
+		inputActions.remoteLoad();
 		System.out.println("Fullload finished");
 	}
 	

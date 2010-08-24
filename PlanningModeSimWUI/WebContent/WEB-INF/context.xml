@@ -18,7 +18,7 @@
 		</property>
 		<property name="url">
 <!--			<value>jdbc:hsqldb:mem:data_model</value> -->
- 			<value>jdbc:hsqldb:file:/home/ahoffsta/.aprc/psmWUI/data_model</value>
+ 			<value>jdbc:hsqldb:file:/export/home/griffin/javarias/APRC/tmp/hsqldb/data_model</value>
 <!--   		<value>jdbc:hsqldb:hsql://localhost:8090/data_model</value> -->
 <!--            <value>jdbc:oracle:thin:@localhost:1521:xe</value> -->
 		</property>
@@ -40,12 +40,12 @@
 		<property name="user" value="sa" />
 		<property name="password" value="" />
 		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
-		<property name="jdbcUrl" value="jdbc:hsqldb:file:/var/tmp/aprc/data_model" /> 
+		<property name="jdbcUrl" value="jdbc:hsqldb:file:/home/almaproc/APRC/tmp/hsqldb/data_model" /> 
         <property name="initialPoolSize" value="5" />
 		<property name="maxPoolSize" value="20" />
 		<property name="minPoolSize" value="1" />
 		<property name="acquireIncrement" value="1" />
-		<property name="acquireRetryAttempts" value="0" />
+		<property name="acquireRetryAttempts" value="5" />
 	</bean> 
 
 	<!-- Hibernate SessionFactory -->
@@ -161,7 +161,24 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
+	<!-- Archive/XMLStore Data Loader -->
+	<bean id="archProjectDao"
+		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
+	</bean>
+	
+	<!--  RMI Client -->
+	<bean id="remoteConsoleService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+    	<property name="serviceUrl" value="rmi://localhost:1099/aprcSimConsoleService"/>
+    	<property name="serviceInterface" value="alma.scheduling.psm.cli.RemoteConsole"/>
+	</bean>
+	
 	<!-- DataLoaders Beans -->
+	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
+		<!-- <property name="xmlDao" ref="xmlObsProjectDao"/> -->
+		<!-- <property name="archProjectDao" ref="archProjectDao" /> -->
+		<property name="dao" ref="obsProjectDao" />
+	</bean>
+	
     <bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
         <property name="sbDao" ref="sbDao"/>
         <property name="execDao" ref="execDao"/>
@@ -172,10 +189,7 @@
     <bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
-				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-					<property name="xmlDao" ref="xmlObsProjectDao"/>
-					<property name="dao" ref="obsProjectDao"/>
-				</bean>
+				<ref bean="obsProjectDataLoader"/>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao"/>
 					<property name="xmlDao" ref="xmlExecDao"/>
@@ -184,14 +198,10 @@
 					<property name="dao" ref="observatoryDao"/>
 					<property name="xmlDao" ref="xmlObservatoryDao"/>
 				</bean>
-				<bean class="alma.scheduling.dataload.OutputDataLoader">
-                    <property name="outDao" ref="outDao"/>
-                </bean>
 				<ref bean="dataLinker"/>
 			</list>
 		</property>
 	</bean>
-
 	
     <bean id="fullDataUnloader" class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
 	    <property name="xmlDao" ref="xmlObsProjectDao"/>
