@@ -25,6 +25,7 @@
 
 package alma.scheduling.psm.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -107,18 +108,28 @@ public class Ph1mSynchronizer extends PsmContext {
         }
     }
     
-    public void listPh1mProposals(){
+    public List<ProposalComparison> listPh1mProposals(){
+    	ArrayList<ProposalComparison> retList = new ArrayList<ProposalComparison>();
         System.out.println("Project UID\tAPRC Score\tAPRC Rank");
         List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
+        ProposalComparison propC = null;
         for(ObsProject p: prjs){
+        	propC = new ProposalComparison();
             Proposal prop = ph1mDao.findProposalByArchiveUid(p.getUid());
             if(prop == null)
                 continue;
+            propC.setEntityID(p.getUid());
+            propC.setPh1mScore(prop.getAssessment().getAprcScore());
+            propC.setLocalScore(p.getScienceScore());
+            propC.setPh1mRank(prop.getAssessment().getAprcRank());
+            propC.setLocalRank(p.getScienceRank());
+            retList.add(propC);
             String line =p.getUid() + "\t";
             line += prop.getAssessment().getAprcScore() + "\t";
             line += prop.getAssessment().getAprcRank();
             System.out.println(line);
         }
+        return retList;
     }
     
     
