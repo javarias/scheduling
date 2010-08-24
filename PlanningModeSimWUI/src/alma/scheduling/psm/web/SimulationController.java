@@ -87,7 +87,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
 		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
-		inputActions.clean();
+		inputActions.remoteClean();
 		System.out.println("Clean finished");
 	}
 	
