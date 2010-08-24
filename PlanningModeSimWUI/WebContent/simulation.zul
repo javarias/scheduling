@@ -66,21 +66,21 @@
 												width="100%" id="buttonLoad" />
 										</row>
 										<row>
-											<button label="Unload simulation data"
-												width="100%" id="buttonUnload" />
-										</row>
-										<row>
-											<button label="Unload all data"
+											<button label="Clean data"
 												width="100%" id="buttonClean" />
 										</row>
+<!--										<row>
+											<button label="Unload simulation data"
+												width="100%" id="buttonUnload" />
+										</row>-->
 										<row>
 											<button
 												label="Run simulation" width="100%" onClick="startServerpush()" />
 										</row>
-										<row>
+<!--  									<row>
 											<button
 												label="Generate reports" width="100%" id="buttonReports" />
-										</row>
+										</row> -->	
 									</rows>
 								</grid>
 							</panelchildren>
