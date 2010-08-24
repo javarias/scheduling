@@ -147,6 +147,20 @@ public class InputActions extends PsmContext {
 		}
 		
 	}
+	
+	public void remoteClean() {
+		ApplicationContext ctx = getApplicationContext();
+		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
+		String[] args= new String[1];
+		args[0]="clean";
+		try {
+			console.runTask(args);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
     
     
 
