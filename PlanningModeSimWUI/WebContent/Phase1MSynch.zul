@@ -1,0 +1,51 @@
+<?page title="Phase1M Tool Synchronization" contentType="text/html;charset=UTF-8"?>
+<zk>
+<window title="Phase1M Tool Synchronization" border="normal" 
+height="600px" width="600px" closable="true" maximizable="true" 
+sizable="true" onOpen="fillGrid()">
+	<borderlayout>
+		<north></north>
+		<center flex="true">
+			<grid fixedLayout="true" id="grid">
+				<auxhead>
+					<auxheader label="Local Data" colspan="3" />
+					<auxheader label="Ph1M Data" colspan="3" />
+				</auxhead>
+				<columns>
+					<column label="Entity ID" />
+					<column label="Score" />
+					<column label="Rank" />
+					<column label="Entity ID" />
+					<column label="Score" />
+					<column label="Rank" />
+				</columns>
+				<rows></rows>
+			</grid>
+		</center>
+	</borderlayout>
+	<zscript><![CDATA[
+	import alma.scheduling.psm.util.Ph1mSynchronizer;
+	import java.util.List;
+	import alma.scheduling.psm.util.ProposalComparison;
+	
+	void fillGrid() {
+		String workDir = System.getenv("APRC_WORK_DIR");
+		Ph1mSynchronizer ph1mSync = new Ph1mSynchronizer(workDir);
+		List<ProposalComparison> propList = ph1mSync.listPh1mProposals();
+		String[][] model = new String[propList.size()][6];
+		for(int i = 0; i < propList.size(); i++){
+			model[i][0]=propList.get(i).getEntityID();
+			model[i][1]=Double.toString(propList.get(i).getLocalScore());
+			model[i][3]=Integer.toString(propList.get(i).getLocalRank());
+			model[i][3]=propList.get(i).getEntityID();
+			model[i][4]=Double.toString(propList.get(i).getPh1mScore());
+			model[i][5]=Integer.toString(propList.get(i).getPh1mRank());
+		}
+		
+		 ListModel strset = new SimpleListModel(model);
+		 grid.setModel(strset);
+		 grid.setRowRenderer(new alma.scheduling.psm.web.Ph1MSychGridRowRenderer());
+	}
+]]></zscript>
+</window>
+</zk>
