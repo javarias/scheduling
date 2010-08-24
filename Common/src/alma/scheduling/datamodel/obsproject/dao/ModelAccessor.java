@@ -19,9 +19,7 @@ package alma.scheduling.datamodel.obsproject.dao;
 
 import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -35,7 +33,6 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
 import alma.lifecycle.persistence.StateArchive;
-import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
