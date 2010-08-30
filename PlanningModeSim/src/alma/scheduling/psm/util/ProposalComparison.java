@@ -1,6 +1,10 @@
 package alma.scheduling.psm.util;
 
-public class ProposalComparison {
+import java.io.Serializable;
+
+public class ProposalComparison implements Serializable{
+	
+	private static final long serialVersionUID = -1551287987856008670L;
 	
 	private String entityID;
 	private double ph1mScore;
