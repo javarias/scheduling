@@ -24,13 +24,13 @@ sizable="true" onOpen="fillGrid()">
 		</center>
 	</borderlayout>
 	<zscript><![CDATA[
+	import org.zkoss.zkplus.spring.SpringUtil;
 	import alma.scheduling.psm.util.Ph1mSynchronizer;
 	import java.util.List;
 	import alma.scheduling.psm.util.ProposalComparison;
 	
 	void fillGrid() {
-		String workDir = System.getenv("APRC_WORK_DIR");
-		Ph1mSynchronizer ph1mSync = new Ph1mSynchronizer(workDir);
+		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
 		List<ProposalComparison> propList = ph1mSync.listPh1mProposals();
 		String[][] model = new String[propList.size()][6];
 		for(int i = 0; i < propList.size(); i++){

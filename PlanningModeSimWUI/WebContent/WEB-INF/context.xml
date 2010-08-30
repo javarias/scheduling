@@ -166,16 +166,21 @@
 		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
 	</bean>
 	
-	<!--  RMI Client -->
+	<!--  RMI Clients -->
 	<bean id="remoteConsoleService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
     	<property name="serviceUrl" value="rmi://localhost:1099/aprcSimConsoleService"/>
     	<property name="serviceInterface" value="alma.scheduling.psm.cli.RemoteConsole"/>
 	</bean>
 	
+	<bean id="ph1mSynchronizerService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+    	<property name="serviceUrl" value="rmi://localhost:1099/Ph1mSynchronizerService"/>
+    	<property name="serviceInterface" value="alma.scheduling.psm.util.Ph1mSynchronizer"/>
+	</bean>
+	
 	<!-- DataLoaders Beans -->
 	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
 		<!-- <property name="xmlDao" ref="xmlObsProjectDao"/> -->
-		<!-- <property name="archProjectDao" ref="archProjectDao" /> -->
+		<property name="archProjectDao" ref="archProjectDao" />
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	
