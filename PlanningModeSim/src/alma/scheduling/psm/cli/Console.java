@@ -26,10 +26,10 @@
 package alma.scheduling.psm.cli;
 
 import java.io.File;
+import java.rmi.RemoteException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import alma.scheduling.algorithm.VerboseLevel;
@@ -37,6 +37,7 @@ import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.Simulator;
 import alma.scheduling.psm.util.Ph1mSynchronizer;
+import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
 import alma.scheduling.psm.util.PsmContext;
 
 public class Console {
@@ -146,12 +147,22 @@ public class Console {
         }
         else if(args[0].compareTo("ph1m") == 0){
             if(args[1].compareTo("list") == 0){
-            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizer(workDir); 
-            	ph1mSychronizer.listPh1mProposals();
+            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
+            	try {
+					ph1mSychronizer.listPh1mProposals();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }                
             else if(args[1].compareTo("sync") == 0){
-            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizer(workDir); 
-            	ph1mSychronizer.synchPh1m();
+            	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
+            	try {
+					ph1mSychronizer.synchPh1m();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         }
         else if (args[0].compareTo("go")==0){
