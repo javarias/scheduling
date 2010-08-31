@@ -1,8 +1,10 @@
 package alma.scheduling.psm.web;
 
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zk.ui.util.Initiator;
 import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.ListModel;
 import org.zkoss.zul.SimpleListModel;
@@ -12,9 +14,11 @@ import alma.scheduling.psm.util.Ph1mSynchronizer;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
+
 import alma.scheduling.psm.util.ProposalComparison;
 
-public class Ph1MSynchController extends GenericForwardComposer {
+public class Ph1MSynchController extends GenericForwardComposer implements Initiator{
 
 	
 	/**
@@ -54,6 +58,18 @@ public class Ph1MSynchController extends GenericForwardComposer {
 			 return;
 		 grid.setModel(strset);
 		 grid.setRowRenderer(new alma.scheduling.psm.web.Ph1MSychGridRowRenderer());
+		
+	}
+
+	@Override
+	public void doAfterCompose(Page page) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doInit(Page page, Map args) throws Exception {
+		// TODO Auto-generated method stub
 		
 	}
 
