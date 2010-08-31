@@ -7,7 +7,7 @@ height="600px" width="600px" closable="true" maximizable="true"
 sizable="true" onCreate="fillGrid()">
 	<borderlayout id="layout">
 		<north>
-			<button id="checkChangesButton" label="Check Ph1M" onClick="fillGrid()"/>
+			<button id="synchPh1mButton" label="Synch with Ph1M Tool" disabled="true" onClick="ph1mSyncronize()"/>
 		</north>
 		<center flex="true" id="center">
 			<grid fixedLayout="true" id="grid">
@@ -38,7 +38,7 @@ sizable="true" onCreate="fillGrid()">
 		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
 		List propList;
 		try{
-			propList= ph1mSync.listPh1mProposals();
+			propList=ph1mSync.listPh1mProposals();
 		}catch(java.rmi.RemoteException ex){
 			ex.printStackTrace();
 			return;
@@ -65,6 +65,15 @@ sizable="true" onCreate="fillGrid()">
 		 ListModel strset = new SimpleListModel(model);
 		 grid.setModel(strset);
 		 grid.setRowRenderer(new alma.scheduling.psm.web.Ph1MSychGridRowRenderer());
+		 if(propList.size() > 0)
+			 synchPh1mButton.setDisabled(false);
+	}
+	
+	public void ph1mSyncronize(){
+		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
+		ph1mSync.synchPh1m();
+		fillGrid();
+		synchPh1mButton.setDisabled(true);
 	}
 ]]></zscript>
 </window>
