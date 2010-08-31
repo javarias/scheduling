@@ -4,12 +4,12 @@
 <zk>
 <window id="windowPh1MSynch" title="Phase1M Tool Synchronization" border="normal" 
 height="600px" width="600px" closable="true" maximizable="true" 
-sizable="true" apply="${sessionScope.ph1mSynchController}" forward="onOpen=onOpen$windowPh1MSynch">
-	<borderlayout>
+sizable="true" onCreate="fillGrid()">
+	<borderlayout id="layout">
 		<north>
-			<button id="checkChangesButton" label="Check Ph1M" />
+			<button id="checkChangesButton" label="Check Ph1M" onClick="fillGrid()"/>
 		</north>
-		<center flex="true">
+		<center flex="true" id="center">
 			<grid fixedLayout="true" id="grid">
 				<auxhead>
 					<auxheader label="Local Data" colspan="3" />
@@ -27,20 +27,36 @@ sizable="true" apply="${sessionScope.ph1mSynchController}" forward="onOpen=onOpe
 			</grid>
 		</center>
 	</borderlayout>
-<!--  <zscript><![CDATA[
+  <zscript><![CDATA[
 	import org.zkoss.zkplus.spring.SpringUtil;
 	import alma.scheduling.psm.util.Ph1mSynchronizer;
 	import java.util.List;
+	import java.util.ArrayList;
 	import alma.scheduling.psm.util.ProposalComparison;
 	
 	void fillGrid() {
 		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
-		List<ProposalComparison> propList = ph1mSync.listPh1mProposals();
+		List propList;
+		try{
+			propList= ph1mSync.listPh1mProposals();
+		}catch(java.rmi.RemoteException ex){
+			ex.printStackTrace();
+			return;
+		}
+//		ArrayList propList;
+//		propList = new ArrayList();
+//		ProposalComparison pc = new ProposalComparison();
+//		pc.setEntityID("uid://lala/123");
+//		pc.setLocalRank(1);
+//		pc.setLocalScore(10);
+//		pc.setPh1mRank(2);
+//		pc.setPh1mScore(8);
+//		propList.add(pc);
 		String[][] model = new String[propList.size()][6];
 		for(int i = 0; i < propList.size(); i++){
 			model[i][0]=propList.get(i).getEntityID();
 			model[i][1]=Double.toString(propList.get(i).getLocalScore());
-			model[i][3]=Integer.toString(propList.get(i).getLocalRank());
+			model[i][2]=Integer.toString(propList.get(i).getLocalRank());
 			model[i][3]=propList.get(i).getEntityID();
 			model[i][4]=Double.toString(propList.get(i).getPh1mScore());
 			model[i][5]=Integer.toString(propList.get(i).getPh1mRank());
@@ -50,6 +66,6 @@ sizable="true" apply="${sessionScope.ph1mSynchController}" forward="onOpen=onOpe
 		 grid.setModel(strset);
 		 grid.setRowRenderer(new alma.scheduling.psm.web.Ph1MSychGridRowRenderer());
 	}
-]]></zscript> -->	
+]]></zscript>
 </window>
 </zk>
