@@ -9,6 +9,8 @@ import org.zkoss.zul.SimpleListModel;
 import org.zkoss.zul.api.Grid;
 
 import alma.scheduling.psm.util.Ph1mSynchronizer;
+
+import java.rmi.RemoteException;
 import java.util.List;
 import alma.scheduling.psm.util.ProposalComparison;
 
@@ -22,7 +24,13 @@ public class Ph1MSynchController extends GenericForwardComposer {
 	
 	public void onOpen$windowPh1MSynch(Event event){
 		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
-		List<ProposalComparison> propList = ph1mSync.listPh1mProposals();
+		List<ProposalComparison> propList = null;
+		try {
+			propList = ph1mSync.listPh1mProposals();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return;
+		}
 		String[][] model = new String[propList.size()][6];
 		for(int i = 0; i < propList.size(); i++){
 			model[i][0]=propList.get(i).getEntityID();
