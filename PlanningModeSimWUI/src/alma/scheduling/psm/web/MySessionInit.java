@@ -39,7 +39,6 @@ public class MySessionInit implements SessionInit {
 		session.setAttribute("configurationController", new ConfigurationController());
 		session.setAttribute("simulationController", new SimulationController());
 		session.setAttribute("reportController", new ReportsController());
-		session.setAttribute("ph1mSynchController", new Ph1MSynchController());
 		return;
 	}
 }
