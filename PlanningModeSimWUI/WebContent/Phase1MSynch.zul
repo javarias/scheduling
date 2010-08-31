@@ -2,11 +2,13 @@
 <?page title="Phase1M Tool Synchronization" contentType="text/html;charset=UTF-8"?>
 <?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./windowPh1MSynch" ?>
 <zk>
-<window title="Phase1M Tool Synchronization" border="normal" id="windowPh1MSynch"
+<window id="windowPh1MSynch" title="Phase1M Tool Synchronization" border="normal" 
 height="600px" width="600px" closable="true" maximizable="true" 
-sizable="true" apply="${sessionScope.ph1mSynchController}">
+sizable="true" apply="${sessionScope.ph1mSynchController}" forward="onOpen=onOpen$windowPh1MSynch">
 	<borderlayout>
-		<north></north>
+		<north>
+			<button id="checkChangesButton" label="Check Ph1M" />
+		</north>
 		<center flex="true">
 			<grid fixedLayout="true" id="grid">
 				<auxhead>

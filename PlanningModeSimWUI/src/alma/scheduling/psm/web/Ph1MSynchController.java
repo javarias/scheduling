@@ -26,7 +26,8 @@ public class Ph1MSynchController extends GenericForwardComposer implements Initi
 	 */
 	private static final long serialVersionUID = 123786487338L;
 	
-	public void onOpen$windowPh1MSynch(Event event){
+	public void onClick$checkChangesButton(Event event){
+		System.out.println("Entering onOpen$windowPh1MSynch");
 		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
 		List<ProposalComparison> propList = null;
 		try {
