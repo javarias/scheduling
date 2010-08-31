@@ -115,7 +115,22 @@ public class SimulationController extends GenericForwardComposer implements Init
 //			runningWindow.doOverlapped();
 //		}
 //	}
-
+//buttonPh1mSynch
+	public void onClick$buttonPh1mSynch(Event event){
+		Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	Window ph1mSychToolWindow = (Window)Executions.createComponents("Phase1MSynch.zul", mainWindow, null);
+    	try {
+    		ph1mSychToolWindow.doModal();
+		} catch (SuspendNotAllowedException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void doAfterCompose(Page arg0) throws Exception {
 		System.out.println("SimulatorController.doAfterCompose()");

@@ -75,9 +75,15 @@
 										</row>-->
 										<row>
 											<button
-												label="Run simulation" width="100%" onClick="startServerpush()" />
+												label="Run simulation" width="100%"
+												onClick="startServerpush()" />
 										</row>
-<!--  									<row>
+										<row>
+											<button
+												label="Ph1m Synchronization Tool" width="100%"
+												id="buttonPh1mSynch" />
+										</row>
+										<!--  									<row>
 											<button
 												label="Generate reports" width="100%" id="buttonReports" />
 										</row> -->	
