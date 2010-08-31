@@ -1,8 +1,10 @@
+<?init class="alma.scheduling.psm.web.Ph1MSynchController"?>
 <?page title="Phase1M Tool Synchronization" contentType="text/html;charset=UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./windowPh1MSynch" ?>
 <zk>
-<window title="Phase1M Tool Synchronization" border="normal" 
+<window title="Phase1M Tool Synchronization" border="normal" id="windowPh1MSynch"
 height="600px" width="600px" closable="true" maximizable="true" 
-sizable="true" onOpen="fillGrid()">
+sizable="true" apply="${sessionScope.ph1mSynchController}">
 	<borderlayout>
 		<north></north>
 		<center flex="true">
@@ -23,7 +25,7 @@ sizable="true" onOpen="fillGrid()">
 			</grid>
 		</center>
 	</borderlayout>
-	<zscript><![CDATA[
+<!--  <zscript><![CDATA[
 	import org.zkoss.zkplus.spring.SpringUtil;
 	import alma.scheduling.psm.util.Ph1mSynchronizer;
 	import java.util.List;
@@ -46,6 +48,6 @@ sizable="true" onOpen="fillGrid()">
 		 grid.setModel(strset);
 		 grid.setRowRenderer(new alma.scheduling.psm.web.Ph1MSychGridRowRenderer());
 	}
-]]></zscript>
+]]></zscript> -->	
 </window>
 </zk>
