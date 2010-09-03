@@ -40,10 +40,11 @@
 		<property name="user" value="sa" />
 		<property name="password" value="" />
 		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
-		<property name="jdbcUrl" value="jdbc:hsqldb:file:/home/almaproc/APRC/tmp/hsqldb/data_model" /> 
+		<property name="jdbcUrl" value="jdbc:hsqldb:hsql://localhost:8090/data_model" /> 
         <property name="initialPoolSize" value="5" />
 		<property name="maxPoolSize" value="20" />
 		<property name="minPoolSize" value="1" />
+		<property name="maxIdleTime" value="5"/>
 		<property name="acquireIncrement" value="1" />
 		<property name="acquireRetryAttempts" value="5" />
 	</bean> 
@@ -74,13 +75,13 @@
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.transaction.factory_class"
 					>org.hibernate.transaction.JDBCTransactionFactory</prop>
-				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.connection.autocommit">true</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.cache.use_query_cache">true</prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
 				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
 				<prop key="hibernate.transaction.flush_before_completion">true</prop>
-				<prop key="hibernate.transaction.auto_close_session">false</prop>
+				<prop key="hibernate.transaction.auto_close_session">true</prop>
 				<prop key="hibernate.max_fetch_depth">5</prop>
 				<prop key="hibernate.default_batch_fetch_size">16</prop>
 				<prop key="hibernate.jdbc.batch_size">25</prop>
@@ -179,8 +180,8 @@
 	
 	<!-- DataLoaders Beans -->
 	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-		<!-- <property name="xmlDao" ref="xmlObsProjectDao"/> -->
-		<property name="archProjectDao" ref="archProjectDao" />
+		<property name="xmlDao" ref="xmlObsProjectDao"/>
+		<!--  <property name="archProjectDao" ref="archProjectDao" /> -->
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	

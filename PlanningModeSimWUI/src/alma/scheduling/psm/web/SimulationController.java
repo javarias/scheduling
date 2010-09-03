@@ -59,7 +59,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println("Load button pressed, starting fullload");
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
-		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
+		InputActions inputActions = InputActions.getInstance(( (String)Sessions.getCurrent().getAttribute("workDir") ));
 		inputActions.remoteFullLoad();
 		System.out.println("Fullload finished");
 	}
@@ -68,7 +68,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println("Load button pressed, starting fullload");
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
-		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
+		InputActions inputActions = InputActions.getInstance(( (String)Sessions.getCurrent().getAttribute("workDir") ));
 		inputActions.remoteLoad();
 		System.out.println("Fullload finished");
 	}
@@ -77,7 +77,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println("Unload button pressed, starting unload");
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
-		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
+		InputActions inputActions = InputActions.getInstance(( (String)Sessions.getCurrent().getAttribute("workDir") ));
 		inputActions.unload();
 		System.out.println("Fullload finished");
 	}
@@ -86,7 +86,7 @@ public class SimulationController extends GenericForwardComposer implements Init
 		System.out.println("Clean button pressed, starting clean");
 		System.out.println( (String)Sessions.getCurrent().getAttribute("workDir") );
 		
-		InputActions inputActions = new InputActions( (String)Sessions.getCurrent().getAttribute("workDir") );
+		InputActions inputActions = InputActions.getInstance(( (String)Sessions.getCurrent().getAttribute("workDir") ));
 		inputActions.remoteClean();
 		System.out.println("Clean finished");
 	}
