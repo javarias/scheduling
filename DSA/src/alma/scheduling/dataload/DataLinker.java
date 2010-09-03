@@ -1,5 +1,6 @@
 package alma.scheduling.dataload;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.ScienceGradeConfig.InvalidScienceGradeConfig;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.PI;
+import alma.scheduling.datamodel.executive.PIMembership;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
@@ -91,6 +93,18 @@ public class DataLinker implements DataLoader {
         for(SchedBlock sb: sbs){
             System.out.println("sb.getPiName() = " + sb.getPiName());
             PI pi = execDao.getPIFromEmail(sb.getPiName());
+            if(pi == null){
+                pi = new PI();
+                pi.setEmail(sb.getPiName());
+                pi.setEmail(sb.getPiName());
+                pi.setPIMembership(new HashSet<PIMembership>());
+                PIMembership pim = new PIMembership();
+                pim.setExecutive(execDao.getAllExecutive().get(0));
+                pim.setMembershipPercentage(1);
+                pi.getPIMembership().add(pim);
+                System.out.println("WARNING: Adding new PI: sb.getPiName()");
+                execDao.saveOrUpdate(pi);
+            }
             sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
             ObsProject p = obsPrjDao.getObsProject(sb);
             sb.setScienceScore(p.getScienceScore());
