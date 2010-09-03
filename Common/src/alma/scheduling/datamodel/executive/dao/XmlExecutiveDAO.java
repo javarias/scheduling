@@ -24,4 +24,6 @@ public interface XmlExecutiveDAO {
 
     public ExecutivePercentage getExecutivePercentage(Executive ex,
             ObservingSeason os);
+    
+    public void deleteAll();
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObservatoryDao.java,v 1.1 2010/03/12 02:11:42 rhiriart Exp $"
+ * "@(#) $Id: XmlObservatoryDao.java,v 1.2 2010/09/03 16:47:05 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory.dao;
 
@@ -36,4 +36,5 @@ public interface XmlObservatoryDao {
     
     List<ArrayConfiguration> getAllArrayConfigurations();
     
+    void deleteAll();
 }

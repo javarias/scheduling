@@ -54,12 +54,13 @@
 	</class>
 		
 	<class name="PI" table="PI">
-		<id name="email" column="EMAIL" type="string">
-			<generator class="assigned"/>
+		<id name="id" column="ID" type="long">
+			<generator class="native"/>
 		</id>
+		<property name="email" column="EMAIL" type="string"/>
 		<property name="name" column="NAME" type="string"/>
 		<set name="PIMembership" table="PI_MEMBERSHIP" cascade="save-update,lock, delete, delete-orphan">
-			<key column="PI_EMAIL" />
+			<key column="PI_ID" />
 			<one-to-many class="PIMembership" />
 		</set>
 	</class>

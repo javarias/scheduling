@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.13 2010/08/18 16:31:10 dclarke Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.14 2010/09/03 16:47:15 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -44,24 +44,33 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     @Override
     public <T> void delete(T obj) {
         getHibernateTemplate().delete(obj);
+        getHibernateTemplate().evict(obj);
     }
 
     @Override
+    @Transactional
     public <T> void deleteAll(Collection<T> objs) {
         getHibernateTemplate().deleteAll(objs);
+        getHibernateTemplate().flush();
+        for (T obj : objs) {
+            getHibernateTemplate().evict(obj);
+        }
     }
     
     @Override
+    @Transactional
     public <T> void saveOrUpdate(T obj) {
         getHibernateTemplate().saveOrUpdate(obj);
+        getHibernateTemplate().flush();
     }
 
     @Override
     @Transactional
     public <T> void saveOrUpdate(Collection<T> objs) {
         getHibernateTemplate().saveOrUpdateAll(objs);
+        getHibernateTemplate().flush();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     @Transactional(readOnly=true)
@@ -69,7 +78,7 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
      * memory during the runtime, but using more the DB access. 
      */
     public <T, PK extends Serializable> T findById(Class<T> obj, PK key) {
-        return (T) getHibernateTemplate().load(obj, key);
+        return (T) getHibernateTemplate().get(obj, key);
         //return (T) getHibernateTemplate().get(obj, key);
     }
 
@@ -90,6 +99,7 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     @Override
     @Transactional(readOnly=true)
     public <T> List<T> findAll(Class<T> obj) {
+        getHibernateTemplate().flush();
         return (List<T>)getHibernateTemplate().find("from " + obj.getName());
     }
 }

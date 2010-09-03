@@ -83,8 +83,9 @@ public class DataLinker implements DataLoader {
             else
                 p.setLetterGrade(ScienceGrade.D);
             i++;
-            obsPrjDao.saveOrUpdate(p);
         }
+        obsPrjDao.saveOrUpdate(prjs);
+        
         
         List<SchedBlock>sbs = sbDao.findAll();
         for(SchedBlock sb: sbs){
@@ -97,8 +98,8 @@ public class DataLinker implements DataLoader {
             sb.setScienceRank(p.getScienceRank());
             if(p.getStatus().compareTo("CANCELLED") == 0)
                 sb.getSchedBlockControl().setState(SchedBlockState.CANCELED);
-            sbDao.saveOrUpdate(sb);
         }
+        sbDao.saveOrUpdate(sbs);
         
         Configuration config = configDao.getConfiguration();
         config.getScienceGradeConfig().setTotalPrj(sbs.size());

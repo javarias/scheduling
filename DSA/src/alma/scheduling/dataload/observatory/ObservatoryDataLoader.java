@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservatoryDataLoader.java,v 1.2 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: ObservatoryDataLoader.java,v 1.3 2010/09/03 16:47:43 javarias Exp $"
  */
 package alma.scheduling.dataload.observatory;
 
@@ -60,6 +60,7 @@ public class ObservatoryDataLoader implements DataLoader {
     @Override
     public void clear() {
         // not very efficient, replace later for a delete SQL command in the DAO
+        xmlDao.deleteAll();
         dao.deleteAll(dao.findAll(AntennaInstallation.class));
         dao.deleteAll(dao.findAll(ArrayConfiguration.class));
         dao.deleteAll(dao.findAll(TelescopeEquipment.class));

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AssemblyContainer.java,v 1.1 2010/03/10 22:31:18 rhiriart Exp $"
+ * "@(#) $Id: AssemblyContainer.java,v 1.2 2010/09/03 16:47:05 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory;
 
@@ -97,5 +97,19 @@ public class AssemblyContainer {
 
     public void setState(AssemblyContainerState state) {
         this.state = state;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (id == null) return false;
+        if ( !(obj instanceof AssemblyContainer)) return false;
+        final AssemblyContainer that = (AssemblyContainer) obj;
+        return this.id.equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return id == null ? System.identityHashCode(this) : id.hashCode();
     }
 }

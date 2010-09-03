@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoader.java,v 1.4 2010/06/01 17:17:30 rhiriart Exp $"
+ * "@(#) $Id: ObsProjectDataLoader.java,v 1.5 2010/09/03 16:47:43 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -71,6 +72,7 @@ public class ObsProjectDataLoader implements DataLoader {
     }
 
     @Override
+    @Transactional
     public void load() {
     	List<ObsProject> projects = null;
     	if (xmlDao != null) {
@@ -78,6 +80,7 @@ public class ObsProjectDataLoader implements DataLoader {
     	} else if (archProjectDao != null) {
     		try {
 				projects = archProjectDao.getAllObsProjects();
+				System.out.println("Project Size: " + projects.size());
 			} catch (DAOException ex) {
 				logger.error("error getting projects from XML Store");
 				ex.printStackTrace();
@@ -86,6 +89,9 @@ public class ObsProjectDataLoader implements DataLoader {
     		logger.error("no DAO to retrieve projects has been setup");
     		return;
     	}
+//    	for(ObsProject p: projects){
+//    	    dao.saveOrUpdate(p);
+//    	}
         dao.saveOrUpdate(projects);
     }
 

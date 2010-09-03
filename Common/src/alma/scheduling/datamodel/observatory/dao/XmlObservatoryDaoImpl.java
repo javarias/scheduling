@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObservatoryDaoImpl.java,v 1.2 2010/04/05 19:53:02 rhiriart Exp $"
+ * "@(#) $Id: XmlObservatoryDaoImpl.java,v 1.3 2010/09/03 16:47:05 javarias Exp $"
  */
 package alma.scheduling.datamodel.observatory.dao;
 
@@ -287,5 +287,14 @@ public class XmlObservatoryDaoImpl implements XmlObservatoryDao {
         if (xmlEquip.getType() == null)
             throw new NullPointerException("type hasn't been defined in " + xmlEquip.getId());
         return AssemblyGroupType.valueOf(xmlEquip.getType().toString());
+    }
+
+    @Override
+    public void deleteAll() {
+//        equipments.clear();
+        equipments = null;
+//        arrayConfigurations.clear();
+        arrayConfigurations = null;
+        
     }
 }

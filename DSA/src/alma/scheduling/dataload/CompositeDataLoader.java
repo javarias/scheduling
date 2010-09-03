@@ -21,13 +21,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CompositeDataLoader.java,v 1.5 2010/08/13 21:50:59 javarias Exp $"
+ * "@(#) $Id: CompositeDataLoader.java,v 1.6 2010/09/03 16:47:43 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 public class CompositeDataLoader implements DataLoader {
@@ -39,7 +41,7 @@ public class CompositeDataLoader implements DataLoader {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly=false)
     public void load() throws Exception {
         for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
             iter.next().load();
@@ -51,6 +53,6 @@ public class CompositeDataLoader implements DataLoader {
     public void clear() {
         for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
             iter.next().clear();
-        }        
+        }
     }
 }

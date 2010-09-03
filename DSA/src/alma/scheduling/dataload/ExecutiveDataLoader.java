@@ -1,8 +1,11 @@
 package alma.scheduling.dataload;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.datamodel.executive.PI;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.executive.dao.XmlExecutiveDAO;
 
@@ -33,11 +36,13 @@ public class ExecutiveDataLoader implements DataLoader {
     public void load() {
         logger.info("Populating the DB with Exec data");
         dbDao.saveObservingSeasonsAndExecutives(xmlDao.getAllObservingSeason(), xmlDao.getAllExecutive());
-        dbDao.saveOrUpdate(xmlDao.getAllPi());
+        List<PI> pis = xmlDao.getAllPi();
+        dbDao.saveOrUpdate(pis);
     }
 
     @Override
     public void clear() {
+        xmlDao.deleteAll();
         dbDao.deleteAll();
     }
 }

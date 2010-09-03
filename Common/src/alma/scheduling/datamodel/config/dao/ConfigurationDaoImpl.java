@@ -80,5 +80,6 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
     @Override
     public void deleteAll() {
         getHibernateTemplate().bulkUpdate("delete Configuration");
+        config = null;
     }
 }

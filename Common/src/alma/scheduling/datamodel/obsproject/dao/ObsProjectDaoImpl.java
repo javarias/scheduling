@@ -1,5 +1,6 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.rmi.Remote;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 @Transactional
-public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao {
+public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, Remote {
 
     private static Logger logger = LoggerFactory.getLogger(ObsProjectDaoImpl.class);
     
