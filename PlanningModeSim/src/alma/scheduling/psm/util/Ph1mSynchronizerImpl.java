@@ -64,8 +64,7 @@ public class Ph1mSynchronizerImpl extends PsmContext implements Ph1mSynchronizer
             Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", ph1mDbConfig);
             
         } catch (DbConfigException e) {
-            e.printStackTrace();
-            System.exit(1);
+            throw new RuntimeException(e);
         }
         ph1mDao = Ph1mContextFactory.INSTANCE.getPh1mDao();
     }

@@ -11,6 +11,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.springframework.context.ApplicationContext;
 
 import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.input.config.generated.Configuration;
 
 public class PsmContext {
@@ -21,6 +22,8 @@ public class PsmContext {
 	protected String contextFile = null;
     protected VerboseLevel verboseLvl = null;
     static private ApplicationContext ctx = null;
+    
+    protected ConfigurationDao configDao = null;
     
 	public PsmContext(String workDir){
 		this.workDir = workDir;

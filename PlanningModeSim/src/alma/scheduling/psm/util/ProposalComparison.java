@@ -11,6 +11,7 @@ public class ProposalComparison implements Serializable{
 	private double localScore;
 	private int ph1mRank;
 	private int localRank;
+	
 	public String getEntityID() {
 		return entityID;
 	}
@@ -41,6 +42,4 @@ public class ProposalComparison implements Serializable{
 	public void setLocalRank(int localRank) {
 		this.localRank = localRank;
 	}
-	
-	
 }

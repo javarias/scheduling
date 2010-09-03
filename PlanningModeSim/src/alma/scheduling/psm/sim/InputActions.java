@@ -30,7 +30,6 @@ import java.rmi.RemoteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import alma.scheduling.dataload.CompositeDataLoader;
 import alma.scheduling.dataload.DataLoader;
@@ -44,7 +43,9 @@ public class InputActions extends PsmContext {
 	
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
-    public InputActions(String workDir) {
+	private static InputActions instance = null;
+		
+    private InputActions(String workDir) {
 		super(workDir);
 	}
 	
@@ -73,7 +74,6 @@ public class InputActions extends PsmContext {
 
     public void load(){
     	ApplicationContext ctx = getApplicationContext();
-        String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
         try {
 			loader.load();
@@ -81,7 +81,7 @@ public class InputActions extends PsmContext {
 			logger.error("Data loading error: load()");
 			e.printStackTrace();
 		}
-        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
         configDao.updateConfig();
     }
 
@@ -93,17 +93,8 @@ public class InputActions extends PsmContext {
 
     public void clean() {
     	ApplicationContext ctx = getApplicationContext();
-        String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
-        String[] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
-        if (cfgBeans.length == 0) {
-        	logger.error(contextFile
-            + " file doesn't contain a bean of the type alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
-            System.exit(3); // Exit code 3: No necessary bean in scheduling context file.
-        }
-        for(int i = 0; i < loadersNames.length; i++) {
-        	DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
-            loader.clear();
-        }
+    	DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
+    	loader.clear();
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
         configDao.deleteAll();
     }
@@ -160,8 +151,11 @@ public class InputActions extends PsmContext {
 			e.printStackTrace();
 		}
 		
+	}    
+    
+	public static InputActions getInstance(String workDir){
+		if (InputActions.instance == null)
+			InputActions.instance = new InputActions(workDir);
+		return InputActions.instance;
 	}
-    
-    
-
 }

@@ -67,6 +67,7 @@ public class Console {
 			selectAction(args);
 		} catch (IllegalArgumentException e) {
 			logger.error("Specified working directory does not exist. Please specify a correct working directory.");
+			e.printStackTrace();
 			System.exit(4); // Exit code 4: Specified working directory does not exist
 		}
     }
@@ -81,22 +82,22 @@ public class Console {
         	simulator.createWorkDir(workDir);
         }
         else if (args[0].compareTo("fullload") == 0){
-        	InputActions inputActions = new InputActions(workDir);
+        	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.fullLoad();
         }        	
         else if (args[0].compareTo("load") == 0){
-        	InputActions inputActions = new InputActions(workDir);
+        	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.load();
         }
         else if (args[0].compareTo("unload") == 0){
-        	InputActions inputActions = new InputActions(workDir);
+        	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.unload();
         }
         else if (args[0].compareTo("clean") == 0){
-        	InputActions inputActions = new InputActions(workDir);
+        	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.clean();
         }
@@ -112,12 +113,12 @@ public class Console {
         	simulator.run();
         }
         else if (args[0].compareTo("remoteFullLoad") == 0){
-        	InputActions inputActions = new InputActions(workDir);
+        	InputActions inputActions = InputActions.getInstance(workDir);;
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteFullLoad();
         }
         else if (args[0].compareTo("remoteLoad") == 0){
-        	InputActions inputActions = new InputActions(workDir);
+        	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteLoad();
         }
