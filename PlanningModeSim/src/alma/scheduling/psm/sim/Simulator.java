@@ -78,7 +78,7 @@ public class Simulator extends PsmContext {
     
 	private static Logger logger = LoggerFactory.getLogger(Simulator.class);
     private ConfigurationDao xmlConfigDao = new XmlConfigurationDaoImpl();
-    private String DSAName = null;
+    private static String DSAName = null;
     private boolean toBeInterrupted = false;
     private Configuration config = null;
     private SimulatorThread simThread= null;
