@@ -1,9 +1,10 @@
-package alma.scheduling.datamodel.obsproject.dao;
+package alma.scheduling.archiveupd.functionality;
 
 import java.util.logging.Logger;
 
 import junit.framework.TestCase;
-import alma.scheduling.archive.ArchivePoller;
+import alma.scheduling.archiveupd.functionality.ArchivePoller;
+import alma.scheduling.datamodel.obsproject.dao.ArchiveObsProjectDaoTest;
 import alma.scheduling.utils.LoggerFactory;
 
 public class ArchivePollerTest extends TestCase {

@@ -21,12 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
-import alma.scheduling.ArrayOperations;
-import alma.scheduling.array.compimpl.DelegatedArray;
-import alma.scheduling.array.util.NameTranslator;
-import alma.scheduling.array.util.NameTranslator.TranslationException;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
 
@@ -34,7 +29,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.4 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.5 2010/09/03 22:07:31 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -49,8 +44,7 @@ public abstract class AbstractArrayPanel extends JPanel
 	/** The access to the project models */
 	private ModelAccessor models = null;
 	/** The access to the Array for which we are a panel */
-	// Will become an ArrayAccessor in due course 
-	private ArrayOperations         array = null;
+	private ArrayAccessor array = null;
 	/** Is this panel running in control mode (or monitor mode)? */
 	private boolean                 controlPanel = false;
 	/* End Fields
@@ -78,16 +72,6 @@ public abstract class AbstractArrayPanel extends JPanel
 	@Override
 	public void setServices(PluginContainerServices services) {
 		this.services = services;
-		final SessionProperties properties = services.getSessionProperties();
-		final String arrayName = properties.getArrayName();
-		try {
-			final String arrayCompName = NameTranslator.arrayToComponentName(arrayName);
-		} catch (TranslationException e) {
-			e.printStackTrace();
-		}
-		
-		arrayAvailable();
-		modelsAvailable();
 	}
 
 	/* (non-Javadoc)
@@ -95,8 +79,28 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	@Override
 	public void start() throws Exception {
-		// TODO Auto-generated method stub
-
+		try {
+			array = new ArrayAccessor(services);
+			arrayAvailable();
+		} catch (Exception e) {
+			array = null;
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					String.format("Cannot connect to array - %s", e.getMessage()),
+					"Initialisation Error,",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		try {
+			models = new ModelAccessor();
+			modelsAvailable();
+		} catch (Exception e) {
+			models = null;
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					String.format("Cannot connect to project data - %s", e.getMessage()),
+					"Initialisation Error,",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -119,29 +123,6 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	protected AbstractArrayPanel() {
 		super();
-		try {
-			models = new ModelAccessor();
-		} catch (Exception e) {
-			models = null;
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this,
-					String.format("Cannot connect to project data - %s", e.getMessage()),
-					"Initialisation Error,",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		try {
-			array = new DelegatedArray(
-					null,
-					null,
-					null);
-		} catch (Exception e) {
-			array = null;
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this,
-					String.format("Cannot connect to array - %s", e.getMessage()),
-					"Initialisation Error,",
-					JOptionPane.ERROR_MESSAGE);
-		}
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -169,7 +150,7 @@ public abstract class AbstractArrayPanel extends JPanel
 	 * Get access to the array for which we are a panel.
 	 * @return
 	 */
-	protected ArrayOperations getArray() {
+	protected ArrayAccessor getArray() {
 		return array;
 	}
 	

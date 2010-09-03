@@ -24,6 +24,9 @@ import alma.ACS.ComponentStates;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdaterOperations;
+import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.archiveupd.functionality.ArchivePoller;
+import alma.scheduling.utils.ErrorHandling;
 
 public class ArchiveUpdaterImpl implements ComponentLifecycle,
         ArchiveUpdaterOperations {
@@ -31,6 +34,13 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     private ContainerServices m_containerServices;
 
     private Logger m_logger;
+    
+    private ArchivePoller poller = null;
+    private Loop          loop = null;
+
+	private ErrorHandling handler;
+
+	final public long pollInterval = 5 * 60 * 1000; // 5 minutes
 
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -39,16 +49,21 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     public void initialize(ContainerServices containerServices) {
         m_containerServices = containerServices;
         m_logger = m_containerServices.getLogger();
-
-        m_logger.finest("initialize() called...");
+		handler = new ErrorHandling(m_logger);
+		getPoller();
+		
+		m_logger.finest("initialize() called...");
     }
 
     public void execute() {
         m_logger.finest("execute() called...");
+        loop = new Loop();
+        loop.start();
     }
 
     public void cleanUp() {
         m_logger.finest("cleanUp() called");
+        loop.interrupt();
     }
 
     public void aboutToAbort() {
@@ -74,6 +89,50 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     /////////////////////////////////////////////////////////////
     
 	@Override
-	public void update() {
+	synchronized public void update() {
+		getPoller();
+		if (poller != null) {
+			try {
+				m_logger.info("Polling archive");
+				poller.pollArchive();
+			} catch (SchedulingException e) {
+				handler.warning(String.format(
+						"Error polling archive - %s",
+						e.getMessage()), e);
+			}
+		}
 	}
+
+    /////////////////////////////////////////////////////////////
+    // Support methods
+    /////////////////////////////////////////////////////////////
+
+    public void getPoller() {
+    	if (poller == null) {
+    		try {
+				poller = new ArchivePoller(m_logger);
+			} catch (Exception e) {
+				handler.severe(String.format(
+						"Error creating ArchivePoller - %s",
+						e.getMessage()), e);
+			}
+    	}
+    }
+
+    private class Loop extends Thread {
+    	public Loop() {
+    		setDaemon(true);
+    	}
+    	
+    	public void run() {
+    		while (!this.isInterrupted()) {
+    			update();
+    			try {
+    				Thread.sleep(pollInterval);
+    			} catch (InterruptedException e) {
+    				break;
+    			}
+    		}
+    	}
+    }
 }

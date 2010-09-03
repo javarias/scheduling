@@ -69,7 +69,7 @@ import alma.scheduling.swingx.CallbackFilter;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.7 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.8 2010/09/03 22:07:31 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -439,16 +439,16 @@ public class InteractivePanel extends AbstractArrayPanel
 	 */
 	@Override
 	protected void modelsAvailable() {
-		fakeData(opModel, sbModel);
-//		final List<ObsProject> projects = getModels().getAllProjects();
-//		final List<SchedBlock> sbs = getModels().getAllSchedBlocks();
-//		
-//		opModel.setData(projects);
-//		
-//		for (final SchedBlock sb : sbs) {
-//			getModels().hydrateSchedBlock(sb);
-//		}
-//		sbModel.setData(sbs);
+//		fakeData(opModel, sbModel);
+		final List<ObsProject> projects = getModels().getAllProjects();
+		final List<SchedBlock> sbs = getModels().getAllSchedBlocks();
+		
+		opModel.setData(projects);
+		
+		for (final SchedBlock sb : sbs) {
+			getModels().hydrateSchedBlock(sb);
+		}
+		sbModel.setData(sbs);
 		showConnectivity();
 	}
 	/* End Constructors and GUI building

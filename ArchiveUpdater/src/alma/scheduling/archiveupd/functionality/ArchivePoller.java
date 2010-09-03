@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
-package alma.scheduling.archive;
+package alma.scheduling.archiveupd.functionality;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.2 2010/08/23 23:05:12 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.1 2010/09/03 22:09:11 dclarke Exp $
  */
 public class ArchivePoller {
 
