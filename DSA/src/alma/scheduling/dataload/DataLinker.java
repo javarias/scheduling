@@ -93,18 +93,6 @@ public class DataLinker implements DataLoader {
         for(SchedBlock sb: sbs){
             System.out.println("sb.getPiName() = " + sb.getPiName());
             PI pi = execDao.getPIFromEmail(sb.getPiName());
-            if(pi == null){
-                pi = new PI();
-                pi.setEmail(sb.getPiName());
-                pi.setEmail(sb.getPiName());
-                pi.setPIMembership(new HashSet<PIMembership>());
-                PIMembership pim = new PIMembership();
-                pim.setExecutive(execDao.getAllExecutive().get(0));
-                pim.setMembershipPercentage(1);
-                pi.getPIMembership().add(pim);
-                System.out.println("WARNING: Adding new PI: sb.getPiName()");
-                execDao.saveOrUpdate(pi);
-            }
             sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
             ObsProject p = obsPrjDao.getObsProject(sb);
             sb.setScienceScore(p.getScienceScore());

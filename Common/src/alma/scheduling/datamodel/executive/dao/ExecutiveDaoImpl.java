@@ -21,11 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.21 2010/09/03 16:47:05 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.22 2010/09/03 21:48:45 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -91,6 +92,18 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     @Transactional(readOnly=true)
     public Executive getExecutive(String piEmail) {
         PI pi = findById(PI.class, piEmail);
+        if(pi == null){
+            pi = new PI();
+            pi.setEmail(piEmail);
+            pi.setEmail(piEmail);
+            pi.setPIMembership(new HashSet<PIMembership>());
+            PIMembership pim = new PIMembership();
+            pim.setExecutive(getAllExecutive().get(0));
+            pim.setMembershipPercentage(1);
+            pi.getPIMembership().add(pim);
+            System.out.println("WARNING: Adding new PI: sb.getPiName()");
+            saveOrUpdate(pi);
+        }
         Executive exec = pi.getPIMembership().iterator().next().getExecutive();
         for (ExecutivePercentage ep : exec.getExecutivePercentage()) {
             ObservingSeason o = ep.getSeason();
