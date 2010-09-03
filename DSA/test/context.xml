@@ -162,9 +162,9 @@
 	</bean>
 
 	<!-- Archive/XMLStore Data Loader -->
-<!--	<bean id="archProjectDao"
+	<bean id="archProjectDao"
 		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
-	</bean> -->
+	</bean>
 	
 	<!--  RMI Client -->
 	<bean id="remoteConsoleService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
@@ -174,8 +174,8 @@
 	
 	<!-- DataLoaders Beans -->
 	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-		    <property name="xmlDao" ref="xmlObsProjectDao"/> 
-		<!-- <property name="archProjectDao" ref="archProjectDao" /> -->
+		<!--   <property name="xmlDao" ref="xmlObsProjectDao"/>   -->
+		<property name="archProjectDao" ref="archProjectDao" />
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	

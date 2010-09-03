@@ -180,8 +180,8 @@
 	
 	<!-- DataLoaders Beans -->
 	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-		<property name="xmlDao" ref="xmlObsProjectDao"/>
-		<!--  <property name="archProjectDao" ref="archProjectDao" /> -->
+		<!--<property name="xmlDao" ref="xmlObsProjectDao"/>  -->
+		<property name="archProjectDao" ref="archProjectDao" />
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	
