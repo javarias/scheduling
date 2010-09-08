@@ -62,6 +62,18 @@ public class MainWindowController extends GenericForwardComposer {
     	reportsWindow.doOverlapped();
     }
     
+    public void onClick$menuItemBeforeSimLST(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowBeforeSimLST");
+    	param.put("title", "Requested time per LST Range ");
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
     public void onClick$menuItemAfterSimExec(Event event) {
     	Window mainWindow = (Window) Path.getComponent("//");
     	if( mainWindow == null ){
@@ -70,6 +82,18 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimExec");
     	param.put("title", "Executive Percentage Balancing");
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemAfterSimLST(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimLST");
+    	param.put("title", "Requested time per LST Range ");
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }

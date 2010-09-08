@@ -163,9 +163,9 @@
 	</bean>
 
 	<!-- Archive/XMLStore Data Loader -->
-	<bean id="archProjectDao"
+<!--	<bean id="archProjectDao"
 		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
-	</bean>
+	</bean> -->
 	
 	<!--  RMI Clients -->
 	<bean id="remoteConsoleService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
@@ -180,8 +180,8 @@
 	
 	<!-- DataLoaders Beans -->
 	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-		<!--<property name="xmlDao" ref="xmlObsProjectDao"/>  -->
-		<property name="archProjectDao" ref="archProjectDao" />
+		<property name="xmlDao" ref="xmlObsProjectDao"/>
+		<!-- <property name="archProjectDao" ref="archProjectDao" /> -->
 		<property name="dao" ref="obsProjectDao" />
 	</bean>
 	
@@ -359,7 +359,8 @@
         </property>
 	</bean>
 
-	<bean id="postUpdateSelectorAndUpdater" class="alma.scheduling.algorithm.sbselection.MasterSelectorWithUpdater">
+	<bean id="postUpdateSelectorAndUpdater" class="alma.scheduling.algorithm.sbselection.MasterSelectorWithUpdater"
+		scope="prototype">
 		<property name="selectors">
 			<set>
             <!-- The preupdate selector must be included to get the criteriones
@@ -406,7 +407,8 @@
 	</bean>
 
 	<!-- Updaters -->
-	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
+	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater"
+	scope="prototype">
 		<property name="dao" ref="atmDao"/>
 		<property name="selector" ref="weatherSelector"/>
 		<property name="weatherDao" ref="weatherDao"/>
@@ -414,10 +416,15 @@
 		<property name="projTimeIncr" value="0.5"/>
 	</bean>
 	
-	<bean id="sourceUpdater" class="alma.scheduling.algorithm.obsproject.FieldSourceObservabilityUpdater">
+	<bean id="sourceUpdater" class="alma.scheduling.algorithm.obsproject.FieldSourceObservabilityUpdater"
+	scope="prototype">
 		<property name="configDao" ref="configDao"/>
 		<property name="sourceDao" ref="sourceDao"/>
 	</bean>
+	
+	<util:set id="postUpdateSelectorsSet">
+		<ref bean="postUpdateSelectorAndUpdater"/>
+	</util:set>
 	
 	<!-- Algorithm -->
 	<bean id="dsa" class="alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl"
@@ -429,9 +436,7 @@
 			</set>
 		</property>
 		<property name="postUpdateSelectors">
-			<set>
-				<ref bean="postUpdateSelectorAndUpdater"/>
-			</set>
+			<ref bean="postUpdateSelectorsSet"/>
 		</property>
 		
 		<property name="firstRunUpdaters">
@@ -439,19 +444,19 @@
                 <ref bean="sourceUpdater"/>
 			</set>
 		</property>
-        <property name="updaters">
-            <set>
-                <ref bean="postUpdateSelectorAndUpdater"/>
-            </set>
-        </property>
+		<property name="updaters">
+			<ref bean="postUpdateSelectorsSet" />
+		</property>
 	</bean>
 
 	<!-- Reporters -->
-	<bean id="execReporter" class="alma.scheduling.output.ExecutiveReporter">
+	<bean id="execReporter" class="alma.scheduling.output.ExecutiveReporter"
+	scope="prototype">
 		<property name="execDao" ref="execDao"/>
 	</bean>
 
-	<bean id="reporter" class="alma.scheduling.output.MasterReporter">
+	<bean id="reporter" class="alma.scheduling.output.MasterReporter"
+	scope="prototype">
 		<property name="reporters">
 			<set>
 				<ref bean="execReporter"/>
@@ -460,8 +465,10 @@
 	</bean>
 
 	<!-- SchedBlock Executor -->
-	<bean name="opacityInterpolator" class="alma.scheduling.algorithm.weather.OpacityInterpolatorImpl"/>
-	<bean name="schedBlockExecutor" class="alma.scheduling.algorithm.SchedBlockExecutorImpl">
+	<bean name="opacityInterpolator" class="alma.scheduling.algorithm.weather.OpacityInterpolatorImpl"
+	scope="prototype"/>
+	<bean name="schedBlockExecutor" class="alma.scheduling.algorithm.SchedBlockExecutorImpl"
+	scope="prototype">
 		<property name="execDao" ref="execDao"/>
 		<property name="weatherDao" ref="weatherDao"/>
 		<property name="configDao" ref="configDao"/>
