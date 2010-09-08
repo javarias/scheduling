@@ -44,6 +44,8 @@ public class InputActions extends PsmContext {
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
 	private static InputActions instance = null;
+	private static String[] loadersNames = null;
+	private static String[] cfgBeans = null;
 		
     private InputActions(String workDir) {
 		super(workDir);
@@ -51,13 +53,15 @@ public class InputActions extends PsmContext {
 	
     public void fullLoad() {
         ApplicationContext ctx = getApplicationContext();
-        String[] loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
-        String [] cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
+        if (loadersNames == null)
+        	loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
+        if	(cfgBeans == null)
+        	cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
         if(cfgBeans.length == 0){
             logger.error(contextFile + 
             		" file doesn't contain a bean of the type " +
             		"alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
-            System.exit(3); // Exit code 3: No necessary bean in scheduling context file.
+            //System.exit(3); // Exit code 3: No necessary bean in scheduling context file.
         }
         for(int i = 0; i < loadersNames.length ; i++){
             DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
