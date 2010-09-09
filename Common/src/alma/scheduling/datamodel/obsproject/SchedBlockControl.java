@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockControl.java,v 1.4 2010/06/10 21:17:12 javarias Exp $"
+ * "@(#) $Id: SchedBlockControl.java,v 1.5 2010/09/09 17:54:48 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -71,6 +71,9 @@ public class SchedBlockControl implements Updateable {
     
     /** Sensitivity achieved so far (Jy) */
     private Double achievedSensitivity;
+    
+    /** Times that the Sb has been executed, initiallly is zero*/
+    private Integer numberOfExecutions = 0;
     
     public SchedBlockControl() {
         // nothing here yet
@@ -143,5 +146,14 @@ public class SchedBlockControl implements Updateable {
     public void setSbMaximumTime(Double sbMaximumTime) {
         this.sbMaximumTime = sbMaximumTime;
     }
+
+    public Integer getNumberOfExecutions() {
+        return numberOfExecutions;
+    }
+
+    public void setNumberOfExecutions(Integer numberOfExecutions) {
+        this.numberOfExecutions = numberOfExecutions;
+    }
+    
     
 }

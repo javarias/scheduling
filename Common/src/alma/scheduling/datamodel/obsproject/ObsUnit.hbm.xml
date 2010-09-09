@@ -67,6 +67,7 @@
                 <property name="achievedSensitivity" type="double" column="SCHEDBLOCK_CTRL_SENSITIVITY"/>
                 <property name="accumulatedExecutionTime" type="double" column="SCHEDBLOCK_CTRL_ACCUM_TIME"/>
                 <property name="sbMaximumTime" type="double" column="SCHEDBLOCK_CTRL_MAX_TIME" />
+                <propertt name="numberOfExecutions" type="int" column="SCHEDBLOCK_CTRL_N_EXECUTIONS"/>
             </component>
             <set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
                 <key column="SCHEDBLOCKID"/>
