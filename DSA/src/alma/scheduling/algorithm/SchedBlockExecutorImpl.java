@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.8 2010/06/10 21:30:02 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.9 2010/09/09 18:07:11 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -136,8 +136,15 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
                     freqGHz, bwGHz, declDeg, numAnt, antDiamMtr, latitudeDeg,
                     opacity, atmBrightnessTemp);
-        schedBlock.getSchedBlockControl().setAchievedSensitivity(sensJy);
-        if ((sensJy <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
+        schedBlock.getSchedBlockControl().setNumberOfExecutions(
+                schedBlock.getSchedBlockControl().getNumberOfExecutions() + 1);
+        double accumSens = 0;
+        if(schedBlock.getSchedBlockControl().getAchievedSensitivity() == null)
+            accumSens = sensJy;
+        else
+           accumSens = (schedBlock.getSchedBlockControl().getAchievedSensitivity() + sensJy)
+                                    / schedBlock.getSchedBlockControl().getNumberOfExecutions();
+        if ((accumSens * FUDGE_FACTOR <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
             schedBlock.getSchedBlockControl().setState(SchedBlockState.FULLY_OBSERVED);
         }
         else{
