@@ -326,16 +326,17 @@ public class ResultComposer {
             		sbrSet.add( sbr );
     			}
     			
-    			Iterator<Date> itEndDate = lhmEnd.keySet().iterator();
-        		for( SchedBlockResult sbr : sbrSet ){
-        			sbr.setEndDate( itEndDate.next() );
-        			sbr.setAchievedSensitivity( lhmEnd.get( sbr.getEndDate()).get(0) );
-        			sbr.setExecutionTime( lhmEnd.get( sbr.getEndDate()).get(1) );
-        			if( sbr.getAchievedSensitivity() <= sbr.getGoalSensitivity() )
-        				sbr.setStatus( ExecutionStatus.COMPLETE);
-        			else
-        				sbr.setStatus( ExecutionStatus.INCOMPLETE);
-        		}
+    			for( Date d : lhmEnd.keySet() ){
+	        		for( SchedBlockResult sbr : sbrSet ){
+	        			sbr.setEndDate( d );
+	        			sbr.setAchievedSensitivity( lhmEnd.get( sbr.getEndDate()).get(0) );
+	        			sbr.setExecutionTime( lhmEnd.get( sbr.getEndDate()).get(1) );
+	        			if( sbr.getAchievedSensitivity() <= sbr.getGoalSensitivity() )
+	        				sbr.setStatus( ExecutionStatus.COMPLETE);
+	        			else
+	        				sbr.setStatus( ExecutionStatus.INCOMPLETE);
+	        		}
+    			}
     		}catch(NullPointerException e){
     			// Do nothing, The SB was not executed in this simulation
     		}
