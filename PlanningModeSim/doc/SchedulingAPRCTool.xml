@@ -49,21 +49,20 @@
 
     <legalnotice>
       <title>Legal Notices</title>
-<para>ALMA - Atacama Large Millimeter Array</para>
-<para>(c) European Southern Observatory, 2002</para>
-<para>(c) Associated Universities Inc., 2002</para>
-<para>Copyright by ESO (in the framework of the ALMA collaboration), Copyright by AUI (in the framework of the ALMA collaboration),All rights reserved.</para>
+      <para>ALMA - Atacama Large Millimeter Array</para>
+      <para>(c) European Southern Observatory, 2002</para>
+      <para>(c) Associated Universities Inc., 2002</para>
+      <para>Copyright by ESO (in the framework of the ALMA collaboration), Copyright by AUI (in the framework of the ALMA collaboration),All rights reserved.</para>
 
-<para>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free software Foundation; either version 2.1 of the License, or (at your option) any later version.</para>
+      <para>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free software Foundation; either version 2.1 of the License, or (at your option) any later version.</para>
 
-<para>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.</para>
+      <para>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.</para>
 
-<para>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA</para>
+      <para>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA.</para>
     </legalnotice>
 
     <releaseinfo>
-      This is version 1.0.0 of DocBook Basics documenting version 4.1.2 of
-      DocBook XML.
+      This version of the Planning Mode Simulator / ALMA Programme Review Committee Tool user manual only applies to version 0.8 of the software. Please refer to previous version in <ulink url="http://almasw.hq.eso.org/almasw/bin/view/SCHEDULING/PlanningModeSimulator"> this webpage</ulink>.
     </releaseinfo>
     <title>Scheduling APRC Tool</title>
   </articleinfo>
@@ -84,12 +83,12 @@
 	    <para>This document only covers the description and user manual for the Planning Mode
 		Simulator and Scheduling internal data model. The explanation is throughout in this
 		sense, but the DSA is not covered by this document. Please refer to "ALMA Dynamic 
-		Scheduling Algorithm" by Rafael Hiriart for more information on this matter.</para>
+		Scheduling Algorithm" by Rafael Hiriart for more information on this matter. For more information and software download, please go the <ulink url="http://almasw.hq.eso.org/almasw/bin/view/SCHEDULING/PlanningModeSimulator">this webpage</ulink></para>
 	</sect2>
     </sect1>
     <sect1>
         <title>APRC and DSA Architecture</title>
-        <para><xref linkend="arch"/> shows the general architecture of the APRC and the DSA. The
+        <para><xref linkend="fig:arch"/> shows the general architecture of the APRC and the DSA. The
             APRC integrates several data sources, depending on its configuration. These are shown in
             the left side of the diagram. The data sources used by the APRC are configured in
             $APRC_WORK_DIR/context.xml.</para>
@@ -99,7 +98,7 @@
             functionality is implemented as operations over the work database. It is advisable to
             gain some familiarity with the DSA Data Model, as it is the main model involved in the
             current implementation of the DSA and future additions as well. A description of the
-            Data Model is given in the following section.</para>
+            Data Model is given in <xref linkend="sec:datamodel"/>.</para>
         <para>Both the input data sources and the work database are accessed through Data Access
             Objects (DAOs). These are classes that allows access to the data through uniform
             interfaces, hiding the specific details involved in getting the data and transforming it
@@ -107,7 +106,7 @@
             but equivalent data sources. For example, weather information is retrieved from
             historical files during simulation, but it is acquired by actual instrumentation when
             the DSA runs in the online system.</para>
-        <figure id="arch">
+        <figure id="fig:arch">
             <title>Scheduling APRC Tool Architecture</title>
             <mediaobject>
                 <imageobject><imagedata width="100%" fileref="APRCArch.png"/></imageobject>
@@ -148,7 +147,7 @@
                         <para>Historical data for several parameters (temperature, opacity, wind
                             direction, wind speed), for one year, with a resolution of 15 minutes.
                             These tables are also stored in $APRC_WORK_DIR/weather.</para>
-                        <para> This historical files are only used by the DSA when running in the
+                        <para>This historical files are only used by the DSA when running in the
                             context of the APRC. When the DSA runs with the online system, this data
                             is retrieved directly from the instrumentation.</para>
                     </listitem>
@@ -206,7 +205,7 @@
                 </varlistentry>
             </variablelist></para>
     </sect1>
-    <sect1>
+    <sect1 id="sec:datamodel">
         <title>The DSA Data Model</title>
         <para>The DSA works internally with a data model conformed by a collection of Java classes
             that are made persistent (i.e., its fields are stored persistently so the state of the
@@ -407,10 +406,16 @@
                         <para>As discussed above, this directory is used to output reports.</para>
                     </listitem>
                 </varlistentry>
+		  <varlistentry>
+                    <term>reports/</term>
+                    <listitem>
+                        <para>This directory holds the reports created by the tool.</para>
+                    </listitem>
+                </varlistentry>
                 <varlistentry>
                     <term>hsqldb/</term>
                     <listitem>
-                        <para>This directory is used by the HSQLDB Work database..</para>
+                        <para>This directory is used by the HSQLDB Work database.</para>
                     </listitem>
                 </varlistentry>
                 <varlistentry>
@@ -435,8 +440,12 @@ Starting HSQLDB                        </screen>
                     <listitem>
                         <para>Load all the input files into the database.</para>
                         <screen>$ aprc fullload
-Using directory: /users/almaop/APRC/WORK
-Verbose Level: NONE                        </screen>
+sb.getPiName() = joe1@doe.edu
+sb.getPiName() = joe2@doe.edu
+sb.getPiName() = joe3@doe.edu
+sb.getPiName() = joe4@doe.edu
+...
+</screen>
                         <para>This will load all the input files into the database, including the
                             weather files. Weather files are big, so it usually takes some minutes
                             for this command to complete. However, as loading the weather files only
@@ -448,32 +457,39 @@ Verbose Level: NONE                        </screen>
                     <listitem>
                         <para>Run the simulation</para>
                         <screen>$ aprc run
-Using directory: /users/almaop/APRC/WORK
-Verbose Level: NONE
-[2011-01-01T00:00:00] Starting Simulation
-Running first update Thu May 27 09:11:43 MDT 2010
-Finishing first update Thu May 27 09:11:46 MDT 2010
-[2011-01-02T00:00:00] Array 2 created
-[2011-01-02T00:00:00] Starting selection of candidate SchedBlocks 
-for Array Id: 2
-Size of criteria query: 7
-Time used: 17 ms
-Size of criteria query: 3
-Time used: 9 ms
-[2011-01-02T00:30:00] Finishing Execution of SchedBlock Id: 396
-[2011-01-02T00:30:00] Starting selection of candidate SchedBlocks 
-for Array Id: 2
-Size of criteria query: 8
-Time used: 9 ms
-Size of criteria query: 8
-Time used: 8 ms
-[2011-01-02T01:00:00] Finishing Execution of SchedBlock Id: 396
-[2011-01-02T01:00:00] Starting selection of candidate SchedBlocks 
-for Array Id: 2
-...
-DSA for array 2 No suitable SBs to be scheduled
-[2011-06-02T03:00:00] Array Id: 2 destroyed
-Completing results                   </screen>
+Running first update Tue Sep 14 14:52:33 CLT 2010
+Finishing first update Tue Sep 14 14:52:35 CLT 2010
+[2011-01-02T00:00:00] Array 1 created
+[2011-01-02T00:00:00] Starting selection of candidate SchedBlocks for Array Id: 1
+Size of criteria query: 124
+Time used: 183 ms
+Pre Selectors takes: 184 ms
+Selection takes: 236
+Start Calculations
+6180
+6228
+Weather Calculations takes: 778 ms
+Update takes: 1913 ms
+Post Selectors takes: 0 ms
+508,508,-0.46073496876365416
+6180
+ARRAY_CREATION End Date given by executor: Sat Jan 01 21:30:00 CLST 2011
+SB EXEC END #: 508 Sen: 0.32644845140881207 ExecTime: 0.0
+Step takes: 2266
+[2011-01-02T00:30:00] Finishing Execution of SchedBlock Id: 508
+[2011-01-02T00:30:00] Starting selection of candidate SchedBlocks for Array Id: 1
+Size of criteria query: 118
+Time used: 68 ms
+Pre Selectors takes: 68 ms
+Selection takes: 114
+Start Calculations
+6228
+6276
+Weather Calculations takes: 1 ms
+Update takes: 18 ms
+Post Selectors takes: 0 ms
+1546,1546,-0.25186313880532074
+6228</screen>
                         <para>The level of verbosity of the output to the console can be controlled
                             by the the options <option>-v</option>, <option>-vv</option>, and
                                 <option>-vvv</option>, which configure the verbosity level to LOW,
@@ -490,42 +506,32 @@ Completing results                   </screen>
                             simulation. This file can be converted to HTML with the <command>aprc
                                 report</command> command:</para>
                         <screen>$ aprc report help
-Using directory: /users/almaop/APRC/WORK
-Verbose Level: NONE
+[ahoffsta@ned APRC]$ aprc report help
 Reports help
 Usage: 
 aprc report &lt;command>
 
 List of Commands:
-
-1:      Generate statistics report containing crowding by LST 
-ranges and ALMA Receiver Bands
-2:      Generate result report (after run the simulation)
-help:   Show this help message
-
-$ aprc report 2
-Using directory: /users/almaop/APRC/WORK
-Verbose Level: NONE
-
-$ ls $APRC_WORK_DIR/reports
-report_1274973886488.html</screen>
+1:      Generate statistics report containing SBs per ALMA Receiver Bands.
+2:      Generate result report (after run the simulation).
+3:      Generate statistics report containing SBs per LST ranges.
+help:   Show this help message.
+[ahoffsta@ned APRC]$ aprc report 2
+URL ofr xslt: jar:file:/home/ahoffsta/repos/SCHEDULING/PlanningModeSim/test/APRC/lib/alma-7.1/SchedulingPSM.jar!/alma/scheduling/psm/reports/general_report.xsl
+</screen>
                         <para>This HTML file contains the results of the simulation.</para>
                     </listitem>
                     <listitem>
                         <para>It is possible to change the input files and run another simulation.
                             In order to do this, first it is needed to clean the database:</para>
-                        <screen>$ aprc clean 
-Using directory: /users/almaop/APRC/WORK
-Verbose Level: NONE</screen>
+                        <screen>$ aprc clean</screen>
                     </listitem>
                     <listitem>
                         <para>Now the input files can be modified. For example, you may be
                             interested in modifying the grade setups, in the file
                             $APRC_WORK_DIR/aprc-config.xml. Then the input files can be loaded
                             intothe database:</para>
-                        <screen>$ aprc load
-Using directory: /users/almaop/APRC/WORK
-Verbose Level: NONE</screen>
+                        <screen>$ aprc load</screen>
                         <para>This command doesn't load the weather files, so it finishes faster
                             than the <command>aprc fullload</command> command.</para>
                     </listitem>
@@ -533,12 +539,12 @@ Verbose Level: NONE</screen>
                         <para>The simulation can be executed again. This process can be repeated as
                             many times as necessary.</para>
                     </listitem>
-                    <listitem>
+                    <!--<listitem>
                         <para>When there is not more additional work to do with the APRC Tool. The
                             database server can be shutdown:</para>
                         <screen>$ aprc stop
 Stopping HSQLDB</screen>
-                    </listitem>
+                    </listitem>-->
                 </orderedlist></para>
         </sect2>
         <sect2>
@@ -548,10 +554,16 @@ Stopping HSQLDB</screen>
                     sync</command> command. This command iterates through the proposals in the work
                 database and retrieves their scores and ranks from the ph1m database, updating the
                 corresponding fields in the APRC database.</para>
+<!--	    <screen>
+	    
+	    </screen>-->
             <para>It is possible to inspect the scores and ranks in the ph1m database for the
                 proposals stored in the work database by means of the <command>aprc ph1m
                     list</command> command. This command is useful to verify that the communication
                 with the Ph1M Tool is working properly.</para>
+<!--	    <screen>
+	    
+	    </screen>-->
         </sect2>
     </sect1>
     <sect1>
