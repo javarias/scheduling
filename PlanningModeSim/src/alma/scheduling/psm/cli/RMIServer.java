@@ -16,7 +16,7 @@ public class RMIServer{
 		console = new RemoteConsoleImpl();
 		try{
 			ph1m = new Ph1mSynchronizerImpl(System.getenv("APRC_WORK_DIR"));
-		}catch(Exception ex){
+		}catch(Exception ex){ 
 			ph1m = null;
 			System.out.println("Ph1mSynchronizerService will not be available");
 		}
@@ -32,7 +32,7 @@ public class RMIServer{
         	 Registry registry = LocateRegistry.getRegistry();
         	 registry.rebind("aprcSimConsoleService", stub);
         	 System.err.println("aprcSimConsoleService bound");
-        } catch (Exception e) {
+        } catch (Exception e) { // TODO: General Exception catch, change this.
             System.err.println("aprcSimConsoleService exception:");
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class RMIServer{
 				Registry registry = LocateRegistry.getRegistry();
 				registry.rebind("Ph1mSynchronizerService", stub);
 				System.err.println("Ph1mSynchronizerService bound");
-			} catch (Exception e) {
+			} catch (Exception e) { // TODO: General Exception catch, change this. 
 				System.err.println("Ph1mSynchronizerService exception:");
 				e.printStackTrace();
 			}
