@@ -1,18 +1,91 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
-<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
-    version="5.0">
-    <info>
-        <title>Scheduling APRC Tool</title>
-    </info>
+<!--<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>-->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+          "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang="en">
+  <articleinfo>
+
+    <copyright>
+      <year>2010</year>
+      <holder>ALMA - Atacama Large Millimeter Array</holder>
+      <holder>European Southern Observatory, 2002</holder>
+      <holder>Associated Universities Inc., 2002</holder>
+    </copyright>
+
+    <authorgroup>
+      <author>
+        <firstname>Rafael</firstname>
+        <surname>Hiriart</surname>
+        <affiliation>
+          <orgname>NRAO</orgname>
+          <address>
+            <email>rhiriart@nrao.edu</email>
+          </address>
+        </affiliation>
+      </author>
+
+      <author>
+        <firstname>Arturo</firstname>
+        <surname>Hoffstadt</surname>
+          <affiliation>
+          <orgname>UTFSM</orgname>
+          <address>
+            <email>ahoffsta@inf.utfsm.cl</email>
+          </address>
+        </affiliation>
+      </author>
+      
+      <author>
+        <firstname>Jorge</firstname>
+        <surname>Avarias</surname>
+        <affiliation>
+          <orgname>NRAO</orgname>
+          <address>
+            <email>javarias@nrao.edu</email>
+          </address>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <legalnotice>
+      <title>Legal Notices</title>
+<para>ALMA - Atacama Large Millimeter Array</para>
+<para>(c) European Southern Observatory, 2002</para>
+<para>(c) Associated Universities Inc., 2002</para>
+<para>Copyright by ESO (in the framework of the ALMA collaboration), Copyright by AUI (in the framework of the ALMA collaboration),All rights reserved.</para>
+
+<para>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free software Foundation; either version 2.1 of the License, or (at your option) any later version.</para>
+
+<para>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.</para>
+
+<para>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA</para>
+    </legalnotice>
+
+    <releaseinfo>
+      This is version 1.0.0 of DocBook Basics documenting version 4.1.2 of
+      DocBook XML.
+    </releaseinfo>
+    <title>Scheduling APRC Tool</title>
+  </articleinfo>
+
     <sect1>
-        <title>Introduction</title>
-        <para>The ALMA Programme Review Committee Tool (APRC Tool) allows to simulate the execution
-            of observation projects for one or more observation seasons and analyse the results of
-            the simulation, as well as the distribution of projects with respect to several
-            parameters. The APRC Tool uses the same algorithm that the online scheduling system uses
-            to select the next scheduling block to run, the Dynamic Scheduling Algorithm, or
-            DSA.</para>
+	<title>Introduction</title>
+        <sect2>
+	    <title>Abstract</title>
+	    <para>The ALMA Programme Review Committee Tool (APRC Tool) allows to simulate the execution
+		of observation projects for one or more observation seasons and analyse the results of
+		the simulation, as well as the distribution of projects with respect to several
+		parameters. The APRC Tool uses the same algorithm that the online scheduling system uses
+		to select the next scheduling block to run, the Dynamic Scheduling Algorithm, or
+		DSA.</para>
+	</sect2>
+	<sect2>
+	    <title>Scope</title>
+	    <para>This document only covers the description and user manual for the Planning Mode
+		Simulator and Scheduling internal data model. The explanation is throughout in this
+		sense, but the DSA is not covered by this document. Please refer to "ALMA Dynamic 
+		Scheduling Algorithm" by Rafael Hiriart for more information on this matter.</para>
+	</sect2>
     </sect1>
     <sect1>
         <title>APRC and DSA Architecture</title>
@@ -34,10 +107,10 @@
             but equivalent data sources. For example, weather information is retrieved from
             historical files during simulation, but it is acquired by actual instrumentation when
             the DSA runs in the online system.</para>
-        <figure xml:id="arch">
+        <figure id="arch">
             <title>Scheduling APRC Tool Architecture</title>
             <mediaobject>
-                <imageobject><imagedata fileref="APRCArch.png" width="6in"/></imageobject>
+                <imageobject><imagedata width="100%" fileref="APRCArch.png"/></imageobject>
             </mediaobject>
         </figure>
         <para>We are now able to describe how the APRC works. The APRC:<orderedlist>
@@ -166,10 +239,10 @@
             simulation is executed, ExecutiveTimeSpent records are created, recording the SBs that
             are executed and how much time should be charged to their corresponding
             Executive.</para>
-        <figure xml:id="exec_cd">
+        <figure id="exec_cd">
             <title>Executive package class diagram</title>
             <mediaobject>
-                <imageobject><imagedata fileref="Executive.png" width="6in"/></imageobject>
+                <imageobject><imagedata width="100%" scalefit="1" fileref="Executive.png"/></imageobject>
             </mediaobject>
         </figure>
         <para>The relationship between a SB and an Executive is made though the PI. A PI can be
@@ -180,10 +253,10 @@
             package follows closely the APDM structure, although only the fields that are relevant
             for the DSA are used. Also, some additional classes and fields that are not present in
             the APDM have been added.</para>
-        <figure xml:id="proj_cd">
+        <figure id="proj_cd">
             <title>ObsProject package class diagram</title>
             <mediaobject>
-                <imageobject><imagedata fileref="ObsProject.png" width="6in"/></imageobject>
+                <imageobject><imagedata width="100%" fileref="ObsProject.png"/></imageobject>
             </mediaobject>
         </figure>
         <para>In some cases, the DSA needs to update some of the objects with a certain periodicity.
@@ -195,10 +268,10 @@
         <para>The observatory package can be seen in <xref linkend="obs_cd"/>. This section aims to
             represent the state of the telescope hardware throughout the time interval covered by
             the simulation, including the program of array configurations.</para>
-        <figure xml:id="obs_cd">
+        <figure id="obs_cd">
             <title>Observatory package class diagram</title>
             <mediaobject>
-                <imageobject><imagedata fileref="Observatory.png" width="6in"/></imageobject>
+                <imageobject><imagedata width="100%" fileref="Observatory.png"/></imageobject>
             </mediaobject>
         </figure>
         <para>The telescope hardware devices are modeled as being either an Assembly, or a
@@ -214,21 +287,21 @@
         <para>The weather section is very simple, and is shown in <xref linkend="weather_cd"/>. The
             atmospheric model table is maintained as AtmParameters records, and historical weather
             data is represented as different types of WeatherHistRecords.</para>
-        <figure xml:id="weather_cd">
+        <figure id="weather_cd">
             <title>Weather package class diagram</title>
             <mediaobject>
-                <imageobject><imagedata fileref="Weather.png" width="6in"/></imageobject>
+                <imageobject><imagedata width="100%" fileref="Weather.png"/></imageobject>
             </mediaobject>
         </figure>
-        <para>Lastly, <xref linkend="weather_cd"/> displays the output package. This package
+        <para>Lastly, <xref linkend="output_cd"/> displays the output package. This package
             includes classes that represent and summarize the results of a simulation. Basically,
             the simulation Results integrate both the Arrays that were created during the simulation
             time, and the ObservationProjects that contained SBs that were executed in the Arrays.
             SB executions are recorded as SchedBlockResult instances.</para>
-        <figure xml:id="output_cd">
+        <figure id="output_cd">
             <title>Ouput package class diagram</title>
             <mediaobject>
-                <imageobject><imagedata fileref="Output.png" width="6in"/></imageobject>
+                <imageobject><imagedata width="100%" fileref="Output.png"/></imageobject>
             </mediaobject>
         </figure>
     </sect1>
@@ -351,14 +424,14 @@
         <sect2>
             <title>Running a simulation with the APRC CLI</title>
             <para>Running a simulation with the APRC usually involves the following steps:<orderedlist>
-                    <listitem>
+<!--                    <listitem>
                         <para>Start the APRC work database.</para>
                         <screen>$ aprc start
 Starting HSQLDB                        </screen>
                         <para>Currently the HSQLDB database that the APRC uses run in client/server
                             mode. This command will start the database server. It only needs to be
                             done once in a simulation session.</para>
-                    </listitem>
+                    </listitem>-->
                     <listitem>
                         <para>Load all the input files into the database.</para>
                         <screen>$ aprc fullload
@@ -558,10 +631,10 @@ Stopping HSQLDB</screen>
                             itself.</para>
                         <para> The large white-space is intended for window usage. As simulations
                             are created, ran and reports gets generated, different window will
-                            become available and presented in there. <figure xml:id="mainWindow">
+                            become available and presented in there. <figure id="mainWindow">
                                 <title>Main window</title>
                                 <mediaobject>
-                                    <imageobject><imagedata fileref="mainWindow.png" width="4in"
+                                    <imageobject><imagedata width="100%" fileref="mainWindow.png"
                                         /></imageobject>
                                 </mediaobject>
                             </figure></para>
@@ -579,10 +652,10 @@ Stopping HSQLDB</screen>
                         <para> Basic configuration of the simulation is done through this window, so
                             this window is also presented if the user wants to change anything on
                             the basic simulation configuration.</para>
-                        <figure xml:id="simConfigWindow">
+                        <figure id="simConfigWindow">
                             <title>Simulation configuration window</title>
                             <mediaobject>
-                                <imageobject><imagedata fileref="simConfigWindow.png" width="4in"
+                                <imageobject><imagedata width="100%" fileref="simConfigWindow.png"
                                     /></imageobject>
                             </mediaobject>
                         </figure>
@@ -598,10 +671,10 @@ Stopping HSQLDB</screen>
                         <para> The same window also has two side panels. The first one gives the
                             status of the simulation, meanwhile the second one, presents to the
                             users the most common tasks to execute.</para>
-                        <figure xml:id="simWindow">
+                        <figure id="simWindow">
                             <title>Simulation window</title>
                             <mediaobject>
-                                <imageobject><imagedata fileref="simWindow.png" width="4in"
+                                <imageobject><imagedata width="100%" fileref="simWindow.png"
                                     /></imageobject>
                             </mediaobject>
                         </figure>
@@ -613,10 +686,10 @@ Stopping HSQLDB</screen>
                         <para>This window shows the currently loaded observation projects. This view
                             is intended just to show the data-mapping capabilities of ZK using
                             Spring framework.</para>
-                        <figure xml:id="obsProjectsWindow">
+                        <figure id="obsProjectsWindow">
                             <title>Observation projects listing</title>
                             <mediaobject>
-                                <imageobject><imagedata fileref="obsProjectsWindow.png" width="4in"
+                                <imageobject><imagedata width="100%" fileref="obsProjectsWindow.png"
                                     /></imageobject>
                             </mediaobject>
                         </figure>
