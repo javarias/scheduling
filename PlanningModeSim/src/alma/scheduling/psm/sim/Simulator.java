@@ -301,6 +301,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                System.out.println("ARRAY_CREATION End Date given by executor: " + d);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId() );
                 logger.info("Notification: " + ev.getArray().getId());
                 // Create a new EventTime to check the SB execution termination
@@ -355,6 +356,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                System.out.println("SCHEDBLOCK_EXECUTION_FINISH End Date given by executor: " + d);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId());
                 // Create a new EventTime to check the SB execution termination
                 // in the future
@@ -410,6 +412,7 @@ public class Simulator extends PsmContext {
                 TimeHandler.getHandler().step( ev.getTime() );
                 // Replace second argument with the proper execution time when it gets simulated.
                 Date d = sbExecutor.execute(sb, ev.getArray(), time);
+                System.out.println("FREE_ARRAY End Date given by executor: " + d);
                 rc.notifySchedBlockStart(sb, ev.getArray().getId() );
                 // Create a new EventTime to check the SB execution termination
                 // in the future
