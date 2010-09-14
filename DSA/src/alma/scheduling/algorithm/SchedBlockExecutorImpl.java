@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.9 2010/09/09 18:07:11 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.10 2010/09/14 16:58:59 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -144,6 +144,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         else
            accumSens = (schedBlock.getSchedBlockControl().getAchievedSensitivity() + sensJy)
                                     / schedBlock.getSchedBlockControl().getNumberOfExecutions();
+        schedBlock.getSchedBlockControl().setAchievedSensitivity(accumSens);
         if ((accumSens * FUDGE_FACTOR <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
             schedBlock.getSchedBlockControl().setState(SchedBlockState.FULLY_OBSERVED);
         }
