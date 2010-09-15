@@ -212,7 +212,8 @@
             class can be recovered) in the Work Database's relational tables. The structure of the
             tables is very similar to the Java data model, although classes in Java use inheritance
             and other object oriented constructs that don't exists in the relational model.</para>
-        <para>The Data Model is divided in the following packages: <itemizedlist>
+        <para>The Data Model is divided in the following packages: 
+        <itemizedlist>
                 <listitem>
                     <para>executive</para>
                 </listitem>
@@ -241,7 +242,7 @@
         <figure id="exec_cd">
             <title>Executive package class diagram</title>
             <mediaobject>
-                <imageobject><imagedata width="100%" scalefit="1" fileref="Executive.png"/></imageobject>
+                <imageobject><imagedata width="100%" fileref="Executive.png"/></imageobject>
             </mediaobject>
         </figure>
         <para>The relationship between a SB and an Executive is made though the PI. A PI can be
@@ -569,17 +570,17 @@ Stopping HSQLDB</screen>
     <sect1>
         <title>The APRC Graphical User Interface</title>
         <para>The APRC Graphical User Interface (or GUI), is a web application that allows access to
-            the simulator functionality. It will have the same capabilities as the CLI, with a more
-            friendly user interface. It uses the same technologies as the Ph1M tool, so it can be
-            easily integrated with this application.</para>
+            the simulator functionality. It has the same capabilities as the CLI, and the hability to
+            present multiple reports on screen. It uses the same technologies as the Ph1M tool, so it
+            can be easily integrated with this application.</para>
         <sect2>
             <title>Architecture</title>
-            <para>The architecture of the GUI follow a strictly Model-Controller-View pattern. The
-                framework used to enforce and achieve this pattern is ZK, which is a rich internet
-                application framework, that allows quick prototyping, but also has several
+            <para>The architecture of the GUI follow a strict Model-Controller-View pattern. The
+                framework used to achieve this pattern is ZK, which is a rich internet
+                application (RIA) framework, that allows quick prototyping, but also has several
                 enterprise qualities, such as automatic data mapping from user interface to
-                controller, Spring Framework integration, and Hibernate integration, which is the
-                same layers of frameworks that the scheduling subsystem is using to develop the APRC
+                controller, Spring framework and Hibernate integration, which are the
+                same layers of frameworks that the scheduling subsystem has selected to develop the APRC
                 simulator and the DSA. <variablelist>
                     <varlistentry>
                         <term>View</term>
@@ -604,6 +605,10 @@ Stopping HSQLDB</screen>
                                 that uses ZK's auto-mapping features allows transparent access to
                                 view definitions. Even changes to it can be made from java
                                 code.</para>
+			    <para>Controllers are automatically binded from the View definition. ZK 
+			    allows intelligent and automatic binding between attributes defined at
+			    view layer, with the controller actions. This helps to reduce coding time,
+			    and provides a cleaner code.</para>
                         </listitem>
                     </varlistentry>
                     <varlistentry>
@@ -611,9 +616,11 @@ Stopping HSQLDB</screen>
                         <listitem>
                             <para>The model section of the MVC pattern, takes care of data handling.
                                 Not only it's storage, but also it's processing. In this case, it
-                                will be the APRC tool libraries , and the work database. This is
+                                will be the APRC tool libraries, and the work database. This is
                                 intended to reuse all the code between the CLI and the GUI, and to
-                                allows the same tools, to have the same behaviour. </para>
+                                allows the same tools, to have the same behaviour. All the specification
+                                of this layer, corresponds to the same in <xref linkend="sec:datamodel"/>
+                                </para>
                         </listitem>
                     </varlistentry>
                 </variablelist></para>
@@ -643,13 +650,15 @@ Stopping HSQLDB</screen>
                             itself.</para>
                         <para> The large white-space is intended for window usage. As simulations
                             are created, ran and reports gets generated, different window will
-                            become available and presented in there. <figure id="mainWindow">
-                                <title>Main window</title>
-                                <mediaobject>
-                                    <imageobject><imagedata width="100%" fileref="mainWindow.png"
-                                        /></imageobject>
-                                </mediaobject>
-                            </figure></para>
+                            become available and presented in there.
+                            </para>
+                    <figure id="mainWindow">
+			<title>Main window</title>
+			<mediaobject>
+			    <imageobject><imagedata align="center" width="93%" fileref="psmWUI-1.png"
+				/></imageobject>
+			</mediaobject>
+		    </figure>
                     </listitem>
                 </varlistentry>
                 <varlistentry>
@@ -661,13 +670,18 @@ Stopping HSQLDB</screen>
                             section of this manual. To make things easier to the user, there is a
                             "Default values" button, which completes the form correct and default
                             values.</para>
-                        <para> Basic configuration of the simulation is done through this window, so
-                            this window is also presented if the user wants to change anything on
-                            the basic simulation configuration.</para>
+                        <para>The form is automatically filled with default values, which will work
+                        create a working simulation. It will use a set or simulated sources in case
+                        of a standalone installation. In case of the ALMA STE deployment, it will
+                        be automatically configured to access Archive and Ph1m data.</para>
+                        <para>This same screen is used to reconfigure previous simulations. This screen
+                        corresponds to editting <command>aprc-config.xml</command> file.</para>
+                        <para>The basic panel covers configurations that are more likely to change, while
+                        advanced panel allows editing of configurations which corresponds to data sources path.</para>
                         <figure id="simConfigWindow">
                             <title>Simulation configuration window</title>
                             <mediaobject>
-                                <imageobject><imagedata width="100%" fileref="simConfigWindow.png"
+                                <imageobject><imagedata width="93%" fileref="psmWUI-2.png"
                                     /></imageobject>
                             </mediaobject>
                         </figure>
@@ -679,29 +693,92 @@ Stopping HSQLDB</screen>
                         <para>When a simulation is created, different data sources needs to be
                             selected. Data sources are provided by the APRC tool back-end, and the
                             window depicted in <xref linkend="simWindow"/> presents to the user the
-                            different options available. </para>
-                        <para> The same window also has two side panels. The first one gives the
-                            status of the simulation, meanwhile the second one, presents to the
+                            different options available.</para>
+                        <para>At this moment, the simulator does not allow to change data sources. This
+                        functionallity will be available for 1.0 version (Next release, on december 2010).</para>
+                        <para> The same window also has two side panels. The upper one gives the
+                            status of the simulation, meanwhile the lower one, presents to the
                             users the most common tasks to execute.</para>
-                        <figure id="simWindow">
+			<figure id="simWindow">
                             <title>Simulation window</title>
                             <mediaobject>
-                                <imageobject><imagedata width="100%" fileref="simWindow.png"
+                                <imageobject><imagedata width="93%" fileref="psmWUI-3.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+			<variablelist>
+			    <varlistentry>
+				<term>Basic configuration</term>
+				<listitem>
+				    <para>This button opens (<xref linkend="simConfigWindow"/>) allowing to 
+				    chages basic and advances configurations of the simulation.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Full data load</term>
+				<listitem>
+				    <para>This begins the process of data acquisition, storing it on a working, local
+				    database, for faster processing.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Load data</term>
+				<listitem>
+				    <para>As most of the time is spent loading weather data, this action only loads
+				    non-weather related data.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Clean data</term>
+				<listitem>
+				    <para>This action allows to erase all data from the working DB. If the user
+				    wants a clean start for a simulation, this action erases any traces of it
+				    from database. Also erases all data from "Full data load" action.</para>
+				</listitem>
+			    </varlistentry>
+			    <varlistentry>
+				<term>Run simulation</term>
+				<listitem>
+				    <para>This starts the simulation, presenting <xref linkend="runSimWindow"/> to
+				    the user. Percentage is calculated in base of the start and end of the
+				    simulated observing season, and in which date the simulation currently is.</para>
+				</listitem>
+			    </varlistentry>
+			</variablelist>
+			<figure id="runSimWindow">
+                            <title>Simulation window</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-4.png"
                                     /></imageobject>
                             </mediaobject>
                         </figure>
                     </listitem>
                 </varlistentry>
                 <varlistentry>
-                    <term>Observation projects listing window</term>
+                    <term>Reports windows</term>
                     <listitem>
-                        <para>This window shows the currently loaded observation projects. This view
-                            is intended just to show the data-mapping capabilities of ZK using
-                            Spring framework.</para>
-                        <figure id="obsProjectsWindow">
-                            <title>Observation projects listing</title>
+                        <para>The reports can be accessed from the top appplication menu. Two categories of reports
+                        are available: pre and post simulation. Each menu entry presents a new window with the
+                        select report. Examples of them, can be seen in <xref linkend="bandReportWindow"/>, 
+                        <xref linkend="lstReportWindow"/>, <xref linkend="execReportWindow"/></para>
+                        <figure id="bandReportWindow">
+                            <title>Requested time per ALMA band</title>
                             <mediaobject>
-                                <imageobject><imagedata width="100%" fileref="obsProjectsWindow.png"
+                                <imageobject><imagedata width="93%" fileref="psmWUI-5.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                        <figure id="lstReportWindow">
+                            <title>Requested time per LST range</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-6.png"
+                                    /></imageobject>
+                            </mediaobject>
+                        </figure>
+                        <figure id="execReportWindow">
+                            <title>Executive percentage balancing</title>
+                            <mediaobject>
+                                <imageobject><imagedata width="93%" fileref="psmWUI-7.png"
                                     /></imageobject>
                             </mediaobject>
                         </figure>
