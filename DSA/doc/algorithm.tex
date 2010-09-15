@@ -62,10 +62,12 @@ it is worth noting the following important requirements:
 \item The algorithm shall select the next SB to be executed in near real time. This is
 interpreted as a limit in the execution of 0.5 seconds. (This is still TBD in the requirements,
 but half a second is a safe bet.) 
+% FIXME: If a remember corretly, the selection has a limit of 15 minuts. Has this requiremt change?
 \item The algorithm, when running in the APRC simulator shall simulate an entire observing
 season (6 months), choosing SBs from a pool of 7000 SB in less than 5 minutes. This is actually
 a more stringent performance requirement that the above. If each SB estimated observation time is
 half an hour, this means that each DSA execution should be completed in less than 50 ms.
+% FIXME: Idem
 \item The algorithm implementation should be easy to modify. It should be even possible to
 switch between different algorithms. 
 \end{itemize}
@@ -386,7 +388,7 @@ For interferometric observations:
 $$
 \sigma_i^{INT} = \frac{T_{sys}^i}{\eta_Q \sqrt{N_{INT}^i(N_{INT}^i-1)(\Delta\nu)\tau^i}}
 $$
-where $T_sys^i$ is the system temperature, $\eta_Q$ is the correlator sensitivity,
+where $T_{sys}^i$ is the system temperature, $\eta_Q$ is the correlator sensitivity,
 $N_{INT}^i$ is the number of antennas, $\Delta\nu$ is the bandwidth, and $\tau^i$ is
 the integration time. All the quantities with the $i$ superscript are specific for the $i$-th
 observation.
@@ -610,7 +612,7 @@ The required fields in the APDM are:
 
 Given that the observatory is located in the southern hemisphere, in order to favor the
 SBs that at the current time have their representative source close to the zenith, 
-their hour angle should be in the vicity of 12.0 hours. The hour angle score is
+their hour angle should be in the vicinity of 12.0 hours. The hour angle score is
 $$
    S = \left\{ \begin{array}{ll}
                 0.25\cdot (HA - 12.0) + 1.0 & \text{if $8.0 \leq HA < 12.0$} \\
