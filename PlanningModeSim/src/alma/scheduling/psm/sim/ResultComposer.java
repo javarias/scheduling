@@ -280,14 +280,14 @@ public class ResultComposer {
     			return; 		
     		
 			System.out.println("Execution Lists: " + lhmStart.size() + " " + lhmEnd.size());
-			int i = 0;
+			
+			Iterator<Date> endDatesIt = lhmEnd.keySet().iterator();
+			Date endDate = endDatesIt.next();
+			
 			for( Date d : lhmStart.keySet() ){
-				if( i == 0 ){
-					firstDate = d;
-					firstArrayId = lhmStart.get(d);
-				}
     			SchedBlockResult sbr = new SchedBlockResult();
     			
+    			// From Start notification
     			sbr.setStartDate( d );
         		//TODO: Create arrays
     			Array arrayRef = null;
@@ -320,34 +320,17 @@ public class ResultComposer {
 		        sbr.setType( "SCIENTIFIC");
 		        sbr.setStatus( ExecutionStatus.INCOMPLETE);
         		sbrSet.add( sbr );
-			}
-			
-			SchedBlockResult sbr = null;
-			Iterator<SchedBlockResult> sbrIt = null;
-			if( sbrSet.size() != 0 ){
-				sbrIt = sbrSet.iterator();
-				sbr = sbrSet.iterator().next();
-			}
-			for( Date d : lhmEnd.keySet() ){
-//				while( d.compareTo(firstDate) > 0 ){
-//					sbr = sbrIt.next();
-//				}
-    			sbr.setEndDate( d );
-    			sbr.setAchievedSensitivity( lhmEnd.get(d).get(0) );
-    			sbr.setExecutionTime( lhmEnd.get(d).get(1) );
+        		
+        		// From Stop notification.
+        		sbr.setEndDate( endDate );
+    			sbr.setAchievedSensitivity( lhmEnd.get(endDate).get(0) );
+    			sbr.setExecutionTime( lhmEnd.get(endDate).get(1) );
     			if( ((SchedBlock)ptrOu).getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
     				sbr.setStatus( ExecutionStatus.COMPLETE);
     			}
-    			
-//        			if( sbr.getAchievedSensitivity() <= sbr.getGoalSensitivity() )
-//        				sbr.setStatus( ExecutionStatus.COMPLETE);
-//        			else
-//        				sbr.setStatus( ExecutionStatus.INCOMPLETE);
-    			if( !sbrIt.hasNext() )
-    				break;
-    			else
-    				sbr = sbrIt.next();
-			}    		
+        		if( endDatesIt.hasNext() )
+        			endDate = endDatesIt.next(); 
+			}
     	}else if( ptrOu instanceof ObsUnitSet ){
     		for( ObsUnit forOu : ((ObsUnitSet)ptrOu).getObsUnits() ){
     			prepareSbrSet( forOu, sbrSet );
