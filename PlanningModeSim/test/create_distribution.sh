@@ -12,16 +12,16 @@ mkdir -p $TARGET/lib/spring-2.5.5;
 mkdir -p $TARGET/lib/alma-7.1;
 
 echo "Checking for JasperReports library..."
-if [ ! -f jasperreports-3.7.0.jar ] ; then
+if [ ! -f jasperreports-3.7.4.jar ] ; then
         echo "   * Not present, downloading...";
-        wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.0/jasperreports-3.7.0.jar/download
+        wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.4/jasperreports-3.7.4.jar/download
 fi
-if [ ! -f jasperreports-fonts-3.7.0.jar ]; then
+if [ ! -f jasperreports-fonts-3.7.4.jar ]; then
         echo "   * Not present, downloading...";
-        wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.0/jasperreports-fonts-3.7.0.jar/download
+        wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.4/jasperreports-fonts-3.7.4.jar/download
 fi
-cp jasperreports-3.7.0.jar $TARGET/lib/alma-7.1/;
-cp jasperreports-fonts-3.7.0.jar $TARGET/lib/alma-7.1/;
+cp jasperreports-3.7.4.jar $TARGET/lib/alma-7.1/;
+cp jasperreports-fonts-3.7.4.jar $TARGET/lib/alma-7.1/;
 
 echo "Checking for JFreeChart library..."
 if [ ! -f jfreechart-1.0.13.tar.gz ] ; then
@@ -37,8 +37,9 @@ if [ ! -f $ACSROOT/lib/castor.jar ] ; then
 	echo "   * Not present in ACS distribution, please correct this error.";
 	exit
 fi
-cp $ACSROOT/lib/castor.jar $TARGET/lib/castor-1.3.1/castor.jar;
-cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET/lib/alma-7.1/c3p0-0.9.1.2.jar;
+cp $ACSROOT/lib/castor.jar $TARGET/lib/castor-1.3.1/;
+cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET/lib/alma-7.1/;
+cp $ACSROOT/lib/systementities.jar $TARGET/lib/alma-7.1/;
 
 echo "Checking for Xerces-J library..."
 if [ ! -f $ACSROOT/lib/endorsed/xercesImpl.jar ] ; then
