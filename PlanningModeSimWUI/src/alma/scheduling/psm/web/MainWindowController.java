@@ -109,4 +109,43 @@ public class MainWindowController extends GenericForwardComposer {
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
+    
+    public void onClick$menuItemHelp(Event event) {
+    	Window helpWindow = (Window) Path.getComponent("/mainWindow/helpWindow");
+    	if( helpWindow == null ){
+    		System.out.println("helpWindow is null");
+    		Window mainWindow = (Window) Path.getComponent("//");
+        	if( mainWindow == null ){
+        		System.out.println("mainWindow is null");
+        	}
+    		helpWindow = (Window) Executions.createComponents("help.zul", mainWindow , null);
+    	}    	
+    	helpWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemDistribution(Event event) {
+    	Window distributionWindow = (Window) Path.getComponent("/mainWindow/distributionWindow");
+    	if( distributionWindow == null ){
+    		System.out.println("distributionWindow is null");
+    		Window mainWindow = (Window) Path.getComponent("//");
+        	if( mainWindow == null ){
+        		System.out.println("mainWindow is null");
+        	}
+        	distributionWindow = (Window) Executions.createComponents("distribution.zul", mainWindow , null);
+    	}    	
+    	distributionWindow.doOverlapped();
+    }
+    
+    public void onClick$menuItemAbout(Event event) {
+    	Window aboutWindow = (Window) Path.getComponent("/mainWindow/aboutWindow");
+    	if( aboutWindow == null ){
+    		System.out.println("aboutWindow is null");
+    		Window mainWindow = (Window) Path.getComponent("//");
+        	if( mainWindow == null ){
+        		System.out.println("mainWindow is null");
+        	}
+        	aboutWindow = (Window) Executions.createComponents("about.zul", mainWindow , null);
+    	}    	
+    	aboutWindow.doOverlapped();
+    }
 }

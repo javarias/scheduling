@@ -7,7 +7,7 @@
 <zk>
 	<window title="Simulation" border="normal" mode="overlapped"
 		sizable="true" maximizable="true" closable="true" width="600px"
-		height="600px" apply="${sessionScope.simulationController}"
+		height="500px" apply="${sessionScope.simulationController}"
 		id="simulationWindow">
 		
 		<zscript>
@@ -51,11 +51,6 @@
 											<button
 												label="Basic configuration" width="100%"
 												id="buttonBasicConfiguration" />
-										</row>
-										<row>
-											<button
-												label="Configure data sources" width="100%"
-												id="buttonDataSources" />
 										</row>
 										<row>
 											<button label="Full Load data"

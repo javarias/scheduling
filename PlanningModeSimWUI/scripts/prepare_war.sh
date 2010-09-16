@@ -91,16 +91,16 @@ tar xfz ehcache-core-2.1.0-distribution.tar.gz;
 cp ehcache-core-2.1.0/ehcache-core-2.1.0.jar $TARGET;
 
 echo "Checking for JasperReports library..."
-if [ ! -f jasperreports-3.7.0.jar ] ; then
+if [ ! -f jasperreports-3.7.4.jar ] ; then
         echo "   * Not present, downloading...";
-	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.0/jasperreports-3.7.0.jar/download
+	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.4/jasperreports-3.7.4.jar/download
 fi
-if [ ! -f jasperreports-fonts-3.7.0.jar ]; then
+if [ ! -f jasperreports-fonts-3.7.4.jar ]; then
         echo "   * Not present, downloading...";
-	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.0/jasperreports-fonts-3.7.0.jar/download
+	wget http://sourceforge.net/projects/jasperreports/files/jasperreports/JasperReports%203.7.4/jasperreports-fonts-3.7.4.jar/download
 fi
-cp jasperreports-3.7.0.jar $TARGET;
-cp jasperreports-fonts-3.7.0.jar $TARGET;
+cp jasperreports-3.7.4.jar $TARGET;
+cp jasperreports-fonts-3.7.4.jar $TARGET;
 
 echo "Checking for JFreeChart library..."
 if [ ! -f jfreechart-1.0.13.tar.gz ] ; then
@@ -118,4 +118,5 @@ cp $ACSROOT/lib/castor.jar $TARGET;
 cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET;
 cp $ACSROOT/lib/xalan.jar $TARGET;
 cp $ACSROOT/lib/xalan_serializer.jar $TARGET;
-
+cp $ACSROOT/lib/systementities.jar $TARGET;
+cp $INTROOT/lib/APDMEntities.jar $TARGET;
