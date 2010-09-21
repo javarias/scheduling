@@ -35,10 +35,12 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import alma.archive.database.helpers.wrappers.DbConfigException;
 import alma.archive.database.helpers.wrappers.RelationalDbConfig;
 import alma.obops.dam.config.Ph1mContextFactory;
+import alma.obops.dam.ph1m.constants.LetterGrade;
 import alma.obops.dam.ph1m.dao.Ph1mDao;
 import alma.obops.dam.ph1m.domain.Proposal;
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 
 public class Ph1mSynchronizerImpl extends PsmContext implements Ph1mSynchronizer{
@@ -80,7 +82,12 @@ public class Ph1mSynchronizerImpl extends PsmContext implements Ph1mSynchronizer
         logger.info("Synchronizing proposal: " + p.getUid());
         if(p == null || p.getUid() == null)
             throw new IllegalArgumentException("Obs Project is null or project uid is null ");
-        Proposal prop = ph1mDao.findProposalByArchiveUid(p.getUid());
+	Proposal prop = null;
+	try{
+                prop = ph1mDao.findProposalByArchiveUid(p.getUid());
+            }catch(javax.persistence.NonUniqueResultException e){
+                System.out.println( e.getMessage() );
+            }
         if(prop == null)
             throw new NullPointerException("Proposal retrieved from Phase1m with uid: " + p.getUid() + " is null");
         p.setScienceRank(prop.getAssessment().getAprcRank());
@@ -116,11 +123,26 @@ public class Ph1mSynchronizerImpl extends PsmContext implements Ph1mSynchronizer
         List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
         ProposalComparison propC = null;
         for(ObsProject p: prjs){
-        	propC = new ProposalComparison();
-            Proposal prop = ph1mDao.findProposalByArchiveUid(p.getUid());
+            propC = new ProposalComparison();
+	    Proposal prop = null;
+	    try{
+		prop = ph1mDao.findProposalByArchiveUid(p.getUid());
+	    }catch(javax.persistence.NonUniqueResultException e){
+		System.out.println( e.getMessage() );
+	    }
             if(prop == null)
                 continue;
             propC.setEntityID(p.getUid());
+
+	    if( prop.getAssessment() == null ){
+		System.out.println("ERROR: Ph1m return null on prop.getAssessment()");	
+		continue;
+		}
+    if( prop.getAssessment().getAprcScore() == null){
+		System.out.println("ERROR: Ph1m return null on prop.getAssessment().getAprcScore()");
+		propC.setPh1mScore(9999);
+		continue;
+	    }
             propC.setPh1mScore(prop.getAssessment().getAprcScore());
             propC.setLocalScore(p.getScienceScore());
             propC.setPh1mRank(prop.getAssessment().getAprcRank());

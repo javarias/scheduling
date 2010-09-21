@@ -106,13 +106,18 @@
 				e.printStackTrace();
 				return;
 			}
-			InputStream mediais = new ByteArrayInputStream(out.toString()
-					.getBytes());
+			String localString = null;
+			try{
+				localString = out.toString("ISO-8859-1");
+			} catch (java.io.UnsupportedEncodingException ex){
+				ex.printStackTrace();
+			}
+			InputStream mediais = new ByteArrayInputStream(localString.getBytes());
 			AMedia amedia = null;
 			if(format.compareTo("html") == 0)
-				amedia = new AMedia("report.html", "html", "text/html", mediais);
+				amedia = new AMedia(print.getName() + ".html", "html", "text/html", mediais);
 			else if(format.compareTo("pdf") == 0)
-				amedia = new AMedia("report.pdf", "pdf", "application/pdf", mediais);
+				amedia = new AMedia(print.getName() + ".pdf", "pdf", "application/pdf", mediais);
 			try {
 				report.setContent(amedia);
 			} catch (Exception ex) {

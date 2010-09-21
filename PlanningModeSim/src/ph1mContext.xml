@@ -36,7 +36,8 @@
 				<value>alma.obops.dam.ph1m.domain.TechnicalAssessor</value>
                 <value>alma.obops.dam.ph1m.domain.Ph1mUser</value>
                 <value>alma.obops.dam.ph1m.domain.mock.ObsProposalPF</value>
-                
+				<value>alma.obops.dam.ph1m.domain.EmailTemplate</value>
+
                 <value>alma.lifecycle.persistence.domain.ObsProjectStatusPF</value>
 				<value>alma.lifecycle.persistence.domain.OUSStatusPF</value>
 				<value>alma.lifecycle.persistence.domain.SchedBlockStatusPF</value>
@@ -67,6 +68,9 @@
         	    
         	    <prop key="transaction.flush_before_completion">true</prop>
         	    <prop key="transaction.auto_close_session">true</prop>
+        	    
+        	    <!--  added: amchavan, 02-Sep-2010 -->
+        	    <prop key="hibernate.current_session_context_class">thread</prop>
             </props>
         </property>
     </bean>
@@ -89,10 +93,10 @@
     <bean id="ph1mArchiveDao" class="alma.obops.dam.ph1m.dao.Ph1mArchiveDaoImpl">
     </bean>
     
-    <bean id="ph1mUserDao" class="alma.obops.dam.ph1m.dao.Ph1mUserDaoLdapImpl">
+    <bean id="ph1mUserLdapDao" class="alma.obops.dam.ph1m.dao.Ph1mUserDaoLdapImpl">
     </bean>
     
-    <bean id="ph1mUserMockDao" class="alma.obops.dam.ph1m.dao.Ph1mUserDaoDbImpl">
+    <bean id="ph1mUserDbDao" class="alma.obops.dam.ph1m.dao.Ph1mUserDaoDbImpl">
     </bean>
 
     <bean id="obsProposalDao" class="alma.obops.dam.apdm.dao.ObsProposalArchiveDao">
@@ -108,7 +112,11 @@
     <!--  ====== Services beans  ====== -->
     <bean id="administrationService" 
           class="alma.obops.dam.ph1m.service.AdministrationServiceImpl" >
-    </bean>     
+    </bean> 
+    
+    <bean id="emailTemplateService" 
+          class="alma.obops.dam.ph1m.service.EmailTemplateServiceImpl" >
+    </bean>   
     
     <bean id="ph1mCrudService" 
           class="alma.obops.dam.ph1m.service.Ph1mCrudServiceImpl" >

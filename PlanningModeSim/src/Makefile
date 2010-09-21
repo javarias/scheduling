@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.15 2010/08/17 20:08:14 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.16 2010/09/21 23:17:05 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -220,5 +220,5 @@ build_reports: 	alma/scheduling/psm/reports/crowdingReport.jasper \
 				alma/scheduling/psm/reports/LSTRangesReport.jasper
 	
 %.jasper: %.jrxml
-	acsStartJava alma.util.JasperReportsCompiler $^
+	acsStartJava -endorsed alma.util.JasperReportsCompiler $^
 #___oOo___

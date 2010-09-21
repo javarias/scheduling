@@ -47,6 +47,7 @@
 		<pathelement location="${INTROOT}/lib/SchedulingPSMCli.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
+		<pathelement location="${INTROOT}/lib/dam.jar" />
 		<pathelement location="${INTROOT}/lib/APDMEntities.jar" />
 		
 
