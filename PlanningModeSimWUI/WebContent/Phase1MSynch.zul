@@ -57,7 +57,7 @@ sizable="true" onCreate="fillGrid()">
 		for(int i = 0; i < propList.size(); i++){
 			model[i][0]=propList.get(i).getEntityID();
 			model[i][1]=Double.toString(propList.get(i).getLocalScore());
-			model[i][2]=System.out.printf(".2%f", propList.get(i).getLocalRank()).toString();
+			model[i][2]=Integer.toString(propList.get(i).getLocalRank());
 			model[i][3]=propList.get(i).getLocalGrade().toString();
 			model[i][4]=propList.get(i).getEntityID();
 			model[i][5]=Double.toString(propList.get(i).getPh1mScore());
