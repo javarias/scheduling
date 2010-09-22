@@ -74,6 +74,8 @@ public class DataLinker implements DataLoader {
         List<ObsProject>prjs = obsPrjDao.getObsProjectsOrderBySciRank();
         long i = 0;
         for(ObsProject p: prjs){
+            if (p.getLetterGrade() != null)
+                continue;
             if(i < configDao.getConfiguration().getScienceGradeConfig().getnGradeAPrj())
                 p.setLetterGrade(ScienceGrade.A);
             else if (i >=  configDao.getConfiguration().getScienceGradeConfig().getnGradeAPrj() && 
@@ -90,10 +92,13 @@ public class DataLinker implements DataLoader {
         
         
         List<SchedBlock>sbs = sbDao.findAll();
-        for(SchedBlock sb: sbs){
-            System.out.println("sb.getPiName() = " + sb.getPiName());
-            PI pi = execDao.getPIFromEmail(sb.getPiName());
-            sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
+        for (SchedBlock sb : sbs) {
+            if (sb.getPiName() == null) {
+                System.out.println("sb.getPiName() = " + sb.getPiName());
+                PI pi = execDao.getPIFromEmail(sb.getPiName());
+                sb.setExecutive(pi.getPIMembership().iterator().next()
+                        .getExecutive());
+            }
             ObsProject p = obsPrjDao.getObsProject(sb);
             sb.setScienceScore(p.getScienceScore());
             sb.setLetterGrade(p.getLetterGrade());
@@ -103,15 +108,15 @@ public class DataLinker implements DataLoader {
         }
         sbDao.saveOrUpdate(sbs);
         
-        Configuration config = configDao.getConfiguration();
-        config.getScienceGradeConfig().setTotalPrj(sbs.size());
-        config.getScienceGradeConfig()
-                .setnGradeDPrj(
-                        config.getScienceGradeConfig().getTotalPrj()
-                                - (config.getScienceGradeConfig().getnGradeAPrj()
-                                   + config.getScienceGradeConfig().getnGradeBPrj() 
-                                   + config.getScienceGradeConfig().getnGradeCPrj()));
-        config.getScienceGradeConfig().testValues();
-        configDao.updateConfig();
+//        Configuration config = configDao.getConfiguration();
+//        config.getScienceGradeConfig().setTotalPrj(sbs.size());
+//        config.getScienceGradeConfig()
+//                .setnGradeDPrj(
+//                        config.getScienceGradeConfig().getTotalPrj()
+//                                - (config.getScienceGradeConfig().getnGradeAPrj()
+//                                   + config.getScienceGradeConfig().getnGradeBPrj() 
+//                                   + config.getScienceGradeConfig().getnGradeCPrj()));
+//        config.getScienceGradeConfig().testValues();
+//        configDao.updateConfig();
     }
 }
