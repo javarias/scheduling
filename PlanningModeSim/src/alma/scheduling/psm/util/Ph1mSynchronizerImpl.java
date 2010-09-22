@@ -132,11 +132,11 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 						+ e.getCause());
 			}
 		}
-		try {
-			linker.load();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			linker.load();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	@Override
