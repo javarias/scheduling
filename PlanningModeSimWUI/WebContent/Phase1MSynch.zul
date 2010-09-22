@@ -11,8 +11,8 @@ sizable="true" onCreate="fillGrid()">
 		<center flex="true" id="center">
 			<grid fixedLayout="true" id="grid">
 				<auxhead>
-					<auxheader label="Local Data" colspan="3" />
-					<auxheader label="Ph1M Data" colspan="3" />
+					<auxheader label="Local Data" colspan="4" />
+					<auxheader label="Ph1M Data" colspan="4" />
 				</auxhead>
 				<columns>
 					<column label="Entity ID" />
