@@ -15,7 +15,10 @@ public class Ph1MSychGridRowRenderer implements RowRenderer {
 		new Label(_data[3]).setParent(row);
 		new Label(_data[4]).setParent(row);
 		new Label(_data[5]).setParent(row);
-		if(_data[1].compareTo(_data[4]) != 0 || _data[1].compareTo(_data[4]) != 0){
+		new Label(_data[6]).setParent(row);
+		new Label(_data[7]).setParent(row);
+		if(_data[1].compareTo(_data[5]) != 0 || _data[2].compareTo(_data[6]) != 0
+				|| _data[3].compareTo(_data[7]) != 0){
 			row.setStyle("background-color: #FFD854");
 		}
 	}

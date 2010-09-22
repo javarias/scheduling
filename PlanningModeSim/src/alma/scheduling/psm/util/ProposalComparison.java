@@ -2,6 +2,8 @@ package alma.scheduling.psm.util;
 
 import java.io.Serializable;
 
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
+
 public class ProposalComparison implements Serializable{
 	
 	private static final long serialVersionUID = -1551287987856008670L;
@@ -11,6 +13,8 @@ public class ProposalComparison implements Serializable{
 	private double localScore;
 	private int ph1mRank;
 	private int localRank;
+	private ScienceGrade ph1mGrade;
+	private ScienceGrade localGrade;
 	
 	public String getEntityID() {
 		return entityID;
@@ -41,5 +45,17 @@ public class ProposalComparison implements Serializable{
 	}
 	public void setLocalRank(int localRank) {
 		this.localRank = localRank;
+	}
+	public ScienceGrade getPh1mGrade() {
+		return ph1mGrade;
+	}
+	public void setPh1mGrade(ScienceGrade ph1mGrade) {
+		this.ph1mGrade = ph1mGrade;
+	}
+	public ScienceGrade getLocalGrade() {
+		return localGrade;
+	}
+	public void setLocalGrade(ScienceGrade localGrade) {
+		this.localGrade = localGrade;
 	}
 }

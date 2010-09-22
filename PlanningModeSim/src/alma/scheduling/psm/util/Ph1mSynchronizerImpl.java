@@ -43,119 +43,147 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 
-public class Ph1mSynchronizerImpl extends PsmContext implements Ph1mSynchronizer{
-    
-	private static Logger logger = Logger.getLogger(Ph1mSynchronizerImpl.class.getName());
-    private Ph1mDao ph1mDao;
-    private ObsProjectDao obsProjDao;
-    private DataLoader linker;
-    private ApplicationContext simCtx;
-    
-    public Ph1mSynchronizerImpl(String workDir){
-    	super(workDir);
-    	
-        //Scheduling context init
-        simCtx = new FileSystemXmlApplicationContext( this.getContextFile() );
-        obsProjDao = (ObsProjectDao) simCtx.getBean("obsProjectDao");
-        linker = (DataLoader) simCtx.getBean("dataLinker");
-        
-        //Ph1m context init
-        RelationalDbConfig ph1mDbConfig;
-        try {
-            ph1mDbConfig = new RelationalDbConfig(logger);
-            Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", ph1mDbConfig);
-            
-        } catch (DbConfigException e) {
-            throw new RuntimeException(e);
-        }
-        ph1mDao = Ph1mContextFactory.INSTANCE.getPh1mDao();
-    }
-    
-    /**
-     * 
-     * @param p the ObsProject to be synchronized
-     * @throws IllegalArgumentException if the project is null of the uid is invalid
-     * @throws NullPointerException if the proposal retrieved is null
-     */
-    @Override 
-    public void syncrhonizeProject(ObsProject p) throws IllegalArgumentException, NullPointerException {
-        logger.info("Synchronizing proposal: " + p.getUid());
-        if(p == null || p.getUid() == null)
-            throw new IllegalArgumentException("Obs Project is null or project uid is null ");
-	Proposal prop = null;
-	try{
-                prop = ph1mDao.findProposalByArchiveUid(p.getUid());
-            }catch(javax.persistence.NonUniqueResultException e){
-                System.out.println( e.getMessage() );
-            }
-        if(prop == null)
-            throw new NullPointerException("Proposal retrieved from Phase1m with uid: " + p.getUid() + " is null");
-        p.setScienceRank(prop.getAssessment().getAprcRank());
-        if (prop.getAssessment().getAprcScore() == null)
-            throw new NullPointerException("aprc Score is null");
-        p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
-        if(prop.getCancelled())
-        	p.setStatus("CANCELLED");
-        obsProjDao.saveOrUpdate(p);
-    }
-    
-    @Override
-    public void synchPh1m() throws IllegalArgumentException {
-        List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
-        for(ObsProject p: prjs){
-            try{
-                syncrhonizeProject(p);
-            }catch(NullPointerException e){
-                logger.info("Project " + p.getUid() + " cannot be retrieved from ph1m. Reason: " + e.getCause());
-            }
-        }
-        try {
-            linker.load();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    @Override
-    public List<ProposalComparison> listPh1mProposals(){
-    	ArrayList<ProposalComparison> retList = new ArrayList<ProposalComparison>();
-        System.out.println("Project UID\tAPRC Score\tAPRC Rank");
-        List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
-        ProposalComparison propC = null;
-        for(ObsProject p: prjs){
-            propC = new ProposalComparison();
-	    Proposal prop = null;
-	    try{
-		prop = ph1mDao.findProposalByArchiveUid(p.getUid());
-	    }catch(javax.persistence.NonUniqueResultException e){
-		System.out.println( e.getMessage() );
-	    }
-            if(prop == null)
-                continue;
-            propC.setEntityID(p.getUid());
+public class Ph1mSynchronizerImpl extends PsmContext implements
+		Ph1mSynchronizer {
 
-	    if( prop.getAssessment() == null ){
-		System.out.println("ERROR: Ph1m return null on prop.getAssessment()");	
-		continue;
+	private static Logger logger = Logger.getLogger(Ph1mSynchronizerImpl.class
+			.getName());
+	private Ph1mDao ph1mDao;
+	private ObsProjectDao obsProjDao;
+	private DataLoader linker;
+	private ApplicationContext simCtx;
+
+	public Ph1mSynchronizerImpl(String workDir) {
+		super(workDir);
+
+		// Scheduling context init
+		simCtx = new FileSystemXmlApplicationContext(this.getContextFile());
+		obsProjDao = (ObsProjectDao) simCtx.getBean("obsProjectDao");
+		linker = (DataLoader) simCtx.getBean("dataLinker");
+
+		// Ph1m context init
+		RelationalDbConfig ph1mDbConfig;
+		try {
+			ph1mDbConfig = new RelationalDbConfig(logger);
+			Ph1mContextFactory.INSTANCE.init("/ph1mContext.xml", ph1mDbConfig);
+
+		} catch (DbConfigException e) {
+			throw new RuntimeException(e);
 		}
-    if( prop.getAssessment().getAprcScore() == null){
-		System.out.println("ERROR: Ph1m return null on prop.getAssessment().getAprcScore()");
-		propC.setPh1mScore(9999);
-		continue;
-	    }
-            propC.setPh1mScore(prop.getAssessment().getAprcScore());
-            propC.setLocalScore(p.getScienceScore());
-            propC.setPh1mRank(prop.getAssessment().getAprcRank());
-            propC.setLocalRank(p.getScienceRank());
-            retList.add(propC);
-            String line =p.getUid() + "\t";
-            line += prop.getAssessment().getAprcScore() + "\t";
-            line += prop.getAssessment().getAprcRank();
-            System.out.println(line);
-        }
-        return retList;
-    }
-    
-    
+		ph1mDao = Ph1mContextFactory.INSTANCE.getPh1mDao();
+	}
+
+	/**
+	 * 
+	 * @param p
+	 *            the ObsProject to be synchronized
+	 * @throws IllegalArgumentException
+	 *             if the project is null of the uid is invalid
+	 * @throws NullPointerException
+	 *             if the proposal retrieved is null
+	 */
+	@Override
+	public void syncrhonizeProject(ObsProject p)
+			throws IllegalArgumentException, NullPointerException {
+		logger.info("Synchronizing proposal: " + p.getUid());
+		if (p == null || p.getUid() == null)
+			throw new IllegalArgumentException(
+					"Obs Project is null or project uid is null ");
+		Proposal prop = null;
+		try {
+			prop = ph1mDao.findProposalByArchiveUid(p.getUid());
+		} catch (javax.persistence.NonUniqueResultException e) {
+			p.setStatus("CANCELLED");
+			obsProjDao.saveOrUpdate(p);
+			System.out.println(e.getMessage());
+		}
+		if (prop == null){
+			p.setStatus("CANCELLED");
+			obsProjDao.saveOrUpdate(p);
+			throw new NullPointerException(
+					"Proposal retrieved from Phase1m with uid: " + p.getUid()
+							+ " is null");
+		}
+		if (prop.getCancelled()){
+			p.setStatus("CANCELLED");
+			obsProjDao.saveOrUpdate(p);
+			return;
+		}
+		p.setScienceRank(prop.getAssessment().getAprcRank());
+		if (prop.getAssessment().getAprcScore() == null){
+			p.setStatus("CANCELLED");
+			obsProjDao.saveOrUpdate(p);
+			throw new NullPointerException("aprc Score is null");
+		}
+		p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
+		p.setLetterGrade(ScienceGrade.valueOf(prop.getAssessment().getAprcLetterGrade().toString()));
+		obsProjDao.saveOrUpdate(p);
+	}
+
+	@Override
+	public void synchPh1m() throws IllegalArgumentException {
+		List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
+		for (ObsProject p : prjs) {
+			try {
+				syncrhonizeProject(p);
+			} catch (NullPointerException e) {
+				logger.info("Project " + p.getUid()
+						+ " cannot be retrieved from ph1m. Reason: "
+						+ e.getCause());
+			}
+		}
+		try {
+			linker.load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<ProposalComparison> listPh1mProposals() {
+		ArrayList<ProposalComparison> retList = new ArrayList<ProposalComparison>();
+		System.out.println("Project UID\tAPRC Score\tAPRC Rank");
+		List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
+		ProposalComparison propC = null;
+		for (ObsProject p : prjs) {
+			propC = new ProposalComparison();
+			Proposal prop = null;
+			try {
+				prop = ph1mDao.findProposalByArchiveUid(p.getUid());
+			} catch (javax.persistence.NonUniqueResultException e) {
+				System.out.println(e.getMessage());
+			}
+			if (prop == null)
+				continue;
+			if (prop.getCancelled())
+				continue;
+			
+			propC.setEntityID(p.getUid());
+
+			if (prop.getAssessment() == null) {
+				System.out
+						.println("ERROR: Ph1m return null on prop.getAssessment()");
+				continue;
+			}
+			if (prop.getAssessment().getAprcScore() == null) {
+				System.out
+						.println("ERROR: Ph1m return null on prop.getAssessment().getAprcScore()");
+				propC.setPh1mScore(9999);
+				continue;
+			}
+			propC.setPh1mScore(prop.getAssessment().getAprcScore());
+			propC.setLocalScore(p.getScienceScore());
+			propC.setPh1mRank(prop.getAssessment().getAprcRank());
+			propC.setLocalRank(p.getScienceRank());
+			propC.setPh1mGrade(ScienceGrade.valueOf(prop.getAssessment().getAprcLetterGrade().toString()));
+			propC.setLocalGrade(p.getLetterGrade());
+			retList.add(propC);
+			String line = p.getUid() + "\t";
+			line += prop.getAssessment().getAprcScore() + "\t";
+			line += prop.getAssessment().getAprcRank();
+			System.out.println(line);
+		}
+		return retList;
+	}
 
 }
