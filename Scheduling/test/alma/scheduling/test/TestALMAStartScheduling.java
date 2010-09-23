@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import alma.acs.component.client.ComponentClient;
 import alma.acs.container.ContainerServices;
-import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.CorbaNotificationChannel;
 import alma.acs.nc.Receiver;
 import alma.pipelinescience.ScienceProcessingDoneEvent;
 import alma.scheduling.MasterSchedulerIF;
@@ -51,8 +51,7 @@ public class TestALMAStartScheduling {
         this.container = cs;
         this.logger = cs.getLogger();
         stopCommand = false;
-        r = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
+        r = CorbaNotificationChannel.getCorbaReceiver(alma.pipelinescience.CHANNELNAME_SCIPIPEMANAGER.value,
                 container);
         r.attach("alma.pipelinescience.ScienceProcessingDoneEvent",this);
         r.begin();

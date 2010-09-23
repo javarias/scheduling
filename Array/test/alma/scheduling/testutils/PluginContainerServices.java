@@ -29,6 +29,7 @@ import org.omg.PortableServer.Servant;
 
 import si.ijs.maci.ComponentSpec;
 import alma.ACS.OffShoot;
+import alma.ACS.OffShootOperations;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.ComponentDescriptor;
 import alma.acs.component.ComponentQueryDescriptor;
@@ -45,154 +46,188 @@ import com.cosylab.CDB.DAL;
 
 public class PluginContainerServices implements
 		alma.exec.extension.subsystemplugin.PluginContainerServices {
-	
+
 	private ContainerServices acsCS;
 	private SessionProperties properties;
-	
-	public PluginContainerServices(ContainerServices CS, Properties props) {
-		if (CS==null || props==null) {
-			throw new IllegalArgumentException("null ContainerServices or properties!!");
-		}
-		acsCS=CS;
 
-		properties=new SessionProperties();
+	public PluginContainerServices(ContainerServices CS, Properties props) {
+		if (CS == null || props == null) {
+			throw new IllegalArgumentException(
+					"null ContainerServices or properties!!");
+		}
+		acsCS = CS;
+
+		properties = new SessionProperties();
 		for (String n : props.stringPropertyNames())
 			properties.setProperty(n, props.getProperty(n));
 	}
-		
-	public Logger getExecLogger () {
+
+	public Logger getExecLogger() {
 		return getLogger();
 	}
-	
-	public String getProperty (String name) {
-		String prop= properties.getProperty(name);
-		if (prop==null) {
+
+	public String getProperty(String name) {
+		String prop = properties.getProperty(name);
+		if (prop == null) {
 			return System.getProperty(name);
 		} else {
 			return prop;
 		}
 	}
 
-	
-	public void startChildPlugin(String childName, SubsystemPlugin child) throws PluginContainerException {
+	public void startChildPlugin(String childName, SubsystemPlugin child)
+			throws PluginContainerException {
 		try {
-    			PluginStarter pluginStarter = new PluginStarter(childName,child, new Properties());
-		} catch(Exception ex) {
-			throw new PluginContainerException("Exception caught trying to start child plugin!");
+			PluginStarter pluginStarter = new PluginStarter(childName, child,
+					new Properties());
+		} catch (Exception ex) {
+			throw new PluginContainerException(
+					"Exception caught trying to start child plugin!");
 		}
 	}
 
-	public void stopPlugin(SubsystemPlugin child) throws PluginContainerException {
+	public void stopPlugin(SubsystemPlugin child)
+			throws PluginContainerException {
 		throw new PluginContainerException("Unsupported stopPlugin");
 	}
-	
+
 	public SessionProperties getSessionProperties() {
 		return properties;
 	}
-	
-	 public String getName() {
-		 return acsCS.getName();
-	 }
-	 
-	 public ComponentStateManager getComponentStateManager() {
-		 return acsCS.getComponentStateManager();
-	 }
 
-	 public AcsLogger getLogger() {
-		 return acsCS.getLogger();
-	 }
-	 
-	 public org.omg.CORBA.Object getComponent(String componentUrl)
-     throws AcsJContainerServicesEx {
+	public String getName() {
+		return acsCS.getName();
+	}
+
+	public ComponentStateManager getComponentStateManager() {
+		return acsCS.getComponentStateManager();
+	}
+
+	public AcsLogger getLogger() {
+		return acsCS.getLogger();
+	}
+
+	public org.omg.CORBA.Object getComponent(String componentUrl)
+			throws AcsJContainerServicesEx {
 		return acsCS.getComponent(componentUrl);
-	 }
-	 
-	 public org.omg.CORBA.Object getCollocatedComponent(String compUrl, String targetCompUrl) 
-	 throws AcsJContainerServicesEx {
-		 return acsCS.getCollocatedComponent(compUrl, targetCompUrl);
-	 }
-	 
-	 public org.omg.CORBA.Object getCollocatedComponent(ComponentQueryDescriptor spec, boolean markAsDefaul, String targetCompUrl) 
-	 throws AcsJContainerServicesEx {
-		 return acsCS.getCollocatedComponent(spec,markAsDefaul,targetCompUrl);
-	 }
-	 
-	 public org.omg.CORBA.Object getDynamicComponent(ComponentQueryDescriptor compSpec, boolean markAsDefault)
-     throws AcsJContainerServicesEx {
-		 return acsCS.getDynamicComponent(compSpec, markAsDefault);
-	 }
-	 
-	 @SuppressWarnings("deprecation")
-	public org.omg.CORBA.Object getDynamicComponent(ComponentSpec compSpec, boolean markAsDefault)
-     throws AcsJContainerServicesEx {
-		 return acsCS.getDynamicComponent(compSpec, markAsDefault);
-	 }
-	 
-	 public DAL getCDB() throws AcsJContainerServicesEx {
-		 return acsCS.getCDB();
-	 }
-	 
-	 public String[] findComponents(String curlWildcard, String typeWildcard)
-     throws AcsJContainerServicesEx {
-		 return acsCS.findComponents(curlWildcard, typeWildcard);
-	 }
-	 
-	 public ComponentDescriptor getComponentDescriptor(String componentUrl)
-     throws AcsJContainerServicesEx {
-		 return acsCS.getComponentDescriptor(componentUrl);
-	 }
-	 
-	 public void releaseComponent(String componentUrl) {
-		 acsCS.releaseComponent(componentUrl);
-	 }
-	 
-	 public void registerComponentListener(ComponentListener listener) {
-		 acsCS.registerComponentListener(listener);
-	 }
-	 
-	 public OffShoot activateOffShoot(Servant cbServant)
-     throws AcsJContainerServicesEx {
-		 return acsCS.activateOffShoot(cbServant);
-	 }
-	 
-	 public void deactivateOffShoot(Servant cbServant)
-     throws AcsJContainerServicesEx {
-		 acsCS.deactivateOffShoot(cbServant);
-	 }
-	 
-	 public AdvancedContainerServices getAdvancedContainerServices() {
-		 return acsCS.getAdvancedContainerServices();
-	 }
-	 
-	 public ThreadFactory getThreadFactory() {
-		 return acsCS.getThreadFactory();
-	 }
-	 
-	 public <T> T getTransparentXmlComponent(
-             Class<T> transparentXmlIF,
-             org.omg.CORBA.Object componentReference,
-             Class flatXmlIF)
-             throws AcsJContainerServicesEx {
-		 return acsCS.getTransparentXmlComponent(transparentXmlIF, componentReference, flatXmlIF);
-	 }
-	 
-	 public void assignUniqueEntityId(EntityT entity) throws AcsJContainerServicesEx {
-		 acsCS.assignUniqueEntityId(entity);
-	 }
-	 
-	 public org.omg.CORBA.Object getDefaultComponent(String componentIDLType)
-     throws AcsJContainerServicesEx {
-		 return acsCS.getDefaultComponent(componentIDLType);
-	 }
-	 
-	 public org.omg.CORBA.Object getComponentNonSticky(String curl)
-     throws AcsJContainerServicesEx {
-		 return acsCS.getComponentNonSticky(curl);
-	 }
-	 
-		public org.omg.CORBA.Object getReferenceWithCustomClientSideTimeout(org.omg.CORBA.Object originalCorbaRef, double timeoutSeconds) throws AcsJContainerServicesEx {
-			// once we are on Acs7.0.2 we can implement this by forwarding to acsCS   
-			throw new AcsJContainerServicesEx(new UnsupportedOperationException("getReferenceWithCustomClientSideTimeout() not implemented at this time, please contact EXEC"));
-		}	
-	 
+	}
+
+	public org.omg.CORBA.Object getCollocatedComponent(String compUrl,
+			String targetCompUrl) throws AcsJContainerServicesEx {
+		return acsCS.getCollocatedComponent(compUrl, targetCompUrl);
+	}
+
+	public org.omg.CORBA.Object getCollocatedComponent(
+			ComponentQueryDescriptor spec, boolean markAsDefaul,
+			String targetCompUrl) throws AcsJContainerServicesEx {
+		return acsCS.getCollocatedComponent(spec, markAsDefaul, targetCompUrl);
+	}
+
+	public org.omg.CORBA.Object getDynamicComponent(
+			ComponentQueryDescriptor compSpec, boolean markAsDefault)
+			throws AcsJContainerServicesEx {
+		return acsCS.getDynamicComponent(compSpec, markAsDefault);
+	}
+
+	@SuppressWarnings("deprecation")
+	public org.omg.CORBA.Object getDynamicComponent(ComponentSpec compSpec,
+			boolean markAsDefault) throws AcsJContainerServicesEx {
+		return acsCS.getDynamicComponent(compSpec, markAsDefault);
+	}
+
+	public DAL getCDB() throws AcsJContainerServicesEx {
+		return acsCS.getCDB();
+	}
+
+	public String[] findComponents(String curlWildcard, String typeWildcard)
+			throws AcsJContainerServicesEx {
+		return acsCS.findComponents(curlWildcard, typeWildcard);
+	}
+
+	public ComponentDescriptor getComponentDescriptor(String componentUrl)
+			throws AcsJContainerServicesEx {
+		return acsCS.getComponentDescriptor(componentUrl);
+	}
+
+	public void releaseComponent(String componentUrl) {
+		acsCS.releaseComponent(componentUrl);
+	}
+
+	public void registerComponentListener(ComponentListener listener) {
+		acsCS.registerComponentListener(listener);
+	}
+
+	@Override
+	public <T extends Servant & OffShootOperations> OffShoot activateOffShoot(
+			T cbServant) throws AcsJContainerServicesEx {
+		return acsCS.activateOffShoot(cbServant);
+	}
+
+	public void deactivateOffShoot(Servant cbServant)
+			throws AcsJContainerServicesEx {
+		acsCS.deactivateOffShoot(cbServant);
+	}
+
+	public AdvancedContainerServices getAdvancedContainerServices() {
+		return acsCS.getAdvancedContainerServices();
+	}
+
+	public ThreadFactory getThreadFactory() {
+		return acsCS.getThreadFactory();
+	}
+
+	public <T> T getTransparentXmlComponent(Class<T> transparentXmlIF,
+			org.omg.CORBA.Object componentReference, Class flatXmlIF)
+			throws AcsJContainerServicesEx {
+		return (T) acsCS.getTransparentXmlWrapper(transparentXmlIF,
+				componentReference, flatXmlIF);
+	}
+
+	public void assignUniqueEntityId(EntityT entity)
+			throws AcsJContainerServicesEx {
+		acsCS.assignUniqueEntityId(entity);
+	}
+
+	public org.omg.CORBA.Object getDefaultComponent(String componentIDLType)
+			throws AcsJContainerServicesEx {
+		return acsCS.getDefaultComponent(componentIDLType);
+	}
+
+	public org.omg.CORBA.Object getComponentNonSticky(String curl)
+			throws AcsJContainerServicesEx {
+		return acsCS.getComponentNonSticky(curl);
+	}
+
+	public org.omg.CORBA.Object getReferenceWithCustomClientSideTimeout(
+			org.omg.CORBA.Object originalCorbaRef, double timeoutSeconds)
+			throws AcsJContainerServicesEx {
+		// once we are on Acs7.0.2 we can implement this by forwarding to acsCS
+		throw new AcsJContainerServicesEx(
+				new UnsupportedOperationException(
+						"getReferenceWithCustomClientSideTimeout() not implemented at this time, please contact EXEC"));
+	}
+
+	@Override
+	public <T extends OffShootOperations> OffShoot activateOffShoot(
+			T offshootImpl, Class<T> idlOpInterface)
+			throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T, F> T getTransparentXmlWrapper(Class<T> transparentXmlIF,
+			F objectReference, Class<F> flatXmlIF)
+			throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deactivateOffShoot(Object offshootImpl)
+			throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+
+	}
+
 }

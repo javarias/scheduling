@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import alma.Control.ControlSystemChangeOfStateEvent;
 import alma.acs.component.client.ComponentClient;
 import alma.acs.container.ContainerServices;
-import alma.acs.nc.AbstractNotificationChannel;
+import alma.acs.nc.CorbaNotificationChannel;
 import alma.acs.nc.Receiver;
 import alma.acs.nc.SimpleSupplier;
 import alma.acs.util.UTCUtility;
@@ -56,20 +56,17 @@ public class TestALMAPublishEvent {
         this.container = cs;
         this.logger = cs.getLogger();
         
-        r1 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
+        r1 = CorbaNotificationChannel.getCorbaReceiver(alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
         r1.attach("alma.scheduling.NothingCanBeScheduledEvent", this);
         r1.begin();
 
-        r2 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
+        r2 = CorbaNotificationChannel.getCorbaReceiver(alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
         r2.attach("alma.scheduling.StartSessionEvent", this);
         r2.begin();
        
-        r3 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
+        r3 = CorbaNotificationChannel.getCorbaReceiver(alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
         r3.attach("alma.scheduling.EndSessionEvent", this);
         r3.begin();
@@ -78,8 +75,7 @@ public class TestALMAPublishEvent {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        r4 = AbstractNotificationChannel.getReceiver(
-            AbstractNotificationChannel.CORBA, alma.scheduling.CHANNELNAME_SCHEDULING.value,
+        r4 = CorbaNotificationChannel.getCorbaReceiver(alma.scheduling.CHANNELNAME_SCHEDULING.value,
                 container);
         r4.attach("alma.Control.ControlSystemChangeOfStateEvent", this);
         r4.begin();
