@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.17 2010/07/26 23:58:19 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.18 2010/09/24 21:05:28 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -132,7 +132,7 @@ SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
                         alma/scheduling/datamodel/config/Configuration.hbm.xml \
                         alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml \
                         alma/scheduling/CommonContext.xml \
-                        ../config/hibernate.cfg.xml
+                        ../config/hibernate.cfg.xml ehcache.xml
 #
 # java sources in Jarfile on/off
 DEBUG=on
