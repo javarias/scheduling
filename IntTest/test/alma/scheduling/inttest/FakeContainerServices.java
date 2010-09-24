@@ -7,6 +7,7 @@ import org.omg.PortableServer.Servant;
 
 import si.ijs.maci.ComponentSpec;
 import alma.ACS.OffShoot;
+import alma.ACS.OffShootOperations;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.ComponentDescriptor;
 import alma.acs.component.ComponentQueryDescriptor;
@@ -21,11 +22,12 @@ import com.cosylab.CDB.DAL;
 public class FakeContainerServices implements ContainerServices {
 
 	private static int id = 1;
-	
-	public void assignUniqueEntityId(EntityT entity) throws AcsJContainerServicesEx {
-		entity.setEntityId(String.format("%s %2H ", entity.getEntityTypeName(), id++));
-	}
 
+	public void assignUniqueEntityId(EntityT entity)
+			throws AcsJContainerServicesEx {
+		entity.setEntityId(String.format("%s %2H ", entity.getEntityTypeName(),
+				id++));
+	}
 
 	public String[] findComponents(String curlWildcard, String typeWildcard)
 			throws AcsJContainerServicesEx {
@@ -111,15 +113,58 @@ public class FakeContainerServices implements ContainerServices {
 
 	}
 
-	public String getName() {return null;};
-	public AcsLogger getLogger() {return null;};
-	public DAL getCDB() throws AcsJContainerServicesEx {return null;};
-	public OffShoot activateOffShoot(Servant cbServant) 
-		throws AcsJContainerServicesEx {return null;};
-	public void deactivateOffShoot(Servant cbServant) 
-		throws AcsJContainerServicesEx {}; 
-    public AdvancedContainerServices getAdvancedContainerServices() {return null;};
-    public ThreadFactory getThreadFactory() {return null;};
+	public String getName() {
+		return null;
+	};
 
+	public AcsLogger getLogger() {
+		return null;
+	};
+
+	public DAL getCDB() throws AcsJContainerServicesEx {
+		return null;
+	};
+
+	public void deactivateOffShoot(Servant cbServant)
+			throws AcsJContainerServicesEx {
+	};
+
+	public AdvancedContainerServices getAdvancedContainerServices() {
+		return null;
+	};
+
+	public ThreadFactory getThreadFactory() {
+		return null;
+	}
+
+	@Override
+	public <T extends OffShootOperations> OffShoot activateOffShoot(
+			T offshootImpl, Class<T> idlOpInterface)
+			throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T, F> T getTransparentXmlWrapper(Class<T> transparentXmlIF,
+			F objectReference, Class<F> flatXmlIF)
+			throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Servant & OffShootOperations> OffShoot activateOffShoot(
+			T cbServant) throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deactivateOffShoot(java.lang.Object offshootImpl)
+			throws AcsJContainerServicesEx {
+		// TODO Auto-generated method stub
+
+	};
 
 }

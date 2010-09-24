@@ -29,6 +29,7 @@ import org.omg.PortableServer.Servant;
 
 import si.ijs.maci.ComponentSpec;
 import alma.ACS.OffShoot;
+import alma.ACS.OffShootOperations;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.ComponentDescriptor;
 import alma.acs.component.ComponentQueryDescriptor;
@@ -150,10 +151,10 @@ public class PluginContainerServices implements
 		 acsCS.registerComponentListener(listener);
 	 }
 	 
-	 public OffShoot activateOffShoot(Servant cbServant)
-     throws AcsJContainerServicesEx {
-		 return acsCS.activateOffShoot(cbServant);
-	 }
+//	 public OffShoot activateOffShoot(Servant cbServant)
+//     throws AcsJContainerServicesEx {
+//		 return acsCS.activateOffShoot(cbServant);
+//	 }
 	 
 	 public void deactivateOffShoot(Servant cbServant)
      throws AcsJContainerServicesEx {
@@ -193,6 +194,33 @@ public class PluginContainerServices implements
 		public org.omg.CORBA.Object getReferenceWithCustomClientSideTimeout(org.omg.CORBA.Object originalCorbaRef, double timeoutSeconds) throws AcsJContainerServicesEx {
 			// once we are on Acs7.0.2 we can implement this by forwarding to acsCS   
 			throw new AcsJContainerServicesEx(new UnsupportedOperationException("getReferenceWithCustomClientSideTimeout() not implemented at this time, please contact EXEC"));
+		}
+
+		@Override
+		public <T extends OffShootOperations> OffShoot activateOffShoot(
+				T offshootImpl, Class<T> idlOpInterface)
+				throws AcsJContainerServicesEx {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public <T, F> T getTransparentXmlWrapper(Class<T> transparentXmlIF,
+				F objectReference, Class<F> flatXmlIF)
+				throws AcsJContainerServicesEx {
+			return acsCS.getTransparentXmlWrapper(transparentXmlIF, objectReference, flatXmlIF);
+		}
+
+		@Override
+		public <T extends Servant & OffShootOperations> OffShoot activateOffShoot(
+				T cbServant) throws AcsJContainerServicesEx {
+			return acsCS.activateOffShoot(cbServant);
+		}
+
+		@Override
+		public void deactivateOffShoot(Object offshootImpl)
+				throws AcsJContainerServicesEx {
+			acsCS.deactivateOffShoot(offshootImpl);
 		}	
 	 
 }

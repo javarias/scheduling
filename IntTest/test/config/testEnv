@@ -9,7 +9,7 @@ ACS_TMP=`pwd`/tmp
 ACS_LOCK=${ACS_TMP}/.running
 ACS_INSTANCE=0
 ACS_CONTAINERS="ACC/javaContainer ACC/pythonContainer OBOPS/ACC/javaContainer"
-IDL_FILES_TO_LOAD="SciPipeManager.idl QlDisplayManager.idl ControlMasterInterfaces.idl ControlArrayInterfaces.idl TMCDBComponent.idl projectlifecycle.idl"
+IDL_FILES_TO_LOAD="SciPipeManager.idl QlDisplayManager.idl ControlMasterInterfaces.idl ControlArrayInterfaces.idl TMCDBComponent.idl projectlifecycle.idl Simulator.idl"
 
 # Hibernate database configuration
 DBDIR=$ACS_TMP/hsqldb
