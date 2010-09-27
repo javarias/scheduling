@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.18 2010/09/24 21:05:28 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.19 2010/09/27 21:47:53 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -201,6 +201,7 @@ endif
 # TARGETS
 # -------
 all: gen do_all
+	cp scheduling.properties $(ACSDATA)/config
 	@echo " . . . 'all' done" 
 
 clean : clean_gen clean_all 
