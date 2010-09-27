@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
- * $Id: SchedulingContextFactory.java,v 1.2 2010/09/27 21:49:09 javarias Exp $
+ * $Id: SchedulingContextFactory.java,v 1.3 2010/09/27 21:51:55 javarias Exp $
  */
 
 package alma.scheduling.utils;
@@ -43,11 +43,11 @@ public class SchedulingContextFactory {
      * </br>
      * Ex. file:../context.xml classpath:alma/scheduling/CommonContext.xml
      * </br>
-     * If no resource identifier is provided will be assumed that a file a url is passed as
+     * If no resource identifier is provided will be assumed that a file's url is passed as
      * parameter.
      * 
-     * @param url
-     * @return
+     * @param url the url of the Context xml file to be read.
+     * @return a spring Context initializated and ready to be used. 
      */
     public static AbstractApplicationContext getContext(String url) {
         XmlBeanFactory factory = null;
