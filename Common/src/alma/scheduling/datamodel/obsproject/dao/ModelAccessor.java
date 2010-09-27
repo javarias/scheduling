@@ -24,8 +24,7 @@ import java.util.Observable;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.archive.database.helpers.wrappers.StateArchiveDbConfig;
@@ -37,6 +36,7 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.LoggerFactory;
+import alma.scheduling.utils.SchedulingContextFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 
 /**
@@ -75,8 +75,8 @@ public class ModelAccessor extends Observable {
             stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 		}
 		
-        ApplicationContext ctx =
-            new ClassPathXmlApplicationContext(SCHEDULING_COMMON_SPRING_CONFIG);
+        AbstractApplicationContext ctx = SchedulingContextFactory
+                .getContext("classpath:" + SCHEDULING_COMMON_SPRING_CONFIG);
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBS_PROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHED_BLOCK_BEAN);
 	}
