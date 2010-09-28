@@ -75,16 +75,17 @@ startHSQLDB() {
     acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT" &> tmp/hsqldb.log &
     # allow some time for the database to start
     sleep 5
-    acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server "$DBNAME" //localhost:$DBPORT sql/hsqldb-ddl.sql &> $ACS_TMP/hsqldb-ddl.log
+	./scripts/sqltool "\\i $INTROOT/Sources/StateSystem/src/sql/hsqldb-ddl.sql"
+#    acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server "$DBNAME" localhost:9001 sql/hsqldb-ddl.sql &> $ACS_TMP/hsqldb-ddl.log
 }
 
 stopHSQLDB() {
     printf "Stopping HSQLDB\n"
     # Get the location of hsqldb.jar.
-    if test -a $ACSROOT/lib/hsqldb.jar; then
-        HSQLDB_JAR=$ACSROOT/lib/hsqldb.jar
-    elif test -a $INTROOT/lib/hsqldb.jar; then
-        HSQLDB_JAR=$INTROOT/lib/hsqldb.jar
+    if test -a $ACSROOT/lib/sqltool.jar; then
+        HSQLDB_JAR=$ACSROOT/lib/sqltool.jar
+    elif test -a $INTROOT/lib/sqltool.jar; then
+        HSQLDB_JAR=$INTROOT/lib/sqltool.jar
     fi
     java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "shutdown;" "$DBNAME"
 }
