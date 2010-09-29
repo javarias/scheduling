@@ -31,17 +31,17 @@ import java.util.logging.Level;
 
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
-import alma.TelCalPublisher.AmpCurveReducedEvent;
-import alma.TelCalPublisher.AmpliCalReducedEvent;
-import alma.TelCalPublisher.AntennaPositionsReducedEvent;
-import alma.TelCalPublisher.AtmosphereReducedEvent;
-import alma.TelCalPublisher.DelayReducedEvent;
-import alma.TelCalPublisher.FocusReducedEvent;
-import alma.TelCalPublisher.PhaseCalReducedEvent;
-import alma.TelCalPublisher.PhaseCurveReducedEvent;
-import alma.TelCalPublisher.PointingModelReducedEvent;
-import alma.TelCalPublisher.PointingReducedEvent;
-import alma.TelCalPublisher.SkydipReducedEvent;
+import alma.telcal.AmpCurveReducedEvent;
+import alma.telcal.AmpliCalReducedEvent;
+import alma.telcal.AntennaPositionsReducedEvent;
+import alma.telcal.AtmosphereReducedEvent;
+import alma.telcal.DelayReducedEvent;
+import alma.telcal.FocusReducedEvent;
+import alma.telcal.PhaseCalReducedEvent;
+import alma.telcal.PhaseCurveReducedEvent;
+import alma.telcal.PointingModelReducedEvent;
+import alma.telcal.PointingReducedEvent;
+import alma.telcal.SkydipReducedEvent;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.domainspecific.ArrayContextLogger;
 import alma.acs.util.UTCUtility;
@@ -68,7 +68,7 @@ import alma.scheduling.Scheduler.Scheduler;
 /**
  * This Class receives the events sent out by other alma subsystems. 
  * @author Sohaila Lucero
- * @version $Id: ALMAReceiveEvent.java,v 1.61 2010/01/21 18:33:52 javarias Exp $
+ * @version $Id: ALMAReceiveEvent.java,v 1.62 2010/09/29 17:10:41 dclarke Exp $
  */
 public class ALMAReceiveEvent extends ReceiveEvent {
     // container services

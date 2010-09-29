@@ -99,7 +99,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.130 2010/06/18 15:09:45 dclarke Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.131 2010/09/29 17:10:41 dclarke Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -236,22 +236,22 @@ public class ALMAMasterScheduler extends MasterScheduler
             // Connect to the TelCal NC
             //telcal_nc = AbstractNotificationChannel.getReceiver(
             //    AbstractNotificationChannel.CORBA, 
-            //    alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
+            //    alma.telcal.CHANNELNAME_TELCALPUBLISHER.value,
             //    containerServices);
             telcal_nc = CorbaNotificationChannel.getCorbaReceiver(
-                    alma.TelCalPublisher.CHANNELNAME_TELCALPUBLISHER.value,
+                    alma.telcal.CHANNELNAME_TELCALPUBLISHER.value,
                     containerServices);
-            telcal_nc.attach("alma.TelCalPublisher.AmpliCalReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.AmpCurveReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.AntennaPositionsReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.AtmosphereReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.DelayReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.FocusReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.PhaseCalReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.PhaseCurveReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.PointingReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.PointingModelReducedEvent", eventreceiver);
-            telcal_nc.attach("alma.TelCalPublisher.SkydipReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.AmpliCalReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.AmpCurveReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.AntennaPositionsReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.AtmosphereReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.DelayReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.FocusReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.PhaseCalReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.PhaseCurveReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.PointingReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.PointingModelReducedEvent", eventreceiver);
+            telcal_nc.attach("alma.telcal.SkydipReducedEvent", eventreceiver);
             telcal_nc.begin();
         
             // Connect to the Pipeline NC
