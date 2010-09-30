@@ -54,7 +54,7 @@ package alma.scheduling.Define;
  * the "ready", "waiting", or "running" state.  If the unit's end time
  * has been set the state is either "complete" or "aborted".  
  * 
- * @version $Id: Status.java,v 1.10 2009/11/09 22:58:45 rhiriart Exp $
+ * @version $Id: Status.java,v 1.11 2010/09/30 23:28:51 javarias Exp $
  * @author Allen Farris
  */
 public class Status {
@@ -219,6 +219,7 @@ public class Status {
 	 * @return true if the status is ready
 	 */
 	public boolean isReady() {
+		System.out.println("SchedBlockStatus:" + status);
 		return status == READY;
 	}
 	
