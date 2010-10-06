@@ -109,7 +109,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
     public ObsProject findByEntityId(String entityId) {
         Query query = null;
         query = getSession().createQuery("from ObsProject op " +
-        		"where op = ?");
+        		"where op.uid = ?");
         query.setParameter(0, entityId);
         return (ObsProject)query.uniqueResult();
     }
@@ -119,7 +119,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
 	public int countAll() {
         Query query = null;
         query = getSession().createQuery("select count(x) from ObsProject x ");
-        return (Integer)query.uniqueResult();
+        return ((Long)query.uniqueResult()).intValue();
 	}
 
 }

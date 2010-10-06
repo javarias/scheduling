@@ -231,7 +231,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
 	public int countAll() {
         Query query = null;
         query = getSession().createQuery("select count(x) from SchedBlock x ");
-        return (Integer)query.uniqueResult();
+        return ((Long)query.uniqueResult()).intValue();
 	}
 
     @Override
