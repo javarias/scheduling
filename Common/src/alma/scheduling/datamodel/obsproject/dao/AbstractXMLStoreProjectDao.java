@@ -25,6 +25,7 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.persistence.domain.StateEntityType;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemOperations;
@@ -174,7 +175,11 @@ public abstract class AbstractXMLStoreProjectDao
         
         logger.info(String.format("%s.getAllObsProjects()",
         		this.getClass().getSimpleName()));
-
+        // Use the State Archive to convert all the Phase2Submitted
+        // ObsProjects and SchedBlocks to Ready
+        archive.convertProjects(StatusTStateType.PHASE2SUBMITTED,
+                                StatusTStateType.READY);
+        
         // Create somewhere for the result
         List<ObsProject> result = null;
 
@@ -268,11 +273,18 @@ public abstract class AbstractXMLStoreProjectDao
     		final DateTime     since,
     		final List<String> newOrModifiedIds,
     		final List<String> deletedIds) throws DAOException {
-		
+	    
+	    // Use the State Archive to convert all the Phase2Submitted
+        // ObsProjects and SchedBlocks to Ready
+        archive.convertProjects(StatusTStateType.PHASE2SUBMITTED,
+                                StatusTStateType.READY);
+	    
 		// Collect the id in sets so we don't have to worry about
 		// duplication
 		final Set<String> changedProjects = new HashSet<String>();
 		final Set<String> deletedProjects = new HashSet<String>();
+		
+		//Do a change in the status of the Projects
 		
 		// A change in ProjectStatus is the only way that an ObsProject
 		// can be deleted, so we differentiate these two cases in the
@@ -365,7 +377,6 @@ public abstract class AbstractXMLStoreProjectDao
 	    			e);
 	    	return result;
 		}
-		
 		for (final String projectId : changedOPs) {
 			result.add(projectId);
 		}
