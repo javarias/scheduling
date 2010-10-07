@@ -20,7 +20,9 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
+import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
 import alma.xmlentity.XmlEntityStruct;
@@ -399,4 +401,16 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	protected boolean interestedInObsProject(String state) {
 		return opPhase2RunnableStates.contains(state);
 	}
+
+    @Override
+    public void getObsProjectChanges(DateTime since,
+            List<String> newOrModifiedIds, List<String> deletedIds)
+            throws DAOException {
+        convertProjects(
+                alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED,
+                alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY);
+        super.getObsProjectChanges(since, newOrModifiedIds, deletedIds);
+    }
+	
+	
 }

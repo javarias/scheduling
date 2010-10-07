@@ -177,8 +177,6 @@ public abstract class AbstractXMLStoreProjectDao
         		this.getClass().getSimpleName()));
         // Use the State Archive to convert all the Phase2Submitted
         // ObsProjects and SchedBlocks to Ready
-        archive.convertProjects(StatusTStateType.PHASE2SUBMITTED,
-                                StatusTStateType.READY);
         
         // Create somewhere for the result
         List<ObsProject> result = null;
@@ -219,6 +217,9 @@ public abstract class AbstractXMLStoreProjectDao
     			// ...get the project...
     			final alma.entity.xmlbinding.obsproject.ObsProject
     					apdmProject = archive.getObsProject(id);
+    			// ... and its status...
+                ProjectStatus ps = archive.getProjectStatus(apdmProject.getProjectStatusRef().getEntityId());
+                archive.getOUSStatus(ps.getObsProgramStatusRef().getEntityId());
     			// ...get all the corresponding APDM SchedBlocks.
 				logger.info(String.format(
 						"Succesfully got APDM ObsProject %s",
@@ -274,17 +275,10 @@ public abstract class AbstractXMLStoreProjectDao
     		final List<String> newOrModifiedIds,
     		final List<String> deletedIds) throws DAOException {
 	    
-	    // Use the State Archive to convert all the Phase2Submitted
-        // ObsProjects and SchedBlocks to Ready
-        archive.convertProjects(StatusTStateType.PHASE2SUBMITTED,
-                                StatusTStateType.READY);
-	    
 		// Collect the id in sets so we don't have to worry about
 		// duplication
 		final Set<String> changedProjects = new HashSet<String>();
 		final Set<String> deletedProjects = new HashSet<String>();
-		
-		//Do a change in the status of the Projects
 		
 		// A change in ProjectStatus is the only way that an ObsProject
 		// can be deleted, so we differentiate these two cases in the
