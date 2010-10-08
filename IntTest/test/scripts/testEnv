@@ -74,7 +74,8 @@ startHSQLDB() {
     acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT" &> tmp/hsqldb.log &
     # allow some time for the database to start
     sleep 5
-    acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server "$DBNAME" //localhost:$DBPORT sql/hsqldb-ddl.sql &> $ACS_TMP/hsqldb-ddl.log
+	./scripts/sqltool "\\i $INTROOT/Sources/StateSystem/src/sql/hsqldb-ddl.sql"
+#    acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server "$DBNAME" //localhost:$DBPORT sql/hsqldb-ddl.sql &> $ACS_TMP/hsqldb-ddl.log
 }
 
 stopHSQLDB() {
