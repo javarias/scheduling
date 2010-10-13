@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingArray.idl,v 1.3 2010/08/20 19:27:31 rhiriart Exp $
+ * $Id: SchedulingArray.idl,v 1.4 2010/10/13 15:55:31 javarias Exp $
  */
 
 #ifndef _SCHEDULINGARRAY_IDL_
@@ -37,13 +37,17 @@
 
 module scheduling {
 
-    enum ArraySchedulerMode {
-        INTERACTIVE,
-        DYNAMIC_PASSIVE,
-        DYNAMIC_ACTIVE,
-        TIME_BASED,
-        MANUAL
-    };
+//HACK: This file is included in SchedulingMaster.idl  the enum defined here has a
+// conflict with another enum defined in SchedulingMaster.idl
+//Added _I, jacorb parser doesn't support very well modules inside modules
+   enum ArraySchedulerMode{
+      INTERACTIVE_I,
+   	  DYNAMIC_PASSIVE_I,
+      DYNAMIC_ACTIVE_I,
+      TIME_BASED_I,
+      MANUAL_I
+   };
+
     typedef sequence<ArraySchedulerMode> ArraySchedulerModeSeq;
     
     enum ArraySchedulerLifecycleType {

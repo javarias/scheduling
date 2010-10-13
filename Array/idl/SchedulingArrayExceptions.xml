@@ -6,7 +6,7 @@
     type="80100"
     _prefix="alma">
 
-<ErrorCode name="SchedulingInternalError"
+<ErrorCode name="SchedulingArrayInternalError"
            shortDescription="Internal exception in the Scheduling Array component."
            description="Internal exception in the Scheduling Array component."/>
 <ErrorCode name="NoRunningSchedBlock"
