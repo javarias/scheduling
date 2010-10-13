@@ -21,13 +21,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingMaster.idl,v 1.1 2010/07/14 00:28:17 rhiriart Exp $
+ * $Id: SchedulingMaster.idl,v 1.2 2010/10/13 16:02:45 javarias Exp $
  */
 
 #ifndef _SCHEDULINGMASTER_IDL_
 #define _SCHEDULINGMASTER_IDL_
 
 #include <acscomponent.idl>
+#include <SchedulingMasterExceptions.idl>
+#include <SchedulingArray.idl>
 #include <ControlInterfaces.idl>
 
 #pragma prefix "alma"
@@ -40,17 +42,25 @@ module scheduling {
     typedef Control::ResourceNameSeq PhotonicsSeq;
     enum ArrayModeEnum { DYNAMIC, INTERACTIVE, QUEUED, MANUAL };
     
-    struct ArrayInfo {
+    struct ArrayCreationInfo {
         ArrayIdentifier arrayId;
         string arrayComponentName;
     };
 
     interface Master : ACS::ACSComponent {
-        ArrayInfo createArray(in AntennaIdSeq antennaIdList,
+        ArrayCreationInfo createArray(in AntennaIdSeq antennaIdList,
                               in PhotonicsSeq photonicsList,
                               in Control::CorrelatorType corrType,
-                              in ArrayModeEnum schedulingMode);
-        void destroyArray(in ArrayIdentifier arrayId); 
+                              in ArrayModeEnum schedulingMode,
+                              in ArraySchedulerLifecycleType lifecycleType) 
+			raises (SchedulingMasterExceptions::ControlInternalExceptionEx,
+					SchedulingMasterExceptions::SchedulingInternalExceptionEx, 
+					SchedulingMasterExceptions::ACSInternalExceptionEx);
+
+        void destroyArray(in ArrayIdentifier arrayId) raises 
+			(SchedulingMasterExceptions::ControlInternalExceptionEx,
+			 SchedulingMasterExceptions::SchedulingInternalExceptionEx, 
+			 SchedulingMasterExceptions::ACSInternalExceptionEx);
     };
 
 

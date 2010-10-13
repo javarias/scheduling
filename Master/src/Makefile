@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.1 2010/07/14 00:28:17 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.2 2010/10/13 16:02:45 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -108,6 +108,11 @@ tttlll_OBJECTS  =
 # Configuration Database Files
 # ----------------------------
 CDB_SCHEMAS = 
+
+#
+# Generate ACS Error System classes
+#
+ACSERRDEF = SchedulingMasterExceptions
 
 # 
 # IDL Files and flags

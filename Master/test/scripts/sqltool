@@ -6,10 +6,10 @@
 # Source test configuration file. 
 . config/testEnv
 
-if test -a $ACSROOT/lib/hsqldb.jar; then
-    HSQLDB_JAR=$ACSROOT/lib/hsqldb.jar
-elif test -a $INTROOT/lib/hsqldb.jar; then
-    HSQLDB_JAR=$INTROOT/lib/hsqldb.jar
+if test -a $ACSROOT/lib/sqltool.jar; then
+    HSQLDB_JAR=$ACSROOT/lib/sqltool.jar
+elif test -a $INTROOT/lib/sqltool.jar; then
+    HSQLDB_JAR=$INTROOT/lib/sqltool.jar
 fi
 
 if test $# -ge 1; then
