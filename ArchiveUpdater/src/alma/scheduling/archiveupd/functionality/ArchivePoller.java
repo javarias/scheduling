@@ -36,7 +36,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.1 2010/09/03 22:09:11 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.2 2010/11/03 22:13:44 javarias Exp $
  */
 public class ArchivePoller {
 
@@ -217,12 +217,9 @@ public class ArchivePoller {
 			return;
 		}
     	List<String> newOrModifiedIds = new ArrayList<String>();
-    	List<String> deletedIds       = new ArrayList<String>();
+		List<String> deletedIds = new ArrayList<String>();
 		try {
-			inDao.getObsProjectChanges(
-		    		since,
-		    		newOrModifiedIds,
-		    		deletedIds);
+			inDao.getObsProjectChanges(since, newOrModifiedIds, deletedIds);
 		} catch (DAOException e) {
 			handler.severe(String.format(
 					"Error getting new projects from ALMA project store - %s",

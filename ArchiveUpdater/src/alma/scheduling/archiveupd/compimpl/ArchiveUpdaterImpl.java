@@ -40,7 +40,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 
 	private ErrorHandling handler;
 
-	final public long pollInterval = 5 * 60 * 1000; // 5 minutes
+	private long pollInterval = 5 * 60 * 1000; // 5 minutes
 
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -121,11 +121,13 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 
     private class Loop extends Thread {
     	public Loop() {
+    		m_logger.info("Starting polling Thread");
     		setDaemon(true);
     	}
     	
     	public void run() {
     		while (!this.isInterrupted()) {
+    			System.out.println("Interrupted: " + this.isInterrupted());
     			update();
     			try {
     				Thread.sleep(pollInterval);
@@ -135,4 +137,9 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     		}
     	}
     }
+
+	@Override
+	public void setPollInterval(int arg0) {
+		pollInterval = arg0 * 1000;
+	}
 }

@@ -50,7 +50,7 @@ checkInstances() {
 
 start() {
     printf "Starting test\n"
-    startHSQLDB
+#    startHSQLDB
     startACS
 }
 

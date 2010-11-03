@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingArchiveUpdater.idl,v 1.1 2010/07/29 21:09:38 rhiriart Exp $
+ * $Id: SchedulingArchiveUpdater.idl,v 1.2 2010/11/03 22:13:44 javarias Exp $
  */
 
 #ifndef _SCHEDULING_ARCHIVE_UPDATER_IDL_
@@ -55,6 +55,8 @@ module scheduling {
     interface ArchiveUpdater : ACS::ACSComponent {
         /** Perform the update incrementally */
         void update();
+
+		void setPollInterval(in long seconds);
     };
 
 };
