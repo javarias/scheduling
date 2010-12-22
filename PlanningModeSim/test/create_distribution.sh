@@ -52,7 +52,7 @@ cp $ACSROOT/lib/endorsed/xercesImpl.jar $TARGET/lib/castor-1.3.1/xercesImpl.jar;
 echo "Checking for Spring libraries..."
 if [ ! -f spring-framework-2.5.5-with-dependencies.zip ] ; then
 	echo "   * Not present, downloading...";
-	wget wget http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-2.5.5-with-dependencies.zip
+	wget http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-2.5.5-with-dependencies.zip
 fi
 unzip -o spring-framework-2.5.5-with-dependencies.zip > /dev/null;
 cp -r spring-framework-2.5.5/lib/* spring-framework-2.5.5/dist $TARGET/lib/spring-2.5.5/;
