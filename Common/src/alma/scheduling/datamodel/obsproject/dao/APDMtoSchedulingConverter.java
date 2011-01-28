@@ -4,12 +4,16 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.omg.CORBA.UserException;
+
+import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.ExecStatusT;
@@ -29,6 +33,7 @@ import alma.scheduling.datamodel.helpers.FrequencyConverter;
 import alma.scheduling.datamodel.helpers.SensitivityConverter;
 import alma.scheduling.datamodel.helpers.TimeConverter;
 import alma.scheduling.datamodel.obsproject.FieldSource;
+import alma.scheduling.datamodel.obsproject.GenericObservingParameters;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitControl;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -42,6 +47,8 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
+import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
+import alma.scheduling.utils.ErrorHandling;
 
 /**
  * Conversion of APDM ObsProjects to the equivalents in the Scheduling
@@ -81,9 +88,11 @@ public class APDMtoSchedulingConverter {
 	private Phase            phase;
 	private Logger           logger;
 	
+	private final AbstractXMLStoreProjectDao.XMLStoreImportNotifier notifier;
 	/* End Fields
 	 * ============================================================= */
 
+	
 	
 	
 	/*
@@ -93,7 +102,9 @@ public class APDMtoSchedulingConverter {
 	 */
 	/** Hide the default constructor from the outside world */
 	@SuppressWarnings("unused")
-	private APDMtoSchedulingConverter() {};
+	private APDMtoSchedulingConverter() {
+		notifier = null;
+	};
 	
 	/**
 	 * Construct a new instance.
@@ -101,10 +112,12 @@ public class APDMtoSchedulingConverter {
 	public APDMtoSchedulingConverter(
 			ArchiveInterface archive,
 			Phase            phase,
-			Logger           logger) {
+			Logger           logger,
+			AbstractXMLStoreProjectDao.XMLStoreImportNotifier notifier) {
 		this.archive = archive;
 		this.phase   = phase;
 		this.logger  = logger;
+		this.notifier = notifier;
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -124,17 +137,68 @@ public class APDMtoSchedulingConverter {
 	 */
 	public List<ObsProject> convertAPDMProjectsToDataModel() {
 		List<ObsProject> result = new Vector<ObsProject>();
+		final int numProjects = archive.numObsProjects();
+		int processed = 0;
+		
 		for (alma.entity.xmlbinding.obsproject.ObsProject 
 				apdmProject : archive.obsProjects()) {
+//			final LogBuffer lb = new LogBuffer(logger);
 			try {
 				result.add(
 						convertAPDMProjectToDataModel(
 								apdmProject));
+//				lb.successInfo(String.format(
+//						"ObsProject %s successfully converted to Scheduling Data Model",
+//						apdmProject.getObsProjectEntity().getEntityId()));
+				logger.info(String.format(
+						"ObsProject %s successfully converted to Scheduling Data Model",
+						apdmProject.getObsProjectEntity().getEntityId()));
+				ProjectImportEvent event = new ProjectImportEvent();
+				event.setTimestamp(new Date());
+				event.setEntityId(apdmProject.getObsProjectEntity().getEntityId());
+				event.setEntityType("ObsProject");
+				event.setStatus(ImportStatus.STATUS_OK);
+				event.setDetails("successfully converted to Scheduling Data Model");
+				notifier.notifyEvent(event);
 			} catch (ConversionException e) {
+//				lb.failureWarning(String.format(
+//						"cannot convert APDM ObsProject %s to Scheduling Data Model - %s",
+//						apdmProject.getObsProjectEntity().getEntityId(),
+//						e.getMessage()));
 				logger.warning(String.format(
-					"cannot convert APDM ObsProject %s to Scheduling Data Model - %s",
-					apdmProject.getObsProjectEntity().getEntityId(),
-					e.getMessage()));
+						"cannot convert APDM ObsProject %s to Scheduling Data Model - %s",
+						apdmProject.getObsProjectEntity().getEntityId(),
+						e.getMessage()));
+				ProjectImportEvent event = new ProjectImportEvent();
+				event.setTimestamp(new Date());
+				event.setEntityId(apdmProject.getObsProjectEntity().getEntityId());
+				event.setEntityType("ObsProject");
+				event.setStatus(ImportStatus.STATUS_ERROR);
+				event.setDetails("cannot convert APDM ObsProject - " + e.getMessage());
+				notifier.notifyEvent(event);
+			} catch (Exception e) {
+				// unexpected error, bung out the stack trace too.
+//				lb.failureWarning(String.format(
+//						"error converting APDM ObsProject %s to Scheduling Data Model - %s",
+//						apdmProject.getObsProjectEntity().getEntityId(),
+//						e.getMessage()));
+				ErrorHandling.severe(logger, String.format(
+						"error converting APDM ObsProject %s to Scheduling Data Model - %s",
+						apdmProject.getObsProjectEntity().getEntityId(),
+						e.getMessage()), e);
+				ProjectImportEvent event = new ProjectImportEvent();
+				event.setTimestamp(new Date());
+				event.setEntityId(apdmProject.getObsProjectEntity().getEntityId());
+				event.setEntityType("ObsProject");
+				event.setStatus(ImportStatus.STATUS_ERROR);
+				event.setDetails("cannot convert APDM ObsProject - " + e.getMessage());
+				notifier.notifyEvent(event);
+			}
+			processed ++;
+			if ((numProjects > 100) && (processed % 100 == 0)) {
+				logger.info(String.format(
+						"Processed %d of %d ObsProjects",
+						processed, numProjects));
 			}
 		}
 		return result;
@@ -264,12 +328,20 @@ public class APDMtoSchedulingConverter {
 		// Fill in the top level object
 		
 		/* obsProject.setId() - No need, it is handled by Hibernate */
-		obsProject.setUid(apdmProject.getObsProposalRef().getEntityId());
-		// obsProject.setUid(apdmProject.getObsProjectEntity().getEntityId());
+		if (phase == Phase.PHASE1) {
+			obsProject.setUid(apdmProject.getObsProposalRef().getEntityId());
+		} else { 
+			obsProject.setUid(apdmProject.getObsProjectEntity().getEntityId());
+		}
+		obsProject.setCode(apdmProject.getCode());
+		obsProject.setName(apdmProject.getProjectName());
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
 		obsProject.setScienceScore((float)apdmProject.getScientificScore());
 		obsProject.setLetterGrade(ScienceGrade.valueOf(apdmProject.getLetterGrade()));
+		obsProject.setCsv(apdmProject.getIsCommissioning());
+		obsProject.setManual(apdmProject.getManualMode());
+		
 		if (phase == Phase.PHASE1) {
 			obsProject.setStatus(
 					alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString());
@@ -284,20 +356,35 @@ public class APDMtoSchedulingConverter {
 					projectStatus.getStatus().getState().toString());
 			obsProject.setTotalExecutionTime(
 					programStatus.getTotalUsedTimeInSec()*1.0);
+			obsProject.setStatusEntity(projectStatus.getProjectStatusEntity());
 		}
 		
 		// Shuffle down the structure creating it
 		alma.entity.xmlbinding.obsproject.ObsUnitSetT apdmOUS;
 		
+		alma.entity.xmlbinding.obsproposal.ObsProposalRefT proposalRef = apdmProject
+				.getObsProposalRef();
+		alma.entity.xmlbinding.obsproposal.ObsProposal apdmProposal = null;
+		try {
+			apdmProposal = archive.getObsProposal(proposalRef.getEntityId());
+		} catch (EntityException e1) {
+			e1.printStackTrace();
+		} catch (UserException e1) {
+			e1.printStackTrace();
+		}
 		if (phase == Phase.PHASE1) {
-			alma.entity.xmlbinding.obsproposal.ObsProposalRefT
-				proposalRef = apdmProject.getObsProposalRef();
-			alma.entity.xmlbinding.obsproposal.ObsProposal
-				apdmProposal = archive.cachedObsProposal(proposalRef.getEntityId());
 			apdmOUS = apdmProposal.getObsPlan();
 		} else {
 			apdmOUS = apdmProject.getObsProgram().getObsPlan();
 		}
+		
+		try {
+			obsProject.setAffiliation(apdmProposal.getPrincipalInvestigator().getAssociatedArc().toString());
+		} catch (java.lang.NullPointerException e) {
+			throw new ConversionException("Information of PI from APDMProposal is incomlpete. Project: "
+					+ obsProject.getUid());
+		}
+		
 		ObsUnitSet obsProgram = createObsUnitSet(
 				apdmOUS,
 				apdmProject,
@@ -353,6 +440,7 @@ public class APDMtoSchedulingConverter {
 		obsUnitSet.setObsUnitControl(obsUnitControl);
 		/* obsUnitSet.setparent() - Handled by the calling code */
 		obsUnitSet.setProject(obsProject);
+
 		
 		// Shuffle down the structure creating it
 		// Firstly, any child ObsUnitSets.
@@ -360,6 +448,14 @@ public class APDMtoSchedulingConverter {
 				choice = apdmOUS.getObsUnitSetTChoice();
 		
 		if (choice == null) {
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setTimestamp(new Date());
+			event.setEntityId(apdmOUS.getEntityPartId());
+			event.setEntityType("ObsUnitSet");
+			event.setStatus(ImportStatus.STATUS_ERROR);
+			event.setDetails("ObsUnitSet has no children");
+			notifier.notifyEvent(event);
+			
 			throw new ConversionException(String.format(
 					"APDM ObsUnitSet %s of APDM ObsProject %s has no children",
 					apdmOUS.getEntityPartId(),
@@ -388,12 +484,27 @@ public class APDMtoSchedulingConverter {
 							apdmProject,
 							obsProject);
 					obsUnitSet.addObsUnit(schedBlock);
+					ProjectImportEvent event = new ProjectImportEvent();
+					event.setTimestamp(new Date());
+					event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+					event.setEntityType("SchedBlock");
+					event.setStatus(ImportStatus.STATUS_OK);
+					event.setDetails("successfully converted APDM SchedBlock" );
+					notifier.notifyEvent(event);
+					
 				} catch (ConversionException e) {
 					logger.info(String.format(
 							"Skipping SchedBlock %s in Project %s - %s",
 							apdmSB.getSchedBlockEntity().getEntityId(),
 							apdmProject.getObsProjectEntity().getEntityId(),
 							e.getMessage()));
+					ProjectImportEvent event = new ProjectImportEvent();
+					event.setTimestamp(new Date());
+					event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+					event.setEntityType("SchedBlock");
+					event.setStatus(ImportStatus.STATUS_ERROR);
+					event.setDetails("cannot convert APDM SchedBlock - " + e.getMessage());
+					notifier.notifyEvent(event);
 				}
 			} else {
 				// No SchedBlock for the child, skip gently over it.
@@ -403,6 +514,17 @@ public class APDMtoSchedulingConverter {
 					apdmOUS.getEntityPartId(),
 					apdmProject.getObsProjectEntity().getEntityId()));
 			}
+		}
+		
+		alma.entity.xmlbinding.ousstatus.OUSStatusRefT oussRef = apdmOUS
+				.getOUSStatusRef();
+		try {
+			OUSStatus ousStatus = archive.getOUSStatus(oussRef.getEntityId());
+			obsUnitSet.setStatusEntity(ousStatus.getOUSStatusEntity());
+		} catch (EntityException e) {
+			throw new ConversionException(e);
+		} catch (UserException e) {
+			throw new ConversionException(e);
 		}
 		
 		// Return the result
@@ -459,7 +581,13 @@ public class APDMtoSchedulingConverter {
 		
 		// schedBlock.setPiName(apdmSB.getPIName());
 		schedBlock.setPiName(obsProject.getPrincipalInvestigator());
+		schedBlock.setNote(apdmSB.getNote());
 		schedBlock.setUid(apdmSB.getSchedBlockEntity().getEntityId());
+		schedBlock.setRunQuicklook(apdmSB.getSchedBlockControl().getRunQuicklook());
+		schedBlock.setProjectUid(obsProject.getUid());
+		schedBlock.setCsv(obsProject.getCsv());
+		schedBlock.setManual(obsProject.getManual());
+		schedBlock.setName(apdmSB.getName());
 		
 		// Create objects which hang off the top level SchedBlock, and
 		// hang them off it.
@@ -481,6 +609,13 @@ public class APDMtoSchedulingConverter {
 					apdmSB.getSchedBlockEntity().getEntityId(),
 					apdmProject.getObsProjectEntity().getEntityId(),
 					e.getMessage()));
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setTimestamp(new Date());
+			event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+			event.setEntityType("SchedBlock");
+			event.setStatus(ImportStatus.STATUS_ERROR);
+			event.setDetails("Cannot create ObsUnitControl object for SchedBlock" );
+			notifier.notifyEvent(event);
 			throw e;
 		}
 		try {
@@ -493,6 +628,13 @@ public class APDMtoSchedulingConverter {
 					apdmSB.getSchedBlockEntity().getEntityId(),
 					apdmProject.getObsProjectEntity().getEntityId(),
 					e.getMessage()));
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setTimestamp(new Date());
+			event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+			event.setEntityType("SchedBlock");
+			event.setStatus(ImportStatus.STATUS_ERROR);
+			event.setDetails("Cannot create Preconditions object for SchedBlock" );
+			notifier.notifyEvent(event);
 			throw e;
 		}
 		try {
@@ -505,6 +647,13 @@ public class APDMtoSchedulingConverter {
 				apdmSB.getSchedBlockEntity().getEntityId(),
 				apdmProject.getObsProjectEntity().getEntityId(),
 				e.getMessage()));
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setTimestamp(new Date());
+			event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+			event.setEntityType("SchedBlock");
+			event.setStatus(ImportStatus.STATUS_ERROR);
+			event.setDetails("Cannot create SchedulingConstraints object for SchedBlock");
+			notifier.notifyEvent(event);
 			throw e;
 		}
 		try {
@@ -516,12 +665,22 @@ public class APDMtoSchedulingConverter {
 					apdmSB.getSchedBlockControl(),
 					sbStatus);
 			schedBlock.setSchedBlockControl(schedBlockControl);
+			if (sbStatus != null) {
+				schedBlock.setStatusEntity(sbStatus.getSBStatusEntity());
+			}
 		} catch (ConversionException e) {
 			logger.info(String.format(
 				"Cannot create SchedBlockControl object for SchedBlock %s in Project %s - %s",
 				apdmSB.getSchedBlockEntity().getEntityId(),
 				apdmProject.getObsProjectEntity().getEntityId(),
 				e.getMessage()));
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setTimestamp(new Date());
+			event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+			event.setEntityType("SchedBlock");
+			event.setStatus(ImportStatus.STATUS_ERROR);
+			event.setDetails("Cannot create SchedBlockControl object for SchedBlock");
+			notifier.notifyEvent(event);
 			throw e;
 		}
 		
@@ -542,31 +701,37 @@ public class APDMtoSchedulingConverter {
 		}
 		
 		// Dig around for the representative target.
-		alma.entity.xmlbinding.schedblock.SchedulingConstraintsT
-				constraints = apdmSB.getSchedulingConstraints();
-		if (constraints != null) {
-			alma.entity.xmlbinding.schedblock.SchedBlockRefT
-					representativeTargetRef =
-							constraints.getRepresentativeTargetRef();
-			if (representativeTargetRef != null) {
-				String representativeTargetId
-						= representativeTargetRef.getPartId();
-				Target representativeTarget
-						= targets.get(representativeTargetId);
-				if (representativeTarget != null) {
-					schedBlock.getSchedulingConstraints()
-						.setRepresentativeTarget(representativeTarget);
+		try {
+			alma.entity.xmlbinding.schedblock.SchedulingConstraintsT
+					constraints = apdmSB.getSchedulingConstraints();
+			if (constraints != null) {
+				alma.entity.xmlbinding.schedblock.SchedBlockRefT
+				representativeTargetRef =
+					constraints.getRepresentativeTargetRef();
+				if (representativeTargetRef != null) {
+					String representativeTargetId =
+						representativeTargetRef.getPartId();
+					Target representativeTarget =
+						targets.get(representativeTargetId);
+					if (representativeTarget != null) {
+						schedBlock.getSchedulingConstraints()
+							.setRepresentativeTarget(representativeTarget);
+					} else {
+						throw new ConversionException(
+									"Cannot find representative target");
+					}
 				} else {
 					throw new ConversionException(
-							"Cannot find representative target");
+								"No representative target reference object");
 				}
 			} else {
 				throw new ConversionException(
-						"No representative target reference object");
+							"No scheduling constraints (want to look in them for the representative target)");
 			}
-		} else {
-			throw new ConversionException(
-					"No scheduling constraints (want to look in them for the representative target)");
+		} catch (ConversionException e) {
+			logger.warning(String.format(
+					"%s in SchedBlock %s",
+					e.getMessage(), apdmSB.getSchedBlockEntity().getEntityId()));
 		}
 		
 		// Return the result
@@ -717,33 +882,55 @@ public class APDMtoSchedulingConverter {
 				outer : apdmSB.getSchedBlockChoice2()) {
 			for (alma.entity.xmlbinding.schedblock.SchedBlockChoice2Item
 					inner : outer.getSchedBlockChoice2Item()) {
-				ObservingParameters op;
-				String name;
-				String partId;
+
 				alma.entity.xmlbinding.schedblock.ScienceParametersT
 					scienceParameters = inner.getScienceParameters();
+				
 				if (scienceParameters != null) {
-					name   = scienceParameters.getName();
-					partId = scienceParameters.getEntityPartId();
+					ScienceParameters sp;
+					String name   = scienceParameters.getName();
+					String partId = scienceParameters.getEntityPartId();
+
 					try {
-						op = createScienceParameters(scienceParameters);
-						result.put(partId, op);
+						sp = createScienceParameters(scienceParameters);
+						result.put(partId, sp);
 						logger.info(String.format(
 							"Converted APDM Science Parameters %s (%s) in SchedBlock %s",
 							name, partId,
 							apdmSB.getSchedBlockEntity().getEntityId()));
 					} catch (ConversionException e) {
 						logger.info(String.format(
-							"Cannot convert APDM ObservingParameters %s (%s) in SchedBlock %s - %s, skipping",
+							"Cannot convert APDM Science Parameters %s (%s) in SchedBlock %s - %s, skipping",
 							name, partId,
 							apdmSB.getSchedBlockEntity().getEntityId(),
 							e.getMessage()));
 					}
 				} else {
-					logger.info(String.format(
-						"Cannot convert APDM ObservingParameters in SchedBlock %s - unsupported type (%s), skipping",
-						apdmSB.getSchedBlockEntity().getEntityId(),
-						workOutType(inner)));
+					alma.entity.xmlbinding.schedblock.ObservingParametersT
+							observingParameters = getAPDMObservingParameters(inner);
+					if (observingParameters != null) {
+						String name   = observingParameters.getName();
+						String partId = observingParameters.getEntityPartId();
+
+						try {
+							GenericObservingParameters gp = createGenericObservingParameters(workOutType(inner));
+							result.put(partId, gp);
+							logger.info(String.format(
+									"Converted APDM %s Parameters %s (%s) in SchedBlock %s",
+									gp.getType(),
+									name, partId,
+									apdmSB.getSchedBlockEntity().getEntityId()));
+						} catch (ConversionException e) {
+							logger.info(String.format(
+									"Cannot convert APDM %s Parameters %s (%s) in SchedBlock %s - %s, skipping",
+									workOutType(inner),
+									name, partId,
+									apdmSB.getSchedBlockEntity().getEntityId(),
+									e.getMessage()));
+						}
+					} else {
+						logger.info("Cannot convert APDM Observing Parameters in SchedBlock - unknown type, skipping");
+					}
 				}
 			}
 		}
@@ -845,6 +1032,17 @@ public class APDMtoSchedulingConverter {
 		return result;
 	}
 
+	private GenericObservingParameters createGenericObservingParameters(
+			String type)
+		throws ConversionException {
+		
+		GenericObservingParameters result = new GenericObservingParameters();
+		
+		result.setType(type);
+
+		return result;
+	}
+
 	private FieldSource createFieldSource(
 			alma.entity.xmlbinding.schedblock.FieldSourceT fieldSource)
 		throws ConversionException {
@@ -857,7 +1055,8 @@ public class APDMtoSchedulingConverter {
 
 		result.setCoordinates(createSkyCoordinates(
 				fieldSource.getSourceCoordinates()));
-		result.setEphemeris(fieldSource.getSourceEphemeris());
+// Ephemeris could be a long string		
+//		result.setEphemeris(fieldSource.getSourceEphemeris());
 		result.setName(fieldSource.getName());
 		result.setPmRA(AngularVelocityConverter.convertedValue(
 				fieldSource.getPMRA(),
@@ -947,8 +1146,10 @@ public class APDMtoSchedulingConverter {
 			case StatusTStateType.READY_TYPE:
 			case StatusTStateType.PHASE1SUBMITTED_TYPE:
 			case StatusTStateType.PHASE2SUBMITTED_TYPE:
+			case StatusTStateType.CSVREADY_TYPE:
 				return SchedBlockState.READY;
 			case StatusTStateType.RUNNING_TYPE:
+			case StatusTStateType.CSVRUNNING_TYPE:
 				return SchedBlockState.RUNNING;
 			case StatusTStateType.FULLYOBSERVED_TYPE:
 				return SchedBlockState.FULLY_OBSERVED;
@@ -960,6 +1161,41 @@ public class APDMtoSchedulingConverter {
 		}
 	}
 
+
+	private alma.entity.xmlbinding.schedblock.ObservingParametersT getAPDMObservingParameters(
+			alma.entity.xmlbinding.schedblock.SchedBlockChoice2Item inner) {
+		alma.entity.xmlbinding.schedblock.ObservingParametersT result = null;
+		
+		if (inner.getAmplitudeCalParameters() != null) {
+			result = inner.getAmplitudeCalParameters();
+		} else if (inner.getAtmosphericCalParameters() != null) {
+			result = inner.getAtmosphericCalParameters();
+		} else if (inner.getBandpassCalParameters() != null) {
+			result = inner.getBandpassCalParameters();
+		} else if (inner.getDelayCalParameters() != null) {
+			result = inner.getDelayCalParameters();
+		} else if (inner.getFocusCalParameters() != null) {
+			result = inner.getFocusCalParameters();
+		} else if (inner.getHolographyParameters() != null) {
+			result = inner.getHolographyParameters();
+		} else if (inner.getOpticalPointingParameters() != null) {
+			result = inner.getOpticalPointingParameters();
+		} else if (inner.getPhaseCalParameters() != null) {
+			result = inner.getPhaseCalParameters();
+		} else if (inner.getPointingCalParameters() != null) {
+			result = inner.getPointingCalParameters();
+		} else if (inner.getPolarizationCalParameters() != null) {
+			result = inner.getPolarizationCalParameters();
+		} else if (inner.getRadiometricPointingParameters() != null) {
+			result = inner.getRadiometricPointingParameters();
+		} else if (inner.getReservationParameters() != null) {
+			result = inner.getReservationParameters();
+		} else if (inner.getScienceParameters() != null) {
+			result = inner.getScienceParameters();
+		}
+		
+		return result;
+	}
 
 	private String workOutType(
 			alma.entity.xmlbinding.schedblock.SchedBlockChoice2Item inner) {
@@ -976,9 +1212,9 @@ public class APDMtoSchedulingConverter {
 		} else if (inner.getFocusCalParameters() != null) {
 			result = "Focus Cal";
 		} else if (inner.getHolographyParameters() != null) {
-			result = "Holography Cal";
+			result = "Holography";
 		} else if (inner.getOpticalPointingParameters() != null) {
-			result = "Optical Pointing Cal";
+			result = "Optical Pointing";
 		} else if (inner.getPhaseCalParameters() != null) {
 			result = "Phase Cal";
 		} else if (inner.getPointingCalParameters() != null) {
@@ -986,11 +1222,11 @@ public class APDMtoSchedulingConverter {
 		} else if (inner.getPolarizationCalParameters() != null) {
 			result = "Polarization Cal";
 		} else if (inner.getRadiometricPointingParameters() != null) {
-			result = "Radiometric Cal";
+			result = "Radiometric";
 		} else if (inner.getReservationParameters() != null) {
-			result = "Reservation Cal";
+			result = "Reservation";
 		} else if (inner.getScienceParameters() != null) {
-			result = "Science Cal";
+			result = "Science";
 		}
 		
 		return result;

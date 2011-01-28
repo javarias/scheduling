@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="lib/SchedulingMaster.jar"/>
+	<classpathentry kind="lib" path="lib/SchedulingMasterExceptions.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Array"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
+	<classpathentry kind="lib" path="/Array/lib/SchedulingArray.jar"/>
+	<classpathentry kind="lib" path="/Array/lib/SchedulingArrayExceptions.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -25,7 +25,7 @@ import alma.scheduling.Define.SchedulingException;
  * another, e.g. component names to and from array names.
  * 
  * @author dclarke
- * $Id: NameTranslator.java,v 1.3 2010/08/20 19:27:31 rhiriart Exp $
+ * $Id: NameTranslator.java,v 1.4 2011/01/28 00:35:31 javarias Exp $
  */
 public abstract class NameTranslator {
 	/*
@@ -96,6 +96,8 @@ public abstract class NameTranslator {
 		String result;
 		try {
 			result = addPrefix(COMPONENT_PREFIX, arrayName);
+			System.out.format("ArrayName %s translated to ComponentName %s%n",
+					arrayName, result);
 		} catch (TranslationException e) {
 			throw new TranslationException(String.format(
 					"Error translating array name %s to Scheduling component name - %s",
@@ -119,6 +121,8 @@ public abstract class NameTranslator {
 		String result;
 		try {
 			result = stripPrefix(COMPONENT_PREFIX, componentName);
+			System.out.format("ComponentName %s translated to ArrayName %s%n",
+					componentName, result);
 		} catch (TranslationException e) {
 			throw new TranslationException(String.format(
 					"Error translating Scheduling component name %s to array name - %s",
@@ -141,6 +145,8 @@ public abstract class NameTranslator {
 		String result;
 		try {
 			result = addPrefix(CONTROL_COMPONENT_PREFIX, arrayName);
+			System.out.format("ArrayName %s translated to ControlComponentName %s%n",
+					arrayName, result);
 		} catch (TranslationException e) {
 			throw new TranslationException(String.format(
 					"Error translating array name %s to Control component name - %s",
@@ -164,6 +170,8 @@ public abstract class NameTranslator {
 		String result;
 		try {
 			result = stripPrefix(CONTROL_COMPONENT_PREFIX, componentName);
+			System.out.format("ControlComponentName %s translated to ArrayName %s%n",
+					componentName, result);
 		} catch (TranslationException e) {
 			throw new TranslationException(String.format(
 					"Error translating Control component name %s to array name - %s",

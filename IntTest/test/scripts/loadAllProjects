@@ -8,6 +8,6 @@ then
 else
    subsystems=($@)
 fi
-
+JAVA_OPTIONS="-Dalma.obsprep.allowprivileged=true $JAVA_OPTIONS"
 ALMA-OT -batch scripts/bulk-import-saveasnew-retrieve.py ${subsystems[@]}
 

@@ -11,7 +11,7 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 
-	<bean id="dataSource.hsqldb" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<!--<property name="user" value="hibernate" />
 		<property name="password" value="aprc" />
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
@@ -30,10 +30,25 @@
 		<property name="acquireIncrement" value="1"/>
 		<property name="acquireRetryAttempts" value="5"/>
 	</bean>
+	
+	<bean id="dataSource.test" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName">
+			<value>org.hsqldb.jdbcDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:hsqldb:hsql://localhost:9001/statearchive</value>
+		</property>
+		<property name="username">
+			<value>sa</value>
+		</property>
+		<property name="password">
+			<value/>
+		</property>
+	</bean>
 
 	<!-- Hibernate SessionFactory -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource.hsqldb"/>
+		<property name="dataSource" ref="dataSource"/>
 		<property name="mappingResources">
 			<list>
 				<value>alma/scheduling/datamodel/executive/Executive.hbm.xml</value>
@@ -88,9 +103,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
-	<!-- ResultComposer -->
-	<bean id="resultComposer" class="alma.scheduling.psm.sim.ResultComposer"> </bean>
-
 	<!-- DAO Beans -->
 	<bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
@@ -109,9 +121,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	<bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-	<bean id="schedBlockDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 	<bean id="sourceDao" class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">

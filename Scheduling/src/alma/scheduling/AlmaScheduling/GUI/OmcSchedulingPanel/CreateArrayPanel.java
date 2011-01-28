@@ -53,7 +53,7 @@ import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.ChessboardPanel;
 import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.OLDArrayModeEnum;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
@@ -62,7 +62,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private int columnIndex = 0;
     private JButton createArrayB;
     private JButton cancelB;
-    private ArrayModeEnum arrayMode;
+    private OLDArrayModeEnum arrayMode;
     private CreateArrayController controller;
     private JTabbedPane parent;
     private ChessboardPanel twelveMeterChessboard;
@@ -412,7 +412,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
 
-    public void prepareCreateArray(ArrayModeEnum mode){
+    public void prepareCreateArray(OLDArrayModeEnum mode){
         arrayMode = mode;
         GetAntennaThread ant = new GetAntennaThread();
         if(controller == null){

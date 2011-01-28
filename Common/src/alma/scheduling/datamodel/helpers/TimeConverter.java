@@ -63,7 +63,15 @@ public class TimeConverter {
 	 */
 	static private double valueConvertedToStandardUnits(DoubleWithUnitT time) 
 			throws ConversionException {
-		final TimeTUnitType unit = TimeTUnitType.valueOf(time.getUnit());
+		final TimeTUnitType unit;
+		try {
+			unit = TimeTUnitType.valueOf(time.getUnit());
+		} catch (IllegalArgumentException e) {
+			throw new ConversionException(String.format(
+					"Unrecognised input units for time: %s",
+					time.getUnit()));
+		}
+
 		double result = time.getContent();
 
 		switch (unit.getType()) {

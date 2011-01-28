@@ -17,10 +17,15 @@
  */
 package alma.scheduling.array.guis;
 
+import java.awt.Dimension;
+import java.awt.Color;
+
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 
@@ -29,27 +34,47 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.5 2010/09/03 22:07:31 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.6 2011/01/28 00:35:31 javarias Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
 										   implements SubsystemPlugin {
 
-	/*
-	 * ================================================================
-	 * Fields
-	 * ================================================================
-	 */
-	private PluginContainerServices services = null;
-	/** The access to the project models */
-	private ModelAccessor models = null;
-	/** The access to the Array for which we are a panel */
-	private ArrayAccessor array = null;
-	/** Is this panel running in control mode (or monitor mode)? */
-	private boolean                 controlPanel = false;
-	/* End Fields
-	 * ============================================================= */
-
+    /*
+     * ================================================================
+     * Constants
+     * ================================================================
+     */
+    public final static String NormalColour = "#000000";
+    public final static String TitleColour  = "#3f3fff";
+    public final static String DetailColour = "#bf00bf";
+    public final static Color NormalColor = Color.BLACK;
+    public final static Color TitleColor  = new Color( 63,  63, 255);
+    public final static Color DetailColor = new Color(191,   0, 191);
+    /* End Constants
+     * ============================================================= */
+    
+	
+    
+    /*
+     * ================================================================
+     * Fields
+     * ================================================================
+     */
+    protected PluginContainerServices services = null;
+    /** The access to the project models */
+    protected ModelAccessor models = null;
+    /** The access to the Array for which we are a panel */
+    protected ArrayAccessor array = null;
+    /** Is this panel running in control mode (or monitor mode)? */
+    private boolean                 controlPanel = true;
+    /** Name of the Array to be controlled */
+    protected String arrayName;
+    /** Are we in Manual Mode? */
+    private boolean manualMode = false;
+    /* End Fields
+     * ============================================================= */
+    
 	
 	
 	/*
@@ -71,7 +96,19 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	@Override
 	public void setServices(PluginContainerServices services) {
+		System.out.format("%s (AbstractArrayPanel).setServices, new arrayName = %s, old arrayName = %s%n",
+				this.getClass().getSimpleName(),
+				services.getSessionProperties().getArrayName(),
+				this.arrayName);
 		this.services = services;
+		final String newArrayName = services.getSessionProperties().getArrayName();
+		if ((this.arrayName == null) || (this.arrayName.length() == 0)) {
+			// No existing array name..
+			if ((newArrayName != null) && (newArrayName.length() > 0)) {
+				// ..and there is one in the services
+				this.arrayName = newArrayName;
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -79,16 +116,11 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	@Override
 	public void start() throws Exception {
-		try {
-			array = new ArrayAccessor(services);
-			arrayAvailable();
-		} catch (Exception e) {
-			array = null;
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this,
-					String.format("Cannot connect to array - %s", e.getMessage()),
-					"Initialisation Error,",
-					JOptionPane.ERROR_MESSAGE);
+		
+		if (arrayName == null ){
+			Exception ex = new Exception("arrayName is null. Please set an array value name before start");
+			ex.printStackTrace();
+			throw ex;
 		}
 		try {
 			models = new ModelAccessor();
@@ -98,6 +130,17 @@ public abstract class AbstractArrayPanel extends JPanel
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
 					String.format("Cannot connect to project data - %s", e.getMessage()),
+					"Initialisation Error,",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		try {
+			array = new ArrayAccessor(services, arrayName);
+			arrayAvailable();
+		} catch (Exception e) {
+			array = null;
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					String.format("Cannot connect to array - %s", e.getMessage()),
 					"Initialisation Error,",
 					JOptionPane.ERROR_MESSAGE);
 		}
@@ -121,8 +164,18 @@ public abstract class AbstractArrayPanel extends JPanel
 	 * Construction
 	 * ================================================================
 	 */
+	protected AbstractArrayPanel(String arrayName) {
+		super();
+		this.arrayName = arrayName;
+		System.out.format("%s (AbstractArrayPanel).AbstractArrayPanel(%s)%n",
+				this.getClass().getSimpleName(),
+				arrayName);
+	}
+	
 	protected AbstractArrayPanel() {
 		super();
+		System.out.format("%s (AbstractArrayPanel).AbstractArrayPanel()%n",
+				this.getClass().getSimpleName());
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -169,6 +222,79 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	protected boolean isControl() {
 		return controlPanel;
+	}
+	
+	/**
+	 * Is our array manual?
+	 * @return <code>true</code> if we're in Manual Mode
+	 *         <code>false</code> if we're not
+	 */
+	protected boolean isManual() {
+		return manualMode;
+	}
+	
+	protected void setArray(ArrayAccessor array){
+		this.array = array;
+		this.manualMode = array.isManual();
+		System.out.format("%s (AbstractArrayPanel).setArray(ArrayAccessor @ %h)%n",
+				this.getClass().getSimpleName(),
+				arrayName.hashCode());
+	}
+	
+	protected void setModelAccessor(ModelAccessor models){
+		this.models = models;
+	}
+
+	protected void makeSameWidth(JComponent... components) {
+		double maxWidth = -1;
+
+		for (final JComponent c : components) {
+			final double w = c.getPreferredSize().getWidth();
+			if (w > maxWidth) {
+				maxWidth = w;
+			}
+		}
+		for (final JComponent c : components) {
+			final Dimension d = c.getPreferredSize();
+			d.setSize(maxWidth, d.getHeight());
+			c.setMinimumSize(d);
+			c.setPreferredSize(d);
+			c.setMaximumSize(d);
+		}
+	}
+	
+	protected String getUserName() {
+		try {
+			final SessionProperties sp = services.getSessionProperties();
+			try {
+				String result = sp.getUserName();
+				if (result == null) {
+					result = "<i>No username</i>";
+				}
+				return result;
+			} catch (NullPointerException e) {
+				return "<i>No session properties</i>";
+			}
+		} catch (NullPointerException e) {
+			return "<i>No container services</i>";
+		}
+	}
+	
+	protected String getUserRole() {
+		try {
+			final SessionProperties sp = services.getSessionProperties();
+			try {
+				String result = sp.getUserRole();
+				if (result == null) {
+					result = "<i>No user role</i>";
+				}
+				return result;
+			} catch (NullPointerException e) {
+				return "<i>No session properties</i>";
+			}
+		} catch (NullPointerException e) {
+			return "<i>No container services</i>";
+		}
 	}
 	/* End Stuff to do with being a superclass
 	 * ============================================================= */

@@ -45,11 +45,23 @@ public class ControlAutomaticArrayImpl implements ControlArray {
             .narrow(container.getComponent(NameTranslator.arrayToControlComponentName(arrayName)));
     }
 
+    @Override
+    public void configure(IDLEntityRef schedBlockRef)
+        throws Exception {
+	// Do nothing, automatic observing does not configure
+    }
+    
+    @Override
     public void observe(IDLEntityRef schedBlockRef, IDLEntityRef sessionRef)
         throws Exception {
         array.observe(schedBlockRef, sessionRef, 0);
     }
-    
+
+    @Override    
+    public void stopSB() throws Exception {
+	array.stop();
+    }
+
     @Override
     public void cleanUp() {
         container.releaseComponent(array.getName());

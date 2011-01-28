@@ -10,7 +10,7 @@ import alma.acs.component.client.AdvancedComponentClient;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.ClientLogManager;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.OLDArrayModeEnum;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.ProjectLite;
@@ -74,7 +74,7 @@ public class TestSimulatorInteractiveSB {
 		    ms.createArray(antenna,
 		    		       selectPhotonics,
 		    		       CorrelatorType.BL,
-		    		       ArrayModeEnum.INTERACTIVE);
+		    		       OLDArrayModeEnum.INTERACTIVE);
 		    //ms.createArray(array02,ArrayModeEnum.INTERACTIVE);
 		    String schedulername = ms.startInteractiveScheduling1("Control/Array001");
 		    //String schedulername1 = ms.startInteractiveScheduling1("Control/Array002");

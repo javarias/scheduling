@@ -18,6 +18,8 @@
 
 package alma.scheduling.master.compimpl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.Object;
@@ -31,24 +33,26 @@ import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingMasterExceptions.ACSInternalExceptionEx;
+import alma.SchedulingMasterExceptions.ArrayNotFoundExceptionEx;
 import alma.SchedulingMasterExceptions.ControlInternalExceptionEx;
 import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.SchedulingMasterExceptions.wrappers.AcsJACSInternalExceptionEx;
+import alma.SchedulingMasterExceptions.wrappers.AcsJArrayNotFoundExceptionEx;
 import alma.SchedulingMasterExceptions.wrappers.AcsJControlInternalExceptionEx;
 import alma.SchedulingMasterExceptions.wrappers.AcsJSchedulingInternalExceptionEx;
 import alma.acs.component.ComponentDescriptor;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
-import alma.scheduling.ArrayHelper;
+import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
+import alma.scheduling.ArrayHelper;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.MasterOperations;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
-import alma.scheduling.Array;
 
 public class MasterImpl implements ComponentLifecycle,
         MasterOperations {
@@ -56,28 +60,20 @@ public class MasterImpl implements ComponentLifecycle,
     private ContainerServices m_containerServices;
     private Logger m_logger;
     private ControlMaster controlMaster;
-    
-    private static final String CONTROL_MASTER_URL = "CONTROL/MASTER";
+    private HashMap<String, ArrayModeEnum> activeArrays;
 	
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
     /////////////////////////////////////////////////////////////
 
+    public MasterImpl(){
+    	activeArrays = new HashMap<String, ArrayModeEnum>();
+    }
+    
     public void initialize(ContainerServices containerServices) {
         m_containerServices = containerServices;
         m_logger = m_containerServices.getLogger();
-
-		m_logger.finest("About to get reference of " + CONTROL_MASTER_URL);
-		try {
-			controlMaster = ControlMasterHelper.narrow(m_containerServices
-					.getComponent(CONTROL_MASTER_URL));
-			m_logger.finest("Got reference of " +  CONTROL_MASTER_URL + " successfully");
-		} catch (AcsJContainerServicesEx e) {
-			m_logger.warning("Unable to get reference to " + CONTROL_MASTER_URL);
-			throw new RuntimeException("Unable to get reference to " + CONTROL_MASTER_URL,
-					e);
-		}
-
+        
 		m_logger.finest("initialize() called...");
     }
 
@@ -86,13 +82,33 @@ public class MasterImpl implements ComponentLifecycle,
     }
 
     public void cleanUp() {
+    	for(String arrayName: activeArrays.keySet()){
+    		m_logger.warning("Triying to destroy Array: " + arrayName + " at cleanUp. " +
+    				"You should destroy the arrays before component cleanUp");
+    		try {
+				destroyArray(arrayName);
+				m_logger.fine("Array: " + arrayName + " Destroyed successfully");
+			} catch (ACSInternalExceptionEx e) {
+				m_logger.severe("Array: " + arrayName + " Cannot be destroyed");
+				AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(e); 
+				ex.log(m_logger);
+			} catch (ControlInternalExceptionEx e) {
+				m_logger.severe("Array: " + arrayName + " Cannot be destroyed");
+				AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(e); 
+				ex.log(m_logger);
+			} catch (SchedulingInternalExceptionEx e) {
+				m_logger.severe("Array: " + arrayName + " Cannot be destroyed");
+				AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(e); 
+				ex.log(m_logger);
+			}
+    	}
+    	activeArrays = null;
         m_logger.finest("cleanUp() called");
     }
 
     public void aboutToAbort() {
         cleanUp();
         m_logger.finest("managed to abort...");
-        System.out.println("DummyComponent component managed to abort...");
     }
 
     /////////////////////////////////////////////////////////////
@@ -117,9 +133,23 @@ public class MasterImpl implements ComponentLifecycle,
 			ArraySchedulerLifecycleType lifecycleType) throws 
 			ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx{
 		String arrayName;
+		while (!isInitialized()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				//Do nothing, try again
+			}
+		}
 		try {
 			arrayName = createNewControlArray(antennaIdList, photonicsList, 
 					corrType, schedulingMode);
+			if (arrayName == null){
+				AcsJControlInternalExceptionEx ex = 
+					new AcsJControlInternalExceptionEx();
+				ex.setProperty("reason", Constants.CONTROL_MASTER_URL + " component is not OPERATIONAL");
+				ex.log(m_logger);
+				throw ex.toControlInternalExceptionEx();
+			}
 		} catch (InaccessibleException e) {
 			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(e);
 			ex.log(m_logger);
@@ -149,6 +179,7 @@ public class MasterImpl implements ComponentLifecycle,
 			throw ex.toSchedulingInternalExceptionEx();
 		}
 		
+		activeArrays.put(arrayInfo.arrayId, schedulingMode);
 		return arrayInfo;
 	}
 
@@ -157,9 +188,10 @@ public class MasterImpl implements ComponentLifecycle,
 	ControlInternalExceptionEx, SchedulingInternalExceptionEx{
 		Object obj = null;
 		String schedArrayName = null;
+		m_logger.fine("About to destroy array: " + arrayName);
 		try {
 			schedArrayName = NameTranslator.arrayToComponentName(arrayName);
-			m_containerServices.getComponent(schedArrayName);
+			obj = m_containerServices.getComponent(schedArrayName);
 		} catch (AcsJContainerServicesEx e) {
 			AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
 			ex.log(m_logger);
@@ -170,14 +202,12 @@ public class MasterImpl implements ComponentLifecycle,
 			throw ex.toSchedulingInternalExceptionEx();
 		}
 		
-		//The CORBA reference should not be null, but just in case
-		if (obj == null)
-			return;
 		//If Array is executing schedBlocks, stop it
 		Array array = ArrayHelper.narrow(obj);
 		m_logger.fine("Stopping SchedBlock in " + schedArrayName);
-		array.stop();
-		array.abortRunningSchedBlock();
+		array.stop("Master Panel", "Master Panel");
+		array.stopRunningSchedBlock("Master Panel", "Master Panel");
+		array.destroyArray();
 		
 		obj = null;
 		array = null;
@@ -186,7 +216,7 @@ public class MasterImpl implements ComponentLifecycle,
 		
 		try {
 			m_logger.finest("About to release CONTROL Array");
-			controlMaster.destroyArray(NameTranslator.arrayToControlComponentName(arrayName));
+			controlMaster.destroyArray(arrayName);
 			m_logger.finest("Released CONTROL Array");
 		} catch (InaccessibleException e) {
 			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(e);
@@ -196,14 +226,48 @@ public class MasterImpl implements ComponentLifecycle,
 			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(e);
 			ex.log(m_logger);
 			ex.toControlInternalExceptionEx();
-		} catch (TranslationException e) {
-			AcsJSchedulingInternalExceptionEx ex = new AcsJSchedulingInternalExceptionEx(e);
-			ex.log(m_logger);
-			throw ex.toSchedulingInternalExceptionEx();
 		}
+		activeArrays.remove(arrayName);
 		
 	}
 	
+	@Override
+	public String[] getActiveAutomaticArrays() {
+		ArrayList<String> arrays = new ArrayList<String>();
+		for (String arrayName: activeArrays.keySet())
+			if(activeArrays.get(arrayName) != ArrayModeEnum.MANUAL)
+				arrays.add(arrayName);
+		String[] retval = new String[arrays.size()];
+		arrays.toArray(retval);
+		return retval;
+	}
+
+	@Override
+	public String[] getActiveManualArrays() {
+		ArrayList<String> arrays = new ArrayList<String>();
+		for (String arrayName: activeArrays.keySet())
+			if(activeArrays.get(arrayName) == ArrayModeEnum.MANUAL)
+				arrays.add(arrayName);
+		String[] retval = new String[arrays.size()];
+		arrays.toArray(retval);
+		return retval;
+	}
+
+	@Override
+	public ArrayModeEnum getSchedulerModeForArray(String arrayName) throws ArrayNotFoundExceptionEx {
+		ArrayModeEnum arrayMode = activeArrays.get(arrayName);
+		if (arrayMode == null){
+			AcsJArrayNotFoundExceptionEx ex = new AcsJArrayNotFoundExceptionEx();
+			ex.log(m_logger);
+			throw ex.toArrayNotFoundExceptionEx();
+		}
+		return arrayMode; 
+	}
+
+    /////////////////////////////////////////////////////////////
+    // Miscellany
+    /////////////////////////////////////////////////////////////
+
 	/**
 	 * 
 	 * Create a new CONTROL Array
@@ -280,5 +344,28 @@ public class MasterImpl implements ComponentLifecycle,
 		}
 		
 		return arrayModes;
+	}
+	
+	
+	private boolean isInitialized(){
+		if (controlMaster != null)
+			return true;
+		try {
+			initialize();
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+		
+	}
+	
+	private void initialize() throws AcsJContainerServicesEx {
+		m_logger.finest("About to get reference of "
+				+ Constants.CONTROL_MASTER_URL);
+		controlMaster = ControlMasterHelper.narrow(m_containerServices
+				.getComponent(Constants.CONTROL_MASTER_URL));
+		m_logger.finest("Got reference of " + Constants.CONTROL_MASTER_URL
+				+ " successfully");
 	}
 }

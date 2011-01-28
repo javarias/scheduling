@@ -105,7 +105,15 @@ public class AngleConverter {
 	 */
 	static private double valueConvertedToStandardUnits(DoubleWithUnitT angle) 
 			throws ConversionException {
-		final AngleTUnitType unit = AngleTUnitType.valueOf(angle.getUnit());
+		final AngleTUnitType unit;
+		try {
+			unit = AngleTUnitType.valueOf(angle.getUnit());
+		} catch (IllegalArgumentException e) {
+			throw new ConversionException(String.format(
+					"Unrecognised input units for angle: %s",
+					angle.getUnit()));
+		}
+		
 		double result = angle.getContent();
 
 		switch (unit.getType()) {

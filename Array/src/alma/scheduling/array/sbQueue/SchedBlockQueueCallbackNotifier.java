@@ -50,16 +50,29 @@ public class SchedBlockQueueCallbackNotifier implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        logger.info("received queue change notification");
-        ObservableReorderingBlockingQueue q = (ObservableReorderingBlockingQueue) o;
-        QueueNotification qn = (QueueNotification) arg;
-        String[] uids = new String[1];
-        uids[0] = qn.getItem().getUid();
-        for (Iterator<String> iter = registeredCallbacks.keySet().iterator(); iter.hasNext(); ) {
-            SchedBlockQueueCallback callback = registeredCallbacks.get(iter.next());
-            callback.report(qn.getItem().getTimestamp(), qn.getOperation(), uids, "");
-        }
-    }
-    
+    	try {
+    		QueueNotification notification = (QueueNotification) arg;
+    		logger.info(String.format(
+    				"received notification of queue change %s SB %s",
+    				notification.getOperation(),
+    				notification.getItem().getUid()));
+
+            String[] uids = new String[1];
+            uids[0] = notification.getItem().getUid();
+
+    		for (Iterator<String> iter = registeredCallbacks.keySet().iterator(); iter.hasNext(); ) {
+    			String key = iter.next();
+                SchedBlockQueueCallback callback = registeredCallbacks.get(key);
+                try {
+                	callback.report(notification.getItem().getTimestamp(), notification.getOperation(), uids, "");
+                }
+                catch (org.omg.CORBA.TRANSIENT ex){
+                	logger.info("Forcing Unregister of Queue Callback with key: " + key);
+                	unregisterMonitor(key);
+                }
+    		}
+    	} catch (ClassCastException e) {
+    	}
+    }    
     
 }

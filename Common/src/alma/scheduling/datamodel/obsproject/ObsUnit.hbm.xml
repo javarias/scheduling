@@ -17,6 +17,7 @@
             <generator class="native"/>
         </id>
         <property name="uid" column="OBSUNIT_UID"/>
+        <property name="note" type="string" column="NOTE" length="4000"/>
         <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
         <property name="projectUid" type="string" column="OBSUNIT_PROJECT_UID"/>
 <!--    <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>  -->
@@ -36,6 +37,8 @@
         	<property name="scienceRank" column="SCIENCE_RANK"/>
        		<property name="letterGrade" type="ScienceGrade" column="SCIENCE_GRADE"/>
             <property name="runQuicklook" type="boolean" column="RUN_QUICKLOOK"/>
+            <property name="csv" column="CSV"/>
+            <property name="manual" column="MANUAL"/>
             <component name="weatherConstraints" class="WeatherConstraints">
                 <property name="maxWindVelocity" type="double" column="MAX_WIND_VELOCITY"/>
                 <property name="maxOpacity" type="double" column="MAX_OPACITY"/>

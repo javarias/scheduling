@@ -27,19 +27,21 @@ public interface ReorderingBlockingQueue<E> extends BlockingQueue<E> {
 
     /**
      * Moves a single instance of the specified element one step closer to
-     * the head, if it is present.
+     * the tail, if it is present. This is moving down in the sense of being
+     * demoted to the back of the queue
      * 
-     * @param o element to be moved up in the queue, if present
+     * @param e element to be moved down the queue, if present
      * @return <tt>true</tt> if this queue changed as a result of the call
      */
-    public boolean moveDown(Object o);
+    public boolean moveDown(E e);
     
     /**
-     * Moves a single instance of the specified element one step away from
-     * the head, if it is present.
+     * Moves a single instance of the specified element one step closer to
+     * the head, if it is present. This is moving up in the sense of being
+     * promoted to the front of the queue.
      * 
-     * @param o element to be moved down in the queue, if present
+     * @param e element to be moved up the queue, if present
      * @return <tt>true</tt> if this queue changed as a result of the call
      */
-    public boolean moveUp(Object o);
+    public boolean moveUp(E e);
 }

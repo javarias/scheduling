@@ -1,26 +1,25 @@
 Running the Plugin Interactive Test
 
+Pre-load the archive with some projects:
+
+	scripts/startup.sh
+	scripts/populate.sh projects/R80*.aot
+	scripts/shutdown.sh
+
 From SCHEDULING/IntTest/test:
 
 1) Start the system with
 
     ./scripts/testEnv start
 
-2) Delete all projects
-
-    ./scripts/deleteAllProjects
-
-3) Load some projects, e.g.
-
-    ./scripts/loadAllProjects ./projects/01SBin1OUS.aot
-
-4) Prepare the system to run the Plugins interactively
+2) Prepare the system to run the Plugins interactively
 
     ./scripts/runSchedulingPluginsTest <Mode>
 
-where mode can be CreateArray, Interactive or Queued.
+where mode can be CreateArray, Interactive or Queued. If
+no mode is specified, CreateArray is used.
 
-5) Start the plugin. To start the CreateArray plugin use:
+3) Start the plugin. To start the CreateArray plugin use:
 
     ./scripts/startCreateArrayPlugin
 
@@ -28,9 +27,9 @@ and to start the Interactive or Queued plugin:
 
     ./scripts/startSchedulerPlugin
 
-6) Interact with the plugins, load projects, execute them, etc.
+4) Interact with the plugins, load projects, execute them, etc.
 
-7) To shutdown:
+5) To shutdown:
 
     ./scripts/testEnv stop
 

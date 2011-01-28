@@ -508,78 +508,85 @@ public class LinkedReorderingBlockingQueue<E> extends AbstractQueue<E>
         }
         return removed;
     }
+    
+    /**
+     * Swap the contents of the two nodes.
+     * 
+     * @param a
+     * @param b
+     */
+    private void swapContents(Node<E> a, Node<E> b) {
+    	final E temp = b.item;
+    	b.item = a.item;
+    	a.item = temp;
+    }
 
     /**
      * Moves a single instance of the specified element one step closer to
-     * the head, if it is present.
+     * the tail, if it is present. This is moving down in the sense of being
+     * demoted to the back of the queue
      * 
-     * @param o element to be moved up in the queue, if present
+     * @param e element to be moved down the queue, if present
      * @return <tt>true</tt> if this queue changed as a result of the call
      */
-    public boolean moveDown(Object o) {
-        if (o == null) return false;
-        if (count.get() == 0) return false;
+    public boolean moveDown(E e) {
+    	if (e == null) return false;        // Nothing specified for moving
+        if (count.get() <= 1) return false; // Queue to small to bother.
+        
         boolean movedown = false;
         fullyLock();
         try {
-            Node<E> trail = head;
             Node<E> p = head.next;
             // Stop in the previous to the last item. The last item
             // can't be moved down further.
             while (p.next != null) {
-                if (o.equals(p.item)) {
+            	if (e.equals(p.item)) {
                     movedown = true;
                     break;
                 }
-                trail = p;
                 p = p.next;
             }
             if (movedown) {
-                Node<E> p2 = p.next.next;
-                p.next.next = p;
-                trail.next = p.next;
-                p.next = p2;
+            	swapContents(p, p.next);
             }
         } finally {
-            fullyUnlock();
+        	fullyUnlock();
         }
         return movedown;
     }
 
     /**
-     * Moves a single instance of the specified element one step away from
-     * the head, if it is present.
+     * Moves a single instance of the specified element one step closer to
+     * the head, if it is present. This is moving up in the sense of being
+     * promoted to the front of the queue.
      * 
-     * @param o element to be moved down in the queue, if present
+     * @param e element to be moved up the queue, if present
      * @return <tt>true</tt> if this queue changed as a result of the call
      */
-    public boolean moveUp(Object o) {
-        if (o == null) return false;
-        if (count.get() == 0) return false;
+    public boolean moveUp(E e) {
+        if (e == null) return false;        // Nothing specified for moving
+        if (count.get() == 0) return false; // Queue to small to bother.
+        
         boolean moveup = false;
         fullyLock();
         try {
             // Begin with the second element in the list. The first can't be
             // moved up.
-            Node<E> trail2 = head;
-            Node<E> trail = head.next;
+        	Node<E> trail = head.next;
             Node<E> p = head.next.next;
             while (p != null) {
-                if (o.equals(p.item)) {
+            	if (e.equals(p.item)) {
                     moveup = true;
                     break;
                 }
-                trail2 = trail;
                 trail = p;
                 p = p.next;
             }
             if (moveup) {
-                trail.next = p.next;
-                p.next = trail;
-                trail2.next = p;
+            	swapContents(p, trail);
             }
         } finally {
-            fullyUnlock();
+        	fullyUnlock();
         }
         return moveup;
     }

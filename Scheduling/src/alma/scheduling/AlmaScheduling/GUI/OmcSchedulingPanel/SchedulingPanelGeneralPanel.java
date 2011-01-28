@@ -35,10 +35,8 @@ import javax.swing.JPanel;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
-import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.ArrayModeEnum;
-import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.scheduling.OLDArrayModeEnum;
 
 public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlugin {
     protected PluginContainerServices container;
@@ -46,7 +44,7 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
     protected String title;
     private MasterSchedulerIF ms;
     private String arrayname;
-    private ArrayModeEnum mode;
+    private OLDArrayModeEnum mode;
 
     public SchedulingPanelGeneralPanel(){
         super();
@@ -212,22 +210,22 @@ public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlug
       */
     class OpenSchedulerTab implements Runnable {
         private PluginContainerServices container;
-        private ArrayModeEnum mode;
+        private OLDArrayModeEnum mode;
         private String array;
-        public OpenSchedulerTab(ArrayModeEnum m, String arrayName, PluginContainerServices cs) {
+        public OpenSchedulerTab(OLDArrayModeEnum m, String arrayName, PluginContainerServices cs) {
             container = cs;
             mode =m;
             array = arrayName;
         }
         public void run() {
             SchedulerTab tab=null;
-            if(mode == ArrayModeEnum.DYNAMIC) {
+            if(mode == OLDArrayModeEnum.OLDDYNAMIC) {
                 tab = new DynamicSchedTab(container,array);
-            } else if(mode == ArrayModeEnum.INTERACTIVE){
+            } else if(mode == OLDArrayModeEnum.OLDINTERACTIVE){
                 tab = new InteractiveSchedTab(container, array);
-            } else if(mode == ArrayModeEnum.QUEUED){
+            } else if(mode == OLDArrayModeEnum.OLDQUEUED){
                 tab = new QueuedSchedTab(container, array);
-            } else if(mode == ArrayModeEnum.MANUAL){
+            } else if(mode == OLDArrayModeEnum.OLDMANUAL){
                 tab = new ManualArrayTab(container,array);
             }
             try {

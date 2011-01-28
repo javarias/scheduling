@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingTemplateTest.java,v 1.5 2010/03/13 00:39:57 dclarke Exp $
+ * $Id: SchedulingTemplateTest.java,v 1.6 2011/01/28 00:35:32 javarias Exp $
  */
 
 package alma.scheduling.inttest;
@@ -53,6 +53,7 @@ import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.OLDArrayModeEnum;
 import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
@@ -139,7 +140,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
-                ArrayModeEnum.INTERACTIVE);
+                OLDArrayModeEnum.OLDINTERACTIVE);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");

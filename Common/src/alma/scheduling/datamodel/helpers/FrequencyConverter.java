@@ -61,7 +61,15 @@ public class FrequencyConverter {
 	 */
 	static private double valueConvertedToStandardUnits(DoubleWithUnitT frequency) 
 			throws ConversionException {
-		final FrequencyTUnitType unit = FrequencyTUnitType.valueOf(frequency.getUnit());
+		final FrequencyTUnitType unit;
+		try {
+			unit = FrequencyTUnitType.valueOf(frequency.getUnit());
+		} catch (IllegalArgumentException e) {
+			throw new ConversionException(String.format(
+					"Unrecognised input units for frequency: %s",
+					frequency.getUnit()));
+		}
+
 		double result = frequency.getContent();
 
 		switch (unit.getType()) {

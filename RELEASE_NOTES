@@ -6,9 +6,78 @@ From:
    David Clarke
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.23 2009/11/24 17:36:52 rhiriart Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.24 2011/01/28 00:35:30 javarias Exp $"
 
 ********************************************************************
+
+Release 8.0
+===========
+
+Development Notes
+~~~~~~~~~~~~~~~~~
+
+The Scheduling subsystem has undergone a major re-engineering since
+R7.1. This includes:
+
+ * The interface with the project and status databases has been
+   reworked. There is now a persistent Scheduling Working Database
+   (SWDB) which contains the Scheduler's view of the ObsProjects and
+   SchedBlocks. The model in this is the same as used in the APRC
+   simulator. A new component, the ArchiveUpdater, has been created
+   which updates this database both efficiently and frequently
+   (currently once per minute).
+
+ * The MasterScheduler's role has been reduced from trying to do
+   everything to being in charge of creation and destruction of
+   arrays. The functionality for each Array is now implemented in the
+   new Scheduling Array component (q.v.)
+
+ * When an array is created, a corresponding Scheduler component is
+   created (in addition to the Control component). For Array999, the
+   components created are SCHEDULING/Array999 and
+   CONTROL/Array999. The Scheduler component consists of three parts:
+
+    * the selector, which selects SchedBlocks to observe;
+    * the queue, which queues the selected SchedBlocks for execution;
+    * the executor, which takes SchedBlocks from the queue and
+      observes them
+
+ * To control the Scheduling Array component, a new plug-in, the Array
+   Panel, has been created. For pragmatic reasons the CreateArray
+   plug-in has been carried over largely unchanged.
+
+User Notes
+~~~~~~~~~~
+
+1. Scheduling Panel Changes
+
+As well as major internal changes (q.v.), the Scheduling subsystem has
+had its main operating panel replaced with a much more user-friendly
+and focussed plug-in. See the user documentation for details.
+
+2. SchedBlock Lifecycle for Commissioning
+
+A new, simplified, SB lifecycle has been introduced for
+commissioning. For how to create Projects which use this lifecycle,
+see the Observation Preparation documentation.
+
+SchedBlocks which are commissioning SchedBlocks (i.e. are part of an
+ObsProject which has the CSV (aka Commissioning Mode) flag set), are
+treated specially by the Scheduler. Such SchedBlocks start off in the
+CSVReady state, move to CSVRunning while observing, and then move back
+to CSVReady when each execution of the SchedBlock is finished. What
+this means is that they will never fall off the Scheduler's radar as a
+result of the Scheduler's actions. They can be moved to a state
+CSVSuspended by the ProjectTracker, which will remove them from the
+Scheduler's consideration.
+
+3. Observing Sessions
+
+Consecutive observations of the same SchedBlock on the same Array will
+now form one QuickLook session. A QuickLook session is terminated by
+either observing a different SchedBlock or destroying the Array. Note
+that there is no timeout on a session.
+
 
 Release 7.0
 ===========

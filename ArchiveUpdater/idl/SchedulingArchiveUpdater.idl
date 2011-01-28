@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingArchiveUpdater.idl,v 1.2 2010/11/03 22:13:44 javarias Exp $
+ * $Id: SchedulingArchiveUpdater.idl,v 1.3 2011/01/28 00:35:30 javarias Exp $
  */
 
 #ifndef _SCHEDULING_ARCHIVE_UPDATER_IDL_
@@ -34,6 +34,28 @@
 
 module scheduling {
 
+     enum ImportStatus {
+		 IMPORT_INFO,
+		 IMPORT_OKAY,
+		 IMPORT_WARNING,
+		 IMPORT_ERROR
+     };
+
+     struct ArchiveImportEvent{
+     		ImportStatus status;
+		ACS::Time timestamp;
+		string entityId;
+		string entityType;
+		string details;
+     };
+     
+     interface ArchiveUpdaterCallback: ACS::OffShoot {
+    	/**
+	 * Report conversion status for entities
+	 */
+	oneway void report (in ArchiveImportEvent event);
+     };
+     
     /**
      * The ArchiveUpdater component updates the Scheduling (internal)
      * relational database from APDM entities stored in the XML Store.
@@ -56,7 +78,19 @@ module scheduling {
         /** Perform the update incrementally */
         void update();
 
-		void setPollInterval(in long seconds);
+
+	/** Clear out the SWDB and start again */
+        void refresh();
+
+	/** Control how often the SWDB is updated */
+        void setPollInterval(in long seconds);
+	
+		long getPollInterval();
+	
+		void registerCallback(in string name, in ArchiveUpdaterCallback callback);
+	
+		void deregisterCallback(in string name);
+	
     };
 
 };

@@ -16,6 +16,11 @@
             <property name="representativeFrequency" column="REPR_FREQUENCY"/>
             <property name="sensitivityGoal" column="SENSITIVITY_GOAL"/>
         </joined-subclass>
+        
+        <joined-subclass name="GenericObservingParameters" table="GENERIC_OBSERVING_PARAMETERS">
+            <key column="ID"/>
+            <property name="type" column="TYPE"/>
+        </joined-subclass>
 
     </class>
     

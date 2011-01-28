@@ -21,19 +21,24 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA 02111-1307  USA
 #
-# $Id: startCreateArrayPlugin,v 1.2 2009/09/22 22:40:17 rhiriart Exp $
+# $Id: startCreateArrayPlugin,v 1.3 2011/01/28 00:35:36 javarias Exp $
 #
 
 # Documentation about the test goes here.
 #
 #
 
+. config/testEnv
+
 CLASSPATH=../lib/SchedulingIntegrationTest.jar:$CLASSPATH
 export CLASSPATH
+RUNLOCATION=tst
+export RUNLOCATION
 
 declare PLUGIN_STARTER=alma.scheduling.plugintest.PluginStarter
-declare PLUGIN=alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.SchedulingPanelMainFrame
+declare PLUGIN=alma.scheduling.master.gui.SchedulingPanelMainFrame
 
-acsStartJava -endorsed "$PLUGIN_STARTER" "$PLUGIN"
+acsStartJava -endorsed "$PLUGIN_STARTER" "$PLUGIN" &
+# acsStartJava -endorsed "$PLUGIN_STARTER" "$PLUGIN" &> ${ACS_TMP}/plugin.log
 
 # __oOo__

@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,19 +35,23 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.RowFilter.Entry;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -54,7 +60,11 @@ import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableRowSorter;
 
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.acs.gui.standards.StandardIcons;
+import alma.scheduling.ArrayGUIOperation;
+import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.datamodel.executive.Executive;
@@ -69,92 +79,99 @@ import alma.scheduling.swingx.CallbackFilter;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.8 2010/09/03 22:07:31 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.9 2011/01/28 00:35:31 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
 							 implements ChangeListener, MouseListener {
-	/*
-	 * ================================================================
-	 * Constants
-	 * ================================================================
-	 */
-	private final static String BlankLabel = " ";
-	private final static int popupLimit = 10;
-	/* End Constants
-	 * ============================================================= */
+    /*
+     * ================================================================
+     * Constants
+     * ================================================================
+     */
+    private final static String BlankLabel = " ";
+    private final static int popupLimit = 10;
+    /* End Constants
+     * ============================================================= */
 	
 	
 	
-	/*
-	 * ================================================================
-	 * Fields for widgets &c
-	 * ================================================================
-	 */
-	/** The LayoutManager we're using. */
-	private GridBagLayout l;
-	private GridBagConstraints c;
-	
-	/** Used to show a summary of the ObsProject filters */
-	private JLabel opFilterSummary;
-	/** Used to invoke a change to the ObsProject filters */
-	private JButton opFilterChange;
-	/** Used to reset the ObsProject filters to their default */
-	private JButton opFilterReset;
-	/** The widget in which we show the ObsProjects */
-	private JTable opTable;
-	/** The model behind the ObsProjects' table */
-	private ObsProjectTableModel opModel;
-	/** the thing which sorts the ObsProjects in our table */
-	private TableRowSorter<ObsProjectTableModel> opSorter;
-	/** The filters we use to select which ObsProjects to show */
-	private FilterSet opFilters;
-	/** The panel for editing the ObsProject filters */
-	private FilterSetPanel opFilterPanel;
-	/** Used to convey information concerning ObsProjects stuff */
-	private JLabel opMessage;
-	/** opTable pop-up menu */
-	private JPopupMenu opPopup;
-	/** opTable pop-up menu item for details of the OP under the mouse */
-	private JMenuItem opDetailsHere;
-	/** The OP under the mouse (only valid when opPopup is active) */
-	private String opHere = null;
-	
-	/** Used to show a summary of the SchedBlock filters */
-	private JLabel sbFilterSummary;
-	/** Used to invoke a change to the SchedBlock filters */
-	private JButton sbFilterChange;
-	/** Used to reset the SchedBlock filters to their default */
-	private JButton sbFilterReset;
-	/** The widget in which we show the SchedBlocks */
-	private JTable sbTable;
-	/** The model behind the SchedBlocks' table */
-	private SchedBlockTableModel sbModel;
-	/** the thing which sorts the SchedBlocks in our table */
-	private TableRowSorter<SchedBlockTableModel> sbSorter;
-	/** The filters we use to select which SchedBlocks to show */
-	private FilterSet sbFilters;
-	/** The panel for editing the SchedBlock filters */
-	private FilterSetPanel sbFilterPanel;
-	/** Used to convey information concerning SchedBlocks stuff */
-	private JLabel sbMessage;
-	/** sbTable pop-up menu */
-	private JPopupMenu sbPopup;
-	/** sbTable pop-up menu item for details of the SB under the mouse */
-	private JMenuItem sbDetailsHere;
-	/** sbTable pop-up menu item to queue the SB under the mouse */
-	private JMenuItem sbQueueHere;
-	/** The SB under the mouse (only valid when sbPopup is active) */
-	private String sbHere = null;
-	/** The filter in use to select SBs by Project Id, null if none */
-	private RowFilter<SchedBlockTableModel, Integer> sbFilterFromOPTable;
-
-	/** Used to convey information to the user */
-	private JLabel statusMessage;
-	/** Button to initiate getting updates from the project store */
-	private JButton update;
-	/* End Fields for widgets &c
-	 * ============================================================= */
+    /*
+     * ================================================================
+     * Fields for widgets &c
+     * ================================================================
+     */
+    /** Title for the project part of the display. */
+    private JLabel opTitle;
+    /** Used to show a summary of the ObsProject filters */
+    private JLabel opFilterSummary;
+    /** Used to invoke a change to the ObsProject filters */
+    private JButton opFilterChange;
+    /** Used to reset the ObsProject filters to their default */
+    private JButton opFilterReset;
+    /** The widget in which we show the ObsProjects */
+    private JTable opTable;
+    /** The model behind the ObsProjects' table */
+    private ObsProjectTableModel opModel;
+    /** the thing which sorts the ObsProjects in our table */
+    private TableRowSorter<ObsProjectTableModel> opSorter;
+    /** The filters we use to select which ObsProjects to show */
+    private FilterSet opFilters;
+    /** The panel for editing the ObsProject filters */
+    private FilterSetPanel opFilterPanel;
+    /** Used to convey information concerning ObsProjects stuff */
+    private JLabel opMessage;
+    /** opTable pop-up menu */
+    private JPopupMenu opPopup;
+    /** opTable pop-up menu item for details of the OP under the mouse */
+    private JMenuItem opDetailsHere;
+    /** The OP under the mouse (only valid when opPopup is active) */
+    private String opHere = null;
+    
+    /** Title for the schedblock part of the display. */
+    private JLabel sbTitle;
+    /** Used to show a summary of the SchedBlock filters */
+    private JLabel sbFilterSummary;
+    /** Used to invoke a change to the SchedBlock filters */
+    private JButton sbFilterChange;
+    /** Used to reset the SchedBlock filters to their default */
+    private JButton sbFilterReset;
+    /** The widget in which we show the SchedBlocks */
+    private JTable sbTable;
+    /** The model behind the SchedBlocks' table */
+    private SchedBlockTableModel sbModel;
+    /** the thing which sorts the SchedBlocks in our table */
+    private TableRowSorter<SchedBlockTableModel> sbSorter;
+    /** The filters we use to select which SchedBlocks to show */
+    private FilterSet sbFilters;
+    /** The panel for editing the SchedBlock filters */
+    //	private FilterSetPanel sbFilterPanel;
+    /** Used to convey information concerning SchedBlocks stuff */
+    private JLabel sbMessage;
+    /** sbTable pop-up menu */
+    private JPopupMenu sbPopup;
+    /** sbTable pop-up menu item for details of the SB under the mouse */
+    private JMenuItem sbDetailsHere;
+    /** sbTable pop-up menu item for details of the selected SB(s) */
+    private JMenuItem sbDetailsSelected;
+    /** sbTable pop-up menu item to queue the SB under the mouse */
+    private JMenuItem sbQueueHere;
+    /** sbTable pop-up menu item to queue the selected SB(s) */
+    private JMenuItem sbQueueSelected;
+    /** The SB under the mouse (only valid when sbPopup is active) */
+    private String sbHere = null;
+    /** The filter in use to select SBs by Project Id, null if none */
+    private RowFilter<SchedBlockTableModel, Integer> sbFilterFromOPTable;
+    
+    /** Used to convey information to the user */
+    private JLabel statusMessage;
+    /** Button to initiate getting updates from the project store */
+    private JButton update;
+    
+    /** Do we Queue or Configure? */
+    private String processSB = "Queue";
+    /* End Fields for widgets &c
+     * ============================================================= */
 	
 	
 	
@@ -166,23 +183,15 @@ public class InteractivePanel extends AbstractArrayPanel
 	/**
 	 * Basic constructor.
 	 */
-	public InteractivePanel() {
-		super();
+	public InteractivePanel(String arrayName) {
+		super(arrayName);
+		System.out.format("%s (InteractivePanel).InteractivePanel(%s)%n",
+				this.getClass().getSimpleName(),
+				arrayName);
 		createWidgets();
-		createLayoutManager();
 		addWidgets();
 		showConnectivity();
-	}
-	
-	/**
-	 * Build the LayoutManager we plan to use.
-	 */
-	private void createLayoutManager() {
-		l = new GridBagLayout();
-		c = new GridBagConstraints();
-		c.ipadx = 2;
-		c.ipady = 2;
-		this.setLayout(l);
+		showProjectCounts();
 	}
 	
 	/**
@@ -202,13 +211,17 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * Create those widgets which we want to keep track of.
 	 */
 	private void createWidgets() {
+		opTitle = new JLabel(String.format(
+				"<html><font color=%s>Projects</font></html>",
+				this.TitleColour));
 		opModel = new ObsProjectTableModel();
 		opTable = new JTable(opModel);
 		opSorter = new TableRowSorter<ObsProjectTableModel>(opModel);
 		opTable.setRowSorter(opSorter);
 		opFilters = new FilterSet(opModel);
-		opFilterSummary = new JLabel(opFilters.toHTML());
-		opFilterChange = newButton("Change", "Edit the filters to control which Projects are displayed");
+		opFilterSummary = new JLabel(opFilters.toHTML(
+				this.NormalColour, this.DetailColour));
+		opFilterChange = newButton("Filter", "Edit the filters to control which Projects are displayed");
 		opFilterReset = newButton("Reset", "Reset the filters to display all Projects");
 		opFilterPanel = FilterSetPanel.createGUI(
 				"Filters for the Project Table",
@@ -221,6 +234,9 @@ public class InteractivePanel extends AbstractArrayPanel
 		opFilters.addChangeListener(this);
 		opTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
+		sbTitle = new JLabel(String.format(
+				"<html><font color=%s>SchedBlocks</font></html>",
+				this.TitleColour));
 		sbModel = new SchedBlockTableModel();
 		sbTable = new JTable(sbModel);
 		sbSorter = new TableRowSorter<SchedBlockTableModel>(sbModel);
@@ -229,17 +245,17 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbFilterSummary = new JLabel();
 		sbFilterChange = newButton("Change", "Edit the filters to control which SchedBlocks are displayed");
 		sbFilterReset = newButton("Reset", "Reset the filters to display all SchedBlocks");
-		sbFilterPanel = FilterSetPanel.createGUI(
-				"Filters for the SchedBlock Table",
-				sbFilters);
+//		sbFilterPanel = FilterSetPanel.createGUI(
+//				"Filters for the SchedBlock Table",
+//				sbFilters);
 		sbMessage = new JLabel(BlankLabel);
 		
 		opTable.addMouseListener(this);
 		sbTable.addMouseListener(this);
 		
-		addFilterListeners(sbFilterChange,
-				   		   sbFilterReset,
-				   		   sbFilterPanel);
+//		addFilterListeners(sbFilterChange,
+//				   		   sbFilterReset,
+//				   		   sbFilterPanel);
 		sbFilters.addChangeListener(this);
 
 		sbFilterFromOPTable = null;
@@ -247,10 +263,22 @@ public class InteractivePanel extends AbstractArrayPanel
 
 		update = newButton("Update",
 				"Get new project data from the repositories");
+		update.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				update.setEnabled(false);
+				try {
+					getData();
+				} finally {
+					update.setEnabled(true);
+				}
+			}});
 		update.setEnabled(false);
 		statusMessage = new JLabel(BlankLabel);
 		
 		createPopups();
+		
+		makeSameWidth(opTitle, sbTitle, update, opFilterReset, opFilterChange);
 	}
 	
 	/**
@@ -258,50 +286,53 @@ public class InteractivePanel extends AbstractArrayPanel
 	 */
 	private void createPopups() {
 		JMenuItem detailsSelected;
-		JMenuItem change;
-		JMenuItem reset;
-		JMenuItem queueSelected;
+		JMenuItem changeFilters;
+		JMenuItem resetFilters;
+		JMenuItem clearSelection;
 		
 		// Project table menu
 		opPopup = new JPopupMenu("Projects");
 		detailsSelected = new JMenuItem(menuStringDetailsSelection(opTable));
 		opDetailsHere = new JMenuItem("Details");
-		reset   = new JMenuItem("Reset Project Filters");
-		change  = new JMenuItem("Change Project Filters");
+		resetFilters   = new JMenuItem("Reset Project Filters");
+		changeFilters  = new JMenuItem("Change Project Filters");
+		clearSelection  = new JMenuItem("Clear Selection");
 
 		opTable.getSelectionModel().addListSelectionListener(detailsListener(detailsSelected, opTable));
 		detailsSelected.addActionListener(detailsActionListener(opTable, opModel));
 		detailsSelected.setEnabled(false);
 		opDetailsHere.addActionListener(opDetailsHereListener());
-		addFilterListeners(change, reset, opFilterPanel);
+		addFilterListeners(changeFilters, resetFilters, opFilterPanel);
 		detailsSelected.setEnabled(false);
+		clearSelection.addActionListener(opClearSelectionListener());
+		clearSelection.setEnabled(true);
 
 		opPopup.add(detailsSelected);
 		opPopup.add(opDetailsHere);
 		opPopup.addSeparator();
-		opPopup.add(reset);
-		opPopup.add(change);
+		opPopup.add(resetFilters);
+		opPopup.add(changeFilters);
+		opPopup.addSeparator();
+		opPopup.add(clearSelection);
 		
 		// SchedBlock table menu
 		sbPopup = new JPopupMenu("SchedBlocks");
-		detailsSelected = new JMenuItem(menuStringDetailsSelection(sbTable));
-		sbDetailsHere = new JMenuItem("Details");
-		queueSelected = new JMenuItem(menuStringQueueSelection());
-		sbQueueHere   = new JMenuItem("Queue");
+		sbDetailsSelected = new JMenuItem(menuStringDetailsSelection(sbTable));
+		sbDetailsHere     = new JMenuItem("Details");
+		sbQueueSelected   = new JMenuItem(menuStringQueueSelection());
+		sbQueueHere       = new JMenuItem("Queue");
 		
-		sbTable.getSelectionModel().addListSelectionListener(detailsListener(detailsSelected, sbTable));
-		sbTable.getSelectionModel().addListSelectionListener(queueListener(queueSelected, sbTable));
-		detailsSelected.addActionListener(detailsActionListener(sbTable, sbModel));
+		sbDetailsSelected.addActionListener(detailsActionListener(sbTable, sbModel));
 		sbDetailsHere.addActionListener(sbDetailsHereListener());
 		sbQueueHere.addActionListener(sbQueueHereListener());
-		queueSelected.addActionListener(queueActionListener());
-		detailsSelected.setEnabled(false);
-		queueSelected.setEnabled(false);
+		sbQueueSelected.addActionListener(queueActionListener());
+		sbDetailsSelected.setEnabled(false);
+		sbQueueSelected.setEnabled(false);
 		
-		sbPopup.add(detailsSelected);
+		sbPopup.add(sbDetailsSelected);
 		sbPopup.add(sbDetailsHere);
 		sbPopup.addSeparator();
-		sbPopup.add(queueSelected);
+		sbPopup.add(sbQueueSelected);
 		sbPopup.add(sbQueueHere);
 	}
 
@@ -312,7 +343,10 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * use, we need to be careful to set all the constraints that may
 	 * have been set in them (and vice versa).
 	 */
-	private void addSingleWidget(JComponent widget,
+	private void addSingleWidget(JPanel             panel,
+			                     GridBagLayout      l,
+			                     GridBagConstraints c,
+			                     JComponent widget,
 								 int        x,
 								 int        y,
 								 double     wx,
@@ -332,7 +366,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		}
 		c.fill = GridBagConstraints.BOTH;
 		l.setConstraints(widget, c);
-		add(widget);
+		panel.add(widget);
 	}
 	
 	/**
@@ -342,7 +376,10 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * we need to be careful to set all the constraints that may have
 	 * been set in them (and vice versa).
 	 */
-	private void addFullWidthWidget(JComponent widget,
+	private void addFullWidthWidget(JPanel             panel,
+                                    GridBagLayout      l,
+                                    GridBagConstraints c,
+                                    JComponent widget,
 			                        int        x,
 			                        int        y,
 			                        double     wx,
@@ -360,99 +397,125 @@ public class InteractivePanel extends AbstractArrayPanel
 		if (scrollRequired) {
 			JScrollPane scroll = new JScrollPane(widget);
 			l.setConstraints(scroll, c);
-			add(scroll);
+			panel.add(scroll);
 		} else {
 			l.setConstraints(widget, c);
-			add(widget);
+			panel.add(widget);
 		}
 	}
 	
 	/**
-	 * Add blank row to the display. Note: because this uses the same
-	 * GridBagConstraints object that other add*Widget() methods use,
-	 * we need to be careful to set all the constraints that may have
-	 * been set in them (and vice versa).
+	 * Add the OP widgets to the given panel.
 	 */
-	private void addVerticalSpacer(int y) {
-		c.gridx = 0;
-		c.gridy = y;
-		c.gridwidth  = GridBagConstraints.REMAINDER;
-		c.gridheight = 1;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.anchor = GridBagConstraints.CENTER;
-		c.fill = GridBagConstraints.BOTH;
+	private void addOPWidgets(JPanel             panel,
+                              GridBagLayout      l,
+                              GridBagConstraints c) {
+		int x = 0;
+		int y = 0;
 		
-		final JLabel spacer = new JLabel(BlankLabel);
-		l.setConstraints(spacer, c);
-		add(spacer);
+		addSingleWidget(panel, l, c, opTitle,         x++, y, 0.0, 0.0);
+		addSingleWidget(panel, l, c, opFilterSummary, x++, y, 1.0, 0.0);
+		addSingleWidget(panel, l, c, opFilterChange,  x++, y, 0.0, 0.0);
+		addSingleWidget(panel, l, c, opFilterReset,   x++, y, 0.0, 0.0);
+		
+		x = 0 ; y ++; // New row
+		addFullWidthWidget(panel, l, c, opTable, x++, y, 1.0, 1.0, true);
+		
+		x = 0 ; y ++; // New row
+		addFullWidthWidget(panel, l, c, opMessage, x++, y, 1.0, 0.0, false);
+	}
+	
+	/**
+	 * Add the SB widgets to the given panel.
+	 */
+	private void addSBWidgets(JPanel             panel,
+                              GridBagLayout      l,
+                              GridBagConstraints c) {
+		int x = 0;
+		int y = 0;
+		
+		addSingleWidget(panel, l, c, sbTitle, x++, y, 0.0, 0.0);
+//		addSingleWidget(panel, l, c, sbFilterSummary,           x++, y, 1.0, 0.0);
+//		addSingleWidget(panel, l, c, sbFilterReset,             x++, y, 0.0, 0.0);
+//		addSingleWidget(panel, l, c, sbFilterChange,            x++, y, 0.0, 0.0);
+		
+		x = 0 ; y ++; // New row
+		addFullWidthWidget(panel, l, c, sbTable, x++, y, 1.0, 0.3, true);
+		
+		x = 0 ; y ++; // New row
+		addFullWidthWidget(panel, l, c, sbMessage, x++, y, 1.0, 0.0, false);
+		
+		x = 0 ; y ++; // New row
+		addSingleWidget(panel, l, c, update, x++, y, 0.0, 0.0);
+		addFullWidthWidget(panel, l, c, statusMessage, x++, y, 1.0, 0.0, false);
 	}
 	
 	/**
 	 * Add the widgets to the display.
 	 */
 	private void addWidgets() {
-		int x = 0;
-		int y = 0;
+		JPanel opPanel = new JPanel();
+		JPanel sbPanel = new JPanel();
+		GridBagLayout      l = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
+		c.ipadx = 2;
+		c.ipady = 2;
 		
-		addSingleWidget(new JLabel("Projects"), x++, y, 0.0, 0.0);
-		addSingleWidget(opFilterSummary,        x++, y, 1.0, 0.0);
-		addSingleWidget(opFilterReset,          x++, y, 0.0, 0.0);
-		addSingleWidget(opFilterChange,         x++, y, 0.0, 0.0);
+		opPanel.setLayout(l);
+		addOPWidgets(opPanel, l, c);
 		
-		x = 0 ; y ++; // New row
-		addFullWidthWidget(opTable, x++, y, 1.0, 1.0, true);
+		l = new GridBagLayout();
+		c = new GridBagConstraints();
+		sbPanel.setLayout(l);
+		addSBWidgets(sbPanel, l, c);
 		
-		x = 0 ; y ++; // New row
-		addFullWidthWidget(opMessage, x++, y, 1.0, 0.0, false);
+		final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		split.setTopComponent(opPanel);
+		split.setBottomComponent(sbPanel);
+		split.setDividerLocation(2.0/3.0);
 		
-		x = 0 ; y ++; // New row
-		addVerticalSpacer(y);
-		
-		x = 0 ; y ++; // New row
-		addSingleWidget(new JLabel("SchedBlocks"), x++, y, 0.0, 0.0);
-		addSingleWidget(sbFilterSummary,           x++, y, 1.0, 0.0);
-//		addSingleWidget(sbFilterReset,             x++, y, 0.0, 0.0);
-//		addSingleWidget(sbFilterChange,            x++, y, 0.0, 0.0);
-		
-		x = 0 ; y ++; // New row
-		addFullWidthWidget(sbTable, x++, y, 1.0, 0.3, true);
-		
-		x = 0 ; y ++; // New row
-		addFullWidthWidget(sbMessage, x++, y, 1.0, 0.0, false);
-		
-		x = 0 ; y ++; // New row
-		addSingleWidget(update, x++, y, 0.0, 0.0);
-		addFullWidthWidget(statusMessage, x++, y, 1.0, 0.0, false);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		add(split);
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
-	 */
-	@Override
-	protected void arrayAvailable() {
-		showConnectivity();
-	}
-
-	/* (non-Javadoc)
-	 * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
-	 */
-	@Override
-	protected void modelsAvailable() {
-//		fakeData(opModel, sbModel);
-		final List<ObsProject> projects = getModels().getAllProjects();
-		final List<SchedBlock> sbs = getModels().getAllSchedBlocks();
-		
-		opModel.setData(projects);
-		
-		for (final SchedBlock sb : sbs) {
-			getModels().hydrateSchedBlock(sb);
+    /* (non-Javadoc)
+     * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
+     */
+    @Override
+    protected void arrayAvailable() {
+		System.out.format("%s (InteractivePanel).arrayAvailable() - %s is %s @ %h%n",
+				this.getClass().getSimpleName(),
+				arrayName,
+				array.getClass().getSimpleName(),
+				array.hashCode());
+		if (getModels() != null) {
+			getData();
 		}
-		sbModel.setData(sbs);
+		// Set the selection model for the SB table according to the array type
+		if (isManual()) {
+			sbTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			processSB = "Configure array for";
+		} else {
+			sbTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			processSB = "Queue";
+		}
+		sbTable.getSelectionModel().addListSelectionListener(detailsListener(sbDetailsSelected, sbTable));
+		sbTable.getSelectionModel().addListSelectionListener(queueListener(sbQueueSelected, sbTable));
 		showConnectivity();
+    }
+
+    /* (non-Javadoc)
+     * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
+     */
+    @Override
+    protected void modelsAvailable() {
+	if (getArray() != null) {
+	    getData();
 	}
-	/* End Constructors and GUI building
-	 * ============================================================= */
+	showConnectivity();
+    }
+    /* End Constructors and GUI building
+     * ============================================================= */
 
 	
 	
@@ -533,6 +596,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		}
 		sbFilterFromOPTable = rowFilterForSBs(pids);
 		sbSorter.setRowFilter(sbFilterFromOPTable);
+		showProjectCounts();
 	}
 	
 	/**
@@ -557,6 +621,7 @@ public class InteractivePanel extends AbstractArrayPanel
 			@Override
 			public void sorterChanged(RowSorterEvent e) {
 				setFilterForSBs(opTable);
+				showProjectCounts();
 			}
 		});
 	}
@@ -769,6 +834,21 @@ public class InteractivePanel extends AbstractArrayPanel
 	}
 	
 	/**
+	 * Create a listener to clear the selection in the opTable.
+	 * 
+	 * @return
+	 */
+	private ActionListener opClearSelectionListener() {
+		final ActionListener result = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				opTable.getSelectionModel().clearSelection();
+			}
+		};
+		return result;
+	}
+	
+	/**
 	 * Create a listener to show details of the SchedBlock over which
 	 * the pop-up menu was popped up. Which SchedBlock that is will be
 	 * worked out in the handling of the mouse event which triggers the
@@ -812,8 +892,8 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @return
 	 */
 	private String menuStringQueueSelection() {
-		final String singular = (sbTable.getSelectedRowCount() == 1)? "": "s";
-		return String.format("Queue Selected SchedBlock%s", singular);
+	    final String singular = (sbTable.getSelectedRowCount() == 1)? "": "s";
+	    return String.format("%s Selected SchedBlock%s", processSB, singular);
 	}
 	
 	/**
@@ -823,7 +903,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @return
 	 */
 	private String menuStringQueueHere() {
-		return String.format("Queue SchedBlock %s", sbHere);
+	    return String.format("%s SchedBlock %s", processSB, sbHere);
 	}
 
 	/**
@@ -840,15 +920,26 @@ public class InteractivePanel extends AbstractArrayPanel
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				item.setEnabled(isControl() &&
-						(table.getSelectedRows().length > 0));
-				// TODO: also have to disable the item if there are
-				//       more items selected than there is capacity
-				//       available in the SB queue.
+						(table.getSelectedRows().length > 0) &&
+						(spaceOnQueue(table.getSelectedRows().length)));
+				item.setText(menuStringQueueSelection());
 			}
 		};
 		return result;
 	}
 	
+    /**
+     * Deconfigure the previous SchedBlock Ideally this should involve
+     * a wee bit of switching on and off of the execution queue so
+     * that the previous doesn't get left marked as Running
+     */
+    private void deconfigurePrevious() {
+	final ArrayAccessor array = getArray();
+	final String name = getUserName();
+	final String role = getUserRole();
+	array.stopRunningSchedBlock(name, role);
+    }
+
 	/**
 	 * Create a listener to queue the SchedBlocks selected in the given
 	 * table.
@@ -862,7 +953,7 @@ public class InteractivePanel extends AbstractArrayPanel
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int[] viewRows = sbTable.getSelectedRows();
-				final Set<String> pids = new HashSet<String>();
+				final List<String> pids = new ArrayList<String>();
 
 				for (int viewRow : viewRows) {
 					try {
@@ -871,6 +962,10 @@ public class InteractivePanel extends AbstractArrayPanel
 					} catch (ArrayIndexOutOfBoundsException ex) {
 					}
 				}
+				if (isManual()) {
+				    deconfigurePrevious();
+				}
+
 				for (final String pid : pids) {
 					queueSchedBlock(pid);
 				}
@@ -889,21 +984,120 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @return
 	 */
 	private ActionListener sbQueueHereListener() {
-		final ActionListener result = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (sbHere != null) {
-					queueSchedBlock(sbHere);
-				}
+	    final ActionListener result = new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+			if (sbHere != null) {
+			    if (isManual()) {
+				deconfigurePrevious();
+			    }
+			    queueSchedBlock(sbHere);
 			}
+		    }
 		};
-		return result;
+	    return result;
 	}
 	
 	private void queueSchedBlock(String entityId) {
-		System.out.format("Queue SchedBlock %s%n", entityId);
+		final long time = System.nanoTime();
+		final SchedBlockQueueItem item =
+			new SchedBlockQueueItem(time, entityId);
+		getArray().push(item);
 	}
 	/* End Queue interactions
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * Miscellaneous operations kicked off by the GUI 
+	 * ================================================================
+	 */
+	private class ProjectDataFetcher extends SwingWorker<Boolean, String> {
+
+		private boolean wantManual;
+		
+		protected ProjectDataFetcher(boolean wantManual) {
+			this.wantManual = wantManual;
+		}
+		@Override
+		protected Boolean doInBackground() throws Exception {
+			String opInfo = "Getting Project data";
+			String sbInfo = "Getting SchedBlock data";
+			safePublish(opInfo, sbInfo);
+			
+			final List<ObsProject> projects = getModels().getAllProjects(wantManual);
+			opInfo = String.format("Got %d %sProject%s",
+								   projects.size(),
+								   wantManual? "Manual mode ": "",
+								   projects.size()==1? "": "s");
+			safePublish(opInfo, sbInfo);
+			
+			final List<SchedBlock> sbs = getModels().getAllSchedBlocks(wantManual);
+			sbInfo = String.format("Got %d %sSchedBlock%s, hydrating them",
+								   sbs.size(),
+								   wantManual? "Manual mode ": "",
+								   sbs.size()==1? "": "s");
+			safePublish(opInfo, sbInfo);
+
+			opModel.setData(projects);
+
+			for (final SchedBlock sb : sbs) {
+				getModels().hydrateSchedBlock(sb);
+			}
+			sbModel.setData(sbs);
+			sbInfo = String.format("Got and hydrated %d %sSchedBlock%s",
+					   sbs.size(),
+					   wantManual? "Manual mode ": "",
+					   sbs.size()==1? "": "s");
+			safePublish(opInfo, sbInfo);
+			return true;
+		}
+
+		private void safePublish(String op, String sb) {
+			// Just makes sure there are two strings, as expected
+			// by process().
+			publish(op, sb);
+		}
+		
+		@Override
+		protected void done() {
+			try { 
+				showConnectivity();
+				showProjectCounts();
+				update.setEnabled(true);
+			} catch (Exception ignore) {
+			}
+		}
+
+	     @Override
+	     protected void process(List<String> info) {
+	    	 try {
+	    		 setOPMessage(info.get(0));
+	    		 setSBMessage(info.get(1));
+	    	 } catch (Exception ignore) {}
+	     }
+
+	}
+	
+	/**
+	 * Get the project and SB data from the ModelAccessor. Do the time
+	 * consuming stuff in a separate thread like a good little Swing
+	 * and OMC citizen.
+	 */
+	protected void getData() {
+		if (getModels() != null) {
+			update.setEnabled(false);
+			final ProjectDataFetcher fetch = new ProjectDataFetcher(
+					isManual());
+			fetch.execute();
+		} else {
+			showConnectivity();
+			showProjectCounts();
+		}
+	}
+	/* End Miscellaneous operations kicked off by the GUI 
 	 * ============================================================= */
 
 	
@@ -949,6 +1143,25 @@ public class InteractivePanel extends AbstractArrayPanel
 		b.append("</html>");
 		setStatusMessage(b.toString());
 	}
+	
+	private void showProjectCounts() {
+		final int totalProjects = opModel.getRowCount();
+		final int shownProjects = opTable.getRowCount();
+		String l = String.format(
+				"Showing %d project%s of %d",
+				shownProjects,
+				(shownProjects == 1)? "": "s",
+				totalProjects);
+		setOPMessage(l);
+		final int totalSBs = sbModel.getRowCount();
+		final int shownSBs = sbTable.getRowCount();
+		l = String.format(
+				"Showing %d SchedBlock%s of %d",
+				shownSBs,
+				(shownSBs == 1)? "": "s",
+						totalSBs);
+		setSBMessage(l);
+	}
 	/* End Messages to the user
 	 * ============================================================= */
 
@@ -967,7 +1180,8 @@ public class InteractivePanel extends AbstractArrayPanel
 	public void stateChanged(ChangeEvent e) {
 		if (e.getSource() == opFilters) {
 			opSorter.setRowFilter(opFilters.rowFilter());
-			setOPFilterSummary(opFilters.toHTML());
+			setOPFilterSummary(opFilters.toHTML(
+					this.NormalColour, this.DetailColour));
 		} else if (e.getSource() == sbFilters) {
 //			setSBFilterSummary(sbFilters.toHTML());
 		}
@@ -1037,19 +1251,77 @@ public class InteractivePanel extends AbstractArrayPanel
 				sbHere = model.getSchedBlockId(modelRow);
 				sbDetailsHere.setText(menuStringDetailsHere(table));
 				sbQueueHere.setText(menuStringQueueHere());
-				sbQueueHere.setEnabled(isControl());
+				sbQueueHere.setEnabled(isControl() && spaceOnQueue(1));
 				sbPopup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}
 
+    /**
+     * Determine if there is space on the queue for the given number of
+     * SchedBlocks.
+     * 
+     * @param numSBs
+     * @return
+     */
+    private boolean spaceOnQueue(int numSBs) {
+	if (isManual() && numSBs == 1) {
+	    return true;
+	}
+	final int capacity = getArray().getQueueCapacity();
+	final int numInQ   = getArray().getQueue().length;
+	final int numRunning = getArray().hasRunningSchedBlock()? 1: 0;
+	
+	return (capacity >= numSBs + numRunning + numInQ);
+    }
+
 	@Override
 	public void mouseReleased(MouseEvent e) { /* don't care */ }
+
+	@Override
+	protected void setArray(ArrayAccessor array) {
+		super.setArray(array);
+		System.out.format("%s (InteractivePanel).setArray(ArrayAccessor @ %h)%n",
+				this.getClass().getSimpleName(),
+				arrayName.hashCode());
+	
+		PropertyChangeListener guiListener = new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				final String operation = evt.getPropertyName();
+				final String[] item = (String[]) evt.getNewValue();
+				if (operation.equals(ArrayGUIOperation.DESTROYED.toString())) {
+					setStatusMessage(String.format(
+							"<html>Array %s by %s</html>",
+							operation.toString(),
+							item[0]));
+					deactivateAllButtons();
+				}
+			}
+		};
+		try {
+			array.registerGUICallback(guiListener);
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void deactivateAllButtons() {
+		opFilterChange.setEnabled(false);
+		opFilterReset.setEnabled(false);
+		opPopup.setEnabled(false);
+		sbFilterChange.setEnabled(false);
+		sbFilterReset.setEnabled(false);
+		sbPopup.setEnabled(false);
+		update.setEnabled(false);
+		opFilterPanel.setEnabled(false);
+//		sbFilterPanel.setEnabled(false);
+	}
 	/* End Listening to the filters (and anything else)
 	 * ============================================================= */
 
-	
-	
+
+
 	/*
 	 * ================================================================
 	 * Fake data
@@ -1130,7 +1402,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * ============================================================= */
 
 	
-	
+
 	/*
 	 * ================================================================
 	 * Running stand-alone
@@ -1142,7 +1414,7 @@ public class InteractivePanel extends AbstractArrayPanel
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add the ubiquitous "Hello World" label.
-        InteractivePanel panel = new InteractivePanel();
+        InteractivePanel panel = new InteractivePanel("testArray");
         frame.getContentPane().add(panel);
 
         //Display the window.

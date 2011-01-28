@@ -77,7 +77,12 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
                 ((ScienceParameters) params).getRepresentativeBandwidth();
             }
         }
-        schedBlock.getSchedulingConstraints().getRepresentativeTarget().getSource().getCoordinates();
+        //Could be that the target doesn't have a representative target
+        try{
+        	schedBlock.getSchedulingConstraints().getRepresentativeTarget().getSource().getCoordinates();
+        }catch(NullPointerException ex){
+        	//Do nothing
+        }
         schedBlock.getExecutive().getName();
         schedBlock.getProjectUid();
     }
@@ -209,12 +214,18 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         return criteria;
     }
     
+    @Transactional (readOnly=true)
     public SchedBlock findByEntityId(String entityId) {
         Query query = null;
         query = getSession().createQuery("from SchedBlock sb " +
         		"where sb.uid = ?");
         query.setParameter(0, entityId);
-        return (SchedBlock)query.uniqueResult();
+        SchedBlock retVal = (SchedBlock)query.uniqueResult();
+        retVal.getExecutive().getName();
+        retVal.getParent();
+        retVal.setParent(retVal.getParent()); // Weirdness
+        
+        return retVal;
     }
     
     @SuppressWarnings("unchecked")
@@ -237,6 +248,7 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
     @Override
     public void hydrateObsUnitSet(ObsUnitSet ous) {
         getHibernateTemplate().lock(ous, LockMode.NONE);
+        ous.getStatusEntity();
         ous.getStatusEntity().getEntityId();
     }
 

@@ -59,7 +59,15 @@ public class SensitivityConverter {
 	 */
 	static private double valueConvertedToStandardUnits(DoubleWithUnitT sensitivity) 
 			throws ConversionException {
-		final SensitivityTUnitType unit = SensitivityTUnitType.valueOf(sensitivity.getUnit());
+		final SensitivityTUnitType unit;
+		try {
+			unit = SensitivityTUnitType.valueOf(sensitivity.getUnit());
+		} catch (IllegalArgumentException e) {
+			throw new ConversionException(String.format(
+					"Unrecognised input units for sensitivity: %s",
+					sensitivity.getUnit()));
+		}
+
 		double result = sensitivity.getContent();
 
 		switch (unit.getType()) {

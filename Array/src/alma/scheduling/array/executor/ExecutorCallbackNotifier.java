@@ -26,8 +26,10 @@ import java.util.logging.Logger;
 
 import alma.ACSErr.Completion;
 import alma.ACSErr.ErrorTrace;
+import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockQueueItem;
+import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.utils.LoggerFactory;
 
 /**
@@ -53,16 +55,29 @@ public class ExecutorCallbackNotifier implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        logger.info("received notification of execution state change");
-        Executor e = (Executor) o;
-        ExecutionStateChange stch = (ExecutionStateChange) arg;
-        SchedBlockQueueItem item = new SchedBlockQueueItem(stch.getItem().getTimestamp(),
-                stch.getItem().getUid());
-        for (Iterator<String> iter = registeredCallbacks.keySet().iterator(); iter.hasNext(); ) {
-            SchedBlockExecutionCallback callback = registeredCallbacks.get(iter.next());
-            callback.report(item, stch.getNewState(),
-                    new Completion(0L, 0, 0, new ErrorTrace[0]));
-        }
+    	try {
+    		Executor e = (Executor) o;
+    		ExecutionStateChange stch = (ExecutionStateChange) arg;
+    		logger.info(String.format(
+    				"received notification of execution state change SB %s to %s",
+    				stch.getItem().getUid(),
+    				stch.getNewState()));
+    		SchedBlockQueueItem item = new SchedBlockQueueItem(stch.getItem().getTimestamp(),
+    				stch.getItem().getUid());
+    		for (Iterator<String> iter = registeredCallbacks.keySet().iterator(); iter.hasNext(); ) {
+    			String key = iter.next();
+    			SchedBlockExecutionCallback callback = registeredCallbacks.get(key);
+    			try {
+    				callback.report(item, stch.getNewState(),
+    					new Completion(0L, 0, 0, new ErrorTrace[0]));
+    			}
+    			catch(org.omg.CORBA.TRANSIENT ex){
+    				logger.info("Forcing Unregister of Execution Callback with key: " + key);
+                	unregisterMonitor(key);
+    			}
+    		}
+    	} catch (ClassCastException e) {
+    	}
     }
     
     

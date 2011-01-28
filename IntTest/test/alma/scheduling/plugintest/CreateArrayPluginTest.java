@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: CreateArrayPluginTest.java,v 1.2 2009/09/22 22:45:55 rhiriart Exp $
+ * $Id: CreateArrayPluginTest.java,v 1.3 2011/01/28 00:35:32 javarias Exp $
  */
 
 package alma.scheduling.plugintest;
@@ -45,12 +45,16 @@ import alma.ACSErr.Completion;
 import alma.ACSErr.CompletionHolder;
 import alma.ACSSim.Simulator;
 import alma.ACSSim.SimulatorHelper;
-import alma.TMCDB.TMCDBComponent;
-import alma.TMCDB.TMCDBComponentHelper;
+import alma.Control.ControlMaster;
+import alma.Control.ControlMasterHelper;
+import alma.TMCDB.Access;
+import alma.TMCDB.AccessHelper;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
+import alma.scheduling.ArchiveUpdater;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.SchedulingPanelMainFrame;
+import alma.scheduling.archiveupd.compimpl.ArchiveUpdaterHelper;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
 import alma.xmlstore.Operational;
@@ -80,9 +84,12 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
     private Operational archOperational;
     private Identifier archIdentifierComp;
     
-    private TMCDBComponent tmcdb;
+    private Access tmcdb;
     private MasterComponent schedulingMC;
     private MasterSchedulerIF masterScheduler;
+    private ArchiveUpdater archiveUpdater;
+    
+    private ControlMaster control;
     
     public CreateArrayPluginTest() throws Exception {
         super(CreateArrayPluginTest.class.getName());
@@ -110,7 +117,11 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
         simulator = 
             SimulatorHelper.narrow(container.getDefaultComponent("IDL:alma/ACSSim/Simulator:1.0"));
 
-        tmcdb = TMCDBComponentHelper.narrow(container.getComponent("TMCDB"));
+        tmcdb = AccessHelper.narrow(container.getComponent("TMCDB"));
+        
+        control = ControlMasterHelper.narrow(container.getComponent("CONTROL/MASTER"));
+        
+        archiveUpdater = alma.scheduling.ArchiveUpdaterHelper.narrow(container.getComponent("SCHEDULING_UPDATER"));
         
         logger.info("Initializing SCHEDULING...");
         schedulingMC = MasterComponentHelper.narrow(container.getComponent("SCHEDULING_MASTER_COMP"));
@@ -133,6 +144,8 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
             schedulingMC.doTransition(SubsystemStateEvent.SUBSYSEVENT_SHUTDOWNPASS2);
             waitForSubsystemState(schedulingMC.currentStateHierarchy(), "AVAILABLE.OFFLINE.SHUTDOWN", 300);
         }
+        container.releaseComponent(archiveUpdater.name());
+        container.releaseComponent(control.name());
         container.releaseComponent(tmcdb.name());
         container.releaseComponent(archConnectionComp.name());
         container.releaseComponent(archIdentifierComp.name());

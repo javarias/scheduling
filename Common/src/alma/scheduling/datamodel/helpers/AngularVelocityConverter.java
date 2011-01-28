@@ -3,8 +3,8 @@
  */
 package alma.scheduling.datamodel.helpers;
 
-import alma.entity.xmlbinding.valuetypes.DoubleWithUnitT;
 import alma.entity.xmlbinding.valuetypes.AngularVelocityT;
+import alma.entity.xmlbinding.valuetypes.DoubleWithUnitT;
 import alma.entity.xmlbinding.valuetypes.types.AngularVelocityTUnitType;
 
 /**
@@ -65,7 +65,15 @@ public class AngularVelocityConverter {
 	 */
 	static private double valueConvertedToStandardUnits(DoubleWithUnitT angularVelocity) 
 			throws ConversionException {
-		final AngularVelocityTUnitType unit = AngularVelocityTUnitType.valueOf(angularVelocity.getUnit());
+		final AngularVelocityTUnitType unit;
+		try {
+			unit = AngularVelocityTUnitType.valueOf(angularVelocity.getUnit());
+		} catch (IllegalArgumentException e) {
+			throw new ConversionException(String.format(
+					"Unrecognised input units for angular velocity: %s",
+					angularVelocity.getUnit()));
+		}
+
 		double result = angularVelocity.getContent();
 
 		switch (unit.getType()) {
@@ -83,7 +91,7 @@ public class AngularVelocityConverter {
 				break;
 			default:
 				throw new ConversionException(String.format(
-						"Unrecognised units for angularVelocity: %s",
+						"Unrecognised units for angular velocity: %s",
 						unit));
 		}
 		

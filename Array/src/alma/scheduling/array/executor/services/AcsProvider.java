@@ -36,6 +36,8 @@ public class AcsProvider implements Provider {
     
     private String arrayName;
     
+    private boolean isManual;
+    
     private ControlArray controlArray;
     
     private Pipeline pipeline;
@@ -46,12 +48,19 @@ public class AcsProvider implements Provider {
 
     private ModelAccessor model;
         
-    public AcsProvider(ContainerServices container, String arrayName)
+    public AcsProvider(ContainerServices container, String arrayName, boolean isManual)
         throws TranslationException, AcsJException {
         this.container = container;
         this.logger = container.getLogger();
         this.arrayName = arrayName;
-        this.controlArray = new ControlAutomaticArrayImpl(container, arrayName);
+        this.isManual = isManual;
+        
+        if (isManual) {
+            this.controlArray = new ControlManualArrayImpl(container, arrayName);
+        } else {
+            this.controlArray = new ControlAutomaticArrayImpl(container, arrayName);
+        }
+
         try {
             this.model = new ModelAccessor();
         } catch (Exception e) {

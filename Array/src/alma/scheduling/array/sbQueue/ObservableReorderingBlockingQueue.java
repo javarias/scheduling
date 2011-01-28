@@ -213,21 +213,21 @@ public class ObservableReorderingBlockingQueue<E> extends Observable
     }
 
     @Override
-    public boolean moveDown(Object o) {
-        boolean retVal = queue.moveDown(o);
+    public boolean moveDown(E e) {
+        boolean retVal = queue.moveDown(e);
         if (retVal) {
             setChanged();
-            notifyObservers(new QueueNotification(QueueOperation.DOWN, o));
+            notifyObservers(new QueueNotification(QueueOperation.DOWN, e));
         }
         return retVal;
     }
 
     @Override
-    public boolean moveUp(Object o) {
-        boolean retVal = queue.moveUp(o);
+    public boolean moveUp(E e) {
+        boolean retVal = queue.moveUp(e);
         if (retVal) {
             setChanged();
-            notifyObservers(new QueueNotification(QueueOperation.UP, o));
+            notifyObservers(new QueueNotification(QueueOperation.UP, e));
         }
         return retVal;
     }

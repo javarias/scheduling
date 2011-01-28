@@ -17,6 +17,8 @@
  */
 package alma.scheduling.array.executor;
 
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+
 
 /**
  * @author rhiriart
@@ -30,11 +32,6 @@ public class AbortingExecutionState extends ExecutionState {
     public AbortingExecutionState(ExecutionContext context) {
         super(context);
         // TODO Auto-generated constructor stub
-    }
-
-    @Override
-    public String toString() {
-        return "AbortingExecutionState";
     }
 
 }

@@ -21,18 +21,23 @@ package alma.scheduling.array.guis;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,14 +49,27 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.SchedBlockQueueItem;
+import alma.scheduling.array.executor.AbortingExecutionState;
+import alma.scheduling.array.executor.ArchivingExecutionState;
+import alma.scheduling.array.executor.CompleteExecutionState;
+import alma.scheduling.array.executor.FailedExecutionState;
+import alma.scheduling.array.executor.ManualCompleteExecutionState;
+import alma.scheduling.array.executor.ManualReadyExecutionState;
+import alma.scheduling.array.executor.ManualRunningExecutionState;
+import alma.scheduling.array.executor.ReadyExecutionState;
+import alma.scheduling.array.executor.RunningExecutionState;
+import alma.scheduling.array.executor.StartingExecutionState;
+import alma.scheduling.array.executor.StoppingExecutionState;
 import alma.scheduling.array.guis.SBExecutionTableModel.When;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.1 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -63,6 +81,36 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	private final static String BlankLabel = " ";
 	private final static int popupLimit = 10;
+	
+	/** SBs in any of these states should be shown on the current panel */
+	private final static Set<String> CurrentStates = new HashSet<String>();
+	
+	/** SBs in any of these states should be shown on the past panel */
+	private final static Set<String> PastStates = new HashSet<String>();
+	
+	/**
+	 *  SBs in any of these states mean the Stop and Abort buttons
+	 *  should be active
+	 */
+	private final static Set<String> RunningStates = new HashSet<String>();
+	
+	static {
+		CurrentStates.add(AbortingExecutionState.class.getSimpleName());
+		CurrentStates.add(ArchivingExecutionState.class.getSimpleName());
+		CurrentStates.add(ReadyExecutionState.class.getSimpleName());
+		CurrentStates.add(RunningExecutionState.class.getSimpleName());
+		CurrentStates.add(StartingExecutionState.class.getSimpleName());
+		CurrentStates.add(StoppingExecutionState.class.getSimpleName());
+		CurrentStates.add(ManualReadyExecutionState.class.getSimpleName());
+		CurrentStates.add(ManualRunningExecutionState.class.getSimpleName());
+		
+		PastStates.add(CompleteExecutionState.class.getSimpleName());
+		PastStates.add(FailedExecutionState.class.getSimpleName());
+		PastStates.add(ManualCompleteExecutionState.class.getSimpleName());
+		
+		RunningStates.add(RunningExecutionState.class.getSimpleName());
+		RunningStates.add(ManualRunningExecutionState.class.getSimpleName());
+	}
 	/* End Constants
 	 * ============================================================= */
 	
@@ -89,10 +137,13 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	private JButton delete;
 	
 	/** The buttons for manipulating the executor */
-	private JButton abortSB;
-	private JButton stopSB;
-	private JButton startExec;
-	private JButton stopExec;
+	private JButton   stopSB;
+	private JCheckBox fullAuto;
+	private JButton   startExec;
+	private JButton   stopExec;
+//	private JButton   destroyArray;
+	
+	private SchedBlockQueueItem runningExecution = null;
 	
 	/** the things which sorts the SchedBlocks in our tables */
 	// Note that there is no pending sorter - the queue is ordered
@@ -101,6 +152,17 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 
 	/** Used to convey information to the user */
 	private JLabel statusMessage;
+	
+	private JPanel pendingPanel;
+	private JPanel currentPanel;
+	private JPanel pastPanel;
+	private JSplitPane bottomSplit;
+	private JPanel normalButtons;
+	private JPanel manualButtons;
+	private JLabel currentPanelLabel;
+
+	private boolean deactivated = false;
+
 	/* End Fields for widgets &c
 	 * ============================================================= */
 	
@@ -116,16 +178,24 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public CurrentActivityPanel() {
 		super();
+		System.out.format("%s (CurrentActivityPanel).CurrentActivityPanel()%n",
+				this.getClass().getSimpleName());
 		createWidgets();
-		createLayoutManager();
 		addWidgets();
 		showConnectivity();
 	}
 	
 	/**
-	 * Build the LayoutManager we plan to use.
+	 * Basic constructor.
 	 */
-	private void createLayoutManager() {
+	public CurrentActivityPanel(String arrayName) {
+		super(arrayName);
+		System.out.format("%s (CurrentActivityPanel).CurrentActivityPanel(%s)%n",
+				this.getClass().getSimpleName(),
+				arrayName);
+		createWidgets();
+		addWidgets();
+		showConnectivity();
 	}
 	
 	/**
@@ -142,27 +212,6 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		return result;
 	}
 	
-	private void makeSameWidth(JButton... buttons) {
-		double maxWidth = -1;
-		System.out.println("-- makeSameWidth() --");
-		for (final JButton b : buttons) {
-			final double w = b.getPreferredSize().getWidth();
-			System.out.format("%s:\t%f%n",
-					b.getText(),
-					w);
-			if (w > maxWidth) {
-				maxWidth = w;
-			}
-		}
-		for (final JButton b : buttons) {
-			final Dimension d = b.getPreferredSize();
-			d.setSize(maxWidth, d.getHeight());
-			b.setMinimumSize(d);
-			b.setPreferredSize(d);
-			b.setMaximumSize(d);
-		}
-		System.out.println("---------------------");
-	}
 	/**
 	 * Create those widgets which we want to keep track of.
 	 */
@@ -205,12 +254,14 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 								pendingModel.getData(r);
 							getArray().moveUp(mqi.getItem());
 							pendingModel.fireTableRowsUpdated(r-1, r);
+							System.out.format("pendingTable.getSelectionModel().setSelectionInterval(%d, %d)%n", r-1, r-1);
+							pendingTable.getSelectionModel().setSelectionInterval(r-1, r-1);
 						} catch (NullPointerException npe) {
 						}
 					}});
 		moveDown = newButton("Demote",
 				"Move the selected execution down the queue");
-		moveUp.addActionListener(
+		moveDown.addActionListener(
 				new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -220,6 +271,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 								pendingModel.getData(r);
 							getArray().moveDown(mqi.getItem());
 							pendingModel.fireTableRowsUpdated(r, r+1);
+							pendingTable.getSelectionModel().setSelectionInterval(r+1, r+1);
 						} catch (NullPointerException npe) {
 						}
 					}});
@@ -230,62 +282,114 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-							final int r = pendingTable.getSelectedRow();
+							int r = pendingTable.getSelectedRow();
 							final ManifestSchedBlockQueueItem mqi =
 								pendingModel.getData(r);
 							getArray().delete(mqi.getItem());
 							pendingModel.fireTableRowsDeleted(r, r);
+							if (r >= pendingTable.getRowCount()) {
+								// Just removed the bottom row
+								r --;
+							}
+							if (r >= 0) {
+								pendingTable.getSelectionModel().setSelectionInterval(r, r);
+							}
 						} catch (NullPointerException npe) {
 						}
 					}});
 		
-		abortSB = newButton("Abort SB",
-							"Abort the execution of the current SchedBlock as quickly as possible");
-		abortSB.setForeground(Color.RED);
-		abortSB.addActionListener(
-				new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							getArray().abortRunningSchedBlock();
-							getArray().stop();
-						} catch (NullPointerException npe) {
-						}
-					}});
 		stopSB = newButton("Stop SB",
-						   "Stop the execution of the current SchedBlock at the end of the current scan");
+				   "Stop the execution of the current SchedBlock at the end of the current scan");
 		stopSB.addActionListener(
 				new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-							getArray().stopRunningSchedBlock();
-							getArray().stop();
+							getArray().stopRunningSchedBlock(
+									getUserName(),
+									getUserRole());
+							//getArray().stop(
+							//		getUserName(),
+							//		getUserRole());
 						} catch (NullPointerException npe) {
 						}
 					}});
-		startExec = newButton("Start",
+		stopSB.setEnabled(true);
+		
+		fullAuto = new JCheckBox("Full Auto");
+		fullAuto.setToolTipText("If checked, run the executor in Full Auto mode");
+		fullAuto.addActionListener(
+				new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							getArray().setFullAuto(
+									fullAuto.isSelected(),
+									getUserName(),
+									getUserRole());
+						} catch (NullPointerException npe) {
+						}
+					}});
+		fullAuto.setSelected(false);
+
+		startExec = newButton("Start Queue",
 							  "Start execution of SchedBlocks on this array");
 		startExec.addActionListener(
 				new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-							getArray().start();
+							getArray().start(getUserName(),
+									         getUserRole());
 						} catch (NullPointerException npe) {
+							npe.printStackTrace();
 						}
 					}});
-		stopExec = newButton("Stop",
-							  "Stop execution of SchedBlocks on this array");
+		startExec.setEnabled(true);
+		stopExec = newButton("Stop Queue",
+		  "Stop execution of SchedBlocks on this array");
 		stopExec.addActionListener(
 				new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-							getArray().stop();
+							getArray().stop(getUserName(),
+									getUserRole());
 						} catch (NullPointerException npe) {
 						}
 					}});
+		stopExec.setEnabled(true);
+		
+//		destroyArray = newButton("Destroy",
+//			"Destroy the manual array");
+//		destroyArray.addActionListener(
+//				new ActionListener(){
+//					@Override
+//					public void actionPerformed(ActionEvent event) {
+//						try {
+//							setStatusMessage(
+//									String.format("Destroying array %s...",
+//									arrayName));
+//							Master m = getMaster();
+//							m.destroyArray(arrayName);
+//						} catch (NullPointerException npe) {
+//							npe.printStackTrace();
+//							setStatusMessage(String.format(
+//								"Cannot destroy array - cannot find master component! See logs for details."),
+//								Color.RED);
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//							ErrorHandling.severe(services.getLogger(),
+//									String.format("Internal error (%s) whilst destroying array - %s",
+//											e.getClass().getSimpleName(), e.getMessage()),
+//									e);
+//							setStatusMessage(String.format(
+//								"Cannot destroy array - internal error! See logs for details."),
+//								Color.RED);
+//						}
+//					}
+//					});
+//		destroyArray.setEnabled(true);
 
 		currentSorter = new TableRowSorter<SBExecutionTableModel>(currentModel);
 		currentTable.setRowSorter(currentSorter);
@@ -293,6 +397,8 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		pastTable.setRowSorter(pastSorter);
 
 		statusMessage = new JLabel(BlankLabel);
+		updateArrayButtons();
+		updateSBButtons();
 	}
 
 	/**
@@ -303,7 +409,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	private JLabel newLabel(final String label) {
 		final JLabel result = new JLabel(label);
 		
-		result.setForeground(new Color(127, 127, 255));
+		result.setForeground(TitleColor);
 		result.setAlignmentX(Component.LEFT_ALIGNMENT);
 		result.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
 		return result;
@@ -357,20 +463,37 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	private JPanel createCurrentPanel() {
 		final JPanel      result  = new JPanel();
 		final JPanel      buttons = new JPanel();
-		final JLabel      label  = newLabel("Current Executions");
+//		final JLabel      label  = newLabel("Current Executions");
 		final JScrollPane scroll = newScroller(currentTable);
+		
+		currentPanelLabel = newLabel("Current Executions");
+		
+		normalButtons = new JPanel();
+		normalButtons.setLayout(new BoxLayout(normalButtons, BoxLayout.Y_AXIS));
+		normalButtons.add(stopSB);
+		normalButtons.add(Box.createVerticalStrut(
+				moveUp.getPreferredSize().height/2));
+		normalButtons.add(fullAuto);
+		normalButtons.add(Box.createVerticalStrut(
+				moveUp.getPreferredSize().height/2));
+		normalButtons.add(startExec);
+		normalButtons.add(stopExec);
+		normalButtons.setAlignmentY(Component.TOP_ALIGNMENT);
+
+		manualButtons = new JPanel();
+		manualButtons.setLayout(new BoxLayout(manualButtons, BoxLayout.Y_AXIS));
+//		manualButtons.add(destroyArray);
+		manualButtons.setAlignmentY(Component.TOP_ALIGNMENT);
+		
+		normalButtons.setVisible(false);
+		manualButtons.setVisible(false);
 
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
-		buttons.add(abortSB);
-		buttons.add(stopSB);
-		buttons.add(Box.createVerticalStrut(
-				moveUp.getPreferredSize().height/2));
-		buttons.add(startExec);
-		buttons.add(stopExec);
-		buttons.setAlignmentY(Component.TOP_ALIGNMENT);
+		buttons.add(normalButtons);
+		buttons.add(manualButtons);
 
 		result.setLayout(new BorderLayout());
-		result.add(label, BorderLayout.NORTH);
+		result.add(currentPanelLabel, BorderLayout.NORTH);
 		result.add(scroll, BorderLayout.CENTER);
 		result.add(buttons, BorderLayout.EAST);
 		
@@ -397,29 +520,31 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * Add the widgets to the display.
 	 */
 	private void addWidgets() {
-		makeSameWidth(abortSB, stopSB, startExec, stopExec,
+		makeSameWidth(stopSB, startExec, stopExec,
 			      moveUp, moveDown, delete);
 
-		final JPanel pendingPanel = createPendingPanel();
-		final JPanel currentPanel = createCurrentPanel();
-		final JPanel pastPanel    = createPastPanel();
+		pendingPanel = createPendingPanel();
+		currentPanel = createCurrentPanel();
+		pastPanel    = createPastPanel();
 		
-		final JSplitPane topSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-		final JSplitPane bottomSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		bottomSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
 		
-		topSplit.setTopComponent(pendingPanel);
-		topSplit.setBottomComponent(bottomSplit);
 		bottomSplit.setTopComponent(currentPanel);
 		bottomSplit.setBottomComponent(pastPanel);
 		
-		topSplit.setDividerLocation(1.0/3.0);
 		bottomSplit.setDividerLocation(0.5);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		add(topSplit);
+		add(bottomSplit);
 		add(statusMessage);
 	}
 
+	/**
+	 * Manifest the given SchedBlockQueueItems
+	 * 
+	 * @param qItems
+	 * @return
+	 */
 	public List<ManifestSchedBlockQueueItem> getSchedBlocks(
 			SchedBlockQueueItem[] qItems) {
 		final List<ManifestSchedBlockQueueItem> result =
@@ -446,16 +571,53 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
+	/**
+	 * Manifest a single SchedBlockQueueItem
+	 * 
+	 * @param item
+	 * @return
 	 */
-	@Override
-	protected void arrayAvailable() {
-		final SchedBlockQueueItem[] ids = getArray().getQueue();
-		final List<ManifestSchedBlockQueueItem> blocks = getSchedBlocks(ids);
-		pendingModel.setData(blocks);
-		showConnectivity();
+	public ManifestSchedBlockQueueItem getSchedBlock(
+			SchedBlockQueueItem item) {
+		final ModelAccessor ma = getModels();
+		final SchedBlock sb = ma.getSchedBlockFromEntityId(item.uid);
+		final ManifestSchedBlockQueueItem result =
+			new ManifestSchedBlockQueueItem(item, sb);
+
+		return result;
 	}
+
+    /* (non-Javadoc)
+     * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
+     */
+    @Override
+    protected void arrayAvailable() {
+    	System.out.format("%s (CurrentActivityPanel).arrayAvailable() - %s is %s @ %h%n",
+			this.getClass().getSimpleName(),
+			arrayName,
+			array.getClass().getSimpleName(),
+			array.hashCode());
+
+    	if (getArray().isManual()) {
+    		currentPanelLabel.setText("Configured SchedBlock");
+    		bottomSplit.setDividerLocation(1.0/3.0);
+    		normalButtons.setVisible(false);
+    		manualButtons.setVisible(true);
+    	} else {
+    		final JSplitPane topSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+    		bottomSplit.setTopComponent(topSplit);
+    		topSplit.setTopComponent(pendingPanel);
+    		topSplit.setBottomComponent(currentPanel);
+    		bottomSplit.setDividerLocation(2.0/3.0);
+    		topSplit.setDividerLocation(1.0/2.0);
+    		normalButtons.setVisible(true);
+    		manualButtons.setVisible(false);
+    	}
+    	final SchedBlockQueueItem[] ids = getArray().getQueue();
+    	final List<ManifestSchedBlockQueueItem> blocks = getSchedBlocks(ids);
+    	pendingModel.setData(blocks);
+    	showConnectivity();
+    }
 
 	/* (non-Javadoc)
 	 * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
@@ -483,6 +645,76 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	}
 	/* End Constructors and GUI building
 	 * ============================================================= */
+	
+	
+	
+	/*
+	 * ================================================================
+	 * GUI management
+	 * ================================================================
+	 */
+	/**
+	 * Determine if the given ManifestSchedBlockQueueItem is the same
+	 * execution as we currently have running (if there's one running).
+	 * 
+	 * @param m
+	 * @return
+	 */
+	private boolean isRunningExecution(ManifestSchedBlockQueueItem m) {
+		try {
+			SchedBlockQueueItem inner = m.getItem();
+			return (inner.timestamp == runningExecution.timestamp) &&
+					(inner.uid.equals(runningExecution.uid));
+		} catch (NullPointerException e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * Set the appropriate buttons according to whether we have a
+	 * current execution.
+	 */
+	private void updateSBButtons() {
+		if (!deactivated) {
+			stopSB.setEnabled(runningExecution != null);
+		}
+	}
+	
+	/**
+	 * Set the appropriate buttons according to the status of the Array
+	 */
+	private void updateArrayButtons() {
+		if (!deactivated) {
+			ArrayAccessor a = getArray();
+			
+			if (a == null) {
+				startExec.setEnabled(false);
+				stopExec.setEnabled(false);
+				fullAuto.setSelected(false);
+			} else {
+				startExec.setEnabled(!a.isRunning());
+				stopExec.setEnabled(a.isRunning());
+				fullAuto.setSelected(a.isFullAuto());
+			}
+		}
+	}
+	
+	/**
+	 * Set the appropriate buttons according to the status of the Array
+	 */
+	private void deactivateAllButtons() {
+		deactivated = true;
+		startExec.setEnabled(false);
+		stopExec.setEnabled(false);
+		fullAuto.setEnabled(false);
+		stopSB.setEnabled(false);
+		moveUp.setEnabled(false);
+		moveDown.setEnabled(false);
+		delete.setEnabled(false);
+//		destroyArray.setEnabled(false);
+	}
+	/* End GUI management
+	 * ============================================================= */
 
 	
 	
@@ -502,7 +734,12 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * ================================================================
 	 */
 	private void setStatusMessage(String message) {
+		setStatusMessage(message, Color.black);
+	}
+	
+	private void setStatusMessage(String message, Color colour) {
 		statusMessage.setText(message);
+		statusMessage.setForeground(colour);
 	}
 	
 	private void showConnectivity() {
@@ -531,11 +768,178 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * Listening
 	 * ================================================================
 	 */
+
+	@Override
+	protected void setArray(ArrayAccessor array) {
+		super.setArray(array);
+		System.out.format("%s (CurrentActivityPanel).setArray(ArrayAccessor @ %h)%n",
+				this.getClass().getSimpleName(),
+				arrayName.hashCode());
+		PropertyChangeListener queueListener = new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				final SchedBlockQueueItem[] ids = getArray().getQueue();
+				final List<ManifestSchedBlockQueueItem> blocks = getSchedBlocks(ids);
+				final int selected = pendingTable.getSelectedRow();
+				pendingModel.setData(blocks);
+				if (selected >= 0) {
+					pendingTable.getSelectionModel().setSelectionInterval(selected, selected);
+				}
+			}
+		};
+		try {
+			array.registerQueueCallback(queueListener);
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+		}
+	
+		PropertyChangeListener execListener = new PropertyChangeListener() {
+			@Override
+			public synchronized void propertyChange(PropertyChangeEvent evt) {
+				{ // Logging block
+					PrintStream o = System.out;
+					o.format("execListener.propertyChange(%s, ", evt.getPropertyName());
+					try {
+						SchedBlockQueueItem item = (SchedBlockQueueItem) evt.getNewValue();
+						o.format("%s %s)",
+								item.uid, item.timestamp);
+					} catch (NullPointerException e) {
+						o.format("Unexpected null)");
+					} catch (ClassCastException e) {
+						o.format("Unexpected class of object %s)",
+								evt.getNewValue().getClass().getName());
+					}
+					if (CurrentStates.contains(evt.getPropertyName())) {
+						o.print(" - Current");
+					} else if (PastStates.contains(evt.getPropertyName())) {
+						o.print(" - Past");
+					} else {
+						o.print(" - Unknown!");
+					}
+					o.println(" state");
+				} // end Logging block
+
+				SchedBlockQueueItem item = (SchedBlockQueueItem) evt.getNewValue();
+				final String state = evt.getPropertyName();
+				
+				final ManifestSchedBlockQueueItem block = getSchedBlock(item);
+				if (!PastStates.contains(block.getExecutionState())) {
+					// Don't do anything if the execution is already in
+					// a past (terminal) state. The notifications are
+					// not guaranteed to arrive in the order sent!
+					block.setExecutionState(state);
+					if (CurrentStates.contains(state)) {
+						currentModel.ensureIn(block);
+					} else if (PastStates.contains(state)) {
+						currentModel.ensureOut(block);
+						pastModel.ensureIn(block);
+					}
+				}
+				if (RunningStates.contains(state)) {
+					// This execution is actively running.
+					if (runningExecution == null) {
+						// Nothing running, so use the new block
+						runningExecution = block.getItem();
+					} else if (!isRunningExecution(block)) {
+						// Something else is currently running.
+						// TODO: R8 something sensible.
+					}
+				} else {
+					// This execution is not actively running
+					if (isRunningExecution(block)) {
+						// but it was, so clear it
+						runningExecution = null;
+					}
+				}
+				stopSB.setEnabled(runningExecution != null);
+			}
+		};
+
+		try {
+			array.registerExecutionCallback(execListener);
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+		}
+
+		PropertyChangeListener guiListener = new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				{ // Logging block
+					PrintStream o = System.out;
+					o.format("guiListener.propertyChange(%s, ", evt.getPropertyName());
+					try {
+						String[] item = (String[]) evt.getNewValue();
+						o.format("%s, %s)",
+								item[0], item[1]);
+					} catch (IndexOutOfBoundsException e) {
+						o.format("Unexpected lack of values - expecting 2)");
+					} catch (NullPointerException e) {
+						o.format("Unexpected null)");
+					} catch (ClassCastException e) {
+						o.format("Unexpected class of object %s)",
+								evt.getNewValue().getClass().getName());
+					}
+					o.println();
+				} // end Logging block
+				final String operation = evt.getPropertyName();
+				final String[] item = (String[]) evt.getNewValue();
+				if (operation.equals(ArrayGUIOperation.DESTROYED.toString())) {
+					setStatusMessage(String.format(
+							"<html>Array %s by %s</html>",
+							operation.toString(),
+							item[0]));
+					deactivateAllButtons();
+				} else {
+					setStatusMessage(String.format(
+							"<html>Array set to %s by %s (%s)</html>",
+							operation.toString(),
+							item[0],
+							item[1]));
+					updateArrayButtons();
+				}
+			}
+		};
+		try {
+			array.registerGUICallback(guiListener);
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+		}
+	
+		updateArrayButtons();
+		updateSBButtons();
+	}
 	/* End Listening
 	 * ============================================================= */
 
 	
 	
+
+	/*
+	 * ================================================================
+	 * Interaction with components
+	 * ================================================================
+	 */
+//	private Master getMaster() {
+//		final String masterComponentName = "SCHEDULING_MASTERSCHEDULER";
+//		Master result = null;
+//		
+//		try {
+//			org.omg.CORBA.Object o = services.getComponentNonSticky(masterComponentName);
+//			result = MasterHelper.narrow(o);
+//		} catch (AcsJContainerServicesEx e) {
+//			ErrorHandling.severe(services.getLogger(),
+//					String.format("Cannot get reference to component %s - %s",
+//							masterComponentName, e.getMessage()),
+//					e);
+//		}
+//		return result;
+//	}
+	/* End Listening
+	 * ============================================================= */
+
+	
+	
+
 	/*
 	 * ================================================================
 	 * Running stand-alone
@@ -547,7 +951,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add the ubiquitous "Hello World" label.
-        CurrentActivityPanel panel = new CurrentActivityPanel();
+        CurrentActivityPanel panel = new CurrentActivityPanel("testArray");
         frame.getContentPane().add(panel);
 
         //Display the window.
@@ -579,4 +983,5 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	/*
 	 * End Running stand-alone
 	 * ============================================================= */
+    
 }

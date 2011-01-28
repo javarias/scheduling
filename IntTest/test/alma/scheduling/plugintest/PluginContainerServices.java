@@ -76,9 +76,21 @@ public class PluginContainerServices implements
 
 	
 	public void startChildPlugin(String childName, SubsystemPlugin child) throws PluginContainerException {
+		for (Object prop : System.getProperties().keySet()) {
+			try {
+				String value = System.getProperty((String)prop);
+				System.out.format("%s -> %s%n", prop, value);
+			} catch (ClassCastException c) {
+			}
+		}
 		try {
-    			PluginStarter pluginStarter = new PluginStarter(childName,child, new Properties());
+			Properties props = new Properties();
+			//props.setProperty("array.name", childName);
+			//props.setProperty("user.name", System.getProperty("username"));
+			//props.setProperty("user.role", childName);
+			PluginStarter pluginStarter = new PluginStarter(childName, child, props);
 		} catch(Exception ex) {
+			ex.printStackTrace();
 			throw new PluginContainerException("Exception caught trying to start child plugin!");
 		}
 	}

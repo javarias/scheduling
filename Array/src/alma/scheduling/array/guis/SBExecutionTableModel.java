@@ -18,10 +18,12 @@
 
 package alma.scheduling.array.guis;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -33,10 +35,28 @@ import alma.scheduling.datamodel.obsproject.SchedBlockState;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SBExecutionTableModel.java,v 1.1 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: SBExecutionTableModel.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SBExecutionTableModel extends AbstractTableModel {
+	/*
+	 * ================================================================
+	 * Time offsets
+	 * ================================================================
+	 */
+	private static long TimeZeroMilli;
+	private static long TimeZeroNano;
+	private static int NanosPerMilli = 1000000;
+	
+	static {
+		TimeZeroNano = System.nanoTime();
+		TimeZeroMilli = System.currentTimeMillis();
+	}
+	/* End Time offsets
+	 * ============================================================= */
+
+	
+	
 	/*
 	 * ================================================================
 	 * Types
@@ -57,10 +77,13 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	 * ================================================================
 	 */
 	/** Of course, a Logger */
-	private Logger logger;
+//	private Logger logger;
 	
 	/** Map the displayed columns to the internal logical columns */
 	private int viewToModelColumnMap[];
+	
+	/** Map the displayed columns to the internal logical columns */
+	private DateFormat dateFormat;
 	/* End Fields
 	 * ============================================================= */
 
@@ -95,6 +118,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			break;
 		}
 		initialiseData();
+		dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -117,10 +141,12 @@ public class SBExecutionTableModel extends AbstractTableModel {
 				Column_Position,
 				Column_EntityId,
 				Column_PI,
+				Column_Timestamp,
 				Column_Executive,
 				Column_Name,
 				Column_State,
-				Column_Project
+				Column_Project,
+				Column_Note
 		};
 		return result;
 	}
@@ -135,10 +161,12 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		final int[] result = {
 				Column_EntityId,
 				Column_PI,
+				Column_Timestamp,
 				Column_Executive,
 				Column_Name,
 				Column_State,
-				Column_Project
+				Column_Project,
+				Column_Note
 		};
 		return result;
 	}
@@ -154,9 +182,11 @@ public class SBExecutionTableModel extends AbstractTableModel {
 				Column_Project,
 				Column_EntityId,
 				Column_PI,
+				Column_Timestamp,
 				Column_Executive,
 				Column_Name,
 				Column_State,
+				Column_Note,
 		};
 		return result;
 	}
@@ -195,6 +225,85 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	}
 	
 	/**
+	 * Make sure that the given item is in this model
+	 */
+	public void ensureIn(ManifestSchedBlockQueueItem item) {
+		final int i = findDataRow(item);
+		if (i < 0) { // Can't find it, so add it in
+			data.add(item);
+		} else { // Existing copy - make sure it has the correct state
+			data.get(i).setExecutionState(item.getExecutionState());
+		}
+
+		this.fireTableDataChanged();
+	}
+	
+	/**
+	 * Make sure that the given items are in this model
+	 */
+	public void ensureIn(Collection<ManifestSchedBlockQueueItem> interesting) {
+		for (final ManifestSchedBlockQueueItem item : interesting) {
+			final int i = findDataRow(item);
+			if (i < 0) { // Can't find it, so add it in
+				data.add(item);
+			} else { // Existing copy - make sure it has the correct state
+				data.get(i).setExecutionState(item.getExecutionState());
+			}
+		}
+
+		this.fireTableDataChanged();
+	}
+	
+	/**
+	 * Make sure that the given item is not in this model
+	 */
+	public void ensureOut(ManifestSchedBlockQueueItem item) {
+		final int i = findDataRow(item);
+		if (i >= 0) {
+			data.remove(i);
+			this.fireTableDataChanged();
+		}
+	}
+	
+	/**
+	 * Make sure that the given items are not in this model
+	 */
+	public void ensureOut(Collection<ManifestSchedBlockQueueItem> interesting) {
+		boolean changed = false;
+		for (final ManifestSchedBlockQueueItem item : interesting) {
+			final int i = findDataRow(item);
+			if (i >= 0) {
+				data.remove(i);
+				changed = true;
+			}
+		}
+		if (changed) {
+			this.fireTableDataChanged();
+		}
+	}
+	
+	/**
+	 * Find the data row which corresponds to the given item.
+	 * 
+	 * @param item
+	 * @return - the index of the row, or -1 if it's not found
+	 */
+	private int findDataRow(ManifestSchedBlockQueueItem item) {
+		int result = -1;
+		
+		for (int r = 0; r < data.size(); r++) {
+			final ManifestSchedBlockQueueItem datum = data.get(r);
+			if (datum.getTimestamp() == item.getTimestamp() &&
+					datum.getUid().equals(item.getUid())) {
+				result = r;
+				break;
+			}
+		}
+			
+		return result;
+	}
+
+	/**
 	 * Get the data of the TableModel
 	 */
 	public ManifestSchedBlockQueueItem getData(int rowIndex) {
@@ -202,9 +311,10 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		try {
 			schedBlock = getData().get(rowIndex);
 		} catch (IndexOutOfBoundsException e) {
-			logger.severe(String.format(
-					"row out of bounds in %getData(%d)",
-					this.getClass().getSimpleName()));
+			System.out.format(
+					"row out of bounds in %s.getData(%d)",
+					this.getClass().getSimpleName(),
+					rowIndex);
 			return null;
 		}
 		return schedBlock;
@@ -243,6 +353,8 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	private static final int     Column_State = 4;
 	private static final int   Column_Project = 5;
 	private static final int  Column_Position = 6;
+	private static final int      Column_Note = 7;
+	private static final int Column_Timestamp = 8;
 	
 
 	/* (non-Javadoc)
@@ -270,10 +382,10 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		try {
 			schedBlock = getData().get(rowIndex);
 		} catch (IndexOutOfBoundsException e) {
-			logger.severe(String.format(
+			System.out.format(
 					"row out of bounds in %s.getValueAt(%d, %d)",
 					this.getClass().getSimpleName(),
-					rowIndex, columnIndex));
+					rowIndex, columnIndex);
 			return null;
 		}
 		
@@ -285,18 +397,35 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		case Column_Executive:
 			return schedBlock.getExecutive().getName();
 		case Column_Name:
-			return "Not yet implemented"; // TODO: SchedBlock name
+			return schedBlock.getName();
 		case Column_State:
-			return schedBlock.getSchedBlockControl().getState();
+			return schedBlock.getExecutionState();
 		case Column_Project:
 			return schedBlock.getProjectUid();
 		case Column_Position:
 			return rowIndex + 1;
+		case Column_Timestamp:
+			final long nsSinceT0 = schedBlock.getItem().timestamp - TimeZeroNano;
+			final long msSinceT0 = nsSinceT0 / NanosPerMilli;
+			final long remainderNS = nsSinceT0 % NanosPerMilli;
+//			System.out.format(
+//					"%n%-13s = %21d%n%-13s = %21d%n%-13s = %15d (%s) %n%-13s = %21d%n%-13s = %15d%n%-13s = %21d%n",
+//					"timestamp", schedBlock.getItem().timestamp,
+//					"TimeZeroNano", TimeZeroNano,
+//					"TimeZeroMilli", TimeZeroMilli, new Date(TimeZeroMilli),
+//					"nsSinceT0", nsSinceT0,
+//					"msSinceT0", msSinceT0,
+//					"remainderNS", remainderNS);
+			return String.format("%s%02d",
+					dateFormat.format(new Date(TimeZeroMilli + msSinceT0)),
+					remainderNS / 10000);
+		case Column_Note:
+			return schedBlock.getNote();
 		default:
-			logger.severe(String.format(
+			System.out.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
 					this.getClass().getSimpleName(),
-					rowIndex, columnIndex));
+					rowIndex, columnIndex);
 			return null;
 		}
 	}
@@ -321,11 +450,15 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return String.class;
 		case Column_Position:
 			return Integer.class;
+		case Column_Timestamp:
+			return String.class;
+		case Column_Note:
+			return String.class;
 		default:
-			logger.severe(String.format(
+			System.out.format(
 					"column out of bounds in %s.getColumnClass(%d)",
 					this.getClass().getSimpleName(),
-					columnIndex));
+					columnIndex);
 			return Object.class;
 		}
 	}
@@ -353,11 +486,15 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return "Project";
 		case Column_Position:
 			return "Position";
+		case Column_Timestamp:
+			return "Time";
+		case Column_Note:
+			return "Note";
 		default:
-			logger.severe(String.format(
+			System.out.format(
 					"column out of bounds in %s.getColumnName(%d)",
 					this.getClass().getSimpleName(),
-					columnIndex));
+					columnIndex);
 			return "";
 		}
 	}

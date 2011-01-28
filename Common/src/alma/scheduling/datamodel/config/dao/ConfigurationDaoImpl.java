@@ -44,8 +44,16 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
                 + " order by config.lastLoad desc");
         query.setMaxResults(1);
         if (query.list().size() == 0) {
-            config.setLastLoad(null);
+        	if (config == null){
+        		logger.warn("Ignoring configuration from XML file");
+        		config = new Configuration();
+        	}
+        	else
+        		config.setLastLoad(null);
         } else {
+        	if (config == null)
+        		config = new Configuration();
+        	logger.warn("Ignoring configuration from XML file. Using configuration stored in the DB");
             Configuration dbConf = (Configuration) query.list().get(0);
             config.setLastLoad(dbConf.getLastLoad());
             config.setNextStepTime(dbConf.getNextStepTime());
@@ -62,6 +70,15 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
     public void updateConfig() {
         config.setLastLoad(new Date());
         saveOrUpdate(config);
+    }
+    
+    /**
+     * Store in the DB the given update time
+     */
+    @Override
+    public void updateConfig(Date lastUpdateTime){
+    	config.setLastLoad(lastUpdateTime);
+    	saveOrUpdate(config);
     }
 
     @Override

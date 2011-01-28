@@ -18,7 +18,11 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
 import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Vector;
@@ -32,12 +36,18 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
 import alma.lifecycle.persistence.StateArchive;
+import alma.lifecycle.stateengine.RoleProvider;
+import alma.lifecycle.stateengine.RoleProviderMock;
+import alma.lifecycle.stateengine.StateEngine;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.CommonContextFactory;
 import alma.scheduling.utils.LoggerFactory;
-import alma.scheduling.utils.SchedulingContextFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
+
+
 
 /**
  * A class to be used by GUI models to get access to data held in the database. Currently
@@ -53,36 +63,42 @@ import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
  */
 public class ModelAccessor extends Observable {
 	
-	public static final String SCHEDULING_COMMON_SPRING_CONFIG =  "alma/scheduling/CommonContext.xml";
-	public static final String SCHEDULING_OBS_PROJECT_DAO_BEAN = "obsProjectDao";
-	public static final String SCHEDULING_SCHED_BLOCK_BEAN = "schedBlockDao";
-	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private StateArchive stateArchive;
+	private StateEngine stateEngine;
 	private ObsProjectDao projectDao;
 	private SchedBlockDao schedBlockDao;
+	private ExecutiveDAO execDao;
 		
 	public ModelAccessor() throws Exception {
 	    // There should be only one instance of the stateArchive in the process.
 	    // An implication of this is that this component cannot coexist with
 	    // the OBOPS StateArchive in the same container.
 		if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
+			final RoleProvider roleProvider = new RoleProviderMock();
 			StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
 					new StateArchiveDbConfig(logger));
 			stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 			stateArchive.initStateArchive(logger);
+			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
+			stateEngine.initStateEngine(logger, stateArchive, roleProvider);
 		} else {
             stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
+			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 		}
 		
-        AbstractApplicationContext ctx = SchedulingContextFactory
-                .getContext("classpath:" + SCHEDULING_COMMON_SPRING_CONFIG);
-        projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBS_PROJECT_DAO_BEAN);
-        schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHED_BLOCK_BEAN);
+        AbstractApplicationContext ctx = CommonContextFactory.getContext();
+        projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
+        schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
+        execDao = (ExecutiveDAO) ctx.getBean(SCHEDULING_EXECUTIVE_DAO_BEAN);
 	}
 	
 	public StateArchive getStateArchive() {
 		return stateArchive;
+	}
+	
+	public StateEngine getStateEngine() {
+		return stateEngine;
 	}
 
 	public ObsProjectDao getObsProjectDao() {
@@ -91,6 +107,10 @@ public class ModelAccessor extends Observable {
 	
 	public SchedBlockDao getSchedBlockDao() {
 		return schedBlockDao;
+	}
+	
+	public ExecutiveDAO getExecutiveDao() {
+		return execDao;
 	}
 
 	public ProjectStatus[] getAllProjectStatuses()
@@ -103,6 +123,17 @@ public class ModelAccessor extends Observable {
 	
 	public List<ObsProject> getAllProjects() {
 		return getObsProjectDao().findAll(ObsProject.class);
+	}
+	
+	public List<ObsProject> getAllProjects(boolean manual) {
+		final List<ObsProject> all = getAllProjects();
+		final List<ObsProject> result = new ArrayList<ObsProject>();
+		for (final ObsProject op : all) {
+			if (op.getManual() == manual) {
+				result.add(op);
+			}
+		}
+		return result;
 	}
 	
 	public List<ObsProject> getProjects(String... ids) {
@@ -134,7 +165,20 @@ public class ModelAccessor extends Observable {
 		}
 		return sbs;
 	}
+
 	
+	public List<SchedBlock> getAllSchedBlocks(boolean manual) {
+		final List<SchedBlock> all = getSchedBlockDao().findAll(SchedBlock.class);
+		final List<SchedBlock> result = new ArrayList<SchedBlock>();
+		for (final SchedBlock sb : all) {
+			if (sb.getManual() == manual) {
+				hydrateSchedBlock(sb);
+				result.add(sb);
+			}
+		}
+		return result;
+	}
+
 	public List<SchedBlock> getSchedBlocks(String... ids) {
 		final SchedBlockDao dao = getSchedBlockDao();
 		

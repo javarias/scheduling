@@ -17,6 +17,8 @@
  */
 package alma.scheduling.array.executor;
 
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+
 
 /**
  * @author rhiriart
@@ -29,11 +31,6 @@ public class FailedExecutionState extends ExecutionState {
      */
     public FailedExecutionState(ExecutionContext context) {
         super(context);
-        // TODO Auto-generated constructor stub
     }
 
-    @Override
-    public String toString() {
-        return "FailedExecutionState";
-    }
 }

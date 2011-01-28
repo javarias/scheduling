@@ -25,7 +25,6 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -50,7 +49,7 @@ import alma.scheduling.array.guis.ObsProjectTableModel;
 /**
  *
  * @author dclarke
- * $Id: FilterSetPanel.java,v 1.4 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: FilterSetPanel.java,v 1.5 2011/01/28 00:35:31 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class FilterSetPanel extends JPanel {
@@ -96,6 +95,9 @@ public class FilterSetPanel extends JPanel {
 	
 	/** Reset button */
 	private JButton resetButton;
+	
+	/** Our JFrame, to help us close down */
+	private JFrame frame = null;
 	/* End Fields for widgets &c
 	 * ============================================================= */
 	
@@ -116,6 +118,16 @@ public class FilterSetPanel extends JPanel {
 		createWidgets();
 		createLayoutManager();
 		addWidgets();
+	}
+	
+	private void rememberFrame(JFrame frame) {
+		this.frame = frame;
+	}
+	
+	public void prepareToDie() {
+        if (frame != null) {
+        	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        }
 	}
 	
 	/**
@@ -166,7 +178,7 @@ public class FilterSetPanel extends JPanel {
 					label));
 		}
 		
-		okButton     = newButton("OK",     "Apply the filters and exit this dialogue");
+		okButton     = newButton("Close",  "Close this dialogue");
 		okButton.addActionListener(okButtonListener());
 		revertButton = newButton("Revert", "Undo all changes since the dialogue was opened");
 		revertButton.addActionListener(revertButtonListener());
@@ -456,6 +468,7 @@ public class FilterSetPanel extends JPanel {
 
         frame.pack();
         panel.setVisible(false);
+        panel.rememberFrame(frame);
         
         return panel;
     }

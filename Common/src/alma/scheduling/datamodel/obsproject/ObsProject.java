@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.10 2010/09/03 16:47:05 javarias Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.11 2011/01/28 00:35:31 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -53,6 +53,12 @@ public class ObsProject {
      * membership.
      */
     private String principalInvestigator;
+    
+    /**
+     * This field is equivalent to Executive Name, used to simplify the
+     * conversion process from an APDMProject into an ObsProject
+     */
+    private String affiliation;
     
     /**
      * Scientific score, assigned by the different ALMA Project Review
@@ -99,6 +105,15 @@ public class ObsProject {
      */
     private ProjectStatusEntityT statusEntity;
     
+    /**
+     * Is this a commissioning project or not?
+     */
+    private boolean csv;
+    
+    /**
+     * Is this a manual project or not?
+     */
+    private boolean manual;
     // --- constructors ---
     
     public ObsProject() { }
@@ -200,8 +215,32 @@ public class ObsProject {
     public void setStatusEntity(ProjectStatusEntityT statusEntity) {
         this.statusEntity = statusEntity;
     }
+    
+    public String getAffiliation() {
+		return affiliation;
+	}
 
-    @Override
+	public void setAffiliation(String affiliation) {
+		this.affiliation = affiliation;
+	}
+
+	public boolean getCsv() {
+		return csv;
+	}
+
+	public void setCsv(boolean csv) {
+		this.csv = csv;
+	}
+
+	public boolean getManual() {
+		return manual;
+	}
+
+	public void setManual(boolean manual) {
+		this.manual = manual;
+	}
+
+	@Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (Id == null) return false;

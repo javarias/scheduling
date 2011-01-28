@@ -25,39 +25,41 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  */
 public class Services {
     
-    private Services() {};
+    @SuppressWarnings("unused")
+	private Services() {};
     
-    private static Provider provider;
+    private Provider provider;
     
-    public static void registerProvider(Provider p) {
-        provider = p;
-    }
+    public Services(Provider provider) {
+		super();
+		this.provider = provider;
+	}
     
-    public static ControlArray getControlArray() {
+    public ControlArray getControlArray() {
         if (provider == null)
             throw new IllegalStateException("Provider has not been initialized");
         return provider.getControlArray();
     }
     
-    public static Pipeline getPipeline() {
+    public Pipeline getPipeline() {
         if (provider == null)
             throw new IllegalStateException("Provider has not been initialized");
         return provider.getPipeline();
     }
     
-    public static EventPublisher getEventPublisher() {
+    public EventPublisher getEventPublisher() {
         if (provider == null)
             throw new IllegalStateException("Provider has not been initialized");
         return provider.getEventPublisher();
     }
     
-    public static ModelAccessor getModel() {
+    public ModelAccessor getModel() {
         if (provider == null)
             throw new IllegalStateException("Provider has not been initialized");
         return provider.getModel();        
     }
     
-    public static void cleanUp() {
+    public void cleanUp() {
         if (provider != null)
             provider.cleanUp();
     }

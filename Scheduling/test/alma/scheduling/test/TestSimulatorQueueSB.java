@@ -11,7 +11,7 @@ import alma.acs.component.client.AdvancedComponentClient;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.ClientLogManager;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.OLDArrayModeEnum;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.Queued_Operator_to_Scheduling;
 import alma.scheduling.SBLite;
@@ -60,7 +60,7 @@ public class TestSimulatorQueueSB {
 		    ms.createArray(antenna,
 		    		       selectPhotonics,
 		    		       CorrelatorType.BL,
-		    		       ArrayModeEnum.QUEUED);
+		    		       OLDArrayModeEnum.QUEUED);
 		    String schedulerName = ms.createQueuedSchedulingComponent(arrayName);
 		    qsComp = alma.scheduling.Queued_Operator_to_SchedulingHelper.narrow(
 		    		m_containerservices.getComponent(schedulerName));

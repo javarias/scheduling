@@ -13,7 +13,7 @@
         <property name="name" column="NAME"/>
         <property name="pmRA" column="PMRA"/>
         <property name="pmDec" column="PMDEC"/>
-        <property name="ephemeris" column="EPHEMERIS"/>
+        <property name="ephemeris" type="string" column="EPHEMERIS" length="2000"/>
         <component name="coordinates" class="SkyCoordinates">
             <property name="RA" type="double" column="RA"/>
             <property name="Dec" type="double" column="DEC"/>

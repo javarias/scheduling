@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingPluginsTest.java,v 1.6 2010/03/13 00:39:57 dclarke Exp $
+ * $Id: SchedulingPluginsTest.java,v 1.7 2011/01/28 00:35:32 javarias Exp $
  */
 
 package alma.scheduling.inttest;
@@ -34,14 +34,19 @@ import alma.ACSErr.Completion;
 import alma.ACSErr.CompletionHolder;
 import alma.ACSSim.Simulator;
 import alma.ACSSim.SimulatorHelper;
+import alma.Control.ControlMaster;
+import alma.Control.ControlMasterHelper;
 import alma.Control.CorrelatorType;
-import alma.TMCDB.TMCDBComponent;
-import alma.TMCDB.TMCDBComponentHelper;
+import alma.TMCDB.Access;
+import alma.TMCDB.AccessHelper;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
+import alma.scheduling.ArchiveUpdater;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.MasterSchedulerIF;
+import alma.scheduling.OLDArrayModeEnum;
+import alma.scheduling.Define.Control;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
 import alma.xmlstore.Operational;
@@ -61,9 +66,11 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     private Operational archOperational;
     private Identifier archIdentifierComp;
     
-    private TMCDBComponent tmcdb;
+    private Access tmcdb;
     private MasterComponent schedulingMC;
     private MasterSchedulerIF masterScheduler;
+    private ArchiveUpdater archiveUpdater;
+    private ControlMaster control;
 
     public static Test suite() {
     	TestSuite suite = new TestSuite();
@@ -110,7 +117,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
 
         container = getContainerServices();
         logger = container.getLogger();
-
+        
         archConnectionComp = alma.xmlstore.ArchiveConnectionHelper.narrow(
                 container.getComponent("ARCHIVE_CONNECTION"));
         
@@ -124,7 +131,12 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
         simulator = 
             SimulatorHelper.narrow(container.getDefaultComponent("IDL:alma/ACSSim/Simulator:1.0"));
 
-        tmcdb = TMCDBComponentHelper.narrow(container.getComponent("TMCDB"));
+        
+        tmcdb = AccessHelper.narrow(container.getComponent("TMCDB"));
+        
+        control = ControlMasterHelper.narrow(container.getComponent("CONTROL/MASTER"));
+        
+        archiveUpdater = alma.scheduling.ArchiveUpdaterHelper.narrow(container.getComponent("SCHEDULING_UPDATER"));
         
         logger.info("Initializing SCHEDULING...");
         schedulingMC = MasterComponentHelper.narrow(container.getComponent("SCHEDULING_MASTER_COMP"));
@@ -147,7 +159,9 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
             schedulingMC.doTransition(SubsystemStateEvent.SUBSYSEVENT_SHUTDOWNPASS2);
             waitForSubsystemState(schedulingMC.currentStateHierarchy(), "AVAILABLE.OFFLINE.SHUTDOWN", 300);
         }
+        container.releaseComponent(archiveUpdater.name());
         container.releaseComponent(tmcdb.name());
+        container.releaseComponent(control.name());
         container.releaseComponent(archConnectionComp.name());
         container.releaseComponent(archIdentifierComp.name());
         container.releaseComponent(simulator.name());
@@ -195,7 +209,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
-                ArrayModeEnum.INTERACTIVE);
+                OLDArrayModeEnum.OLDINTERACTIVE);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");
@@ -260,7 +274,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
-                ArrayModeEnum.QUEUED);
+                OLDArrayModeEnum.OLDQUEUED);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");
@@ -277,7 +291,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
-                ArrayModeEnum.MANUAL);
+                OLDArrayModeEnum.OLDMANUAL);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");

@@ -52,7 +52,7 @@ import alma.alarmsystem.source.ACSFaultState;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.log_audience.OPERATOR;
 import alma.scheduling.ArrayInfo;
-import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.OLDArrayModeEnum;
 import alma.scheduling.ArrayStateEnum;
 import alma.scheduling.Define.BestSB;
 import alma.scheduling.Define.Control;
@@ -61,7 +61,7 @@ import alma.scheduling.Define.SchedulingException;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAControl.java,v 1.98 2010/06/18 15:09:45 dclarke Exp $
+ * @version $Id: ALMAControl.java,v 1.99 2011/01/28 00:35:38 javarias Exp $
  */
 public class ALMAControl implements Control {
     
@@ -644,9 +644,9 @@ public class ALMAControl implements Control {
                 //TODO need a way to see if its dynamic/interactive
                 allInfo[x].mode =  getArrayMode(allInfo[x].arrayName);//ArrayModeEnum.DYNAMIC;
                 if(getAutomaticArray(automaticArrays[i].ComponentName).isBusy()){
-                    allInfo[x].state= ArrayStateEnum.BUSY; 
+                    allInfo[x].state= ArrayStateEnum.OLDBUSY; 
                 } else {
-                    allInfo[x].state= ArrayStateEnum.IDLE; 
+                    allInfo[x].state= ArrayStateEnum.OLDIDLE; 
                 }
                 allInfo[x].projectName ="";
                 allInfo[x].SBName ="";
@@ -728,17 +728,17 @@ public class ALMAControl implements Control {
         return null;
     }
 
-    private ArrayModeEnum getArrayMode(String arrayname){
+    private OLDArrayModeEnum getArrayMode(String arrayname){
         String mode;
         for(int i=0 ; i< auto_controllers.size(); i++){
             if(((AutomaticArray)auto_controllers.elementAt(i).getArrayComp()).getArrayName().equals(arrayname)){
                 mode = auto_controllers.elementAt(i).getMode();
                 if(mode.equals("dynamic")){
-                    return ArrayModeEnum.DYNAMIC;
+                    return OLDArrayModeEnum.OLDDYNAMIC;
                 } else if(mode.equals("interactive")){
-                    return ArrayModeEnum.INTERACTIVE;
+                    return OLDArrayModeEnum.OLDINTERACTIVE;
                 } else if(mode.equals("queued")){
-                    return ArrayModeEnum.QUEUED;
+                    return OLDArrayModeEnum.OLDQUEUED;
                 } else {
                     return null;
                 }

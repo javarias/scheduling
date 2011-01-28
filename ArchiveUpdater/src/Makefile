@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.1 2010/07/29 21:09:38 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.2 2011/01/28 00:35:30 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -112,14 +112,16 @@ CDB_SCHEMAS =
 # 
 # IDL Files and flags
 # 
-IDL_FILES = SchedulingArchiveUpdater
+IDL_FILES := SchedulingArchiveUpdater
 TAO_IDLFLAGS =
 USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES = SchedulingArchiveUpdaterImpl
-SchedulingArchiveUpdaterImpl_DIRS = alma
+COMPONENTS_JARFILES := SchedulingArchiveUpdaterImpl
+JARFILES = SchedulingArchiveUpdaterGUI
+SchedulingArchiveUpdaterImpl_DIRS := alma/scheduling/archiveupd/compimpl alma/scheduling/archiveupd/functionality alma/scheduling/archiveupd/mastercomp
+SchedulingArchiveUpdaterGUI_DIRS := alma/scheduling/archiveupd/gui
 jjj_EXTRAS= 
 #
 # java sources in Jarfile on/off

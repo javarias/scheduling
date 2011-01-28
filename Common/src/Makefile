@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.19 2010/09/27 21:47:53 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.20 2011/01/28 00:35:31 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -201,7 +201,7 @@ endif
 # TARGETS
 # -------
 all: gen do_all
-	cp scheduling.properties $(ACSDATA)/config
+#	cp scheduling.properties $(ACSDATA)/config
 	@echo " . . . 'all' done" 
 
 clean : clean_gen clean_all 
@@ -216,13 +216,57 @@ man   : do_man
 install : install_all
 	@echo " . . . installation done"
 
-gen:
-	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/executive.xsd -package alma.scheduling.input.executive.generated
-	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/output.xsd -package alma.scheduling.output.generated
-	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/obsunit.xsd -package alma.scheduling.input.obsproject.generated
-	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/config.xsd -package alma.scheduling.input.config.generated
-	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/observatory.xsd -package alma.scheduling.input.observatory.generated
+#gen:
+#	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/executive.xsd -package alma.scheduling.input.executive.generated
+#	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/output.xsd -package alma.scheduling.output.generated
+#	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/obsunit.xsd -package alma.scheduling.input.obsproject.generated
+#	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/config.xsd -package alma.scheduling.input.config.generated
+#	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i ../config/observatory.xsd -package alma.scheduling.input.observatory.generated
+CASTOR_GEN = executive output obsunit config observatory
+
+
+CASTOR_TARGETS = $(foreach target, $(CASTOR_GEN), ../object/$(target).castorgen)
+.PHONY: gen 
+gen: $(CASTOR_TARGETS)
 
 clean_gen:
-	@rm -rf alma/scheduling/input/executive/generated
+	$(shell cat ../object/*.castorgen | sed -r "s/\./\//g" | xargs rm -rf)
+	@rm -rf $(CASTOR_TARGETS)
+
+../object/executive.castorgen: ../config/executive.xsd
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i $< -package alma.scheduling.input.executive.generated
+	 $(shell echo alma.scheduling.input.executive.generated > ../object/executive.castorgen)
+
+../object/output.castorgen: ../config/output.xsd
+	 acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i $<   -package alma.scheduling.output.generated
+	 $(shell echo alma.scheduling.output.generated > ../object/output.castorgen)
+
+../object/obsunit.castorgen: ../config/obsunit.xsd
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i $< -package alma.scheduling.input.obsproject.generated
+	$(shell echo alma.scheduling.input.obsproject.generated > ../object/obsunit.castorgen)
+
+../object/config.castorgen: ../config/config.xsd
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i $< -package alma.scheduling.input.config.generated
+	$(shell echo alma.scheduling.input.config.generated > ../object/config.castorgen)
+
+../object/observatory.castorgen: ../config/observatory.xsd
+	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i $< -package alma.scheduling.input.observatory.generated
+	$(shell echo alma.scheduling.input.observatory.generated > ../object/observatory.castorgen)
+
+
+
+#$(foreach target, $CASTOR_XSD, 
+#	$(eval 
+#		$(call CASTOR_generation, $(target), ../config/$(target).xsd, alma.scheduling.input.$(target).generated)
+#	)
+#)
+
+#Generic castor incremental generation
+#define CASTOR_generation
+#../object/$(1).castorgen: $(2)
+#	acsStartJava -endorsed org.exolab.castor.builder.SourceGenerator -f -i $(2) -package $(3)
+#	$(shell echo $(3) >> ../object/$(1).castorgen)
+#endef
+
+
 #___oOo___

@@ -22,8 +22,11 @@ import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
+import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
+import alma.asdmIDLTypes.IDLEntityRef;
+import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
@@ -41,7 +44,7 @@ import alma.scheduling.SchedBlockScore;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.4 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.5 2011/01/28 00:35:31 javarias Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
@@ -196,11 +199,11 @@ public class DelegatedArray implements ComponentLifecycle,
      * ================================================================
      */
 	/**
-	 * 
-	 * @see alma.scheduling.SchedBlockExecutionManagerOperations#abortRunningtSchedBlock()
+	 * @return
+	 * @see alma.scheduling.SchedBlockExecutionManagerOperations#hasRunningSchedBlock()
 	 */
-	public void abortRunningtSchedBlock() {
-		sbExecDelegate.abortRunningSchedBlock();
+	public boolean hasRunningSchedBlock() {
+		return sbExecDelegate.hasRunningSchedBlock();
 	}
 
 	/**
@@ -215,33 +218,81 @@ public class DelegatedArray implements ComponentLifecycle,
 	 * @param callback
 	 * @see alma.scheduling.SchedBlockExecutionManagerOperations#start(alma.scheduling.SchedBlockExecutionCallback)
 	 */
-	public void start() {
-		sbExecDelegate.start();
+	public void start(String name, String role) {
+		sbExecDelegate.start(name, role);
 	}
 
 	/**
 	 * 
 	 * @see alma.scheduling.SchedBlockExecutionManagerOperations#stop()
 	 */
-	public void stop() {
-		sbExecDelegate.stop();
+	public void stop(String name, String role) {
+		sbExecDelegate.stop(name, role);
 	}
 
 	/**
 	 * 
 	 * @see alma.scheduling.SchedBlockExecutionManagerOperations#stopRunningSchedBlock()
 	 */
-	public void stopRunningSchedBlock() {
-		sbExecDelegate.stopRunningSchedBlock();
+	public void stopRunningSchedBlock(String name, String role) {
+		sbExecDelegate.stopRunningSchedBlock(name, role);
 	}
 
-	public void abortRunningSchedBlock() {
-		sbExecDelegate.abortRunningSchedBlock();
+	public void addMonitorExecution(String arg0, SchedBlockExecutionCallback arg1) {
+		sbExecDelegate.addMonitorExecution(arg0, arg1);
+	}
+	
+	public void removeMonitorExecution(String arg0){
+		sbExecDelegate.removeMonitorExecution(arg0);
 	}
 
-	public void monitorExecution(String arg0, SchedBlockExecutionCallback arg1) {
-		sbExecDelegate.monitorExecution(arg0, arg1);
+	@Override
+	public boolean isFullAuto() {
+		return sbExecDelegate.isFullAuto();
 	}
+
+	@Override
+	public boolean isManual() {
+		return sbExecDelegate.isManual();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return sbExecDelegate.isRunning();
+	}
+
+	@Override
+	public void setFullAuto(boolean on, String name, String role) {
+		sbExecDelegate.setFullAuto(on, name, role);
+	}
+
+	@Override
+	public void addMonitorGUI(String name, ArrayGUICallback callback) {
+		sbExecDelegate.addMonitorGUI(name, callback);
+	}
+
+	@Override
+	public void removeMonitorGUI(String name) {
+		sbExecDelegate.removeMonitorGUI(name);
+	}
+	
+	@Override
+	public void destroyArray() {
+		sbExecDelegate.destroyArray();
+	}
+
+    /**
+     * Method called by control when the user calls beginExecution from the CCL.
+     * This method gives control the the SB id and the session id to use through
+     * out the execution. It is only needed in manual mode when the user wants
+     * an asdm produced. There will be a 'dummy' project with sb in the archive
+     * to attach these asdms to its project status.
+     */
+   public IDLEntityRef startManualModeSession(String sbid)
+       throws InvalidOperationEx {
+	   return sbExecDelegate.startManualModeSession(sbid);
+   }
+
     /* End Delegation of SchedBlockExecutionManagerOperations
      * ============================================================= */
 	
@@ -276,7 +327,7 @@ public class DelegatedArray implements ComponentLifecycle,
 		sbQueueDelegate.push(qItem);
 	}
 
-    public SchedBlockQueueItem[] getExecutedQueue() {
+        public SchedBlockQueueItem[] getExecutedQueue() {
 		return sbQueueDelegate.getExecutedQueue();
 	}
 
@@ -284,9 +335,15 @@ public class DelegatedArray implements ComponentLifecycle,
 		return sbQueueDelegate.getQueueCapacity();
 	}
 
-	public void monitorQueue(String arg0, SchedBlockQueueCallback arg1) {
-		sbQueueDelegate.monitorQueue(arg0, arg1);
+	public void addMonitorQueue(String arg0, SchedBlockQueueCallback arg1) {
+		sbQueueDelegate.addMonitorQueue(arg0, arg1);
+	}
+
+	public void removeMonitorQueue(String arg0) {
+		sbQueueDelegate.removeMonitorQueue(arg0);
+		
 	}
     /* End Delegation of SchedBlockQueueManagerOperations
      * ============================================================= */
+
 }

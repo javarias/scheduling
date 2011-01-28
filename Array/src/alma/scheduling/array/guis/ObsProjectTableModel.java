@@ -33,7 +33,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
  * alma.scheduling.datamodel.obsproject.ObsProjects.
  * 
  * @author dclarke
- * $Id: ObsProjectTableModel.java,v 1.3 2010/07/31 00:16:12 dclarke Exp $
+ * $Id: ObsProjectTableModel.java,v 1.4 2011/01/28 00:35:31 javarias Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class ObsProjectTableModel extends AbstractTableModel {
@@ -107,14 +107,17 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	 * TableModel implementation
 	 * ================================================================
 	 */
-	private static final int           Column_EntityId = 0;
-	private static final int                 Column_PI = 1;
-	private static final int       Column_ScienceScore = 2;
-	private static final int        Column_ScienceRank = 3;
-	private static final int        Column_LetterGrade = 4;
-	private static final int              Column_State = 5;
-	private static final int Column_TotalExecutionTime = 6;
-	private static final int               NUM_COLUMNS = 7;
+	private static final int               Column_Name =  0;
+	private static final int               Column_Code =  1;
+	private static final int                 Column_PI =  2;
+	private static final int       Column_ScienceScore =  3;
+	private static final int        Column_ScienceRank =  4;
+	private static final int        Column_LetterGrade =  5;
+	private static final int              Column_State =  6;
+	private static final int           Column_EntityId =  7;
+	private static final int                Column_CSV =  8;
+	private static final int Column_TotalExecutionTime =  9;
+	private static final int               NUM_COLUMNS = 10;
 	
 
 	/* (non-Javadoc)
@@ -150,8 +153,10 @@ public class ObsProjectTableModel extends AbstractTableModel {
 		}
 		
 		switch (columnIndex) {
-		case Column_EntityId:
-			return obsProject.getUid();
+		case Column_Name:
+			return obsProject.getName();
+		case Column_Code:
+			return obsProject.getCode();
 		case Column_PI:
 			return obsProject.getPrincipalInvestigator();
 		case Column_ScienceScore:
@@ -162,6 +167,10 @@ public class ObsProjectTableModel extends AbstractTableModel {
 			return obsProject.getLetterGrade();
 		case Column_State:
 			return obsProject.getStatus();
+		case Column_EntityId:
+			return obsProject.getUid();
+		case Column_CSV:
+			return obsProject.getCsv();
 		case Column_TotalExecutionTime:
 			return obsProject.getTotalExecutionTime();
 		default:
@@ -179,7 +188,9 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		switch (columnIndex) {
-		case Column_EntityId:
+		case Column_Name:
+			return String.class;
+		case Column_Code:
 			return String.class;
 		case Column_PI:
 			return String.class;
@@ -191,6 +202,10 @@ public class ObsProjectTableModel extends AbstractTableModel {
 			return ScienceGrade.class;
 		case Column_State:
 			return String.class;
+		case Column_EntityId:
+			return String.class;
+		case Column_CSV:
+			return Boolean.class;
 		case Column_TotalExecutionTime:
 			return Double.class;
 		default:
@@ -211,8 +226,10 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	 */
 	private String getColumnInnerName(int columnIndex) {
 		switch (columnIndex) {
-		case Column_EntityId:
-			return "Entity ID";
+		case Column_Name:
+			return "Name";
+		case Column_Code:
+			return "Code";
 		case Column_PI:
 			return "P. I.";
 		case Column_ScienceScore:
@@ -223,6 +240,10 @@ public class ObsProjectTableModel extends AbstractTableModel {
 			return "Grade";
 		case Column_State:
 			return "State";
+		case Column_EntityId:
+			return "Entity ID";
+		case Column_CSV:
+			return "CSV?";
 		case Column_TotalExecutionTime:
 			return "Time so far";
 		default:

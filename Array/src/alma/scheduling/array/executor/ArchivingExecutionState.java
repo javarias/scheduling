@@ -17,6 +17,7 @@
  */
 package alma.scheduling.array.executor;
 
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.offline.ASDMArchivedEvent;
 
 /**
@@ -25,13 +26,18 @@ import alma.offline.ASDMArchivedEvent;
  */
 public class ArchivingExecutionState extends ExecutionState {
 
-    public ArchivingExecutionState(ExecutionContext context) {
+	private boolean fullyExecuted;
+	
+    public ArchivingExecutionState(ExecutionContext context,
+    		                       boolean fullyExecuted) {
         super(context);
+        this.fullyExecuted = fullyExecuted;
     }
     
     @Override
     public void waitArchival() {
-        ASDMArchivedEvent event = context.waitForASDMArchivedEvent(3600000);
+        ASDMArchivedEvent event = context.waitForASDMArchivedEvent(
+        		context.getAsdmArchiveTimeoutMS());
         if (event == null) {
             context.setState(new FailedExecutionState(context));
         } else {
@@ -39,8 +45,9 @@ public class ArchivingExecutionState extends ExecutionState {
         }
     }
 
-    @Override
-    public String toString() {
-        return "ArchivingExecutionState";
+    public StatusTStateType getFinalState() {
+    	return this.fullyExecuted?
+    			StatusTStateType.FULLYOBSERVED:
+    			StatusTStateType.PARTIALLYOBSERVED;
     }
 }

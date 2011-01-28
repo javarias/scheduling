@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * $Id: SchedulingMaster.idl,v 1.2 2010/10/13 16:02:45 javarias Exp $
+ * $Id: SchedulingMaster.idl,v 1.3 2011/01/28 00:35:37 javarias Exp $
  */
 
 #ifndef _SCHEDULINGMASTER_IDL_
@@ -37,6 +37,7 @@
 module scheduling {
 
     typedef string ArrayIdentifier;
+	typedef sequence<ArrayIdentifier> ArrayIdentifierSeq;
     typedef Control::AntennaId AntennaId;
     typedef sequence<Control::AntennaId> AntennaIdSeq;    
     typedef Control::ResourceNameSeq PhotonicsSeq;
@@ -61,8 +62,14 @@ module scheduling {
 			(SchedulingMasterExceptions::ControlInternalExceptionEx,
 			 SchedulingMasterExceptions::SchedulingInternalExceptionEx, 
 			 SchedulingMasterExceptions::ACSInternalExceptionEx);
-    };
+		
+		ArrayIdentifierSeq getActiveAutomaticArrays();
 
+		ArrayIdentifierSeq getActiveManualArrays();
+
+		ArrayModeEnum getSchedulerModeForArray(in string arrayName) raises (SchedulingMasterExceptions::ArrayNotFoundExceptionEx);
+
+    };
 
 };
 #endif // _SCHEDULINGMASTER_IDL_

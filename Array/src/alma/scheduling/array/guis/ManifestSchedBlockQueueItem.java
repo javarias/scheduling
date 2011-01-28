@@ -41,7 +41,7 @@ import alma.scheduling.datamodel.obsproject.WeatherDependentVariables;
  * in question rather than just it's Entity ID.
  * 
  * @author dclarke
- * $Id: ManifestSchedBlockQueueItem.java,v 1.1 2010/08/23 23:07:36 dclarke Exp $
+ * $Id: ManifestSchedBlockQueueItem.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
  */
 public class ManifestSchedBlockQueueItem {
 	/*
@@ -53,6 +53,8 @@ public class ManifestSchedBlockQueueItem {
 	private SchedBlockQueueItem item;
 	/** The corresponding SchedBlock */
 	private SchedBlock schedBlock;
+	/** The execution state we're in */
+	private String executionState;
 	/* End Fields
 	 * ============================================================= */
 	
@@ -78,6 +80,9 @@ public class ManifestSchedBlockQueueItem {
 									   SchedBlock          schedBlock) {
 		this.item = item;
 		this.schedBlock = schedBlock;
+		this.executionState = schedBlock.
+								getSchedBlockControl().
+								getState().toString();
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -104,7 +109,28 @@ public class ManifestSchedBlockQueueItem {
 	public SchedBlock getSchedBlock() {
 		return schedBlock;
 	}
+	
+	public String getExecutionState() {
+		return executionState;
+	}
 	/* End Basic getters
+	 * ============================================================= */
+	
+	
+	
+	/*
+	 * ================================================================
+	 * Basic setters
+	 * ================================================================
+	 */
+	public void setExecutionState(String state) {
+		final int i = state.indexOf("ExecutionState");
+		if (i > 0) {
+			state = state.substring(0, i);
+		}
+		executionState = state;
+	}
+	/* End Basic setters
 	 * ============================================================= */
 	
 	
@@ -192,6 +218,10 @@ public class ManifestSchedBlockQueueItem {
 
 	public WeatherDependentVariables getWeatherDependentVariables() {
 		return schedBlock.getWeatherDependentVariables();
+	}
+	
+	public String getNote(){
+		return schedBlock.getNote();
 	}
 	/* End Delegation
 	 * ============================================================= */

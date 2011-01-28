@@ -18,30 +18,98 @@
 package alma.scheduling.array.executor;
 
 import alma.Control.ExecBlockEndedEvent;
+import alma.Control.ExecBlockStartedEvent;
+import alma.acs.util.UTCUtility;
+import alma.asdmIDLTypes.IDLEntityRef;
+import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 /**
  * @author rhiriart
  *
  */
 public class RunningExecutionState extends ExecutionState {
-
     /**
      * @param context
      */
     public RunningExecutionState(ExecutionContext context) {
         super(context);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
-    public void startObservation() {
-        // use SB maximum execution time?
-        ExecBlockEndedEvent event = context.waitForExecBlockEndedEvent();
-        context.setState(new ArchivingExecutionState(context));
-    }
+    public long observe() {
+    	long execTime = super.observe();
 
-    @Override
-    public String toString() {
-        return "RunningExecutionState";
+    	final SessionManager sessions = context.getSessions();
+    	SchedBlock sb = context.getSchedBlock();
+
+    	sessions.observeSB(sb);
+
+    	final IDLEntityRef sessionRef = sessions.getCurrentSession();
+    	final IDLEntityRef sbRef      = sessions.getCurrentSB();
+    	context.setSessionRef(sessionRef);
+    	context.setSchedBlockRef(sbRef);
+
+    	try {
+    		context.getControlArray().observe(sbRef, sessionRef);
+    	} catch (org.omg.CORBA.TIMEOUT e) {
+    		//Do Nothing
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+        
+    	// blocks waiting for the ExecBlockStartedEvent
+    	ExecBlockStartedEvent sev = context.waitForExecBlockStartedEvent(
+    			context.getStartEventTimeoutMS());
+
+    	if (sev == null) {
+    		logger.info(String.format(
+    				"%s: No ExecBlockStartedEvent",
+    				this.getClass().getSimpleName()));
+    		context.setState(new FailedExecutionState(context));
+    		return execTime;
+    	}
+
+    	sessions.addExecution(sev.execId.entityId);
+    	ExecBlockEndedEvent eev = context.waitForExecBlockEndedEvent();
+
+    	if (eev.status.value() == alma.Control.Completion.SUCCESS.value()) {
+    		// Full success
+    		execTime = (long) ((UTCUtility.utcOmgToJava(eev.endTime) - UTCUtility.utcOmgToJava(sev.startTime)) / 1000.0);
+    		context.setState(new ArchivingExecutionState(context, true));
+    	} else if (eev.status.value() != alma.Control.Completion.FAIL.value()) {
+    		// Partial success
+    		execTime = (long) ((UTCUtility.utcOmgToJava(eev.endTime) - UTCUtility.utcOmgToJava(sev.startTime)) / 1000.0);
+    		context.setState(new ArchivingExecutionState(context, false));
+    	} else {
+    		// Fail
+    		context.setState(new FailedExecutionState(context));
+    	}
+
+    	return execTime;
     }
+    
+    @Override
+    public void stopObservation() {
+	try {
+	    context.getControlArray().stopSB();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+    
+ /*   
+	@Override
+	protected boolean hasLifeCycleEquivalent() {
+		return true;
+	}
+
+	@Override
+	protected StatusTStateType lifeCycleEquivalent() {
+		if (context.isCSV()) {
+			return StatusTStateType.CSVRUNNING;
+		}
+		return StatusTStateType.RUNNING;
+	}
+*/
 }

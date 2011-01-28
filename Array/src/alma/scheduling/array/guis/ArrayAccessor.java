@@ -17,11 +17,23 @@
  */
 package alma.scheduling.array.guis;
 
+import java.beans.PropertyChangeListener;
+
+import org.omg.CORBA.Object;
+
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.Array;
+import alma.scheduling.ArrayHelper;
+import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockScore;
+import alma.scheduling.array.compimpl.ArrayGUICallbackImpl;
+import alma.scheduling.array.compimpl.SchedBlockExecutionCallbackImpl;
+import alma.scheduling.array.compimpl.SchedBlockQueueCallbackImpl;
+import alma.scheduling.array.util.NameTranslator;
+import alma.scheduling.array.util.NameTranslator.TranslationException;
 
 /**
  * A proxy for the Scheduling array component.
@@ -33,17 +45,28 @@ public class ArrayAccessor {
 
 	private PluginContainerServices services;
     private Array array;
+    private String arrayName;
+    private String queueCallbackName;
+    private SchedBlockQueueCallbackImpl queueCallback;
+    private String executionCallbackName;
+    private SchedBlockExecutionCallbackImpl executionCallback;
+    private String guiCallbackName;
+    private ArrayGUICallbackImpl guiCallback;
     
-    public ArrayAccessor(PluginContainerServices services) {
+    
+    public ArrayAccessor(PluginContainerServices services, String arrayName) throws AcsJContainerServicesEx, TranslationException {
         this.services = services;
+        this.arrayName = arrayName;
+        Object obj = this.services.getComponentNonSticky(NameTranslator.arrayToComponentName(arrayName));
+        array = ArrayHelper.narrow(obj);
     }
-
-    public void abortRunningSchedBlock() {
-		array.abortRunningSchedBlock();
-	}
 
 	public void delete(SchedBlockQueueItem arg0) {
 		array.delete(arg0);
+	}
+
+	public String getArrayName() {
+		return arrayName;
 	}
 
 	public SchedBlockQueueItem[] getExecutedQueue() {
@@ -56,6 +79,10 @@ public class ArrayAccessor {
 
 	public int getQueueCapacity() {
 		return array.getQueueCapacity();
+	}
+
+	public boolean hasRunningSchedBlock() {
+		return array.hasRunningSchedBlock();
 	}
 
 	public String getRunningSchedBlock() throws NoRunningSchedBlockEx {
@@ -82,15 +109,113 @@ public class ArrayAccessor {
 		return array.run();
 	}
 
-	public void start() {
-		array.start();
+	public void start(String name, String role) {
+		array.start(name, role);
 	}
 
-	public void stop() {
-		array.stop();
+	public void stop(String name, String role) {
+		array.stop(name, role);
 	}
 
-	public void stopRunningSchedBlock() {
-		array.stopRunningSchedBlock();
+	public void stopRunningSchedBlock(String name, String role) {
+		array.stopRunningSchedBlock(name, role);
+	}
+	
+	public void registerQueueCallback(PropertyChangeListener listener) throws AcsJContainerServicesEx {
+		services.getLogger().info("Registering Queue Callback");
+		queueCallbackName = array.name() + "_" + System.currentTimeMillis();
+		queueCallback = new SchedBlockQueueCallbackImpl(services.getLogger(), listener);
+		services.activateOffShoot(queueCallback);
+		array.addMonitorQueue(queueCallbackName, queueCallback._this());
+	}
+	
+	public void registerExecutionCallback(PropertyChangeListener pcl) throws AcsJContainerServicesEx{
+        executionCallbackName = array.name() + "_" + System.currentTimeMillis();
+		executionCallback = new SchedBlockExecutionCallbackImpl(services.getLogger(), pcl);
+		services.activateOffShoot(executionCallback);
+		array.addMonitorExecution(executionCallbackName, executionCallback._this());
+	}
+	
+	public void registerGUICallback(PropertyChangeListener pcl) throws AcsJContainerServicesEx{
+        guiCallbackName = array.name() + "_" + System.currentTimeMillis();
+		guiCallback = new ArrayGUICallbackImpl(services.getLogger(), pcl);
+		services.activateOffShoot(guiCallback);
+		array.addMonitorGUI(guiCallbackName, guiCallback._this());
+	}
+	
+	private void unregisterQueueCallback() throws AcsJContainerServicesEx {
+		if (queueCallback != null) {
+			try {
+				array.removeMonitorQueue(queueCallbackName);
+			} catch (Exception ex){
+				System.out.println("Exception catched when tried to remove the monitor of the Sched Block Queue, continuing anway");
+				ex.printStackTrace();
+			}
+			services.deactivateOffShoot(queueCallback);
+		}
+	}
+	
+	private void unregisterGUICallback() throws AcsJContainerServicesEx {
+		if (guiCallback != null) {
+			try {
+				array.removeMonitorGUI(guiCallbackName);
+			} catch (Exception ex){
+				System.out.println("Exception catched when tried to remove the monitor of the array state for GUIs, continuing anway");
+				ex.printStackTrace();
+			}
+			services.deactivateOffShoot(guiCallback);
+		}
+	}
+	
+	private void unregisterExecutionCallback() throws AcsJContainerServicesEx {
+		if (queueCallback != null) {
+			try {
+				array.removeMonitorExecution(executionCallbackName);
+			} catch (Exception ex){
+				System.out.println("Exception catched when tried to remove the monitor of Sched Block Execution, continuing anway");
+				ex.printStackTrace();
+			}
+			services.deactivateOffShoot(executionCallback);
+		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		try {
+			unregisterQueueCallback();
+		} catch (Exception ex){
+			ex.printStackTrace();
+		}
+		try {
+			unregisterExecutionCallback();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		try {
+			unregisterGUICallback();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public boolean isRunning() {
+		return array.isRunning();
+	}
+	
+	public boolean isManual() {
+		return array.isManual();
+	}
+	
+	public boolean isFullAuto() {
+		return array.isFullAuto();
+	}
+	
+	public void setFullAuto(boolean on, String name, String role) {
+		array.setFullAuto(on, name, role);
+	}
+	
+	public ArraySchedulerMode[] getModes() {
+		return array.getModes();
 	}
 }

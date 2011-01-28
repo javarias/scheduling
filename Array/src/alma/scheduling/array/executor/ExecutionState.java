@@ -20,11 +20,12 @@ package alma.scheduling.array.executor;
 
 import java.util.logging.Logger;
 
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.LoggerFactory;
 
 public abstract class ExecutionState {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
     
     protected ExecutionContext context;
     
@@ -46,5 +47,22 @@ public abstract class ExecutionState {
     
     public void waitArchival() {
         logger.info("waitArchival called when state is " + this);
+    }
+    
+    /**
+     * 
+     * @return the execution time in seconds
+     */
+    public long observe(){
+    	logger.info("observe called when state is " + this);
+    	return 0;
+    }
+    
+    public void setup(){
+    	logger.info("setup called when state is " + this);
+    }
+    
+    public String toString() {
+    	return getClass().getSimpleName();
     }
 }

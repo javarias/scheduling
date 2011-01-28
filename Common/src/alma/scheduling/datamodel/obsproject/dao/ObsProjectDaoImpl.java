@@ -106,12 +106,17 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
         return (ObsProject) query.uniqueResult();
     }
 
+    @Transactional(readOnly=true)
     public ObsProject findByEntityId(String entityId) {
         Query query = null;
         query = getSession().createQuery("from ObsProject op " +
         		"where op.uid = ?");
         query.setParameter(0, entityId);
-        return (ObsProject)query.uniqueResult();
+        ObsProject prj = (ObsProject)query.uniqueResult();
+        if (prj != null) {
+        	prj.getObsUnit();
+        }
+        return prj;
     }
 
 

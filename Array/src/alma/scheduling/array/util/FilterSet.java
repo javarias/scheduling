@@ -38,7 +38,7 @@ import alma.scheduling.swingx.CaseInsensitiveRegexpFilter;
 /**
  * A set of filters for the columns of a TableModel
  * @author dclarke
- * $Id: FilterSet.java,v 1.2 2010/07/29 15:55:39 dclarke Exp $
+ * $Id: FilterSet.java,v 1.3 2011/01/28 00:35:31 javarias Exp $
  */
 public class FilterSet {
 	/*
@@ -146,26 +146,36 @@ public class FilterSet {
 	 * A bit like toString(), but with some HTML tags to do a wee bit
 	 * of formatting.
 	 * 
+	 * @param labelColour - the hex string giving the colour in which
+	 *                      to write the labels of the FilterSet  
+	 * @param filterColour - the hex string giving the colour in which
+	 *                       to write the filter parts.
+	 * 
 	 * @return An HTML representation of this FilterSet, without
 	 * <code>&lt;html&gt;</code> &amp; <code>&lt;/html&gt;</code>
 	 */
-	public String toHTMLSnippet() {
+	public String toHTMLSnippet(String labelColour, String filterColour) {
 		StringBuilder b = new StringBuilder();
 		Formatter     f = new Formatter(b);
 		boolean doneSome = false;
 
 		for (int i = 0; i < size(); i++) {
 			if (inUse.get(i)) {
-				if (doneSome) {
+				if (!doneSome) {
+					f.format("<font color=%s>", labelColour);
+				} else {
 					b.append("; ");
 				}
-				f.format("<font color=#7f7fff>%s:</font> %s",
+				f.format("%s: <font color=%s>%s</font>",
 						getName(i),
+						filterColour,
 						filters.get(i));
 				doneSome = true;
 			}
 		}
-		if (!doneSome) {
+		if (doneSome) {
+			b.append("</font>");
+		} else {
 			b.append("<em>&lt;No filtering&gt;</em>");
 		}
 		return b.toString();
@@ -175,14 +185,19 @@ public class FilterSet {
 	 * A bit like toString(), but with some HTML tags to do a wee bit
 	 * of formatting.
 	 * 
+	 * @param labelColour - the hex string giving the colour in which
+	 *                      to write the labels of the FilterSet  
+	 * @param filterColour - the hex string giving the colour in which
+	 *                       to write the filter parts.
+	 * 
 	 * @return An HTML representation of this FilterSet, complete with
 	 * <code>&lt;html&gt;</code> &amp; <code>&lt;/html&gt;</code>
 	 */
-	public String toHTML() {
+	public String toHTML(String labelColour, String filterColour) {
 		StringBuilder b = new StringBuilder();
 
 		b.append("<html>");
-		b.append(toHTMLSnippet());
+		b.append(toHTMLSnippet(labelColour, filterColour));
 		b.append("</html>");
 		return b.toString();
 	}

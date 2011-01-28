@@ -18,11 +18,13 @@
 
 package alma.scheduling.archiveupd.compimpl;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
+import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.ArchiveUpdaterOperations;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.archiveupd.functionality.ArchivePoller;
@@ -40,7 +42,9 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 
 	private ErrorHandling handler;
 
-	private long pollInterval = 5 * 60 * 1000; // 5 minutes
+	private final static long initialMinutes = 1;
+	private final static long initialMilliseconds = initialMinutes * 60 * 1000;
+	private long pollInterval = initialMilliseconds;
 
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -102,7 +106,47 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 			}
 		}
 	}
+    
+	@Override
+	synchronized public void refresh() {
+		getPoller();
+		if (poller != null) {
+			try {
+				m_logger.info("Refreshing SWDB");
+				poller.refreshSWDB();
+			} catch (SchedulingException e) {
+				handler.warning(String.format(
+						"Error refreshing SWDB - %s",
+						e.getMessage()), e);
+			}
+		}
+	}
 
+	@Override
+	public void setPollInterval(int seconds) {
+		pollInterval = seconds * 1000;
+		loop.interrupt();
+	}
+
+//	@Override
+//	public int getPollIntervalInSecs() {
+//		return (int)pollInterval / 1000;
+//	}
+//
+//	@Override
+//	public int getNumSchedBlocks() {
+//		return pollInterval / 1000;
+//	}
+//
+//	@Override
+//	public int getNumObsProject() {
+//		return pollInterval / 1000;
+//	}
+//
+//	@Override
+//	public String getLastUpdate() {
+//		return pollInterval / 1000;
+//	}
     /////////////////////////////////////////////////////////////
     // Support methods
     /////////////////////////////////////////////////////////////
@@ -112,6 +156,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     		try {
 				poller = new ArchivePoller(m_logger);
 			} catch (Exception e) {
+				e.printStackTrace();
 				handler.severe(String.format(
 						"Error creating ArchivePoller - %s",
 						e.getMessage()), e);
@@ -139,7 +184,18 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     }
 
 	@Override
-	public void setPollInterval(int arg0) {
-		pollInterval = arg0 * 1000;
+	public void deregisterCallback(String arg0) {
+		poller.deregisterCallback(arg0);
+		
+	}
+
+	@Override
+	public void registerCallback(String arg0, ArchiveUpdaterCallback arg1) {
+		poller.registerCallback(arg0, arg1);
+	}
+
+	@Override
+	public int getPollInterval() {
+		return (int) (pollInterval / 1000);
 	}
 }

@@ -33,18 +33,18 @@ import java.util.logging.Logger;
 import alma.Control.ControlMaster;
 import alma.Control.CorrelatorType;
 import alma.Control.InaccessibleException;
-import alma.TMCDB.TMCDBComponent;
-import alma.TMCDB.TMCDBComponentHelper;
+import alma.TMCDB.Access;
+import alma.TMCDB.AccessHelper;
 import alma.TMCDB_IDL.StartupAntennaIDL;
 import alma.common.gui.chessboard.ChessboardEntry;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
-import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.OLDArrayModeEnum;
 import alma.scheduling.Define.SchedulingException;
 
 public class CreateArrayController extends SchedulingPanelController {
 
     private ControlMaster control;
-    private TMCDBComponent tmcdb = null;
+    private Access tmcdb = null;
     private ChessboardEntry[][] allEntries = null;   
     private ChessboardEntry[] entries12 = new ChessboardEntry[50];
     private ChessboardEntry[] entries7 = new ChessboardEntry[12];
@@ -74,9 +74,14 @@ public class CreateArrayController extends SchedulingPanelController {
 
     public boolean getTMCDBComponent(){
     	boolean isTMCDBReady = false;
-       try {
-           if(tmcdb == null){
-                tmcdb = TMCDBComponentHelper.narrow(container.getComponentNonSticky("TMCDB"));
+		try {
+			if (tmcdb == null) {
+				tmcdb = AccessHelper.narrow(container
+						.getDefaultComponent("IDL:alma/TMCDB/Access:1.0"));
+				String tmcdbName = tmcdb.name();
+				container.releaseComponent(tmcdbName);
+				tmcdb = AccessHelper.narrow(container
+						.getComponentNonSticky(tmcdbName));
            }
            if(tmcdb !=null) {
         	   isTMCDBReady = true;
@@ -281,7 +286,7 @@ public class CreateArrayController extends SchedulingPanelController {
         return antennas;
     }
     
-    public String createArray(ArrayModeEnum arrayMode,
+    public String createArray(OLDArrayModeEnum arrayMode,
     						  ChessboardEntry[] cbEntries,
     						  String[] photonicsChoice,
     						  CorrelatorType correlator) 

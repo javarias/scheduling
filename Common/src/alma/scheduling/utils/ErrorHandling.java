@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 /**
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.1 2010/08/18 16:31:10 dclarke Exp $
+ * $Id: ErrorHandling.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
  */
 public final class ErrorHandling {
 	/*
@@ -197,5 +197,31 @@ public final class ErrorHandling {
     	log(Level.SEVERE, message, Level.FINEST, t);
     }
 	/* End Helper methods
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * Miscellany
+	 * ================================================================
+	 */
+	public static void logArray(Logger logger, String label, Object[] choices) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(label);
+		sb.append(String.format("[%2d] = [", choices.length));
+		
+		String sep = "";
+		for (Object choice : choices) {
+			sb.append(sep);
+			sb.append(choice.toString());
+			sep = ", ";
+		}
+		sb.append("]");
+		
+		logger.fine(sb.toString());
+	}
+	/* End Miscellany
 	 * ============================================================= */
 }

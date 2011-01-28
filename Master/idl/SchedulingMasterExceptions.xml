@@ -12,6 +12,9 @@
 <ErrorCode name="SchedulingInternalException"
            shortDescription="Internal Exception in Scheduling subsystem."
            description="Internal Exception in Scheduling subsystem."/>
+<ErrorCode name="ArrayNotFoundException"
+           shortDescription="Array doesn't exist. It could be destroyed, or it was never was created."
+           description="Array doesn't exist. It could be destroyed, or it was never was created."/>
 <ErrorCode name="ACSInternalException"
            shortDescription="Internal Exception in ACS."
            description="Internal Exception in ACS."/>

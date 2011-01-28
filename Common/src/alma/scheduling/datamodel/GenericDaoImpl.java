@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.14 2010/09/03 16:47:15 javarias Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.15 2011/01/28 00:35:31 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -32,6 +32,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
+
+import alma.scheduling.datamodel.obsproject.ObsProject;
 
 /**
  * Implementation of {@link GenericDao}
@@ -65,10 +67,21 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     }
 
     @Override
-    @Transactional
-    public <T> void saveOrUpdate(Collection<T> objs) {
-        getHibernateTemplate().saveOrUpdateAll(objs);
-        getHibernateTemplate().flush();
+    public <T> void saveOrUpdate(Collection<T> objs){
+    	for(T obj: objs){
+    		try{
+    			getHibernateTemplate().saveOrUpdate(obj);
+    		} catch (Exception ex){
+    			//HACK: if the saved obj is and ObsProject log the uid.
+    			if (obj instanceof ObsProject){
+    				ObsProject prj = (ObsProject) obj;
+    				System.out.println("Project: " + prj.getId() + 
+    						" Could not be inserted into SWDB - reason: " + ex.getMessage());
+    				ex.printStackTrace();
+    			}
+    		}
+    	}
+        //getHibernateTemplate().flush();
     }
 
     @SuppressWarnings("unchecked")

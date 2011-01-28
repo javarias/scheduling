@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2010/08/20 19:27:31 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.3 2011/01/28 00:35:31 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -112,19 +112,19 @@ CDB_SCHEMAS =
 #
 # Generate ACS Error System classes
 #
-ACSERRDEF = SchedulingArrayExceptions
+ACSERRDEF := 
 
 # 
 # IDL Files and flags
 # 
-IDL_FILES = SchedulingArray
+IDL_FILES = 
 TAO_IDLFLAGS =
 USER_IDL =
 #
 # Jarfiles and their directories
 #
 JARFILES = SchedulingArrayImpl
-SchedulingArrayImpl_DIRS = alma
+SchedulingArrayImpl_DIRS := alma
 jjj_EXTRAS= 
 #
 # java sources in Jarfile on/off

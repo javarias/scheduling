@@ -63,13 +63,13 @@ import alma.alarmsystem.source.ACSFaultState;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.log_audience.OPERATOR;
 import alma.scheduling.ArrayInfo;
-import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Dynamic_Operator_to_Scheduling;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.InvalidOperation;
 import alma.scheduling.MasterSchedulerIFOperations;
 import alma.scheduling.NoSuchSB;
 import alma.scheduling.NothingCanBeScheduledEnum;
+import alma.scheduling.OLDArrayModeEnum;
 import alma.scheduling.ProjectAndSBLites;
 import alma.scheduling.ProjectLite;
 import alma.scheduling.Queued_Operator_to_Scheduling;
@@ -99,7 +99,7 @@ import alma.xmlentity.XmlEntityStruct;
 
 /**
  * @author Sohaila Lucero
- * @version $Id: ALMAMasterScheduler.java,v 1.131 2010/09/29 17:10:41 dclarke Exp $
+ * @version $Id: ALMAMasterScheduler.java,v 1.132 2011/01/28 00:35:38 javarias Exp $
  */
 public class ALMAMasterScheduler extends MasterScheduler 
     implements MasterSchedulerIFOperations, ComponentLifecycle {
@@ -153,7 +153,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     //keep track of arrays
     private Vector arraysInUse;
     //Keeps track of the scheduler modes for each array
-    private LinkedHashMap<String, ArrayModeEnum> schedModeForArray;
+    private LinkedHashMap<String, OLDArrayModeEnum> schedModeForArray;
     
     //private ArrayContextLogger arraylogger;
     protected AcsLogger logger;
@@ -189,7 +189,7 @@ public class ALMAMasterScheduler extends MasterScheduler
             this.queuedComps = new Vector();
             this.dynamicComps = new Vector();
             allSchedulers = new LinkedHashMap<String, Scheduler>();
-            schedModeForArray = new LinkedHashMap<String, ArrayModeEnum>();
+            schedModeForArray = new LinkedHashMap<String, OLDArrayModeEnum>();
             this.clock = new ALMAClock();
             this.archive = new ALMAArchive(containerServices, clock);
             this.sbQueue = new SBQueue();
@@ -1097,7 +1097,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     public String createArray(String[] antennaIdList,
     		                  String[] photonicsChoice,
     		                  CorrelatorType correlatorType,
-    		                  ArrayModeEnum  schedulingMode)
+    		                  OLDArrayModeEnum  schedulingMode)
         throws InvalidOperationEx {
 
     	logger.fine("ALMAMasterScheduler.createArray(...)");
@@ -1111,7 +1111,7 @@ public class ALMAMasterScheduler extends MasterScheduler
         String name="";
         String logMsg="";
         try {             
-            if(schedulingMode == ArrayModeEnum.MANUAL) {
+            if(schedulingMode == OLDArrayModeEnum.OLDMANUAL) {
                 logMsg = "SCHEDULING: Creating an array for manual mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg =logMsg + antennaIdList[i] +", ";
@@ -1121,7 +1121,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 logger.logToAudience(Level.INFO, "create manual array with name:"+name, OPERATOR.value);
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("manual");
-            } else if(schedulingMode == ArrayModeEnum.DYNAMIC){
+            } else if(schedulingMode == OLDArrayModeEnum.OLDDYNAMIC){
                 logMsg = "SCHEDULING: Creating an array for dynamic mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg = logMsg + antennaIdList[i] +", ";
@@ -1131,7 +1131,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 name = control.createArray(antennaIdList, photonicsChoice, correlatorType, "dynamic");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("dynamic");
-            } else if(schedulingMode == ArrayModeEnum.QUEUED){
+            } else if(schedulingMode == OLDArrayModeEnum.OLDQUEUED){
                 logMsg = "SCHEDULING: Creating an array for queued mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg = logMsg + antennaIdList[i] +", ";
@@ -1141,7 +1141,7 @@ public class ALMAMasterScheduler extends MasterScheduler
                 name = control.createArray(antennaIdList, photonicsChoice, correlatorType,"queued");
                 //a = new Subarray(name, antennaIdList);
                 //a.setSchedulingMode("queued");
-            } else if(schedulingMode == ArrayModeEnum.INTERACTIVE){
+            } else if(schedulingMode == OLDArrayModeEnum.OLDINTERACTIVE){
                 logMsg = "SCHEDULING: Creating an array for interactive mode with antennas; [";
                 for(int i=0; i< antennaIdList.length; i++){
                     logMsg = logMsg + antennaIdList[i] +", ";
@@ -1728,7 +1728,7 @@ public class ALMAMasterScheduler extends MasterScheduler
     
     ////////////// Methods to set/get scheduler modes for a given array ///////////
 
-    public ArrayModeEnum getSchedulerModeForArray(String arrayname) 
+    public OLDArrayModeEnum getSchedulerModeForArray(String arrayname) 
         throws InvalidOperationEx {
         // TODO check to see if array exists, if not throw exception
     	logger.info("ALMAMasteScheduler.getSchedulerModeForArray.arrayname:"+arrayname);
@@ -1737,11 +1737,11 @@ public class ALMAMasterScheduler extends MasterScheduler
     	Iterator keyIter = keys.iterator();
     	while(keyIter.hasNext()) {
     		String keyName = (String)keyIter.next();
-    		ArrayModeEnum arrayMode = schedModeForArray.get(keyName);
+    		OLDArrayModeEnum arrayMode = schedModeForArray.get(keyName);
     		logger.info("arrayname:"+keyName+ "for mode "+arrayMode.toString());
     	}
     	
-        return (ArrayModeEnum)schedModeForArray.get(arrayname);
+        return (OLDArrayModeEnum)schedModeForArray.get(arrayname);
     }
     ////////////////////////////////////////////////////////////////
 

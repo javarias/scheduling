@@ -14,31 +14,47 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ * $Id: ArchivePoller.java,v 1.3 2011/01/28 00:35:30 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Logger;
 
+
+import alma.scheduling.ArchiveImportEvent;
+import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.Define.DateTime;
 import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.datamodel.DAOException;
+import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.ObsUnit;
+import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.Phase2XMLStoreProjectDao;
+import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent;
+import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.utils.CommonContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.2 2010/11/03 22:13:44 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.3 2011/01/28 00:35:30 javarias Exp $
  */
-public class ArchivePoller {
+public class ArchivePoller implements Observer{
 
 	/*
 	 * ================================================================
@@ -47,12 +63,18 @@ public class ArchivePoller {
 	 */
 	private SchedBlockDao schedBlockDao;
 //	private ObsUnitDao    obsUnitDao;
+	private ExecutiveDAO execDao;
 	private ObsProjectDao obsProjectDao;
 	
 	private Logger logger;
 	private ErrorHandling handler;
 	
 	private DateTime lastUpdate;
+	
+	private ConfigurationDao configDao;
+	
+	private HashMap<String, ArchiveUpdaterCallback> callbacks 
+		= new HashMap<String, ArchiveUpdaterCallback>();
 //    private SBQueue                     sbQueue;
 //    private ProjectQueue                projectQueue;
 //    private StatusEntityQueueBundle     statusQs;
@@ -76,6 +98,10 @@ public class ArchivePoller {
 		this.handler = new ErrorHandling(logger);
 		this.schedBlockDao = ma.getSchedBlockDao();
 		this.obsProjectDao = ma.getObsProjectDao();
+		this.execDao = ma.getExecutiveDao();
+		configDao = (ConfigurationDao) CommonContextFactory
+				.getContext()
+				.getBean(CommonContextFactory.SCHEDULING_CONFIGURATION_DAO_BEAN);
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -100,6 +126,9 @@ public class ArchivePoller {
 			final ObsProject op = obsProjectDao.findByEntityId(id);
 			if (op != null) {
 				projects.add(op);
+			} else {
+				logger.warning(String.format(
+						"Cannot find project %s to delete it", id));
 			}
 		}
 		
@@ -136,9 +165,19 @@ public class ArchivePoller {
     private void initialPollArchive() {
     	logger.info("Starting initial poll of the archive");
     	
+    	createExecutives();
+    	
     	Phase2XMLStoreProjectDao inDao;
 		try {
 			inDao = new Phase2XMLStoreProjectDao();
+			inDao.getNotifer().addObserver(this);
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setEntityId("Starting Initial Poll Archive");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("");
+			inDao.getNotifer().notifyEvent(event);
 		} catch (Exception e) {
 			handler.severe(String.format(
 					"Error creating DAO for ALMA project store - %s",
@@ -154,12 +193,83 @@ public class ArchivePoller {
 					e.getMessage()), e);
 			return;
 		}
-    	obsProjectDao.saveOrUpdate(allProjects);
+		for(ObsProject prj: allProjects)
+			linkData(prj);
+		if (allProjects.size() > 0) {
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setEntityId("Saving Converted Projects to SWDB");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("About to save: " + allProjects.size()
+					+ " Projects");
+			inDao.getNotifer().notifyEvent(event);
+		};
+		obsProjectDao.saveOrUpdate(allProjects);
     	logger.info(String.format(
     			"%d project%s loaded",
     			allProjects.size(),
     			allProjects.size()==1? "": "s"));
     	logNumbers();
+    	ProjectImportEvent event = new ProjectImportEvent();
+		event.setEntityId("Completing Initial Poll Archive");
+		event.setTimestamp(new Date());
+		event.setStatus(ImportStatus.STATUS_INFO);
+		event.setEntityType("<html><i>none</i></html>");
+		event.setDetails("");
+		inDao.getNotifer().notifyEvent(event);
+    }
+    
+	private void deleteExistingProjectsInSWDB(List<ObsProject> prjs) {
+		for (ObsProject prj : prjs) {
+			logger.finer("Checking project with entity ID: " + prj.getUid());
+			ObsProject ret = obsProjectDao.findByEntityId(prj.getUid());
+			if (ret != null) {
+				logger.finer("Deleting project with entity ID: " + prj.getUid());
+				obsProjectDao.delete(prj.getObsUnit());
+				obsProjectDao.delete(ret);
+			}
+		}
+	}
+    
+    private void createExecutives(){
+    	//Names retrieved from ObsProposal.xsd
+    	String [] executiveNames = {"NONALMA", "CHILE", "EA", "EU", "NA"};
+    	for (int i = 0; i < executiveNames.length; i++){
+    		Executive exec =  new Executive();
+    		exec.setName(executiveNames[i]);
+    		//All executives will have the same percentage
+    		//TODO: Change this: each executive has different percentages 
+    		exec.setDefaultPercentage((float) 0.20);
+    		execDao.saveOrUpdate(exec);
+    	}
+    }
+    
+    private void linkData(ObsProject proj){
+    	List<Executive> executives = execDao.getAllExecutive();
+    	Executive executiveSelected = null;
+		logger.finer("Look for executive: " + proj.getAffiliation());
+		for(Executive exec: executives)
+			if(exec.getName().compareTo(proj.getAffiliation()) == 0){
+				logger.finer("Executive found. Updating references into the SchedBlocks");
+				executiveSelected = exec;
+				break;
+			}
+		linkData(proj.getObsUnit(), executiveSelected, proj);
+    }
+    
+    private void linkData(ObsUnit ou, Executive exec, ObsProject proj){
+    	if (ou instanceof ObsUnitSet){
+    		ObsUnitSet ous = (ObsUnitSet) ou;
+    		for (ObsUnit tmp: ous.getObsUnits())
+    			linkData(tmp, exec, proj);
+    	}
+    	else if (ou instanceof SchedBlock){
+    		SchedBlock sb = (SchedBlock) ou;
+    		sb.setExecutive(exec);
+    		sb.setCsv(proj.getCsv());
+    		sb.setManual(proj.getManual());
+    	}
     }
 	/* End Initial Polling of the ALMA Archives
 	 * ============================================================= */
@@ -210,6 +320,14 @@ public class ArchivePoller {
     	Phase2XMLStoreProjectDao inDao;
 		try {
 			inDao = new Phase2XMLStoreProjectDao();
+			inDao.getNotifer().addObserver(this);
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setEntityId("Starting Incremental Poll Archive");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("");
+			inDao.getNotifer().notifyEvent(event);
 		} catch (Exception e) {
 			handler.severe(String.format(
 					"Error creating DAO for ALMA project store - %s",
@@ -236,6 +354,20 @@ public class ArchivePoller {
 			return;
 		}
 		final int deleted = deleteProjects(deletedIds);
+		for(ObsProject prj: newProjects)
+			linkData(prj);
+		logger.info("Checking for entities already stored in SWDB");
+		deleteExistingProjectsInSWDB(newProjects);
+		if (newProjects.size() > 0) {
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setEntityId("Saving Converted Projects to SWDB");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("About to save: " + newProjects.size()
+					+ " Projects");
+			inDao.getNotifer().notifyEvent(event);
+		}
     	obsProjectDao.saveOrUpdate(newProjects);
     	logger.info(String.format(
     			"%d new or modified project%s, %d project%s removed",
@@ -244,6 +376,14 @@ public class ArchivePoller {
     			deleted,
     			deleted==1? "": "s"));
     	logNumbers();
+    	
+		ProjectImportEvent event = new ProjectImportEvent();
+		event.setEntityId("Incremental Poll Archive Completed");
+		event.setTimestamp(new Date());
+		event.setStatus(ImportStatus.STATUS_INFO);
+		event.setEntityType("<html><i>none</i></html>");
+		event.setDetails("");
+		inDao.getNotifer().notifyEvent(event);
     }
 	/* End Incremental Polling of the ALMA Archives
 	 * ============================================================= */
@@ -261,6 +401,7 @@ public class ArchivePoller {
      * Reset back to the initial state
      */
     public void reset() {
+    	logger.info("Resetting scheduling working database");
     	donePollArchive = false;
     	obsProjectDao.deleteAll(
     			obsProjectDao.findAll(ObsProject.class));
@@ -268,8 +409,31 @@ public class ArchivePoller {
     			schedBlockDao.findAll(SchedBlock.class));
     }
     
+    
+    /**
+     * Completely refresh the SWDB by clearing it out and then doing a
+     * pollArchive(). The clear out will cause the pollArchive() to be
+     * complete rather than incremental.
+     */
+    public void refreshSWDB() throws SchedulingException {
+    	reset();
+    	pollArchive();
+    }
+    
     synchronized public void pollArchive() throws SchedulingException {
-
+    	//First Check into the DB for the last update
+		if (lastUpdate == null && !donePollArchive){
+			logger.fine("Checking for last update in the Scheduling Working DB");
+			Date savedTime = configDao.getConfiguration().getLastLoad();
+			logger.fine("Last time saved in the Scheduling Working DB is: " + savedTime);
+			if(savedTime != null){
+				logger.fine("Restoring saved time as last update and doing an incremental polling after that");
+				lastUpdate = new DateTime(savedTime.getTime());
+				donePollArchive = true;
+			}
+			else
+				logger.fine("Ignoring saved time in Scheduling Working DB because it is null");
+		}
 		logger.fine("Polling archive for runnable projects");
 		final DateTime now = new DateTime(System.currentTimeMillis());
         
@@ -281,10 +445,51 @@ public class ArchivePoller {
     	}
 
         lastUpdate = now;
+        final Date toSave =  new Date(lastUpdate.getMillisec());
+        configDao.updateConfig(toSave);
         
 //        logNumbers(String.format("at end of pollArchive(%s)", prjuid));
 //        logDetails(String.format("at end of pollArchive(%s)", prjuid));
     }
+    
+    public void deregisterCallback(String arg0) {
+    	synchronized(callbacks){
+    		callbacks.remove(arg0);
+    	}
+    }
+    
+    public void registerCallback(String arg0, ArchiveUpdaterCallback arg1) {
+    	synchronized(callbacks){
+    		callbacks.put(arg0, arg1);
+    	}
+    }
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg instanceof ProjectImportEvent){
+			ProjectImportEvent evt = (ProjectImportEvent) arg;
+			ArchiveImportEvent event = new ArchiveImportEvent();
+			event.timestamp = alma.acs.util.UTCUtility.utcJavaToOmg(evt.getTimestamp().getTime());
+			event.entityId = evt.getEntityId();
+			event.entityType = evt.getEntityType();
+			event.status = alma.scheduling.ImportStatus.from_int(evt.getStatus().ordinal());
+			event.details = evt.getDetails();
+			logger.finer("Received notification update for project: " +
+					event.entityId + " Type: " + event.entityType + " status: " + event.status);
+			for (String callback: callbacks.keySet()){
+				try{
+					callbacks.get(callback).report(event);
+				} catch (org.omg.CORBA.MARSHAL ex){
+					logger.warning("Found null field in event, id: " + callback + " Reason: " + ex.getMessage());
+					
+				} catch (org.omg.CORBA.SystemException ex){
+					logger.warning("Found dead callback, id: " + callback + " De-regestering callback. Reason: " + ex.getMessage());
+					ex.printStackTrace();
+					deregisterCallback(callback);
+				}
+			}
+		}
+	}
 
 	/* End External interface
 	 * ============================================================= */

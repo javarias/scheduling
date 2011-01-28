@@ -17,6 +17,8 @@
  */
 package alma.scheduling.array.executor;
 
+// import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+// import alma.obsprep.bo.schedblock.SchedBlock;
 
 /**
  * @author rhiriart
@@ -30,9 +32,24 @@ public class CompleteExecutionState extends ExecutionState {
     public CompleteExecutionState(ExecutionContext context) {
         super(context);
     }
+    
+ /*   
+	@Override
+	protected boolean hasLifeCycleEquivalent() {
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "CompleteExecutionState";
-    }
+	@Override
+	protected StatusTStateType lifeCycleEquivalent() {
+		if (context.isCSV()) {
+			return StatusTStateType.CSVREADY;
+		}
+		if (!context.isFullAuto()) {
+			return StatusTStateType.SUSPENDED;
+		}
+		if (context.getSchedBlock().needsMoreExecutions()) {
+			return StatusTStateType.READY;
+		}
+		return StatusTStateType.SUSPENDED;
+	}*/
 }

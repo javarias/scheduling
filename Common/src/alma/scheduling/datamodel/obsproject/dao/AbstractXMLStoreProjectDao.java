@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -76,14 +77,17 @@ public abstract class AbstractXMLStoreProjectDao
     
     // ACS Diagnostics
     private final static ComponentDiagnosticTypes[] xmlStoreDiags = {
-    	ComponentDiagnosticTypes.LOGGING,
-    	ComponentDiagnosticTypes.PROFILING
+//    	ComponentDiagnosticTypes.LOGGING,
+//    	ComponentDiagnosticTypes.PROFILING
     };
     
     private final static ComponentDiagnosticTypes[] stateSystemDiags = {
-    	ComponentDiagnosticTypes.LOGGING,
-    	ComponentDiagnosticTypes.PROFILING
+//    	ComponentDiagnosticTypes.LOGGING,
+//    	ComponentDiagnosticTypes.PROFILING
     };
+    
+    //Import Notifications
+    protected final XMLStoreImportNotifier notifier;
     /* End Fields and constants
 	 * ============================================================= */
 
@@ -116,6 +120,7 @@ public abstract class AbstractXMLStoreProjectDao
 			throws Exception {
 		// TODO: Logger type has been hacked, must be resolved properly.
 		super(logger, managerLoc, clientName);
+		notifier = new XMLStoreImportNotifier();
 		this.componentFactory = new ACSComponentFactory(getContainerServices());
 		this.logger = getContainerServices().getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
@@ -192,7 +197,13 @@ public abstract class AbstractXMLStoreProjectDao
         for (alma.entity.xmlbinding.obsproject.ObsProject apdmProject : archive.obsProjects()) {
         	getAPDMSchedBlocksFor(archive, apdmProject);
         }
-        logAPDMSchedBlocks(archive);
+        
+        try {
+            logAPDMSchedBlocks(archive);
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+            logger.severe("null pointer exception when logging APDM SchedBlocks");
+        }
         
         // Convert them to Scheduling stylee ObsProjects
         result = convertAPDMProjectsToDataModel(archive, logger);
@@ -274,7 +285,11 @@ public abstract class AbstractXMLStoreProjectDao
     		final DateTime     since,
     		final List<String> newOrModifiedIds,
     		final List<String> deletedIds) throws DAOException {
-	    
+        
+        logger.info(String.format("%s.getObsProjectChanges(since %s)",
+        		this.getClass().getSimpleName(),
+        		since.toString()));
+        
 		// Collect the id in sets so we don't have to worry about
 		// duplication
 		final Set<String> changedProjects = new HashSet<String>();
@@ -303,6 +318,14 @@ public abstract class AbstractXMLStoreProjectDao
 		// we've been asked to put them.
 		newOrModifiedIds.addAll(changedProjects);
 		deletedIds.addAll(deletedProjects);
+		
+		// Bleargh... log
+		for (final String id : deletedIds) {
+			logger.finer(String.format("delete project %s", id));
+		}
+		for (final String id : newOrModifiedIds) {
+			logger.finer(String.format("refresh or get project %s", id));
+		}
 	}
 
 	/**
@@ -559,64 +582,113 @@ public abstract class AbstractXMLStoreProjectDao
      * Logging
      * ================================================================
      */
+	/** Limit the size of log messages - large loads were hitting problems */
+	final private static int MaxItemsPerLogMessage = 100;
+	
 	private void logAPDMObsProposals(ArchiveInterface archive) {
-		final StringBuilder sb = new StringBuilder();
-		final Formatter f = new Formatter(sb);
+		StringBuilder sb = new StringBuilder();
+		Formatter f = new Formatter(sb);
+		int lines;
+		
 		f.format("Found the following %d APDM ObsProposal%s:%n",
 				archive.numObsProposals(),
 				(archive.numObsProposals()==1)? "": "s");
+		lines = 1;
+		
 		for (final alma.entity.xmlbinding.obsproposal.ObsProposal op : archive.obsProposals()) {
-			f.format("\tProposal uid: %s, Project uid: %s, title is %s%n",
+			f.format("\tProposal %s, Project %s, title is %s%n",
 					op.getObsProposalEntity().getEntityId(),
 					op.getObsProjectRef().getEntityId(),
 					op.getTitle());
+			lines ++;
+			if (lines == MaxItemsPerLogMessage) {
+				logger.info(sb.toString());
+				sb = new StringBuilder();
+				f = new Formatter(sb);
+				f.format("...continuing...%n");
+				lines = 1;
+			}
 		}
-		logger.info(sb.toString());
+		if (lines > 1) {
+			logger.info(sb.toString());
+		}
 	}
 
 	private void logAPDMObsProjects(ArchiveInterface archive) {
-		final StringBuilder sb = new StringBuilder();
-		final Formatter f = new Formatter(sb);
+		StringBuilder sb = new StringBuilder();
+		Formatter f = new Formatter(sb);
+		int lines;
+		
 		f.format("Found the following %d APDM ObsProject%s:%n",
 				archive.numObsProjects(),
 				(archive.numObsProjects()==1)? "": "s");
+		lines = 1;
+		
 		for (final alma.entity.xmlbinding.obsproject.ObsProject op : archive.obsProjects()) {
-			f.format("\tOP uid: %s, PS uid: %s, name is %s, proposal %s%n",
+			f.format("\tOP %s, PS %s, name is %s, proposal %s%n",
 					op.getObsProjectEntity().getEntityId(),
 					op.getProjectStatusRef().getEntityId(),
 					op.getProjectName(),
 					op.getObsProposalRef().getEntityId());
+			lines ++;
+			if (lines == MaxItemsPerLogMessage) {
+				logger.info(sb.toString());
+				sb = new StringBuilder();
+				f = new Formatter(sb);
+				f.format("...continuing...%n");
+				lines = 1;
+			}
 		}
-		logger.info(sb.toString());
+		if (lines > 1) {
+			logger.info(sb.toString());
+		}
 	}
 
 	private void logAPDMObsProjects(ArchiveInterface archive, String... ids) {
-		final StringBuilder sb = new StringBuilder();
-		final Formatter f = new Formatter(sb);
+		StringBuilder sb = new StringBuilder();
+		Formatter f = new Formatter(sb);
+		int lines;
+		
 		f.format("Logging %d APDM ObsProject%s:%n",
 				ids.length,
 				(ids.length==1)? "": "s");
+		lines = 1;
+		
 		for (String id : ids) {
 			if (archive.hasObsProject(id)) {
 				alma.entity.xmlbinding.obsproject.ObsProject op
 					= archive.cachedObsProject(id);
-				f.format("\tOP uid: %s, PS uid: %s, name is %s%n",
+				f.format("\tOP %s, PS %s, name is %s%n",
 						op.getObsProjectEntity().getEntityId(),
 						op.getProjectStatusRef().getEntityId(),
 						op.getProjectName());
 			} else {
-				f.format("\tOP uid: %s not found in cache", id);
+				f.format("\tOP %s not found in cache", id);
+			}
+			lines ++;
+			if (lines == MaxItemsPerLogMessage) {
+				logger.info(sb.toString());
+				sb = new StringBuilder();
+				f = new Formatter(sb);
+				f.format("...continuing...%n");
+				lines = 1;
 			}
 		}
-		logger.info(sb.toString());
+		if (lines > 1) {
+			logger.info(sb.toString());
+		}
 	}
 
 	private void logAPDMSchedBlocks(ArchiveInterface archive) {
-		final StringBuilder sb = new StringBuilder();
-		final Formatter f = new Formatter(sb);
+		StringBuilder sb = new StringBuilder();
+		Formatter f = new Formatter(sb);
+		int lines;
+		
 		f.format("Found the following %d APDM SchedBlock%s:%n",
 				archive.numSchedBlocks(),
 				(archive.numSchedBlocks()==1)? "": "s");
+		lines = 1;
+		
 		for (final alma.entity.xmlbinding.schedblock.SchedBlock schedBlock : archive.schedBlocks()) {
 			final alma.entity.xmlbinding.obsproject.ObsProject op =
 				archive.cachedObsProject(schedBlock.getObsProjectRef().getEntityId());
@@ -624,7 +696,7 @@ public abstract class AbstractXMLStoreProjectDao
 				final alma.entity.xmlbinding.schedblock.SchedBlockEntityT sbEnt  = schedBlock.getSchedBlockEntity();
 				final                                   SBStatusRefT      sbsRef = schedBlock.getSBStatusRef();
 				final alma.entity.xmlbinding.obsproject.ObsProjectEntityT prjEnt = op.getObsProjectEntity();
-				f.format("\tSB uid: %s, SBS uid: %s, part of %s (%s)%n",
+				f.format("\tSB %s, SBS %s, part of %s (%s)%n",
 						(sbEnt  == null)? "<null>": sbEnt.getEntityId(),
 						(sbsRef == null)? "<null>": sbsRef.getEntityId(),
 						op.getProjectName(),
@@ -633,40 +705,64 @@ public abstract class AbstractXMLStoreProjectDao
 				final alma.entity.xmlbinding.schedblock.SchedBlockEntityT sbEnt  = schedBlock.getSchedBlockEntity();
 				final                                   SBStatusRefT      sbsRef = schedBlock.getSBStatusRef();
 				final alma.entity.xmlbinding.obsproject.ObsProjectRefT    prjRef = schedBlock.getObsProjectRef();
-				f.format("\tSB uid: %s, SBS uid: %s, part of <<lost project>> (%s)%n",
+				f.format("\tSB %s, SBS %s, part of <<lost project>> (%s)%n",
 						(sbEnt  == null)? "<null>": sbEnt.getEntityId(),
 						(sbsRef == null)? "<null>": sbsRef.getEntityId(),
 						(prjRef == null)? "<null>": prjRef.getEntityId());
 			}
+			lines ++;
+			if (lines == MaxItemsPerLogMessage) {
+				logger.info(sb.toString());
+				sb = new StringBuilder();
+				f = new Formatter(sb);
+				f.format("...continuing...%n");
+				lines = 1;
+			}
 		}
-		logger.info(sb.toString());
+		if (lines > 1) {
+			logger.info(sb.toString());
+		}
 	}
 
 	private void logAPDMSchedBlocks(ArchiveInterface archive,
 			                        String... projectIds) {
-		final StringBuilder sb = new StringBuilder();
-		final Formatter f = new Formatter(sb);
+		StringBuilder sb = new StringBuilder();
+		Formatter f = new Formatter(sb);
+		int lines;
+		
 		final Set<String> pids = new HashSet<String>();
 		
 		for (String pid : projectIds) {
 			pids.add(pid);
 		}
-		f.format("Found the following APDM SchedBlock%s:%n",
+		f.format("Found the following %d APDM SchedBlock%s:%n",
 				archive.numSchedBlocks(),
 				(archive.numSchedBlocks()==1)? "": "s");
+		lines = 1;
+		
 		for (final alma.entity.xmlbinding.schedblock.SchedBlock schedBlock : archive.schedBlocks()) {
 			final String projectId = schedBlock.getObsProjectRef().getEntityId();
 			if (pids.contains(projectId)) {
 				final alma.entity.xmlbinding.obsproject.ObsProject op =
 					archive.cachedObsProject(projectId);
-				f.format("\tSB uid: %s, SBS uid: %s, part of %s (%s)%n",
+				f.format("\tSB %s, SBS %s, part of %s (%s)%n",
 						schedBlock.getSchedBlockEntity().getEntityId(),
 						schedBlock.getSBStatusRef().getEntityId(),
 						op.getProjectName(),
 						projectId);
 			}
+			lines ++;
+			if (lines == MaxItemsPerLogMessage) {
+				logger.info(sb.toString());
+				sb = new StringBuilder();
+				f = new Formatter(sb);
+				f.format("...continuing...%n");
+				lines = 1;
+			}
 		}
-		logger.info(sb.toString());
+		if (lines > 1) {
+			logger.info(sb.toString());
+		}
 	}
 
 	private void recLogOUSStatus(
@@ -674,12 +770,15 @@ public abstract class AbstractXMLStoreProjectDao
 			final OUSStatus ousStatus,
 			final ArchiveInterface archive,
 			final Formatter f) {
-		f.format("%sOUSS uid: %s, OUS uid: %s in %s, status is %s%n",
+
+		f.format("%sOUSS %s, OUS %s in %s, status is %s%n",
 				indent,
 				ousStatus.getOUSStatusEntity().getEntityId(),
 				ousStatus.getObsUnitSetRef().getPartId(),
 				ousStatus.getObsUnitSetRef().getEntityId(),
 				ousStatus.getStatus().getState());
+
+		
 		for (final OUSStatusRefT childRef : ousStatus.getOUSStatusChoice().getOUSStatusRef()) {
 			final String childId = childRef.getEntityId();
 			if (archive.hasOUSStatus(childId)) {
@@ -704,10 +803,9 @@ public abstract class AbstractXMLStoreProjectDao
 		}
 	}
 
-	private void logOneProjectStatus(
-			final ProjectStatus projectStatus,
-			final ArchiveInterface archive,
-			final Formatter f) {
+	private void logOneProjectStatus(final ProjectStatus projectStatus,
+			                         final ArchiveInterface archive,
+			                         final Formatter f) {
 		String projectId = projectStatus.getObsProjectRef().getEntityId();
 		String projectName;
 		if (archive.hasObsProject(projectId)) {
@@ -715,7 +813,7 @@ public abstract class AbstractXMLStoreProjectDao
 		} else {
 			projectName = "<none>";
 		}
-		f.format("\tProject %s, PS uid: %s, OP uid: %s, status is %s%n",
+		f.format("\tProject %s, PS %s, OP %s, status is %s%n",
 				projectName, 
 				projectStatus.getProjectStatusEntity().getEntityId(),
 				projectStatus.getObsProjectRef().getEntityId(),
@@ -731,19 +829,30 @@ public abstract class AbstractXMLStoreProjectDao
 	}
 
 	private void logStatuses(ArchiveInterface archive) {
-		final StringBuilder sb = new StringBuilder();
-		final Formatter f = new Formatter(sb);
-		f.format("Found %s ProjectStatus%s, %d OUSStatus%s and %s SBStatus%s%n",
+		logger.info(String.format(
+				"Found %s ProjectStatus%s, %d OUSStatus%s and %s SBStatus%s%n",
 				archive.numProjectStatuses(),
 				((archive.numProjectStatuses()==1)? "": "es"),
 				archive.numOUSStatuses(),
 				((archive.numOUSStatuses()==1)? "": "es"),
 				archive.numSBStatuses(),
-			    ((archive.numSBStatuses()==1)? "": "es"));
+			    ((archive.numSBStatuses()==1)? "": "es")));
+		
 		for (final ProjectStatus ps : archive.projectStatuses()) {
-			logOneProjectStatus(ps, archive, f);
+			final StringBuilder sb = new StringBuilder();
+			final Formatter f = new Formatter(sb);
+			
+			try {
+				logOneProjectStatus(ps, archive, f);
+				logger.info(sb.toString());
+			} catch (Exception e) {
+				logger.warning(String.format(
+						"Unexpected error whilst printing hierarchy for ProjectStatus %s - %s.%nHere's what we managed so far:%n%s",
+						ps.getProjectStatusEntity().getEntityId(),
+						e.getMessage(),
+						sb.toString()));
+			}
 		}
-		logger.info(sb.toString());
 	}
 
 	private void logObsProjects(List<ObsProject> result) {
@@ -752,6 +861,19 @@ public abstract class AbstractXMLStoreProjectDao
         		result.size(),
         		(result.size() == 1)? "": "s"));
 	}
+	
 	/* End Logging
 	 * ============================================================= */
+	public XMLStoreImportNotifier getNotifer(){
+		return notifier;
+	}
+	
+	public class XMLStoreImportNotifier extends Observable{
+		
+		public void notifyEvent(ProjectImportEvent event){
+			System.out.println("Notificating Observers, Time: " + event.getTimestamp());
+			setChanged();
+			notifyObservers(event);
+		}
+	}
 }

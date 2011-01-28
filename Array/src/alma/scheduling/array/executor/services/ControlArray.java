@@ -24,6 +24,23 @@ import alma.asdmIDLTypes.IDLEntityRef;
  *
  */
 public interface ControlArray {
+    /**
+     * Set up the array for the given SchedBlock. This method will cope with being
+     * invoked multiple times consecutively for the same SchedBlock, the array will
+     * only be configured the once.
+     */
+    void configure(IDLEntityRef schedBlockRef) throws Exception;
+
+    /**
+     * Observe the given SchedBlock as part of the given Session. Multiple calls
+     * with the same SchedBlock and Session will result in multiple observations.
+     */
     void observe(IDLEntityRef schedBlockRef, IDLEntityRef sessionRef) throws Exception;
+
+    /**
+     * Stop the execution/observation of the current SchedBlock.
+     */
+    void stopSB() throws Exception;
+
     void cleanUp();
 }

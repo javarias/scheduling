@@ -71,7 +71,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		final APDMtoSchedulingConverter converter =
 			new APDMtoSchedulingConverter(archive,
                                           APDMtoSchedulingConverter.Phase.PHASE2,
-                                          logger);
+                                          logger, notifier);
 		return converter.convertAPDMProjectsToDataModel();
 	}
 
@@ -316,28 +316,33 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			for (final alma.entity.xmlbinding.schedblock.SchedBlockRefT childSBRef : choice.getSchedBlockRef()) {
 				final String id = childSBRef.getEntityId();
 				final alma.entity.xmlbinding.sbstatus.SBStatus sbs = sbsByDomainId.get(id);
-				final String state = sbs.getStatus().getState().toString();
-				if (sbPhase2RunnableStates.contains(state)) {
-					try {
-						archive.getSchedBlock(id);
-						logger.info(String.format(
-								"Succesfully got APDM SchedBlock %s",
-								id));
-					} catch (EntityException deserialiseEx) {
-						logger.warning(String.format(
-								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
-								id,
-								deserialiseEx.getMessage()));
-					} catch (UserException retrieveEx) {
-						logger.warning(String.format(
-								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
-								id,
-								retrieveEx.getMessage()));
-					}
-				} else {
-					logger.info(String.format(
-							"APDM SchedBlock %s is in an uninteresting state (%s) - skipping it",
-							id, state));
+				try {
+    				final String state = sbs.getStatus().getState().toString();
+    				if (sbPhase2RunnableStates.contains(state)) {
+    					try {
+    						archive.getSchedBlock(id);
+    						logger.info(String.format(
+    								"Succesfully got APDM SchedBlock %s",
+    								id));
+    					} catch (EntityException deserialiseEx) {
+    						logger.warning(String.format(
+    								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+    								id,
+    								deserialiseEx.getMessage()));
+    					} catch (UserException retrieveEx) {
+    						logger.warning(String.format(
+    								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+    								id,
+    								retrieveEx.getMessage()));
+    					}
+    				} else {
+    					logger.info(String.format(
+    							"APDM SchedBlock %s is in an uninteresting state (%s) - skipping it",
+    							id, state));
+    				}
+				} catch (NullPointerException ex) {
+				    ex.printStackTrace();
+				    logger.severe("null pointer exception: " + ex);
 				}
 			}
 		} else {

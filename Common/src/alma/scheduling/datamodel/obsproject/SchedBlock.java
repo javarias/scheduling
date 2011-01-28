@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.11 2010/08/20 19:22:48 rhiriart Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.12 2011/01/28 00:35:31 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.scheduling.datamodel.executive.Executive;
 
@@ -71,6 +72,16 @@ public class SchedBlock extends ObsUnit {
     private SBStatusEntityT statusEntity;
     
     private Boolean runQuicklook;
+    
+    /**
+     * Is this a commissioning SchedBlock or not?
+     */
+    private boolean csv;
+    
+    /**
+     * Is this a manual SchedBlock or not?
+     */
+    private boolean manual;
     
     /** Default constructor */
     public SchedBlock() { }
@@ -203,5 +214,35 @@ public class SchedBlock extends ObsUnit {
     public void setRunQuicklook(Boolean runQuicklook) {
         this.runQuicklook = runQuicklook;
     }
+    
+	public boolean getCsv() {
+		return csv;
+	}
+
+	public void setCsv(boolean csv) {
+		this.csv = csv;
+	}
+
+	public boolean getManual() {
+		return manual;
+	}
+
+	public void setManual(boolean manual) {
+		this.manual = manual;
+	}
+
+	public boolean needsMoreExecutions(SBStatus status) {
+		if (schedBlockControl.getIndefiniteRepeat()) {
+			return true;
+		}
+		if (status.getExecutionsRemaining() <= 0) {
+			// No more executions allowed
+			return false;
+		}
+
+		// TODO R8 - Maximum time
+		// TODO R8 - Sensitivity?
+		return true;
+	}
 
 }

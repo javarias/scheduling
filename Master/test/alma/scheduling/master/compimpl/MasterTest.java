@@ -16,22 +16,21 @@ import alma.scheduling.MasterHelper;
 
 public class MasterTest extends ComponentClientTestCase {
 	
-	private final static String MASTER_SCHED_URL = "SCHEDULING_MASTER"; 
-	
 	public MasterTest() throws Exception {
 		super("Scheduling Master Test");
 	}
 	
-	public void testMasterCreation() throws AcsJContainerServicesEx{
-		Master master = null;
-		Object obj = getContainerServices().getComponent(MASTER_SCHED_URL);
-		assertNotNull(obj);
-		master = MasterHelper.narrow(obj);
-		assertNotNull(master);
-	}
+//	public void testMasterCreation() throws AcsJContainerServicesEx{
+//		Master master = null;
+//		Object obj = getContainerServices().getComponent(Constants.SCHEDULING_MASTER_URL);
+//		assertNotNull(obj);
+//		master = MasterHelper.narrow(obj);
+//		assertNotNull(master);
+//		getContainerServices().releaseComponent(Constants.SCHEDULING_MASTER_URL);
+//	}
 	
 	public void testArrayCreation() throws AcsJContainerServicesEx, ControlInternalExceptionEx, SchedulingInternalExceptionEx, ACSInternalExceptionEx{
-		Object obj = getContainerServices().getComponent(MASTER_SCHED_URL);
+		Object obj = getContainerServices().getComponent(Constants.SCHEDULING_MASTER_URL);
 		Master master = MasterHelper.narrow(obj);
 		String[] antennas = {"DV01", "DA41"};
 		String[] photonics = {};
@@ -39,10 +38,12 @@ public class MasterTest extends ComponentClientTestCase {
 				ArrayModeEnum.DYNAMIC, ArraySchedulerLifecycleType.NORMAL);
 		assertEquals("Array001", arrayInfo.arrayId);
 		assertEquals("SCHEDULING/Array001", arrayInfo.arrayComponentName);
+		master.destroyArray(arrayInfo.arrayId);
+		getContainerServices().releaseComponent(Constants.SCHEDULING_MASTER_URL);
 	}
 	
 	public void testArrayDestruction() throws AcsJContainerServicesEx, ControlInternalExceptionEx, SchedulingInternalExceptionEx, ACSInternalExceptionEx{
-		Object obj = getContainerServices().getComponent(MASTER_SCHED_URL);
+		Object obj = getContainerServices().getComponent(Constants.SCHEDULING_MASTER_URL);
 		Master master = MasterHelper.narrow(obj);
 		String[] antennas = {"DV01", "DA41"};
 		String[] photonics = {};
@@ -54,7 +55,7 @@ public class MasterTest extends ComponentClientTestCase {
 		finally {
 			m_logger.fine("Destroying Array");
 			master.destroyArray(arrayInfo.arrayId);
-			getContainerServices().releaseComponent(MASTER_SCHED_URL);
+			getContainerServices().releaseComponent(Constants.SCHEDULING_MASTER_URL);
 		}
 	}
 

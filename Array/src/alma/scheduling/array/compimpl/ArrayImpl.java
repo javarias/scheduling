@@ -26,9 +26,13 @@ import java.util.logging.Logger;
 import alma.ACS.ComponentStates;
 import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.SchedulingArrayExceptions.wrappers.AcsJNoRunningSchedBlockEx;
+import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
+import alma.asdmIDLTypes.IDLEntityRef;
+import alma.hla.runtime.asdm.types.EntityRef;
+import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
@@ -36,16 +40,20 @@ import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockScore;
+import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.array.executor.ExecutionContext;
 import alma.scheduling.array.executor.Executor;
 import alma.scheduling.array.executor.ExecutorCallbackNotifier;
 import alma.scheduling.array.executor.services.AcsProvider;
 import alma.scheduling.array.executor.services.Services;
+import alma.scheduling.array.guis.ArrayGUICallbackNotifier;
 import alma.scheduling.array.sbQueue.LinkedReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.ObservableReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sbQueue.SchedBlockQueueCallbackNotifier;
+import alma.scheduling.array.sessions.SessionManager;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 
 public class ArrayImpl implements ComponentLifecycle,
@@ -65,11 +73,14 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private ExecutorCallbackNotifier executorNotifier;
     
+    private ArrayGUICallbackNotifier guiNotifier;
+    
     private ArraySchedulerMode[] modes;
     
     private ArraySchedulerLifecycleType lifecycleType;
     
     private AcsProvider serviceProvider;
+    
     
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -83,6 +94,16 @@ public class ArrayImpl implements ComponentLifecycle,
         logger.finest("initialize() called...");
     }
     
+    private boolean isManual(ArraySchedulerMode[] modes) {
+    	ErrorHandling.logArray(logger, "Scheduler Modes" , modes);
+    	for (final ArraySchedulerMode mode : modes) {
+    		if (mode.equals(ArraySchedulerMode.MANUAL_I)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     @Override
     public void configure(String arrayName, ArraySchedulerMode[] modes,
             ArraySchedulerLifecycleType lifecycleType) {
@@ -91,33 +112,56 @@ public class ArrayImpl implements ComponentLifecycle,
         this.modes = modes;
         this.lifecycleType = lifecycleType;
         
+        final boolean manual = isManual(modes);
+        Services services = null;
+        
         try {
-            serviceProvider = new AcsProvider(containerServices, arrayName);
-            Services.registerProvider(serviceProvider);
+            serviceProvider = new AcsProvider(containerServices,
+            		                          arrayName,
+            		                          manual);
+            services = new Services(serviceProvider);
         } catch (TranslationException e) {
-            e.printStackTrace();
-            // throw an exception...
+            ErrorHandling.warning(logger,
+            		String.format("Error in array name %s - %s (more details in finer logs)",
+            				arrayName, e.getMessage()), e);
         } catch (AcsJException e) {
-            e.printStackTrace();
-            // throw an exception...
+            ErrorHandling.warning(logger,
+            		String.format("Error linking to services for %s - %s (more details in finer logs)",
+            				arrayName, e.getMessage()), e);
         }
         
-        LinkedReorderingBlockingQueue<SchedBlockItem> q =
-            new LinkedReorderingBlockingQueue<SchedBlockItem>();
+        LinkedReorderingBlockingQueue<SchedBlockItem> q;
+        if (manual) {
+        	q = new LinkedReorderingBlockingQueue<SchedBlockItem>(1);
+        } else {
+        	q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
+        }
+            
         queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
         
         executor = new Executor(arrayName, queue);
+        executor.configureManual(manual);
+        executor.configureServices(services);
+        executor.configureSessionManager(
+        		new SessionManager(arrayName, containerServices, services));
         
         queueNotifier = new SchedBlockQueueCallbackNotifier();
         executorNotifier = new ExecutorCallbackNotifier();
+        guiNotifier = new ArrayGUICallbackNotifier();
         
         queue.addObserver(queueNotifier);
         executor.addObserver(executorNotifier);
+        executor.addObserver(guiNotifier);
         
         serviceProvider.getControlEventReceiver().attach("alma.Control.ExecBlockStartedEvent", executor);
         serviceProvider.getControlEventReceiver().attach("alma.Control.ExecBlockEndedEvent", executor);
         serviceProvider.getControlEventReceiver().attach("alma.offline.ASDMArchivedEvent", executor);
         serviceProvider.getControlEventReceiver().begin();
+        
+        if (manual) {
+	    executor.setFullAuto(true, "Master Scheduler", "array configuration");
+	    executor.start("Master Scheduler", "array configuration");
+        }
     }
 
     @Override
@@ -199,23 +243,23 @@ public class ArrayImpl implements ComponentLifecycle,
 	}
 
 	@Override
-	public void abortRunningSchedBlock() {
-	    executor.abortCurrentExecution();
+	public void start(String name, String role) {
+	    executor.start(name, role);
 	}
 
 	@Override
-	public void start() {
-	    executor.start();
+	public void stop(String name, String role) {
+	    executor.stop(name, role);
 	}
 
 	@Override
-	public void stop() {
-	    executor.stop();
+	public void stopRunningSchedBlock(String name, String role) {
+        executor.stopCurrentExecution(name, role);
 	}
 
 	@Override
-	public void stopRunningSchedBlock() {
-        executor.stopCurrentExecution();
+	public boolean hasRunningSchedBlock() {
+        return (executor.getCurrentExecution() != null);
 	}
 
 	@Override
@@ -249,14 +293,36 @@ public class ArrayImpl implements ComponentLifecycle,
     }
 
     @Override
-    public void monitorQueue(String monitorName, SchedBlockQueueCallback callback) {
+    public void addMonitorQueue(String monitorName, SchedBlockQueueCallback callback) {
         queueNotifier.registerMonitor(monitorName, callback);
     }
+    
+	@Override
+	public void removeMonitorQueue(String monitorName) {
+		queueNotifier.unregisterMonitor(monitorName);
+	}
 
     @Override
-    public void monitorExecution(String monitorName, SchedBlockExecutionCallback callback) {
+    public void addMonitorExecution(String monitorName, SchedBlockExecutionCallback callback) {
         executorNotifier.registerMonitor(monitorName, callback);
     }
+
+	@Override
+	public void removeMonitorExecution(String monitorName) {
+		executorNotifier.unregisterMonitor(monitorName);
+		
+	}
+
+    @Override
+	public void addMonitorGUI(String monitorName, ArrayGUICallback callback) {
+        guiNotifier.registerMonitor(monitorName, callback);
+    }
+
+	@Override
+	public void removeMonitorGUI(String monitorName) {
+		guiNotifier.unregisterMonitor(monitorName);
+		
+	}
 
     @Override
     public SchedBlockQueueItem[] getExecutedQueue() {
@@ -274,4 +340,41 @@ public class ArrayImpl implements ComponentLifecycle,
         // TODO DSA...
         return null;
     }
+
+	@Override
+	public boolean isFullAuto() {
+		return executor.isFullAuto();
+	}
+
+	@Override
+	public boolean isManual() {
+		return executor.isManual();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return executor.isRunning();
+	}
+
+	@Override
+	public void setFullAuto(boolean on, String name, String role) {
+		executor.setFullAuto(on, name, role);
+	}
+	
+	@Override
+	public void destroyArray() {
+		executor.destroyArray();
+	}
+
+    /**
+     * Method called by control when the user calls beginExecution from the CCL.
+     * This method gives control the the SB id and the session id to use through
+     * out the execution. It is only needed in manual mode when the user wants
+     * an asdm produced. There will be a 'dummy' project with sb in the archive
+     * to attach these asdms to its project status.
+     */
+   public IDLEntityRef startManualModeSession(String sbid)
+       throws InvalidOperationEx {
+	   return executor.startManualModeSession(sbid);
+   }
 }
