@@ -5,6 +5,7 @@ package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +31,6 @@ import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.persistence.domain.StateEntityType;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemOperations;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.acsFacades.ACSComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes;
@@ -282,7 +281,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 */
 	@Override
 	public void getObsProjectChanges(
-    		final DateTime     since,
+    		final Date    since,
     		final List<String> newOrModifiedIds,
     		final List<String> deletedIds) throws DAOException {
         
@@ -337,7 +336,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 * @return
 	 */
 	private List<String> getProjectIdsForChangedSchedBlocks(
-			final DateTime since) {
+			final Date since) {
 		final List<String> result = new ArrayList<String>();
 		List<String> changedSBs;
 		try {
@@ -380,7 +379,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 * @return
 	 */
 	private List<String> getProjectIdsForChangedObsProjects(
-			final DateTime since) {
+			final Date since) {
 		final List<String> result = new ArrayList<String>();
 		List<String> changedOPs = null;
 		try {
@@ -409,7 +408,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 * @return
 	 */
 	private List<String> getProjectIdsForChangedSBStatuses(
-			final DateTime since) {
+			final Date since) {
 		final List<String> result = new ArrayList<String>();
 		final List<StateChangeData> changes = getStatusChanges(
 				StateEntityType.SBK,
@@ -457,7 +456,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 * @return
 	 */
 	private List<String> getProjectIdsForChangedOUSStatuses(
-			final DateTime since) {
+			final Date since) {
 		final List<String> result = new ArrayList<String>();
 		final List<StateChangeData> changes = getStatusChanges(
 				StateEntityType.OUT,
@@ -483,7 +482,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 *                          interest to the Scheduler.
 	 */
 	private void getProjectIdsForChangedProjectStatuses(
-			final DateTime    since,
+			final Date    since,
 			final Set<String> changedProjects,
 			final Set<String> deletedProjects) {
 		final List<StateChangeData> changes = getStatusChanges(
@@ -510,7 +509,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 */
 	private List<StateChangeData> getStatusChanges(
 			final StateEntityType type,
-			final DateTime        since) {
+			final Date       since) {
 		
 		final Map<String, StateChangeData> build =
 			new HashMap<String, StateChangeData>();
@@ -518,7 +517,7 @@ public abstract class AbstractXMLStoreProjectDao
 			new ArrayList<StateChangeData>();
 		
 		final IDLArrayTime start =
-			new IDLArrayTime(since.getMillisec());
+			new IDLArrayTime(since.getTime());
 		final IDLArrayTime end   =
 			new IDLArrayTime(System.currentTimeMillis());
 
@@ -565,10 +564,10 @@ public abstract class AbstractXMLStoreProjectDao
      * ACS Bookkeeping
      * ================================================================
      */
-	private static String getManagerLocation() throws SchedulingException {
+	private static String getManagerLocation() throws Exception{
 		final String result = System.getProperty("ACS.manager");
 		if (result == null) {
-			throw new SchedulingException("Java property 'ACS.manager' is not set. It must be set to the corbaloc of the ACS manager!");
+			throw new Exception("Java property 'ACS.manager' is not set. It must be set to the corbaloc of the ACS manager!");
 		}
 		return result;
 	}

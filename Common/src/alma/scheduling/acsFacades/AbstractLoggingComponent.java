@@ -25,31 +25,15 @@ package alma.scheduling.acsFacades;
 
 import java.util.logging.Logger;
 
-import alma.ACS.ComponentStates;
-import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
-import alma.asdmIDLTypes.IDLArrayTime;
-import alma.projectlifecycle.StateChangeData;
-import alma.projectlifecycle.StateSystemHelper;
-import alma.projectlifecycle.StateSystemOperations;
-import alma.scheduling.AlmaScheduling.facades.ComponentFactory;
-import alma.statearchiveexceptions.EntitySerializationFailedEx;
-import alma.statearchiveexceptions.InappropriateEntityTypeEx;
-import alma.statearchiveexceptions.NoSuchEntityEx;
-import alma.statearchiveexceptions.NullEntityIdEx;
-import alma.statearchiveexceptions.StateIOFailedEx;
-import alma.stateengineexceptions.NoSuchTransitionEx;
-import alma.stateengineexceptions.NotAuthorizedEx;
-import alma.stateengineexceptions.PostconditionFailedEx;
-import alma.stateengineexceptions.PreconditionFailedEx;
 import alma.xmlentity.XmlEntityStruct;
 
 
 /**
  * Superclass with common functions for Logging versions of components.
  *
- * @version $Id: AbstractLoggingComponent.java,v 1.1 2010/04/20 23:04:14 dclarke Exp $
+ * @version $Id: AbstractLoggingComponent.java,v 1.2 2011/01/31 19:17:02 javarias Exp $
  * @author David Clarke
  */
 public abstract class AbstractLoggingComponent {

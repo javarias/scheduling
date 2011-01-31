@@ -21,13 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ProjectIncrementalDao.java,v 1.3 2010/08/18 16:31:10 dclarke Exp $"
+ * "@(#) $Id: ProjectIncrementalDao.java,v 1.4 2011/01/31 19:17:02 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Date;
 import java.util.List;
 
-import alma.scheduling.Define.DateTime;
 import alma.scheduling.datamodel.DAOException;
 
 /**
@@ -53,7 +53,7 @@ public interface ProjectIncrementalDao extends ProjectDao {
      *                        not if individual projects fail).
      */
     void getObsProjectChanges(
-    		final DateTime     since,
+    		final Date     since,
     		final List<String> newOrModifiedIds,
     		final List<String> deletedIds) throws DAOException;
 }

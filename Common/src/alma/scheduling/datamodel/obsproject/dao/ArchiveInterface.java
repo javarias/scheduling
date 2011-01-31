@@ -6,6 +6,7 @@ package alma.scheduling.datamodel.obsproject.dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +28,7 @@ import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
-import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
-import alma.lifecycle.stateengine.constants.Role;
-import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateSystemOperations;
-import alma.scheduling.AlmaScheduling.ProjectStatusQueue;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.SchedulingException;
 import alma.statearchiveexceptions.InappropriateEntityTypeEx;
 import alma.statearchiveexceptions.NoSuchEntityEx;
 import alma.statearchiveexceptions.NullEntityIdEx;
@@ -967,7 +962,7 @@ public class ArchiveInterface  {
 	 * @return
 	 * @throws ArchiveInternalError 
 	 */
-	public List<String> getIdsOfChangedProjects(DateTime since)
+	public List<String> getIdsOfChangedProjects(Date since)
 												 throws UserException {
     	String[] ids = archive.queryRecent(projectSchema,
     										since.toString()+".000");
@@ -981,7 +976,7 @@ public class ArchiveInterface  {
 	 * @param since
 	 * @return
 	 */
-	public List<String> getIdsOfChangedSBs(DateTime since)
+	public List<String> getIdsOfChangedSBs(Date since)
 												 throws UserException {
     	String[] ids = archive.queryRecent(sbSchema,
     									   since.toString()+".000");

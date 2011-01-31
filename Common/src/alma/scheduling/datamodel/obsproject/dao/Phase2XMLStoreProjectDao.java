@@ -4,6 +4,7 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,8 +21,6 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
@@ -408,7 +407,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	}
 
     @Override
-    public void getObsProjectChanges(DateTime since,
+    public void getObsProjectChanges(Date since,
             List<String> newOrModifiedIds, List<String> deletedIds)
             throws DAOException {
         convertProjects(

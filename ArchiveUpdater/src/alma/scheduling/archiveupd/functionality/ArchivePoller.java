@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.3 2011/01/28 00:35:30 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.4 2011/01/31 19:17:02 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -30,8 +30,7 @@ import java.util.logging.Logger;
 
 import alma.scheduling.ArchiveImportEvent;
 import alma.scheduling.ArchiveUpdaterCallback;
-import alma.scheduling.Define.DateTime;
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.Executive;
@@ -52,7 +51,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.3 2011/01/28 00:35:30 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.4 2011/01/31 19:17:02 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -69,7 +68,7 @@ public class ArchivePoller implements Observer{
 	private Logger logger;
 	private ErrorHandling handler;
 	
-	private DateTime lastUpdate;
+	private Date lastUpdate;
 	
 	private ConfigurationDao configDao;
 	
@@ -314,7 +313,7 @@ public class ArchivePoller implements Observer{
      * @param now - timestamp to use for any created objects.
      * @throws SchedulingException
      */
-    private void incrementalPollArchive(DateTime since) {
+    private void incrementalPollArchive(Date since) {
     	logger.info("Starting incremental poll of the archive");
     	
     	Phase2XMLStoreProjectDao inDao;
@@ -428,14 +427,14 @@ public class ArchivePoller implements Observer{
 			logger.fine("Last time saved in the Scheduling Working DB is: " + savedTime);
 			if(savedTime != null){
 				logger.fine("Restoring saved time as last update and doing an incremental polling after that");
-				lastUpdate = new DateTime(savedTime.getTime());
+				lastUpdate = new Date(savedTime.getTime());
 				donePollArchive = true;
 			}
 			else
 				logger.fine("Ignoring saved time in Scheduling Working DB because it is null");
 		}
 		logger.fine("Polling archive for runnable projects");
-		final DateTime now = new DateTime(System.currentTimeMillis());
+		final Date now = new Date();
         
         if (!donePollArchive) {
     		initialPollArchive();
@@ -445,7 +444,7 @@ public class ArchivePoller implements Observer{
     	}
 
         lastUpdate = now;
-        final Date toSave =  new Date(lastUpdate.getMillisec());
+        final Date toSave =  now;
         configDao.updateConfig(toSave);
         
 //        logNumbers(String.format("at end of pollArchive(%s)", prjuid));

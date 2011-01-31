@@ -25,11 +25,6 @@
  */
 package alma.scheduling.acsFacades;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.StringWriter;
-import java.util.logging.Logger;
-
 import alma.ACS.ComponentStates;
 import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -38,7 +33,6 @@ import alma.asdmIDLTypes.IDLArrayTime;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemHelper;
 import alma.projectlifecycle.StateSystemOperations;
-import alma.scheduling.AlmaScheduling.facades.ComponentFactory;
 import alma.statearchiveexceptions.EntitySerializationFailedEx;
 import alma.statearchiveexceptions.InappropriateEntityTypeEx;
 import alma.statearchiveexceptions.NoSuchEntityEx;
@@ -54,7 +48,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: BarfingStateSystem.java,v 1.1 2010/04/20 23:04:14 dclarke Exp $
+ * @version $Id: BarfingStateSystem.java,v 1.2 2011/01/31 19:17:02 javarias Exp $
  * @author David Clarke
  */
 public class BarfingStateSystem implements StateSystemOperations {

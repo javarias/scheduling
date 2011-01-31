@@ -45,7 +45,7 @@ import alma.lifecycle.persistence.StateArchive;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.offline.ASDMArchivedEvent;
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
 import alma.scheduling.array.executor.services.ControlArray;
 import alma.scheduling.array.executor.services.EventPublisher;
 import alma.scheduling.array.executor.services.Pipeline;

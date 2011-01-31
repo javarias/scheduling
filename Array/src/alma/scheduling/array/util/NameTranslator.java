@@ -18,14 +18,15 @@
 
 package alma.scheduling.array.util;
 
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
+
 
 /**
  * Utilities for handling the translation of names from one arena to
  * another, e.g. component names to and from array names.
  * 
  * @author dclarke
- * $Id: NameTranslator.java,v 1.4 2011/01/28 00:35:31 javarias Exp $
+ * $Id: NameTranslator.java,v 1.5 2011/01/31 19:17:02 javarias Exp $
  */
 public abstract class NameTranslator {
 	/*

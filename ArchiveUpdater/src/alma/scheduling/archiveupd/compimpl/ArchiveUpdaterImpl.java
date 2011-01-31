@@ -26,7 +26,7 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.ArchiveUpdaterOperations;
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
 import alma.scheduling.archiveupd.functionality.ArchivePoller;
 import alma.scheduling.utils.ErrorHandling;
 

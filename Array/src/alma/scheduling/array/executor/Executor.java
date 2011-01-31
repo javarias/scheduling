@@ -18,6 +18,7 @@
 package alma.scheduling.array.executor;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
@@ -25,22 +26,17 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
-import java.util.Formatter;
 
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.asdmIDLTypes.IDLEntityRef;
-import alma.hla.runtime.asdm.types.EntityRef;
 import alma.offline.ASDMArchivedEvent;
 import alma.scheduling.ArrayGUIOperation;
-import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
-import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.utils.LoggerFactory;
 
 /**

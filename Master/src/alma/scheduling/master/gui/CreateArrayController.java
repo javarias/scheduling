@@ -40,7 +40,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayCreationInfo;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
 
 public class CreateArrayController extends SchedulingPanelController {
 

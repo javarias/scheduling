@@ -40,7 +40,6 @@ import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockScore;
-import alma.scheduling.Define.SchedulingException;
 import alma.scheduling.array.executor.ExecutionContext;
 import alma.scheduling.array.executor.Executor;
 import alma.scheduling.array.executor.ExecutorCallbackNotifier;
