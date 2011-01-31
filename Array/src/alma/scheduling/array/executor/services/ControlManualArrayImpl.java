@@ -17,8 +17,8 @@
  */
 package alma.scheduling.array.executor.services;
 
-import alma.Control.ManualArray;
-import alma.Control.ManualArrayHelper;
+import alma.Control.ManualArrayCommand;
+import alma.Control.ManualArrayCommandHelper;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.asdmIDLTypes.IDLEntityRef;
@@ -35,17 +35,17 @@ public class ControlManualArrayImpl implements ControlArray {
     
     private final String arrayName;
     
-    private final ManualArray array;
+    private final ManualArrayCommand array;
     private String lastSB;
     
-    public ControlManualArrayImpl(ContainerServices container, String arrayName)
-        throws AcsJContainerServicesEx, TranslationException {
-        this.container = container;
-        this.arrayName = arrayName;
-        this.array = ManualArrayHelper
-            .narrow(container.getComponent(NameTranslator.arrayToControlComponentName(arrayName)));
-	this.lastSB = "";
-    }
+	public ControlManualArrayImpl(ContainerServices container, String arrayName)
+			throws AcsJContainerServicesEx, TranslationException {
+		this.container = container;
+		this.arrayName = arrayName;
+		array = ManualArrayCommandHelper.narrow(
+				container.getComponentNonSticky(NameTranslator.arrayToControlComponentName(arrayName)));
+		this.lastSB = "";
+	}
 
     private String hashes(int n) {
 	final StringBuilder s = new StringBuilder();
@@ -93,7 +93,11 @@ public class ControlManualArrayImpl implements ControlArray {
     @Override
     public void cleanUp() {
 	shout(String.format("%s.cleanUp()", this.getClass().getSimpleName()));
-        container.releaseComponent(array.getName());
+        try {
+			container.releaseComponent(NameTranslator.arrayToControlComponentName(arrayName));
+		} catch (TranslationException e) {
+			e.printStackTrace();
+		}
     }
     
 }
