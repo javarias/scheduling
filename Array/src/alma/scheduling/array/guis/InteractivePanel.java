@@ -61,7 +61,6 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableRowSorter;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-import alma.SchedulingArrayExceptions.NoRunningSchedBlockEx;
 import alma.acs.gui.standards.StandardIcons;
 import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.SchedBlockQueueItem;
@@ -79,7 +78,7 @@ import alma.scheduling.swingx.CallbackFilter;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.9 2011/01/28 00:35:31 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.10 2011/02/04 17:19:36 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -183,6 +182,19 @@ public class InteractivePanel extends AbstractArrayPanel
 	/**
 	 * Basic constructor.
 	 */
+	public InteractivePanel() {
+		super();
+		System.out.format("%s (InteractivePanel).InteractivePanel()%n",
+				this.getClass().getSimpleName() );
+		createWidgets();
+		addWidgets();
+		showConnectivity();
+		showProjectCounts();
+	}
+	
+	/**
+	 * Basic constructor.
+	 */
 	public InteractivePanel(String arrayName) {
 		super(arrayName);
 		System.out.format("%s (InteractivePanel).InteractivePanel(%s)%n",
@@ -240,6 +252,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbModel = new SchedBlockTableModel();
 		sbTable = new JTable(sbModel);
 		sbSorter = new TableRowSorter<SchedBlockTableModel>(sbModel);
+		sbModel.addSpecificComparators(sbSorter);
 		sbTable.setRowSorter(sbSorter);
 		sbFilters = new FilterSet(sbModel);
 		sbFilterSummary = new JLabel();
@@ -1283,7 +1296,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		super.setArray(array);
 		System.out.format("%s (InteractivePanel).setArray(ArrayAccessor @ %h)%n",
 				this.getClass().getSimpleName(),
-				arrayName.hashCode());
+				array.hashCode());
 	
 		PropertyChangeListener guiListener = new PropertyChangeListener() {
 			@Override

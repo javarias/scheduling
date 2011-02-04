@@ -69,7 +69,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.3 2011/02/04 17:19:36 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -774,7 +774,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		super.setArray(array);
 		System.out.format("%s (CurrentActivityPanel).setArray(ArrayAccessor @ %h)%n",
 				this.getClass().getSimpleName(),
-				arrayName.hashCode());
+				array.hashCode());
 		PropertyChangeListener queueListener = new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {

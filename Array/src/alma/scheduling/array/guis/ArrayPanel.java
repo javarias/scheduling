@@ -37,7 +37,16 @@ public class ArrayPanel extends AbstractArrayPanel {
 		initialize();
 	}
 	
-	private void initialize(){
+	public ArrayPanel() {
+		super();
+		System.out.format("%s (ArrayPanel).ArrayPanel()%n",
+				this.getClass().getSimpleName());
+		this.arrayMode = "";
+		this.setLayout(new BorderLayout());
+		initialize();
+	}
+	
+	private void initializeWithArrayName() {
 		cup = new CurrentActivityPanel(this.arrayName);
 		ip = new InteractivePanel(this.arrayName);
 		
@@ -55,6 +64,27 @@ public class ArrayPanel extends AbstractArrayPanel {
 		
 		title = new JLabel();
 		setTitle(arrayName, "Initializing");
+		this.add(title, BorderLayout.NORTH);
+	}
+	
+	private void initialize(){
+		cup = new CurrentActivityPanel();
+		ip = new InteractivePanel();
+		
+		JPanel left = new JPanel(new BorderLayout());
+		JPanel right = new JPanel(new BorderLayout());
+		right.add(cup, BorderLayout.CENTER);
+		left.add(ip, BorderLayout.CENTER);
+		
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(450);
+		cup.setSize(400, 800);
+		ip.setSize(400, 800);
+		this.add(splitPane, BorderLayout.CENTER);
+		
+		title = new JLabel();
+		setTitle("", "Initializing");
 		this.add(title, BorderLayout.NORTH);
 	}
 	

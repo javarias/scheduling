@@ -34,7 +34,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.6 2011/01/28 00:35:31 javarias Exp $
+ * $Id: AbstractArrayPanel.java,v 1.7 2011/02/04 17:19:36 javarias Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -238,7 +238,7 @@ public abstract class AbstractArrayPanel extends JPanel
 		this.manualMode = array.isManual();
 		System.out.format("%s (AbstractArrayPanel).setArray(ArrayAccessor @ %h)%n",
 				this.getClass().getSimpleName(),
-				arrayName.hashCode());
+				array.hashCode());
 	}
 	
 	protected void setModelAccessor(ModelAccessor models){

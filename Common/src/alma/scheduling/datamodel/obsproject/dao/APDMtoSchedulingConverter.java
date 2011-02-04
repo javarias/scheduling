@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.omg.CORBA.UserException;
 
 import alma.acs.entityutil.EntityException;
+import alma.entity.xmlbinding.obsproject.types.ObsUnitTStatusType;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.ExecStatusT;
@@ -733,7 +734,43 @@ public class APDMtoSchedulingConverter {
 					"%s in SchedBlock %s",
 					e.getMessage(), apdmSB.getSchedBlockEntity().getEntityId()));
 		}
-		
+		//Check if the SB has the right state
+		if (schedBlock.getCsv()){
+			if (! (apdmSB.getStatus().toString().contains(ObsUnitTStatusType.CSVREADY.toString()) || 
+					apdmSB.getStatus().toString().contains(ObsUnitTStatusType.CSVRUNNING.toString()))) {
+				logger.warning("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " is CSV, but the SB status is not CSV compatible: " + 
+						apdmSB.getStatus().toString());
+				ProjectImportEvent event = new ProjectImportEvent();
+				event.setTimestamp(new Date());
+				event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+				event.setEntityType("SchedBlock");
+				event.setStatus(ImportStatus.STATUS_ERROR);
+				event.setDetails("SchedBlock is CSV, but SB status is not CSV compatible: " + apdmSB.getStatus().toString());
+				notifier.notifyEvent(event);
+				
+				ConversionException e = new ConversionException("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " is CSV, but the SB status is not CSV compatible: " + 
+						apdmSB.getStatus().toString());
+				throw e;
+			}
+		}
+		else {
+			if (! (apdmSB.getStatus().toString().contains(ObsUnitTStatusType.READY.toString()) || 
+					apdmSB.getStatus().toString().contains(ObsUnitTStatusType.RUNNING.toString()))){
+				logger.warning("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " has a not compatible SB status: " + 
+						apdmSB.getStatus().toString());
+				ProjectImportEvent event = new ProjectImportEvent();
+				event.setTimestamp(new Date());
+				event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
+				event.setEntityType("SchedBlock");
+				event.setStatus(ImportStatus.STATUS_ERROR);
+				event.setDetails("SB Status is not compatible: " + apdmSB.getStatus().toString());
+				notifier.notifyEvent(event);
+				
+				ConversionException e = new ConversionException("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " has a not compatible SB status: " + 
+					apdmSB.getStatus().toString());
+				throw e;
+			}
+		}
 		// Return the result
 		return schedBlock;
 	}

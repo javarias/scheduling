@@ -132,117 +132,110 @@ public class ExecutionContext {
     			this.state));
     }
     
-    protected void setState(ExecutionState state) {
-    	//Just take care of the not manual arrays statuses
-        logger.info(String.format("%s.setState(): moving SB %s @ %d from %s to %s",
-				  this.getClass().getSimpleName(),
-				  schedBlockItem.getUid(),
-				  schedBlockItem.getTimestamp(),
-				  this.state,
-				  state));
-        if (state instanceof CompleteExecutionState) {
-	    // Nothing more to do here
-        } else if ((state instanceof RunningExecutionState) ||
-		   (state instanceof ManualRunningExecutionState)) {
-	    StatusTStateType fromStatus = null;
-	    StatusTStateType toStatus = null;
-	    
-	    if (getSchedBlock().getCsv()) {
-		fromStatus = StatusTStateType.CSVREADY;
-		toStatus = StatusTStateType.CSVRUNNING;
-	    } else {
-		fromStatus = StatusTStateType.READY;
-		toStatus = StatusTStateType.RUNNING;
-	    }
-	    try {
-		doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus, toStatus);
-	    } catch (Exception e) {
-		ErrorHandling.warning(logger,
-				      String.format("Error marking SchedBlock %s @ %s as %s - %s",
-						    schedBlockItem.getUid(),
-						    schedBlockItem.getTimestamp(),
-						    toStatus.toString(),
-						    e.getMessage()),
-				      e);
-		this.setState(new FailedExecutionState(this));
-		return;
-	    }
-        } else if (state instanceof ArchivingExecutionState) {
-	    /*
-	     * We only get here when we get an ExecBlockEnded event
-	     * with a successful status. Do the book-keeping here and
-	     * also move the SB to the correct lifecycle state after
-	     * RUNNING (which will be READY, CSVREADY or SUSPENDED).
-	     */
-	    try {
-		ArchivingExecutionState aes = (ArchivingExecutionState) state;
-		final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
-		addExecStatus(sbStatus, aes.getFinalState());
-		accountExecution(sbStatus, execTime);
-	    } catch (Exception e) {
-		ErrorHandling.warning(logger,
-				      String.format("Error post-processing completed SchedBlock %s @ %s - %s",
-						    schedBlockItem.getUid(),
-						    schedBlockItem.getTimestamp(),
-						    e.getMessage()),
-				      e);
-		this.setState(new FailedExecutionState(this));
-		return;
-	    } //The state transition is done inside this method
-        } else if (state instanceof ManualCompleteExecutionState) {
-	    StatusTStateType fromStatus = null;
-	    StatusTStateType toStatus = null;
-	    
-	    if (getSchedBlock().getCsv()) {
-		fromStatus = StatusTStateType.CSVRUNNING;
-		toStatus = StatusTStateType.CSVREADY;
-	    } else {
-		fromStatus = StatusTStateType.RUNNING;
-		toStatus = StatusTStateType.READY;
-	    }
-	    try {
-		doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus, toStatus);
-	    } catch (Exception e) {
-		ErrorHandling.warning(logger,
-				      String.format("Error marking SchedBlock %s @ %s as %s - %s",
-						    schedBlockItem.getUid(),
-						    schedBlockItem.getTimestamp(),
-						    toStatus.toString(),
-						    e.getMessage()),
-				      e);
-		this.setState(new FailedExecutionState(this));
-		return;
-	    }
-	    
-	    // this is a manual array, so requeue the just-completed SB for
-	    // running again, unless the processing has been stopped.
-	    if (executor.isRunning()) {
-		final SchedBlockItem again = new SchedBlockItem(schedBlockItem.getUid(),
-								System.nanoTime());
-		executor.getQueue().offer(again);
-	    }
-									  
-        } else if (state instanceof FailedExecutionState) {
-	    try {
-		final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
-		addExecStatus(sbStatus, StatusTStateType.BROKEN);
-		accountFailure(sbStatus);
-	    } catch (Exception e) {
-		ErrorHandling.warning(logger,
-				      String.format("Error post-processing failed SchedBlock %s @ %s - %s",
-						    schedBlockItem.getUid(),
-						    schedBlockItem.getTimestamp(),
-						    e.getMessage()),
-				      e);
-		// this.setState(new FailedExecutionState(this));
-		return;
-	    } // The state transition is done inside this method
-        }
-        
-        this.executor.notify(new ExecutionStateChange(schedBlockItem,
-                state.toString()));
-        this.state = state;
-    }
+	protected void setState(ExecutionState state) {
+		// Just take care of the not manual arrays statuses
+		logger.info(String.format(
+				"%s.setState(): moving SB %s @ %d from %s to %s", this
+						.getClass().getSimpleName(), schedBlockItem.getUid(),
+				schedBlockItem.getTimestamp(), this.state, state));
+		if (state instanceof CompleteExecutionState) {
+			// Nothing more to do here
+		} else if ((state instanceof RunningExecutionState)
+				|| (state instanceof ManualRunningExecutionState)) {
+			StatusTStateType fromStatus = null;
+			StatusTStateType toStatus = null;
+
+			if (getSchedBlock().getCsv()) {
+				fromStatus = StatusTStateType.CSVREADY;
+				toStatus = StatusTStateType.CSVRUNNING;
+			} else {
+				fromStatus = StatusTStateType.READY;
+				toStatus = StatusTStateType.RUNNING;
+			}
+			try {
+				doStateArchiveTransition(getSchedBlock().getStatusEntity(),
+						fromStatus, toStatus);
+			} catch (Exception e) {
+				ErrorHandling.warning(logger, String.format(
+						"Error marking SchedBlock %s @ %s as %s - %s",
+						schedBlockItem.getUid(), schedBlockItem.getTimestamp(),
+						toStatus.toString(), e.getMessage()), e);
+				this.setState(new FailedExecutionState(this));
+				return;
+			}
+		} else if (state instanceof ArchivingExecutionState) {
+			/*
+			 * We only get here when we get an ExecBlockEnded event with a
+			 * successful status. Do the book-keeping here and also move the SB
+			 * to the correct lifecycle state after RUNNING (which will be
+			 * READY, CSVREADY or SUSPENDED).
+			 */
+			try {
+				ArchivingExecutionState aes = (ArchivingExecutionState) state;
+				final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
+				addExecStatus(sbStatus, aes.getFinalState());
+				accountExecution(sbStatus, execTime);
+			} catch (Exception e) {
+				ErrorHandling
+						.warning(
+								logger,
+								String.format(
+										"Error post-processing completed SchedBlock %s @ %s - %s",
+										schedBlockItem.getUid(),
+										schedBlockItem.getTimestamp(),
+										e.getMessage()), e);
+				this.setState(new FailedExecutionState(this));
+				return;
+			} // The state transition is done inside this method
+		} else if (state instanceof ManualCompleteExecutionState) {
+			StatusTStateType fromStatus = null;
+			StatusTStateType toStatus = null;
+
+			if (getSchedBlock().getCsv()) {
+				fromStatus = StatusTStateType.CSVRUNNING;
+				toStatus = StatusTStateType.CSVREADY;
+			} else {
+				fromStatus = StatusTStateType.RUNNING;
+				toStatus = StatusTStateType.READY;
+			}
+			try {
+				doStateArchiveTransition(getSchedBlock().getStatusEntity(),
+						fromStatus, toStatus);
+			} catch (Exception e) {
+				ErrorHandling.warning(logger, String.format(
+						"Error marking SchedBlock %s @ %s as %s - %s",
+						schedBlockItem.getUid(), schedBlockItem.getTimestamp(),
+						toStatus.toString(), e.getMessage()), e);
+				this.setState(new FailedExecutionState(this));
+				return;
+			}
+
+			// this is a manual array, so requeue the just-completed SB for
+			// running again, unless the processing has been stopped.
+			if (executor.isRunning()) {
+				final SchedBlockItem again = new SchedBlockItem(
+						schedBlockItem.getUid(), System.nanoTime());
+				executor.getQueue().offer(again);
+			}
+
+		} else if (state instanceof FailedExecutionState) {
+			try {
+				final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
+				addExecStatus(sbStatus, StatusTStateType.BROKEN);
+				accountFailure(sbStatus);
+			} catch (Exception e) {
+				ErrorHandling.warning(logger, String.format(
+						"Error post-processing failed SchedBlock %s @ %s - %s",
+						schedBlockItem.getUid(), schedBlockItem.getTimestamp(),
+						e.getMessage()), e);
+				// this.setState(new FailedExecutionState(this));
+			} // The state transition is done inside this method
+		}
+
+		this.executor.notify(new ExecutionStateChange(schedBlockItem, state
+				.toString()));
+		this.state = state;
+	}
     
     public SchedBlock getSchedBlock() {
         return schedBlock;
@@ -762,111 +755,103 @@ public class ExecutionContext {
 
     
     
-    public void accountExecution(SBStatus sbStatus, long secs)
-    			throws AcsJNullEntityIdEx,
-    			       AcsJNoSuchEntityEx,
-    			       AcsJInappropriateEntityTypeEx,
-    			       AcsJStateIOFailedEx,
-    			       AcsJNoSuchTransitionEx,
-    			       AcsJNotAuthorizedEx,
-    			       AcsJPreconditionFailedEx,
-    			       AcsJPostconditionFailedEx
-    			       , AcsJIllegalArgumentEx {
-    	double time = schedBlock.getSchedBlockControl().getAccumulatedExecutionTime() + (secs / 3600.0);
-    	schedBlock.getSchedBlockControl().setAccumulatedExecutionTime(time);
-    	schedBlock.getSchedBlockControl().setExecutionCount(schedBlock.getSchedBlockControl().getExecutionCount() + 1);
-    	ObsProject prj = getModel().getObsProjectDao().findByEntityId(schedBlock.getProjectUid());
-    	prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
-    	
-    	//Avoid saves to the SWDB, due synch issues
-//    	model.getObsProjectDao().saveOrUpdate(prj);
-//		model.getSchedBlockDao().saveOrUpdate(schedBlock);
-		
+	public void accountExecution(SBStatus sbStatus, long secs)
+			throws AcsJNullEntityIdEx, AcsJNoSuchEntityEx,
+			AcsJInappropriateEntityTypeEx, AcsJStateIOFailedEx,
+			AcsJNoSuchTransitionEx, AcsJNotAuthorizedEx,
+			AcsJPreconditionFailedEx, AcsJPostconditionFailedEx,
+			AcsJIllegalArgumentEx {
+		double time = schedBlock.getSchedBlockControl()
+				.getAccumulatedExecutionTime() + (secs / 3600.0);
+		schedBlock.getSchedBlockControl().setAccumulatedExecutionTime(time);
+		schedBlock.getSchedBlockControl().setExecutionCount(
+				schedBlock.getSchedBlockControl().getExecutionCount() + 1);
+		ObsProject prj = getModel().getObsProjectDao().findByEntityId(
+				schedBlock.getProjectUid());
+		prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
+
+		// Avoid saves to the SWDB, due synch issues
+		// model.getObsProjectDao().saveOrUpdate(prj);
+		// model.getSchedBlockDao().saveOrUpdate(schedBlock);
+
 		// Update State Archive Statuses
 		SchedBlock sb = getSchedBlock();
 		SBStatusEntityT sbId = sb.getStatusEntity();
 
-    	updateForSuccess(sbStatus,
-		                 dateFormat.format(new Date()),
-		                 (int) secs,
-		                 sb.getCsv());
-    	
-	// Do the state transition
-	StatusTStateType fromStatus = null;
-	StatusTStateType toStatus = null;
+		updateForSuccess(sbStatus, dateFormat.format(new Date()), (int) secs,
+				sb.getCsv());
 
-	if (sb.getCsv()) {
-	    fromStatus = StatusTStateType.CSVRUNNING;
-	    toStatus = StatusTStateType.CSVREADY;
-	} else {
-	    fromStatus = StatusTStateType.RUNNING;
-	    if (executor.fullAuto()) {
-		if (getSchedBlock().needsMoreExecutions(sbStatus)) {
-		    toStatus = StatusTStateType.READY;
+		// Do the state transition
+		StatusTStateType fromStatus = null;
+		StatusTStateType toStatus = null;
+
+		if (sb.getCsv()) {
+			fromStatus = StatusTStateType.CSVRUNNING;
+			toStatus = StatusTStateType.CSVREADY;
 		} else {
-		    toStatus = StatusTStateType.SUSPENDED;
+			fromStatus = StatusTStateType.RUNNING;
+			if (executor.fullAuto()) {
+				if (getSchedBlock().needsMoreExecutions(sbStatus)) {
+					toStatus = StatusTStateType.READY;
+				} else {
+					toStatus = StatusTStateType.SUSPENDED;
+				}
+			} else {
+				toStatus = StatusTStateType.SUSPENDED;
+			}
 		}
-	    } else {
-		toStatus = StatusTStateType.SUSPENDED;
-	    }
+		doStateArchiveTransition(sbId, fromStatus, toStatus);
 	}
-	doStateArchiveTransition(sbId, fromStatus, toStatus);
-    }
-    
-    public void accountFailure(SBStatus sbStatus)
-    							 throws AcsJNoSuchTransitionEx,
-                                        AcsJNotAuthorizedEx,
-                                        AcsJPreconditionFailedEx,
-                                        AcsJPostconditionFailedEx,
-                                        AcsJIllegalArgumentEx,
-                                        AcsJNoSuchEntityEx,
-                                        AcsJNullEntityIdEx,
-                                        AcsJInappropriateEntityTypeEx {
-//    	if (schedBlock.getParent().getFailuresCount() != null)	
-//    		schedBlock.getParent().setFailuresCount(schedBlock.getParent().getFailuresCount());
-//    	else
-//    		schedBlock.getParent().setFailuresCount(1);
-    	
-//		OUSStatusEntityT ousId = getSchedBlock().getParent().getStatusEntity();
-//		OUSStatus ousS;
-		
-		// Update State Archive Statuses
-//			ousS = getModel().getStateArchive().getOUSStatus(ousId);
-//			ousS.setNumberSBsFailed(ousS.getNumberSBsFailed() + 1);
-//			getModel().getStateArchive().update(ousS);
-			
-    	updateForFailure(sbStatus,
-    			         dateFormat.format(new Date()));
-    	StatusTStateType fromStatus = null;
-    	StatusTStateType toStatus = null;
-	
-    	if (getSchedBlock().getCsv()) {
-	    fromStatus = StatusTStateType.CSVRUNNING;
-	    toStatus = StatusTStateType.CSVREADY;
-    	} else {
-	    fromStatus = StatusTStateType.RUNNING;
-	    toStatus = StatusTStateType.SUSPENDED;
-    	}
-    	doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus, toStatus);
-    }
 
-    private void doStateArchiveTransition(SBStatusEntityT  sbStatusId,
-					  StatusTStateType fromStatus,
-					  StatusTStateType toStatus)
-    		throws AcsJNoSuchTransitionEx,
-		       AcsJNotAuthorizedEx,
-		       AcsJPreconditionFailedEx,
-		       AcsJPostconditionFailedEx,
-		       AcsJIllegalArgumentEx,
-		       AcsJNoSuchEntityEx {
-    	
-	final String subsystem = Subsystem.SCHEDULING;
-	final String role = Role.AOD;
-	
-	logger.info("Doing transition of SBStatusEntityT: " + sbStatusId.getEntityId() +  
-		    " from: " + fromStatus + " to: " + toStatus + ", Role: " + role);
-	getModel().getStateEngine().changeState(sbStatusId, toStatus, subsystem, role);
-    }
+	public void accountFailure(SBStatus sbStatus)
+			throws AcsJNoSuchTransitionEx, AcsJNotAuthorizedEx,
+			AcsJPreconditionFailedEx, AcsJPostconditionFailedEx,
+			AcsJIllegalArgumentEx, AcsJNoSuchEntityEx, AcsJNullEntityIdEx,
+			AcsJInappropriateEntityTypeEx {
+		// if (schedBlock.getParent().getFailuresCount() != null)
+		// schedBlock.getParent().setFailuresCount(schedBlock.getParent().getFailuresCount());
+		// else
+		// schedBlock.getParent().setFailuresCount(1);
+
+		// OUSStatusEntityT ousId =
+		// getSchedBlock().getParent().getStatusEntity();
+		// OUSStatus ousS;
+
+		// Update State Archive Statuses
+		// ousS = getModel().getStateArchive().getOUSStatus(ousId);
+		// ousS.setNumberSBsFailed(ousS.getNumberSBsFailed() + 1);
+		// getModel().getStateArchive().update(ousS);
+
+		updateForFailure(sbStatus, dateFormat.format(new Date()));
+		StatusTStateType fromStatus = null;
+		StatusTStateType toStatus = null;
+
+		if (getSchedBlock().getCsv()) {
+			fromStatus = StatusTStateType.CSVRUNNING;
+			toStatus = StatusTStateType.CSVREADY;
+		} else {
+			fromStatus = StatusTStateType.RUNNING;
+			toStatus = StatusTStateType.SUSPENDED;
+		}
+		doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus,
+				toStatus);
+	}
+
+	private void doStateArchiveTransition(SBStatusEntityT sbStatusId,
+			StatusTStateType fromStatus, StatusTStateType toStatus)
+			throws AcsJNoSuchTransitionEx, AcsJNotAuthorizedEx,
+			AcsJPreconditionFailedEx, AcsJPostconditionFailedEx,
+			AcsJIllegalArgumentEx, AcsJNoSuchEntityEx {
+
+		final String subsystem = Subsystem.SCHEDULING;
+		final String role = Role.AOD;
+
+		logger.info("Doing transition of SBStatusEntityT: "
+				+ sbStatusId.getEntityId() + " from: " + fromStatus + " to: "
+				+ toStatus + ", Role: " + role);
+		getModel().getStateEngine().changeState(sbStatusId, toStatus,
+				subsystem, role);
+	}
 
     /**
      * @return
