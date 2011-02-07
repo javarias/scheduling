@@ -22,9 +22,9 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 
-public class DataLinker implements DataLoader {
+public class DataLinkerLocal implements DataLoader {
 
-	private static Logger logger = LoggerFactory.getLogger(DataLinker.class);
+    private static Logger logger = LoggerFactory.getLogger(DataLinkerLocal.class);
 	
     private SchedBlockDao sbDao;
     private ExecutiveDAO execDao;
@@ -93,12 +93,8 @@ public class DataLinker implements DataLoader {
         
         List<SchedBlock>sbs = sbDao.findAll();
         for (SchedBlock sb : sbs) {
-//            if (sb.getPiName() == null) {
-//              System.out.println("sb.getPiName() = " + sb.getPiName());
-                PI pi = execDao.getPIFromEmail(sb.getPiName());
-                sb.setExecutive(pi.getPIMembership().iterator().next()
-                        .getExecutive());
-//            }
+            PI pi = execDao.getPIFromEmail(sb.getPiName());
+            sb.setExecutive(pi.getPIMembership().iterator().next().getExecutive());
             ObsProject p = obsPrjDao.getObsProject(sb);
             sb.setScienceScore(p.getScienceScore());
             sb.setLetterGrade(p.getLetterGrade());
