@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.3 2011/01/28 00:35:37 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.4 2011/02/07 17:44:06 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -112,13 +112,13 @@ CDB_SCHEMAS =
 #
 # Generate ACS Error System classes
 #
-ACSERRDEF := SchedulingMasterExceptions
+ACSERRDEF := 
 
 # 
 # IDL Files and flags
 # 
 # IDL_FILES := SchedulingMaster SchedulingInterfaces
-IDL_FILES := SchedulingMaster
+IDL_FILES := 
 TAO_IDLFLAGS =
 USER_IDL =
 #

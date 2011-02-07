@@ -1,8 +1,0 @@
-#ifdef _SCHEDULING_INTERFACES_IDL_
-#define _SCHEDULING_INTERFACES_IDL_
-
-#include <SchedulingArchiveUpdater.idl>
-#include <SchedulingArray.idl>
-#include <SchedulingMaster.idl>
-
-#endif
