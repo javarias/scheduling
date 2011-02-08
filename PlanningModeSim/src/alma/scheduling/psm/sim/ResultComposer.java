@@ -148,6 +148,7 @@ public class ResultComposer {
 		tmpAl.add(sb.getSchedBlockControl().getAchievedSensitivity() );
 		tmpAl.add(executionTime );
 		entry.put( TimeHandler.now(), tmpAl );
+		System.out.println("SB Id: " + sb.getId() + " took " + executionTime + " seconds to execute.");
 	}
 	
     @Transactional(readOnly=true)
@@ -242,6 +243,10 @@ public class ResultComposer {
 				execTime += sbr.getExecutionTime();
 			}
 			op.setExecutionTime(execTime);
+
+			if( (op.getStatus() != ExecutionStatus.COMPLETE) && (execTime > 0) ){
+				op.setStatus( ExecutionStatus.INCOMPLETE );
+			}
 		}
 		
 		for( Array arr : results.getArray()){

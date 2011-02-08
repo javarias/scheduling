@@ -314,8 +314,8 @@ public class Simulator extends PsmContext {
                 sbEndEv.setArray(ev.getArray());
                 sbEndEv.setTime(d);
                 TimeHandler.getHandler().step( d );
-                rc.notifySchedBlockStop(sb, sb.getObsUnitControl().getEstimatedExecutionTime());
-                timesToCheck.add(sbEndEv);                
+                rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
+               timesToCheck.add(sbEndEv);                
             } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println(TimeUtil.getUTString(time)
@@ -368,8 +368,8 @@ public class Simulator extends PsmContext {
                 sbEndEv.setTime(d);
                 timesToCheck.add(sbEndEv);
                 TimeHandler.getHandler().step( d );
-                rc.notifySchedBlockStop(sb, sb.getObsUnitControl().getEstimatedExecutionTime());
-            } catch (NoSbSelectedException ex) {
+                rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
+           } catch (NoSbSelectedException ex) {
                 System.out.println("After selectors " + new Date());
                 System.out.println("DSA for array "
                         + ev.getArray().getId().toString()
@@ -424,8 +424,7 @@ public class Simulator extends PsmContext {
                 sbEndEv.setTime(d);
                 timesToCheck.add(sbEndEv);
                 TimeHandler.getHandler().step( d );
-                rc.notifySchedBlockStop(sb, sb.getObsUnitControl().getEstimatedExecutionTime());           
-                
+                rc.notifySchedBlockStop(sb, sb.getSchedBlockControl().getSbMaximumTime());
             } catch (NoSbSelectedException ex) {
                 System.out.println("DSA for array "
                         + ev.getArray().getId().toString()
