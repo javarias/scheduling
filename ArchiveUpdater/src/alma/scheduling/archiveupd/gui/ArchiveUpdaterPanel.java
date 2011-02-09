@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchiveUpdaterPanel.java,v 1.3 2011/02/08 23:55:10 javarias Exp $
+ * $Id: ArchiveUpdaterPanel.java,v 1.4 2011/02/09 00:03:33 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.gui;
@@ -61,11 +61,11 @@ public class ArchiveUpdaterPanel extends JPanel implements SubsystemPlugin {
 	@Override
 	public void start() throws Exception {
 		if(archiveUpdRef == null) {
-//			Object o = services.getDefaultComponent("IDL:alma/scheduling/ArchiveUpdater:1.0");
-//			ArchiveUpdater au = alma.scheduling.ArchiveUpdaterHelper.narrow(services.get);
-//			String name = au.name();
-//			services.releaseComponent(name);
-			archiveUpdRef = ArchiveUpdaterHelper.narrow(services.getComponentNonSticky("SCHEDULING_UPDATER"));
+			Object o = services.getDefaultComponent("IDL:alma/scheduling/ArchiveUpdater:1.0");
+			ArchiveUpdater au = alma.scheduling.ArchiveUpdaterHelper.narrow(o);
+			String name = au.name();
+			services.releaseComponent(name);
+			archiveUpdRef = ArchiveUpdaterHelper.narrow(services.getComponentNonSticky(name));
 		}
 		
 		initialize();
