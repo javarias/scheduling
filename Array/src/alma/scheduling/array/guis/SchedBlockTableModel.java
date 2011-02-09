@@ -38,7 +38,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.7 2011/02/04 17:19:36 javarias Exp $
+ * $Id: SchedBlockTableModel.java,v 1.8 2011/02/09 23:28:39 javarias Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -254,13 +254,13 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			try {
 				return Format.formatRA(getCoordinates(schedBlock).getRA());
 			} catch (NullPointerException npe) {
-				return -1.0;
+				return "n/a";
 			}
 		case Column_Dec:
 			try {
 				return Format.formatDec(getCoordinates(schedBlock).getDec());
 			} catch (NullPointerException npe) {
-				return -1.0;
+				return "n/a";
 			}
 		default:
 			logger.severe(String.format(

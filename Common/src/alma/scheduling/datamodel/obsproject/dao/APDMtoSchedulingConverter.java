@@ -657,14 +657,13 @@ public class APDMtoSchedulingConverter {
 			notifier.notifyEvent(event);
 			throw e;
 		}
+		final alma.entity.xmlbinding.sbstatus.SBStatus sbStatus;
 		try {
-			final alma.entity.xmlbinding.sbstatus.SBStatus sbStatus =
-				(phase == Phase.PHASE1)?
-						null:
-						archive.cachedSBStatus(apdmSB.getSBStatusRef().getEntityId());
+			sbStatus = (phase == Phase.PHASE1) ? null
+					: archive.cachedSBStatus(apdmSB.getSBStatusRef()
+							.getEntityId());
 			schedBlockControl = createSchedBlockControl(
-					apdmSB.getSchedBlockControl(),
-					sbStatus);
+					apdmSB.getSchedBlockControl(), sbStatus);
 			schedBlock.setSchedBlockControl(schedBlockControl);
 			if (sbStatus != null) {
 				schedBlock.setStatusEntity(sbStatus.getSBStatusEntity());
@@ -734,41 +733,62 @@ public class APDMtoSchedulingConverter {
 					"%s in SchedBlock %s",
 					e.getMessage(), apdmSB.getSchedBlockEntity().getEntityId()));
 		}
-		//Check if the SB has the right state
-		if (schedBlock.getCsv()){
-			if (! (apdmSB.getStatus().toString().contains(ObsUnitTStatusType.CSVREADY.toString()) || 
-					apdmSB.getStatus().toString().contains(ObsUnitTStatusType.CSVRUNNING.toString()))) {
-				logger.warning("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " is CSV, but the SB status is not CSV compatible: " + 
-						apdmSB.getStatus().toString());
-				ProjectImportEvent event = new ProjectImportEvent();
-				event.setTimestamp(new Date());
-				event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
-				event.setEntityType("SchedBlock");
-				event.setStatus(ImportStatus.STATUS_ERROR);
-				event.setDetails("SchedBlock is CSV, but SB status is not CSV compatible: " + apdmSB.getStatus().toString());
-				notifier.notifyEvent(event);
-				
-				ConversionException e = new ConversionException("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " is CSV, but the SB status is not CSV compatible: " + 
-						apdmSB.getStatus().toString());
-				throw e;
-			}
-		}
-		else {
-			if (! (apdmSB.getStatus().toString().contains(ObsUnitTStatusType.READY.toString()) || 
-					apdmSB.getStatus().toString().contains(ObsUnitTStatusType.RUNNING.toString()))){
-				logger.warning("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " has a not compatible SB status: " + 
-						apdmSB.getStatus().toString());
-				ProjectImportEvent event = new ProjectImportEvent();
-				event.setTimestamp(new Date());
-				event.setEntityId(apdmSB.getSchedBlockEntity().getEntityId());
-				event.setEntityType("SchedBlock");
-				event.setStatus(ImportStatus.STATUS_ERROR);
-				event.setDetails("SB Status is not compatible: " + apdmSB.getStatus().toString());
-				notifier.notifyEvent(event);
-				
-				ConversionException e = new ConversionException("SchedBlock " + apdmSB.getSchedBlockEntity().getEntityId() + " has a not compatible SB status: " + 
-					apdmSB.getStatus().toString());
-				throw e;
+		if (phase == Phase.PHASE2) {
+			// Check if the SB has the right state
+			if (schedBlock.getCsv()) {
+				if (!(sbStatus.getStatus().getState().toString()
+						.contains(ObsUnitTStatusType.CSVREADY.toString()) || 
+						sbStatus.getStatus().getState().toString()
+						.contains(ObsUnitTStatusType.CSVRUNNING.toString()))) {
+					logger.warning("SchedBlock "
+							+ apdmSB.getSchedBlockEntity().getEntityId()
+							+ " is CSV, but the SB status is not CSV compatible: "
+							+ apdmSB.getStatus().toString());
+					ProjectImportEvent event = new ProjectImportEvent();
+					event.setTimestamp(new Date());
+					event.setEntityId(apdmSB.getSchedBlockEntity()
+							.getEntityId());
+					event.setEntityType("SchedBlock");
+					event.setStatus(ImportStatus.STATUS_ERROR);
+					event.setDetails("SchedBlock is CSV, but SB status is not CSV compatible: "
+							+ apdmSB.getStatus().toString());
+					notifier.notifyEvent(event);
+
+					ConversionException e = new ConversionException(
+							"SchedBlock "
+									+ apdmSB.getSchedBlockEntity()
+											.getEntityId()
+									+ " is CSV, but the SB status is not CSV compatible: "
+									+ apdmSB.getStatus().toString());
+					throw e;
+				}
+			} else {
+				if (!(sbStatus.getStatus().getState().toString()
+						.contains(ObsUnitTStatusType.READY.toString()) || 
+						sbStatus.getStatus().getState().toString()
+						.contains(ObsUnitTStatusType.RUNNING.toString()))) {
+					logger.warning("SchedBlock "
+							+ apdmSB.getSchedBlockEntity().getEntityId()
+							+ " has a not compatible SB status: "
+							+ apdmSB.getStatus().toString());
+					ProjectImportEvent event = new ProjectImportEvent();
+					event.setTimestamp(new Date());
+					event.setEntityId(apdmSB.getSchedBlockEntity()
+							.getEntityId());
+					event.setEntityType("SchedBlock");
+					event.setStatus(ImportStatus.STATUS_ERROR);
+					event.setDetails("SB Status is not compatible: "
+							+ apdmSB.getStatus().toString());
+					notifier.notifyEvent(event);
+
+					ConversionException e = new ConversionException(
+							"SchedBlock "
+									+ apdmSB.getSchedBlockEntity()
+											.getEntityId()
+									+ " has a not compatible SB status: "
+									+ apdmSB.getStatus().toString());
+					throw e;
+				}
 			}
 		}
 		// Return the result
