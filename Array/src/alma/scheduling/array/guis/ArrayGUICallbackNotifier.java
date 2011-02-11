@@ -17,6 +17,7 @@
  */
 package alma.scheduling.array.guis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class ArrayGUICallbackNotifier implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+    	ArrayList<String> toBeUnregistered = new ArrayList<String>();
     	try {
     		ArrayGUINotification notification = (ArrayGUINotification) arg;
     		logger.info("received GUI change notification");
@@ -64,8 +66,11 @@ public class ArrayGUICallbackNotifier implements Observer {
                 }
                 catch (org.omg.CORBA.TRANSIENT ex){
                 	logger.info("Forcing Unregister of GUI Callback with key: " + key);
-                	unregisterMonitor(key);
+                	toBeUnregistered.add(key);
                 }
+    		}
+    		for (String key: toBeUnregistered) {
+    			unregisterMonitor(key);
     		}
     	} catch (ClassCastException e) {
     	}

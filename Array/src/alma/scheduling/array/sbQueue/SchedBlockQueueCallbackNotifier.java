@@ -17,6 +17,7 @@
  */
 package alma.scheduling.array.sbQueue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class SchedBlockQueueCallbackNotifier implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+    	ArrayList<String> toBeUnregistered = new ArrayList<String>();
     	try {
     		QueueNotification notification = (QueueNotification) arg;
     		logger.info(String.format(
@@ -68,8 +70,11 @@ public class SchedBlockQueueCallbackNotifier implements Observer {
                 }
                 catch (org.omg.CORBA.TRANSIENT ex){
                 	logger.info("Forcing Unregister of Queue Callback with key: " + key);
-                	unregisterMonitor(key);
+                	toBeUnregistered.add(key);
                 }
+    		}
+    		for (String key: toBeUnregistered) {
+    			unregisterMonitor(key);
     		}
     	} catch (ClassCastException e) {
     	}
