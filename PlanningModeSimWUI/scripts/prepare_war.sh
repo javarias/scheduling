@@ -9,7 +9,7 @@ cd tmp;
 echo "Checking for Spring libraries..."
 if [ ! -f spring-framework-2.5.5-with-dependencies.zip ] ; then
 	echo "   * Not present, downloading...";
-	wget wget http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-2.5.5-with-dependencies.zip
+	wget http://s3.amazonaws.com/dist.springframework.org/release/SPR/spring-framework-2.5.5-with-dependencies.zip
 fi
 unzip -o spring-framework-2.5.5-with-dependencies.zip > /dev/null;
 cp spring-framework-2.5.5/lib/antlr/antlr-2.7.6.jar $TARGET/;
@@ -114,9 +114,16 @@ echo "Checking for Castor library..."
 if [ ! -f $ACSROOT/lib/castor.jar ] ; then
         echo "   * Not present in ACS distribution, please correct this error.";
 fi
+
+echo "Checking for Xerces-J library..."
+if [ ! -f $ACSROOT/lib/endorsed/xercesImpl.jar ] ; then
+        echo "   * Not present in ACS distribution, please correct this error.";
+        exit
+fi
+cp $ACSROOT/lib/endorsed/xercesImpl.jar $TARGET;
 cp $ACSROOT/lib/castor.jar $TARGET;
 cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET;
 cp $ACSROOT/lib/xalan.jar $TARGET;
 cp $ACSROOT/lib/xalan_serializer.jar $TARGET;
 cp $ACSROOT/lib/systementities.jar $TARGET;
-cp $INTROOT/lib/APDMEntities.jar $TARGET;
+cp $ACSROOT/lib/APDMEntities.jar $TARGET;

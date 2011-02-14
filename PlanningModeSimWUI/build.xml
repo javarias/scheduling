@@ -47,10 +47,7 @@
 		<pathelement location="${INTROOT}/lib/SchedulingPSMCli.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
-		<pathelement location="${INTROOT}/lib/dam.jar" />
-		<pathelement location="${INTROOT}/lib/APDMEntities.jar" />
-		
-
+	
 		<pathelement location="${ACSROOT}/lib/antlr.jar" />
 		<pathelement location="${ACSROOT}/lib/commons-collections-3.1.jar" />
 		<pathelement location="${ACSROOT}/lib/antlr.jar" />
@@ -66,6 +63,8 @@
 		<pathelement location="${ACSROOT}/lib/log4j-1.2.15.jar" />
 		<pathelement location="${ACSROOT}/lib/slf4j-api-1.5.8.jar" />
 		<pathelement location="${ACSROOT}/lib/c3p0-0.9.1.2.jar" />
+		<pathelement location="${ACSROOT}/lib/dam.jar" />
+		<pathelement location="${ACSROOT}/lib/APDMEntities.jar" />
 		<pathelement location="${ACSROOT}/lib/systementities.jar" />
 
 		<pathelement location="${lib}/bsh.jar" />
@@ -81,6 +80,7 @@
 		<pathelement location="${lib}/castor.jar" />
 		<pathelement location="${lib}/xalan.jar" />
 		<pathelement location="${lib}/xalan_serializer.jar" />
+		<pathelement location="${lib}/xercesImpl.jar" />
 
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommons-el.jar" />
