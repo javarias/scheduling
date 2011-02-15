@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.10 2010/09/14 16:58:59 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.11 2011/02/15 12:43:16 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -136,6 +136,18 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
                     freqGHz, bwGHz, declDeg, numAnt, antDiamMtr, latitudeDeg,
                     opacity, atmBrightnessTemp);
+	//FIXME: For Debug purposes. Seems sensitivy get pretty higher some times.
+	if( sensJy > 1.0 ){
+		System.out.println("** SCHEDBLOCK ID: " + schedBlock.getId() );
+		System.out.println("** Temp and Humi: " + hr.getValue() + ", " + tr.getValue() );
+		System.out.println("** opacityInterpolator.estimatePWV(): " + pwv );
+		System.out.println("** opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity );
+		System.out.println("** opacityInterpolator.interpolateOpacityAndTemperature().atmBrightnessTemp: " + atmBrightnessTemp );
+		System.out.println("** InterferometrySensitivityCalculator.pointSourceSensitivity(): " + sensJy );
+	}
+
+
+	// END Debug purposes
         schedBlock.getSchedBlockControl().setNumberOfExecutions(
                 schedBlock.getSchedBlockControl().getNumberOfExecutions() + 1);
         double accumSens = 0;
@@ -154,7 +166,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         schedBlockDao.saveOrUpdate(schedBlock);
         
         long executionTime = (long) (schedBlock.getSchedBlockControl().getSbMaximumTime().doubleValue()
-            * 3600 * 1000);
+            * 1000);
         Date nextExecutionTime = new Date(ut.getTime() + executionTime);
         return nextExecutionTime;
     }

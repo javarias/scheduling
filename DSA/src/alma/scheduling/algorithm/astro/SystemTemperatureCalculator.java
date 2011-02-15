@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.2 2010/04/05 19:54:39 rhiriart Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.3 2011/02/15 12:43:16 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -51,6 +51,7 @@ public class SystemTemperatureCalculator {
         double sinLat = Math.sin(latitudeRad);
         double cosDec = Math.cos(decRad);
         double cosLat = Math.cos(latitudeRad);
+	//FIXME: Missing HA termn in this formula. Airmass is miscalculated
         double sinAltitude = sinDec * sinLat + cosDec * cosLat; // missing cosH?
         
         double Airmass = 1.0 / sinAltitude;
