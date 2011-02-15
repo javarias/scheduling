@@ -210,6 +210,7 @@ public class ResultComposer {
 			outputOp.setOriginalId( op.getId() );
 			outputOp.setScienceRank( op.getScienceRank());
 			outputOp.setScienceScore( op.getScienceScore() );
+			outputOp.setGrade( op.getLetterGrade().toString() );
 
 			HashSet<SchedBlockResult> sbrSet = new HashSet<SchedBlockResult>();
 			obsProjectDao.hydrateSchedBlocks(op);			
@@ -316,6 +317,7 @@ public class ResultComposer {
 		            ObservingParameters params = iter.next();
 		            if (params instanceof ScienceParameters) {
 		                sbr.setGoalSensitivity(((ScienceParameters) params).getSensitivityGoal());
+				System.out.println("SensitivityGoal: " + ((ScienceParameters) params).getSensitivityGoal() );
 		            }
 		        }
 		        sbr.setOriginalId( sbId );
@@ -329,6 +331,7 @@ public class ResultComposer {
         		// From Stop notification.
         		sbr.setEndDate( endDate );
     			sbr.setAchievedSensitivity( lhmEnd.get(endDate).get(0) );
+			System.out.println("Sensitivity Goal in Results: " + lhmEnd.get(endDate).get(0) );
     			sbr.setExecutionTime( lhmEnd.get(endDate).get(1) );
     			if( ((SchedBlock)ptrOu).getSchedBlockControl().getState() == SchedBlockState.FULLY_OBSERVED ){
     				sbr.setStatus( ExecutionStatus.COMPLETE);

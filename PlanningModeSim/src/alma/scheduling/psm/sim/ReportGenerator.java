@@ -52,6 +52,7 @@ import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.psm.reports.domain.SchedBlockReportBean;
+import alma.scheduling.psm.reports.domain.ObsProjectReportBean;
 import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.util.PsmContext;
 import alma.scheduling.psm.util.XsltTransformer;
@@ -115,35 +116,27 @@ public class ReportGenerator extends PsmContext {
 	
 	public JRDataSource getExecutiveUsageOutputData() {
 		JRBeanCollectionDataSource dataSource = null;
-        ApplicationContext ctx = ReportGenerator.getApplicationContext();
-        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-        ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
-        HashMap<String, ArrayList<SchedBlockReportBean>> SBPerExecutive = new HashMap<String, ArrayList<SchedBlockReportBean>>();
-        System.out.println("Retrieving Data...");
-        List<Results> results = outDao.getResults();
-        System.out.println("Processing Data...");
-        SchedBlockReportBean.totalExecutionTime = 0;
-        for(Results r: results)
-        	for(ObservationProject op: r.getObservationProject()){
-        		String exec = op.getAffiliation().iterator().next().getExecutive();
-        		ArrayList<SchedBlockReportBean> list = SBPerExecutive.get(exec);
-        		if(list == null){
-        			list = new ArrayList<SchedBlockReportBean>();
-        			SBPerExecutive.put(exec, list);
-        		}
-        		for(SchedBlockResult sbr: op.getSchedBlock()){
-        			SchedBlockReportBean sbrb = new SchedBlockReportBean();
-        			double execTime = (sbr.getEndDate().getTime() - sbr.getStartDate().getTime())/1000.0/3600.0;
-        			sbrb.setExecutive(exec);
-        			sbrb.setExecutionTime(execTime);
-        			sbrb.setTotalExecutionTime(sbrb.getTotalExecutionTime() + execTime);
-        			list.add(sbrb);
-        		}
-        	}
-        for(ArrayList<SchedBlockReportBean> list: SBPerExecutive.values())
-        	data.addAll(list);
-        dataSource =  new JRBeanCollectionDataSource(data);
-        return dataSource;
+	        ApplicationContext ctx = ReportGenerator.getApplicationContext();
+	        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		HashMap<String, ObsProjectReportBean> OPPerExecutive = new HashMap<String, ObsProjectReportBean>();
+	        ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
+	        System.out.println("Retrieving Data...");
+	        List<Results> results = outDao.getResults();
+	        System.out.println("Processing Data...");
+	        for(Results r: results)
+	        	for(ObservationProject op: r.getObservationProject()){
+				ObsProjectReportBean oprb = new ObsProjectReportBean();
+				oprb.setExecutive( op.getAffiliation().iterator().next().getExecutive() );
+				oprb.setExecutionTime( op.getExecutionTime() );
+				oprb.setGrade( op.getGrade() );
+				oprb.setScienceRank( op.getScienceRank() );
+				oprb.setScienceScore( op.getScienceScore() );
+	        		OPPerExecutive.put(oprb.getExecutive(), oprb);
+	        	}
+		for( ObsProjectReportBean oprbTmp: OPPerExecutive.values() )
+			data.add( oprbTmp );
+	        dataSource =  new JRBeanCollectionDataSource(data);
+	        return dataSource;
 	}
 	
 	public JasperPrint createExecutiveReport() {

@@ -211,6 +211,10 @@ public class Console {
         System.out.println("1:\tGenerate statistics report containing SBs per ALMA Receiver Bands.");
         System.out.println("2:\tGenerate result report (after run the simulation).");
         System.out.println("3:\tGenerate statistics report containing SBs per LST ranges.");
+	System.out.println("4:\tGenerate executive balancing report.");
+	System.out.println("5:\tBand usage report.");
+	System.out.println("6:\tLST crowding before simulation.");
+	System.out.println("7:\tLST crowding after simulation.");
         System.out.println("help:\tShow this help message.");
     }
     
