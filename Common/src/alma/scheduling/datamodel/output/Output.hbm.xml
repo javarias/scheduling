@@ -43,6 +43,7 @@
 		</id>
 		<property name="scienceRank" type="long" column="SCIENCE_RANK" />
 		<property name="scienceScore" type="float" column="SCIENCE_SCORE" />
+		<property name="grade" type="string" column="GRADE" />
 		<property name="originalId" type="long" column="ORIGINAL_ID" />
 		<property name="status" type="OutputExecutionStatusType" column="STATUS"/>
 		<property name="executionTime" type="double" column="EXECUTION_TIME"/>

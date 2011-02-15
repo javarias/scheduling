@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.20 2010/08/20 19:22:48 rhiriart Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.21 2011/02/15 12:42:43 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -210,6 +210,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     scip.setRepresentativeBandwidth(xmlSciParams.getRepresentativeBandwidth());
                     scip.setRepresentativeFrequency(xmlSciParams.getRepresentativeFrequency());
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
+		System.out.println("Sensitivity Goal: " + scip.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
                     schedBlock.addObservingParameters(scip);
                     for (Target t : targets.values()) { // TODO fix this
                         HashSet<ObservingParameters> obsParams = new HashSet<ObservingParameters>();
@@ -359,6 +360,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSciParams.setRepresentativeBandwidth(scp.getRepresentativeBandwidth());
                     xmlSciParams.setRepresentativeFrequency(scp.getRepresentativeFrequency());
                     xmlSciParams.setSensitivityGoal(scp.getSensitivityGoal());
+		System.out.println("Sensitivity Goal: " + scp.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
                     xmlOP.setScienceParameters(xmlSciParams);
                     xmlObsParams.put(new XmlDomainXRef(ObsParametersT.class, scp.getId()), xmlOP);
                     theOne = xmlOP;

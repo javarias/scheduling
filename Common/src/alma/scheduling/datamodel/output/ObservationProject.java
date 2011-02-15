@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObservationProject.java,v 1.7 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: ObservationProject.java,v 1.8 2011/02/15 12:42:43 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.output;
 
@@ -39,6 +39,7 @@ public class ObservationProject {
 	private long originalId;
 	private long scienceRank;
 	private float scienceScore;
+	private String grade;
 	private ExecutionStatus status;
 	public Set<Affiliation> affiliation;
 	public Set<SchedBlockResult> schedBlock;
@@ -109,6 +110,14 @@ public class ObservationProject {
 
 	public void setScienceScore(float scienceScore) {
 		this.scienceScore = scienceScore;
+	}
+
+	public String getGrade(){
+		return this.grade;
+	}
+
+	public void setGrade(String grade){
+		this.grade = grade;
 	}
 
 }
