@@ -118,7 +118,7 @@ public class ReportGenerator extends PsmContext {
 		JRBeanCollectionDataSource dataSource = null;
 	        ApplicationContext ctx = ReportGenerator.getApplicationContext();
 	        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		HashMap<String, ObsProjectReportBean> OPPerExecutive = new HashMap<String, ObsProjectReportBean>();
+		HashMap<String, HashMap<String,ObsProjectReportBean>> OPPerExecutive = new HashMap<String, HashMap<String, ObsProjectReportBean>>();
 	        ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
 	        System.out.println("Retrieving Data...");
 	        List<Results> results = outDao.getResults();
@@ -131,21 +131,34 @@ public class ReportGenerator extends PsmContext {
 				oprb.setGrade( op.getGrade() );
 				oprb.setScienceRank( op.getScienceRank() );
 				oprb.setScienceScore( op.getScienceScore() );
-	        		OPPerExecutive.put(oprb.getExecutive(), oprb);
+				HashMap<String, ObsProjectReportBean> hs = OPPerExecutive.get( oprb.getExecutive() );
+				if( hs == null ){
+					hs = new HashMap<String, ObsProjectReportBean>();
+					hs.put( op.getGrade(), oprb );
+	        			OPPerExecutive.put(oprb.getExecutive(), hs);
+				}else{
+					hs.put( op.getGrade(), oprb );
+				}
 	        	}
-		for( ObsProjectReportBean oprbTmp: OPPerExecutive.values() )
-			data.add( oprbTmp );
+		for( HashMap<String, ObsProjectReportBean> hs : OPPerExecutive.values() )
+			for( ObsProjectReportBean oprbTmp: hs.values() )
+				data.add( oprbTmp );
 	        dataSource =  new JRBeanCollectionDataSource(data);
 	        return dataSource;
 	}
 	
 	public JasperPrint createExecutiveReport() {
-		HashMap<String, String> param = new HashMap<String, String>();
+		HashMap<String, String> param = new HashMap();
 		JasperPrint print = null;
 		InputStream reportStream = getClass()
 		.getClassLoader()
 		.getResourceAsStream(
 				"alma/scheduling/psm/reports/executiveReport.jasper");
+
+		// Parameters
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+                OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+		param.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		synchronized (this) {
 			JRDataSource dataSource = getExecutiveUsageOutputData();
 			try {
