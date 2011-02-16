@@ -42,6 +42,8 @@ cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET/lib/alma-7.1/;
 cp $ACSROOT/lib/systementities.jar $TARGET/lib/alma-7.1/;
 #TODO: Check for existance in INTROOT, and then in ALMASW
 cp $INTROOT/lib/APDMEntities.jar $TARGET/lib/alma-7.1/;
+cp $ACSROOT/lib/APDMEntities.jar $TARGET/lib/alma-7.1/;
+
 
 echo "Checking for Xerces-J library..."
 if [ ! -f $ACSROOT/lib/endorsed/xercesImpl.jar ] ; then
