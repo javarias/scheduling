@@ -25,40 +25,45 @@
 
 package alma.scheduling.master.gui;
 
-import alma.Control.CreatedAutomaticArrayEvent;
-import alma.Control.CreatedManualArrayEvent;
-import alma.Control.DestroyedAutomaticArrayEvent;
-import alma.Control.DestroyedManualArrayEvent;
-import alma.acs.nc.Consumer;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.ArrayModeEnum;
 
-public class ExistingArraysTabController extends SchedulingPanelController {
+public class ExistingArraysTabController extends SchedulingPanelController 
+	implements ArrayStatusListener{
     private ExistingArraysTab parent;
+    private ArrayStatusCallbackImpl callback;
   //  private PluginContainerServices container; 
-    private Consumer consumer;
+//    private Consumer consumer;
 
-    public ExistingArraysTabController(PluginContainerServices cs, ExistingArraysTab p){
-        super(cs);
-   //     container = cs;
-        parent = p;
-        try {
-            consumer = new Consumer(alma.Control.CHANNELNAME_CONTROLSYSTEM.value, cs);
-            
-            consumer.addSubscription(alma.Control.CreatedManualArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.CreatedAutomaticArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.DestroyedAutomaticArrayEvent.class, this);
-            consumer.addSubscription(alma.Control.DestroyedManualArrayEvent.class, this);
-         
-          //  consumer.addSubscription(alma.Control.ExecBlockStartedEvent.class, this);
-            //consumer.addSubscription(alma.Control.ExecBlockEndedEvent.class, this);
-            
-            consumer.consumerReady();
-        } catch(Exception e){
-            e.printStackTrace();
-            logger.warning("SCHEDULING_PANEL: Problem getting NC consumer for control system channel, won't see existing arrays");
-        }
-    }
+	public ExistingArraysTabController(PluginContainerServices cs,
+			ExistingArraysTab p) {
+		super(cs);
+		// container = cs;
+		parent = p;
+		callback = new ArrayStatusCallbackImpl(this);
+		try {
+			cs.activateOffShoot(callback);
+			getMSRef();
+			masterScheduler.addMonitorMaster(
+					InetAddress.getLocalHost().getHostName() + "_"
+							+ this.toString() + "_"
+							+ System.currentTimeMillis(), callback._this());
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			masterScheduler.addMonitorMaster(
+					this.toString() + "_" + System.currentTimeMillis(),
+					callback._this());
+		} finally {
+			releaseMSRef();
+		}
 
+	}
+/*
     public void receive(CreatedAutomaticArrayEvent event) {
         String name = event.arrayName;
         logger.fine("SP: Received created array event for "+name);
@@ -79,7 +84,8 @@ public class ExistingArraysTabController extends SchedulingPanelController {
         logger.fine("SP: Received destroy array event for "+name+" in existing array tab");
         parent.removeArray(name);
     }
-
+*/
+    
     protected String[] getCurrentAutomaticArrays() {
         try {
             getMSRef();
@@ -101,12 +107,15 @@ public class ExistingArraysTabController extends SchedulingPanelController {
         }
     }
 
-    /*
-     public void receive(ExecBlockStartedEvent e) {
-         logger.fine("Existing array tab got exec block started event");
-     }
-     public void receive(ExecBlockEndedEvent e) {
-         logger.fine("Existing array tab got exec block ended event");
-     }*/
+	@Override
+	public void notifyArrayCreation(String name, ArrayModeEnum arrayMode) {
+		parent.addArray(name, arrayMode.toString());
+	}
+
+	@Override
+	public void notifyArrayDestruction(String name) {
+		parent.removeArray(name);
+		
+	}
         
 }

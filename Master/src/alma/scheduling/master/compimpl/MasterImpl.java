@@ -46,10 +46,12 @@ import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
+import alma.scheduling.ArrayEvent;
 import alma.scheduling.ArrayHelper;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
+import alma.scheduling.ArrayStatusCallback;
 import alma.scheduling.MasterOperations;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
@@ -61,6 +63,7 @@ public class MasterImpl implements ComponentLifecycle,
     private Logger m_logger;
     private ControlMaster controlMaster;
     private HashMap<String, ArrayModeEnum> activeArrays;
+    private HashMap<String, ArrayStatusCallback> callbacks;
 	
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -68,6 +71,7 @@ public class MasterImpl implements ComponentLifecycle,
 
     public MasterImpl(){
     	activeArrays = new HashMap<String, ArrayModeEnum>();
+    	callbacks =  new HashMap<String, ArrayStatusCallback>();
     }
     
     public void initialize(ContainerServices containerServices) {
@@ -128,11 +132,11 @@ public class MasterImpl implements ComponentLifecycle,
     /////////////////////////////////////////////////////////////
     
 	@Override
-	public ArrayCreationInfo createArray(String[] antennaIdList, String[] photonicsList,
+	public synchronized ArrayCreationInfo createArray(String[] antennaIdList, String[] photonicsList,
 			CorrelatorType corrType, ArrayModeEnum schedulingMode, 
 			ArraySchedulerLifecycleType lifecycleType) throws 
 			ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx{
-		String arrayName;
+		String arrayName = null;
 		while (!isInitialized()) {
 			try {
 				Thread.sleep(1000);
@@ -158,6 +162,10 @@ public class MasterImpl implements ComponentLifecycle,
 			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(e);
 			ex.log(m_logger);
 			throw ex.toControlInternalExceptionEx();
+		} catch(org.omg.CORBA.SystemException e) {
+			AcsJControlInternalExceptionEx ex = new AcsJControlInternalExceptionEx(e);
+			ex.log(m_logger);
+			throw ex.toControlInternalExceptionEx();
 		}
 		
 		try {
@@ -179,7 +187,26 @@ public class MasterImpl implements ComponentLifecycle,
 			throw ex.toSchedulingInternalExceptionEx();
 		}
 		
+		m_logger.info(String.format(
+				"adding (%s, %s) to active arrays",
+				arrayInfo.arrayId,
+				schedulingMode));
+		
 		activeArrays.put(arrayInfo.arrayId, schedulingMode);
+		
+		//Notify to the callbacks
+		ArrayList<String> toBeDeleted =  new ArrayList<String>();
+		for (String key: callbacks.keySet()){
+			try {
+				callbacks.get(key).report(ArrayEvent.CREATION, schedulingMode, arrayInfo.arrayId);
+			} catch (org.omg.CORBA.SystemException e) {
+				m_logger.warning("Forcing release of callback " + key + ". Callback is not responding");
+				toBeDeleted.add(key);
+			}
+		}
+		for (String key: toBeDeleted)
+			callbacks.remove(key);
+		
 		return arrayInfo;
 	}
 
@@ -188,7 +215,7 @@ public class MasterImpl implements ComponentLifecycle,
 	ControlInternalExceptionEx, SchedulingInternalExceptionEx{
 		Object obj = null;
 		String schedArrayName = null;
-		m_logger.fine("About to destroy array: " + arrayName);
+		m_logger.info("About to destroy array: " + arrayName);
 		try {
 			schedArrayName = NameTranslator.arrayToComponentName(arrayName);
 			obj = m_containerServices.getComponent(schedArrayName);
@@ -204,15 +231,32 @@ public class MasterImpl implements ComponentLifecycle,
 		
 		//If Array is executing schedBlocks, stop it
 		Array array = ArrayHelper.narrow(obj);
-		m_logger.fine("Stopping SchedBlock in " + schedArrayName);
+		m_logger.info("Stopping SchedBlock in " + schedArrayName);
 		array.stop("Master Panel", "Master Panel");
 		array.stopRunningSchedBlock("Master Panel", "Master Panel");
 		array.destroyArray();
 		
 		obj = null;
 		array = null;
-		m_logger.fine ("Releasing Scheduling Array " + schedArrayName);
+		m_logger.info ("Releasing Scheduling Array " + schedArrayName);
 		m_containerServices.releaseComponent(schedArrayName);
+		
+		//Notify to the callbacks
+		ArrayList<String> toBeDeleted =  new ArrayList<String>();
+		for (String key: callbacks.keySet()){
+			try {
+				try {
+					callbacks.get(key).report(ArrayEvent.DESTRUCTION, getSchedulerModeForArray(arrayName), arrayName);
+				} catch (ArrayNotFoundExceptionEx e) {
+					//This exception should not be throw
+				}
+			} catch (org.omg.CORBA.SystemException e) {
+				m_logger.warning("Forcing release of callback " + key + ". Callback is not responding");
+				toBeDeleted.add(key);
+			}
+		}
+		for (String key: toBeDeleted)
+			callbacks.remove(key);
 		
 		try {
 			m_logger.finest("About to release CONTROL Array");
@@ -227,6 +271,9 @@ public class MasterImpl implements ComponentLifecycle,
 			ex.log(m_logger);
 			ex.toControlInternalExceptionEx();
 		}
+		m_logger.fine(String.format(
+				"removing (%s) from active arrays",
+				arrayName));
 		activeArrays.remove(arrayName);
 		
 	}
@@ -286,7 +333,7 @@ public class MasterImpl implements ComponentLifecycle,
 			CorrelatorType corrType, ArrayModeEnum schedulingMode) throws InaccessibleException, InvalidRequest{
 		
 		if( controlMaster.getMasterState() == alma.Control.SystemState.OPERATIONAL){
-			m_logger.finest("Control master reference is OPERATIONAL. About to create CONTROL Array");
+			m_logger.info("Control master reference is OPERATIONAL. About to create CONTROL Array");
 			ArrayIdentifier arrayId;
 			if(schedulingMode == ArrayModeEnum.MANUAL){
 				arrayId = controlMaster.createManualArray(antennaIdList, 
@@ -318,7 +365,6 @@ public class MasterImpl implements ComponentLifecycle,
 		Object dynamicComponent = null;
 		
 		ComponentDescriptor info = m_containerServices.getComponentDescriptor(m_containerServices.getName());
-		System.out.println(info.getName());
 		ComponentQueryDescriptor query = new ComponentQueryDescriptor();
 		query.setComponentName(schedArrayURL);
 		query.setComponentType("IDL:alma/scheduling/Array:1.0");
@@ -368,4 +414,18 @@ public class MasterImpl implements ComponentLifecycle,
 		m_logger.finest("Got reference of " + Constants.CONTROL_MASTER_URL
 				+ " successfully");
 	}
+
+	@Override
+	public void addMonitorMaster(String monitorName,
+			ArrayStatusCallback callback) {
+		callbacks.put(monitorName, callback);
+		
+	}
+
+	@Override
+	public void removeMonitorQueue(String monitorName) {
+		callbacks.remove(monitorName);
+		
+	}
+	
 }
