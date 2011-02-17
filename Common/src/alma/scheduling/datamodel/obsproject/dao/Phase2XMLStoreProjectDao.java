@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import org.omg.CORBA.UserException;
 
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
@@ -61,6 +63,10 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
     
 	public Phase2XMLStoreProjectDao() throws Exception {
 		super(Phase2XMLStoreProjectDao.class.getSimpleName());
+	}
+	
+	public Phase2XMLStoreProjectDao(ContainerServices containerServices) throws AcsJContainerServicesEx, UserException {
+		super(containerServices);
 	}
 
 	@Override

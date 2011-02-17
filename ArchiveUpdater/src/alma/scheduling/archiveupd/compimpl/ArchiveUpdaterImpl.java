@@ -54,7 +54,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
         m_containerServices = containerServices;
         m_logger = m_containerServices.getLogger();
 		handler = new ErrorHandling(m_logger);
-		getPoller();
+		getPoller(containerServices);
 		
 		m_logger.finest("initialize() called...");
     }
@@ -94,7 +94,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     
 	@Override
 	synchronized public void update() {
-		getPoller();
+		getPoller(m_containerServices);
 		if (poller != null) {
 			try {
 				m_logger.info("Polling archive");
@@ -109,7 +109,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     
 	@Override
 	synchronized public void refresh() {
-		getPoller();
+		getPoller(m_containerServices);
 		if (poller != null) {
 			try {
 				m_logger.info("Refreshing SWDB");
@@ -151,10 +151,10 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     // Support methods
     /////////////////////////////////////////////////////////////
 
-    public void getPoller() {
+    public void getPoller(ContainerServices containerServices) {
     	if (poller == null) {
     		try {
-				poller = new ArchivePoller(m_logger);
+				poller = new ArchivePoller(m_logger, containerServices);
 			} catch (Exception e) {
 				e.printStackTrace();
 				handler.severe(String.format(

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.4 2011/01/31 19:17:02 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.5 2011/02/17 22:31:43 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -28,6 +28,7 @@ import java.util.Observer;
 import java.util.logging.Logger;
 
 
+import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveImportEvent;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.SchedulingException;
@@ -51,7 +52,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.4 2011/01/31 19:17:02 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.5 2011/02/17 22:31:43 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -67,6 +68,8 @@ public class ArchivePoller implements Observer{
 	
 	private Logger logger;
 	private ErrorHandling handler;
+	
+	private ContainerServices containerServices;
 	
 	private Date lastUpdate;
 	
@@ -87,12 +90,11 @@ public class ArchivePoller implements Observer{
 	 * Construction
 	 * ================================================================
 	 */
-	@SuppressWarnings("unused")
-	private ArchivePoller() throws Exception { }
 	
-	public ArchivePoller(Logger logger) throws Exception {	
+	public ArchivePoller(Logger logger, ContainerServices containerServices) throws Exception {	
 		final ModelAccessor ma = new ModelAccessor();
 
+		this.containerServices = containerServices;
 		this.logger = logger;
 		this.handler = new ErrorHandling(logger);
 		this.schedBlockDao = ma.getSchedBlockDao();
@@ -168,7 +170,7 @@ public class ArchivePoller implements Observer{
     	
     	Phase2XMLStoreProjectDao inDao;
 		try {
-			inDao = new Phase2XMLStoreProjectDao();
+			inDao = new Phase2XMLStoreProjectDao(containerServices);
 			inDao.getNotifer().addObserver(this);
 			ProjectImportEvent event = new ProjectImportEvent();
 			event.setEntityId("Starting Initial Poll Archive");
@@ -318,7 +320,7 @@ public class ArchivePoller implements Observer{
     	
     	Phase2XMLStoreProjectDao inDao;
 		try {
-			inDao = new Phase2XMLStoreProjectDao();
+			inDao = new Phase2XMLStoreProjectDao(containerServices);
 			inDao.getNotifer().addObserver(this);
 			ProjectImportEvent event = new ProjectImportEvent();
 			event.setEntityId("Starting Incremental Poll Archive");

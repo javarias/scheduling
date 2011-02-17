@@ -17,7 +17,9 @@ import java.util.logging.Logger;
 
 import org.omg.CORBA.UserException;
 
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.client.ComponentClient;
+import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
 import alma.asdmIDLTypes.IDLArrayTime;
@@ -46,7 +48,6 @@ import alma.xmlstore.OperationalOperations;
  *
  */
 public abstract class AbstractXMLStoreProjectDao
-	extends ComponentClient
 	implements ProjectIncrementalDao {
 
     
@@ -87,6 +88,8 @@ public abstract class AbstractXMLStoreProjectDao
     
     //Import Notifications
     protected final XMLStoreImportNotifier notifier;
+    
+    private XMLStroreProjectDaoClient client;
     /* End Fields and constants
 	 * ============================================================= */
 
@@ -118,14 +121,25 @@ public abstract class AbstractXMLStoreProjectDao
 			                        String clientName)
 			throws Exception {
 		// TODO: Logger type has been hacked, must be resolved properly.
-		super(logger, managerLoc, clientName);
+		client = new XMLStroreProjectDaoClient(logger, managerLoc, clientName);
 		notifier = new XMLStoreImportNotifier();
-		this.componentFactory = new ACSComponentFactory(getContainerServices());
-		this.logger = getContainerServices().getLogger();
+		this.componentFactory = new ACSComponentFactory(client.getContainerServices());
+		this.logger = client.getContainerServices().getLogger();
 		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
 		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
-        		getContainerServices().getLogger());
+        		client.getContainerServices().getLogger());
+		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer);
+	}
+	
+	protected AbstractXMLStoreProjectDao(ContainerServices containerServices) throws AcsJContainerServicesEx, UserException {
+		notifier = new XMLStoreImportNotifier();
+		this.componentFactory = new ACSComponentFactory(containerServices);
+		this.logger = containerServices.getLogger();
+		this.xmlStore = componentFactory.getDefaultArchive(xmlStoreDiags);
+		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
+		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
+        		containerServices.getLogger());
 		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer);
 	}
 	/* End Construction
@@ -874,5 +888,14 @@ public abstract class AbstractXMLStoreProjectDao
 			setChanged();
 			notifyObservers(event);
 		}
+	}
+	
+	private class XMLStroreProjectDaoClient extends ComponentClient {
+
+		public XMLStroreProjectDaoClient(Logger logger, String managerLoc,
+				String clientName) throws Exception {
+			super(logger, managerLoc, clientName);
+		}
+		
 	}
 }
