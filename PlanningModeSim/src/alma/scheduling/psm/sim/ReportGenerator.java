@@ -118,7 +118,7 @@ public class ReportGenerator extends PsmContext {
 		JRBeanCollectionDataSource dataSource = null;
 	        ApplicationContext ctx = ReportGenerator.getApplicationContext();
 	        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		HashMap<String, HashMap<String,ObsProjectReportBean>> OPPerExecutive = new HashMap<String, HashMap<String, ObsProjectReportBean>>();
+		HashMap<String, ArrayList<ObsProjectReportBean>> OPPerExecutive = new HashMap<String, ArrayList<ObsProjectReportBean>>();
 	        ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
 	        System.out.println("Retrieving Data...");
 	        List<Results> results = outDao.getResults();
@@ -131,18 +131,16 @@ public class ReportGenerator extends PsmContext {
 				oprb.setGrade( op.getGrade() );
 				oprb.setScienceRank( op.getScienceRank() );
 				oprb.setScienceScore( op.getScienceScore() );
-				HashMap<String, ObsProjectReportBean> hs = OPPerExecutive.get( oprb.getExecutive() );
-				if( hs == null ){
-					hs = new HashMap<String, ObsProjectReportBean>();
-					hs.put( op.getGrade(), oprb );
-	        			OPPerExecutive.put(oprb.getExecutive(), hs);
+				if( OPPerExecutive.containsKey( oprb.getExecutive() )){
+					OPPerExecutive.get( oprb.getExecutive() ).add( oprb );
 				}else{
-					hs.put( op.getGrade(), oprb );
+					ArrayList<ObsProjectReportBean> list = new ArrayList<ObsProjectReportBean>();
+					list.add( oprb );
+					OPPerExecutive.put( oprb.getExecutive(), list );
 				}
 	        	}
-		for( HashMap<String, ObsProjectReportBean> hs : OPPerExecutive.values() )
-			for( ObsProjectReportBean oprbTmp: hs.values() )
-				data.add( oprbTmp );
+		for( ArrayList<ObsProjectReportBean> listTmp: OPPerExecutive.values() )
+			data.addAll( listTmp );
 	        dataSource =  new JRBeanCollectionDataSource(data);
 	        return dataSource;
 	}
