@@ -336,6 +336,7 @@ public class APDMtoSchedulingConverter {
 		}
 		obsProject.setCode(apdmProject.getCode());
 		obsProject.setName(apdmProject.getProjectName());
+		obsProject.setVersion(apdmProject.getVersion());
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
 		obsProject.setScienceScore((float)apdmProject.getScientificScore());

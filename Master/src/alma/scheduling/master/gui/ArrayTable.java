@@ -197,11 +197,20 @@ public class ArrayTable extends JTable {
 
     protected synchronized void removeArray(String name){
         if(name.equals("")){
+        	logger.fine(String.format(
+        			"ArrayTable.removeArray(%s) - existing %d, failed as name is empty",
+        			name, arrayRowInfo.length));
             return;
         }
         if(!isArrayInList(name)){
+        	logger.fine(String.format(
+        			"ArrayTable.removeArray(%s) - existing %d, failed as name not in list",
+        			name, arrayRowInfo.length));
             return;
         }
+    	logger.fine(String.format(
+    			"ArrayTable.removeArray(%s) - existing %d",
+    			name, arrayRowInfo.length));
         //ok name is in the list so lets take it out
         Object[][] oldInfo = arrayRowInfo;
         arrayRowInfo = new Object[oldInfo.length - 1][2];
@@ -217,6 +226,9 @@ public class ArrayTable extends JTable {
     }
 
     protected synchronized void addArray(String name, String type){
+    	logger.fine(String.format(
+    			"ArrayTable.addArray(%s, %s) - existing %d",
+    			name, type, arrayRowInfo.length));
         if(arrayRowInfo.length == 0) {
             arrayRowInfo = new Object[1][2];
             arrayRowInfo[0][0] = name;
@@ -243,6 +255,9 @@ public class ArrayTable extends JTable {
     }
     
     public void clear(){
+    	logger.fine(String.format(
+    			"ArrayTable.clear() - existing %d",
+    			arrayRowInfo.length));
         arrayRowInfo = new Object[0][2];
         manageColumnSizes();
         repaint();

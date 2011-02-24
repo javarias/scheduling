@@ -32,6 +32,7 @@ import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.DSAOperations;
 import alma.scheduling.SchedBlockExecutionCallback;
+import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockExecutionManagerOperations;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
@@ -44,7 +45,7 @@ import alma.scheduling.SchedBlockScore;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.5 2011/01/28 00:35:31 javarias Exp $
+ * $Id: DelegatedArray.java,v 1.6 2011/02/24 22:42:50 javarias Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
@@ -281,6 +282,11 @@ public class DelegatedArray implements ComponentLifecycle,
 		sbExecDelegate.destroyArray();
 	}
 
+	@Override
+	public SchedBlockExecutionItem[] getExecutions() {
+		return sbExecDelegate.getExecutions();
+	}
+
     /**
      * Method called by control when the user calls beginExecution from the CCL.
      * This method gives control the the SB id and the session id to use through
@@ -327,7 +333,7 @@ public class DelegatedArray implements ComponentLifecycle,
 		sbQueueDelegate.push(qItem);
 	}
 
-        public SchedBlockQueueItem[] getExecutedQueue() {
+	public SchedBlockQueueItem[] getExecutedQueue() {
 		return sbQueueDelegate.getExecutedQueue();
 	}
 

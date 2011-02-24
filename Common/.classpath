@@ -6,6 +6,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JACORB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Scheduling"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

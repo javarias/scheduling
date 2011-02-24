@@ -76,6 +76,16 @@ public class ManualRunningExecutionState extends ExecutionState {
 	return execTime;
     }
 
+		logger.info(String.format(
+				"%s: just before context.getControlArray().observe(%s, null)",
+				this.getClass().getSimpleName(), sbRef.entityId));
+		try {
+			context.getControlArray().observe(sbRef, sessionRef);
+		} catch (org.omg.CORBA.TIMEOUT e) {
+			// Do Nothing
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
     @Override
     public void stopObservation() {

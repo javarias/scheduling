@@ -49,7 +49,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
+ * $Id: SessionManager.java,v 1.3 2011/02/24 22:42:50 javarias Exp $
  */
 public class SessionManager {
 
@@ -63,6 +63,7 @@ public class SessionManager {
     private QlDisplayManager quicklook;
     private ModelAccessor model;
     private CorbaNotificationChannel sched_nc;
+    private boolean newSessionPerExecution = false;
 
     private String arrayName;
 
@@ -83,12 +84,14 @@ public class SessionManager {
 	 */
     public SessionManager(String            arrayName,
     		              ContainerServices cs,
-    		              Services          services) {
+    		              Services          services,
+    		              boolean           newSessionPerExecution) {
         this.containerServices = cs;
         this.logger    = cs.getLogger();
         this.quicklook = getPipelineComponents();
         this.sched_nc  = getNotificationChannel();
         this.model     = services.getModel();
+        this.newSessionPerExecution = newSessionPerExecution;
         
         this.arrayName = arrayName;
         
@@ -205,6 +208,24 @@ public class SessionManager {
 	}
 
 	/**
+	 * Work out if we should continue the same session or start a new
+	 * one.
+	 * 
+	 * @param schedBlock - a SchedBlock
+	 * @param reference - an IDLEntityRef
+	 * @return <code>true</code> we should keep the same session or
+	 *         <code>false</code> if we should start a new one.
+	 */
+	private boolean continueSession(SchedBlock   schedBlock,
+			                        IDLEntityRef reference) {
+		if (newSessionPerExecution) { // Should we always start a new one?
+			return false;
+		}
+		// Otherwise keep the session going if it's the same SB
+		return isSameSchedBlock(schedBlock, reference);
+	}
+
+	/**
 	 * Construct a suitable title for a session of observing the given
 	 * SchedBlock (which is expected to be in the given Project). If
 	 * all the fields are there, this will be:
@@ -224,15 +245,26 @@ public class SessionManager {
 		String projectCode = project.getCode();
 		String sbName = sb.getName();
 		String sbUid  = sb.getUid();
-		
-		if (project.getName().equals("")) {
+		try {
+			if (project.getName().equals("")) {
+				projectName = "unnamed ObsProject";
+			}
+		} catch (NullPointerException ex) {
 			projectName = "unnamed ObsProject";
 		}
-		if (project.getCode().equals("")) {
-			projectCode = project.getUid();
+		try {
+			if (project.getCode().equals("")) {
+				projectCode = project.getUid();
+			}
+		} catch (NullPointerException ex) {
+			projectName = "unnamed ObsProject";
 		}
-		if (sb.getName().equals("")) {
-			projectName = "unnamed SchedBlock";
+		try {
+			if (sb.getName().equals("")) {
+				projectName = "unnamed SchedBlock";
+			}
+		} catch (NullPointerException ex) {
+			projectName = "unnamed ObsProject";
 		}
 		
 		return String.format("%s (%s) %s (%s)",
@@ -348,12 +380,15 @@ public class SessionManager {
 	}
 
 	public IDLEntityRef observeSB(SchedBlock sb) {
-		if (!isSameSchedBlock(sb, currentSB)) {
-			// Different SB
+		if (!continueSession(sb, currentSB)) {
+			// Start a new session
 			endObservingSession();
 			final String projectUID = sb.getProjectUid();
 			final ObsProject op = model.getObsProjectDao().findByEntityId(projectUID);
 			startObservingSession(op, sb);
+		} else {
+			logger.info(String.format("%s.continueObservingSession",
+					arrayName));
 		}
 
 		return getCurrentSession();

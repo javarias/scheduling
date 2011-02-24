@@ -176,9 +176,7 @@ public class ExecutionContext {
 				addExecStatus(sbStatus, aes.getFinalState());
 				accountExecution(sbStatus, execTime);
 			} catch (Exception e) {
-				ErrorHandling
-						.warning(
-								logger,
+				ErrorHandling.warning(logger,
 								String.format(
 										"Error post-processing completed SchedBlock %s @ %s - %s",
 										schedBlockItem.getUid(),
@@ -755,103 +753,111 @@ public class ExecutionContext {
 
     
     
-	public void accountExecution(SBStatus sbStatus, long secs)
-			throws AcsJNullEntityIdEx, AcsJNoSuchEntityEx,
-			AcsJInappropriateEntityTypeEx, AcsJStateIOFailedEx,
-			AcsJNoSuchTransitionEx, AcsJNotAuthorizedEx,
-			AcsJPreconditionFailedEx, AcsJPostconditionFailedEx,
-			AcsJIllegalArgumentEx {
-		double time = schedBlock.getSchedBlockControl()
-				.getAccumulatedExecutionTime() + (secs / 3600.0);
-		schedBlock.getSchedBlockControl().setAccumulatedExecutionTime(time);
-		schedBlock.getSchedBlockControl().setExecutionCount(
-				schedBlock.getSchedBlockControl().getExecutionCount() + 1);
-		ObsProject prj = getModel().getObsProjectDao().findByEntityId(
-				schedBlock.getProjectUid());
-		prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
-
-		// Avoid saves to the SWDB, due synch issues
-		// model.getObsProjectDao().saveOrUpdate(prj);
-		// model.getSchedBlockDao().saveOrUpdate(schedBlock);
-
+    public void accountExecution(SBStatus sbStatus, long secs)
+    			throws AcsJNullEntityIdEx,
+    			       AcsJNoSuchEntityEx,
+    			       AcsJInappropriateEntityTypeEx,
+    			       AcsJStateIOFailedEx,
+    			       AcsJNoSuchTransitionEx,
+    			       AcsJNotAuthorizedEx,
+    			       AcsJPreconditionFailedEx,
+    			       AcsJPostconditionFailedEx
+    			       , AcsJIllegalArgumentEx {
+    	double time = schedBlock.getSchedBlockControl().getAccumulatedExecutionTime() + (secs / 3600.0);
+    	schedBlock.getSchedBlockControl().setAccumulatedExecutionTime(time);
+    	schedBlock.getSchedBlockControl().setExecutionCount(schedBlock.getSchedBlockControl().getExecutionCount() + 1);
+    	ObsProject prj = getModel().getObsProjectDao().findByEntityId(schedBlock.getProjectUid());
+    	prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
+    	
+    	//Avoid saves to the SWDB, due synch issues
+//    	model.getObsProjectDao().saveOrUpdate(prj);
+//		model.getSchedBlockDao().saveOrUpdate(schedBlock);
+		
 		// Update State Archive Statuses
 		SchedBlock sb = getSchedBlock();
 		SBStatusEntityT sbId = sb.getStatusEntity();
 
-		updateForSuccess(sbStatus, dateFormat.format(new Date()), (int) secs,
-				sb.getCsv());
+    	updateForSuccess(sbStatus,
+		                 dateFormat.format(new Date()),
+		                 (int) secs,
+		                 sb.getCsv());
+    	
+	// Do the state transition
+	StatusTStateType fromStatus = null;
+	StatusTStateType toStatus = null;
 
-		// Do the state transition
-		StatusTStateType fromStatus = null;
-		StatusTStateType toStatus = null;
-
-		if (sb.getCsv()) {
-			fromStatus = StatusTStateType.CSVRUNNING;
-			toStatus = StatusTStateType.CSVREADY;
+	if (sb.getCsv()) {
+	    fromStatus = StatusTStateType.CSVRUNNING;
+	    toStatus = StatusTStateType.CSVREADY;
+	} else {
+	    fromStatus = StatusTStateType.RUNNING;
+	    if (executor.fullAuto()) {
+		if (getSchedBlock().needsMoreExecutions(sbStatus)) {
+		    toStatus = StatusTStateType.READY;
 		} else {
-			fromStatus = StatusTStateType.RUNNING;
-			if (executor.fullAuto()) {
-				if (getSchedBlock().needsMoreExecutions(sbStatus)) {
-					toStatus = StatusTStateType.READY;
-				} else {
-					toStatus = StatusTStateType.SUSPENDED;
-				}
-			} else {
-				toStatus = StatusTStateType.SUSPENDED;
-			}
+		    toStatus = StatusTStateType.SUSPENDED;
 		}
-		doStateArchiveTransition(sbId, fromStatus, toStatus);
+	    } else {
+		toStatus = StatusTStateType.SUSPENDED;
+	    }
 	}
-
-	public void accountFailure(SBStatus sbStatus)
-			throws AcsJNoSuchTransitionEx, AcsJNotAuthorizedEx,
-			AcsJPreconditionFailedEx, AcsJPostconditionFailedEx,
-			AcsJIllegalArgumentEx, AcsJNoSuchEntityEx, AcsJNullEntityIdEx,
-			AcsJInappropriateEntityTypeEx {
-		// if (schedBlock.getParent().getFailuresCount() != null)
-		// schedBlock.getParent().setFailuresCount(schedBlock.getParent().getFailuresCount());
-		// else
-		// schedBlock.getParent().setFailuresCount(1);
-
-		// OUSStatusEntityT ousId =
-		// getSchedBlock().getParent().getStatusEntity();
-		// OUSStatus ousS;
-
+	doStateArchiveTransition(sbId, fromStatus, toStatus);
+    }
+    
+    public void accountFailure(SBStatus sbStatus)
+    							 throws AcsJNoSuchTransitionEx,
+                                        AcsJNotAuthorizedEx,
+                                        AcsJPreconditionFailedEx,
+                                        AcsJPostconditionFailedEx,
+                                        AcsJIllegalArgumentEx,
+                                        AcsJNoSuchEntityEx,
+                                        AcsJNullEntityIdEx,
+                                        AcsJInappropriateEntityTypeEx {
+//    	if (schedBlock.getParent().getFailuresCount() != null)	
+//    		schedBlock.getParent().setFailuresCount(schedBlock.getParent().getFailuresCount());
+//    	else
+//    		schedBlock.getParent().setFailuresCount(1);
+    	
+//		OUSStatusEntityT ousId = getSchedBlock().getParent().getStatusEntity();
+//		OUSStatus ousS;
+		
 		// Update State Archive Statuses
-		// ousS = getModel().getStateArchive().getOUSStatus(ousId);
-		// ousS.setNumberSBsFailed(ousS.getNumberSBsFailed() + 1);
-		// getModel().getStateArchive().update(ousS);
+//			ousS = getModel().getStateArchive().getOUSStatus(ousId);
+//			ousS.setNumberSBsFailed(ousS.getNumberSBsFailed() + 1);
+//			getModel().getStateArchive().update(ousS);
+			
+    	updateForFailure(sbStatus,
+    			         dateFormat.format(new Date()));
+    	StatusTStateType fromStatus = null;
+    	StatusTStateType toStatus = null;
+	
+    	if (getSchedBlock().getCsv()) {
+	    fromStatus = StatusTStateType.CSVRUNNING;
+	    toStatus = StatusTStateType.CSVREADY;
+    	} else {
+	    fromStatus = StatusTStateType.RUNNING;
+	    toStatus = StatusTStateType.SUSPENDED;
+    	}
+    	doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus, toStatus);
+    }
 
-		updateForFailure(sbStatus, dateFormat.format(new Date()));
-		StatusTStateType fromStatus = null;
-		StatusTStateType toStatus = null;
-
-		if (getSchedBlock().getCsv()) {
-			fromStatus = StatusTStateType.CSVRUNNING;
-			toStatus = StatusTStateType.CSVREADY;
-		} else {
-			fromStatus = StatusTStateType.RUNNING;
-			toStatus = StatusTStateType.SUSPENDED;
-		}
-		doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus,
-				toStatus);
-	}
-
-	private void doStateArchiveTransition(SBStatusEntityT sbStatusId,
-			StatusTStateType fromStatus, StatusTStateType toStatus)
-			throws AcsJNoSuchTransitionEx, AcsJNotAuthorizedEx,
-			AcsJPreconditionFailedEx, AcsJPostconditionFailedEx,
-			AcsJIllegalArgumentEx, AcsJNoSuchEntityEx {
-
-		final String subsystem = Subsystem.SCHEDULING;
-		final String role = Role.AOD;
-
-		logger.info("Doing transition of SBStatusEntityT: "
-				+ sbStatusId.getEntityId() + " from: " + fromStatus + " to: "
-				+ toStatus + ", Role: " + role);
-		getModel().getStateEngine().changeState(sbStatusId, toStatus,
-				subsystem, role);
-	}
+    private void doStateArchiveTransition(SBStatusEntityT  sbStatusId,
+					  StatusTStateType fromStatus,
+					  StatusTStateType toStatus)
+    		throws AcsJNoSuchTransitionEx,
+		       AcsJNotAuthorizedEx,
+		       AcsJPreconditionFailedEx,
+		       AcsJPostconditionFailedEx,
+		       AcsJIllegalArgumentEx,
+		       AcsJNoSuchEntityEx {
+    	
+	final String subsystem = Subsystem.SCHEDULING;
+	final String role = Role.AOD;
+	
+	logger.info("Doing transition of SBStatusEntityT: " + sbStatusId.getEntityId() +  
+		    " from: " + fromStatus + " to: " + toStatus + ", Role: " + role);
+	getModel().getStateEngine().changeState(sbStatusId, toStatus, subsystem, role);
+    }
 
     /**
      * @return
@@ -895,4 +901,12 @@ public class ExecutionContext {
     		}
     	}
     }
+
+	public String getStateName() {
+		try {
+			return state.toString();
+		} catch (NullPointerException e) {
+			return "";
+		}
+	}
 }

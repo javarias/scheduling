@@ -132,11 +132,6 @@ public class ArrayPanel extends AbstractArrayPanel {
 	
 	@Override
 	protected void arrayAvailable() {
-		System.out.format("%s (ArrayPanel).arrayAvailable() - %s is %s @ %h%n",
-				this.getClass().getSimpleName(),
-				arrayName,
-				array.getClass().getSimpleName(),
-				array.hashCode());
 		setModesInTitle(array.getModes());
 		cup.setArray(array);
 		cup.arrayAvailable();

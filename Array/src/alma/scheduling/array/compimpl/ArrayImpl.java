@@ -21,6 +21,8 @@ package alma.scheduling.array.compimpl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
@@ -31,12 +33,12 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.asdmIDLTypes.IDLEntityRef;
-import alma.hla.runtime.asdm.types.EntityRef;
 import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.SchedBlockExecutionCallback;
+import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockScore;
@@ -80,6 +82,13 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private AcsProvider serviceProvider;
     
+    //Conditions variables to signal when the array is configured
+    final Lock lock = new ReentrantLock();
+    
+    
+    public ArrayImpl() {
+    	lock.lock();
+    }
     
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -103,64 +112,76 @@ public class ArrayImpl implements ComponentLifecycle,
     	return false;
     }
     
-    @Override
-    public void configure(String arrayName, ArraySchedulerMode[] modes,
-            ArraySchedulerLifecycleType lifecycleType) {
-        
-        this.arrayName = arrayName;
-        this.modes = modes;
-        this.lifecycleType = lifecycleType;
-        
-        final boolean manual = isManual(modes);
-        Services services = null;
-        
-        try {
-            serviceProvider = new AcsProvider(containerServices,
-            		                          arrayName,
-            		                          manual);
-            services = new Services(serviceProvider);
-        } catch (TranslationException e) {
-            ErrorHandling.warning(logger,
-            		String.format("Error in array name %s - %s (more details in finer logs)",
-            				arrayName, e.getMessage()), e);
-        } catch (AcsJException e) {
-            ErrorHandling.warning(logger,
-            		String.format("Error linking to services for %s - %s (more details in finer logs)",
-            				arrayName, e.getMessage()), e);
-        }
-        
-        LinkedReorderingBlockingQueue<SchedBlockItem> q;
-        if (manual) {
-        	q = new LinkedReorderingBlockingQueue<SchedBlockItem>(1);
-        } else {
-        	q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
-        }
-            
-        queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
-        
-        executor = new Executor(arrayName, queue);
-        executor.configureManual(manual);
-        executor.configureServices(services);
-        executor.configureSessionManager(
-        		new SessionManager(arrayName, containerServices, services));
-        
-        queueNotifier = new SchedBlockQueueCallbackNotifier();
-        executorNotifier = new ExecutorCallbackNotifier();
-        guiNotifier = new ArrayGUICallbackNotifier();
-        
-        queue.addObserver(queueNotifier);
-        executor.addObserver(executorNotifier);
-        executor.addObserver(guiNotifier);
-        
-        serviceProvider.getControlEventReceiver().attach("alma.Control.ExecBlockStartedEvent", executor);
-        serviceProvider.getControlEventReceiver().attach("alma.Control.ExecBlockEndedEvent", executor);
-        serviceProvider.getControlEventReceiver().attach("alma.offline.ASDMArchivedEvent", executor);
-        serviceProvider.getControlEventReceiver().begin();
-        
-        if (manual) {
-	    executor.setFullAuto(true, "Master Scheduler", "array configuration");
-	    executor.start("Master Scheduler", "array configuration");
-        }
+	@Override
+	public void configure(String arrayName, ArraySchedulerMode[] modes,
+			ArraySchedulerLifecycleType lifecycleType) {
+		try {
+			this.arrayName = arrayName;
+			this.modes = modes;
+			this.lifecycleType = lifecycleType;
+
+			final boolean manual = isManual(modes);
+			Services services = null;
+
+			try {
+				serviceProvider = new AcsProvider(containerServices, arrayName,
+						manual);
+				services = new Services(serviceProvider);
+			} catch (TranslationException e) {
+				ErrorHandling
+						.warning(
+								logger,
+								String.format(
+										"Error in array name %s - %s (more details in finer logs)",
+										arrayName, e.getMessage()), e);
+			} catch (AcsJException e) {
+				ErrorHandling
+						.warning(
+								logger,
+								String.format(
+										"Error linking to services for %s - %s (more details in finer logs)",
+										arrayName, e.getMessage()), e);
+			}
+
+			LinkedReorderingBlockingQueue<SchedBlockItem> q;
+			if (manual) {
+				q = new LinkedReorderingBlockingQueue<SchedBlockItem>(1);
+			} else {
+				q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
+			}
+
+			queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
+
+			executor = new Executor(arrayName, queue);
+			executor.configureManual(manual);
+			executor.configureServices(services);
+			executor.configureSessionManager(new SessionManager(arrayName,
+					containerServices, services, manual));
+
+			queueNotifier = new SchedBlockQueueCallbackNotifier();
+			executorNotifier = new ExecutorCallbackNotifier();
+			guiNotifier = new ArrayGUICallbackNotifier();
+
+			queue.addObserver(queueNotifier);
+			executor.addObserver(executorNotifier);
+			executor.addObserver(guiNotifier);
+
+			serviceProvider.getControlEventReceiver().attach(
+					"alma.Control.ExecBlockStartedEvent", executor);
+			serviceProvider.getControlEventReceiver().attach(
+					"alma.Control.ExecBlockEndedEvent", executor);
+			serviceProvider.getControlEventReceiver().attach(
+					"alma.offline.ASDMArchivedEvent", executor);
+			serviceProvider.getControlEventReceiver().begin();
+
+			if (manual) {
+				executor.setFullAuto(true, "Master Scheduler",
+						"array configuration");
+				executor.start("Master Scheduler", "array configuration");
+			}
+		} finally {
+			lock.unlock();
+		}
     }
 
     @Override
@@ -292,8 +313,14 @@ public class ArrayImpl implements ComponentLifecycle,
     }
 
     @Override
-    public void addMonitorQueue(String monitorName, SchedBlockQueueCallback callback) {
-        queueNotifier.registerMonitor(monitorName, callback);
+	public void addMonitorQueue(String monitorName,
+			SchedBlockQueueCallback callback) {
+		lock.lock();
+		try {
+			queueNotifier.registerMonitor(monitorName, callback);
+		} finally {
+			lock.unlock();
+		}
     }
     
 	@Override
@@ -301,10 +328,16 @@ public class ArrayImpl implements ComponentLifecycle,
 		queueNotifier.unregisterMonitor(monitorName);
 	}
 
-    @Override
-    public void addMonitorExecution(String monitorName, SchedBlockExecutionCallback callback) {
-        executorNotifier.registerMonitor(monitorName, callback);
-    }
+	@Override
+	public void addMonitorExecution(String monitorName,
+			SchedBlockExecutionCallback callback) {
+		lock.lock();
+		try {
+			executorNotifier.registerMonitor(monitorName, callback);
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	@Override
 	public void removeMonitorExecution(String monitorName) {
@@ -312,10 +345,15 @@ public class ArrayImpl implements ComponentLifecycle,
 		
 	}
 
-    @Override
+	@Override
 	public void addMonitorGUI(String monitorName, ArrayGUICallback callback) {
-        guiNotifier.registerMonitor(monitorName, callback);
-    }
+		lock.lock();
+		try {
+			guiNotifier.registerMonitor(monitorName, callback);
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	@Override
 	public void removeMonitorGUI(String monitorName) {
@@ -363,6 +401,11 @@ public class ArrayImpl implements ComponentLifecycle,
 	@Override
 	public void destroyArray() {
 		executor.destroyArray();
+	}
+
+	@Override
+	public SchedBlockExecutionItem[] getExecutions() {
+		return executor.getExecutions();
 	}
 
     /**

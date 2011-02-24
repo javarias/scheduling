@@ -3,13 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/SchedulingArray.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
-	<classpathentry kind="lib" path="lib/SchedulingArrayExceptions.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JACORB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Common-HEAD"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DSA-HEAD"/>
 	<classpathentry kind="output" path="object/SchedulingArrayImpl"/>
 </classpath>

@@ -51,6 +51,7 @@ import javax.swing.table.TableRowSorter;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.scheduling.ArrayGUIOperation;
+import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.array.executor.AbortingExecutionState;
 import alma.scheduling.array.executor.ArchivingExecutionState;
@@ -69,7 +70,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.3 2011/02/04 17:19:36 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.4 2011/02/24 22:42:50 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -587,17 +588,29 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		return result;
 	}
 
+	/**
+	 * Manifest a single SchedBlockExecutionItem
+	 * 
+	 * @param item
+	 * @return
+	 */
+	public ManifestSchedBlockQueueItem getSchedBlock(
+			SchedBlockExecutionItem item) {
+		final ModelAccessor ma = getModels();
+		final SchedBlock sb = ma.getSchedBlockFromEntityId(item.uid);
+		final SchedBlockQueueItem fake = new SchedBlockQueueItem(
+				item.timestamp, item.uid);
+		final ManifestSchedBlockQueueItem result =
+			new ManifestSchedBlockQueueItem(fake, sb, item.executionState);
+		
+		return result;
+	}
+
     /* (non-Javadoc)
      * @see alma.scheduling.array.guis.AbstractArrayPanel#arrayAvailable()
      */
     @Override
     protected void arrayAvailable() {
-    	System.out.format("%s (CurrentActivityPanel).arrayAvailable() - %s is %s @ %h%n",
-			this.getClass().getSimpleName(),
-			arrayName,
-			array.getClass().getSimpleName(),
-			array.hashCode());
-
     	if (getArray().isManual()) {
     		currentPanelLabel.setText("Configured SchedBlock");
     		bottomSplit.setDividerLocation(1.0/3.0);
@@ -613,9 +626,19 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
     		normalButtons.setVisible(true);
     		manualButtons.setVisible(false);
     	}
-    	final SchedBlockQueueItem[] ids = getArray().getQueue();
-    	final List<ManifestSchedBlockQueueItem> blocks = getSchedBlocks(ids);
+    	
+    	SchedBlockQueueItem[] ids;
+    	List<ManifestSchedBlockQueueItem> blocks;
+    	
+    	ids = getArray().getQueue();
+    	blocks = getSchedBlocks(ids);
     	pendingModel.setData(blocks);
+    	
+		final SchedBlockExecutionItem[] items = array.getExecutions();
+		for (final SchedBlockExecutionItem item : items) {
+			addExecutionToModels(item);
+		}
+
     	showConnectivity();
     }
 
@@ -772,9 +795,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	@Override
 	protected void setArray(ArrayAccessor array) {
 		super.setArray(array);
-		System.out.format("%s (CurrentActivityPanel).setArray(ArrayAccessor @ %h)%n",
-				this.getClass().getSimpleName(),
-				array.hashCode());
+
 		PropertyChangeListener queueListener = new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -821,37 +842,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 
 				SchedBlockQueueItem item = (SchedBlockQueueItem) evt.getNewValue();
 				final String state = evt.getPropertyName();
-				
-				final ManifestSchedBlockQueueItem block = getSchedBlock(item);
-				if (!PastStates.contains(block.getExecutionState())) {
-					// Don't do anything if the execution is already in
-					// a past (terminal) state. The notifications are
-					// not guaranteed to arrive in the order sent!
-					block.setExecutionState(state);
-					if (CurrentStates.contains(state)) {
-						currentModel.ensureIn(block);
-					} else if (PastStates.contains(state)) {
-						currentModel.ensureOut(block);
-						pastModel.ensureIn(block);
-					}
-				}
-				if (RunningStates.contains(state)) {
-					// This execution is actively running.
-					if (runningExecution == null) {
-						// Nothing running, so use the new block
-						runningExecution = block.getItem();
-					} else if (!isRunningExecution(block)) {
-						// Something else is currently running.
-						// TODO: R8 something sensible.
-					}
-				} else {
-					// This execution is not actively running
-					if (isRunningExecution(block)) {
-						// but it was, so clear it
-						runningExecution = null;
-					}
-				}
-				stopSB.setEnabled(runningExecution != null);
+				addExecutionToModels(item, state);
 			}
 		};
 
@@ -908,6 +899,49 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		updateArrayButtons();
 		updateSBButtons();
 	}
+	
+	private void addExecutionToModels(SchedBlockExecutionItem item) {	
+		final ManifestSchedBlockQueueItem block = getSchedBlock(item);
+		addExecutionToModels(block, item.executionState);
+	}
+	
+	private void addExecutionToModels(SchedBlockQueueItem item, String state) {	
+		final ManifestSchedBlockQueueItem block = getSchedBlock(item);
+		addExecutionToModels(block, state);
+	}
+
+	private void addExecutionToModels(ManifestSchedBlockQueueItem block, String state) {
+		if (!PastStates.contains(block.getExecutionState())) {
+			// Don't do anything if the execution is already in
+			// a past (terminal) state. The notifications are
+			// not guaranteed to arrive in the order sent!
+			block.setExecutionState(state);
+			if (CurrentStates.contains(state)) {
+				currentModel.ensureIn(block);
+			} else if (PastStates.contains(state)) {
+				currentModel.ensureOut(block);
+				pastModel.ensureIn(block);
+			}
+		}
+		if (RunningStates.contains(state)) {
+			// This execution is actively running.
+			if (runningExecution == null) {
+				// Nothing running, so use the new block
+				runningExecution = block.getItem();
+			} else if (!isRunningExecution(block)) {
+				// Something else is currently running.
+				// TODO: R8 something sensible.
+			}
+		} else {
+			// This execution is not actively running
+			if (isRunningExecution(block)) {
+				// but it was, so clear it
+				runningExecution = null;
+			}
+		}
+		stopSB.setEnabled(runningExecution != null);
+	}
+
 	/* End Listening
 	 * ============================================================= */
 

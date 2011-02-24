@@ -33,6 +33,7 @@ import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.offline.ASDMArchivedEvent;
 import alma.scheduling.ArrayGUIOperation;
+import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
@@ -477,7 +478,29 @@ public class Executor extends Observable {
 	return queue;
     }
 	
-    /**
+	public SchedBlockExecutionItem[] getExecutions() {
+	    List<SchedBlockExecutionItem> retVal = new ArrayList<SchedBlockExecutionItem>();
+	    if (currentExecution != null) {
+	    	// Add in any current execution
+	    	final SchedBlockExecutionItem sbei = new SchedBlockExecutionItem(
+	    			currentExecution.getQueuedTimestamp(),
+	    			currentExecution.getSbUid(),
+	    			currentExecution.getStateName());
+	    	retVal.add(sbei);
+	    }
+	    // Now add the past executions
+    	for (Iterator<ExecutionContext> iter = getPastExecutions().iterator(); iter.hasNext();) {
+    		ExecutionContext ctx = iter.next();
+	    	final SchedBlockExecutionItem sbei = new SchedBlockExecutionItem(
+	    			ctx.getQueuedTimestamp(),
+	    			ctx.getSbUid(),
+	    			ctx.getStateName());
+	    	retVal.add(sbei);
+    	}
+		return retVal.toArray(new SchedBlockExecutionItem[0]);
+	}
+
+	/**
      * Method called by control when the user calls beginExecution from the CCL.
      * This method gives control the the SB id and the session id to use through
      * out the execution. It is only needed in manual mode when the user wants

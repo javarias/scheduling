@@ -33,7 +33,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
  * alma.scheduling.datamodel.obsproject.ObsProjects.
  * 
  * @author dclarke
- * $Id: ObsProjectTableModel.java,v 1.4 2011/01/28 00:35:31 javarias Exp $
+ * $Id: ObsProjectTableModel.java,v 1.5 2011/02/24 22:42:50 javarias Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class ObsProjectTableModel extends AbstractTableModel {
@@ -108,16 +108,17 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	 * ================================================================
 	 */
 	private static final int               Column_Name =  0;
-	private static final int               Column_Code =  1;
-	private static final int                 Column_PI =  2;
-	private static final int       Column_ScienceScore =  3;
-	private static final int        Column_ScienceRank =  4;
-	private static final int        Column_LetterGrade =  5;
-	private static final int              Column_State =  6;
-	private static final int           Column_EntityId =  7;
-	private static final int                Column_CSV =  8;
-	private static final int Column_TotalExecutionTime =  9;
-	private static final int               NUM_COLUMNS = 10;
+	private static final int            Column_Version =  1;
+	private static final int               Column_Code =  2;
+	private static final int                 Column_PI =  3;
+	private static final int       Column_ScienceScore =  4;
+	private static final int        Column_ScienceRank =  5;
+	private static final int        Column_LetterGrade =  6;
+	private static final int              Column_State =  7;
+	private static final int           Column_EntityId =  8;
+	private static final int                Column_CSV =  9;
+	private static final int Column_TotalExecutionTime = 10;
+	private static final int               NUM_COLUMNS = 11;
 	
 
 	/* (non-Javadoc)
@@ -155,6 +156,8 @@ public class ObsProjectTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case Column_Name:
 			return obsProject.getName();
+		case Column_Version:
+			return obsProject.getVersion();
 		case Column_Code:
 			return obsProject.getCode();
 		case Column_PI:
@@ -189,6 +192,8 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(int columnIndex) {
 		switch (columnIndex) {
 		case Column_Name:
+			return String.class;
+		case Column_Version:
 			return String.class;
 		case Column_Code:
 			return String.class;
@@ -228,6 +233,8 @@ public class ObsProjectTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case Column_Name:
 			return "Name";
+		case Column_Version:
+			return "Version";
 		case Column_Code:
 			return "Code";
 		case Column_PI:

@@ -21,6 +21,7 @@ package alma.scheduling.array.guis;
 import java.util.Set;
 
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
+import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -41,7 +42,7 @@ import alma.scheduling.datamodel.obsproject.WeatherDependentVariables;
  * in question rather than just it's Entity ID.
  * 
  * @author dclarke
- * $Id: ManifestSchedBlockQueueItem.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
+ * $Id: ManifestSchedBlockQueueItem.java,v 1.3 2011/02/24 22:42:50 javarias Exp $
  */
 public class ManifestSchedBlockQueueItem {
 	/*
@@ -83,6 +84,20 @@ public class ManifestSchedBlockQueueItem {
 		this.executionState = schedBlock.
 								getSchedBlockControl().
 								getState().toString();
+	}
+
+	/**
+	 * Construct from field values.
+	 * 
+	 * @param item
+	 * @param schedBlock
+	 */
+	public ManifestSchedBlockQueueItem(SchedBlockQueueItem item,
+									   SchedBlock          schedBlock,
+									   String              executionState) {
+		this.item = item;
+		this.schedBlock = schedBlock;
+		this.executionState = executionState;
 	}
 	/* End Construction
 	 * ============================================================= */

@@ -5,12 +5,12 @@
 	<classpathentry kind="lib" path="lib/SchedulingMaster.jar"/>
 	<classpathentry kind="lib" path="lib/SchedulingMasterExceptions.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Array"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
-	<classpathentry kind="lib" path="/Array/lib/SchedulingArray.jar"/>
-	<classpathentry kind="lib" path="/Array/lib/SchedulingArrayExceptions.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/acs"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/introot"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jacorb"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ACSROOT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/INTROOT"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JACORB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Array-HEAD"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Common-HEAD"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ArchiveUpdater-HEAD"/>
+	<classpathentry kind="lib" path="/ArchiveUpdater-HEAD/lib/SchedulingArchiveUpdater.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

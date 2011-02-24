@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.11 2011/01/28 00:35:31 javarias Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.12 2011/02/24 22:42:50 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -142,6 +142,14 @@ public class ObsProject {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+    
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
     
     public String getPrincipalInvestigator() {

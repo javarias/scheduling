@@ -56,6 +56,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.array.guis.ArrayPanel;
 import alma.scheduling.utils.ErrorHandling;
+import alma.scheduling.utils.SchedulingProperties;
 
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
 
@@ -522,17 +523,19 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     				"Error creating array", JOptionPane.ERROR_MESSAGE);
     		return false;
     	}
-    	try {
-    		ArrayPanel arrayPanel = new ArrayPanel(arrayName);
-    		container.startChildPlugin(arrayName, arrayPanel);
-    	} catch(Exception e) {
-    		e.printStackTrace();
-    		JOptionPane.showMessageDialog(this, e.toString() +
-    				"\nProblem creating or displaying the array panel for " +
-    				arrayName + "\n\n" +
-    				ErrorHandling.printedStackTrace(e), 
-    				"Error creating array panel", JOptionPane.ERROR_MESSAGE);
-    		return false;
+    	if (SchedulingProperties.isAutoPopupArrayPlugin()) {
+    		try {
+    			ArrayPanel arrayPanel = new ArrayPanel(arrayName);
+    			container.startChildPlugin(arrayName, arrayPanel);
+    		} catch(Exception e) {
+    			e.printStackTrace();
+    			JOptionPane.showMessageDialog(this, e.toString() +
+    					"\nProblem creating or displaying the array panel for " +
+    					arrayName + "\n\n" +
+    					ErrorHandling.printedStackTrace(e), 
+    					"Error creating array panel", JOptionPane.ERROR_MESSAGE);
+    			return false;
+    		}
     	}
     	return true;
     }

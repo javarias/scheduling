@@ -78,7 +78,7 @@ import alma.scheduling.swingx.CallbackFilter;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.10 2011/02/04 17:19:36 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.11 2011/02/24 22:42:50 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -496,11 +496,6 @@ public class InteractivePanel extends AbstractArrayPanel
      */
     @Override
     protected void arrayAvailable() {
-		System.out.format("%s (InteractivePanel).arrayAvailable() - %s is %s @ %h%n",
-				this.getClass().getSimpleName(),
-				arrayName,
-				array.getClass().getSimpleName(),
-				array.hashCode());
 		if (getModels() != null) {
 			getData();
 		}
@@ -1294,9 +1289,6 @@ public class InteractivePanel extends AbstractArrayPanel
 	@Override
 	protected void setArray(ArrayAccessor array) {
 		super.setArray(array);
-		System.out.format("%s (InteractivePanel).setArray(ArrayAccessor @ %h)%n",
-				this.getClass().getSimpleName(),
-				array.hashCode());
 	
 		PropertyChangeListener guiListener = new PropertyChangeListener() {
 			@Override

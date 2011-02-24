@@ -27,6 +27,7 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayHelper;
 import alma.scheduling.ArraySchedulerMode;
+import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockScore;
 import alma.scheduling.array.compimpl.ArrayGUICallbackImpl;
@@ -52,6 +53,7 @@ public class ArrayAccessor {
     private SchedBlockExecutionCallbackImpl executionCallback;
     private String guiCallbackName;
     private ArrayGUICallbackImpl guiCallback;
+    private final static long MAX_WAIT_TIME_MILLIS = 300000;
     
     
     public ArrayAccessor(PluginContainerServices services, String arrayName) throws AcsJContainerServicesEx, TranslationException {
@@ -75,6 +77,10 @@ public class ArrayAccessor {
 
 	public SchedBlockQueueItem[] getQueue() {
 		return array.getQueue();
+	}
+
+	public SchedBlockExecutionItem[] getExecutions() {
+		return array.getExecutions();
 	}
 
 	public int getQueueCapacity() {
@@ -124,23 +130,95 @@ public class ArrayAccessor {
 	public void registerQueueCallback(PropertyChangeListener listener) throws AcsJContainerServicesEx {
 		services.getLogger().info("Registering Queue Callback");
 		queueCallbackName = array.name() + "_" + System.currentTimeMillis();
-		queueCallback = new SchedBlockQueueCallbackImpl(services.getLogger(), listener);
+		queueCallback = new SchedBlockQueueCallbackImpl(services.getLogger(),
+				listener);
 		services.activateOffShoot(queueCallback);
-		array.addMonitorQueue(queueCallbackName, queueCallback._this());
+		final long maxWaitTimeMillis = System.currentTimeMillis() + MAX_WAIT_TIME_MILLIS;
+		boolean succeed = false;
+		Exception ex = null;
+		while (!succeed && (System.currentTimeMillis() <= maxWaitTimeMillis)) {
+			try {
+				array.addMonitorQueue(queueCallbackName, queueCallback._this());
+				succeed = true;
+			} catch (Exception e) {
+				ex = e; // Save last Exception just in case
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		if (!succeed) {
+			services.getLogger().severe(
+					"Queue Callback could not be installed in Array.");
+			throw new RuntimeException(
+					"Queue Callback could not be installed in Array.", ex);
+		}
 	}
 	
-	public void registerExecutionCallback(PropertyChangeListener pcl) throws AcsJContainerServicesEx{
-        executionCallbackName = array.name() + "_" + System.currentTimeMillis();
-		executionCallback = new SchedBlockExecutionCallbackImpl(services.getLogger(), pcl);
+	public void registerExecutionCallback(PropertyChangeListener pcl)
+			throws AcsJContainerServicesEx {
+		services.getLogger().info("Registering Execution Callback");
+		executionCallbackName = array.name() + "_" + System.currentTimeMillis();
+		executionCallback = new SchedBlockExecutionCallbackImpl(
+				services.getLogger(), pcl);
 		services.activateOffShoot(executionCallback);
-		array.addMonitorExecution(executionCallbackName, executionCallback._this());
+		final long maxWaitTimeMillis = System.currentTimeMillis() + MAX_WAIT_TIME_MILLIS;
+		boolean succeed = false;
+		Exception ex = null;
+		while (!succeed && (System.currentTimeMillis() <= maxWaitTimeMillis)) {
+			try {
+				array.addMonitorExecution(executionCallbackName,
+						executionCallback._this());
+				succeed = true;
+			} catch (Exception e) {
+				ex = e; // Save last Exception just in case
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		if (!succeed) {
+			services.getLogger().severe(
+					"Execution Callback could not be installed in Array.");
+			throw new RuntimeException(
+					"Execution Callback could not be installed in Array.", ex);
+		}
 	}
 	
-	public void registerGUICallback(PropertyChangeListener pcl) throws AcsJContainerServicesEx{
-        guiCallbackName = array.name() + "_" + System.currentTimeMillis();
+
+	
+	public void registerGUICallback(PropertyChangeListener pcl)
+			throws AcsJContainerServicesEx {
+		services.getLogger().info("Registering GUI Callback");
+		guiCallbackName = array.name() + "_" + System.currentTimeMillis();
 		guiCallback = new ArrayGUICallbackImpl(services.getLogger(), pcl);
 		services.activateOffShoot(guiCallback);
-		array.addMonitorGUI(guiCallbackName, guiCallback._this());
+		final long maxWaitTimeMillis = System.currentTimeMillis() + MAX_WAIT_TIME_MILLIS;
+		boolean succeed = false;
+		Exception ex = null;
+		while (!succeed && (System.currentTimeMillis() <= maxWaitTimeMillis)) {
+			try {
+				array.addMonitorGUI(guiCallbackName, guiCallback._this());
+				succeed = true;
+			} catch (Exception e) {
+				ex = e; // Save last Exception just in case
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		if (!succeed) {
+			services.getLogger().severe(
+					"GUI Callback could not be installed in Array.");
+			throw new RuntimeException(
+					"GUI Callback could not be installed in Array.", ex);
+		}
 	}
 	
 	private void unregisterQueueCallback() throws AcsJContainerServicesEx {

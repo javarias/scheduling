@@ -93,11 +93,7 @@ public class ControlManualArrayImpl implements ControlArray {
     @Override
     public void cleanUp() {
 	shout(String.format("%s.cleanUp()", this.getClass().getSimpleName()));
-        try {
-			container.releaseComponent(NameTranslator.arrayToControlComponentName(arrayName));
-		} catch (TranslationException e) {
-			e.printStackTrace();
-		}
+        container.releaseComponent(array.getName());
     }
     
 }
