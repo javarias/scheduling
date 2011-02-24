@@ -219,7 +219,7 @@ public class ResultComposer {
 			
 			outputOp.setAffiliation(new HashSet<Affiliation>());
 			Affiliation newAffiliation = new Affiliation();
-			newAffiliation.setExecutive( execDao.getExecutive( op.getPrincipalInvestigator()).getName() );
+			newAffiliation.setExecutive( execDao.getExecutive( op.getPrincipalInvestigator() ).getName() );
 			//TODO: Fix affiliation percentage.
 			newAffiliation.setPercentage(100.0f);
 			outputOp.getAffiliation().add( newAffiliation );

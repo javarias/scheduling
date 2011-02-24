@@ -43,7 +43,10 @@ import org.springframework.context.ApplicationContext;
 import alma.ControlSB.SB;
 import alma.scheduling.algorithm.astro.Constants;
 import alma.scheduling.algorithm.astro.CoordinatesUtil;
+import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
+import alma.scheduling.datamodel.obsproject.ObservingParameters;
+import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
@@ -66,6 +69,107 @@ public class ReportGenerator extends PsmContext {
     public ReportGenerator(String workDir){
     	super(workDir);
     }
+	/**
+	  * Retrieves data por LST Ranges report, previous any simulation execution. 
+	  * Retrieves frequencies, bands, time requested, and executive, but orders entries acoording to LST Range.
+          * FIXME: At this moment, only uses RA. Change to LST.
+	  * @return A collection of beans containing the data of all ScheckBlocks.
+	  */
+	public JRDataSource getLstRangesBeforeSim(){
+		JRBeanCollectionDataSource dataSource = null;
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
+		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
+		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerLstRange = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
+		List<SchedBlock> sbs = sbDao.findAll();
+
+		for (int i = 0; i < 24; i++) 
+			SBPerLstRange.put( determineLst( 0.1 + i ), new ArrayList<SchedBlockReportBean>() );
+
+		for( SchedBlock sb : sbs ){
+			sbDao.hydrateSchedBlockObsParams(sb);
+
+			for (int i = 0; i < 24; i++) {
+				double ra = sb.getSchedulingConstraints().getRepresentativeTarget().getSource().getCoordinates().getRA() * 24 / 360;
+				if (ra >= i && ra <= (i + 1)) {
+					SchedBlockReportBean sbrb = new SchedBlockReportBean();
+					
+					for( ObservingParameters op : sb.getObservingParameters() )
+						if (op instanceof ScienceParameters)
+	        	        	               sbrb.setFrequency(((ScienceParameters) op).getRepresentativeFrequency());
+					sbrb.setBand( determineBand( sbrb.getFrequency() ) );
+					sbrb.setExecutionTime( sb.getSchedBlockControl().getSbMaximumTime() );
+					sbrb.setExecutive( execDao.getExecutive( sb.getPiName()).getName() );
+					
+					sbrb.setLstRange( determineLst( ra ) );
+
+					if( SBPerLstRange.containsKey( sbrb.getLstRange() )){
+						SBPerLstRange.get( sbrb.getLstRange() ).add( sbrb );
+					}else{
+						ArrayList<SchedBlockReportBean> list = new ArrayList<SchedBlockReportBean>();
+						list.add( sbrb );
+						SBPerLstRange.put( sbrb.getLstRange(), list );
+					}
+					break;
+				}
+			}
+		}
+                
+		for (int i = 0; i < 24; i++){
+			ArrayList<SchedBlockReportBean> listTmp = SBPerLstRange.get( determineLst( 0.1 + i ) );
+			data.addAll( listTmp );
+		}
+		dataSource =  new JRBeanCollectionDataSource(data);
+	        return dataSource;
+	}
+
+	public JasperPrint createLstRangesBeforeSimReport(){
+		ApplicationContext ctx = ReportGenerator.getApplicationContext();
+		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
+
+		HashMap<String, String> props = new HashMap<String, String>();
+                props.put("title", "Pre simulation requests report, per scheduling blocks");
+                props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+                JRDataSource dataSource = getLstRangesBeforeSim();
+		InputStream reportStream = getClass().getClassLoader().getResourceAsStream("alma/scheduling/psm/reports/lstRangesBeforeSim.jasper");
+		System.out.println("Creating report");
+		try {
+                        JasperPrint print = JasperFillManager.fillReport(reportStream, props, dataSource);
+                        return print;
+                } catch (JRException e) {
+                        e.printStackTrace();
+                        return null;
+                }
+	}
+
+	public void lstRangesBeforeSim(){
+		JasperViewer.viewReport( createLstRangesBeforeSimReport() );
+		try {
+                        Thread.currentThread().join();
+                } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+		}
+	}
+
+
+	private String determineBand( double frequency){
+		for( int i = 3; i < ReportGenerator.ReceiverBandsRange.length; i++) {
+			if( frequency >= ReportGenerator.ReceiverBandsRange[i][0] && frequency <= ReportGenerator.ReceiverBandsRange[i][1] )
+				return new String("Band " + i );
+		}
+		return new String("Band N/A");
+	}
+
+	private String determineLst( double ra ){
+		for (int i = 0; i < 24; i++) {
+			if (ra >= i && ra <= (i + 1))
+                        	return new String( i + "-" + (i + 1) );
+		}
+		return new String("N/A");
+	}
+
     
     public JRDataSource getCrowdingReportData(){
     	JRBeanCollectionDataSource dataSource = null;
@@ -114,7 +218,7 @@ public class ReportGenerator extends PsmContext {
     }
 	
 	
-	public JRDataSource getExecutiveUsageOutputData() {
+	public JRDataSource getExecutiveAfterSimData() {
 		JRBeanCollectionDataSource dataSource = null;
 	        ApplicationContext ctx = ReportGenerator.getApplicationContext();
 	        OutputDao outDao = (OutputDao) ctx.getBean("outDao");
@@ -158,7 +262,7 @@ public class ReportGenerator extends PsmContext {
                 OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		param.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		synchronized (this) {
-			JRDataSource dataSource = getExecutiveUsageOutputData();
+			JRDataSource dataSource = getExecutiveAfterSimData();
 			try {
 				print = JasperFillManager.fillReport(reportStream, param,
 						dataSource);

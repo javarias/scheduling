@@ -142,6 +142,8 @@ public class Console {
                 	reportGenerator.lstRangeBeforeSimReport();
                 else if(args[1].compareTo("7") == 0)
                 	reportGenerator.lstRangeAfterSimReport();
+		else if(args[1].compareTo("8") == 0)
+			reportGenerator.lstRangesBeforeSim();
                 else
                     reportHelp();
             

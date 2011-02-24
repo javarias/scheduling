@@ -6,6 +6,7 @@ public class SchedBlockReportBean {
 	private String executive;
 	private String lstRange;
 	private double executionTime;
+	private double frequency;
 	
 	public static double totalExecutionTime;
 
@@ -15,6 +16,14 @@ public class SchedBlockReportBean {
 
 	public void setBand(String band) {
 		this.band = band;
+	}
+
+	public double getFrequency(){
+		return frequency;
+	}
+
+	public void setFrequency(double frequency){
+		this.frequency = frequency;
 	}
 
 	public String getExecutive() {
