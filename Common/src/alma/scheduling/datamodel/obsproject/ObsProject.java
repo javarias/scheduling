@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.12 2011/02/24 22:42:50 javarias Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.13 2011/02/24 23:00:17 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -45,6 +45,9 @@ public class ObsProject {
     
 	/** The user-entered name of the Project. To be used as a mnemonic for the user */
     private String name;
+    
+	/** The user-entered version of the Project. */
+    private String version;
     
     /**
      * The principal investigator (PI).
