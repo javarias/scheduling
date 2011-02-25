@@ -187,6 +187,7 @@ public class APDMtoSchedulingConverter {
 						"error converting APDM ObsProject %s to Scheduling Data Model - %s",
 						apdmProject.getObsProjectEntity().getEntityId(),
 						e.getMessage()), e);
+				e.printStackTrace();
 				ProjectImportEvent event = new ProjectImportEvent();
 				event.setTimestamp(new Date());
 				event.setEntityId(apdmProject.getObsProjectEntity().getEntityId());
