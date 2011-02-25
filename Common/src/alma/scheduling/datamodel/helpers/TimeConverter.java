@@ -18,6 +18,7 @@ public class TimeConverter {
 	final static double MilliSToS = 1.0e-3;
 	final static double MinToS    =   60.0;
 	final static double HToS      = 3600.0;
+	final static double DToS      = HToS * 24;
 	
 	/*
 	 * ================================================================
@@ -93,6 +94,9 @@ public class TimeConverter {
 			case TimeTUnitType.H_TYPE:
 				result *= HToS;
 				break;
+			case TimeTUnitType.D_TYPE:
+				result *= DToS;
+				break;
 			default:
 				throw new ConversionException(String.format(
 						"Unrecognised units for time: %s",
@@ -124,6 +128,9 @@ public class TimeConverter {
 				break;
 			case TimeTUnitType.H_TYPE:
 				result /= HToS;
+				break;
+			case TimeTUnitType.D_TYPE:
+				result /= DToS;
 				break;
 			default:
 				throw new ConversionException(String.format(
