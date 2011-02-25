@@ -522,8 +522,11 @@ public class APDMtoSchedulingConverter {
 		alma.entity.xmlbinding.ousstatus.OUSStatusRefT oussRef = apdmOUS
 				.getOUSStatusRef();
 		try {
-			OUSStatus ousStatus = archive.getOUSStatus(oussRef.getEntityId());
-			obsUnitSet.setStatusEntity(ousStatus.getOUSStatusEntity());
+			if (phase == Phase.PHASE2) {
+				OUSStatus ousStatus = archive.getOUSStatus(oussRef
+						.getEntityId());
+				obsUnitSet.setStatusEntity(ousStatus.getOUSStatusEntity());
+			}
 		} catch (EntityException e) {
 			throw new ConversionException(e);
 		} catch (UserException e) {
