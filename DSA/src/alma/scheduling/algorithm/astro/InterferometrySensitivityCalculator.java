@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: InterferometrySensitivityCalculator.java,v 1.2 2011/02/28 17:23:52 ahoffsta Exp $"
+ * "@(#) $Id: InterferometrySensitivityCalculator.java,v 1.3 2011/02/28 20:08:45 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -52,10 +52,18 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param ut Date in Universal time (Date)
      * @return sensitivity (Jy)
      */
-    public static double pointSourceSensitivity(double exposureTime,
-            double frequency, double bandwidth, double declination,
-            int numberAntennas, double antennaDiameter, double latitude,
-            double opacity, double atmBrightnessTemperature, Date ut) {
+    public static double pointSourceSensitivity(
+    		double exposureTime,
+            double frequency, 
+            double bandwidth, 
+            double declination,
+            int numberAntennas, 
+            double antennaDiameter, 
+            double latitude,
+            double opacity,
+            double atmBrightnessTemperature, 
+            Date ut) {
+    	
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
         double tsys = SystemTemperatureCalculator.getTsys(declination,
                 latitude, frequency, opacity, atmBrightnessTemperature, ut);
@@ -86,10 +94,19 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param ut Date in Universal time (Date)
      * @return source brightness temperature (K)
      */
-    public static double extendedSourceBrightnessTemp(double exposureTime,
-            double resolution, double frequency, double bandwidth,
-            double declination, int numberAntennas, double antennaDiameter,
-            double latitude, double opacity, double atmBrightnessTemperature, Date ut) {
+    public static double extendedSourceBrightnessTemp(
+    		double exposureTime,
+            double resolution,
+            double frequency,
+            double bandwidth,
+            double declination,
+            int numberAntennas,
+            double antennaDiameter,
+            double latitude,
+            double opacity,
+            double atmBrightnessTemperature,
+            Date ut) {
+    	
         double sensitivity = pointSourceSensitivity(exposureTime, frequency, bandwidth,
                 declination, numberAntennas, antennaDiameter,
                 latitude, opacity, atmBrightnessTemperature, ut);
@@ -122,6 +139,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
             double opacity,
             double atmBrightnessTemperature,
             Date ut) {
+    	
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
         double tsys  =
             SystemTemperatureCalculator.getTsys(declination, latitude, 
@@ -141,8 +159,11 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param syntheticBeamWidth Synthesized beam width (arcseconds)
      * @return equivalent brightness temperature
      */
-    public static double toBrightnessTemp(double sensitivity, 
-            double frequency, double syntheticBeamWidth) {
+    public static double toBrightnessTemp(
+    		double sensitivity, 
+            double frequency,
+            double syntheticBeamWidth) {
+    	
         final double rho = untaparedMapsParameter();
         double wavelengthMm = Constants.LIGHT_SPEED / (frequency * 1.0e9) * 1.0e3;
         double result = sensitivity * rho * wavelengthMm * wavelengthMm;
@@ -158,8 +179,11 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param syntheticBeamWidth Synthesized beam width (arcseconds)
      * @return flux density
      */
-    public static double toFluxDensity(double brightnessTemp, 
-            double frequency, double syntheticBeamWidth) {
+    public static double toFluxDensity(
+    		double brightnessTemp, 
+            double frequency, 
+            double syntheticBeamWidth) {
+    	
         double wavelengthMm = Constants.LIGHT_SPEED / (frequency * 1.0e9) * 1.0e3;
         double rho = untaparedMapsParameter();
         double result = brightnessTemp * syntheticBeamWidth * syntheticBeamWidth /
