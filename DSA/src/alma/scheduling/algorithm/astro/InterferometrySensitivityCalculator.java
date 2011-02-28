@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: InterferometrySensitivityCalculator.java,v 1.1 2010/03/06 00:57:17 rhiriart Exp $"
+ * "@(#) $Id: InterferometrySensitivityCalculator.java,v 1.2 2011/02/28 17:23:52 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
+
+import java.util.Date;
 
 /**
  * Sensitivity calculator for interferometric observations.
@@ -47,15 +49,16 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param latitude Geographic latitude (degrees)
      * @param opacity Opacity or optical depth (nepers)
      * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @param ut Date in Universal time (Date)
      * @return sensitivity (Jy)
      */
     public static double pointSourceSensitivity(double exposureTime,
             double frequency, double bandwidth, double declination,
             int numberAntennas, double antennaDiameter, double latitude,
-            double opacity, double atmBrightnessTemperature) {
+            double opacity, double atmBrightnessTemperature, Date ut) {
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
         double tsys = SystemTemperatureCalculator.getTsys(declination,
-                latitude, frequency, opacity, atmBrightnessTemperature);
+                latitude, frequency, opacity, atmBrightnessTemperature, ut);
         double bandwidthHz = bandwidth * 1.0e9;
         double tmp = rho_e
                 * tsys
@@ -80,15 +83,16 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param latitude Geographic latitude (degrees)
      * @param opacity Opacity (nepers)
      * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @param ut Date in Universal time (Date)
      * @return source brightness temperature (K)
      */
     public static double extendedSourceBrightnessTemp(double exposureTime,
             double resolution, double frequency, double bandwidth,
             double declination, int numberAntennas, double antennaDiameter,
-            double latitude, double opacity, double atmBrightnessTemperature) {
+            double latitude, double opacity, double atmBrightnessTemperature, Date ut) {
         double sensitivity = pointSourceSensitivity(exposureTime, frequency, bandwidth,
                 declination, numberAntennas, antennaDiameter,
-                latitude, opacity, atmBrightnessTemperature);
+                latitude, opacity, atmBrightnessTemperature, ut);
         return toBrightnessTemp(sensitivity, frequency, resolution);
     }
 
@@ -104,6 +108,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param latitude Geographic latitude (degrees)
      * @param opacity Opacity (nepers)
      * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @param ut Date in Universal time (Date)
      * @return exposure time (seconds)
      */
     public static double pointSourceExposureTime(
@@ -115,10 +120,12 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
             double antennaDiameter,
             double latitude,
             double opacity,
-            double atmBrightnessTemperature) {
+            double atmBrightnessTemperature,
+            Date ut) {
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
         double tsys  =
-            SystemTemperatureCalculator.getTsys(declination, latitude, frequency, opacity, atmBrightnessTemperature);
+            SystemTemperatureCalculator.getTsys(declination, latitude, 
+            		frequency, opacity, atmBrightnessTemperature, ut);
         double bandwidthHz = bandwidth * 1.0e9;
         double tmp = rho_e * tsys / 
                     (correlatorEfficiency()* instrumentalDecorrelationCoeff()* atmosphericDecorrelationCoeff()* sensitivity);

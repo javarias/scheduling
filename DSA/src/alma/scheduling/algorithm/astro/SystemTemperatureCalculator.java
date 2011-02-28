@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.3 2011/02/15 12:43:16 ahoffsta Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.4 2011/02/28 17:23:52 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
+
+import java.util.Date;
 
 /**
  * Calculates the system temperature (Tsys).
@@ -39,10 +41,12 @@ public class SystemTemperatureCalculator {
      * @param frequency Frequency (GHz)
      * @param opacity Opacity or optical depth (neper)
      * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @param ut Time in Universal Time system
      * @return System temperature (K)
      */
     public static double getTsys(double declination, double latitude,
-            double frequency, double opacity, double atmBrightnessTemperature) {
+            double frequency, double opacity, double atmBrightnessTemperature,
+            Date ut) {
         
         double latitudeRad = Math.toRadians(latitude);
         double decRad = Math.toRadians(declination);
@@ -51,8 +55,10 @@ public class SystemTemperatureCalculator {
         double sinLat = Math.sin(latitudeRad);
         double cosDec = Math.cos(decRad);
         double cosLat = Math.cos(latitudeRad);
-	//FIXME: Missing HA termn in this formula. Airmass is miscalculated
-        double sinAltitude = sinDec * sinLat + cosDec * cosLat; // missing cosH?
+        double ha = CoordinatesUtil.getHourAngle(ut, decRad, Constants.CHAJNANTOR_LONGITUDE);
+        double cosHa = Math.cos(ha);
+
+        double sinAltitude = sinDec * sinLat + cosDec * cosLat * cosHa;
         
         double Airmass = 1.0 / sinAltitude;
 

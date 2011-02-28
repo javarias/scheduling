@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.11 2011/02/15 12:43:16 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.12 2011/02/28 17:23:52 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -135,7 +135,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         double sensJy =
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
                     freqGHz, bwGHz, declDeg, numAnt, antDiamMtr, latitudeDeg,
-                    opacity, atmBrightnessTemp);
+                    opacity, atmBrightnessTemp, ut);
 	//FIXME: For Debug purposes. Seems sensitivy get pretty higher some times.
 	if( sensJy > 1.0 ){
 		System.out.println("** SCHEDBLOCK ID: " + schedBlock.getId() );
