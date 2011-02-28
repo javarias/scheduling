@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.4 2011/02/28 17:23:52 ahoffsta Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.5 2011/02/28 19:59:50 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -48,6 +48,7 @@ public class SystemTemperatureCalculator {
             double frequency, double opacity, double atmBrightnessTemperature,
             Date ut) {
         
+    	// sinAltitud Calculation
         double latitudeRad = Math.toRadians(latitude);
         double decRad = Math.toRadians(declination);
 
@@ -55,11 +56,13 @@ public class SystemTemperatureCalculator {
         double sinLat = Math.sin(latitudeRad);
         double cosDec = Math.cos(decRad);
         double cosLat = Math.cos(latitudeRad);
-        double ha = CoordinatesUtil.getHourAngle(ut, decRad, Constants.CHAJNANTOR_LONGITUDE);
+        double haHours = CoordinatesUtil.getHourAngle(ut, decRad, Constants.CHAJNANTOR_LONGITUDE);
+        double ha = Math.PI * haHours / 12;
         double cosHa = Math.cos(ha);
 
         double sinAltitude = sinDec * sinLat + cosDec * cosLat * cosHa;
         
+        // Airmass
         double Airmass = 1.0 / sinAltitude;
 
         // TODO Shouldn't this be the current temperature?
