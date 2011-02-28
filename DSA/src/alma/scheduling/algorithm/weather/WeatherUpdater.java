@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.13 2010/07/20 23:07:00 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.14 2011/02/28 17:27:49 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -188,14 +188,14 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
             double tau_zero = tmp[0];
             double Tatm = tmp[1];
             double tsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                    frequency, tau_zero, Tatm);
+                    frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
             tmp = interpolateOpacityAndTemperature(ppwv, frequency);
             tau_zero = tmp[0];
             Tatm = tmp[1];
             double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                    frequency, tau_zero, Tatm);
+                    frequency, tau_zero, Tatm, date);
 
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);

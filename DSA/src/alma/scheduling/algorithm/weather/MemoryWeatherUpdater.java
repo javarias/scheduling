@@ -72,14 +72,14 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             double tau_zero = tmp[0];
             double Tatm = tmp[1];
             double tsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                    frequency, tau_zero, Tatm);
+                    frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
             tmp = interpolateOpacityAndTemperature(ppwv, frequency);
             tau_zero = tmp[0];
             Tatm = tmp[1];
             double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                    frequency, tau_zero, Tatm);
+                    frequency, tau_zero, Tatm, date);
 
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
@@ -136,14 +136,14 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         double tau_zero = tmp[0];
         double Tatm = tmp[1];
         double tsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                frequency, tau_zero, Tatm);
+                frequency, tau_zero, Tatm, date);
         logger.info("tsys: " + tsys);
 
         tmp = interpolateOpacityAndTemperature(ppwv, frequency);
         tau_zero = tmp[0];
         Tatm = tmp[1];
         double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                frequency, tau_zero, Tatm);
+                frequency, tau_zero, Tatm, date);
 
         WeatherDependentVariables vars = new WeatherDependentVariables();
         vars.setTsys(tsys);
