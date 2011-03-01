@@ -17,7 +17,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-# "@(#) $Id: unitTest.sh,v 1.2 2011/01/28 00:35:38 javarias Exp $"
+# "@(#) $Id: unitTest.sh,v 1.3 2011/03/01 00:52:46 javarias Exp $"
 #
 # who       when      what
 # --------  --------  ----------------------------------------------
@@ -48,12 +48,7 @@
 #------------------------------------------------------------------------
 #
 
-./scripts/testEnv start
-sleep 5
-acsStartJava -endorsed  alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.master.compimpl.MasterTest
-sleep 5
-acsStartJava -endorsed  alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.master.compimpl.MasterCompTest
-sleep 5
-./scripts/testEnv stop
+CLASSPATH=../lib/ACScomponents/SchedulingMasterImpl.jar:$CLASSPATH
+acsStartJava -endorsed  alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.master.compimpl.MasterSchedulerUnitTests
 #
 # ___oOo___
