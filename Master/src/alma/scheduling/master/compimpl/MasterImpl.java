@@ -76,7 +76,8 @@ public class MasterImpl implements ComponentLifecycle,
     
     public void initialize(ContainerServices containerServices) {
         m_containerServices = containerServices;
-        m_logger = m_containerServices.getLogger();
+        if (m_logger == null)
+        	m_logger = m_containerServices.getLogger();
         
 		m_logger.finest("initialize() called...");
     }
@@ -216,6 +217,7 @@ public class MasterImpl implements ComponentLifecycle,
 		Object obj = null;
 		String schedArrayName = null;
 		m_logger.info("About to destroy array: " + arrayName);
+		Array array = null;
 		try {
 			schedArrayName = NameTranslator.arrayToComponentName(arrayName);
 			obj = m_containerServices.getComponent(schedArrayName);
@@ -229,8 +231,7 @@ public class MasterImpl implements ComponentLifecycle,
 			throw ex.toSchedulingInternalExceptionEx();
 		}
 		
-		//If Array is executing schedBlocks, stop it
-		Array array = ArrayHelper.narrow(obj);
+		array = ArrayHelper.narrow(obj);
 		m_logger.info("Stopping SchedBlock in " + schedArrayName);
 		array.stop("Master Panel", "Master Panel");
 		array.stopRunningSchedBlock("Master Panel", "Master Panel");
@@ -404,6 +405,14 @@ public class MasterImpl implements ComponentLifecycle,
 		}
 		return true;
 		
+	}
+	
+	void setControlMaster(ControlMaster controlComp) {
+		controlMaster = controlComp;
+	}
+	
+	void setLogger(Logger logger) {
+		m_logger = logger;
 	}
 	
 	private void initialize() throws AcsJContainerServicesEx {

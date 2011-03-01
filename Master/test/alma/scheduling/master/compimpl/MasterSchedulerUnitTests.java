@@ -4,16 +4,6 @@ import java.util.logging.Logger;
 
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
-import org.omg.CORBA.Context;
-import org.omg.CORBA.ContextList;
-import org.omg.CORBA.DomainManager;
-import org.omg.CORBA.ExceptionList;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
-import org.omg.CORBA.Object;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.Request;
-import org.omg.CORBA.SetOverrideType;
 
 import si.ijs.maci.ComponentInfo;
 import alma.Control.ArrayIdentifier;
@@ -29,13 +19,10 @@ import alma.acs.component.ComponentDescriptor;
 import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.Array;
-import alma.scheduling.ArrayEvent;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.ArrayStatusCallback;
-import alma.scheduling.master.gui.ArrayStatusCallbackImpl;
-import alma.scheduling.master.gui.ArrayStatusListener;
 
 public class MasterSchedulerUnitTests extends MockObjectTestCase {
 	private ControlMaster controlMaster = mock(ControlMaster.class);
