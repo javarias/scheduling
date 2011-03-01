@@ -31,15 +31,16 @@ import alma.scheduling.array.util.NameTranslator.TranslationException;
  */
 public class ControlManualArrayImpl implements ControlArray {
 
-    private final ContainerServices container;
-    
-    private final String arrayName;
-    
-    private final ManualArrayCommand array;
-    private String lastSB;
-    
-	public ControlManualArrayImpl(ContainerServices container, String arrayName)
-			throws AcsJContainerServicesEx, TranslationException {
+	private final ContainerServices container;
+
+	private final String arrayName;
+
+	private final ManualArrayCommand array;
+	private String lastSB;
+
+	public ControlManualArrayImpl(ContainerServices container,
+			                      String arrayName)
+				throws AcsJContainerServicesEx, TranslationException {
 		this.container = container;
 		this.arrayName = arrayName;
 		array = ManualArrayCommandHelper.narrow(
@@ -47,52 +48,27 @@ public class ControlManualArrayImpl implements ControlArray {
 		this.lastSB = "";
 	}
 
-    private String hashes(int n) {
-	final StringBuilder s = new StringBuilder();
-	while (n-- > 0) {
-	    s.append('#');
+	@Override
+	public void configure(IDLEntityRef schedBlockRef) 
+												throws Exception {
+		if (!schedBlockRef.entityId.equals(lastSB)) {
+			array.configure(schedBlockRef);
+			lastSB = schedBlockRef.entityId;
+		}
 	}
-	return s.toString();
-    }
 
-    private void shout(String s) {
-	final String h = hashes(s.length() + 6);
-	System.out.format("%n   %s%n   ## %s ##%n   %s%n%n",
-			  h, s, h);
-
-    }
-
-    @Override
-    public void configure(IDLEntityRef schedBlockRef)
-        throws Exception {
-	if (!schedBlockRef.entityId.equals(lastSB)) {
-	    shout(String.format("%s.configure(%s) - new SB (versus %s)",
-				this.getClass().getSimpleName(),
-				schedBlockRef.entityId,
-				lastSB));
-	    array.configure(schedBlockRef);
-	    lastSB = schedBlockRef.entityId;
-	} else {
-	    shout(String.format("%s.configure(%s) - repeat SB (versus %s)",
-				this.getClass().getSimpleName(),
-				schedBlockRef.entityId,
-				lastSB));
+	@Override
+	public void observe(IDLEntityRef schedBlockRef, IDLEntityRef sessionRef)
+												throws Exception {
+		// Do nothing, manual observing is not controlled from here
 	}
-    }
-    
-    @Override
-    public void observe(IDLEntityRef schedBlockRef, IDLEntityRef sessionRef)
-        throws Exception {
-	// Do nothing, manual observing is not controlled from here
-    }
-   
-    @Override    
-    public void stopSB() throws Exception {
-    }
+
+	@Override    
+	public void stopSB() throws Exception {
+	}
 
 	@Override
 	public void cleanUp() {
-		shout(String.format("%s.cleanUp()", this.getClass().getSimpleName()));
 		try {
 			container.releaseComponent(NameTranslator
 					.arrayToControlComponentName(arrayName));
@@ -100,5 +76,5 @@ public class ControlManualArrayImpl implements ControlArray {
 			e.printStackTrace();
 		}
 	}
-    
+
 }
