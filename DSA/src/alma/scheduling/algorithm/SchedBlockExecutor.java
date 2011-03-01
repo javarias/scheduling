@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutor.java,v 1.4 2010/09/09 18:07:11 javarias Exp $"
+ * "@(#) $Id: SchedBlockExecutor.java,v 1.5 2011/03/01 13:47:17 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -32,7 +32,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 
 public interface SchedBlockExecutor {
 
-    public static double FUDGE_FACTOR = 0.8;
+    public static double FUDGE_FACTOR = 0.9534;
     
     /**
      * Executes the SchedBlock at the given time.
