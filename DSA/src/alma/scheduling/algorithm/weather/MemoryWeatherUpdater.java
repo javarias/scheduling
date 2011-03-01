@@ -66,20 +66,21 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             Target target = sb.getSchedulingConstraints()
                     .getRepresentativeTarget();
             FieldSource src = target.getSource();
+            double ra = src.getCoordinates().getRA(); // degrees
             double decl = src.getCoordinates().getDec(); // degrees
 
             double[] tmp = interpolateOpacityAndTemperature(pwv, frequency);
             double tau_zero = tmp[0];
             double Tatm = tmp[1];
-            double tsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                    frequency, tau_zero, Tatm, date);
+            double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
+                    latitude, frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
             tmp = interpolateOpacityAndTemperature(ppwv, frequency);
             tau_zero = tmp[0];
             Tatm = tmp[1];
-            double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                    frequency, tau_zero, Tatm, date);
+            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+                    latitude, frequency, tau_zero, Tatm, date);
 
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
@@ -130,20 +131,21 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
                 .getRepresentativeFrequency(); // GHz
         Target target = sb.getSchedulingConstraints().getRepresentativeTarget();
         FieldSource src = target.getSource();
+        double ra = src.getCoordinates().getRA(); // degrees
         double decl = src.getCoordinates().getDec(); // degrees
 
         double[] tmp = interpolateOpacityAndTemperature(pwv, frequency);
         double tau_zero = tmp[0];
         double Tatm = tmp[1];
-        double tsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                frequency, tau_zero, Tatm, date);
+        double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
+                latitude, frequency, tau_zero, Tatm, date);
         logger.info("tsys: " + tsys);
 
         tmp = interpolateOpacityAndTemperature(ppwv, frequency);
         tau_zero = tmp[0];
         Tatm = tmp[1];
-        double ptsys = SystemTemperatureCalculator.getTsys(decl, latitude,
-                frequency, tau_zero, Tatm, date);
+        double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+                latitude, frequency, tau_zero, Tatm, date);
 
         WeatherDependentVariables vars = new WeatherDependentVariables();
         vars.setTsys(tsys);

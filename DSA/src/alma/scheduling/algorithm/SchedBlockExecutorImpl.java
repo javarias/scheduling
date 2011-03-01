@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.12 2011/02/28 17:23:52 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.13 2011/03/01 21:53:21 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -32,6 +32,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.algorithm.astro.Constants;
+import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.astro.InterferometrySensitivityCalculator;
 import alma.scheduling.algorithm.weather.OpacityInterpolator;
 import alma.scheduling.datamodel.GenericDao;
@@ -112,6 +114,12 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
                 sensGoalJy = ((ScienceParameters) params).getSensitivityGoal();
             }
         }
+        double raDeg = 
+            schedBlock.getSchedulingConstraints()
+                      .getRepresentativeTarget()
+                      .getSource()
+                      .getCoordinates()
+                      .getRA();
         double declDeg = 
             schedBlock.getSchedulingConstraints()
                       .getRepresentativeTarget()
@@ -134,7 +142,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         double atmBrightnessTemp = tmp[1];
         double sensJy =
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
-                    freqGHz, bwGHz, declDeg, numAnt, antDiamMtr, latitudeDeg,
+                    freqGHz, bwGHz, raDeg, declDeg, numAnt, antDiamMtr, latitudeDeg,
                     opacity, atmBrightnessTemp, ut);
 	//FIXME: For Debug purposes. Seems sensitivy get pretty higher some times.
 	if( sensJy > 1.0 ){
@@ -144,6 +152,14 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 		System.out.println("** opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity );
 		System.out.println("** opacityInterpolator.interpolateOpacityAndTemperature().atmBrightnessTemp: " + atmBrightnessTemp );
 		System.out.println("** InterferometrySensitivityCalculator.pointSourceSensitivity(): " + sensJy );
+		System.out.println("** RA: " + raDeg + "     Dec: " + declDeg );
+		System.out.println("** Hour Angle at the given time: " + 
+				CoordinatesUtil.getHourAngle(ut, schedBlock.getSchedulingConstraints()
+                      .getRepresentativeTarget()
+                      .getSource()
+                      .getCoordinates().getRA() / 15, 
+                Constants.CHAJNANTOR_LONGITUDE) );
+		
 	}
 
 
@@ -152,10 +168,15 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
                 schedBlock.getSchedBlockControl().getNumberOfExecutions() + 1);
         double accumSens = 0;
         if(schedBlock.getSchedBlockControl().getAchievedSensitivity() == null)
-            accumSens = sensJy;
-        else
-           accumSens = (schedBlock.getSchedBlockControl().getAchievedSensitivity() + sensJy)
-                                    / schedBlock.getSchedBlockControl().getNumberOfExecutions();
+            accumSens = Math.sqrt(sensJy/sensJy);
+        else{
+        	double previousSum = schedBlock.getSchedBlockControl().getAchievedSensitivity() * 
+        							(schedBlock.getSchedBlockControl().getNumberOfExecutions() 
+        							- 1);
+        	previousSum = previousSum * previousSum; 
+        	accumSens = Math.sqrt( previousSum + (sensJy * sensJy) ) / 
+        				schedBlock.getSchedBlockControl().getNumberOfExecutions();
+        }
         schedBlock.getSchedBlockControl().setAchievedSensitivity(accumSens);
         if ((accumSens * FUDGE_FACTOR <= sensGoalJy) || (accumTime >= schedBlock.getObsUnitControl().getMaximumTime())) {
             schedBlock.getSchedBlockControl().setState(SchedBlockState.FULLY_OBSERVED);

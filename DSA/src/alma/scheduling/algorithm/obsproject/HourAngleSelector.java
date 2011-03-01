@@ -41,6 +41,7 @@ public class HourAngleSelector extends AbstractBaseSelector {
 		 */
 		double raLowLimit = CoordinatesUtil.getRA(ut, 16.0, Constants.CHAJNANTOR_LONGITUDE);
 		double raHighLimit = CoordinatesUtil.getRA(ut, 8.0, Constants.CHAJNANTOR_LONGITUDE);
+		System.out.println("RA Limits: " + raLowLimit + ", " + raHighLimit);
 		logger.info("RA Limits: " + raLowLimit + ", " + raHighLimit);
 		List<SchedBlock> res = null;
 		if (raHighLimit < raLowLimit ){

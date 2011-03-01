@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.7 2010/04/27 22:10:04 javarias Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.8 2011/03/01 21:53:21 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -60,8 +60,9 @@ public class CoordinatesUtil {
         double gst = TimeUtil.getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), hours);
         double lst = TimeUtil.getLocalSiderealTime(gst, longitude);
-        double ha = lst - ra;
+        double ha = lst - ra - 12;
         if (ha < 0) ha += 24;
+        if (ha > 24) ha -= 24;
         return ha;
     }
     

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: InterferometrySensitivityCalculator.java,v 1.3 2011/02/28 20:08:45 ahoffsta Exp $"
+ * "@(#) $Id: InterferometrySensitivityCalculator.java,v 1.4 2011/03/01 21:53:21 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -43,6 +43,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param exposureTime Exposure time (seconds)
      * @param frequency Observation frequency (GHz)
      * @param bandwidth Bandwidth (GHz)
+     * @param ra Right ascension (degrees)
      * @param declination Source declination (degrees)
      * @param numberAntennas Number of antennas
      * @param antennaDiameter Antenna diameter (m)
@@ -55,7 +56,8 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
     public static double pointSourceSensitivity(
     		double exposureTime,
             double frequency, 
-            double bandwidth, 
+            double bandwidth,
+            double ra,
             double declination,
             int numberAntennas, 
             double antennaDiameter, 
@@ -65,8 +67,8 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
             Date ut) {
     	
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
-        double tsys = SystemTemperatureCalculator.getTsys(declination,
-                latitude, frequency, opacity, atmBrightnessTemperature, ut);
+        double tsys = SystemTemperatureCalculator.getTsys(ra,
+                declination, latitude, frequency, opacity, atmBrightnessTemperature, ut);
         double bandwidthHz = bandwidth * 1.0e9;
         double tmp = rho_e
                 * tsys
@@ -85,6 +87,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param resolution Resolution (arcsec)
      * @param frequency Observation frequency (GHz)
      * @param bandwidth Bandwidth (GHz)
+     * @param ra Right ascension (degrees)
      * @param declination Source declination (degrees)
      * @param numberAntennas Number of antennas
      * @param antennaDiameter Antenna diameter (m)
@@ -99,6 +102,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
             double resolution,
             double frequency,
             double bandwidth,
+            double ra,
             double declination,
             int numberAntennas,
             double antennaDiameter,
@@ -108,7 +112,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
             Date ut) {
     	
         double sensitivity = pointSourceSensitivity(exposureTime, frequency, bandwidth,
-                declination, numberAntennas, antennaDiameter,
+                ra, declination, numberAntennas, antennaDiameter,
                 latitude, opacity, atmBrightnessTemperature, ut);
         return toBrightnessTemp(sensitivity, frequency, resolution);
     }
@@ -119,7 +123,8 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
      * @param sensitivity Sensitivity (Jy)
      * @param frequency Frequency (GHz)
      * @param bandwidth Bandwidth (GHz)
-     * @param declination Declinatin (degrees)
+     * @param ra Right ascension (degrees)
+     * @param declination Declination (degrees)
      * @param numberAntennas Number of antennas
      * @param antennaDiameter Antenna diameter (m)
      * @param latitude Geographic latitude (degrees)
@@ -132,6 +137,7 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
             double sensitivity,
             double frequency,
             double bandwidth,
+            double ra,
             double declination,
             int numberAntennas,
             double antennaDiameter,
@@ -142,8 +148,8 @@ public class InterferometrySensitivityCalculator extends SensitivityCalculatorBa
     	
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
         double tsys  =
-            SystemTemperatureCalculator.getTsys(declination, latitude, 
-            		frequency, opacity, atmBrightnessTemperature, ut);
+            SystemTemperatureCalculator.getTsys(ra, declination, 
+            		latitude, frequency, opacity, atmBrightnessTemperature, ut);
         double bandwidthHz = bandwidth * 1.0e9;
         double tmp = rho_e * tsys / 
                     (correlatorEfficiency()* instrumentalDecorrelationCoeff()* atmosphericDecorrelationCoeff()* sensitivity);

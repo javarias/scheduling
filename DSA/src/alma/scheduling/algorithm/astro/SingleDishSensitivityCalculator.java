@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SingleDishSensitivityCalculator.java,v 1.3 2011/02/28 17:35:06 ahoffsta Exp $"
+ * "@(#) $Id: SingleDishSensitivityCalculator.java,v 1.4 2011/03/01 21:53:21 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -43,6 +43,7 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
      * @param exposureTime Exposure time (seconds)
      * @param frequency Observation frequency (GHz)
      * @param bandwidth Bandwidth (GHz)
+     * @param ra Right Ascension (degrees)
      * @param declination Source declination (degrees)
      * @param numberAntennas Number of antennas
      * @param antennaDiameter Antenna diameter (m)
@@ -52,13 +53,21 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
      * @param ut Date in Universal Time
      * @return sensitivity (Jy)
      */
-    public static double pointSourceSensitivity(double exposureTime,
-            double frequency, double bandwidth, double declination,
-            int numberAntennas, double antennaDiameter, double latitude,
-            double opacity, double atmBrightnessTemperature, Date ut) {
+    public static double pointSourceSensitivity(
+    		double exposureTime,
+            double frequency, 
+            double bandwidth,
+            double ra,
+            double declination,
+            int numberAntennas, 
+            double antennaDiameter, 
+            double latitude,
+            double opacity, 
+            double atmBrightnessTemperature, 
+            Date ut) {
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
-        double tsys = SystemTemperatureCalculator.getTsys(declination,
-                latitude, frequency, opacity, atmBrightnessTemperature, ut);
+        double tsys = SystemTemperatureCalculator.getTsys(ra,
+                declination, latitude, frequency, opacity, atmBrightnessTemperature, ut);
         double bandwidthHz = bandwidth * 1.0e9;
         // only valid for switch mode
         // for on-the-fly use 1.0 instead of sqrt(2)
@@ -76,6 +85,7 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
      * @param resolution Resolution (arcsec)
      * @param frequency Observation frequency (GHz)
      * @param bandwidth Bandwidth (GHz)
+     * @param ra Right Ascension (degrees)
      * @param declination Source declination (degrees)
      * @param numberAntennas Number of antennas
      * @param antennaDiameter Antenna diameter (m)
@@ -85,12 +95,21 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
      * @param ut Date in Universal Time
      * @return source brightness temperature (K)
      */
-    public static double extendedSourceBrightnessTemp(double exposureTime,
-            double resolution, double frequency, double bandwidth,
-            double declination, int numberAntennas, double antennaDiameter,
-            double latitude, double opacity, double atmBrightnessTemperature, Date ut) {
+    public static double extendedSourceBrightnessTemp(
+    		double exposureTime,
+            double resolution, 
+            double frequency, 
+            double bandwidth,
+            double ra,
+            double declination, 
+            int numberAntennas, 
+            double antennaDiameter,
+            double latitude, 
+            double opacity, 
+            double atmBrightnessTemperature, 
+            Date ut) {
         double sensitivity = pointSourceSensitivity(exposureTime, frequency, bandwidth,
-                declination, numberAntennas, antennaDiameter,
+                ra, declination, numberAntennas, antennaDiameter,
                 latitude, opacity, atmBrightnessTemperature, ut);
         return toBrightnessTemp(sensitivity, frequency, antennaDiameter);
     }
@@ -101,6 +120,7 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
      * @param sensitivity Sensitivity (Jy)
      * @param frequency Frequency (GHz)
      * @param bandwidth Bandwidth (GHz)
+     * @param ra Right Ascension (degrees)
      * @param declination Declination (degrees)
      * @param numberAntennas Number of antennas
      * @param antennaDiameter Antenna diameter (m)
@@ -111,13 +131,13 @@ public class SingleDishSensitivityCalculator extends SensitivityCalculatorBase {
      * @return exposure time (seconds)
      */
     public static double pointSourceExposureTime(double sensitivity,
-            double frequency, double bandwidth, double declination,
+            double frequency, double ra, double bandwidth, double declination,
             int numberAntennas, double antennaDiameter, double latitude,
             double opacity, double atmBrightnessTemperature, Date ut) {
         double rho_e = antennaEfficiency(antennaDiameter, frequency);
         double tsys  =
-            SystemTemperatureCalculator.getTsys(declination, latitude, frequency,
-            		opacity, atmBrightnessTemperature, ut);
+            SystemTemperatureCalculator.getTsys(ra, declination, latitude,
+            		frequency, opacity, atmBrightnessTemperature, ut);
         double bandwidthHz = bandwidth * 1.0e9;
         double tmp = rho_e * Math.sqrt(2) * tsys / sensitivity;
         return tmp * tmp / (numberAntennas * bandwidthHz);

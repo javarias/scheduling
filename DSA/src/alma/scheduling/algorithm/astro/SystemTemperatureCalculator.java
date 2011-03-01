@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.5 2011/02/28 19:59:50 ahoffsta Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.6 2011/03/01 21:53:21 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -35,7 +35,7 @@ public class SystemTemperatureCalculator {
     
     /**
      * Get system temperature (K).
-     * 
+     * @param ra Right Ascension (degrees)
      * @param declination Declination (degrees)
      * @param latitude Latitude (degrees)
      * @param frequency Frequency (GHz)
@@ -44,9 +44,9 @@ public class SystemTemperatureCalculator {
      * @param ut Time in Universal Time system
      * @return System temperature (K)
      */
-    public static double getTsys(double declination, double latitude,
-            double frequency, double opacity, double atmBrightnessTemperature,
-            Date ut) {
+    public static double getTsys(double ra, double declination,
+            double latitude, double frequency, double opacity,
+            double atmBrightnessTemperature, Date ut) {
         
     	// sinAltitud Calculation
         double latitudeRad = Math.toRadians(latitude);
@@ -56,8 +56,9 @@ public class SystemTemperatureCalculator {
         double sinLat = Math.sin(latitudeRad);
         double cosDec = Math.cos(decRad);
         double cosLat = Math.cos(latitudeRad);
-        double haHours = CoordinatesUtil.getHourAngle(ut, decRad, Constants.CHAJNANTOR_LONGITUDE);
+        double haHours = CoordinatesUtil.getHourAngle(ut, ra/15.0, Constants.CHAJNANTOR_LONGITUDE);
         double ha = Math.PI * haHours / 12;
+        System.out.println("getTsys: ha = " + haHours);
         double cosHa = Math.cos(ha);
 
         double sinAltitude = sinDec * sinLat + cosDec * cosLat * cosHa;
