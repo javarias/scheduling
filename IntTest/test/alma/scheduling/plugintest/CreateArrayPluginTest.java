@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: CreateArrayPluginTest.java,v 1.4 2011/03/02 16:43:25 javarias Exp $
+ * $Id: CreateArrayPluginTest.java,v 1.5 2011/03/02 17:47:21 javarias Exp $
  */
 
 package alma.scheduling.plugintest;
@@ -52,8 +52,7 @@ import alma.TMCDB.AccessHelper;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdater;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.archiveupd.compimpl.ArchiveUpdaterHelper;
+import alma.scheduling.Master;
 import alma.scheduling.master.gui.SchedulingPanelMainFrame;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
@@ -86,7 +85,7 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
     
     private Access tmcdb;
     private MasterComponent schedulingMC;
-    private MasterSchedulerIF masterScheduler;
+    private Master masterScheduler;
     private ArchiveUpdater archiveUpdater;
     
     private ControlMaster control;
@@ -165,7 +164,7 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
      */
     public void testControlNotOperational() throws Exception {
     	
-    	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
         
     	// Set the CONTROL simulator so this subsystem is not operational
@@ -211,7 +210,7 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
      */
     public void testCreateInteractiveArray() throws Exception {
     	
-    	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
 
     	// Set the CONTROL simulator so this subsystem is operational
