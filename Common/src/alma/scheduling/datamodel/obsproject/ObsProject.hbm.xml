@@ -1,39 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="alma.scheduling.datamodel.obsproject">
-    
-    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ScienceGrade">
-        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ScienceGrade</param>
-    </typedef>
-    
-    <class name="ObsProject" table="OBSPROJECT">
-        <cache usage="read-write" region="alma.scheduling.datamodel.obsproject.ObsUnit"/>
-        <id name="id" column="OBSPROJECTID">            
-            <generator class="native"/>
-        </id>
-        <property name="uid" column="OBSPROJECT_UID"/>
-        <property name="code" column="CODE"/>
-        <property name="name" column="NAME"/>
-        <property name="version" column="VERSION"/>
-        <property name="principalInvestigator" column="PI"/>
-        <property name="scienceScore" column="SCIENCE_SCORE" />
-        <property name="scienceRank" column="SCIENCE_RANK"/>
-        <property name="letterGrade" type="ScienceGrade" column="SCIENCE_GRADE"/>
-        <property name="status" column="STATUS"/>
-        <property name="totalExecutionTime" column="TOTAL_EXEC_TIME"/>
-        <property name="csv" column="CSV"/>
-        <property name="manual" column="MANUAL"/>
-        <many-to-one name="obsUnit" class="ObsUnit" column="OBSUNITID"
-            cascade="save-update, lock, delete" unique="true" not-null="false"/>
-        <component name="statusEntity" class="alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT">
-            <property name="entityId" type="string" column="STATUS_ENTITY_ID" not-null="false"/>
-            <property name="entityIdEncrypted" type="string" column="STATUS_ENTITY_ID_ENCRYPTED" not-null="false"/>
-            <property name="entityTypeName" type="string" column="STATUS_ENTITY_TYPE_NAME" not-null="false"/>
-            <property name="schemaVersion" type="string" column="STATUS_SCHEMA_VERSION" not-null="false"/>
-            <property name="documentVersion" type="string" column="STATUS_DOCUMENT_VERSION" not-null="false"/>
-            <property name="timestamp" type="string" column="STATUS_TIMESTAMP" not-null="false"/>
-        </component>
-    </class>
+ <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ScienceGrade">
+  <param name="enumClassName">alma.scheduling.datamodel.obsproject.ScienceGrade</param>
+ </typedef>
+ <class name="ObsProject" table="OBSPROJECT">
+  <cache include="all"
+   region="alma.scheduling.datamodel.obsproject.ObsUnit" usage="read-write"/>
+  <id column="OBSPROJECTID" name="id">
+   <generator class="native"/>
+  </id>
+  <property column="OBSPROJECT_UID" generated="never" lazy="false"
+   name="uid" type="string" unique="true"/>
+  <property column="CODE" generated="never" lazy="false" name="code"/>
+  <property column="NAME" generated="never" lazy="false" name="name"/>
+  <property column="VERSION" generated="never" lazy="false" name="version"/>
+  <property column="PI" generated="never" lazy="false" name="principalInvestigator"/>
+  <property column="SCIENCE_SCORE" generated="never" lazy="false" name="scienceScore"/>
+  <property column="SCIENCE_RANK" generated="never" lazy="false" name="scienceRank"/>
+  <property column="SCIENCE_GRADE" generated="never" lazy="false"
+   name="letterGrade" type="ScienceGrade"/>
+  <property column="STATUS" generated="never" lazy="false" name="status"/>
+  <property column="TOTAL_EXEC_TIME" generated="never" lazy="false" name="totalExecutionTime"/>
+  <property column="CSV" generated="never" lazy="false" name="csv"/>
+  <property column="MANUAL" generated="never" lazy="false" name="manual"/>
+  <many-to-one cascade="save-update, lock, delete" class="ObsUnit"
+   column="OBSUNITID" name="obsUnit" not-null="false" unique="true"/>
+  <component
+   class="alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT" name="statusEntity">
+   <property column="STATUS_ENTITY_ID" generated="never" lazy="false"
+    name="entityId" type="string"/>
+   <property column="STATUS_ENTITY_ID_ENCRYPTED" generated="never"
+    lazy="false" name="entityIdEncrypted" type="string"/>
+   <property column="STATUS_ENTITY_TYPE_NAME" generated="never"
+    lazy="false" name="entityTypeName" type="string"/>
+   <property column="STATUS_SCHEMA_VERSION" generated="never"
+    lazy="false" name="schemaVersion" type="string"/>
+   <property column="STATUS_DOCUMENT_VERSION" generated="never"
+    lazy="false" name="documentVersion" type="string"/>
+   <property column="STATUS_TIMESTAMP" generated="never" lazy="false"
+    name="timestamp" type="string"/>
+  </component>
+ </class>
 </hibernate-mapping>

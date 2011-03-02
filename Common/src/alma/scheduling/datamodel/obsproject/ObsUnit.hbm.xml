@@ -1,151 +1,180 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="alma.scheduling.datamodel.obsproject">
-    
-    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ArrayType">
-        <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
-    </typedef>
-    <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="SchedBlockState">
-        <param name="enumClassName">alma.scheduling.datamodel.obsproject.SchedBlockState</param>
-    </typedef>
-    
-    <class name="ObsUnit" table="OBSUNIT">
-    <cache usage="read-write" include="all" region="alma.scheduling.datamodel.obsproject.ObsUnit"/>
-        <id name="id" column="OBSUNITID">            
-            <generator class="native"/>
-        </id>
-        <property name="uid" column="OBSUNIT_UID"/>
-        <property name="note" type="string" column="NOTE" length="4000"/>
-        <many-to-one name="parent" column="PARENTID" class="ObsUnitSet"/>
-        <property name="projectUid" type="string" column="OBSUNIT_PROJECT_UID"/>
-<!--    <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>  -->
-        <component name="obsUnitControl" class="ObsUnitControl">
-            <property name="lastUpdate" type="date" column="OBSUNIT_CTRL_LAST_UPDATE"/>
-            <property name="validUntil" type="date" column="OBSUNIT_CTRL_VALID_UNTIL"/>
-            <property name="maximumTime" type="double" column="OBSUNIT_CTRL_MAX_TIME"/>
-            <property name="estimatedExecutionTime" type="double" column="OBSUNIT_CTRL_EXEC_TIME"/>
-            <property name="arrayRequested" type="ArrayType" column="OBSUNIT_CTRL_ARRAY_TYPE"/>
-        </component>
-        
-        <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
-            <key column="SCHEDBLOCKID"/>
-            <property name="name" column="NAME"/>
-            <property name="piName" column="PINAME"/>
-            <property name="scienceScore" column="SCIENCE_SCORE" />
-        	<property name="scienceRank" column="SCIENCE_RANK"/>
-       		<property name="letterGrade" type="ScienceGrade" column="SCIENCE_GRADE"/>
-            <property name="runQuicklook" type="boolean" column="RUN_QUICKLOOK"/>
-            <property name="csv" column="CSV"/>
-            <property name="manual" column="MANUAL"/>
-            <component name="weatherConstraints" class="WeatherConstraints">
-                <property name="maxWindVelocity" type="double" column="MAX_WIND_VELOCITY"/>
-                <property name="maxOpacity" type="double" column="MAX_OPACITY"/>
-                <property name="minPhaseStability" type="double" column="MIN_PHASE_STABILITY"/>
-                <property name="maxSeeing" type="double" column="MAX_SEEING"/>
-            </component>
-            <component name="preConditions" class="Preconditions">
-                <property name="maxAllowedHourAngle" type="double" column="MAX_ALLOWED_HA"/>
-                <property name="minAllowedHourAngle" type="double" column="MIN_ALLOWED_HA"/>
-            </component>
-            <component name="schedulingConstraints" class="SchedulingConstraints">
-                <property name="maxAngularResolution" type="double" column="MAX_ANG_RESOLUTION"/>
-                <property name="representativeFrequency" type="double" column="REPR_FREQ"/>
-                <many-to-one name="representativeTarget" class="Target" column="REPR_TARGET"/>
-            </component>
-            <component name="weatherDependentVariables" class="WeatherDependentVariables">
-                <property name="lastUpdate" type="date" column="WEATHER_VARS_LAST_UPDATE"/>
-                <property name="validUntil" type="date" column="WEATHER_VARS_VALID_UNTIL"/>
-                <property name="tsys" type="double" column="WEATHER_VARS_TSYS"/>
-                <property name="projectedTsys" type="double" column="WEATHER_VARS_PROJ_TSYS"/>
-                <property name="projectionTimeIncr" type="double" column="WEATHER_VARS_PROJ_DELTA_T"/>
-            </component>
-            <component name="schedBlockControl" class="SchedBlockControl">
-                <property name="lastUpdate" type="date" column="SCHEDBLOCK_CTRL_LAST_UPDATE"/>
-                <property name="validUntil" type="date" column="SCHEDBLOCK_CTRL_VALID_UNTIL"/>
-                <property name="indefiniteRepeat" type="boolean" column="SCHEDBLOCK_CTRL_INDEFINITE"/>
-                <property name="executionCount" type="int" column="SCHEDBLOCK_CTRL_EXEC_COUNT"/>
-                <property name="state" type="SchedBlockState" column="SCHEDBLOCK_CTRL_STATE"/>
-                <property name="achievedSensitivity" type="double" column="SCHEDBLOCK_CTRL_SENSITIVITY"/>
-                <property name="accumulatedExecutionTime" type="double" column="SCHEDBLOCK_CTRL_ACCUM_TIME"/>
-                <property name="sbMaximumTime" type="double" column="SCHEDBLOCK_CTRL_MAX_TIME" />
-                <property name="numberOfExecutions" type="int" column="SCHEDBLOCK_CTRL_N_EXECUTIONS"/>
-            </component>
-            <set name="observingParameters" cascade="save-update, lock, delete, delete-orphan">
-                <key column="SCHEDBLOCKID"/>
-                <one-to-many class="ObservingParameters"/>
-            </set>
-            <set name="targets" cascade="save-update, lock, delete, delete-orphan">
-                <key column="SCHEDBLOCKID"/>
-                <one-to-many class="Target"/>
-            </set>
-            <many-to-one name="executive" column="EXECUTIVE_ID" not-null="false" />            
-            <component name="statusEntity" class="alma.entity.xmlbinding.sbstatus.SBStatusEntityT">
-                <property name="entityId" type="string" column="STATUS_ENTITY_ID" not-null="false"/>
-                <property name="entityIdEncrypted" type="string" column="STATUS_ENTITY_ID_ENCRYPTED" not-null="false"/>
-                <property name="entityTypeName" type="string" column="STATUS_ENTITY_TYPE_NAME" not-null="false"/>
-                <property name="schemaVersion" type="string" column="STATUS_SCHEMA_VERSION" not-null="false"/>
-                <property name="documentVersion" type="string" column="STATUS_DOCUMENT_VERSION" not-null="false"/>
-                <property name="timestamp" type="string" column="STATUS_TIMESTAMP" not-null="false"/>
-            </component>
-        </joined-subclass>
-
-        <joined-subclass name="ObsUnitSet" table="OBSUNITSET">
-            <key column="OBSUNITSETID"/>
-            <set name="obsUnits" inverse="true" cascade="save-update, lock, delete, delete-orphan">
-                <key column="PARENTID"/>
-                <one-to-many class="ObsUnit"/>
-            </set>
-            <component name="statusEntity" class="alma.entity.xmlbinding.ousstatus.OUSStatusEntityT">
-                <property name="entityId" type="string" column="STATUS_ENTITY_ID" not-null="false"/>
-                <property name="entityIdEncrypted" type="string" column="STATUS_ENTITY_ID_ENCRYPTED" not-null="false"/>
-                <property name="entityTypeName" type="string" column="STATUS_ENTITY_TYPE_NAME" not-null="false"/>
-                <property name="schemaVersion" type="string" column="STATUS_SCHEMA_VERSION" not-null="false"/>
-                <property name="documentVersion" type="string" column="STATUS_DOCUMENT_VERSION" not-null="false"/>
-                <property name="timestamp" type="string" column="STATUS_TIMESTAMP" not-null="false"/>
-            </component>
-        </joined-subclass>
-        
-    </class>
-    
-    <!-- Care must be taken because the rising time could be bigger than the setting time,
+ <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="ArrayType">
+  <param name="enumClassName">alma.scheduling.datamodel.obsproject.ArrayType</param>
+ </typedef>
+ <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="SchedBlockState">
+  <param name="enumClassName">alma.scheduling.datamodel.obsproject.SchedBlockState</param>
+ </typedef>
+ <class name="ObsUnit" table="OBSUNIT">
+  <cache include="all"
+   region="alma.scheduling.datamodel.obsproject.ObsUnit" usage="read-write"/>
+  <id column="OBSUNITID" name="id">
+   <generator class="native"/>
+  </id>
+  <property column="OBSUNIT_UID" generated="never" lazy="false"
+   name="uid" type="string" unique="true"/>
+  <property column="NOTE" generated="never" lazy="false" length="4000"
+   name="note" type="string"/>
+  <many-to-one class="ObsUnitSet" column="PARENTID" name="parent"/>
+  <property column="OBSUNIT_PROJECT_UID" generated="never" lazy="false"
+   name="projectUid" type="string"/>
+  <!--    <one-to-one name="project" class="ObsProject" property-ref="obsUnit"/>  -->
+  <component class="ObsUnitControl" name="obsUnitControl">
+   <property column="OBSUNIT_CTRL_LAST_UPDATE" generated="never"
+    lazy="false" name="lastUpdate" type="date"/>
+   <property column="OBSUNIT_CTRL_VALID_UNTIL" generated="never"
+    lazy="false" name="validUntil" type="date"/>
+   <property column="OBSUNIT_CTRL_MAX_TIME" generated="never"
+    lazy="false" name="maximumTime" type="double"/>
+   <property column="OBSUNIT_CTRL_EXEC_TIME" generated="never"
+    lazy="false" name="estimatedExecutionTime" type="double"/>
+   <property column="OBSUNIT_CTRL_ARRAY_TYPE" generated="never"
+    lazy="false" name="arrayRequested" type="ArrayType"/>
+  </component>
+  <joined-subclass name="SchedBlock" table="SCHEDBLOCK">
+   <key column="SCHEDBLOCKID"/>
+   <property column="NAME" generated="never" lazy="false" name="name"/>
+   <property column="PINAME" generated="never" lazy="false" name="piName"/>
+   <property column="SCIENCE_SCORE" generated="never" lazy="false" name="scienceScore"/>
+   <property column="SCIENCE_RANK" generated="never" lazy="false" name="scienceRank"/>
+   <property column="SCIENCE_GRADE" generated="never" lazy="false"
+    name="letterGrade" type="ScienceGrade"/>
+   <property column="RUN_QUICKLOOK" generated="never" lazy="false"
+    name="runQuicklook" type="boolean"/>
+   <property column="CSV" generated="never" lazy="false" name="csv"/>
+   <property column="MANUAL" generated="never" lazy="false" name="manual"/>
+   <component class="WeatherConstraints" name="weatherConstraints">
+    <property column="MAX_WIND_VELOCITY" generated="never" lazy="false"
+     name="maxWindVelocity" type="double"/>
+    <property column="MAX_OPACITY" generated="never" lazy="false"
+     name="maxOpacity" type="double"/>
+    <property column="MIN_PHASE_STABILITY" generated="never"
+     lazy="false" name="minPhaseStability" type="double"/>
+    <property column="MAX_SEEING" generated="never" lazy="false"
+     name="maxSeeing" type="double"/>
+   </component>
+   <component class="Preconditions" name="preConditions">
+    <property column="MAX_ALLOWED_HA" generated="never" lazy="false"
+     name="maxAllowedHourAngle" type="double"/>
+    <property column="MIN_ALLOWED_HA" generated="never" lazy="false"
+     name="minAllowedHourAngle" type="double"/>
+   </component>
+   <component class="SchedulingConstraints" name="schedulingConstraints">
+    <property column="MAX_ANG_RESOLUTION" generated="never" lazy="false"
+     name="maxAngularResolution" type="double"/>
+    <property column="REPR_FREQ" generated="never" lazy="false"
+     name="representativeFrequency" type="double"/>
+    <many-to-one class="Target" column="REPR_TARGET" name="representativeTarget"/>
+   </component>
+   <component class="WeatherDependentVariables" name="weatherDependentVariables">
+    <property column="WEATHER_VARS_LAST_UPDATE" generated="never"
+     lazy="false" name="lastUpdate" type="date"/>
+    <property column="WEATHER_VARS_VALID_UNTIL" generated="never"
+     lazy="false" name="validUntil" type="date"/>
+    <property column="WEATHER_VARS_TSYS" generated="never" lazy="false"
+     name="tsys" type="double"/>
+    <property column="WEATHER_VARS_PROJ_TSYS" generated="never"
+     lazy="false" name="projectedTsys" type="double"/>
+    <property column="WEATHER_VARS_PROJ_DELTA_T" generated="never"
+     lazy="false" name="projectionTimeIncr" type="double"/>
+   </component>
+   <component class="SchedBlockControl" name="schedBlockControl">
+    <property column="SCHEDBLOCK_CTRL_LAST_UPDATE" generated="never"
+     lazy="false" name="lastUpdate" type="date"/>
+    <property column="SCHEDBLOCK_CTRL_VALID_UNTIL" generated="never"
+     lazy="false" name="validUntil" type="date"/>
+    <property column="SCHEDBLOCK_CTRL_INDEFINITE" generated="never"
+     lazy="false" name="indefiniteRepeat" type="boolean"/>
+    <property column="SCHEDBLOCK_CTRL_EXEC_COUNT" generated="never"
+     lazy="false" name="executionCount" type="int"/>
+    <property column="SCHEDBLOCK_CTRL_STATE" generated="never"
+     lazy="false" name="state" type="SchedBlockState"/>
+    <property column="SCHEDBLOCK_CTRL_SENSITIVITY" generated="never"
+     lazy="false" name="achievedSensitivity" type="double"/>
+    <property column="SCHEDBLOCK_CTRL_ACCUM_TIME" generated="never"
+     lazy="false" name="accumulatedExecutionTime" type="double"/>
+    <property column="SCHEDBLOCK_CTRL_MAX_TIME" generated="never"
+     lazy="false" name="sbMaximumTime" type="double"/>
+    <property column="SCHEDBLOCK_CTRL_N_EXECUTIONS" generated="never"
+     lazy="false" name="numberOfExecutions" type="int"/>
+   </component>
+   <set cascade="save-update, lock, delete, delete-orphan"
+    name="observingParameters" sort="unsorted">
+    <key column="SCHEDBLOCKID"/>
+    <one-to-many class="ObservingParameters"/>
+   </set>
+   <set cascade="save-update, lock, delete, delete-orphan"
+    name="targets" sort="unsorted">
+    <key column="SCHEDBLOCKID"/>
+    <one-to-many class="Target"/>
+   </set>
+   <many-to-one column="EXECUTIVE_ID" name="executive" not-null="false"/>
+   <component class="alma.entity.xmlbinding.sbstatus.SBStatusEntityT" name="statusEntity">
+    <property column="STATUS_ENTITY_ID" generated="never" lazy="false"
+     name="entityId" type="string"/>
+    <property column="STATUS_ENTITY_ID_ENCRYPTED" generated="never"
+     lazy="false" name="entityIdEncrypted" type="string"/>
+    <property column="STATUS_ENTITY_TYPE_NAME" generated="never"
+     lazy="false" name="entityTypeName" type="string"/>
+    <property column="STATUS_SCHEMA_VERSION" generated="never"
+     lazy="false" name="schemaVersion" type="string"/>
+    <property column="STATUS_DOCUMENT_VERSION" generated="never"
+     lazy="false" name="documentVersion" type="string"/>
+    <property column="STATUS_TIMESTAMP" generated="never" lazy="false"
+     name="timestamp" type="string"/>
+   </component>
+  </joined-subclass>
+  <joined-subclass name="ObsUnitSet" table="OBSUNITSET">
+   <key column="OBSUNITSETID"/>
+   <set cascade="save-update, lock, delete, delete-orphan"
+    inverse="true" name="obsUnits" sort="unsorted">
+    <key column="PARENTID"/>
+    <one-to-many class="ObsUnit"/>
+   </set>
+   <component class="alma.entity.xmlbinding.ousstatus.OUSStatusEntityT" name="statusEntity">
+    <property column="STATUS_ENTITY_ID" generated="never" lazy="false"
+     name="entityId" type="string"/>
+    <property column="STATUS_ENTITY_ID_ENCRYPTED" generated="never"
+     lazy="false" name="entityIdEncrypted" type="string"/>
+    <property column="STATUS_ENTITY_TYPE_NAME" generated="never"
+     lazy="false" name="entityTypeName" type="string"/>
+    <property column="STATUS_SCHEMA_VERSION" generated="never"
+     lazy="false" name="schemaVersion" type="string"/>
+    <property column="STATUS_DOCUMENT_VERSION" generated="never"
+     lazy="false" name="documentVersion" type="string"/>
+    <property column="STATUS_TIMESTAMP" generated="never" lazy="false"
+     name="timestamp" type="string"/>
+   </component>
+  </joined-subclass>
+ </class>
+ <!-- Care must be taken because the rising time could be bigger than the setting time,
          which happens when the interval of observability crosses the 24 hr boundary. -->
-    <query name="SchedBlock.findSchedBlocksWithVisibleRepresentativeTarget">
-        <![CDATA[
+ <query name="SchedBlock.findSchedBlocksWithVisibleRepresentativeTarget">
         from SchedBlock sb where
-       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime <
+       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime &lt;
         sb.schedulingConstraints.representativeTarget.source.observability.settingTime and
-        sb.schedulingConstraints.representativeTarget.source.observability.risingTime < ? and
-        sb.schedulingConstraints.representativeTarget.source.observability.settingTime > ?) or
-       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime >
+        sb.schedulingConstraints.representativeTarget.source.observability.risingTime &lt; ? and
+        sb.schedulingConstraints.representativeTarget.source.observability.settingTime &gt; ?) or
+       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime &gt;
         sb.schedulingConstraints.representativeTarget.source.observability.settingTime and
-       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime < ? or
-        sb.schedulingConstraints.representativeTarget.source.observability.settingTime > ?))        
-		]]>
-    </query>
-    
-    <query name="SchedBlock.findSchedBlocksWithoutTooMuchTsysVariation">
-        <![CDATA[
+       (sb.schedulingConstraints.representativeTarget.source.observability.risingTime &lt; ? or
+        sb.schedulingConstraints.representativeTarget.source.observability.settingTime &gt; ?))        
+		</query>
+ <query name="SchedBlock.findSchedBlocksWithoutTooMuchTsysVariation">
         from SchedBlock sb where
         ((sb.weatherDependentVariables.projectedTsys - sb.weatherDependentVariables.tsys)
-         / sb.weatherDependentVariables.tsys) < ?
-        ]]>
-    </query>
-    
-    <query name="SchedBlock.findByEstimatedExecutionTime">
-    	<![CDATA[
+         / sb.weatherDependentVariables.tsys) &lt; ?
+        </query>
+ <query name="SchedBlock.findByEstimatedExecutionTime">
     		from SchedBlock sb where
-    		sb.obsUnitControl.estimatedExecutionTime < ?
-    	]]>
-    </query>
-    
-    <query name="SchedBlock.findByTargetHourAngleLimits">
-    	<![CDATA[
+    		sb.obsUnitControl.estimatedExecutionTime &lt; ?
+    	</query>
+ <query name="SchedBlock.findByTargetHourAngleLimits">
     		from SchedBlock sb where
-    		sb.schedulingConstraints.representativeTarget.source.coordinates.RA >= ? and
-    		sb.schedulingConstraints.representativeTarget.source.coordinates.RA <= ?
-    	]]>
-    </query>
-
+    		sb.schedulingConstraints.representativeTarget.source.coordinates.RA &gt;= ? and
+    		sb.schedulingConstraints.representativeTarget.source.coordinates.RA &lt;= ?
+    	</query>
 </hibernate-mapping>
