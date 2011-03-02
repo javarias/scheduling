@@ -17,7 +17,7 @@ import alma.acs.component.client.ComponentClient;
 import alma.acs.logging.AcsLogger;
 import alma.projectlifecycle.StateSystemHelper;
 import alma.projectlifecycle.StateSystemOperations;
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.ArchiveConnectionHelper;
 import alma.xmlstore.OperationalOperations;

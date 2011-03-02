@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: ExecuteSBTest.java,v 1.6 2011/01/28 00:35:32 javarias Exp $
+ * $Id: ExecuteSBTest.java,v 1.7 2011/03/02 16:43:25 javarias Exp $
  */
 
 package alma.scheduling.inttest;
@@ -24,8 +24,6 @@ package alma.scheduling.inttest;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.logging.Logger;
-
-import org.omg.CORBA.UserException;
 
 import alma.ACS.MasterComponent;
 import alma.ACS.MasterComponentHelper;
@@ -40,22 +38,13 @@ import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityDeserializer;
-import alma.acs.entityutil.EntitySerializer;
-import alma.alarmsystem.source.ACSFaultState;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
-import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
-import alma.lifecycle.stateengine.constants.Role;
-import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateSystem;
 import alma.projectlifecycle.StateSystemHelper;
-import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.OLDArrayModeEnum;
 import alma.scheduling.SBLite;
-import alma.scheduling.AlmaScheduling.ProjectStatusQueue;
-import alma.scheduling.AlmaScheduling.statusImpl.CachedSBStatus;
-import alma.scheduling.Define.SchedulingException;
 import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;

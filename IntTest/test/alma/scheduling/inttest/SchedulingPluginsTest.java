@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingPluginsTest.java,v 1.7 2011/01/28 00:35:32 javarias Exp $
+ * $Id: SchedulingPluginsTest.java,v 1.8 2011/03/02 16:43:25 javarias Exp $
  */
 
 package alma.scheduling.inttest;
@@ -42,11 +42,9 @@ import alma.TMCDB.AccessHelper;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdater;
-import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Interactive_PI_to_Scheduling;
 import alma.scheduling.MasterSchedulerIF;
 import alma.scheduling.OLDArrayModeEnum;
-import alma.scheduling.Define.Control;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
 import alma.xmlstore.Operational;

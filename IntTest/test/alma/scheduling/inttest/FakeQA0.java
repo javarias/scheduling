@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: FakeQA0.java,v 1.2 2009/11/09 23:13:27 rhiriart Exp $
+ * $Id: FakeQA0.java,v 1.3 2011/03/02 16:43:25 javarias Exp $
  */
 
 package alma.scheduling.inttest;
@@ -41,7 +41,7 @@ import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateSystem;
 import alma.projectlifecycle.StateSystemHelper;
-import alma.scheduling.Define.SchedulingException;
+import alma.scheduling.SchedulingException;
 import alma.xmlentity.XmlEntityStruct;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;

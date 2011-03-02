@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: CreateArrayPluginTest.java,v 1.3 2011/01/28 00:35:32 javarias Exp $
+ * $Id: CreateArrayPluginTest.java,v 1.4 2011/03/02 16:43:25 javarias Exp $
  */
 
 package alma.scheduling.plugintest;
@@ -53,8 +53,8 @@ import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdater;
 import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.AlmaScheduling.GUI.OmcSchedulingPanel.SchedulingPanelMainFrame;
 import alma.scheduling.archiveupd.compimpl.ArchiveUpdaterHelper;
+import alma.scheduling.master.gui.SchedulingPanelMainFrame;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
 import alma.xmlstore.Operational;
