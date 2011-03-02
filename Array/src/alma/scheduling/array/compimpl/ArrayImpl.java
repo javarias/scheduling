@@ -82,14 +82,6 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private AcsProvider serviceProvider;
     
-    //Conditions variables to signal when the array is configured
-    final Lock lock = new ReentrantLock();
-    
-    
-    public ArrayImpl() {
-    	lock.lock();
-    }
-    
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
     /////////////////////////////////////////////////////////////
@@ -115,74 +107,67 @@ public class ArrayImpl implements ComponentLifecycle,
 	@Override
 	public void configure(String arrayName, ArraySchedulerMode[] modes,
 			ArraySchedulerLifecycleType lifecycleType) {
+		this.arrayName = arrayName;
+		this.modes = modes;
+		this.lifecycleType = lifecycleType;
+
+		final boolean manual = isManual(modes);
+		Services services = null;
+
 		try {
-			this.arrayName = arrayName;
-			this.modes = modes;
-			this.lifecycleType = lifecycleType;
-
-			final boolean manual = isManual(modes);
-			Services services = null;
-
-			try {
-				serviceProvider = new AcsProvider(containerServices, arrayName,
-						manual);
-				services = new Services(serviceProvider);
-			} catch (TranslationException e) {
-				ErrorHandling
-						.warning(
-								logger,
-								String.format(
-										"Error in array name %s - %s (more details in finer logs)",
-										arrayName, e.getMessage()), e);
-			} catch (AcsJException e) {
-				ErrorHandling
-						.warning(
-								logger,
-								String.format(
-										"Error linking to services for %s - %s (more details in finer logs)",
-										arrayName, e.getMessage()), e);
-			}
-
-			LinkedReorderingBlockingQueue<SchedBlockItem> q;
-			if (manual) {
-				q = new LinkedReorderingBlockingQueue<SchedBlockItem>(1);
-			} else {
-				q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
-			}
-
-			queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
-
-			executor = new Executor(arrayName, queue);
-			executor.configureManual(manual);
-			executor.configureServices(services);
-			executor.configureSessionManager(new SessionManager(arrayName,
-					containerServices, services, manual));
-
-			queueNotifier = new SchedBlockQueueCallbackNotifier();
-			executorNotifier = new ExecutorCallbackNotifier();
-			guiNotifier = new ArrayGUICallbackNotifier();
-
-			queue.addObserver(queueNotifier);
-			executor.addObserver(executorNotifier);
-			executor.addObserver(guiNotifier);
-
-			serviceProvider.getControlEventReceiver().attach(
-					"alma.Control.ExecBlockStartedEvent", executor);
-			serviceProvider.getControlEventReceiver().attach(
-					"alma.Control.ExecBlockEndedEvent", executor);
-			serviceProvider.getControlEventReceiver().attach(
-					"alma.offline.ASDMArchivedEvent", executor);
-			serviceProvider.getControlEventReceiver().begin();
-
-			if (manual) {
-				executor.setFullAuto(true, "Master Scheduler",
-						"array configuration");
-				executor.start("Master Scheduler", "array configuration");
-			}
-		} finally {
-			lock.unlock();
+			serviceProvider = new AcsProvider(containerServices, arrayName,
+					manual);
+			services = new Services(serviceProvider);
+		} catch (TranslationException e) {
+			ErrorHandling.warning(logger, String.format(
+					"Error in array name %s - %s (more details in finer logs)",
+					arrayName, e.getMessage()), e);
+		} catch (AcsJException e) {
+			ErrorHandling
+					.warning(
+							logger,
+							String.format(
+									"Error linking to services for %s - %s (more details in finer logs)",
+									arrayName, e.getMessage()), e);
 		}
-    }
+
+		LinkedReorderingBlockingQueue<SchedBlockItem> q;
+		if (manual) {
+			q = new LinkedReorderingBlockingQueue<SchedBlockItem>(1);
+		} else {
+			q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
+		}
+
+		queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
+
+		executor = new Executor(arrayName, queue);
+		executor.configureManual(manual);
+		executor.configureServices(services);
+		executor.configureSessionManager(new SessionManager(arrayName,
+				containerServices, services, manual));
+
+		queueNotifier = new SchedBlockQueueCallbackNotifier();
+		executorNotifier = new ExecutorCallbackNotifier();
+		guiNotifier = new ArrayGUICallbackNotifier();
+
+		queue.addObserver(queueNotifier);
+		executor.addObserver(executorNotifier);
+		executor.addObserver(guiNotifier);
+
+		serviceProvider.getControlEventReceiver().attach(
+				"alma.Control.ExecBlockStartedEvent", executor);
+		serviceProvider.getControlEventReceiver().attach(
+				"alma.Control.ExecBlockEndedEvent", executor);
+		serviceProvider.getControlEventReceiver().attach(
+				"alma.offline.ASDMArchivedEvent", executor);
+		serviceProvider.getControlEventReceiver().begin();
+
+		if (manual) {
+			executor.setFullAuto(true, "Master Scheduler",
+					"array configuration");
+			executor.start("Master Scheduler", "array configuration");
+		}
+	}
 
     @Override
     public ArraySchedulerLifecycleType getLifecycleType() {
@@ -312,16 +297,11 @@ public class ArrayImpl implements ComponentLifecycle,
         return queue.remainingCapacity() + queue.size();
     }
 
-    @Override
+	@Override
 	public void addMonitorQueue(String monitorName,
 			SchedBlockQueueCallback callback) {
-		lock.lock();
-		try {
-			queueNotifier.registerMonitor(monitorName, callback);
-		} finally {
-			lock.unlock();
-		}
-    }
+		queueNotifier.registerMonitor(monitorName, callback);
+	}
     
 	@Override
 	public void removeMonitorQueue(String monitorName) {
@@ -331,12 +311,7 @@ public class ArrayImpl implements ComponentLifecycle,
 	@Override
 	public void addMonitorExecution(String monitorName,
 			SchedBlockExecutionCallback callback) {
-		lock.lock();
-		try {
-			executorNotifier.registerMonitor(monitorName, callback);
-		} finally {
-			lock.unlock();
-		}
+		executorNotifier.registerMonitor(monitorName, callback);
 	}
 
 	@Override
@@ -347,12 +322,7 @@ public class ArrayImpl implements ComponentLifecycle,
 
 	@Override
 	public void addMonitorGUI(String monitorName, ArrayGUICallback callback) {
-		lock.lock();
-		try {
-			guiNotifier.registerMonitor(monitorName, callback);
-		} finally {
-			lock.unlock();
-		}
+		guiNotifier.registerMonitor(monitorName, callback);
 	}
 
 	@Override
