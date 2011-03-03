@@ -377,6 +377,7 @@ public class APDMtoSchedulingConverter {
 		}
 		if (phase == Phase.PHASE1) {
 			apdmOUS = apdmProposal.getObsPlan();
+			logger.info("Proposal with uid: " + obsProject.getId() + "  had a status in ObsPlan of :" + apdmProposal.getObsPlan().getStatus().toString() );
 		} else {
 			apdmOUS = apdmProject.getObsProgram().getObsPlan();
 		}
