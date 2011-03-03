@@ -142,7 +142,7 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 	@Override
 	public List<ProposalComparison> listPh1mProposals() {
 		ArrayList<ProposalComparison> retList = new ArrayList<ProposalComparison>();
-		System.out.println("Project UID\tAPRC Score\tAPRC Rank");
+		System.out.println("Project UID\tAPRC Score\tAPRC Rank\tGrade");
 		List<ObsProject> prjs = obsProjDao.findAll(ObsProject.class);
 		ProposalComparison propC = null;
 		for (ObsProject p : prjs) {
@@ -180,7 +180,8 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			retList.add(propC);
 			String line = p.getUid() + "\t";
 			line += prop.getAssessment().getAprcScore() + "\t";
-			line += prop.getAssessment().getAprcRank();
+			line += prop.getAssessment().getAprcRank() + "\t";
+			line += prop.getAssessment().getAprcLetterGrade();
 			System.out.println(line);
 		}
 		return retList;
