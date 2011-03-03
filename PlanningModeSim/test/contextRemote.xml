@@ -288,61 +288,66 @@
 
 	<bean id="execSelector" class="alma.scheduling.algorithm.executive.ExecutiveSelector"
 		scope="prototype">
-        <constructor-arg><value>execSelector</value></constructor-arg>
+        	<constructor-arg><value>execSelector</value></constructor-arg>
 		<property name="execDao" ref="execDao"/>
 		<property name="sbDao" ref="sbDao"/>
 	</bean>
 
 	<bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector"
 		scope="prototype">
-        <constructor-arg><value>weatherSelector</value></constructor-arg>
+	        <constructor-arg><value>weatherSelector</value></constructor-arg>
 		<property name="schedBlockDao" ref="schedBlockDao"/>
 	</bean>
 	
 	<bean id="weatherTsysSelector" class="alma.scheduling.algorithm.weather.WeatherTsysSelector"
 		scope="prototype">
-        <constructor-arg><value>weatherTsysSelector</value></constructor-arg>
+        	<constructor-arg><value>weatherTsysSelector</value></constructor-arg>
 		<property name="schedBlockDao" ref="schedBlockDao"/>
         <property name="tsysVariation" value="0.2"/>
 	</bean>
 
 	<bean id="sourceSelector" class="alma.scheduling.algorithm.obsproject.FieldSourceObservableSelector"
 		scope="prototype">
-        <constructor-arg><value>sourceSelector</value></constructor-arg>
+	        <constructor-arg><value>sourceSelector</value></constructor-arg>
 		<property name="configDao" ref="configDao"/>
 		<property name="schedBlockDao" ref="schedBlockDao"/>		
 	</bean>
 	
 	<bean id="arrayConfigSelector" class="alma.scheduling.algorithm.observatory.ArrayConfigurationSelector"
 		scope="prototype">
-        <constructor-arg><value>arrayConfigSelector</value></constructor-arg>
+	        <constructor-arg><value>arrayConfigSelector</value></constructor-arg>
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 	
 	<bean id="hourAngleSelector" class="alma.scheduling.algorithm.obsproject.HourAngleSelector"
 		scope="prototype">
-        <constructor-arg><value>hourAngleSelector</value></constructor-arg>
+	        <constructor-arg><value>hourAngleSelector</value></constructor-arg>
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 	
 	<bean id="sunAvoidanceSelector" class="alma.scheduling.algorithm.obsproject.SunAvoidanceSelector"
 		scope="prototype">
-        <constructor-arg><value>sunAvoidanceSelector</value></constructor-arg>
+        	<constructor-arg><value>sunAvoidanceSelector</value></constructor-arg>
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 	
 	<bean id="moonAvoidanceSelector" class="alma.scheduling.algorithm.obsproject.MoonAvoidanceSelector"
 		scope="prototype">
-        <constructor-arg><value>moonAvoidanceSelector</value></constructor-arg>
+	        <constructor-arg><value>moonAvoidanceSelector</value></constructor-arg>
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
 
 	<bean id="sbStatusSelector" class="alma.scheduling.algorithm.obsproject.SchedBlockStatusSelector"
 		scope="prototype">
-        <constructor-arg><value>sbStatusSelector</value></constructor-arg>
+        	<constructor-arg><value>sbStatusSelector</value></constructor-arg>
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
-
+	
+	<bean id="projectQualitySelector" class="alma.scheduling.algorithm.obsproject.ProjectQualitySelector"
+		scope="prototype">
+	        <constructor-arg><value>projectQualitySelector</value></constructor-arg>
+	</bean>
+	
 <!--
 ################ DSA Updaters Beans ###########################################################
 ################   Updaters are beans in charge of re-calculating a specific value, ########### 
@@ -376,6 +381,7 @@
 				<ref bean="sunAvoidanceSelector" />
 				<ref bean="moonAvoidanceSelector" />
 				<ref bean="sbStatusSelector" />
+				<ref bean="projectQualitySelector" />
 			</set>
         </property>
 	</bean>

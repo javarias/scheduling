@@ -342,6 +342,13 @@
         <constructor-arg><value>sbStatusSelector</value></constructor-arg>
 		<property name="sbDao" ref="sbDao"/>		
 	</bean>
+	
+	<bean id="projectQualitySelector" class="alma.scheduling.algorithm.obsproject.ProjectQualitySelector"
+		scope="prototype">
+	        <constructor-arg><value>projectQualitySelector</value></constructor-arg>
+	</bean>
+	
+	
 
 <!--
 ################ DSA Updaters Beans ###########################################################
@@ -376,6 +383,7 @@
 				<ref bean="sunAvoidanceSelector" />
 				<ref bean="moonAvoidanceSelector" />
 				<ref bean="sbStatusSelector" />
+				<ref bean="projectQualitySelector" />
 			</set>
         </property>
 	</bean>
