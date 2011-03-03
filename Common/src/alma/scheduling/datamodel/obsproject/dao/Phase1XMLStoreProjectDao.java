@@ -133,8 +133,9 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 						result.add(proposal);
 						archive.cache(proposal);
 						logger.info(String.format(
-								"Succesfully got APDM ObsProposal %s",
+								"Succesfully got %d APDM ObsProposal %s", result.size(), 
 								res.identifier));
+						
 					} catch (EntityException e) {
 						logger.warning(String.format(
 								"Cannot get APDM ObsProposal %s - %s (skipping)",
