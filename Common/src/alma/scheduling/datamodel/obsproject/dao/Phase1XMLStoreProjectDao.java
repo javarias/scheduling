@@ -24,10 +24,10 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	
     final public static String[] OPPhase1RunnableStates = {
     	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE1SUBMITTED.toString(),
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.APPROVED.toString(),
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED.toString(),
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),              
-    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PARTIALLYOBSERVED.toString()               
+//    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.APPROVED.toString(),
+//    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED.toString(),
+//    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY.toString(),              
+//    	alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PARTIALLYOBSERVED.toString()               
     };
 
 	public Phase1XMLStoreProjectDao() throws Exception {
@@ -82,18 +82,43 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		}
 	}
 
+	private static String makePredicate(String... states) {
+		final StringBuffer sb = new StringBuffer();
+		String sep = "";
+		
+		for (final String state : states) {
+			sb.append(sep);
+			sb.append("@status=\"");
+			sb.append(state);
+			sb.append('"');
+			sep = " or ";
+		}
+		
+		return sb.toString();
+	}
+
+	private static String makeQuery(String... states) {
+		return String.format(
+				"/prp:ObsProposal/prj:ObsPlan[%s]",
+				makePredicate(states));
+	}
+	
 	/**
 	 * Fetch all the ObsProposals from the archive.
 	 * 
 	 * @return a <code>List</code> of all the ObsProposals found.
 	 */
-	private List<alma.entity.xmlbinding.obsproposal.ObsProposal> fetchAllAPDMProposals() {
+	private List<alma.entity.xmlbinding.obsproposal.ObsProposal> fetchInterestingAPDMProposals() {
 		List<alma.entity.xmlbinding.obsproposal.ObsProposal> result
 				= new Vector<alma.entity.xmlbinding.obsproposal.ObsProposal>();
 
-		String query = new String("/prp:ObsProposal");
+//		String query = new String("/prp:ObsProposal");
+		String query = makeQuery(OPPhase1RunnableStates);
 		String schema = new String("ObsProposal");
 		
+		logger.info(String.format(
+				"Getting interesting proposals, query = %s, schema = %s",
+				query, schema));
 		try {
 			Cursor cursor = xmlStore.query(query, schema);
 			if (cursor == null) {
@@ -136,7 +161,7 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	protected void getInterestingProjects(ArchiveInterface archive) {
 		List<alma.entity.xmlbinding.obsproposal.ObsProposal> apdmProposals;
 		
-		apdmProposals = fetchAllAPDMProposals();
+		apdmProposals = fetchInterestingAPDMProposals();
 		getAPDMProjectsFor(archive, apdmProposals);
 	}
 
@@ -224,4 +249,19 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	protected boolean interestedInObsProject(String whoCares) {
 		return true;
 	}
+	
+	
+	public static void main(String[] args) {
+		String query = makeQuery(OPPhase1RunnableStates);
+		System.out.println(query);
+		
+		final String[] others = {"first", "second", "third"};
+		query = makeQuery(others);
+		System.out.println(query);
+
+		query = makeQuery();
+		System.out.println(query);
+
+	}
+
 }
