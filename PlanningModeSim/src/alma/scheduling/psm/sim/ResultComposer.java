@@ -99,7 +99,7 @@ public class ResultComposer {
 		results.setObsSeasonEnd(obsSeasonEnd);
 		results.setStartSimDate(obsSeasonStart);
 		results.setStopSimDate(obsSeasonEnd);
-		results.setAvailableTime( (results.getObsSeasonEnd().getTime() - results.getObsSeasonStart().getTime())/1000);
+		results.setAvailableTime( (results.getObsSeasonEnd().getTime() - results.getObsSeasonStart().getTime())/3600/1000);
 		results.setStartRealDate(new Date());
 	}
 	
@@ -107,7 +107,7 @@ public class ResultComposer {
 		Array arr = new Array();
 		arr.setCreationDate( arrcfg.getStartTime() );
 		arr.setDeletionDate( arrcfg.getEndTime() );
-		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/1000);
+		arr.setAvailableTime( (arr.getDeletionDate().getTime() - arr.getCreationDate().getTime())/3600/1000);
 		arr.setOriginalId(arrcfg.getId());
 		arr.setResolution( arrcfg.getResolution());
 		arr.setUvCoverage(arrcfg.getUvCoverage());

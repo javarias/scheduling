@@ -117,14 +117,14 @@
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalExecTime} / 3600]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalExecTime} ]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.00">
 					<reportElement x="173" y="61" width="50" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{totalExecTime}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="223" y="61" width="10" height="15"/>
@@ -166,28 +166,28 @@
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{dTime} / 3600]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{dTime} ]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
 					<reportElement x="85" y="31" width="80" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{cTime} / 3600]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{cTime}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
 					<reportElement x="85" y="16" width="80" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{bTime} / 3600]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{bTime} ]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
 					<reportElement x="85" y="1" width="80" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{aTime} / 3600]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{aTime} ]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="0" y="61" width="70" height="15"/>
@@ -232,28 +232,28 @@
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{dTime}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{dTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.00">
 					<reportElement x="173" y="31" width="50" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{cTime}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.00">
 					<reportElement x="173" y="16" width="50" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{bTime}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<textField pattern="##0.00">
 					<reportElement x="173" y="1" width="50" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{aTime}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
@@ -288,7 +288,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime}) / 3600]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Heading 1" x="52" y="4" width="227" height="18" forecolor="#C5C5C5"/>
