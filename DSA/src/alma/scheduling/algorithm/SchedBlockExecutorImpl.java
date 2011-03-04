@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.13 2011/03/01 21:53:21 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.14 2011/03/04 20:30:29 ahoffsta Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -144,26 +144,29 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
             InterferometrySensitivityCalculator.pointSourceSensitivity(expTimeHr,
                     freqGHz, bwGHz, raDeg, declDeg, numAnt, antDiamMtr, latitudeDeg,
                     opacity, atmBrightnessTemp, ut);
-	//FIXME: For Debug purposes. Seems sensitivy get pretty higher some times.
-	if( sensJy > 1.0 ){
-		System.out.println("** SCHEDBLOCK ID: " + schedBlock.getId() );
-		System.out.println("** Temp and Humi: " + hr.getValue() + ", " + tr.getValue() );
-		System.out.println("** opacityInterpolator.estimatePWV(): " + pwv );
-		System.out.println("** opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity );
-		System.out.println("** opacityInterpolator.interpolateOpacityAndTemperature().atmBrightnessTemp: " + atmBrightnessTemp );
-		System.out.println("** InterferometrySensitivityCalculator.pointSourceSensitivity(): " + sensJy );
-		System.out.println("** RA: " + raDeg + "     Dec: " + declDeg );
-		System.out.println("** Hour Angle at the given time: " + 
-				CoordinatesUtil.getHourAngle(ut, schedBlock.getSchedulingConstraints()
-                      .getRepresentativeTarget()
-                      .getSource()
-                      .getCoordinates().getRA() / 15, 
-                Constants.CHAJNANTOR_LONGITUDE) );
+        
+		//TODO: For Warning purposes. Sensitivity gets high values when observing to horizon.
+        //      See http://jira.alma.cl/browse/COMP-5048 for more information.
+		if( sensJy > 1.0 ){
+			String msg = new String(" High Sensitivity detected in SchedBlock ID: " + schedBlock.getId() + "\n" +  
+					"  Temp and Humi: " + hr.getValue() + ", " + tr.getValue() + "\n" + 
+					"  opacityInterpolator.estimatePWV(): " + pwv + "\n" + 
+					"  opacityInterpolator.interpolateOpacityAndTemperature().opacity: " + opacity + "\n" + 
+					"  opacityInterpolator.interpolateOpacityAndTemperature().atmBrightnessTemp: " + atmBrightnessTemp + "\n" + 
+					"  InterferometrySensitivityCalculator.pointSourceSensitivity(): " + sensJy + "\n" + 
+					"  RA: " + raDeg + "     Dec: " + declDeg + "\n" + 
+					"  Hour Angle at the given time: " + 
+					CoordinatesUtil.getHourAngle(ut, schedBlock.getSchedulingConstraints()
+	                      .getRepresentativeTarget()
+	                      .getSource()
+	                      .getCoordinates().getRA() / 15, 
+	                Constants.CHAJNANTOR_LONGITUDE) );
+			logger.warn(msg);
+			
+		}
+		// END Warning code 
 		
-	}
-
-
-	// END Debug purposes
+		
         schedBlock.getSchedBlockControl().setNumberOfExecutions(
                 schedBlock.getSchedBlockControl().getNumberOfExecutions() + 1);
         double accumSens = 0;
@@ -187,7 +190,7 @@ public class SchedBlockExecutorImpl implements SchedBlockExecutor {
         schedBlockDao.saveOrUpdate(schedBlock);
         
         long executionTime = (long) (schedBlock.getSchedBlockControl().getSbMaximumTime().doubleValue()
-            * 1000);
+            * 1000 * 3600);
         Date nextExecutionTime = new Date(ut.getTime() + executionTime);
         return nextExecutionTime;
     }
