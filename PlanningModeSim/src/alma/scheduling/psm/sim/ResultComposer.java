@@ -204,6 +204,11 @@ public class ResultComposer {
 		
 		// Bring one by one observation project and create the output object for them
 		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){
+			
+			//If the project was Cancelled, we do not consider it for results. 
+			if( op.getStatus() == "CANCELLED" )
+				continue;
+			
 			System.out.println("\\-Completing observation project #" + op.getId());
 			ObservationProject outputOp = new ObservationProject();
 			// Filling what can be filled before calculations
