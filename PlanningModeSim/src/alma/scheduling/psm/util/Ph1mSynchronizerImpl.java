@@ -110,13 +110,15 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			return;
 		}
 		p.setScienceRank(prop.getAssessment().getAprcRank());
-		if (prop.getAssessment().getAprcScore() == null){
+		p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
+		p.setLetterGrade(ScienceGrade.valueOf(prop.getAssessment().getAprcLetterGrade().toString()));
+		if (prop.getAssessment().getAprcScore() == null || 
+				prop.getAssessment().getAprcRank() == null || 
+				prop.getAssessment().getAprcLetterGrade() == null ){
 			p.setStatus("CANCELLED");
 			obsProjDao.saveOrUpdate(p);
 			throw new NullPointerException("aprc Score is null");
 		}
-		p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
-		p.setLetterGrade(ScienceGrade.valueOf(prop.getAssessment().getAprcLetterGrade().toString()));
 		obsProjDao.saveOrUpdate(p);
 	}
 
@@ -181,7 +183,7 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			String line = p.getUid() + "\t";
 			line += prop.getAssessment().getAprcScore() + "\t";
 			line += prop.getAssessment().getAprcRank() + "\t";
-			line += prop.getAssessment().getAprcLetterGrade();
+			line += prop.getAssessment().getAprcLetterGrade() + "\t";
 			System.out.println(line);
 		}
 		return retList;

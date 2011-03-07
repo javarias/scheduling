@@ -166,7 +166,8 @@ public class Console {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-            }
+            }else
+            	System.exit(1);
         }
         else if (args[0].compareTo("go")==0){
             System.out.println("I'm doing something useful 4");
@@ -192,6 +193,7 @@ public class Console {
         System.out.println("clean:\t\t unload from database obsproject, executive, results, and observatory data.");
         System.out.println("step:\t\t step through each cycle of simulation, returning to command prompt.");
         System.out.println("run:\t\t runs a simulation, generating an output file.");
+        System.out.println("ph1m:\t\t synchronizes the proposals with the Phase 1 Manager.");
         System.out.println("go:\t\t loads and run a simulation.");
         System.out.println("help:\t\t Display this helpful message.");
         System.out.println("report <help, 1, 2>:\t\t Generate reports from the results of the simulation.");

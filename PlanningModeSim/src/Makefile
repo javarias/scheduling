@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.18 2011/02/24 20:45:16 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.19 2011/03/07 12:51:40 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -66,7 +66,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         = aprc
+SCRIPTS         =
 #SCRIPTS_L       =
 
 #
