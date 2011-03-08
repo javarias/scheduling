@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	
+	<xs:element name="SchedulingPolicy">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SelectionCriterias" type="SelectionCriteriasT" maxOccurs="1"/>
+				<xs:element name="Scorers" type="ScorersT" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="version" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	
+    <xs:complexType name="SelectionCriteriasT">
+    	<xs:sequence>
+    		<xs:choice minOccurs="0" maxOccurs="unbounded">
+    			<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
+    			<xs:element name="WeatherSelector" type="WeatherSelectorT"/>
+    			<xs:element name="SourceSelector" type="SourceSelectorT"/>
+    			<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>
+    			<xs:element name="HourAngleSelector" type="HourAngleSelectorT"/>
+    			<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT"/>
+    			<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
+    			<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT"/>
+    		</xs:choice>
+    	</xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ScorersT">
+    	<xs:sequence>
+    		<xs:choice minOccurs="0" maxOccurs="unbounded">
+    			<xs:element name="SciScorer" type="SciScorerT" />
+    			<xs:element name="HourAngleScorer" type="HourAngleScorerT" />
+    		</xs:choice>
+    	</xs:sequence>
+    </xs:complexType>
+	
+	<xs:complexType name="ScorerT">
+		<xs:sequence>
+			<xs:element name="weight">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+  
+<!-- Definition of available selection Criterias -->  
+   	<xs:complexType name="ExecutiveSelectorT" />
+	
+	<xs:complexType name="WeatherSelectorT" >
+		<xs:sequence>
+			<xs:element name="tsysVariation" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SourceSelectorT" />
+	
+	<xs:complexType name="ArrayConfigSelectorT"/>
+	
+	<xs:complexType name="HourAngleSelectorT" />
+	
+	<xs:complexType name="SunAvoidanceSelectorT" />
+	
+	<xs:complexType name="MoonAvoidanceSelectorT" />
+	
+	<xs:complexType name="SchedBlockGradeSelectorT" />
+	
+<!-- Definition of available scorers -->
+	
+	<xs:complexType name="SciScorerT" >
+		<xs:complexContent>
+			<xs:extension base="ScorerT" />
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="HourAngleScorerT" >
+		<xs:complexContent>
+			<xs:extension base="ScorerT" />
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>
