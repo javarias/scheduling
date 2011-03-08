@@ -4,7 +4,7 @@
 	<xs:element name="SchedulingPolicy">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="SelectionCriterias" type="SelectionCriteriasT" maxOccurs="1"/>
+				<xs:element name="SelectionCriterion" type="SelectionCriteriaT" maxOccurs="1"/>
 				<xs:element name="Scorers" type="ScorersT" maxOccurs="1"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -12,7 +12,7 @@
 		</xs:complexType>
 	</xs:element>
 	
-    <xs:complexType name="SelectionCriteriasT">
+    <xs:complexType name="SelectionCriteriaT">
     	<xs:sequence>
     		<xs:choice minOccurs="0" maxOccurs="unbounded">
     			<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
