@@ -14,6 +14,8 @@ public abstract class AbstractBaseRanker implements SchedBlockRanker {
     
     protected String rankerName = "" ;
     
+    protected double factor;
+    
     protected AbstractBaseRanker(String rankerName){
         this.rankerName = rankerName;
     }
@@ -58,5 +60,13 @@ public abstract class AbstractBaseRanker implements SchedBlockRanker {
         }
         return str;
     }
+
+	public double getFactor() {
+		return factor;
+	}
+
+	public void setFactor(double factor) {
+		this.factor = factor;
+	}
 
 }

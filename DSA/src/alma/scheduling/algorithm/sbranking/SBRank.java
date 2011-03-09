@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SBRank.java,v 1.5 2010/04/16 20:59:49 javarias Exp $"
+ * "@(#) $Id: SBRank.java,v 1.6 2011/03/09 19:38:23 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
+
+import java.util.ArrayList;
 
 
 /**
@@ -41,17 +43,23 @@ public class SBRank implements Comparable<SBRank>{
     /**
      * Score obtained
      */
-    private double rank;
+    private double score;
     /**
      * SB uid reference
      */
     private String uid;
+    /**
+     * Details, it could be the name of the scorer for future references
+     */
+    private String details;
     
-    public SBRank(long id, double rank, String uid) {
-        super();
+    private ArrayList<SBRank> breakdownScore;
+    
+    public SBRank(long id, double score, String uid) {
         this.id = id;
-        this.rank = rank;
+        this.score = score;
         this.uid = uid;
+        breakdownScore = new ArrayList<SBRank>();
     }
     
     public SBRank(){
@@ -66,11 +74,11 @@ public class SBRank implements Comparable<SBRank>{
     }
 
     public double getRank() {
-        return rank;
+        return score;
     }
 
     public void setRank(double rank) {
-        this.rank = rank;
+        this.score = rank;
     }
 
     public String getUid() {
@@ -80,10 +88,28 @@ public class SBRank implements Comparable<SBRank>{
     public void setUid(String uid) {
         this.uid = uid;
     }
+    
+    public SBRank[] getBreakdown() {
+    	SBRank[] ret = new SBRank[breakdownScore.size()];
+    	breakdownScore.toArray(ret);
+    	return ret;
+    }
+    
+    public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
+	}
+
+	public void addRank(SBRank score) {
+    	breakdownScore.add(score);
+    }
 
     @Override
     public String toString() {
-        return "SBRank [id=" + id + ", rank=" + rank + ", uid=" + uid + "]";
+        return "SBRank [id=" + id + ", score=" + score + ", uid=" + uid + "]";
     }
 
     @Override

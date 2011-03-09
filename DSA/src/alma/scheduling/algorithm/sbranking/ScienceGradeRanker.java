@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.12 2010/07/20 23:07:00 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.13 2011/03/09 19:38:23 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -39,11 +39,6 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
 public class ScienceGradeRanker extends AbstractBaseRanker {
 
     private static Logger logger = LoggerFactory.getLogger(ScienceGradeRanker.class);
-    
-    private double factor;
-    public void setFactor(double factor) {
-        this.factor = factor;
-    }
     
     private ArrayList<SBRank> ranks;
     

@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.6 2010/09/24 21:04:42 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.7 2011/03/09 19:38:23 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -118,9 +118,10 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES= SchedulingDSA
-SchedulingDSA_DIRS= alma
-SchedulingDSA_EXTRAS= log4j.properties
+JARFILES := SchedulingDSA
+SchedulingDSA_DIRS := alma
+SchedulingDSA_EXTRAS := log4j.properties alma/scheduling/algorithm/SchedulingPolicy.xsd \
+						 alma/scheduling/algorithm/SchedulingPolicy.xsl
 #
 # java sources in Jarfile on/off
 DEBUG=on
