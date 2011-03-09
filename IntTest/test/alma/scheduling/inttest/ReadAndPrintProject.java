@@ -177,8 +177,8 @@ public class ReadAndPrintProject {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final ReadAndPrintProject rapp = new ReadAndPrintProject(new FakeContainerServices());
-	    final Logger logger = Logger.getLogger(rapp.getClass().getSimpleName());
+	    final Logger logger = Logger.getLogger(ReadAndPrintProject.class.getSimpleName());
+	    final ReadAndPrintProject rapp = new ReadAndPrintProject(new FakeContainerServices("ReadAndPrintProject", logger));
 
 		try {
 		    final File cwd = new File(".");

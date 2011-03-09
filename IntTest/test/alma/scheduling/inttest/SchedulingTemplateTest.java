@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingTemplateTest.java,v 1.6 2011/01/28 00:35:32 javarias Exp $
+ * $Id: SchedulingTemplateTest.java,v 1.7 2011/03/09 14:19:50 hsommer Exp $
  */
 
 package alma.scheduling.inttest;
@@ -327,7 +327,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
         SchedBlockEntityT entity = schedBlock.getSchedBlockEntity();
         UIDLibrary uidlib = new UIDLibrary(logger);
         uidlib.replaceUniqueEntityId(entity, getContainerServices()
-                .getTransparentXmlComponent(IdentifierJ.class,
+                .getTransparentXmlWrapper(IdentifierJ.class,
                         archIdentifierComp, IdentifierOperations.class));
 
         schedBlock.setSchedBlockEntity(entity);
@@ -352,7 +352,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
         ObsProjectEntityT entity = obsProject.getObsProjectEntity();
         UIDLibrary uidlib = new UIDLibrary(logger);
         uidlib.replaceUniqueEntityId(entity, getContainerServices()
-                .getTransparentXmlComponent(IdentifierJ.class,
+                .getTransparentXmlWrapper(IdentifierJ.class,
                         archIdentifierComp, IdentifierOperations.class));
 
         obsProject.setObsProjectEntity(entity);
@@ -377,7 +377,7 @@ public class SchedulingTemplateTest extends ComponentClientTestCase {
         ObsProposalEntityT entity = obsProposal.getObsProposalEntity();
         UIDLibrary uidlib = new UIDLibrary(logger);
         uidlib.replaceUniqueEntityId(entity, getContainerServices()
-                .getTransparentXmlComponent(IdentifierJ.class,
+                .getTransparentXmlWrapper(IdentifierJ.class,
                         archIdentifierComp, IdentifierOperations.class));
 
         obsProposal.setObsProposalEntity(entity);
