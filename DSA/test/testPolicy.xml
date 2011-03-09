@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SchedulingPolicy name="MyTestDSAPolicy">
+    <SelectionCriterion>
+        <ExecutiveSelector/>
+        <WeatherSelector>
+            <tsysVariation>0.2</tsysVariation>
+        </WeatherSelector>
+        <ArrayConfigSelector/>
+        
+    </SelectionCriterion>
+    <Scorers>
+        <HourAngleScorer>
+            <weight>1.0</weight>
+        </HourAngleScorer>
+        
+    </Scorers>
+</SchedulingPolicy>
