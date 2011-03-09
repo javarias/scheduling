@@ -40,7 +40,7 @@
                  <bean id="weatherTsysSelector" class="alma.scheduling.algorithm.weather.WeatherTsysSelector"
                      scope="prototype">
                      <constructor-arg><value>weatherTsysSelector</value></constructor-arg>
-                     <property name="schedBlockDao" ref="schedBlockDao"/>
+                     <property name="schedBlockDao" ref="sbDao"/>
                      <property name="tsysVariation" value="0.2"/>
                  </bean>
              </xsl:if>
@@ -50,7 +50,7 @@
                     scope="prototype">
                     <constructor-arg><value>sourceSelector</value></constructor-arg>
                     <property name="configDao" ref="configDao"/>
-                    <property name="schedBlockDao" ref="schedBlockDao"/>		
+                    <property name="schedBlockDao" ref="sbDao"/>		
                 </bean>
             </xsl:if>
             
@@ -146,7 +146,7 @@
             <bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector"
                 scope="prototype">
                 <constructor-arg><value>weatherSelector</value></constructor-arg>
-                <property name="schedBlockDao" ref="schedBlockDao"/>
+                <property name="schedBlockDao" ref="sbDao"/>
             </bean>
             
             <bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
