@@ -147,6 +147,12 @@ public class ModelAccessor extends Observable {
 		return result;
 	}
 	
+	public ObsProject getObsProjectFromEntityId(String entityId) {
+		final ObsProject op = getObsProjectDao().findByEntityId(entityId);
+
+		return op;
+	}
+	
 	public ObsUnit getObsUnitForProject(ObsProject project) {
 		return projectDao.getObsUnitForProject(project);
 	}
@@ -200,7 +206,9 @@ public class ModelAccessor extends Observable {
 	}
 	
 	public SchedBlock getSchedBlockFromEntityId(String entityId) {
-	    return schedBlockDao.findByEntityId(entityId);
+		final SchedBlock sb = schedBlockDao.findByEntityId(entityId);
+		hydrateSchedBlock(sb);
+		return sb;
 	}
 	
 }

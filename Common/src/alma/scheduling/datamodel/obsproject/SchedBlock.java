@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.12 2011/01/28 00:35:31 javarias Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.13 2011/03/11 00:04:47 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -243,6 +243,18 @@ public class SchedBlock extends ObsUnit {
 		// TODO R8 - Maximum time
 		// TODO R8 - Sensitivity?
 		return true;
+	}
+
+	public SkyCoordinates getRepresentativeCoordinates() {
+		try {
+			return this.
+				getSchedulingConstraints().
+				getRepresentativeTarget().
+				getSource().
+				getCoordinates();
+		} catch (NullPointerException npe) {
+			return null;
+		}
 	}
 
 }

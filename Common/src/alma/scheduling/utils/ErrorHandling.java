@@ -26,9 +26,20 @@ import java.util.logging.Logger;
 /**
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
+ * $Id: ErrorHandling.java,v 1.3 2011/03/11 00:04:21 dclarke Exp $
  */
 public final class ErrorHandling {
+	/*
+	 * ================================================================
+	 * Constants
+	 * ================================================================
+	 */
+	private static Level DetailsLevel = Level.INFO;
+	/* End Fields
+	 * ============================================================= */
+
+	
+	
 	/*
 	 * ================================================================
 	 * Fields
@@ -109,7 +120,7 @@ public final class ErrorHandling {
     public static void info(Logger logger,
                             String message,
                             Throwable t) {
-    	log(logger, Level.INFO, message, Level.FINEST, t);
+    	log(logger, Level.INFO, message, DetailsLevel, t);
     }
     
     /**
@@ -122,7 +133,7 @@ public final class ErrorHandling {
     public static void warning(Logger logger,
                                String message,
                                Throwable t) {
-    	log(logger, Level.WARNING, message, Level.FINEST, t);
+    	log(logger, Level.WARNING, message, DetailsLevel, t);
     }
     
     /**
@@ -135,7 +146,7 @@ public final class ErrorHandling {
     public static void severe(Logger logger,
                               String message,
                               Throwable t) {
-    	log(logger, Level.SEVERE, message, Level.FINEST, t);
+    	log(logger, Level.SEVERE, message, DetailsLevel, t);
     }
 	/* End Static helper methods
 	 * ============================================================= */
@@ -172,7 +183,7 @@ public final class ErrorHandling {
      * @param t
      */
     public void info(String message, Throwable t) {
-    	log(Level.INFO, message, Level.FINEST, t);
+    	log(Level.INFO, message, DetailsLevel, t);
     }
     
     /**
@@ -183,7 +194,7 @@ public final class ErrorHandling {
      * @param t
      */
     public void warning(String message, Throwable t) {
-    	log(Level.WARNING, message, Level.FINEST, t);
+    	log(Level.WARNING, message, DetailsLevel, t);
     }
     
     /**
@@ -194,7 +205,7 @@ public final class ErrorHandling {
      * @param t
      */
     public void severe(String message, Throwable t) {
-    	log(Level.SEVERE, message, Level.FINEST, t);
+    	log(Level.SEVERE, message, DetailsLevel, t);
     }
 	/* End Helper methods
 	 * ============================================================= */

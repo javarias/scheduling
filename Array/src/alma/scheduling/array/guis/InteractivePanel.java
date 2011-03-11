@@ -41,12 +41,12 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.RowFilter.Entry;
@@ -62,10 +62,15 @@ import javax.swing.table.TableRowSorter;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.gui.standards.StandardIcons;
+import alma.entity.xmlbinding.projectstatus.StatusBaseT;
+import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.lifecycle.persistence.StateArchive;
 import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.SchedBlockQueueItem;
+import alma.scheduling.SchedulingException;
 import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
+import alma.scheduling.array.util.StatusCollection;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -74,11 +79,15 @@ import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.swingx.CallbackFilter;
+import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
+import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
+import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
+import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.11 2011/02/24 22:42:50 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.12 2011/03/11 00:06:34 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -89,7 +98,6 @@ public class InteractivePanel extends AbstractArrayPanel
      * ================================================================
      */
     private final static String BlankLabel = " ";
-    private final static int popupLimit = 10;
     /* End Constants
      * ============================================================= */
 	
@@ -122,10 +130,6 @@ public class InteractivePanel extends AbstractArrayPanel
     private JLabel opMessage;
     /** opTable pop-up menu */
     private JPopupMenu opPopup;
-    /** opTable pop-up menu item for details of the OP under the mouse */
-    private JMenuItem opDetailsHere;
-    /** The OP under the mouse (only valid when opPopup is active) */
-    private String opHere = null;
     
     /** Title for the schedblock part of the display. */
     private JLabel sbTitle;
@@ -149,10 +153,6 @@ public class InteractivePanel extends AbstractArrayPanel
     private JLabel sbMessage;
     /** sbTable pop-up menu */
     private JPopupMenu sbPopup;
-    /** sbTable pop-up menu item for details of the SB under the mouse */
-    private JMenuItem sbDetailsHere;
-    /** sbTable pop-up menu item for details of the selected SB(s) */
-    private JMenuItem sbDetailsSelected;
     /** sbTable pop-up menu item to queue the SB under the mouse */
     private JMenuItem sbQueueHere;
     /** sbTable pop-up menu item to queue the selected SB(s) */
@@ -166,6 +166,11 @@ public class InteractivePanel extends AbstractArrayPanel
     private JLabel statusMessage;
     /** Button to initiate getting updates from the project store */
     private JButton update;
+    
+    private JPanel details;
+    private JTextPane opDetails;
+    private boolean   showingOPDetails;
+    private JTextPane sbDetails;
     
     /** Do we Queue or Configure? */
     private String processSB = "Queue";
@@ -225,14 +230,14 @@ public class InteractivePanel extends AbstractArrayPanel
 	private void createWidgets() {
 		opTitle = new JLabel(String.format(
 				"<html><font color=%s>Projects</font></html>",
-				this.TitleColour));
+				TitleColour));
 		opModel = new ObsProjectTableModel();
 		opTable = new JTable(opModel);
 		opSorter = new TableRowSorter<ObsProjectTableModel>(opModel);
 		opTable.setRowSorter(opSorter);
 		opFilters = new FilterSet(opModel);
 		opFilterSummary = new JLabel(opFilters.toHTML(
-				this.NormalColour, this.DetailColour));
+				NormalColour, DetailColour));
 		opFilterChange = newButton("Filter", "Edit the filters to control which Projects are displayed");
 		opFilterReset = newButton("Reset", "Reset the filters to display all Projects");
 		opFilterPanel = FilterSetPanel.createGUI(
@@ -248,7 +253,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		sbTitle = new JLabel(String.format(
 				"<html><font color=%s>SchedBlocks</font></html>",
-				this.TitleColour));
+				TitleColour));
 		sbModel = new SchedBlockTableModel();
 		sbTable = new JTable(sbModel);
 		sbSorter = new TableRowSorter<SchedBlockTableModel>(sbModel);
@@ -280,48 +285,111 @@ public class InteractivePanel extends AbstractArrayPanel
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				update.setEnabled(false);
-				try {
-					getData();
-				} finally {
-					update.setEnabled(true);
-				}
+				getData();
 			}});
 		update.setEnabled(false);
 		statusMessage = new JLabel(BlankLabel);
 		
+		createDetails();
 		createPopups();
 		
 		makeSameWidth(opTitle, sbTitle, update, opFilterReset, opFilterChange);
 	}
 	
 	/**
+	 * Create everything we need to show details of the selected
+	 * SchedBlock and/or ObsProject.
+	 */
+	private void createDetails() {
+		opDetails = new JTextPane();
+		opDetails.setContentType("text/html");
+		showingOPDetails = false;
+
+		sbDetails = new JTextPane();
+		sbDetails.setContentType("text/html");
+
+		opTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int row = opTable.getSelectedRow();
+				if (row >= 0) {
+					// Something is selected
+					row = opTable.convertRowIndexToModel(row);
+					final String id = opModel.getProjectId(row);
+					showObsProjectDetails(id);
+					showingOPDetails = true;
+				} else {
+					// Nothing is selected
+					clearObsProjectDetails();
+					showingOPDetails = false;
+				}
+			}});
+		sbTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int row = sbTable.getSelectedRow();
+				if (row >= 0) {
+					// Something is selected
+					row = sbTable.convertRowIndexToModel(row);
+					final String id = sbModel.getSchedBlockId(row);
+					showSchedBlockDetails(id);
+				} else {
+					// Nothing is selected
+					clearSchedBlockDetails();
+				}
+			}});
+		
+		details = new JPanel();
+		final JPanel opDetailsPanel = new JPanel();
+		final JPanel sbDetailsPanel = new JPanel();
+		GridBagLayout      l = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
+		c.ipadx = 2;
+		c.ipady = 2;
+		
+		opDetailsPanel.setLayout(l);
+		addFullWidthWidget(opDetailsPanel, l, c, new JLabel("Project Details"), 0, 0, 0.0, 0.0, false);
+		addFullWidthWidget(opDetailsPanel, l, c, opDetails, 0, 1, 1.0, 1.0, true);
+		
+		l = new GridBagLayout();
+		c = new GridBagConstraints();
+		c.ipadx = 2;
+		c.ipady = 2;
+
+		sbDetailsPanel.setLayout(l);
+		addFullWidthWidget(sbDetailsPanel, l, c, new JLabel("SchedBlock Details"), 0, 0, 0.0, 0.0, false);
+		addFullWidthWidget(sbDetailsPanel, l, c, sbDetails, 0, 1, 1.0, 1.0, true);
+
+		
+		final JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
+		split.setTopComponent(opDetailsPanel);
+		split.setBottomComponent(sbDetailsPanel);
+		split.setDividerLocation(1.0/2.0);
+		split.setOneTouchExpandable(true);
+		details.add(split);
+
+	}
+	
+	/**
 	 * Create the pop-up menus for the two tables.
 	 */
 	private void createPopups() {
-		JMenuItem detailsSelected;
 		JMenuItem changeFilters;
 		JMenuItem resetFilters;
 		JMenuItem clearSelection;
 		
 		// Project table menu
 		opPopup = new JPopupMenu("Projects");
-		detailsSelected = new JMenuItem(menuStringDetailsSelection(opTable));
-		opDetailsHere = new JMenuItem("Details");
 		resetFilters   = new JMenuItem("Reset Project Filters");
 		changeFilters  = new JMenuItem("Change Project Filters");
 		clearSelection  = new JMenuItem("Clear Selection");
 
-		opTable.getSelectionModel().addListSelectionListener(detailsListener(detailsSelected, opTable));
-		detailsSelected.addActionListener(detailsActionListener(opTable, opModel));
-		detailsSelected.setEnabled(false);
-		opDetailsHere.addActionListener(opDetailsHereListener());
 		addFilterListeners(changeFilters, resetFilters, opFilterPanel);
-		detailsSelected.setEnabled(false);
 		clearSelection.addActionListener(opClearSelectionListener());
 		clearSelection.setEnabled(true);
 
-		opPopup.add(detailsSelected);
-		opPopup.add(opDetailsHere);
 		opPopup.addSeparator();
 		opPopup.add(resetFilters);
 		opPopup.add(changeFilters);
@@ -330,21 +398,13 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		// SchedBlock table menu
 		sbPopup = new JPopupMenu("SchedBlocks");
-		sbDetailsSelected = new JMenuItem(menuStringDetailsSelection(sbTable));
-		sbDetailsHere     = new JMenuItem("Details");
 		sbQueueSelected   = new JMenuItem(menuStringQueueSelection());
 		sbQueueHere       = new JMenuItem("Queue");
 		
-		sbDetailsSelected.addActionListener(detailsActionListener(sbTable, sbModel));
-		sbDetailsHere.addActionListener(sbDetailsHereListener());
 		sbQueueHere.addActionListener(sbQueueHereListener());
 		sbQueueSelected.addActionListener(queueActionListener());
-		sbDetailsSelected.setEnabled(false);
 		sbQueueSelected.setEnabled(false);
 		
-		sbPopup.add(sbDetailsSelected);
-		sbPopup.add(sbDetailsHere);
-		sbPopup.addSeparator();
 		sbPopup.add(sbQueueSelected);
 		sbPopup.add(sbQueueHere);
 	}
@@ -454,7 +514,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		x = 0 ; y ++; // New row
 		addFullWidthWidget(panel, l, c, sbTable, x++, y, 1.0, 0.3, true);
-		
+			
 		x = 0 ; y ++; // New row
 		addFullWidthWidget(panel, l, c, sbMessage, x++, y, 1.0, 0.0, false);
 		
@@ -483,9 +543,14 @@ public class InteractivePanel extends AbstractArrayPanel
 		addSBWidgets(sbPanel, l, c);
 		
 		final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-		split.setTopComponent(opPanel);
-		split.setBottomComponent(sbPanel);
+		final JSplitPane subSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		subSplit.setTopComponent(opPanel);
+		subSplit.setBottomComponent(sbPanel);
+		subSplit.setDividerLocation(2.0/3.0);
+		split.setTopComponent(subSplit);
+		split.setBottomComponent(details);
 		split.setDividerLocation(2.0/3.0);
+		split.setOneTouchExpandable(true);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(split);
@@ -507,7 +572,6 @@ public class InteractivePanel extends AbstractArrayPanel
 			sbTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			processSB = "Queue";
 		}
-		sbTable.getSelectionModel().addListSelectionListener(detailsListener(sbDetailsSelected, sbTable));
 		sbTable.getSelectionModel().addListSelectionListener(queueListener(sbQueueSelected, sbTable));
 		showConnectivity();
     }
@@ -517,10 +581,10 @@ public class InteractivePanel extends AbstractArrayPanel
      */
     @Override
     protected void modelsAvailable() {
-	if (getArray() != null) {
-	    getData();
-	}
-	showConnectivity();
+    	if (getArray() != null) {
+    		getData();
+    	}
+    	showConnectivity();
     }
     /* End Constructors and GUI building
      * ============================================================= */
@@ -671,176 +735,42 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * ================================================================
 	 */
 	/**
-	 * Create the label for the pop-up menu item which gives the
-	 * details of the selected elements in <code>table</code>.
-	 * 
-	 * @param table
+	 * Get the SBStatus for the given SchedBlock from our model accessor
+	 * @param entityId
 	 * @return
+	 * @throws AcsJInappropriateEntityTypeEx 
+	 * @throws AcsJNoSuchEntityEx 
+	 * @throws AcsJNullEntityIdEx 
 	 */
-	private String menuStringDetailsSelection(JTable table) {
-		final String singular = (table.getSelectedRowCount() == 1)? "": "s";
-		String result;
-		
-		if (table == opTable) {
-			result = String.format("Details of Selected Project%s", singular);
-		} else {
-			result = String.format("Details of Selected SchedBlock%s", singular);
-		}
-		return result;
+	private SBStatus getSBStatus(SchedBlock sb)
+				throws AcsJNullEntityIdEx,
+					   AcsJNoSuchEntityEx,
+					   AcsJInappropriateEntityTypeEx {
+		final StateArchive sa = getModels().getStateArchive();
+		return sa.getSBStatus(sb.getStatusEntity());
 	}
 	
 	/**
-	 * Create the label for the pop-up menu item which gives the
-	 * details of the given element in <code>table</code>.
-	 * 
-	 * @param table
+	 * Get the statuses for the given ObsProject from our model accessor
+	 * @param entityId
 	 * @return
+	 * @throws AcsJInappropriateEntityTypeEx 
+	 * @throws AcsJNoSuchEntityEx 
+	 * @throws AcsJNullEntityIdEx 
+	 * @throws AcsJEntitySerializationFailedEx 
+	 * @throws SchedulingException 
 	 */
-	private String menuStringDetailsHere(JTable table) {
-		String result;
-		
-		if (table == opTable) {
-			result = String.format("Details of Project %s", opHere);
-		} else {
-			result = String.format("Details of SchedBlock %s", sbHere);
-		}
-		return result;
-	}
-	
-	/**
-	 * Create a listener to control the availability of the given
-	 * JMenuItem based on there being something selected in the
-	 * given JTable.
-	 * 
-	 * @param item
-	 * @param table
-	 * @return
-	 */
-	private ListSelectionListener detailsListener(final JMenuItem item,
-												  final JTable table) {
-		final ListSelectionListener result = new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				item.setEnabled(table.getSelectedRowCount() > 0);
-				item.setText(menuStringDetailsSelection(table));
-			}
-		};
-		return result;
+	private StatusCollection getProjectStatus(ObsProject op)
+					throws AcsJNullEntityIdEx,
+					       AcsJNoSuchEntityEx,
+					       AcsJInappropriateEntityTypeEx,
+					       AcsJEntitySerializationFailedEx,
+					       SchedulingException {
+		final StateArchive sa = getModels().getStateArchive();
+		final StatusBaseT[] statuses = sa.getProjectStatusList(op.getStatusEntity());
+		return new StatusCollection(statuses);
 	}
 
-	/**
-	 * Work out if it's OK to pop up a number of windows. It is if
-	 * either there are less than the <code>popupLimit</code> or if the
-	 * user says it's OK.
-	 * 
-	 * @param number
-	 * @param whats
-	 * @return
-	 */
-	private boolean okToDo(int number, String whats) {
-		if (number < popupLimit) {
-			return true;
-		}
-		String question = String.format(
-				"There are %d %s selected, %s%n%s",
-				number, whats,
-				"each of which will be displayed separately",
-				"Do you really want to open that many windows?");
-		return JOptionPane.showConfirmDialog(
-				this,
-				question,
-				"Confirmation Required",
-				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-	}
-	
-	/**
-	 * Create a listener to pop-up details of the projects selected in
-	 * the given table.
-	 * 
-	 * @param table
-	 * @param model
-	 * @return
-	 */
-	private ActionListener detailsActionListener(final JTable table,
-											     final ObsProjectTableModel model) {
-		final ActionListener result = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int[] viewRows = table.getSelectedRows();
-				
-				if (okToDo(viewRows.length, "Projects")) {
-					final Set<String> ids = new HashSet<String>();
-
-					for (int viewRow : viewRows) {
-						try {
-							int modelRow = table.convertRowIndexToModel(viewRow);
-							ids.add(model.getProjectId(modelRow));
-						} catch (ArrayIndexOutOfBoundsException ex) {
-						}
-					}
-					for (final String id : ids) {
-						showObsProjectDetails(id);
-					}
-				}
-			}
-		};
-		return result;
-	}
-	
-	/**
-	 * Create a listener to pop-up details of the SchedBlocks selected
-	 * in the given table.
-	 * 
-	 * @param table
-	 * @param model
-	 * @return
-	 */
-	private ActionListener detailsActionListener(final JTable table,
-											     final SchedBlockTableModel model) {
-		final ActionListener result = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int[] viewRows = table.getSelectedRows();
-
-				if (okToDo(viewRows.length, "SchedBlocks")) {
-					final Set<String> ids = new HashSet<String>();
-
-					for (int viewRow : viewRows) {
-						try {
-							int modelRow = table.convertRowIndexToModel(viewRow);
-							ids.add(model.getSchedBlockId(modelRow));
-						} catch (ArrayIndexOutOfBoundsException ex) {
-						}
-					}
-					for (final String id : ids) {
-						showSchedBlockDetails(id);
-					}
-				}
-			}
-		};
-		return result;
-	}
-	
-	/**
-	 * Create a listener to show details of the ObsProject over which
-	 * the pop-up menu was popped up. Which ObsProject that is will be
-	 * worked out in the handling of the mouse event which triggers the
-	 * menu.
-	 * 
-	 * @return
-	 */
-	private ActionListener opDetailsHereListener() {
-		final ActionListener result = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (opHere != null) {
-					showObsProjectDetails(opHere);
-				}
-			}
-		};
-		return result;
-	}
-	
 	/**
 	 * Create a listener to clear the selection in the opTable.
 	 * 
@@ -855,33 +785,103 @@ public class InteractivePanel extends AbstractArrayPanel
 		};
 		return result;
 	}
-	
-	/**
-	 * Create a listener to show details of the SchedBlock over which
-	 * the pop-up menu was popped up. Which SchedBlock that is will be
-	 * worked out in the handling of the mouse event which triggers the
-	 * menu.
-	 * 
-	 * @return
-	 */
-	private ActionListener sbDetailsHereListener() {
-		final ActionListener result = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (sbHere != null) {
-					showSchedBlockDetails(sbHere);
-				}
-			}
-		};
-		return result;
-	}
-	
+
 	private void showSchedBlockDetails(String entityId) {
-		System.out.format("Show details of SchedBlock %s%n", entityId);
+		final SchedBlock sb;
+		String text;
+		
+		try {
+			sb = getModels().getSchedBlockFromEntityId(entityId);
+		} catch (Exception e) {
+			StringBuffer buf = new StringBuffer();
+			buf.append("<html>");
+			buf.append("SchedBlock ");
+			buf.append(entityId);
+			buf.append(" is no longer in the Scheduler's database");
+			buf.append(" (it's probably no longer in a state which allows it to be");
+			buf.append(" scheduled - but you can see it in the Project Tracker)");
+			buf.append("</html>");
+			sbDetails.setText(buf.toString());
+			return;
+		}
+		
+		try {
+			final SBStatus sbs = getSBStatus(sb);
+			text = SchedBlockFormatter.formatted(sb, sbs);
+		} catch (AcsJNullEntityIdEx e) {
+			text = SchedBlockFormatter.formatted(sb, 
+					"No reference to status object in SchedBlock");
+		} catch (AcsJNoSuchEntityEx e) {
+			text = SchedBlockFormatter.formatted(sb, String.format(
+					"Reference to non-existant status object %s in SchedBlock",
+					sb.getStatusEntity().getEntityId()));
+		} catch (AcsJInappropriateEntityTypeEx e) {
+			text = SchedBlockFormatter.formatted(sb, String.format(
+					"Status reference %s for SchedBlock is to wrong type of object",
+					sb.getStatusEntity().getEntityId()));
+		}
+		
+		sbDetails.setText(text);
+		
+		if (!showingOPDetails) {
+			// No operator selected project being show, so show this SB's one
+			showObsProjectDetails(sb.getProjectUid());
+		}
+	}
+
+	private void clearSchedBlockDetails() {
+		final String text = "<html>No SchedBlock selected</html>";
+		sbDetails.setText(text);
 	}
 	
 	private void showObsProjectDetails(String entityId) {
-		System.out.format("Show details of ObsProject %s%n", entityId);
+		final ObsProject op;
+		String text;
+		
+		try {
+			op = getModels().getObsProjectFromEntityId(entityId);
+		} catch (Exception e) {
+			StringBuffer buf = new StringBuffer();
+			buf.append("<html>");
+			buf.append("Project ");
+			buf.append(entityId);
+			buf.append(" is no longer in the Scheduler's database");
+			buf.append(" (it's probably no longer in a state which allows it to be");
+			buf.append(" scheduled - but you can see it in the Project Tracker)");
+			buf.append("</html>");
+			opDetails.setText(buf.toString());
+			return;
+		}
+		
+		try {
+			final StatusCollection statuses = getProjectStatus(op);
+			text = ObsProjectFormatter.formatted(op, statuses);
+		} catch (AcsJNullEntityIdEx e) {
+			text = ObsProjectFormatter.formatted(op, 
+					"No reference to status object in ObsProject");
+		} catch (AcsJNoSuchEntityEx e) {
+			text = ObsProjectFormatter.formatted(op, String.format(
+					"Reference to non-existant status object %s in ObsProject",
+					op.getStatusEntity().getEntityId()));
+		} catch (AcsJInappropriateEntityTypeEx e) {
+			text = ObsProjectFormatter.formatted(op, String.format(
+					"Status reference %s for ObsProject is to wrong type of object",
+					op.getStatusEntity().getEntityId()));
+		} catch (AcsJEntitySerializationFailedEx e) {
+			text = ObsProjectFormatter.formatted(op,
+					"Cannot deserialize one or more status entities");
+		} catch (SchedulingException e) {
+			text = ObsProjectFormatter.formatted(op, String.format(
+					"Problem with status entities for Project %s - %s",
+					entityId, e.getMessage()));
+		}
+		
+		opDetails.setText(text);
+	}
+	
+	private void clearObsProjectDetails() {
+		final String text = "<html>No Project selected</html>";
+		opDetails.setText(text);
 	}
 	/* End Detail dialogues
 	 * ============================================================= */
@@ -1123,6 +1123,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		opMessage.setText(message);
 	}
 	
+	@SuppressWarnings("unused")
 	private void setSBFilterSummary(String message) {
 		sbFilterSummary.setText(message);
 	}
@@ -1189,7 +1190,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		if (e.getSource() == opFilters) {
 			opSorter.setRowFilter(opFilters.rowFilter());
 			setOPFilterSummary(opFilters.toHTML(
-					this.NormalColour, this.DetailColour));
+					NormalColour, DetailColour));
 		} else if (e.getSource() == sbFilters) {
 //			setSBFilterSummary(sbFilters.toHTML());
 		}
@@ -1200,6 +1201,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @param e
 	 */
 	public void archiveChanged(ChangeEvent e) {
+		update.setEnabled(true);
 		statusMessage.setIcon(StandardIcons.IDEA.icon);
 		setStatusMessage("New project information available in the repositories.");
 	}
@@ -1227,6 +1229,7 @@ public class InteractivePanel extends AbstractArrayPanel
 					ObsProjectTableModel model = (ObsProjectTableModel) table.getModel();
 					id = model.getProjectId(modelRow);
 					showObsProjectDetails(id);
+					showingOPDetails = true;
 				} else if (table == sbTable) {
 					SchedBlockTableModel model = (SchedBlockTableModel) table.getModel();
 					id = model.getSchedBlockId(modelRow);
@@ -1250,14 +1253,10 @@ public class InteractivePanel extends AbstractArrayPanel
 			final int modelRow = table.convertRowIndexToModel(viewRow);
 			
 			if (table == opTable) {
-				final ObsProjectTableModel model = (ObsProjectTableModel)table.getModel();
-				opHere = model.getProjectId(modelRow);
-				opDetailsHere.setText(menuStringDetailsHere(table));
 				opPopup.show(e.getComponent(), e.getX(), e.getY());
 			} else if (table == sbTable) {
 				final SchedBlockTableModel model = (SchedBlockTableModel)table.getModel();
 				sbHere = model.getSchedBlockId(modelRow);
-				sbDetailsHere.setText(menuStringDetailsHere(table));
 				sbQueueHere.setText(menuStringQueueHere());
 				sbQueueHere.setEnabled(isControl() && spaceOnQueue(1));
 				sbPopup.show(e.getComponent(), e.getX(), e.getY());
@@ -1349,6 +1348,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		1, 1, 2, 1, 1, 1, 1, 4, 1, 6, 1, 1, 21, 1, 1, 1
 	};
 	
+	@SuppressWarnings("unused")
 	private void fakeData(ObsProjectTableModel opModel,
 			              SchedBlockTableModel sbModel) {
 		final Collection<ObsProject> ops = new ArrayList<ObsProject>();
@@ -1440,7 +1440,6 @@ public class InteractivePanel extends AbstractArrayPanel
     			try {
     				p.runRestricted(false);
     			} catch (Exception e) {
-    				// TODO Auto-generated catch block
     				e.printStackTrace();
     			}
     			p.arrayAvailable();

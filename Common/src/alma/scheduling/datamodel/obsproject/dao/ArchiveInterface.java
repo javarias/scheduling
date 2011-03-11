@@ -3,6 +3,8 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,6 +89,9 @@ public class ArchiveInterface  {
 
 	/** The connection to the state system */
 	private StateSystemOperations stateSystem;
+	
+	/** How to lay out dates */
+	private DateFormat dateFormat;
 	/* End of other fields
 	 * ============================================================= */
 
@@ -103,6 +108,8 @@ public class ArchiveInterface  {
 		this.archive     = archive;
 		this.stateSystem = stateSystem;
 		this.entityDeserializer = entityDeserializer;
+		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
 		obsProposals    = new HashMap<String, ObsProposal>();
 		obsProjects     = new HashMap<String, ObsProject>();
 		schedBlocks     = new HashMap<String, SchedBlock>();
@@ -907,8 +914,6 @@ public class ArchiveInterface  {
 	 *         ProjectStatus entities found
 	 * @throws IllegalArgumentEx 
 	 * @throws InappropriateEntityTypeEx 
-	 * 
-	 * @throws SchedulingException
 	 */
     public Collection<String> getProjectStatusIdsByState(String[] states)
     		throws InappropriateEntityTypeEx, IllegalArgumentEx {
@@ -964,8 +969,9 @@ public class ArchiveInterface  {
 	 */
 	public List<String> getIdsOfChangedProjects(Date since)
 												 throws UserException {
-    	String[] ids = archive.queryRecent(projectSchema,
-    										since.toString()+".000");
+		String when = dateFormat.format(since);
+    	String[] ids = archive.queryRecent(projectSchema, when);
+    	
  		return Arrays.asList(ids);
 	}
 
@@ -978,8 +984,8 @@ public class ArchiveInterface  {
 	 */
 	public List<String> getIdsOfChangedSBs(Date since)
 												 throws UserException {
-    	String[] ids = archive.queryRecent(sbSchema,
-    									   since.toString()+".000");
+		String when = dateFormat.format(since);
+    	String[] ids = archive.queryRecent(sbSchema, when);
  		return Arrays.asList(ids);
 	}
 	/* End of Compound operations

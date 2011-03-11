@@ -30,7 +30,6 @@ import javax.swing.table.TableRowSorter;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
-import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.utils.Format;
 
 /**
@@ -38,7 +37,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.8 2011/02/09 23:28:39 javarias Exp $
+ * $Id: SchedBlockTableModel.java,v 1.9 2011/03/11 00:06:34 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -158,27 +157,6 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/*
 	 * ================================================================
-	 * Support methods
-	 * ================================================================
-	 */
-	private SkyCoordinates getCoordinates(SchedBlock schedBlock) {
-		try {
-			return schedBlock.
-				getSchedulingConstraints().
-				getRepresentativeTarget().
-				getSource().
-				getCoordinates();
-		} catch (NullPointerException npe) {
-			return null;
-		}
-	}
-	/* End Support methods
-	 * ============================================================= */
-
-	
-	
-	/*
-	 * ================================================================
 	 * TableModel implementation
 	 * ================================================================
 	 */
@@ -252,13 +230,13 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return schedBlock.getPreConditions().getMaxAllowedHourAngle();
 		case Column_RA:
 			try {
-				return Format.formatRA(getCoordinates(schedBlock).getRA());
+				return Format.formatRA(schedBlock.getRepresentativeCoordinates().getRA());
 			} catch (NullPointerException npe) {
 				return "n/a";
 			}
 		case Column_Dec:
 			try {
-				return Format.formatDec(getCoordinates(schedBlock).getDec());
+				return Format.formatDec(schedBlock.getRepresentativeCoordinates().getDec());
 			} catch (NullPointerException npe) {
 				return "n/a";
 			}
