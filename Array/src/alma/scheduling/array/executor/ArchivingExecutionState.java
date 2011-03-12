@@ -39,9 +39,16 @@ public class ArchivingExecutionState extends ExecutionState {
         ASDMArchivedEvent event = context.waitForASDMArchivedEvent(
         		context.getAsdmArchiveTimeoutMS());
         if (event == null) {
-            context.setState(new FailedExecutionState(context));
-        } else {
+        	// Archiving interrupted
+            context.setState(new FailedArchivingExecutionState(context, true));
+        } else if (event.status.equals("complete")) {
+        	// Archived successfully.
+        	// TODO: change that literal to a member of alma.Control.Completion.
+        	//       in line with the corresponding change in Data Capture
             context.setState(new CompleteExecutionState(context));
+        } else {
+        	// Archiving failed
+            context.setState(new FailedArchivingExecutionState(context, false));
         }
     }
 

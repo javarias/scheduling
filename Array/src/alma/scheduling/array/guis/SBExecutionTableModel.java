@@ -35,7 +35,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlockState;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SBExecutionTableModel.java,v 1.2 2011/01/28 00:35:31 javarias Exp $
+ * $Id: SBExecutionTableModel.java,v 1.3 2011/03/12 00:10:28 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SBExecutionTableModel extends AbstractTableModel {
@@ -399,7 +399,22 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		case Column_Name:
 			return schedBlock.getName();
 		case Column_State:
-			return schedBlock.getExecutionState();
+			final StringBuffer sb = new StringBuffer();
+			final String       es = schedBlock.getExecutionState();
+			sb.append("<html>");
+			if (es.startsWith("Failed")) {
+				sb.append("<font color=\"RED\">");
+				sb.append(es);
+				sb.append("</font>");
+			} else if (es.startsWith("Complete")) {
+				sb.append("<b><font color=\"GREEN\">");
+				sb.append(es);
+				sb.append("</font></b>");
+			} else {
+				sb.append(es);
+			}
+			sb.append("</html>");
+			return sb.toString();
 		case Column_Project:
 			return schedBlock.getProjectUid();
 		case Column_Position:

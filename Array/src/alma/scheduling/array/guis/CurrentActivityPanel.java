@@ -56,6 +56,7 @@ import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.array.executor.AbortingExecutionState;
 import alma.scheduling.array.executor.ArchivingExecutionState;
 import alma.scheduling.array.executor.CompleteExecutionState;
+import alma.scheduling.array.executor.FailedArchivingExecutionState;
 import alma.scheduling.array.executor.FailedExecutionState;
 import alma.scheduling.array.executor.ManualCompleteExecutionState;
 import alma.scheduling.array.executor.ManualReadyExecutionState;
@@ -70,7 +71,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.4 2011/02/24 22:42:50 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.5 2011/03/12 00:10:28 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -108,6 +109,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		PastStates.add(CompleteExecutionState.class.getSimpleName());
 		PastStates.add(FailedExecutionState.class.getSimpleName());
 		PastStates.add(ManualCompleteExecutionState.class.getSimpleName());
+		PastStates.add(FailedArchivingExecutionState.class.getSimpleName());
 		
 		RunningStates.add(RunningExecutionState.class.getSimpleName());
 		RunningStates.add(ManualRunningExecutionState.class.getSimpleName());

@@ -20,16 +20,28 @@ package alma.scheduling.array.executor;
 
 
 /**
- * @author rhiriart
- *
+ * The state into which we move if there is a problem with the
+ * archiving of an execution's data (including the interruption
+ * of the wait for the ASDMArchivedEvent.
+ * 
+ * @author dclarke
+ * $Id: FailedArchivingExecutionState.java,v 1.1 2011/03/12 00:10:28 dclarke Exp $
  */
-public class FailedExecutionState extends ExecutionState {
+public class FailedArchivingExecutionState extends ExecutionState {
 
+	private boolean interrupted;
+	
     /**
      * @param context
      */
-    public FailedExecutionState(ExecutionContext context) {
+    public FailedArchivingExecutionState(ExecutionContext context,
+    		                             boolean interrupted) {
         super(context);
+        this.interrupted = interrupted;
+    }
+    
+    public boolean wasInterrupted() {
+    	return interrupted;
     }
 
 }

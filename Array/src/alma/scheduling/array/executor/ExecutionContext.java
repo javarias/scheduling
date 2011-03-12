@@ -228,6 +228,28 @@ public class ExecutionContext {
 						e.getMessage()), e);
 				// this.setState(new FailedExecutionState(this));
 			} // The state transition is done inside this method
+		} else if (state instanceof FailedArchivingExecutionState) {
+			try {
+				FailedArchivingExecutionState faes = (FailedArchivingExecutionState) state;
+				final String message = String.format(
+						"Archiving of execution %s of SB %s @ %s on %s %s",
+						getExecBlockRef().entityId,
+						getSbUid(),
+						getQueuedTimestamp(),
+						executor.getArrayName(),
+						faes.wasInterrupted()? "was interrupted": "FAILED");
+				if (faes.wasInterrupted()) {
+					logger.warning(message);
+				} else {
+					logger.severe(message);
+				}
+			} catch (Exception e) {
+				ErrorHandling.warning(logger, String.format(
+						"Error post-processing failed SchedBlock %s @ %s - %s",
+						schedBlockItem.getUid(), schedBlockItem.getTimestamp(),
+						e.getMessage()), e);
+				// this.setState(new FailedExecutionState(this));
+			} // The state transition is done inside this method
 		}
 
 		this.executor.notify(new ExecutionStateChange(schedBlockItem, state
@@ -256,7 +278,7 @@ public class ExecutionContext {
     }
     
     public void observe() {
-	execTime = state.observe();
+    	execTime = state.observe();
     }
     
     public void processExecBlockStartedEvent(ExecBlockStartedEvent event) {
@@ -417,7 +439,6 @@ public class ExecutionContext {
                 try {
                     received = archivedCV.await(timeout, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                     return null;
                 }
                 if (!received) {

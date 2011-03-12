@@ -80,104 +80,104 @@ public class Executor extends Observable {
         }
         
         @Override
-	public void run() {
-            while(!isInterrupted()) {
-            	synchronized (this) {
-		    // Synchronize so that this Executor will only have
-		    // one current execution at once.
-		    SchedBlockItem item = null;
-		    try {
-			// Blocks waiting for an item.
-			item = queue.take();
-		    } catch (InterruptedException e) {
-			logger.warning("executor consumer has been interrupted");
-			return;
-		    }
-		    logger.info("executor consumer took item " + item);
+        public void run() {
+        	while(!isInterrupted()) {
+        		synchronized (this) {
+        			// Synchronize so that this Executor will only have
+        			// one current execution at once.
+        			SchedBlockItem item = null;
+        			try {
+        				// Blocks waiting for an item.
+        				item = queue.take();
+        			} catch (InterruptedException e) {
+        				logger.warning("executor consumer has been interrupted");
+        				return;
+        			}
+        			logger.info("executor consumer took item " + item);
 
-		    currentExecution = new ExecutionContext(item, executor, manual);
-		    // Blocks until the execution has finished.
-		    logger.finer(String.format("(%s) %s for %s just before %s.startObservation()",
-					       this.getName(),
-					       this.getClass().getSimpleName(),
-					       item.getUid(),
-					       currentExecution.getClass().getSimpleName()));
-		    currentExecution.startObservation();
-		    logger.finer(String.format("(%s) %s for %s just after %s.startObservation()",
-					       this.getName(),
-					       this.getClass().getSimpleName(),
-					       item.getUid(),
-					       currentExecution.getClass().getSimpleName()));
-		    
-		    currentExecution.observe();
-		    logger.finer(String.format("(%s) %s for %s just after %s.observe()",
-					       this.getName(),
-					       this.getClass().getSimpleName(),
-					       item.getUid(),
-					       currentExecution.getClass().getSimpleName()));
-		    
-		    // The observation finished or failed.
-		    
-		    // Pass on the execution to the pastExecutions list, where it will
-		    // wait for the ASDMArchivedEvent.
-		    ArchivalWaitThread wthr = new ArchivalWaitThread(currentExecution);
-		    try {
-			pastExecutionsLock.lock();
-			pastExecutions.add(wthr);
-                    	logger.finer(String.format("(%s) %s for %s just before %s.start()",
-						   this.getName(),
-						   this.getClass().getSimpleName(),
-						   item.getUid(),
-						   wthr.getClass().getSimpleName()));
-			wthr.start();
-                    	logger.finer(String.format("(%s) %s for %s just after %s.start()",
-						   this.getName(),
-						   this.getClass().getSimpleName(),
-						   item.getUid(),
-						   wthr.getClass().getSimpleName()));
-			currentExecution = null;
-		    } finally {
-                    	logger.finer(String.format("(%s) %s for %s in finally block after %s.start()",
-						   this.getName(),
-						   this.getClass().getSimpleName(),
-						   item.getUid(),
-						   wthr.getClass().getSimpleName()));
-			pastExecutionsLock.unlock();
-		    }
-            	}
-            }
+        			currentExecution = new ExecutionContext(item, executor, manual);
+        			// Blocks until the execution has finished.
+        			logger.finer(String.format("(%s) %s for %s just before %s.startObservation()",
+        					this.getName(),
+        					this.getClass().getSimpleName(),
+        					item.getUid(),
+        					currentExecution.getClass().getSimpleName()));
+        			currentExecution.startObservation();
+        			logger.finer(String.format("(%s) %s for %s just after %s.startObservation()",
+        					this.getName(),
+        					this.getClass().getSimpleName(),
+        					item.getUid(),
+        					currentExecution.getClass().getSimpleName()));
+
+        			currentExecution.observe();
+        			logger.finer(String.format("(%s) %s for %s just after %s.observe()",
+        					this.getName(),
+        					this.getClass().getSimpleName(),
+        					item.getUid(),
+        					currentExecution.getClass().getSimpleName()));
+
+        			// The observation finished or failed.
+
+        			// Pass on the execution to the pastExecutions list, where it will
+        			// wait for the ASDMArchivedEvent.
+        			ArchivalWaitThread wthr = new ArchivalWaitThread(currentExecution);
+        			try {
+        				pastExecutionsLock.lock();
+        				pastExecutions.add(wthr);
+        				logger.finer(String.format("(%s) %s for %s just before %s.start()",
+        						this.getName(),
+        						this.getClass().getSimpleName(),
+        						item.getUid(),
+        						wthr.getClass().getSimpleName()));
+        				wthr.start();
+        				logger.finer(String.format("(%s) %s for %s just after %s.start()",
+        						this.getName(),
+        						this.getClass().getSimpleName(),
+        						item.getUid(),
+        						wthr.getClass().getSimpleName()));
+        				currentExecution = null;
+        			} finally {
+        				logger.finer(String.format("(%s) %s for %s in finally block after %s.start()",
+        						this.getName(),
+        						this.getClass().getSimpleName(),
+        						item.getUid(),
+        						wthr.getClass().getSimpleName()));
+        				pastExecutionsLock.unlock();
+        			}
+        		}
+        	}
         }
     }
     
     private class ArchivalWaitThread extends Thread {
-        
-        private final ExecutionContext execution;
-        
-        public ArchivalWaitThread(ExecutionContext execution) {
-            this.execution = execution;
-        }
-        
-        @Override
-        public void run() {
-            // blocks waiting for archival or times out
-	    logger.finer(String.format(
-        			"(%s) %s for %s just before %s.waitForArchival()",
-        			this.getName(),
-        			this.getClass().getSimpleName(),
-        			execution.getSbUid(),
-        			execution.getClass().getSimpleName()));
-            execution.waitForArchival();
-	    logger.finer(String.format(
-        			"(%s) %s for %s just after %s.waitForArchival()",
-        			this.getName(),
-        			this.getClass().getSimpleName(),
-        			execution.getSbUid(),
-        			execution.getClass().getSimpleName()));
-        }
-        
-        public ExecutionContext getContext() {
-            return execution;
-        }
+
+    	private final ExecutionContext execution;
+
+    	public ArchivalWaitThread(ExecutionContext execution) {
+    		this.execution = execution;
+    	}
+
+    	@Override
+    	public void run() {
+    		// blocks waiting for archival or times out
+    		logger.finer(String.format(
+    				"(%s) %s for %s just before %s.waitForArchival()",
+    				this.getName(),
+    				this.getClass().getSimpleName(),
+    				execution.getSbUid(),
+    				execution.getClass().getSimpleName()));
+    		execution.waitForArchival();
+    		logger.finer(String.format(
+    				"(%s) %s for %s just after %s.waitForArchival()",
+    				this.getName(),
+    				this.getClass().getSimpleName(),
+    				execution.getSbUid(),
+    				execution.getClass().getSimpleName()));
+    	}
+
+    	public ExecutionContext getContext() {
+    		return execution;
+    	}
     }
     
     public Executor(String arrayName, BlockingQueue<SchedBlockItem> queue) {
@@ -335,6 +335,17 @@ public class Executor extends Observable {
         return currentExecution;
     }
     
+    private void stopPastExecutions() {
+    	try {
+    		pastExecutionsLock.lock();
+    		for (final ArchivalWaitThread waiter : pastExecutions) {
+    			waiter.interrupt();
+    		}
+    	} finally {
+    		pastExecutionsLock.unlock();
+    	}
+    }
+    
     public List<ExecutionContext> getPastExecutions() {
         try {
             pastExecutionsLock.lock();
@@ -359,125 +370,126 @@ public class Executor extends Observable {
     }
 
     public boolean isFullAuto() {
-	return fullAuto;
+    	return fullAuto;
     }
 
     public void configureManual(boolean manual) {
-	this.manual = manual;
+    	this.manual = manual;
     }
 
     public void configureServices(Services services) {
-	this.services = services;
+    	this.services = services;
     }
-	
+
     public void configureSessionManager(SessionManager sessions) {
-	this.sessions = sessions;
+    	this.sessions = sessions;
     }
-	
+
     public boolean isManual() {
-	return manual;
+    	return manual;
     }
 
     public boolean isRunning() {
-	return running;
+    	return running;
     }
 
     public void setFullAuto(boolean on, String name, String role) {
-	if (fullAuto != on) {
-	    fullAuto = on;
-	    final ArrayGUINotification agn = new ArrayGUINotification(
-		  on? ArrayGUIOperation.FULLAUTO: ArrayGUIOperation.SEMIAUTO,
-		  name,
-		  role);
-	    notify(agn);
-	}
+    	if (fullAuto != on) {
+    		fullAuto = on;
+    		final ArrayGUINotification agn = new ArrayGUINotification(
+    				on? ArrayGUIOperation.FULLAUTO: ArrayGUIOperation.SEMIAUTO,
+    						name,
+    						role);
+    		notify(agn);
+    	}
     }
 
     private void setRunning(boolean on, String name, String role) {
-	if (running != on) {
-	    running = on;
-	    final ArrayGUINotification agn = new ArrayGUINotification(
-		  on? ArrayGUIOperation.RUNNING: ArrayGUIOperation.STOPPED,
-		  name,
-		  role);
-	    notify(agn);
-	}
+    	if (running != on) {
+    		running = on;
+    		final ArrayGUINotification agn = new ArrayGUINotification(
+    				on? ArrayGUIOperation.RUNNING: ArrayGUIOperation.STOPPED,
+    						name,
+    						role);
+    		notify(agn);
+    	}
     }
 
     public void destroyArray() {
-	sessions.endObservingSession(); // Just to be sure
-	if (currentExecution != null) {
-	    currentExecution.tidyUp();
-	}
-	final ArrayGUINotification agn = new ArrayGUINotification(
-	                                       ArrayGUIOperation.DESTROYED,
-					       "Master Component",
-					       "");
-	notify(agn);
+    	sessions.endObservingSession(); // Just to be sure
+    	if (currentExecution != null) {
+    		currentExecution.tidyUp();
+    	}
+    	stopPastExecutions();
+    	final ArrayGUINotification agn = new ArrayGUINotification(
+    			ArrayGUIOperation.DESTROYED,
+    			"Master Component",
+    			"");
+    	notify(agn);
     }
-	
+
     protected boolean fullAuto(){
-	return fullAuto;
+    	return fullAuto;
     }
 
     /**
      * @return the startEventTimeoutMS
      */
     public long getStartEventTimeoutMS() {
-	return startEventTimeoutMS;
+    	return startEventTimeoutMS;
     }
 
     /**
      * @param startEventTimeoutMS the startEventTimeoutMS to set
      */
     public void setStartEventTimeoutMS(long startEventTimeoutMS) {
-	this.startEventTimeoutMS = startEventTimeoutMS;
+    	this.startEventTimeoutMS = startEventTimeoutMS;
     }
 
     /**
      * @return the endedEventTimeoutMS
      */
     public long getEndedEventTimeoutMS() {
-	return endedEventTimeoutMS;
+    	return endedEventTimeoutMS;
     }
 
     /**
      * @param endedEventTimeoutMS the endedEventTime to set
      */
     public void setEndedEventTimeoutMS(long endedEventTimeoutMS) {
-	this.endedEventTimeoutMS = endedEventTimeoutMS;
+    	this.endedEventTimeoutMS = endedEventTimeoutMS;
     }
 
     /**
      * @return the asdmArchiveTimeoutMS
      */
     public long getAsdmArchiveTimeoutMS() {
-	return asdmArchiveTimeoutMS;
+    	return asdmArchiveTimeoutMS;
     }
 
     /**
      * @param asdmArchiveTimeoutMS the asdmArchiveTimeoutMS to set
      */
     public void setAsdmArchiveTimeoutMS(long asdmArchiveTimeoutMS) {
-	this.asdmArchiveTimeoutMS = asdmArchiveTimeoutMS;
+    	this.asdmArchiveTimeoutMS = asdmArchiveTimeoutMS;
     }
-    
+
     public Services getServices() {
-	return services;
+    	return services;
     }
 
     public SessionManager getSessions() {
-	return sessions;
+    	return sessions;
     }
-	
+
     public String getArrayName() {
-	return arrayName;
+    	return arrayName;
     }
-	
+
     public BlockingQueue<SchedBlockItem> getQueue() {
-	return queue;
+    	return queue;
     }
-	
+
 	public SchedBlockExecutionItem[] getExecutions() {
 	    List<SchedBlockExecutionItem> retVal = new ArrayList<SchedBlockExecutionItem>();
 	    if (currentExecution != null) {
