@@ -21,8 +21,6 @@ package alma.scheduling.array.compimpl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
@@ -41,7 +39,6 @@ import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
-import alma.scheduling.SchedBlockScore;
 import alma.scheduling.SchedBlockSelector;
 import alma.scheduling.array.executor.ExecutionContext;
 import alma.scheduling.array.executor.Executor;
@@ -49,6 +46,7 @@ import alma.scheduling.array.executor.ExecutorCallbackNotifier;
 import alma.scheduling.array.executor.services.AcsProvider;
 import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.guis.ArrayGUICallbackNotifier;
+import alma.scheduling.array.sbQueue.DefaultSchedulingQueue;
 import alma.scheduling.array.sbQueue.LinkedReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.ObservableReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
@@ -142,7 +140,7 @@ public class ArrayImpl implements ComponentLifecycle,
 			q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
 		}
 
-		queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
+		queue = new DefaultSchedulingQueue<SchedBlockItem>(q, this);
 
 		executor = new Executor(arrayName, queue);
 		executor.configureManual(manual);
