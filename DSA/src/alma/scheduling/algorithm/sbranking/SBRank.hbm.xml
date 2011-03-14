@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 14, 2011 2:47:45 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="alma.scheduling.algorithm.sbranking.SBRank" table="SBRANK">
+        <id name="id" type="long">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="score" type="double" access="field">
+            <column name="SCORE" />
+        </property>
+        <property name="uid" type="java.lang.String">
+            <column name="UID" />
+        </property>
+        <property name="details" type="java.lang.String">
+            <column name="DETAILS" />
+        </property>
+        <list name="breakdownScore" inverse="false" table="SBRANK" lazy="true" access="field">
+            <key>
+                <column name="ID" />
+            </key>
+            <list-index></list-index>
+            <one-to-many class="alma.scheduling.algorithm.sbranking.SBRank" />
+        </list>
+    </class>
+</hibernate-mapping>

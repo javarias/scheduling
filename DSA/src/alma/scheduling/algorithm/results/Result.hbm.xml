@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="alma.scheduling.algorithm.results.Result" table="RESULT">
+        <id name="time" type="timestamp" column="TIME">
+            <generator class="assigned" />
+        </id>
+        <property name="arrayName" type="java.lang.String" column="ARRAY_NAME">
+        </property>
+        <many-to-one name="score" column="SCORE" class="alma.scheduling.algorithm.sbranking.SBRank" cascade="save-update,lock, delete, delete-orphan">
+        </many-to-one>
+    </class>
+</hibernate-mapping>

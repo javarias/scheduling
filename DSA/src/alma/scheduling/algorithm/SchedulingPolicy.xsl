@@ -25,7 +25,7 @@
             http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd" 
             default-lazy-init="true" default-autowire="byName">
-            <import resource="classpath:alma/scheduling/CommonContext.xml"/>
+            <import resource="classpath:alma/scheduling/algorithm/DSAContext.xml"/>
             
             <xsl:if test="count(SelectionCriterion/ExecutiveSelector) = 1">
                 <bean id="execSelector" class="alma.scheduling.algorithm.executive.ExecutiveSelector"
