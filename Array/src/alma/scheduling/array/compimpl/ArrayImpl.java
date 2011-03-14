@@ -42,6 +42,7 @@ import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockScore;
+import alma.scheduling.SchedBlockSelector;
 import alma.scheduling.array.executor.ExecutionContext;
 import alma.scheduling.array.executor.Executor;
 import alma.scheduling.array.executor.ExecutorCallbackNotifier;
@@ -82,6 +83,8 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private AcsProvider serviceProvider;
     
+    private SchedBlockSelector selector;
+    
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
     /////////////////////////////////////////////////////////////
@@ -89,6 +92,7 @@ public class ArrayImpl implements ComponentLifecycle,
     public void initialize(ContainerServices containerServices) {
         this.containerServices = containerServices;
         this.logger = this.containerServices.getLogger();
+        this.selector = null;
         LoggerFactory.SINGLETON.setLogger(logger);
         
         logger.finest("initialize() called...");
@@ -167,6 +171,11 @@ public class ArrayImpl implements ComponentLifecycle,
 					"array configuration");
 			executor.start("Master Scheduler", "array configuration");
 		}
+	}
+
+	@Override
+	public void configureSelector(SchedBlockSelector selector) {
+		this.selector = selector;
 	}
 
     @Override
@@ -343,9 +352,14 @@ public class ArrayImpl implements ComponentLifecycle,
     }
     
     @Override
-    public SchedBlockScore[] run() {
-        // TODO DSA...
-        return null;
+    public void selectNextSB() {
+    	try {
+    		selector.selectNextSB();
+    	} catch (NullPointerException e) {
+    		logger.warning(String.format(
+    				"Attempting to select next SchedBlock in array %s when no selector has been configured",
+    				arrayName));
+    	}
     }
 
 	@Override

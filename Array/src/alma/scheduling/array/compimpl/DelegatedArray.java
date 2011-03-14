@@ -30,14 +30,14 @@ import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
-import alma.scheduling.DSAOperations;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockExecutionManagerOperations;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockQueueManagerOperations;
-import alma.scheduling.SchedBlockScore;
+import alma.scheduling.SchedBlockSelector;
+import alma.scheduling.SchedBlockSelectorOperations;
 
 /**
  * Implementation of the ArrayOperations interface which is an
@@ -45,14 +45,14 @@ import alma.scheduling.SchedBlockScore;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.6 2011/02/24 22:42:50 javarias Exp $
+ * $Id: DelegatedArray.java,v 1.7 2011/03/14 23:24:25 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
 
 	private ContainerServices m_containerServices;
     private Logger m_logger;
-    private DSAOperations dsaDelegate;
+    private SchedBlockSelectorOperations sbSelectDelegate;
 	private SchedBlockExecutionManagerOperations sbExecDelegate;
     private SchedBlockQueueManagerOperations sbQueueDelegate;
 
@@ -101,10 +101,10 @@ public class DelegatedArray implements ComponentLifecycle,
      * ================================================================
      */
     public DelegatedArray(
-    		DSAOperations                        dsaDelegate,
+    		SchedBlockSelectorOperations         sbSelectDelegate,
     		SchedBlockExecutionManagerOperations sbExecDelegate,
     		SchedBlockQueueManagerOperations     sbQueueDelegate) {
-    	setDSA(dsaDelegate);
+    	setSchedBlockSelector(sbSelectDelegate);
     	setSchedBlockExecutionManager(sbExecDelegate);
     	setSchedBlockQueueManager(sbQueueDelegate);
     }
@@ -119,10 +119,10 @@ public class DelegatedArray implements ComponentLifecycle,
      * ================================================================
      */
     /**
-	 * @param dsaDelegate the dsaDelegate to set
+	 * @param sbSelectDelegate the sbSelectDelegate to set
 	 */
-	public void setDSA(DSAOperations dsaDelegate) {
-		this.dsaDelegate = dsaDelegate;
+	public void setSchedBlockSelector(SchedBlockSelectorOperations sbSelectDelegate) {
+		this.sbSelectDelegate = sbSelectDelegate;
 	}
 
 	/**
@@ -164,6 +164,11 @@ public class DelegatedArray implements ComponentLifecycle,
 	}
 
 	@Override
+	public void configureSelector(SchedBlockSelector sbSelectDelegate) {
+		this.sbSelectDelegate = sbSelectDelegate;
+	}
+
+	@Override
 	public ArraySchedulerLifecycleType getLifecycleType() {
 		return type;
 	}
@@ -179,17 +184,17 @@ public class DelegatedArray implements ComponentLifecycle,
     
     /*
      * ================================================================
-     * Delegation of DSAOperations
+     * Delegation of SchedBlockSelectorOperations
      * ================================================================
      */
 	/**
 	 * @return
-	 * @see alma.scheduling.DSAOperations#run()
+	 * @see alma.scheduling.SchedBlockSelectorOperations#selectNextSB()
 	 */
-	public SchedBlockScore[] run() {
-		return dsaDelegate.run();
+	public void selectNextSB() {
+		sbSelectDelegate.selectNextSB();
 	}
-    /* End Delegation of DSAOperations
+    /* End Delegation of SchedBlockSelectorOperations
      * ============================================================= */
 	
 

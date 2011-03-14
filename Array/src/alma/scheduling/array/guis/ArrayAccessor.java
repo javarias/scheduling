@@ -111,8 +111,8 @@ public class ArrayAccessor {
 		array.push(arg0);
 	}
 
-	public SchedBlockScore[] run() {
-		return array.run();
+	public void selectNextSB() {
+		array.selectNextSB();
 	}
 
 	public void start(String name, String role) {
