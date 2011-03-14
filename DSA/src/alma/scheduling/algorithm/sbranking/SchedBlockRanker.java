@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockRanker.java,v 1.6 2010/05/25 23:59:28 javarias Exp $"
+ * "@(#) $Id: SchedBlockRanker.java,v 1.7 2011/03/14 23:56:26 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -49,4 +49,10 @@ public interface SchedBlockRanker {
      * @return the best ranked SckedBlock
      */
     public SchedBlock getBestSB(List<SBRank> ranks);
+    
+    /**
+     * 
+     * @return the weight of factor to be applied to the score 
+     */
+    public double getFactor();
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SBRank.java,v 1.6 2011/03/09 19:38:23 javarias Exp $"
+ * "@(#) $Id: SBRank.java,v 1.7 2011/03/14 23:56:26 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -89,10 +89,12 @@ public class SBRank implements Comparable<SBRank>{
         this.uid = uid;
     }
     
-    public SBRank[] getBreakdown() {
-    	SBRank[] ret = new SBRank[breakdownScore.size()];
-    	breakdownScore.toArray(ret);
-    	return ret;
+    public ArrayList<SBRank> getBreakdownScore() {
+    	return breakdownScore;
+    }
+    
+    public void setBreakdownScore(ArrayList<SBRank> score) {
+    	breakdownScore = score;
     }
     
     public String getDetails() {

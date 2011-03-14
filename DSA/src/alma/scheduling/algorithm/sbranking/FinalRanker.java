@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FinalRanker.java,v 1.10 2010/05/25 23:59:28 javarias Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.11 2011/03/14 23:56:26 javarias Exp $"
  */
 
 package alma.scheduling.algorithm.sbranking;
@@ -70,29 +70,32 @@ public class FinalRanker extends AbstractBaseRanker {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut, int nProjects) {
-        ranks.clear();
-        List<SBRank>[] results = new List[rankers.size()]; // for each ranker, a list over the sbs
-        int i = 0;
-        for(SchedBlockRanker r: rankers){
-            results[i] = r.rank(sbs, arrConf, ut, nProjects);
-            i++;
-        }
-        for(i = 0; i < sbs.size(); i++){
-            SBRank rank =  new SBRank();
-            rank.setId(results[0].get(i).getId());
-            rank.setUid(results[0].get(i).getUid());
-            double score = 0;
-            for(int j = 0; j < results.length; j++)
-                score += weights.get(j) * results[j].get(i).getRank();
-            rank.setRank(score);
-            logger.debug("rank: " + rank);
-            ranks.put(rank, sbs.get(i));
-        }
-        ArrayList<SBRank> retVal = new ArrayList<SBRank>(ranks.keySet());
-        printVerboseInfo(retVal, arrConf.getId(), ut);
-        return retVal;
-    }
+	@Override
+	public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf,
+			Date ut, int nProjects) {
+		ranks.clear();
+		List<SBRank>[] results = new List[rankers.size()]; // for each ranker, a
+															// list over the sbs
+		int i = 0;
+		for (SchedBlockRanker r : rankers) {
+			results[i] = r.rank(sbs, arrConf, ut, nProjects);
+			i++;
+		}
+
+		for (int sb = 0; sb < sbs.size(); sb++) {
+			SBRank rank = new SBRank();
+			double score = 0;
+			for (i = 0; i < results.length; i++) {
+				rank.addRank(results[i].get(sb));
+				score += results[i].get(sb).getRank() * rankers.get(i).getFactor();
+			}
+			rank.setRank(score);
+			ranks.put(rank, sbs.get(sb));
+		}
+
+		ArrayList<SBRank> retVal = new ArrayList<SBRank>(ranks.keySet());
+		printVerboseInfo(retVal, arrConf.getId(), ut);
+		return retVal;
+	}
 
 }

@@ -14,7 +14,7 @@ public abstract class AbstractBaseRanker implements SchedBlockRanker {
     
     protected String rankerName = "" ;
     
-    protected double factor;
+    protected double factor = 1.0;
     
     protected AbstractBaseRanker(String rankerName){
         this.rankerName = rankerName;

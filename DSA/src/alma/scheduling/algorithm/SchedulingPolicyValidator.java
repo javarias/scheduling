@@ -60,6 +60,7 @@ public class SchedulingPolicyValidator {
 			String policy = (String) it.next();
 			System.out.println("   * " + policy);
 		}
+		context.getBean(DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
 		
 	}
 
@@ -68,7 +69,7 @@ public class SchedulingPolicyValidator {
 		try {
 			Transformer transformer = tFactory.newTransformer(new StreamSource(xslURL.toString()));
 			transformer.transform(new StreamSource(file), new StreamResult(file +".context.xml"));
-			System.out.println("SUCCESS. Output file: " + file + ".context.xml");
+			System.out.println("	SUCCESS. Output file: " + file + ".context.xml");
 			return file + ".context.xml";
 		} catch (TransformerConfigurationException e) {
 			System.out.println("FAILED.");

@@ -6,18 +6,18 @@
     <class name="alma.scheduling.algorithm.sbranking.SBRank" table="SBRANK">
         <id name="id" type="long">
             <column name="ID" />
-            <generator class="assigned" />
+            <generator class="native" />
         </id>
         <property name="score" type="double" access="field">
             <column name="SCORE" />
         </property>
         <property name="uid" type="java.lang.String">
-            <column name="UID" />
+            <column name="SCHEDBLOCK_UID" />
         </property>
         <property name="details" type="java.lang.String">
             <column name="DETAILS" />
         </property>
-        <list name="breakdownScore" inverse="false" table="SBRANK" lazy="true" access="field">
+        <list name="breakdownScore" inverse="false" table="SBRANK" lazy="true" cascade="save-update,lock, delete, delete-orphan">
             <key>
                 <column name="ID" />
             </key>

@@ -8,7 +8,7 @@
         </id>
         <property name="arrayName" type="java.lang.String" column="ARRAY_NAME">
         </property>
-        <many-to-one name="score" column="SCORE" class="alma.scheduling.algorithm.sbranking.SBRank" cascade="save-update,lock, delete, delete-orphan">
+        <many-to-one name="score" column="SCORE" class="alma.scheduling.algorithm.sbranking.SBRank" cascade="save-update,lock, delete">
         </many-to-one>
     </class>
 </hibernate-mapping>
