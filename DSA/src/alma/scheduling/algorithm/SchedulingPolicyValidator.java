@@ -54,11 +54,9 @@ public class SchedulingPolicyValidator {
 		System.out.println("Loading DSA application context file ... ");
 		AbstractApplicationContext context = DSAContextFactory.getContext(file);
 		System.out.println("Available Algorithm Policies: ");
-		@SuppressWarnings("rawtypes")
-		Map policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
-		for (@SuppressWarnings("rawtypes") Iterator it = policies.keySet().iterator(); it.hasNext();) {
-			String policy = (String) it.next();
-			System.out.println("   * " + policy);
+		for (String policyName: DSAContextFactory.getPolicyNames()) {
+			System.out.println("   * " + policyName);
+			context.getBean(policyName);
 		}
 		
 	}
