@@ -1,5 +1,8 @@
 package alma.scheduling.utils;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.springframework.context.support.AbstractApplicationContext;
 
 /**
@@ -10,7 +13,7 @@ import org.springframework.context.support.AbstractApplicationContext;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- *
+ * $Id: DSAContextFactory.java,v 1.3 2011/03/15 22:42:27 dclarke Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -33,6 +36,11 @@ public class DSAContextFactory extends CommonContextFactory {
 		}
 		return context;
 		
+	}
+	
+	public static List<String> getPolicyNames() {
+		final List<String> result = new Vector<String>();
+		return result;
 	}
 	
 }
