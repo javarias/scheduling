@@ -60,7 +60,6 @@ public class SchedulingPolicyValidator {
 			String policy = (String) it.next();
 			System.out.println("   * " + policy);
 		}
-		context.getBean(DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
 		
 	}
 
