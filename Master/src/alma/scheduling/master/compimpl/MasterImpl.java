@@ -53,6 +53,7 @@ import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.ArrayStatusCallback;
 import alma.scheduling.MasterOperations;
+import alma.scheduling.SchedBlockSelector;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 
@@ -375,6 +376,13 @@ public class MasterImpl implements ComponentLifecycle,
 		Array array = ArrayHelper.narrow(dynamicComponent);
 		array.configure(arrayName, 
 				convertToArraySchedulerMode(schedulingMode),lifecycleType);
+		if (schedulingMode == ArrayModeEnum.DYNAMIC) {
+			SchedBlockSelector selector = null;
+			// TODO: Actually build a selector to configure the array with
+			array.configureSelector(selector);
+		} else {
+			array.configureSelector(null);
+		}
 		return array;
 	}
 	
@@ -384,7 +392,7 @@ public class MasterImpl implements ComponentLifecycle,
 			arrayModes[0] = ArraySchedulerMode.INTERACTIVE_I;
 		}
 		else if (mode == ArrayModeEnum.DYNAMIC){
-			arrayModes[0] = ArraySchedulerMode.DYNAMIC_ACTIVE_I;
+			arrayModes[0] = ArraySchedulerMode.DYNAMIC_PASSIVE_I;
 		}
 		else if (mode == ArrayModeEnum.MANUAL){
 			arrayModes[0] = ArraySchedulerMode.MANUAL_I;

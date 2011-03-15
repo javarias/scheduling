@@ -112,19 +112,19 @@ public class ArrayPanel extends AbstractArrayPanel {
 	}
 
 	private void setModesInTitle(final ArraySchedulerMode[] modes) {
-		final String suffix = "_I";
+		final String suffix = "I";
 		final StringBuilder b = new StringBuilder();
 		String sep = "";
 		for (final ArraySchedulerMode mode : modes) {
-			String m = mode.toString();
-			final int right = m.lastIndexOf(suffix);
-			if (right > 0) {
-				m = m.substring(0, right);
+			String[] parts = mode.toString().split("_");
+			for (final String part : parts) {
+				if (!part.equals(suffix)) {
+					b.append(sep);
+					b.append(part.charAt(0));
+					b.append(part.substring(1).toLowerCase());
+					sep = ", ";
+				}
 			}
-			b.append(sep);
-			b.append(m.charAt(0));
-			b.append(m.substring(1).toLowerCase());
-			sep = ", ";
 		}
 		this.arrayMode = b.toString();
 		setTitle(this.arrayName, this.arrayMode);

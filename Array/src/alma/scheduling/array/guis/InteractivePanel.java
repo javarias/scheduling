@@ -18,6 +18,7 @@
 
 package alma.scheduling.array.guis;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -87,7 +88,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.12 2011/03/11 00:06:34 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.13 2011/03/15 21:41:15 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -341,26 +342,17 @@ public class InteractivePanel extends AbstractArrayPanel
 				}
 			}});
 		
-		details = new JPanel();
 		final JPanel opDetailsPanel = new JPanel();
 		final JPanel sbDetailsPanel = new JPanel();
-		GridBagLayout      l = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-		c.ipadx = 2;
-		c.ipady = 2;
-		
-		opDetailsPanel.setLayout(l);
-		addFullWidthWidget(opDetailsPanel, l, c, new JLabel("Project Details"), 0, 0, 0.0, 0.0, false);
-		addFullWidthWidget(opDetailsPanel, l, c, opDetails, 0, 1, 1.0, 1.0, true);
-		
-		l = new GridBagLayout();
-		c = new GridBagConstraints();
-		c.ipadx = 2;
-		c.ipady = 2;
 
-		sbDetailsPanel.setLayout(l);
-		addFullWidthWidget(sbDetailsPanel, l, c, new JLabel("SchedBlock Details"), 0, 0, 0.0, 0.0, false);
-		addFullWidthWidget(sbDetailsPanel, l, c, sbDetails, 0, 1, 1.0, 1.0, true);
+		opDetailsPanel.setLayout(new BorderLayout());
+		opDetailsPanel.add(new JLabel("Project Details"),
+				           BorderLayout.NORTH);
+		opDetailsPanel.add(opDetails, BorderLayout.CENTER);
+		sbDetailsPanel.setLayout(new BorderLayout());
+		sbDetailsPanel.add(new JLabel("SchedBlock Details"),
+				           BorderLayout.NORTH);
+		sbDetailsPanel.add(sbDetails, BorderLayout.CENTER);
 
 		
 		final JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
@@ -368,7 +360,9 @@ public class InteractivePanel extends AbstractArrayPanel
 		split.setBottomComponent(sbDetailsPanel);
 		split.setDividerLocation(1.0/2.0);
 		split.setOneTouchExpandable(true);
-		details.add(split);
+		details = new JPanel();
+		details.setLayout(new BorderLayout());
+		details.add(split, BorderLayout.CENTER);
 
 	}
 	
@@ -822,7 +816,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		}
 		
 		sbDetails.setText(text);
-		
+
 		if (!showingOPDetails) {
 			// No operator selected project being show, so show this SB's one
 			showObsProjectDetails(sb.getProjectUid());
@@ -832,6 +826,11 @@ public class InteractivePanel extends AbstractArrayPanel
 	private void clearSchedBlockDetails() {
 		final String text = "<html>No SchedBlock selected</html>";
 		sbDetails.setText(text);
+
+		if (!showingOPDetails) {
+			// No operator selected project being show, so clear any shown
+			clearObsProjectDetails();
+		}
 	}
 	
 	private void showObsProjectDetails(String entityId) {

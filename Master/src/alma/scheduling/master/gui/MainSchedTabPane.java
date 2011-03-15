@@ -232,46 +232,29 @@ public class MainSchedTabPane extends JTabbedPane {
         }
     }
 
-    private void doInteractiveButton() {
+    private void doSchedulerTypeButton(JButton button, ArrayModeEnum mode) {
         resetMainViewButtons();
-        origButtonColor = interactiveB.getBackground();
-        interactiveB.setBackground(selectedButtonColor);
+        origButtonColor = button.getBackground();
+        button.setBackground(selectedButtonColor);
         createArrayEnabled = true;
         middlePanel.setEnabled(true);
-        middlePanel.prepareCreateArray(ArrayModeEnum.INTERACTIVE);
+        middlePanel.prepareCreateArray(mode);
+    }
+
+    private void doInteractiveButton() {
+    	doSchedulerTypeButton(interactiveB, ArrayModeEnum.INTERACTIVE);
     }
 
     private void doQueuedButton() {
-        resetMainViewButtons();
-        origButtonColor = queuedB.getBackground();
-        queuedB.setBackground(selectedButtonColor);
-        createArrayEnabled = true;
-        middlePanel.setEnabled(true);
-       // middlePanel.setArrayMode("queued");
-        middlePanel.prepareCreateArray(ArrayModeEnum.QUEUED);
-        //createArray with mode 'queued'
+    	doSchedulerTypeButton(queuedB, ArrayModeEnum.QUEUED);
     }
 
     private void doDynamicButton(){ 
-        resetMainViewButtons();
-    //    JOptionPane.showMessageDialog(this,"Dynamic scheduling not available yet.",
-      //          "Not Available", JOptionPane.INFORMATION_MESSAGE);
-        origButtonColor = dynamicB.getBackground();
-        dynamicB.setBackground(selectedButtonColor);
-        createArrayEnabled = true;
-        middlePanel.setEnabled(true);
-        middlePanel.prepareCreateArray(ArrayModeEnum.DYNAMIC);
-        //createArray with mode 'dynamic'
-    
+    	doSchedulerTypeButton(dynamicB, ArrayModeEnum.DYNAMIC);
     }
 
     private void doManualButton(){
-        resetMainViewButtons();
-        origButtonColor = manualB.getBackground();
-        manualB.setBackground(selectedButtonColor);
-        createArrayEnabled = true;
-        middlePanel.setEnabled(true);
-        middlePanel.prepareCreateArray(ArrayModeEnum.MANUAL);
+    	doSchedulerTypeButton(manualB, ArrayModeEnum.MANUAL);
     }
 
     public void resetMainViewButtons(){
@@ -289,9 +272,9 @@ public class MainSchedTabPane extends JTabbedPane {
     }
     protected void enableSchedulerButtons() {
         interactiveB.setEnabled(true);
-        queuedB.setEnabled(true);
-//        TODO: Activate Dynamic Scheduling button after adding dynamic Scheduling
-        dynamicB.setEnabled(false);
+//      TODO: Activate queued scheduling button after adding queued scheduling
+        queuedB.setEnabled(false);
+        dynamicB.setEnabled(true);
         manualB.setEnabled(true);
     }
 
@@ -302,9 +285,9 @@ public class MainSchedTabPane extends JTabbedPane {
         interactiveB = new JButton("Interactive");
         queuedB = new JButton("Queued");
         dynamicB = new JButton("Dynamic");
-//      TODO: Activate Dynamic Scheduling button after adding dynamic Scheduling
-        dynamicB.setEnabled(false);
         manualB = new JButton("Manual");
+        
+        enableSchedulerButtons();
 
         interactiveB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
