@@ -180,6 +180,11 @@ public class ArrayImpl implements ComponentLifecycle,
     }
 
     @Override
+    public String getArrayName() {
+        return arrayName;
+    }
+
+    @Override
     public ArraySchedulerMode[] getModes() {
         return modes;
     }

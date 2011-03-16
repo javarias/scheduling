@@ -43,7 +43,7 @@ import alma.scheduling.SchedBlockQueueManagerOperations;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.8 2011/03/16 00:03:31 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.9 2011/03/16 18:06:58 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
@@ -166,6 +166,11 @@ public class DelegatedArray implements ComponentLifecycle,
 	public ArraySchedulerMode[] getModes() {
 		return modes;
 	}
+
+    @Override
+    public String getArrayName() {
+        return name;
+    }
     /* End ArrayOperations
      * ============================================================= */
 	
