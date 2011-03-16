@@ -112,7 +112,7 @@ public class ArrayAccessor {
 	}
 
 	public void selectNextSB() {
-		array.selectNextSB();
+//		array.selectNextSB();
 	}
 
 	public void start(String name, String role) {

@@ -25,7 +25,7 @@ import alma.scheduling.ArrayOperations;
  * ObservableReorderingBlockingQueue<E>.
  * 
  * @author dclarke
- * $Id: DefaultSchedulingQueue.java,v 1.1 2011/03/14 23:40:37 dclarke Exp $
+ * $Id: DefaultSchedulingQueue.java,v 1.2 2011/03/16 00:03:31 dclarke Exp $
  */
 public class DefaultSchedulingQueue<E> extends
 		ObservableReorderingBlockingQueue<E> {
@@ -44,7 +44,7 @@ public class DefaultSchedulingQueue<E> extends
 	@Override
 	public E take() throws InterruptedException {
 		if (isEmpty()) {
-			getArray().selectNextSB();
+//			getArray().selectNextSB();
 		}
 		return super.take();
 	}

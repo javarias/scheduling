@@ -36,8 +36,6 @@ import alma.scheduling.SchedBlockExecutionManagerOperations;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedBlockQueueManagerOperations;
-import alma.scheduling.SchedBlockSelector;
-import alma.scheduling.SchedBlockSelectorOperations;
 
 /**
  * Implementation of the ArrayOperations interface which is an
@@ -45,14 +43,14 @@ import alma.scheduling.SchedBlockSelectorOperations;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.7 2011/03/14 23:24:25 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.8 2011/03/16 00:03:31 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
 
 	private ContainerServices m_containerServices;
     private Logger m_logger;
-    private SchedBlockSelectorOperations sbSelectDelegate;
+    private String policyName;
 	private SchedBlockExecutionManagerOperations sbExecDelegate;
     private SchedBlockQueueManagerOperations sbQueueDelegate;
 
@@ -101,10 +99,8 @@ public class DelegatedArray implements ComponentLifecycle,
      * ================================================================
      */
     public DelegatedArray(
-    		SchedBlockSelectorOperations         sbSelectDelegate,
     		SchedBlockExecutionManagerOperations sbExecDelegate,
     		SchedBlockQueueManagerOperations     sbQueueDelegate) {
-    	setSchedBlockSelector(sbSelectDelegate);
     	setSchedBlockExecutionManager(sbExecDelegate);
     	setSchedBlockQueueManager(sbQueueDelegate);
     }
@@ -118,13 +114,6 @@ public class DelegatedArray implements ComponentLifecycle,
      * Setting of delegates
      * ================================================================
      */
-    /**
-	 * @param sbSelectDelegate the sbSelectDelegate to set
-	 */
-	public void setSchedBlockSelector(SchedBlockSelectorOperations sbSelectDelegate) {
-		this.sbSelectDelegate = sbSelectDelegate;
-	}
-
 	/**
 	 * @param sbExecDelegate the sbExecDelegate to set
 	 */
@@ -164,8 +153,8 @@ public class DelegatedArray implements ComponentLifecycle,
 	}
 
 	@Override
-	public void configureSelector(SchedBlockSelector sbSelectDelegate) {
-		this.sbSelectDelegate = sbSelectDelegate;
+	public void configureDynamicScheduler(String policyName) {
+		this.policyName = policyName;
 	}
 
 	@Override
@@ -178,23 +167,6 @@ public class DelegatedArray implements ComponentLifecycle,
 		return modes;
 	}
     /* End ArrayOperations
-     * ============================================================= */
-	
-
-    
-    /*
-     * ================================================================
-     * Delegation of SchedBlockSelectorOperations
-     * ================================================================
-     */
-	/**
-	 * @return
-	 * @see alma.scheduling.SchedBlockSelectorOperations#selectNextSB()
-	 */
-	public void selectNextSB() {
-		sbSelectDelegate.selectNextSB();
-	}
-    /* End Delegation of SchedBlockSelectorOperations
      * ============================================================= */
 	
 

@@ -288,7 +288,8 @@ public class CreateArrayController extends SchedulingPanelController {
     public String createArray(ArrayModeEnum arrayMode,
     						  ChessboardEntry[] cbEntries,
     						  String[] photonicsChoice,
-    						  CorrelatorType correlator) 
+    						  CorrelatorType correlator,
+    						  String schedulingPolicy) 
         throws SchedulingException 
     {
         String[] antennas = new String[cbEntries.length];
@@ -331,10 +332,10 @@ public class CreateArrayController extends SchedulingPanelController {
         }
 
      
-        logArray(logger, "Antennas to create array with   ", antennas);
-        logArray(logger, "Photonics to create array with  ", photonicsChoice);
-//        logger.fine("Antennas to create array with   = "+antennas.length);
-        logger.fine("Correlator to create array with = "+correlator);
+//        logArray(logger, "Antennas to create array with   ", antennas);
+//        logArray(logger, "Photonics to create array with  ", photonicsChoice);
+//        logger.fine("Correlator to create array with = "+ correlator);
+//        logger.fine("Policy to create array with = " + schedulingPolicy);
         ArrayCreationInfo arrayInfo = null;
         getMSRef();
         try {
@@ -342,7 +343,9 @@ public class CreateArrayController extends SchedulingPanelController {
                         	antennas,
                         	photonicsChoice,
                         	correlator,
-                        	arrayMode, ArraySchedulerLifecycleType.NORMAL);
+                        	arrayMode,
+                        	ArraySchedulerLifecycleType.NORMAL,
+                        	schedulingPolicy);
         } catch(Exception e) {
             //releaseMSRef();
             e.printStackTrace();

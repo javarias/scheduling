@@ -53,7 +53,6 @@ import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.ArrayStatusCallback;
 import alma.scheduling.MasterOperations;
-import alma.scheduling.SchedBlockSelector;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 
@@ -136,7 +135,8 @@ public class MasterImpl implements ComponentLifecycle,
 	@Override
 	public synchronized ArrayCreationInfo createArray(String[] antennaIdList, String[] photonicsList,
 			CorrelatorType corrType, ArrayModeEnum schedulingMode, 
-			ArraySchedulerLifecycleType lifecycleType) throws 
+			ArraySchedulerLifecycleType lifecycleType,
+			String policyName) throws 
 			ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx{
 		String arrayName = null;
 		while (!isInitialized()) {
@@ -171,7 +171,10 @@ public class MasterImpl implements ComponentLifecycle,
 		}
 		
 		try {
-			createNewSchedulingArray(arrayName, schedulingMode, lifecycleType);
+			createNewSchedulingArray(arrayName,
+					                 schedulingMode,
+					                 lifecycleType,
+					                 policyName);
 		} catch (AcsJContainerServicesEx e) {
 			AcsJACSInternalExceptionEx ex = new AcsJACSInternalExceptionEx(e);
 			ex.log(m_logger);
@@ -354,8 +357,11 @@ public class MasterImpl implements ComponentLifecycle,
 		return null;
 	}
 	
-	private Array createNewSchedulingArray(String arrayName, ArrayModeEnum schedulingMode, 
-			ArraySchedulerLifecycleType lifecycleType) throws AcsJContainerServicesEx, AcsJSchedulingInternalExceptionEx{
+	private Array createNewSchedulingArray(String arrayName,
+			                               ArrayModeEnum schedulingMode, 
+			                               ArraySchedulerLifecycleType lifecycleType,
+			                               String policyName)
+				throws AcsJContainerServicesEx, AcsJSchedulingInternalExceptionEx {
 		String schedArrayURL = null;
 		try {
 			schedArrayURL = NameTranslator.arrayToComponentName(arrayName);
@@ -377,11 +383,7 @@ public class MasterImpl implements ComponentLifecycle,
 		array.configure(arrayName, 
 				convertToArraySchedulerMode(schedulingMode),lifecycleType);
 		if (schedulingMode == ArrayModeEnum.DYNAMIC) {
-			SchedBlockSelector selector = null;
-			// TODO: Actually build a selector to configure the array with
-			array.configureSelector(selector);
-		} else {
-			array.configureSelector(null);
+			array.configureDynamicScheduler(policyName);
 		}
 		return array;
 	}

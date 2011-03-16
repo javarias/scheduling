@@ -251,6 +251,7 @@ public class MainSchedTabPane extends JTabbedPane {
 
     private void doDynamicButton(){ 
     	doSchedulerTypeButton(dynamicB, ArrayModeEnum.DYNAMIC);
+        middlePanel.setPolicyEnabled(true);
     }
 
     private void doManualButton(){
@@ -262,6 +263,7 @@ public class MainSchedTabPane extends JTabbedPane {
         queuedB.setBackground(origButtonColor);
         dynamicB.setBackground(origButtonColor);
         manualB.setBackground(origButtonColor);
+        middlePanel.setPolicyEnabled(false);
     }
     
     protected void disableSchedulerButtons() {
@@ -269,6 +271,7 @@ public class MainSchedTabPane extends JTabbedPane {
         queuedB.setEnabled(false);
         dynamicB.setEnabled(false);
         manualB.setEnabled(false);
+        middlePanel.setPolicyEnabled(false);
     }
     protected void enableSchedulerButtons() {
         interactiveB.setEnabled(true);

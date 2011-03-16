@@ -55,6 +55,7 @@ import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.array.guis.ArrayPanel;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
@@ -75,6 +76,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private JPanel chessboardPanel;
     private ButtonGroup photonicsGroup;
     private JComboBox correlatorType;
+    private JComboBox schedulingPolicy;
 
     public CreateArrayPanel() {
         super();
@@ -167,7 +169,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         gridBagConstraints.weighty = 0.6;
         gridBagConstraints.gridheight = 6;
         gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.gridwidth=gridBagConstraints.REMAINDER;
+        gridBagConstraints.gridwidth=GridBagConstraints.REMAINDER;
         //cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
         ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
         //all[0] is antennas for TwelveMeterChessboard
@@ -185,7 +187,13 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         gridBagConstraints.gridheight = 1;
         gridBagConstraints.weighty = 0.1;
         cbPanel.add(createCentralLOComponent(), gridBagConstraints);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridwidth = 1;
         cbPanel.add(createCorrelatorTypeComponent(), gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        cbPanel.add(createPolicyComponent(), gridBagConstraints);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
         
         chessboardPanel.add(cbPanel,BorderLayout.CENTER);
         chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
@@ -315,6 +323,25 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	result.add(correlatorType);
     	
     	return result;
+    }
+    
+    private JPanel createPolicyComponent() {
+    	final Vector<String> policies = new Vector<String>(
+    			DSAContextFactory.getPolicyNames());
+    	    	
+    	schedulingPolicy = new JComboBox(policies);
+    	final JLabel    label = new JLabel("Scheduling Policy");
+    	
+    	JPanel result = new JPanel();
+    	result.add(label);
+    	result.add(schedulingPolicy);
+    	setPolicyEnabled(false);
+    	
+    	return result;
+    }
+    
+    protected void setPolicyEnabled(boolean b) {
+    	schedulingPolicy.setEnabled(b);
     }
     
     
@@ -486,7 +513,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		System.arraycopy(TPSelected, 0, selected, ACSselected.length, TPSelected.length);
     	}  else if(ACSselected==null && TPSelected==null) {
     		JOptionPane.showMessageDialog(this, 
-    				"None Antenna Selected",
+    				"No Antenna Selected",
 					"Please select at least one antenna to create array",JOptionPane.ERROR_MESSAGE);
     	}
     	
@@ -497,13 +524,18 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	//String selectPhotonic= selectRadioButton.getText();
     	String[] photonicsChoice = getSelectedLOPhotonics();
     	if(photonicsChoice.length>0){
-    		logger.info("the selected photonics is:"+photonicsChoice[0]);
+        	logger.info(String.format("The selected photonic reference is: %s",
+        			photonicsChoice[0]));
     	}
     	else {
     		logger.info("None of the photonics is selected in CreateArray stage");
     	}
     	CorrelatorType correlator = getCorrelatorType();
-    	logger.info("The selected correlator is:" + correlator);
+    	logger.info(String.format("The selected correlator is: %s",
+    			correlator));
+    	String policy = getPolicy();
+    	logger.info(String.format("The selected scheduling policy is: %s",
+    			policy));
 
     	String arrayName;
     	disableCreateArrayPanel();
@@ -511,7 +543,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		arrayName = controller.createArray(arrayMode,
     				selected,
     				photonicsChoice,
-    				correlator);
+    				correlator,
+    				policy);
     		allArrays.add(arrayName);
     	} catch(Exception e) {
     		e.printStackTrace();
@@ -560,10 +593,16 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private CorrelatorType getCorrelatorType() {
     	final CorrelatorType result =
     		(CorrelatorType)correlatorType.getSelectedItem();
-    	logger.fine(String.format(
-    			"Correlator Type is %s (index = %d)",
-    			result, result.value()
-    	));
+    	return result;
+    }
+    
+    private String getPolicy() {
+    	final String result;
+    	if (schedulingPolicy.isEnabled()) {
+        	result = (String)schedulingPolicy.getSelectedItem();
+    	} else {
+    		result = "<none>";
+    	}
     	return result;
     }
 
