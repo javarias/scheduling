@@ -326,8 +326,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
     private JPanel createPolicyComponent() {
-    	final Vector<String> policies = new Vector<String>(
-    			DSAContextFactory.getPolicyNames());
+//    	final Vector<String> policies = new Vector<String>(
+//		DSAContextFactory.getPolicyNames());
+    	final Vector<String> policies = new Vector<String>();
     	    	
     	schedulingPolicy = new JComboBox(policies);
     	final JLabel    label = new JLabel("Scheduling Policy");
