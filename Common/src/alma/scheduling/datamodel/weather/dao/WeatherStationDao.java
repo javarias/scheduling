@@ -13,7 +13,7 @@ import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 
 /**
- * The weather Station DAO will return just the current values for the weather
+ * The weather Station DAO will return just the weather values for the current time
  * parameters, all the method who try to load for history will throw a RuntimeException.
  * 
  * @author javarias
