@@ -83,6 +83,9 @@ public class MasterImpl implements ComponentLifecycle,
         if (m_logger == null)
         	m_logger = m_containerServices.getLogger();
         
+        //Get Weather Station reference and pass it to Weather Station Dao.
+        //Change this if Master Scheduler is not longer deployed in the same container
+        //than the SCHEDULING Arrays
         try {
 			weatherComp = CurrentWeatherHelper.narrow(containerServices.getDefaultComponent("IDL:alma/Control/CurrentWeather:1.0"));
 			String nameComp = weatherComp.name();
