@@ -17,7 +17,7 @@
         <property name="details" type="java.lang.String">
             <column name="DETAILS" />
         </property>
-        <list name="breakdownScore" inverse="false" table="SBRANK" lazy="true" cascade="save-update,lock, delete, delete-orphan">
+        <list name="breakdownScore" inverse="false" table="SBRANK" lazy="false" cascade="save-update,lock, delete, delete-orphan">
             <key>
                 <column name="ID" />
             </key>
