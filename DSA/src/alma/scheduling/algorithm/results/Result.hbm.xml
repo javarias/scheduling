@@ -9,7 +9,7 @@
   <property column="ARRAY_NAME" generated="never" lazy="false"
    name="arrayName" type="java.lang.String"/>
   <set cascade="save-update, lock, delete, delete-orphan" name="scores"
-   sort="unsorted" table="SBRANK">
+   sort="unsorted" table="SBRANK" lazy="false">
    <key column="ID"/>
    <one-to-many class="alma.scheduling.algorithm.sbranking.SBRank"/>
   </set>
