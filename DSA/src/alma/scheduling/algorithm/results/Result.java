@@ -1,6 +1,8 @@
 package alma.scheduling.algorithm.results;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import alma.scheduling.algorithm.sbranking.SBRank;
 
@@ -23,11 +25,11 @@ public class Result {
 	private String arrayName;
 	/**
 	 * Scheduling Block score results, the breakdown of the score is handled by
-	 * {@code SBRank}
+	 * {@link SBRank}
 	 * 
 	 *  @see SBRank
 	 */
-	private SBRank score;
+	private Set<SBRank> scores = new HashSet<SBRank>();
 	
 	public Date getTime() {
 		return time;
@@ -37,12 +39,12 @@ public class Result {
 		this.time = time;
 	}
 	
-	public SBRank getScore() {
-		return score;
+	public Set<SBRank> getScore() {
+		return scores;
 	}
 	
-	public void setScore(SBRank score) {
-		this.score = score;
+	public void setScore(Set<SBRank> scores) {
+		this.scores = scores;
 	}
 	
 	public String getArrayName() {

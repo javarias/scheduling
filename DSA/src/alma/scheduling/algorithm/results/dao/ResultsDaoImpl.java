@@ -13,22 +13,25 @@ import alma.scheduling.datamodel.GenericDaoImpl;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDaoImpl.java,v 1.2 2011/03/15 22:42:27 dclarke Exp $
+ * $Id: ResultsDaoImpl.java,v 1.3 2011/03/17 22:58:35 javarias Exp $
  */
 public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 
 	@Override
-	public Map<String, Result> getCurrentResults(String arrayName) {
-		final Map<String, Result> result = new HashMap<String, Result>();
-		// TODO Auto-generated method stub
-		return result;
+	public void saveOrUpdate(Result result) {
+		saveOrUpdate(result);
 	}
 
 	@Override
-	public Map<String, Result> getPreviousResults(String arrayName) {
-		final Map<String, Result> result = new HashMap<String, Result>();
+	public Result getCurrentResult(String arrayName) {
 		// TODO Auto-generated method stub
-		return result;
+		return null;
+	}
+
+	@Override
+	public Result getPreviousResult(String arrayName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -10,7 +10,7 @@ import alma.scheduling.algorithm.results.Result;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDao.java,v 1.2 2011/03/15 22:42:27 dclarke Exp $
+ * $Id: ResultsDao.java,v 1.3 2011/03/17 22:58:35 javarias Exp $
  */
 public interface ResultsDao {
 
@@ -19,19 +19,19 @@ public interface ResultsDao {
 	 * given array.
 	 * 
 	 * @param arrayName - the array to which the results apply
-	 * @return Map<String, Result> - the results in a map, keyed by
-	 *                               SchedBlock UID.
+	 * @return the current result
 	 */
-	public Map<String, Result> getCurrentResults(String arrayName);
+	public Result getCurrentResult(String arrayName);
 
 	/**
 	 * Return the previous set of scores and ranks from the DSA for the
 	 * given array.
 	 * 
 	 * @param arrayName - the array to which the results applied
-	 * @return Map<String, Result> - the results in a map, keyed by
-	 *                               SchedBlock UID.
+	 * @return the previous result
 	 */
-	public Map<String, Result> getPreviousResults(String arrayName);
+	public Result getPreviousResult(String arrayName);
 	
+	
+	public void saveOrUpdate(Result result);
 }
