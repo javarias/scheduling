@@ -20,14 +20,14 @@ package alma.scheduling.array.sbSelection;
 
 import java.util.Observable;
 
-import alma.scheduling.ArrayOperations;
 import alma.scheduling.QueueOperation;
+import alma.scheduling.array.compimpl.ArrayImpl;
 import alma.scheduling.array.sbQueue.QueueNotification;
 
 /**
  *
  * @author dclarke
- * $Id: AbstractSelector.java,v 1.2 2011/03/16 23:22:11 dclarke Exp $
+ * $Id: AbstractSelector.java,v 1.3 2011/03/17 22:54:33 javarias Exp $
  */
 public abstract class AbstractSelector extends Observable
 			implements Selector {
@@ -38,7 +38,7 @@ public abstract class AbstractSelector extends Observable
 	 * ================================================================
 	 */
 	/** The array for which we're configured */
-	protected ArrayOperations array;
+	protected ArrayImpl array;
 	
 	/** The source for our triggering events */
 	protected Observable source;
@@ -59,7 +59,7 @@ public abstract class AbstractSelector extends Observable
 	 * @see alma.scheduling.array.sbSelection.Selector#configureArray(alma.scheduling.ArrayOperations)
 	 */
 	@Override
-	public void configureArray(ArrayOperations array, Observable source) {
+	public void configureArray(ArrayImpl array, Observable source) {
 		this.array = array;
 		unsubscribeFromPreviousSource();
 		subscribeToNewSource(source);

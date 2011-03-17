@@ -21,12 +21,12 @@ package alma.scheduling.array.sbSelection;
 import java.util.Observable;
 import java.util.Observer;
 
-import alma.scheduling.ArrayOperations;
+import alma.scheduling.array.compimpl.ArrayImpl;
 
 /**
  *
  * @author dclarke
- * $Id: Selector.java,v 1.2 2011/03/16 23:22:11 dclarke Exp $
+ * $Id: Selector.java,v 1.3 2011/03/17 22:54:33 javarias Exp $
  */
 public interface Selector extends Observer {
 
@@ -35,7 +35,7 @@ public interface Selector extends Observer {
 	 * @param array
 	 * @param queue
 	 */
-	void configureArray(ArrayOperations array, Observable queue);
+	void configureArray(ArrayImpl array, Observable queue);
 	
 	/**
 	 * Select the next SB to run and queue it if appropriate 
