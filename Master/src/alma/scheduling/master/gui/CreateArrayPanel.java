@@ -598,9 +598,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
     private String getPolicy() {
-    	final String result;
+    	String result;
     	if (schedulingPolicy.isEnabled()) {
         	result = (String)schedulingPolicy.getSelectedItem();
+        	if (result == null) {
+        		result = "<null>";
+        	}
     	} else {
     		result = "<none>";
     	}

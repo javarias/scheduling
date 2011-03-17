@@ -21,12 +21,17 @@ package alma.scheduling.array.guis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
+import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
@@ -37,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.9 2011/03/11 00:06:34 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.10 2011/03/17 22:45:35 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -51,6 +56,19 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/** Map the displayed columns to the internal logical columns */
 	private int viewToModelColumnMap[];
+	
+	/** Track where to find the project id under the current map */
+	private int unmappedProjectIdColumn;
+	
+	/** Track where to find the SB id under the current map */
+	private int unmappedSBIdColumn;
+	
+	/** Value to use in the absence of a score */
+	private final static double noScore = -1;
+	
+	/** Value to use in the absence of a rank */
+	private final static int noRank = 999999;
+	
 	/* End Fields
 	 * ============================================================= */
 
@@ -58,7 +76,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/*
 	 * ================================================================
-	 * Construction
+	 * Construction and configuration
 	 * ================================================================
 	 */
 	/**
@@ -66,10 +84,24 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	public SchedBlockTableModel() {
 		super();
-		viewToModelColumnMap = defaultMap();
+		logger = Logger.getLogger("Scheduliing GUI");
+		configure(false);
+	}
+	
+	public void configure(boolean dynamic) {
+		if (dynamic) {
+			viewToModelColumnMap = dynamicMap();
+			useScores = true;
+		} else {
+			viewToModelColumnMap = defaultMap();
+			useScores = false;
+		}
+		unmappedProjectIdColumn = unmap(Column_Project);
+		unmappedSBIdColumn = unmap(Column_EntityId);
+		fireTableStructureChanged();
 		initialiseData();
 	}
-	/* End Construction
+	/* End Construction and configuration
 	 * ============================================================= */
 
 
@@ -104,11 +136,43 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_maxHA
 		};
 		
-		assert result[Column_Project] == Column_Project;
-			// Needed to locate the ProjectId for the filtering of SBs
-			// according to which projects are selected.
+		return result;
+	}
+	
+	/**
+	 * Create the map from view columns to logical columns for a
+	 * dynamic scheduler.
+	 * 
+	 * @return
+	 */
+	private int[] dynamicMap() {
+		final int[] result = {
+				Column_Rank,
+				Column_Score,
+				Column_EntityId,
+				Column_PI,
+				Column_Executive,
+				Column_Name,
+				Column_State,
+				Column_CSV,
+				Column_Project,
+				Column_Note,
+				Column_RA,
+				Column_Dec,
+				Column_minHA,
+				Column_maxHA
+		};
 		
 		return result;
+	}
+	
+	private  int unmap(int modelColumn) {
+		for (int viewColumn = 0; viewColumn < viewToModelColumnMap.length; viewColumn++) {
+			if (map(viewColumn) == modelColumn) {
+				return viewColumn;
+			}
+		}
+		return -1;
 	}
 	
 	private int map(int viewColumn) {
@@ -127,11 +191,22 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	/** The underlying data for which we are providing a TableModel */
 	private List<SchedBlock> data;
 	
+	/** The scores  of the data, keyed by SchedBlock UID */
+	private Map<String, SBRank> scores;
+	
+	/** The ranks of the data, keyed by SchedBlock UID */
+	private Map<String, Integer> ranks;
+	
+	/** Do we use the scores? */
+	private boolean useScores;
+	
 	/**
 	 * Initialise our internal storage
 	 */
 	private void initialiseData() {
 		this.data = new ArrayList<SchedBlock>();
+		this.scores = new HashMap<String, SBRank>();
+		this.ranks  = new HashMap<String, Integer>();
 		this.fireTableDataChanged();
 	}
 	
@@ -139,9 +214,28 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 * Set the data of the TableModel
 	 */
 	public void setData(Collection<SchedBlock> schedBlocks) {
-		this.data.clear();
-		this.data.addAll(schedBlocks);
-		this.fireTableDataChanged();
+		data.clear();
+		data.addAll(schedBlocks);
+		fireTableDataChanged();
+	}
+	
+	/**
+	 * Set the scores for the TableModel
+	 */
+	public void setScores(Collection<SBRank> sbRanks) {
+		if (useScores) {
+			scores.clear();
+			ranks.clear();
+			final SortedSet<SBRank> sorted = new TreeSet<SBRank>(sbRanks);
+			// SBRank implements Comparable for us
+			int r = 1;
+			
+			for (final SBRank sbRank : sorted) {
+				ranks.put(sbRank.getUid(), r++);
+				scores.put(sbRank.getUid(), sbRank);
+			}
+			fireTableDataChanged();
+		}
 	}
 	
 	/**
@@ -172,6 +266,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int     Column_maxHA =  9;
 	private static final int        Column_RA = 10;
 	private static final int       Column_Dec = 11;
+	private static final int      Column_Rank = 12;
+	private static final int     Column_Score = 13;
 	
 
 	/* (non-Javadoc)
@@ -240,6 +336,19 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			} catch (NullPointerException npe) {
 				return "n/a";
 			}
+		case Column_Rank:
+			final String uid = schedBlock.getUid();
+			if (ranks.containsKey(uid)) {
+				return ranks.get(uid);
+			}
+			return noRank;
+		case Column_Score:
+			try {
+				final SBRank rank = scores.get(schedBlock.getUid());
+				return rank.getRank();
+			} catch (Exception e) {
+			}
+			return noScore;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -279,6 +388,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return String.class;
 		case Column_Dec:
 			return String.class;
+		case Column_Rank:
+			return Integer.class;
+		case Column_Score:
+			return Double.class;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnClass(%d)",
@@ -321,6 +434,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "RA";
 		case Column_Dec:
 			return "Dec";
+		case Column_Rank:
+			return "Rank";
+		case Column_Score:
+			return "Score";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
@@ -345,17 +462,36 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/*
 	 * ================================================================
-	 * External interface specific to this class
+	 * Displaying scores & ranks
 	 * ================================================================
 	 */
-	public static int projectIdColumn() {
-		return Column_Project;
+	/**
+	 * The scorer has been run, so refresh the scores and ranks.
+	 */
+	public void refreshScores() {
+	}
+	/* End Displaying scores & ranks
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * Other external interface specific to this class
+	 * ================================================================
+	 */
+	public int projectIdColumn() {
+		return unmappedProjectIdColumn;
+	}
+
+	public int sbIdColumn() {
+		return unmappedSBIdColumn;
 	}
 
 	public String getSchedBlockId(int row) {
-		return (String) getValueAt(row, Column_EntityId);
+		return (String) getValueAt(row, sbIdColumn());
 	}
-	/* End External interface specific to this class
+	/* End Other external interface specific to this class
 	 * ============================================================= */
 
 	
@@ -405,6 +541,6 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			}};
 		return result;
 	}
-	/* End External interface specific to this class
+	/* End Comparators for sorting certain columns
 	 * ============================================================= */
 }

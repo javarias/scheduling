@@ -29,7 +29,6 @@ import alma.scheduling.ArrayHelper;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueItem;
-import alma.scheduling.SchedBlockScore;
 import alma.scheduling.array.compimpl.ArrayGUICallbackImpl;
 import alma.scheduling.array.compimpl.SchedBlockExecutionCallbackImpl;
 import alma.scheduling.array.compimpl.SchedBlockQueueCallbackImpl;
@@ -54,6 +53,7 @@ public class ArrayAccessor {
     private String guiCallbackName;
     private ArrayGUICallbackImpl guiCallback;
     private final static long MAX_WAIT_TIME_MILLIS = 300000;
+    private boolean dynamic;
     
     
     public ArrayAccessor(PluginContainerServices services, String arrayName) throws AcsJContainerServicesEx, TranslationException {
@@ -61,7 +61,23 @@ public class ArrayAccessor {
         this.arrayName = arrayName;
         Object obj = this.services.getComponentNonSticky(NameTranslator.arrayToComponentName(arrayName));
         array = ArrayHelper.narrow(obj);
+        determineArrayCharacteristics();
     }
+
+	private boolean determineDynamic() {
+		ArraySchedulerMode[] modes = array.getModes();
+		for (ArraySchedulerMode mode : modes) {
+			if ((mode == ArraySchedulerMode.DYNAMIC_PASSIVE_I) ||
+					(mode == ArraySchedulerMode.DYNAMIC_ACTIVE_I)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void determineArrayCharacteristics() {
+		dynamic = determineDynamic();
+	}
 
 	public void delete(SchedBlockQueueItem arg0) {
 		array.delete(arg0);
@@ -279,6 +295,10 @@ public class ArrayAccessor {
 	
 	public boolean isRunning() {
 		return array.isRunning();
+	}
+	
+	public boolean isDynamic() {
+		return dynamic;
 	}
 	
 	public boolean isManual() {

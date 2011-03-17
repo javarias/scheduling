@@ -88,7 +88,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.13 2011/03/15 21:41:15 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.14 2011/03/17 22:45:35 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -257,9 +257,7 @@ public class InteractivePanel extends AbstractArrayPanel
 				TitleColour));
 		sbModel = new SchedBlockTableModel();
 		sbTable = new JTable(sbModel);
-		sbSorter = new TableRowSorter<SchedBlockTableModel>(sbModel);
-		sbModel.addSpecificComparators(sbSorter);
-		sbTable.setRowSorter(sbSorter);
+//		initialiseSBSorting();
 		sbFilters = new FilterSet(sbModel);
 		sbFilterSummary = new JLabel();
 		sbFilterChange = newButton("Change", "Edit the filters to control which SchedBlocks are displayed");
@@ -295,6 +293,15 @@ public class InteractivePanel extends AbstractArrayPanel
 		createPopups();
 		
 		makeSameWidth(opTitle, sbTitle, update, opFilterReset, opFilterChange);
+	}
+
+	/**
+	 * 
+	 */
+	private void initialiseSBSorting() {
+		sbSorter = new TableRowSorter<SchedBlockTableModel>(sbModel);
+		sbModel.addSpecificComparators(sbSorter);
+		sbTable.setRowSorter(sbSorter);
 	}
 	
 	/**
@@ -567,6 +574,9 @@ public class InteractivePanel extends AbstractArrayPanel
 			processSB = "Queue";
 		}
 		sbTable.getSelectionModel().addListSelectionListener(queueListener(sbQueueSelected, sbTable));
+		
+		sbModel.configure(array.isDynamic());
+		initialiseSBSorting();
 		showConnectivity();
     }
 
@@ -599,6 +609,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * @return
 	 */
 	private RowFilter<SchedBlockTableModel, Integer> rowFilterForSBs(
+			final SchedBlockTableModel sbtm,
 			final Set<String> pids) {
 		final CallbackFilter.Callee callee =
 			new CallbackFilter.Callee() {
@@ -607,15 +618,14 @@ public class InteractivePanel extends AbstractArrayPanel
 					Entry<? extends Object, ? extends Object> value,
 					int index) {
 				final String pid =
-					value.getValue(SchedBlockTableModel.
-							projectIdColumn()).toString();
+					value.getValue(sbtm.projectIdColumn()).toString();
 				return pids.contains(pid);
 			}
 		};
 
 		return CallbackFilter.callbackFilter(
 				callee,
-				SchedBlockTableModel.projectIdColumn());
+				sbtm.projectIdColumn());
 	}
 
 	/**
@@ -660,7 +670,7 @@ public class InteractivePanel extends AbstractArrayPanel
 			} catch (ArrayIndexOutOfBoundsException e) {
 			}
 		}
-		sbFilterFromOPTable = rowFilterForSBs(pids);
+		sbFilterFromOPTable = rowFilterForSBs(sbModel, pids);
 		sbSorter.setRowFilter(sbFilterFromOPTable);
 		showProjectCounts();
 	}
