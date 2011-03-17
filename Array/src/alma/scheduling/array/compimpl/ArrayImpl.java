@@ -80,6 +80,8 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private AcsProvider serviceProvider;
     
+    private String schedulingPolicy;
+    
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
     /////////////////////////////////////////////////////////////
@@ -392,5 +394,13 @@ public class ArrayImpl implements ComponentLifecycle,
    public IDLEntityRef startManualModeSession(String sbid)
        throws InvalidOperationEx {
 	   return executor.startManualModeSession(sbid);
+   }
+   
+   public String getSchedulingPolicy() {
+	   return schedulingPolicy;
+   }
+   
+   public void setSchedulingPolicy(String policy) {
+	   this.schedulingPolicy = policy;
    }
 }
