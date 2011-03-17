@@ -29,6 +29,8 @@ import alma.Control.ArrayIdentifier;
 import alma.Control.ControlMaster;
 import alma.Control.ControlMasterHelper;
 import alma.Control.CorrelatorType;
+import alma.Control.CurrentWeather;
+import alma.Control.CurrentWeatherHelper;
 import alma.Control.InaccessibleException;
 import alma.Control.InvalidRequest;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -55,6 +57,7 @@ import alma.scheduling.ArrayStatusCallback;
 import alma.scheduling.MasterOperations;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
+import alma.scheduling.datamodel.weather.dao.WeatherStationDao;
 
 public class MasterImpl implements ComponentLifecycle,
         MasterOperations {
@@ -64,6 +67,7 @@ public class MasterImpl implements ComponentLifecycle,
     private ControlMaster controlMaster;
     private HashMap<String, ArrayModeEnum> activeArrays;
     private HashMap<String, ArrayStatusCallback> callbacks;
+    private CurrentWeather weatherComp;
 	
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -79,6 +83,16 @@ public class MasterImpl implements ComponentLifecycle,
         if (m_logger == null)
         	m_logger = m_containerServices.getLogger();
         
+        try {
+			weatherComp = CurrentWeatherHelper.narrow(containerServices.getDefaultComponent("IDL:alma/Control/CurrentWeather:1.0"));
+			String nameComp = weatherComp.name();
+			containerServices.releaseComponent(nameComp, null);
+			weatherComp = null;
+			weatherComp = CurrentWeatherHelper.narrow(containerServices.getComponentNonSticky(nameComp));
+			WeatherStationDao.setWeatherStation(weatherComp);
+		} catch (AcsJContainerServicesEx e) {
+			m_logger.warning("Unable to retrieve Weather Station Controller Component: IDL:alma/Control/CurrentWeather:1.0");
+		}
 		m_logger.finest("initialize() called...");
     }
 
