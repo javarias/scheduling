@@ -261,7 +261,7 @@ public class MasterImpl implements ComponentLifecycle,
 		obj = null;
 		array = null;
 		m_logger.info ("Releasing Scheduling Array " + schedArrayName);
-		m_containerServices.releaseComponent(schedArrayName);
+		m_containerServices.releaseComponent(schedArrayName, null);
 		
 		//Notify to the callbacks
 		ArrayList<String> toBeDeleted =  new ArrayList<String>();
