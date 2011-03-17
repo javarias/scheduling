@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.16 2010/07/20 23:07:00 javarias Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithmImpl.java,v 1.17 2011/03/17 22:58:03 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
+import alma.scheduling.algorithm.results.Result;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
@@ -105,8 +106,10 @@ public class DynamicSchedulingAlgorithmImpl implements DynamicSchedulingAlgorith
 	/* (non-Javadoc)
      * @see alma.scheduling.algorithm.DynamicSchedulingAlgorithm#rankSchedBlocks()
      */
-	public void rankSchedBlocks(Date ut){
+    @Override
+	public List<SBRank> rankSchedBlocks(Date ut){
 	    ranks = ranker.rank(new ArrayList<SchedBlock>(sbs.values()), array, ut, nProjects);
+	    return ranks;
 	}
 
     @Override

@@ -21,12 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.13 2010/07/10 01:25:04 rhiriart Exp $"
+ * "@(#) $Id: DynamicSchedulingAlgorithm.java,v 1.14 2011/03/17 22:58:03 javarias Exp $"
  */
 package alma.scheduling.algorithm;
 
 import java.util.Date;
+import java.util.List;
 
+import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -35,13 +37,13 @@ public interface DynamicSchedulingAlgorithm {
 
     public void rankSchedBlocks();
     
-    public void rankSchedBlocks(Date ut);
+    public List<SBRank> rankSchedBlocks(Date ut);
 
     /**
      * Clean the current candidate SBs and run again the selectors
      * 
      * @throws NoSbSelectedException if a selector cannot get SBs or if this method
-     * cannot intersect a common group between al SBs returned by the selectors used
+     * cannot intersect a common group among SBs returned by the selectors used
      */
     public void selectCandidateSB() throws NoSbSelectedException;
 
@@ -62,7 +64,7 @@ public interface DynamicSchedulingAlgorithm {
     public SchedBlock getSelectedSchedBlock();
     
     /**
-     * Set the Array to be schedulued by this DSA instance
+     * Set the Array to be scheduled by this DSA instance
      * @param arrConf The Array
      */
     public void setArray(ArrayConfiguration arrConf);
