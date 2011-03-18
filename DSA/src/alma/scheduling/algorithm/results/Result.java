@@ -39,11 +39,18 @@ public class Result {
 		this.time = time;
 	}
 	
-	public Set<SBRank> getScore() {
+	// **** NOTE
+	//
+	// InteractivePanel.getScoresAndRanks() goes to a bit of trouble
+	// to sort the result it gets from this method. So, if you change
+	// this method to return the scores already sorted, either stop
+	// the InteractivePanel duplicating this effort or tell David and
+	// he'll do it.
+	public Set<SBRank> getScores() {
 		return scores;
 	}
 	
-	public void setScore(Set<SBRank> scores) {
+	public void setScores(Set<SBRank> scores) {
 		this.scores = scores;
 	}
 	
