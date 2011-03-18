@@ -18,38 +18,33 @@
 
 package alma.scheduling.array.sbQueue;
 
+import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.ArrayOperations;
+import alma.scheduling.QueueOperation;
+import alma.scheduling.array.guis.ArrayGUINotification;
 
 /**
  * Subclass to allow us to insert scheduling specific behaviour to an
  * ObservableReorderingBlockingQueue<E>.
  * 
  * @author dclarke
- * $Id: DefaultSchedulingQueue.java,v 1.2 2011/03/16 00:03:31 dclarke Exp $
+ * $Id: DefaultSchedulingQueue.java,v 1.3 2011/03/18 00:20:23 dclarke Exp $
  */
 public class DefaultSchedulingQueue<E> extends
 		ObservableReorderingBlockingQueue<E> {
     
-	private ArrayOperations array;
-	
-    private DefaultSchedulingQueue(ReorderingBlockingQueue<E> queue) {
+    public DefaultSchedulingQueue(ReorderingBlockingQueue<E> queue) {
         super(queue);
-    }
-	
-    public DefaultSchedulingQueue(ReorderingBlockingQueue<E> queue, ArrayOperations array) {
-        super(queue);
-        this.array = array;
     }
 
 	@Override
 	public E take() throws InterruptedException {
 		if (isEmpty()) {
-//			getArray().selectNextSB();
+    		final QueueNotification qn = new QueueNotification(
+    				QueueOperation.WAITING, null);
+    		setChanged();
+    		notifyObservers(qn);
 		}
 		return super.take();
-	}
-	
-	private ArrayOperations getArray() {
-		return array;
 	}
 }

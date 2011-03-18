@@ -50,6 +50,9 @@ import alma.scheduling.array.sbQueue.LinkedReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.ObservableReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sbQueue.SchedBlockQueueCallbackNotifier;
+import alma.scheduling.array.sbSelection.AbstractSelector;
+import alma.scheduling.array.sbSelection.DSASelector;
+import alma.scheduling.array.sbSelection.Selector;
 import alma.scheduling.array.sessions.SessionManager;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 import alma.scheduling.utils.ErrorHandling;
@@ -81,6 +84,8 @@ public class ArrayImpl implements ComponentLifecycle,
     private AcsProvider serviceProvider;
     
     private String schedulingPolicy;
+    
+    private Selector selector = null;
     
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -138,7 +143,7 @@ public class ArrayImpl implements ComponentLifecycle,
 			q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
 		}
 
-		queue = new DefaultSchedulingQueue<SchedBlockItem>(q, this);
+		queue = new DefaultSchedulingQueue<SchedBlockItem>(q);
 
 		executor = new Executor(arrayName, queue);
 		executor.configureManual(manual);
@@ -171,9 +176,15 @@ public class ArrayImpl implements ComponentLifecycle,
 
 	@Override
 	public void configureDynamicScheduler(String policyName) {
-		logger.severe(String.format(
-				"Attempting to configure %s as a dynamic array with policy %s has been ignored",
+		logger.info(String.format(
+				"Configuring %s as a dynamic array with policy %s",
 				arrayName, policyName));
+		
+		this.schedulingPolicy = policyName;
+		final AbstractSelector dsa = new DSASelector();
+		dsa.configureArray(this, queue);
+		dsa.addObserver(guiNotifier);
+		this.selector = dsa;
 	}
 
     @Override
