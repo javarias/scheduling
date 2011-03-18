@@ -101,20 +101,21 @@ startACS() {
     
     # Now see if we should wait for the interface repository to load
     if [ -n "$IDL_FILES_TO_LOAD" ]; then
-        noloadifr='--noloadifr'
+        noloadifr='-noloadifr'
     fi
 
     #
     # Start the ORB services and manager and optionally load the interface repository
     #
     if [ -n "$noloadifr" ]; then
-        acsutilTATPrologue -l $noloadifr
+        acsStart $noloadifr &> $ACS_TMP/acsStart.log
         if [ -n "$IDL_FILES_TO_LOAD" ]; then
             acsstartupLoadIFR  "$IDL_FILES_TO_LOAD" &> $ACS_TMP/loadifr.log
         fi
     else 
-        acsutilTATPrologue -l
+        acsStart &> $ACS_TMP/acsStart.log
     fi
+	echo $ACS_INSTANCE > $ACS_TMP/acs_instance
     
     # Start ACS containers
     declare -a CONTAINERS
