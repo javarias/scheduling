@@ -56,7 +56,7 @@ public class DSASelector extends AbstractSelector {
 				Result result = new Result();
 				result.setArrayName(array.getArrayName());
 				result.setTime(runDate);
-				result.setScore(new HashSet<SBRank>(results));
+				result.setScores(new HashSet<SBRank>(results));
 				resultsDao.saveOrUpdate(result);
 			} catch (NoSbSelectedException e) {
 				e.printStackTrace();
