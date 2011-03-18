@@ -22,13 +22,12 @@ import java.util.Observable;
 
 import alma.scheduling.QueueOperation;
 import alma.scheduling.array.compimpl.ArrayImpl;
-import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.array.sbQueue.QueueNotification;
 
 /**
  *
  * @author dclarke
- * $Id: AbstractSelector.java,v 1.4 2011/03/18 00:20:23 dclarke Exp $
+ * $Id: AbstractSelector.java,v 1.5 2011/03/18 21:46:12 dclarke Exp $
  */
 public abstract class AbstractSelector extends Observable
 			implements Selector {
