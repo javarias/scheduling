@@ -302,11 +302,47 @@ public class ArrayAccessor {
 	}
 	
 	public boolean isManual() {
-		return array.isManual();
+		final long maxWaitTimeMillis = System.currentTimeMillis()
+				+ MAX_WAIT_TIME_MILLIS;
+		boolean succeed = false;
+		Exception ex = null;
+		while (!succeed && (System.currentTimeMillis() <= maxWaitTimeMillis)) {
+			try {
+				return array.isManual();
+			} catch (Exception e) {
+				ex = e; // Save last Exception just in case
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		services.getLogger().severe(
+				"Could not get connection to the Array.");
+		throw new RuntimeException(
+				"Could not get connection to the Array.", ex);
 	}
 	
 	public boolean isFullAuto() {
-		return array.isFullAuto();
+		final long maxWaitTimeMillis = System.currentTimeMillis()
+				+ MAX_WAIT_TIME_MILLIS;
+		boolean succeed = false;
+		Exception ex = null;
+		while (!succeed && (System.currentTimeMillis() <= maxWaitTimeMillis)) {
+			try {
+				return array.isFullAuto();
+			} catch (Exception e) {
+				ex = e; // Save last Exception just in case
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		services.getLogger().severe("Could not get connection to the Array.");
+		throw new RuntimeException("Could not get connection to the Array.", ex);
 	}
 	
 	public void setFullAuto(boolean on, String name, String role) {
