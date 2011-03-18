@@ -42,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.10 2011/03/17 22:45:35 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.11 2011/03/18 21:47:28 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -222,18 +222,11 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	/**
 	 * Set the scores for the TableModel
 	 */
-	public void setScores(Collection<SBRank> sbRanks) {
+	public void setScores(Map<String, SBRank>  scores,
+						  Map<String, Integer> ranks) {
 		if (useScores) {
-			scores.clear();
-			ranks.clear();
-			final SortedSet<SBRank> sorted = new TreeSet<SBRank>(sbRanks);
-			// SBRank implements Comparable for us
-			int r = 1;
-			
-			for (final SBRank sbRank : sorted) {
-				ranks.put(sbRank.getUid(), r++);
-				scores.put(sbRank.getUid(), sbRank);
-			}
+			this.scores = scores;
+			this.ranks  = ranks;
 			fireTableDataChanged();
 		}
 	}

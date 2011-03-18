@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
@@ -61,6 +63,8 @@ import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableRowSorter;
 
+import org.springframework.context.support.AbstractApplicationContext;
+
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.gui.standards.StandardIcons;
 import alma.entity.xmlbinding.projectstatus.StatusBaseT;
@@ -69,6 +73,9 @@ import alma.lifecycle.persistence.StateArchive;
 import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedulingException;
+import alma.scheduling.algorithm.results.Result;
+import alma.scheduling.algorithm.results.dao.ResultsDao;
+import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
@@ -80,6 +87,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.swingx.CallbackFilter;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
@@ -88,7 +96,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.14 2011/03/17 22:45:35 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.15 2011/03/18 21:47:28 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -192,6 +200,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		super();
 		System.out.format("%s (InteractivePanel).InteractivePanel()%n",
 				this.getClass().getSimpleName() );
+		initialiseScoresAndRanks();
 		createWidgets();
 		addWidgets();
 		showConnectivity();
@@ -206,6 +215,7 @@ public class InteractivePanel extends AbstractArrayPanel
 		System.out.format("%s (InteractivePanel).InteractivePanel(%s)%n",
 				this.getClass().getSimpleName(),
 				arrayName);
+		initialiseScoresAndRanks();
 		createWidgets();
 		addWidgets();
 		showConnectivity();
@@ -809,20 +819,63 @@ public class InteractivePanel extends AbstractArrayPanel
 			return;
 		}
 		
+		SBRank currScore = null;
+		int    currRank  = -1;
+		SBRank prevScore = null;
+		int    prevRank  = -1;
+		String excuse;
+		
+		if (array.isDynamic()) {
+			if (currentScores != null) {
+				currScore = currentScores.get(entityId);
+			}
+			if (currentRanks != null) {
+				currRank  = currentRanks.get(entityId);
+			}
+			if (previousScores != null) {
+				prevScore = previousScores.get(entityId);
+			}
+			if (previousRanks != null) {
+				prevRank  = previousRanks.get(entityId);
+			}
+		}
+		
 		try {
 			final SBStatus sbs = getSBStatus(sb);
-			text = SchedBlockFormatter.formatted(sb, sbs);
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, sbs,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, sbs);
+			}
 		} catch (AcsJNullEntityIdEx e) {
-			text = SchedBlockFormatter.formatted(sb, 
-					"No reference to status object in SchedBlock");
+			excuse = "No reference to status object in SchedBlock";
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, excuse,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, excuse);
+			}
 		} catch (AcsJNoSuchEntityEx e) {
-			text = SchedBlockFormatter.formatted(sb, String.format(
+			excuse = String.format(
 					"Reference to non-existant status object %s in SchedBlock",
-					sb.getStatusEntity().getEntityId()));
+					sb.getStatusEntity().getEntityId());
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, excuse,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, excuse);
+			}
 		} catch (AcsJInappropriateEntityTypeEx e) {
-			text = SchedBlockFormatter.formatted(sb, String.format(
+			excuse = String.format(
 					"Status reference %s for SchedBlock is to wrong type of object",
-					sb.getStatusEntity().getEntityId()));
+					sb.getStatusEntity().getEntityId());
+			if (array.isDynamic()) {
+				text = SchedBlockFormatter.formatted(sb, excuse,
+						currScore, currRank, prevScore, prevRank);
+			} else {
+				text = SchedBlockFormatter.formatted(sb, excuse);
+			}
 		}
 		
 		sbDetails.setText(text);
@@ -951,10 +1004,10 @@ public class InteractivePanel extends AbstractArrayPanel
      * that the previous doesn't get left marked as Running
      */
     private void deconfigurePrevious() {
-	final ArrayAccessor array = getArray();
-	final String name = getUserName();
-	final String role = getUserRole();
-	array.stopRunningSchedBlock(name, role);
+    	final ArrayAccessor array = getArray();
+    	final String name = getUserName();
+    	final String role = getUserRole();
+    	array.stopRunningSchedBlock(name, role);
     }
 
 	/**
@@ -1309,6 +1362,16 @@ public class InteractivePanel extends AbstractArrayPanel
 							operation.toString(),
 							item[0]));
 					deactivateAllButtons();
+				} else if (operation.equals(ArrayGUIOperation.CALCULATINGSCORES.toString())) {
+					setStatusMessage(String.format(
+							"<html>Ranking SchedBlocks by %s</html>",
+							item[0]));
+				} else if (operation.equals(ArrayGUIOperation.SCORESREADY.toString())) {
+					setStatusMessage(String.format(
+							"<html>Retrieving scores</html>"));
+					getScoresAndRanks();
+					setStatusMessage(String.format(
+							"<html>Scores updated</html>"));
 				}
 			}
 		};
@@ -1331,6 +1394,51 @@ public class InteractivePanel extends AbstractArrayPanel
 //		sbFilterPanel.setEnabled(false);
 	}
 	/* End Listening to the filters (and anything else)
+	 * ============================================================= */
+	
+	
+	
+	/*
+	 * ================================================================
+	 * Scores and Ranks
+	 * ================================================================
+	 */
+	private Map<String, SBRank>  currentScores;
+	private Map<String, Integer> currentRanks;
+	private Map<String, SBRank>  previousScores;
+	private Map<String, Integer> previousRanks;
+	private ResultsDao resultsDao;
+	
+	private void initialiseScoresAndRanks() {
+		currentScores  = new HashMap<String, SBRank>();
+		previousScores = new HashMap<String, SBRank>();
+		currentRanks   = new HashMap<String, Integer>();
+		previousRanks  = new HashMap<String, Integer>();
+		AbstractApplicationContext ctx = DSAContextFactory.getContext();
+		resultsDao = (ResultsDao) ctx.getBean(
+				DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
+	}
+	
+	private void getScoresAndRanks() {
+		previousScores = currentScores;
+		previousRanks  = currentRanks;
+		final Result result = resultsDao.getCurrentResult(getArray().getArrayName());
+
+		currentScores = new HashMap<String, SBRank>();
+		currentRanks  = new HashMap<String, Integer>();
+		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(result.getScores());
+		// SBRank implements Comparable for us
+		int r = 1;
+		
+		for (final SBRank sbRank : sorted) {
+			currentRanks.put(sbRank.getUid(), r++);
+			currentScores.put(sbRank.getUid(), sbRank);
+		}
+		
+		sbModel.setScores(currentScores, currentRanks);
+
+	}
+	/* End Scores and Ranks
 	 * ============================================================= */
 
 

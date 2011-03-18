@@ -22,10 +22,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import alma.entity.xmlbinding.sbstatus.ExecStatusT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.obsproject.Preconditions;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
@@ -34,7 +36,7 @@ import alma.scheduling.utils.Format;
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.1 2011/03/11 00:06:34 dclarke Exp $
+ * $Id: SchedBlockFormatter.java,v 1.2 2011/03/18 21:47:28 dclarke Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*
@@ -263,6 +265,98 @@ public class SchedBlockFormatter extends EntityFormatter {
 			endTable();
 		}
 	}
+	
+	private void formatScoresAndRanks(SBRank currScore,
+			                          int    currRank,
+			                          SBRank prevScore,
+			                          int    prevRank) {
+		final boolean someScores = (currScore == null) &&
+		                           (prevScore == null);
+		final boolean someRanks  = (currRank < 0) &&
+		                           (prevRank < 0);
+		
+		if ( !someScores && !someRanks ) {
+			// There's nothing to do
+			return;
+		}
+
+		startTable();
+		startTR();
+		th("Score and Rank", 4);
+		endTR();
+		startTR();
+		th("", 2);
+		th("Current");
+		th("Previous");
+		endTR();
+		
+		if (someRanks) {
+			startTR();
+			tdItalic("Rank", 2);
+			if (currRank >= 0) {
+				td(currRank);
+			} else {
+				td("n/a");
+			}
+			if (prevRank >= 0) {
+				td(prevRank);
+			} else {
+				td("n/a");
+			}
+			endTR();
+		}
+		
+		if (someScores) {
+			startTR();
+			tdItalic("Overall", 2);
+			try {
+				td(currScore.getRank());
+			} catch (NullPointerException e) {
+				td("n/a");
+			}
+			try {
+				td(prevScore.getRank());
+			} catch (NullPointerException e) {
+				td("n/a");
+			}
+			endTR();
+			
+			List<SBRank> currParts;
+			List<SBRank> prevParts;
+			List<SBRank> either = null;
+			
+			try {
+				currParts = currScore.getBreakdownScore();
+				either = currParts;
+			} catch (NullPointerException e) {
+				currParts = null;
+			}
+			try {
+				prevParts = prevScore.getBreakdownScore();
+				either = prevParts;
+			} catch (NullPointerException e) {
+				prevParts = null;
+			}
+			for (int i = 0; i < either.size(); i++) {
+				final SBRank r = either.get(i);
+				startTR();
+				td("");
+				tdItalic(r.getDetails());
+				try {
+					td(currParts.get(i).getRank());
+				} catch (NullPointerException e) {
+					td("n/a");
+				}
+				try {
+					td(prevParts.get(i).getRank());
+				} catch (NullPointerException e) {
+					td("n/a");
+				}
+				endTR();
+			}
+		}
+
+	}
 	/* End Utilities
 	 * ============================================================= */
 	
@@ -273,36 +367,59 @@ public class SchedBlockFormatter extends EntityFormatter {
 	 * Formatting
 	 * ================================================================
 	 */
+	public void formatBasics(SchedBlock sb, SBStatus sbs) {
+		startTable();
+		
+		formatName(sb);
+		formatKnownStatus(sbs);
+		formatNote(sb);
+		startTR();
+		th("Entity ID");
+		td(sb.getUid(), 3);
+		endTR();
+		startTR();
+		th("Status ID");
+		td(sb.getStatusEntity().getEntityId(), 3);
+		endTR();
+		formatCoords(sb);
+		formatHA(sb);
+		endTable();
+
+		startTable();
+		formatExecutionCounts(sb, sbs);
+		formatTimes(sbs);
+		formatSensitivity(sbs);
+		endTable();
+		
+		formatExecutions(sbs);
+	}
+	
+	public void formatBasics(SchedBlock sb, String reason) {
+		startTable();
+		
+		formatName(sb);
+		formatUnknownStatus(reason);
+		formatNote(sb);
+		formatCoords(sb);
+		formatHA(sb);
+		
+		endTable();
+	}
+	/* End Formatting
+	 * ============================================================= */
+	
+	
+	
+	/*
+	 * ================================================================
+	 * Formatting - external interface
+	 * ================================================================
+	 */
 	public static String formatted(SchedBlock sb, SBStatus sbs) {
 		final SchedBlockFormatter f = new SchedBlockFormatter();
 		
 		f.startHTML();
-		
-		f.startTable();
-		
-		f.formatName(sb);
-		f.formatKnownStatus(sbs);
-		f.formatNote(sb);
-		f.startTR();
-		f.th("Entity ID");
-		f.td(sb.getUid(), 3);
-		f.endTR();
-		f.startTR();
-		f.th("Status ID");
-		f.td(sb.getStatusEntity().getEntityId(), 3);
-		f.endTR();
-		f.formatCoords(sb);
-		f.formatHA(sb);
-		f.endTable();
-
-		f.startTable();
-		f.formatExecutionCounts(sb, sbs);
-		f.formatTimes(sbs);
-		f.formatSensitivity(sbs);
-		f.endTable();
-		
-		f.formatExecutions(sbs);
-		
+		f.formatBasics(sb, sbs);
 		f.endHTML();
 		
 		return f.toString();
@@ -312,21 +429,42 @@ public class SchedBlockFormatter extends EntityFormatter {
 		final SchedBlockFormatter f = new SchedBlockFormatter();
 		
 		f.startHTML();
-		
-		f.startTable();
-		
-		f.formatName(sb);
-		f.formatUnknownStatus(reason);
-		f.formatNote(sb);
-		f.formatCoords(sb);
-		f.formatHA(sb);
-		
-		f.endTable();
-
+		f.formatBasics(sb, reason);
 		f.endHTML();
 		
 		return f.toString();
 	}
-	/* End Construction
+	public static String formatted(SchedBlock sb,
+			                       SBStatus sbs,
+			                       SBRank currScore,
+			                       int    currRank,
+			                       SBRank prevScore,
+			                       int    prevRank) {
+		final SchedBlockFormatter f = new SchedBlockFormatter();
+		
+		f.startHTML();
+		f.formatBasics(sb, sbs);
+		f.formatScoresAndRanks(currScore, currRank, prevScore, prevRank);
+		f.endHTML();
+		
+		return f.toString();
+	}
+	
+	public static String formatted(SchedBlock sb,
+			                       String reason,
+			                       SBRank currScore,
+			                       int    currRank,
+			                       SBRank prevScore,
+			                       int    prevRank) {
+		final SchedBlockFormatter f = new SchedBlockFormatter();
+		
+		f.startHTML();
+		f.formatBasics(sb, reason);
+		f.formatScoresAndRanks(currScore, currRank, prevScore, prevRank);
+		f.endHTML();
+		
+		return f.toString();
+	}
+	/* End Formatting - external interface
 	 * ============================================================= */
 }
