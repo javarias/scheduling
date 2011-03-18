@@ -16,7 +16,7 @@ public class CommonContextFactory {
 	private static AbstractApplicationContext context = null;
 	
 	/** URL for Scheduling/Common Spring context configuration*/
-	public static final String SCHEDULING_COMMON_SPRING_CONFIG = "classpath:alma/scheduling/CommonContext.xml";
+	protected static final String SCHEDULING_COMMON_SPRING_CONFIG = "classpath:alma/scheduling/CommonContext.xml";
 	public static final String SCHEDULING_OBSPROJECT_DAO_BEAN = "obsProjectDao";
 	public static final String SCHEDULING_SCHEDBLOCK_DAO_BEAN = "sbDao";
 	public static final String SCHEDULING_CONFIGURATION_DAO_BEAN = "configDao";

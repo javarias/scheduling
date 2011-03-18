@@ -87,7 +87,7 @@ public class ModelAccessor extends Observable {
 			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 		}
 		
-        AbstractApplicationContext ctx = CommonContextFactory.getContext();
+        AbstractApplicationContext ctx = DSAContextFactory.getContext();
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
         execDao = (ExecutiveDAO) ctx.getBean(SCHEDULING_EXECUTIVE_DAO_BEAN);

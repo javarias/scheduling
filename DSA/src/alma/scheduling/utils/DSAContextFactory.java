@@ -14,22 +14,25 @@ import org.springframework.context.support.AbstractApplicationContext;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.4 2011/03/15 23:26:15 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.5 2011/03/18 18:22:55 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
+	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
 	public static final String SCHEDULING_DSA_RESULTS_DAO_BEAN="DSAResultDAO";
 	
 	private static AbstractApplicationContext context = null;
 	private static ArrayList<String> availablePolicies = null;
 	
 	/**
-	 * It will return the default ApplicationContext for the DSA, which is null
-	 * @return null
+	 * It will return the default ApplicationContext for the DSA.
+	 * @return the context defined in SCHEDULING_DSA_DEFAULT_SPRING_CONFIG
 	 */
 	public static synchronized AbstractApplicationContext getContext() {
-		return null;
-		
+		if (context == null) {
+			context = SchedulingContextFactory.getContext(SCHEDULING_DSA_DEFAULT_SPRING_CONFIG);
+		}
+		return context;
 	}
 	
 	public static synchronized AbstractApplicationContext getContext(String contextPath) {
