@@ -43,7 +43,7 @@ import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.utils.CommonContextFactory;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.LoggerFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 
