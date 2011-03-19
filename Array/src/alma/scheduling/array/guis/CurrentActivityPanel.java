@@ -51,6 +51,8 @@ import javax.swing.table.TableRowSorter;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.scheduling.ArrayGUIOperation;
+import alma.scheduling.Master;
+import alma.scheduling.MasterHelper;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.array.executor.AbortingExecutionState;
@@ -68,10 +70,11 @@ import alma.scheduling.array.executor.StoppingExecutionState;
 import alma.scheduling.array.guis.SBExecutionTableModel.When;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.5 2011/03/12 00:10:28 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.6 2011/03/19 00:33:36 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -82,7 +85,6 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * ================================================================
 	 */
 	private final static String BlankLabel = " ";
-	private final static int popupLimit = 10;
 	
 	/** SBs in any of these states should be shown on the current panel */
 	private final static Set<String> CurrentStates = new HashSet<String>();
@@ -144,7 +146,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	private JCheckBox fullAuto;
 	private JButton   startExec;
 	private JButton   stopExec;
-//	private JButton   destroyArray;
+	private JButton   destroyArray;
 	
 	private SchedBlockQueueItem runningExecution = null;
 	
@@ -160,6 +162,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	private JPanel currentPanel;
 	private JPanel pastPanel;
 	private JSplitPane bottomSplit;
+	private JPanel commonButtons;
 	private JPanel normalButtons;
 	private JPanel manualButtons;
 	private JLabel currentPanelLabel;
@@ -181,8 +184,6 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public CurrentActivityPanel() {
 		super();
-		System.out.format("%s (CurrentActivityPanel).CurrentActivityPanel()%n",
-				this.getClass().getSimpleName());
 		createWidgets();
 		addWidgets();
 		showConnectivity();
@@ -193,9 +194,6 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public CurrentActivityPanel(String arrayName) {
 		super(arrayName);
-		System.out.format("%s (CurrentActivityPanel).CurrentActivityPanel(%s)%n",
-				this.getClass().getSimpleName(),
-				arrayName);
 		createWidgets();
 		addWidgets();
 		showConnectivity();
@@ -363,36 +361,37 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 					}});
 		stopExec.setEnabled(true);
 		
-//		destroyArray = newButton("Destroy",
-//			"Destroy the manual array");
-//		destroyArray.addActionListener(
-//				new ActionListener(){
-//					@Override
-//					public void actionPerformed(ActionEvent event) {
-//						try {
-//							setStatusMessage(
-//									String.format("Destroying array %s...",
-//									arrayName));
-//							Master m = getMaster();
-//							m.destroyArray(arrayName);
-//						} catch (NullPointerException npe) {
-//							npe.printStackTrace();
-//							setStatusMessage(String.format(
-//								"Cannot destroy array - cannot find master component! See logs for details."),
-//								Color.RED);
-//						} catch (Exception e) {
-//							e.printStackTrace();
-//							ErrorHandling.severe(services.getLogger(),
-//									String.format("Internal error (%s) whilst destroying array - %s",
-//											e.getClass().getSimpleName(), e.getMessage()),
-//									e);
-//							setStatusMessage(String.format(
-//								"Cannot destroy array - internal error! See logs for details."),
-//								Color.RED);
-//						}
-//					}
-//					});
-//		destroyArray.setEnabled(true);
+		destroyArray = newButton("Destroy",
+			"Destroy the array");
+		destroyArray.addActionListener(
+				new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent event) {
+						try {
+							arrayName = getArray().getArrayName();
+							setStatusMessage(
+									String.format("Destroying array %s...",
+									arrayName));
+							Master m = getMaster();
+							m.destroyArray(arrayName, getUserName(), getUserRole());
+						} catch (NullPointerException npe) {
+							npe.printStackTrace();
+							setStatusMessage(String.format(
+								"Cannot destroy array - cannot find master component! See logs for details."),
+								Color.RED);
+						} catch (Exception e) {
+							e.printStackTrace();
+							ErrorHandling.severe(services.getLogger(),
+									String.format("Internal error (%s) whilst destroying array - %s",
+											e.getClass().getSimpleName(), e.getMessage()),
+									e);
+							setStatusMessage(String.format(
+								"Cannot destroy array - internal error! See logs for details."),
+								Color.RED);
+						}
+					}
+					});
+		destroyArray.setEnabled(true);
 
 		currentSorter = new TableRowSorter<SBExecutionTableModel>(currentModel);
 		currentTable.setRowSorter(currentSorter);
@@ -471,6 +470,11 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		
 		currentPanelLabel = newLabel("Current Executions");
 		
+		commonButtons = new JPanel();
+		commonButtons.setLayout(new BoxLayout(commonButtons, BoxLayout.Y_AXIS));
+		commonButtons.add(destroyArray);
+		commonButtons.setAlignmentY(Component.TOP_ALIGNMENT);
+
 		normalButtons = new JPanel();
 		normalButtons.setLayout(new BoxLayout(normalButtons, BoxLayout.Y_AXIS));
 		normalButtons.add(stopSB);
@@ -488,12 +492,14 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 //		manualButtons.add(destroyArray);
 		manualButtons.setAlignmentY(Component.TOP_ALIGNMENT);
 		
+		commonButtons.setVisible(false);
 		normalButtons.setVisible(false);
 		manualButtons.setVisible(false);
 
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
 		buttons.add(normalButtons);
 		buttons.add(manualButtons);
+		buttons.add(commonButtons);
 
 		result.setLayout(new BorderLayout());
 		result.add(currentPanelLabel, BorderLayout.NORTH);
@@ -524,7 +530,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	private void addWidgets() {
 		makeSameWidth(stopSB, startExec, stopExec,
-			      moveUp, moveDown, delete);
+			      moveUp, moveDown, delete, destroyArray);
 
 		pendingPanel = createPendingPanel();
 		currentPanel = createCurrentPanel();
@@ -628,6 +634,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
     		normalButtons.setVisible(true);
     		manualButtons.setVisible(false);
     	}
+    	commonButtons.setVisible(true);
     	
     	SchedBlockQueueItem[] ids;
     	List<ManifestSchedBlockQueueItem> blocks;
@@ -955,21 +962,21 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * Interaction with components
 	 * ================================================================
 	 */
-//	private Master getMaster() {
-//		final String masterComponentName = "SCHEDULING_MASTERSCHEDULER";
-//		Master result = null;
-//		
-//		try {
-//			org.omg.CORBA.Object o = services.getComponentNonSticky(masterComponentName);
-//			result = MasterHelper.narrow(o);
-//		} catch (AcsJContainerServicesEx e) {
-//			ErrorHandling.severe(services.getLogger(),
-//					String.format("Cannot get reference to component %s - %s",
-//							masterComponentName, e.getMessage()),
-//					e);
-//		}
-//		return result;
-//	}
+	private Master getMaster() {
+		final String masterComponentName = "SCHEDULING_MASTERSCHEDULER";
+		Master result = null;
+		
+		try {
+			org.omg.CORBA.Object o = services.getComponentNonSticky(masterComponentName);
+			result = MasterHelper.narrow(o);
+		} catch (AcsJContainerServicesEx e) {
+			ErrorHandling.severe(services.getLogger(),
+					String.format("Cannot get reference to component %s - %s",
+							masterComponentName, e.getMessage()),
+					e);
+		}
+		return result;
+	}
 	/* End Listening
 	 * ============================================================= */
 

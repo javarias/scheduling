@@ -29,9 +29,6 @@ public class ArrayPanel extends AbstractArrayPanel {
 	
 	public ArrayPanel(String arrayName) {
 		super(arrayName);
-		System.out.format("%s (ArrayPanel).ArrayPanel(%s)%n",
-				this.getClass().getSimpleName(),
-				arrayName);
 		this.arrayMode = "";
 		this.setLayout(new BorderLayout());
 		initialize();
@@ -39,8 +36,6 @@ public class ArrayPanel extends AbstractArrayPanel {
 	
 	public ArrayPanel() {
 		super();
-		System.out.format("%s (ArrayPanel).ArrayPanel()%n",
-				this.getClass().getSimpleName());
 		this.arrayMode = "";
 		this.setLayout(new BorderLayout());
 		initialize();

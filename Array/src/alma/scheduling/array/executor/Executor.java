@@ -415,7 +415,7 @@ public class Executor extends Observable {
     	}
     }
 
-    public void destroyArray() {
+    public void destroyArray(String user, String role) {
     	sessions.endObservingSession(); // Just to be sure
     	if (currentExecution != null) {
     		currentExecution.tidyUp();
@@ -423,8 +423,7 @@ public class Executor extends Observable {
     	stopPastExecutions();
     	final ArrayGUINotification agn = new ArrayGUINotification(
     			ArrayGUIOperation.DESTROYED,
-    			"Master Component",
-    			"");
+    			user, role);
     	notify(agn);
     }
 

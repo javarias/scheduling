@@ -30,6 +30,7 @@ import alma.Control.ControlMaster;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
@@ -102,10 +103,10 @@ public class SchedulingPanelController {
         return container;
     }
     
-    protected void destroyArray(String arrayname){
+    protected void destroyArray(String arrayname, String name, String role){
         try {
             getMSRef();
-            masterScheduler.destroyArray(arrayname);
+            masterScheduler.destroyArray(arrayname, name, role);
             releaseMSRef();
         }catch(Exception e){
             logger.warning("SCHEDULING_PANEL: Error destorying array "+arrayname+", see if it still exists.");
@@ -163,6 +164,39 @@ public class SchedulingPanelController {
         return connected && controlConnected;
     }
     
+	protected String getUserName() {
+		try {
+			final SessionProperties sp = container.getSessionProperties();
+			try {
+				String result = sp.getUserName();
+				if (result == null) {
+					result = "<i>No username</i>";
+				}
+				return result;
+			} catch (NullPointerException e) {
+				return "<i>No session properties</i>";
+			}
+		} catch (NullPointerException e) {
+			return "<i>No container services</i>";
+		}
+	}
+	
+	protected String getUserRole() {
+		try {
+			final SessionProperties sp = container.getSessionProperties();
+			try {
+				String result = sp.getUserRole();
+				if (result == null) {
+					result = "<i>No user role</i>";
+				}
+				return result;
+			} catch (NullPointerException e) {
+				return "<i>No session properties</i>";
+			}
+		} catch (NullPointerException e) {
+			return "<i>No container services</i>";
+		}
+	}
 
 }
 

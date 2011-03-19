@@ -108,7 +108,7 @@ public class MasterImpl implements ComponentLifecycle,
     		m_logger.warning("Triying to destroy Array: " + arrayName + " at cleanUp. " +
     				"You should destroy the arrays before component cleanUp");
     		try {
-				destroyArray(arrayName);
+				destroyArray(arrayName, "Clean-up", "");
 				m_logger.fine("Array: " + arrayName + " Destroyed successfully");
 			} catch (ACSInternalExceptionEx e) {
 				m_logger.severe("Array: " + arrayName + " Cannot be destroyed");
@@ -233,7 +233,7 @@ public class MasterImpl implements ComponentLifecycle,
 	}
 
 	@Override
-	public void destroyArray(String arrayName) throws ACSInternalExceptionEx,
+	public void destroyArray(String arrayName, String name, String role) throws ACSInternalExceptionEx,
 	ControlInternalExceptionEx, SchedulingInternalExceptionEx{
 		Object obj = null;
 		String schedArrayName = null;
@@ -256,7 +256,7 @@ public class MasterImpl implements ComponentLifecycle,
 		m_logger.info("Stopping SchedBlock in " + schedArrayName);
 		array.stop("Master Panel", "Master Panel");
 		array.stopRunningSchedBlock("Master Panel", "Master Panel");
-		array.destroyArray();
+		array.destroyArray(name, role);
 		
 		obj = null;
 		array = null;

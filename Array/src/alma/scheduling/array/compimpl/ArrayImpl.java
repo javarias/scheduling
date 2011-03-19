@@ -386,8 +386,8 @@ public class ArrayImpl implements ComponentLifecycle,
 	}
 	
 	@Override
-	public void destroyArray() {
-		executor.destroyArray();
+	public void destroyArray(String name, String role) {
+		executor.destroyArray(name, role);
 	}
 
 	@Override

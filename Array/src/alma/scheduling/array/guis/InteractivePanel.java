@@ -96,7 +96,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.15 2011/03/18 21:47:28 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.16 2011/03/19 00:33:36 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -198,8 +198,6 @@ public class InteractivePanel extends AbstractArrayPanel
 	 */
 	public InteractivePanel() {
 		super();
-		System.out.format("%s (InteractivePanel).InteractivePanel()%n",
-				this.getClass().getSimpleName() );
 		initialiseScoresAndRanks();
 		createWidgets();
 		addWidgets();
@@ -212,9 +210,6 @@ public class InteractivePanel extends AbstractArrayPanel
 	 */
 	public InteractivePanel(String arrayName) {
 		super(arrayName);
-		System.out.format("%s (InteractivePanel).InteractivePanel(%s)%n",
-				this.getClass().getSimpleName(),
-				arrayName);
 		initialiseScoresAndRanks();
 		createWidgets();
 		addWidgets();
@@ -586,6 +581,9 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbTable.getSelectionModel().addListSelectionListener(queueListener(sbQueueSelected, sbTable));
 		
 		sbModel.configure(array.isDynamic());
+		if (array.isDynamic()) {
+			getFirstScoresAndRanks();
+		}
 		initialiseSBSorting();
 		showConnectivity();
     }
@@ -1414,9 +1412,34 @@ public class InteractivePanel extends AbstractArrayPanel
 		previousScores = new HashMap<String, SBRank>();
 		currentRanks   = new HashMap<String, Integer>();
 		previousRanks  = new HashMap<String, Integer>();
+	}
+	
+	private void getFirstScoresAndRanks() {
+		Result result;
+		
 		AbstractApplicationContext ctx = DSAContextFactory.getContext();
 		resultsDao = (ResultsDao) ctx.getBean(
 				DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
+		
+		result = resultsDao.getPreviousResult(getArray().getArrayName());
+		decodeScoresAndRanks(result, previousScores, previousRanks);
+		result = resultsDao.getCurrentResult(getArray().getArrayName());
+		decodeScoresAndRanks(result, currentScores, currentRanks);
+	}
+	
+	private void decodeScoresAndRanks(Result               result,
+			                          Map<String, SBRank>  scores,
+			                          Map<String, Integer> ranks) {
+
+		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(result.getScores());
+		// SBRank implements Comparable for us
+		
+		int r = 1;
+		
+		for (final SBRank sbRank : sorted) {
+			ranks.put(sbRank.getUid(), r++);
+			scores.put(sbRank.getUid(), sbRank);
+		}
 	}
 	
 	private void getScoresAndRanks() {
@@ -1426,17 +1449,9 @@ public class InteractivePanel extends AbstractArrayPanel
 
 		currentScores = new HashMap<String, SBRank>();
 		currentRanks  = new HashMap<String, Integer>();
-		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(result.getScores());
-		// SBRank implements Comparable for us
-		int r = 1;
-		
-		for (final SBRank sbRank : sorted) {
-			currentRanks.put(sbRank.getUid(), r++);
-			currentScores.put(sbRank.getUid(), sbRank);
-		}
+		decodeScoresAndRanks(result, currentScores, currentRanks);
 		
 		sbModel.setScores(currentScores, currentRanks);
-
 	}
 	/* End Scores and Ranks
 	 * ============================================================= */

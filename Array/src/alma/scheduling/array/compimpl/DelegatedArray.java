@@ -43,7 +43,7 @@ import alma.scheduling.SchedBlockQueueManagerOperations;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.9 2011/03/16 18:06:58 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.10 2011/03/19 00:33:36 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
@@ -260,8 +260,8 @@ public class DelegatedArray implements ComponentLifecycle,
 	}
 	
 	@Override
-	public void destroyArray() {
-		sbExecDelegate.destroyArray();
+	public void destroyArray(String name, String role) {
+		sbExecDelegate.destroyArray(name, role);
 	}
 
 	@Override

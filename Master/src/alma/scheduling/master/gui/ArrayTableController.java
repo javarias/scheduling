@@ -49,7 +49,7 @@ public class ArrayTableController extends SchedulingPanelController {
         public void run() {
             try {
                 getMSRef();
-                masterScheduler.destroyArray(name);
+                masterScheduler.destroyArray(name, getUserName(), getUserRole());
                 releaseMSRef();
             } catch(Exception e){
                 e.printStackTrace();
