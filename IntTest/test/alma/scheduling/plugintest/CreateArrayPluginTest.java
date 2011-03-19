@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: CreateArrayPluginTest.java,v 1.5 2011/03/02 17:47:21 javarias Exp $
+ * $Id: CreateArrayPluginTest.java,v 1.6 2011/03/19 00:37:40 dclarke Exp $
  */
 
 package alma.scheduling.plugintest;
@@ -254,7 +254,7 @@ public class CreateArrayPluginTest extends ComponentClientTestCase {
         // Check that the new array appears in the "Existing Arrays" tab
         assertEquals(1, existArr.getRowCount());
 
-        masterScheduler.destroyArray("Array001");
+        masterScheduler.destroyArray("Array001", "User", "Role");
     	container.releaseComponent(masterScheduler.name());    	
     }
     
