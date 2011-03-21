@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.6 2011/03/17 22:52:36 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.7 2011/03/21 17:22:25 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -47,12 +47,13 @@ import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.utils.CommonContextFactory;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.6 2011/03/17 22:52:36 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.7 2011/03/21 17:22:25 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -92,7 +93,7 @@ public class ArchivePoller implements Observer{
 	 */
 	
 	public ArchivePoller(Logger logger, ContainerServices containerServices) throws Exception {	
-		final ModelAccessor ma = new ModelAccessor();
+		final ModelAccessor<DSAContextFactory> ma = new ModelAccessor<DSAContextFactory>();
 
 		this.containerServices = containerServices;
 		this.logger = logger;
