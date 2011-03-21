@@ -75,7 +75,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.7 2011/03/21 17:25:18 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.8 2011/03/21 21:00:56 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -560,7 +560,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		final List<ManifestSchedBlockQueueItem> result =
 			new Vector<ManifestSchedBlockQueueItem>();
 		
-		final ModelAccessor<DSAContextFactory> ma = getModels();
+		final ModelAccessor ma = getModels();
 		final Map<String, SchedBlock> cache =
 			new HashMap<String, SchedBlock>();
 		
@@ -589,7 +589,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public ManifestSchedBlockQueueItem getSchedBlock(
 			SchedBlockQueueItem item) {
-		final ModelAccessor<DSAContextFactory> ma = getModels();
+		final ModelAccessor ma = getModels();
 		final SchedBlock sb = ma.getSchedBlockFromEntityId(item.uid);
 		final ManifestSchedBlockQueueItem result =
 			new ManifestSchedBlockQueueItem(item, sb);
@@ -605,7 +605,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public ManifestSchedBlockQueueItem getSchedBlock(
 			SchedBlockExecutionItem item) {
-		final ModelAccessor<DSAContextFactory> ma = getModels();
+		final ModelAccessor ma = getModels();
 		final SchedBlock sb = ma.getSchedBlockFromEntityId(item.uid);
 		final SchedBlockQueueItem fake = new SchedBlockQueueItem(
 				item.timestamp, item.uid);

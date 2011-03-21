@@ -43,10 +43,10 @@ import alma.scheduling.utils.DSAContextFactory;
 
 public class StateArchivePopulator {
 
-	private ModelAccessor<DSAContextFactory> modelAccessor;
+	private ModelAccessor modelAccessor;
 	
 	public StateArchivePopulator() throws Exception {
-		modelAccessor = new ModelAccessor<DSAContextFactory>();
+		modelAccessor = new ModelAccessor();
 	}
 	
 	public static ProjectStatus createProjectStatus(String prjStatusUID, String obsUnitSetStatusUID, 

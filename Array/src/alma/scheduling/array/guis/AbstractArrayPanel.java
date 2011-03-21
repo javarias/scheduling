@@ -35,7 +35,7 @@ import alma.scheduling.utils.DSAContextFactory;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.11 2011/03/21 17:45:02 javarias Exp $
+ * $Id: AbstractArrayPanel.java,v 1.12 2011/03/21 21:00:56 javarias Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -64,7 +64,7 @@ public abstract class AbstractArrayPanel extends JPanel
      */
     protected PluginContainerServices services = null;
     /** The access to the project models */
-    protected ModelAccessor<DSAContextFactory> models = null;
+    protected ModelAccessor models = null;
     /** The access to the Array for which we are a panel */
     protected ArrayAccessor array = null;
     /** Is this panel running in control mode (or monitor mode)? */
@@ -124,7 +124,7 @@ public abstract class AbstractArrayPanel extends JPanel
 			throw ex;
 		}
 		try {
-			models = new ModelAccessor<DSAContextFactory>();
+			models = new ModelAccessor();
 			modelsAvailable();
 		} catch (Exception e) {
 			models = null;
@@ -207,7 +207,7 @@ public abstract class AbstractArrayPanel extends JPanel
 	 * Get access to the project models
 	 * @return
 	 */
-	protected ModelAccessor<DSAContextFactory> getModels() {
+	protected ModelAccessor getModels() {
 		return models;
 	}
 	
@@ -234,7 +234,7 @@ public abstract class AbstractArrayPanel extends JPanel
 		this.manualMode = array.isManual();
 	}
 	
-	protected void setModelAccessor(ModelAccessor<DSAContextFactory> models){
+	protected void setModelAccessor(ModelAccessor models){
 		this.models = models;
 	}
 

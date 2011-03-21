@@ -54,7 +54,7 @@ public class Services {
         return provider.getEventPublisher();
     }
     
-    public ModelAccessor<DSAContextFactory> getModel() {
+    public ModelAccessor getModel() {
         if (provider == null)
             throw new IllegalStateException("Provider has not been initialized");
         return provider.getModel();        

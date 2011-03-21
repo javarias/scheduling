@@ -23,7 +23,6 @@ import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
-import alma.scheduling.utils.DSAContextFactory;
 
 /**
  * @author rhiriart
@@ -47,7 +46,7 @@ public class AcsProvider implements Provider {
 
     private AcsNotificationChannel controlNotificationChannel;
 
-    private ModelAccessor<DSAContextFactory> model;
+    private ModelAccessor model;
         
     public AcsProvider(ContainerServices container, String arrayName, boolean isManual)
         throws TranslationException, AcsJException {
@@ -63,7 +62,7 @@ public class AcsProvider implements Provider {
         }
 
         try {
-            this.model = new ModelAccessor<DSAContextFactory>();
+            this.model = new ModelAccessor();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -90,7 +89,7 @@ public class AcsProvider implements Provider {
     }
     
     @Override
-    public ModelAccessor<DSAContextFactory> getModel() {
+    public ModelAccessor getModel() {
         return model;
     }
 

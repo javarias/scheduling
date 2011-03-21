@@ -22,6 +22,7 @@ import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DA
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -61,7 +62,7 @@ import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
  * @author rhiriart
  *
  */
-public class ModelAccessor<T extends CommonContextFactory> extends Observable {
+public class ModelAccessor extends Observable {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private StateArchive stateArchive;
@@ -88,7 +89,10 @@ public class ModelAccessor<T extends CommonContextFactory> extends Observable {
 		}
 		
 		logger.info("Loading Context from factory");
-        AbstractApplicationContext ctx = T.getContext();
+		//TODO: Remove this reflection call
+		Class<?> factoryClass = Class.forName("alma.scheduling.utils.DSAContextFactory");
+		Method m = factoryClass.getMethod("getContext");
+        AbstractApplicationContext ctx = (AbstractApplicationContext) m.invoke(factoryClass, (Object [])null);
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
         execDao = (ExecutiveDAO) ctx.getBean(SCHEDULING_EXECUTIVE_DAO_BEAN);
