@@ -50,7 +50,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.4 2011/03/21 17:25:18 javarias Exp $
+ * $Id: SessionManager.java,v 1.5 2011/03/21 21:14:01 javarias Exp $
  */
 public class SessionManager {
 
@@ -62,7 +62,7 @@ public class SessionManager {
     private ContainerServices containerServices;
     private final AcsLogger logger;
     private QlDisplayManager quicklook;
-    private ModelAccessor<DSAContextFactory> model;
+    private ModelAccessor model;
     private CorbaNotificationChannel sched_nc;
     private boolean newSessionPerExecution = false;
 
