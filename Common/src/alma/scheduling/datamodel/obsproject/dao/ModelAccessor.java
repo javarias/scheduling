@@ -87,6 +87,7 @@ public class ModelAccessor<T extends CommonContextFactory> extends Observable {
 			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 		}
 		
+		logger.info("Loading Context from factory");
         AbstractApplicationContext ctx = T.getContext();
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
