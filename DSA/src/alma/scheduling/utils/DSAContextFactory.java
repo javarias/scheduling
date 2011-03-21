@@ -14,7 +14,7 @@ import org.springframework.context.support.AbstractApplicationContext;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.5 2011/03/18 18:22:55 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.6 2011/03/21 17:58:03 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -29,6 +29,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	 * @return the context defined in SCHEDULING_DSA_DEFAULT_SPRING_CONFIG
 	 */
 	public static synchronized AbstractApplicationContext getContext() {
+		System.out.println(DSAContextFactory.class);
 		if (context == null) {
 			context = SchedulingContextFactory.getContext(SCHEDULING_DSA_DEFAULT_SPRING_CONFIG);
 		}
@@ -36,6 +37,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	}
 	
 	public static synchronized AbstractApplicationContext getContext(String contextPath) {
+		System.out.println(DSAContextFactory.class);
 		if (context == null) {
 			context = SchedulingContextFactory.getContext(contextPath);
 		}

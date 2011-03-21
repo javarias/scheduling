@@ -30,6 +30,7 @@ public class CommonContextFactory {
 	 * @return the instance of the context created
 	 */
 	public static synchronized AbstractApplicationContext getContext(){
+		System.out.println(CommonContextFactory.class);
 		if(context == null){
 			context = SchedulingContextFactory.getContext(SCHEDULING_COMMON_SPRING_CONFIG);
 		}
