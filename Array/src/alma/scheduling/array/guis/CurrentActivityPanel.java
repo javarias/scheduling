@@ -70,11 +70,12 @@ import alma.scheduling.array.executor.StoppingExecutionState;
 import alma.scheduling.array.guis.SBExecutionTableModel.When;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.6 2011/03/19 00:33:36 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.7 2011/03/21 17:25:18 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -559,7 +560,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		final List<ManifestSchedBlockQueueItem> result =
 			new Vector<ManifestSchedBlockQueueItem>();
 		
-		final ModelAccessor ma = getModels();
+		final ModelAccessor<DSAContextFactory> ma = getModels();
 		final Map<String, SchedBlock> cache =
 			new HashMap<String, SchedBlock>();
 		
@@ -588,7 +589,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public ManifestSchedBlockQueueItem getSchedBlock(
 			SchedBlockQueueItem item) {
-		final ModelAccessor ma = getModels();
+		final ModelAccessor<DSAContextFactory> ma = getModels();
 		final SchedBlock sb = ma.getSchedBlockFromEntityId(item.uid);
 		final ManifestSchedBlockQueueItem result =
 			new ManifestSchedBlockQueueItem(item, sb);
@@ -604,7 +605,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	public ManifestSchedBlockQueueItem getSchedBlock(
 			SchedBlockExecutionItem item) {
-		final ModelAccessor ma = getModels();
+		final ModelAccessor<DSAContextFactory> ma = getModels();
 		final SchedBlock sb = ma.getSchedBlockFromEntityId(item.uid);
 		final SchedBlockQueueItem fake = new SchedBlockQueueItem(
 				item.timestamp, item.uid);

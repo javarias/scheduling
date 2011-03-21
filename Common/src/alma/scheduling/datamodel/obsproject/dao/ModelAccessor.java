@@ -61,7 +61,7 @@ import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
  * @author rhiriart
  *
  */
-public class ModelAccessor extends Observable {
+public class ModelAccessor<T extends CommonContextFactory> extends Observable {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private StateArchive stateArchive;
@@ -87,7 +87,7 @@ public class ModelAccessor extends Observable {
 			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 		}
 		
-        AbstractApplicationContext ctx = DSAContextFactory.getContext();
+        AbstractApplicationContext ctx = T.getContext();
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
         execDao = (ExecutiveDAO) ctx.getBean(SCHEDULING_EXECUTIVE_DAO_BEAN);

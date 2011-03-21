@@ -28,13 +28,14 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 
 
 /**
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.9 2011/03/19 00:33:36 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.10 2011/03/21 17:25:18 javarias Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -63,7 +64,7 @@ public abstract class AbstractArrayPanel extends JPanel
      */
     protected PluginContainerServices services = null;
     /** The access to the project models */
-    protected ModelAccessor models = null;
+    protected ModelAccessor<DSAContextFactory> models = null;
     /** The access to the Array for which we are a panel */
     protected ArrayAccessor array = null;
     /** Is this panel running in control mode (or monitor mode)? */
@@ -206,7 +207,7 @@ public abstract class AbstractArrayPanel extends JPanel
 	 * Get access to the project models
 	 * @return
 	 */
-	protected ModelAccessor getModels() {
+	protected ModelAccessor<DSAContextFactory> getModels() {
 		return models;
 	}
 	
@@ -233,7 +234,7 @@ public abstract class AbstractArrayPanel extends JPanel
 		this.manualMode = array.isManual();
 	}
 	
-	protected void setModelAccessor(ModelAccessor models){
+	protected void setModelAccessor(ModelAccessor<DSAContextFactory> models){
 		this.models = models;
 	}
 

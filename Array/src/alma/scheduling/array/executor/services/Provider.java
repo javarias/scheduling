@@ -18,6 +18,7 @@
 package alma.scheduling.array.executor.services;
 
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 
 /**
  * @author rhiriart
@@ -29,6 +30,6 @@ public interface Provider {
     EventPublisher getEventPublisher();
     EventReceiver getEventReceiver();
     EventReceiver getControlEventReceiver();
-    ModelAccessor getModel();
+    ModelAccessor<DSAContextFactory> getModel();
     void cleanUp();
 }

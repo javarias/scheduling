@@ -39,6 +39,7 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
@@ -49,7 +50,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.3 2011/02/24 22:42:50 javarias Exp $
+ * $Id: SessionManager.java,v 1.4 2011/03/21 17:25:18 javarias Exp $
  */
 public class SessionManager {
 
@@ -61,7 +62,7 @@ public class SessionManager {
     private ContainerServices containerServices;
     private final AcsLogger logger;
     private QlDisplayManager quicklook;
-    private ModelAccessor model;
+    private ModelAccessor<DSAContextFactory> model;
     private CorbaNotificationChannel sched_nc;
     private boolean newSessionPerExecution = false;
 

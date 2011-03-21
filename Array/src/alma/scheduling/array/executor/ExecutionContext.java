@@ -54,6 +54,7 @@ import alma.scheduling.array.sessions.SessionManager;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
@@ -67,7 +68,7 @@ import alma.stateengineexceptions.wrappers.AcsJPreconditionFailedEx;
 
 public class ExecutionContext {
     
-    protected ModelAccessor getModel() {
+    protected ModelAccessor<DSAContextFactory> getModel() {
         return executor.getServices().getModel();
     }
     

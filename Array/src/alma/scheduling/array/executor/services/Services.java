@@ -18,6 +18,7 @@
 package alma.scheduling.array.executor.services;
 
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 
 /**
  * @author rhiriart
@@ -53,7 +54,7 @@ public class Services {
         return provider.getEventPublisher();
     }
     
-    public ModelAccessor getModel() {
+    public ModelAccessor<DSAContextFactory> getModel() {
         if (provider == null)
             throw new IllegalStateException("Provider has not been initialized");
         return provider.getModel();        

@@ -39,13 +39,14 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.DSAContextFactory;
 
 public class StateArchivePopulator {
 
-	private ModelAccessor modelAccessor;
+	private ModelAccessor<DSAContextFactory> modelAccessor;
 	
 	public StateArchivePopulator() throws Exception {
-		modelAccessor = new ModelAccessor();
+		modelAccessor = new ModelAccessor<DSAContextFactory>();
 	}
 	
 	public static ProjectStatus createProjectStatus(String prjStatusUID, String obsUnitSetStatusUID, 
