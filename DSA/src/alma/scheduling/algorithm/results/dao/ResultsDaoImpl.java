@@ -12,7 +12,7 @@ import alma.scheduling.datamodel.GenericDaoImpl;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDaoImpl.java,v 1.4 2011/03/21 22:07:53 javarias Exp $
+ * $Id: ResultsDaoImpl.java,v 1.5 2011/03/21 22:54:36 javarias Exp $
  */
 public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 
@@ -26,7 +26,7 @@ public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 		} catch (IndexOutOfBoundsException ex) {
 			//Do nothing there are no old results
 		}
-		saveOrUpdate(result);
+		super.saveOrUpdate(result);
 	}
 
 	@Override
