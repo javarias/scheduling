@@ -96,7 +96,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.16 2011/03/19 00:33:36 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.17 2011/03/22 16:14:51 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1367,9 +1367,15 @@ public class InteractivePanel extends AbstractArrayPanel
 				} else if (operation.equals(ArrayGUIOperation.SCORESREADY.toString())) {
 					setStatusMessage(String.format(
 							"<html>Retrieving scores</html>"));
-					getScoresAndRanks();
-					setStatusMessage(String.format(
-							"<html>Scores updated</html>"));
+					try {
+						getScoresAndRanks();
+						setStatusMessage(String.format(
+								"<html>Scores updated (%d found)</html>",
+								currentScores.size()));
+					} catch (NullPointerException npe) {
+						setStatusMessage(String.format(
+								"<html>Cannot access SchedBlock scores</html>"));
+					}
 				}
 			}
 		};
@@ -1433,9 +1439,9 @@ public class InteractivePanel extends AbstractArrayPanel
 
 		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(result.getScores());
 		// SBRank implements Comparable for us
-		
+
 		int r = 1;
-		
+
 		for (final SBRank sbRank : sorted) {
 			ranks.put(sbRank.getUid(), r++);
 			scores.put(sbRank.getUid(), sbRank);
