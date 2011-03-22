@@ -17,7 +17,7 @@ acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server statearchive loca
 export ACS_CDB=`pwd`/config/forOBSPREP
 
 echo "Starting ACS"
-acsStart >& ./${tmp}/acsStart.log
+acsStart -noloadifr >& ./${tmp}/acsStart.log
 
 echo "Starting java container"
 export JAVA_OPTIONS="-Darchive.configFile=archiveConfig.obsprep.properties"
