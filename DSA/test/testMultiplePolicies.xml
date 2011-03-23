@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policies xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="file:/export/home/griffin/javarias/scm/ALMA/HEAD/SCHEDULING/DSA/src/alma/scheduling/algorithm/SchedulingPolicy.xsd">
+    <SchedulingPolicy name="testPolicy1">
+        <SelectionCriterion>
+            <ExecutiveSelector/>
+            <ArrayConfigSelector/>
+            <WeatherSelector>
+                <tsysVariation>1.0</tsysVariation>
+            </WeatherSelector>
+            <MoonAvoidanceSelector/>
+            <SunAvoidanceSelector/>
+            <HourAngleSelector/>
+            <SourceSelector/>
+        </SelectionCriterion>
+        <Scorers>
+            <HourAngleScorer>
+                <weight>1.0</weight>
+            </HourAngleScorer>
+            <SciScorer>
+                <weight>1.0</weight>
+            </SciScorer>
+        </Scorers>
+    </SchedulingPolicy>
+    
+    <SchedulingPolicy name="testPolicy2">
+        <SelectionCriterion>
+            <HourAngleSelector/>
+            <SunAvoidanceSelector/>
+            <MoonAvoidanceSelector/>
+            <SourceSelector/>
+        </SelectionCriterion>
+        <Scorers>
+            <SciScorer>
+                <weight>1</weight>
+            </SciScorer>
+            <HourAngleScorer>
+                <weight>2</weight>
+            </HourAngleScorer>
+            
+            
+        </Scorers>
+    </SchedulingPolicy>
+    
+</Policies>
