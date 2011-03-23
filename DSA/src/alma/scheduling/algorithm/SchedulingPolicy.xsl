@@ -152,7 +152,7 @@
             <bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
                 <property name="dao" ref="atmDao"/>
                 <property name="selector" ref="weatherSelector"/>
-                <property name="weatherDao" ref="weatherDao"/>
+                <property name="weatherDao" ref="weatherStationDao"/>
                 <property name="configDao" ref="configDao"/>
                 <property name="projTimeIncr" value="0.5"/>
             </bean>

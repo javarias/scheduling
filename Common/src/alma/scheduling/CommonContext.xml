@@ -117,6 +117,9 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 		<property name="configurationDao" ref="configDao"/>
 	</bean>
+	<bean id="weatherStationDao" class="alma.scheduling.datamodel.weather.dao.MemoryWeatherHistoryDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
 	<bean id="atmDao" class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
