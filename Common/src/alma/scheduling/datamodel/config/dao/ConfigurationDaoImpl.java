@@ -47,6 +47,8 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         	if (config == null){
         		logger.warn("Ignoring configuration from XML file");
         		config = new Configuration();
+        		config.setArrayCenterLatitude(-23.022894444444443);
+        		config.setArrayCenterLongitude(-67.75492777777778);
         	}
         	else
         		config.setLastLoad(null);
@@ -59,6 +61,8 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
             config.setNextStepTime(dbConf.getNextStepTime());
             config.setSimulationStartTime(dbConf.getSimulationStartTime());
             config.setScienceGradeConfig(dbConf.getScienceGradeConfig());
+    		config.setArrayCenterLatitude(-23.022894444444443);
+    		config.setArrayCenterLongitude(-67.75492777777778);
         }
         return config;
     }
