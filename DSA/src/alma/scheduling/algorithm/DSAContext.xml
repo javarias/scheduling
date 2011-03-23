@@ -12,6 +12,90 @@
 	default-lazy-init="true" default-autowire="byName">
 	
 	<import resource="classpath:alma/scheduling/CommonContext.xml"/>
+
+	<bean id="execSelector" class="alma.scheduling.algorithm.executive.ExecutiveSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>execSelector</value>
+		</constructor-arg>
+		<property name="execDao" ref="execDao" />
+		<property name="sbDao" ref="sbDao" />
+	</bean>
+
+	<bean id="sourceSelector"
+		class="alma.scheduling.algorithm.obsproject.FieldSourceObservableSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>sourceSelector</value>
+		</constructor-arg>
+		<property name="configDao" ref="configDao" />
+		<property name="schedBlockDao" ref="sbDao" />
+	</bean>
+
+	<bean id="arrayConfigSelector"
+		class="alma.scheduling.algorithm.observatory.ArrayConfigurationSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>arrayConfigSelector</value>
+		</constructor-arg>
+		<property name="sbDao" ref="sbDao" />
+	</bean>
+
+	<bean id="hourAngleSelector" class="alma.scheduling.algorithm.obsproject.HourAngleSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>hourAngleSelector</value>
+		</constructor-arg>
+		<property name="sbDao" ref="sbDao" />
+	</bean>
+	
+	<bean id="moonAvoidanceSelector" class="alma.scheduling.algorithm.obsproject.MoonAvoidanceSelector"
+                    scope="prototype">
+        <constructor-arg><value>moonAvoidanceSelector</value></constructor-arg>
+    	<property name="sbDao" ref="sbDao"/>		
+    </bean>
+
+	<bean id="sunAvoidanceSelector"
+		class="alma.scheduling.algorithm.obsproject.SunAvoidanceSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>sunAvoidanceSelector</value>
+		</constructor-arg>
+		<property name="sbDao" ref="sbDao" />
+	</bean>
+
+	<bean id="sbStatusSelector"
+		class="alma.scheduling.algorithm.obsproject.SchedBlockStatusSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>sbStatusSelector</value>
+		</constructor-arg>
+		<property name="sbDao" ref="sbDao" />
+	</bean>
+
+	<bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>weatherSelector</value>
+		</constructor-arg>
+		<property name="schedBlockDao" ref="sbDao" />
+	</bean>
+
+	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
+		<property name="dao" ref="atmDao" />
+		<property name="selector" ref="weatherSelector" />
+		<property name="weatherDao" ref="weatherStationDao" />
+		<property name="configDao" ref="configDao" />
+		<property name="projTimeIncr" value="0.5" />
+	</bean>
+
+	<bean id="sourceUpdater"
+		class="alma.scheduling.algorithm.obsproject.FieldSourceObservabilityUpdater">
+		<property name="configDao" ref="configDao" />
+		<property name="sourceDao" ref="sourceDao" />
+	</bean>
+               
+	
 	
 	<bean id="dsaResultsSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"/>

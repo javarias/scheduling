@@ -2,8 +2,6 @@ package alma.scheduling.algorithm;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -58,6 +56,7 @@ public class SchedulingPolicyValidator {
 			System.out.println("   * " + policyName);
 			context.getBean(policyName);
 		}
+		context.getBean(DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
 		
 	}
 
