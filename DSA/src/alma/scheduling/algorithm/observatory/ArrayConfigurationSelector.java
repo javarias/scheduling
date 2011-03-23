@@ -38,7 +38,7 @@ public class ArrayConfigurationSelector extends AbstractBaseSelector{
             logger.info("ArrayConfiguration is null, selecting all the SchedBlocks");
             return sbDao.findAll();
         }
-        double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000 * 60 * 60);
+        double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000.0 * 60.0 * 60.0);
         Collection<SchedBlock> sbs = sbDao.findSchedBlocksByEstimatedExecutionTime(remaningTime);
         printVerboseInfo(sbs, arrConf.getId(), ut);
         return sbs;
@@ -51,7 +51,7 @@ public class ArrayConfigurationSelector extends AbstractBaseSelector{
 
     @Override
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000 * 60 * 60);
+        double remaningTime = (arrConf.getEndTime().getTime() - ut.getTime()) / (1000.0 * 60.0 * 60.0);
         Criterion crit = Restrictions.le("obsUnitControl.estimatedExecutionTime", new Double(remaningTime));
         return crit;
     }
