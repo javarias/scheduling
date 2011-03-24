@@ -153,6 +153,7 @@ public abstract class AbstractXMLStoreProjectDao
      * ================================================================
      */
 	// Abstract requirements upon subclasses.
+	public abstract void upconvertProjects();
 	protected abstract void getInterestingProjects(
 			ArchiveInterface archive);
 	protected abstract alma.entity.xmlbinding.obsproject.ObsUnitSetT
@@ -738,31 +739,33 @@ public abstract class AbstractXMLStoreProjectDao
 	}
 
 	private void logAPDMSchedBlocks(ArchiveInterface archive,
-			                        String... projectIds) {
+			                        String...        projectIds) {
 		StringBuilder sb = new StringBuilder();
-		Formatter f = new Formatter(sb);
+		Formatter     f  = new Formatter(sb);
 		int lines;
-		
+
 		final Set<String> pids = new HashSet<String>();
-		
+
 		for (String pid : projectIds) {
 			pids.add(pid);
 		}
 		f.format("Found the following %d APDM SchedBlock%s:%n",
-				archive.numSchedBlocks(),
-				(archive.numSchedBlocks()==1)? "": "s");
+				 archive.numSchedBlocks(),
+				 (archive.numSchedBlocks()==1)? "": "s");
 		lines = 1;
-		
+
 		for (final alma.entity.xmlbinding.schedblock.SchedBlock schedBlock : archive.schedBlocks()) {
 			final String projectId = schedBlock.getObsProjectRef().getEntityId();
 			if (pids.contains(projectId)) {
-				final alma.entity.xmlbinding.obsproject.ObsProject op =
-					archive.cachedObsProject(projectId);
+				final alma.entity.xmlbinding.obsproject.ObsProject        op     = archive.cachedObsProject(projectId);
+				final alma.entity.xmlbinding.schedblock.SchedBlockEntityT sbEnt  = schedBlock.getSchedBlockEntity();
+				final                                   SBStatusRefT      sbsRef = schedBlock.getSBStatusRef();
+				final alma.entity.xmlbinding.obsproject.ObsProjectEntityT prjEnt = op.getObsProjectEntity();
 				f.format("\tSB %s, SBS %s, part of %s (%s)%n",
-						schedBlock.getSchedBlockEntity().getEntityId(),
-						schedBlock.getSBStatusRef().getEntityId(),
-						op.getProjectName(),
-						projectId);
+                         (sbEnt  == null)? "<null>": sbEnt.getEntityId(),
+                         (sbsRef == null)? "<null>": sbsRef.getEntityId(),
+                         op.getProjectName(),
+                         (prjEnt == null)? "<null>": prjEnt.getEntityId());
 			}
 			lines ++;
 			if (lines == MaxItemsPerLogMessage) {
