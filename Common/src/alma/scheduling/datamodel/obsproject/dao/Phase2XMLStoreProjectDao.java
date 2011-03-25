@@ -215,12 +215,15 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	}
 
 	@Override
-	protected void getInterestingProjects(ArchiveInterface archive) {
-		List<ProjectStatus> apdmProjectStatuses;
-		
+	public  void upconvertProjects() {
 		convertProjects(
 				alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED,
 				alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY);
+	}
+
+	@Override
+	protected void getInterestingProjects(ArchiveInterface archive) {
+		List<ProjectStatus> apdmProjectStatuses;
 		
 		apdmProjectStatuses = fetchAppropriateAPDMProjectStatuses(archive);
 		getAPDMProjectsFor(archive, apdmProjectStatuses);
@@ -245,7 +248,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	 * @throws SchedulingException 
 	 * @throws SchedulingException 
 	 */
-	public void convertProjects(
+	private void convertProjects(
 			alma.entity.xmlbinding.valuetypes.types.StatusTStateType from,
 			alma.entity.xmlbinding.valuetypes.types.StatusTStateType to) {
 		final String[] fromStates = new String[1];

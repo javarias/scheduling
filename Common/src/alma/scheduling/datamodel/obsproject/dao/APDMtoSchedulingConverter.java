@@ -56,7 +56,7 @@ import alma.scheduling.utils.ErrorHandling;
  * Data Model form.
  * 
  * @author dclarke
- *
+ * $Id: APDMtoSchedulingConverter.java,v 1.17 2011/03/25 15:34:09 dclarke Exp $
  */
 public class APDMtoSchedulingConverter {
 
@@ -370,10 +370,12 @@ public class APDMtoSchedulingConverter {
 		alma.entity.xmlbinding.obsproposal.ObsProposal apdmProposal = null;
 		try {
 			apdmProposal = archive.getObsProposal(proposalRef.getEntityId());
-		} catch (EntityException e1) {
-			e1.printStackTrace();
-		} catch (UserException e1) {
-			e1.printStackTrace();
+		} catch (Exception e1) {
+			throw new ConversionException(String.format(
+					"Error getting APDM ObsProposal %s for APDM Obs Project %s - %s",
+					proposalRef.getEntityId(),
+					obsProject.getUid(),
+					e1.getMessage()));
 		}
 		if (phase == Phase.PHASE1) {
 			apdmOUS = apdmProposal.getObsPlan();
@@ -385,8 +387,10 @@ public class APDMtoSchedulingConverter {
 		try {
 			obsProject.setAffiliation(apdmProposal.getPrincipalInvestigator().getAssociatedArc().toString());
 		} catch (java.lang.NullPointerException e) {
-			throw new ConversionException("Information of PI from APDMProposal is incomlpete. Project: "
-					+ obsProject.getUid());
+			throw new ConversionException(String.format(
+					"No PI information in APDM ObsProposal %s for APDM Obs Project %s",
+					proposalRef.getEntityId(),
+					obsProject.getUid()));
 		}
 		
 		ObsUnitSet obsProgram = createObsUnitSet(
