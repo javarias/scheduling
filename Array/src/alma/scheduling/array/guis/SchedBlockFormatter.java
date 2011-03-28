@@ -36,7 +36,7 @@ import alma.scheduling.utils.Format;
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.2 2011/03/18 21:47:28 dclarke Exp $
+ * $Id: SchedBlockFormatter.java,v 1.3 2011/03/28 23:32:55 dclarke Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*
@@ -266,16 +266,16 @@ public class SchedBlockFormatter extends EntityFormatter {
 		}
 	}
 	
-	private void formatScoresAndRanks(SBRank currScore,
-			                          int    currRank,
-			                          SBRank prevScore,
-			                          int    prevRank) {
-		final boolean someScores = (currScore == null) &&
+	private void formatScoresAndRanks(SBRank  currScore,
+			                          Integer currRank,
+			                          SBRank  prevScore,
+			                          Integer prevRank) {
+		final boolean noScores = (currScore == null) &&
 		                           (prevScore == null);
-		final boolean someRanks  = (currRank < 0) &&
-		                           (prevRank < 0);
+		final boolean noRanks  = (currRank == null) &&
+		                           (prevRank == null);
 		
-		if ( !someScores && !someRanks ) {
+		if ( noScores && noRanks ) {
 			// There's nothing to do
 			return;
 		}
@@ -290,15 +290,15 @@ public class SchedBlockFormatter extends EntityFormatter {
 		th("Previous");
 		endTR();
 		
-		if (someRanks) {
+		if (!noRanks) {
 			startTR();
 			tdItalic("Rank", 2);
-			if (currRank >= 0) {
+			if (currRank != null) {
 				td(currRank);
 			} else {
 				td("n/a");
 			}
-			if (prevRank >= 0) {
+			if (prevRank != null) {
 				td(prevRank);
 			} else {
 				td("n/a");
@@ -306,7 +306,7 @@ public class SchedBlockFormatter extends EntityFormatter {
 			endTR();
 		}
 		
-		if (someScores) {
+		if (!noScores) {
 			startTR();
 			tdItalic("Overall", 2);
 			try {
@@ -400,6 +400,10 @@ public class SchedBlockFormatter extends EntityFormatter {
 		formatName(sb);
 		formatUnknownStatus(reason);
 		formatNote(sb);
+		startTR();
+		th("Entity ID");
+		td(sb.getUid(), 3);
+		endTR();
 		formatCoords(sb);
 		formatHA(sb);
 		
@@ -415,6 +419,13 @@ public class SchedBlockFormatter extends EntityFormatter {
 	 * Formatting - external interface
 	 * ================================================================
 	 */
+	/**
+	 * Format a SchedBlock with the given status (but no scores/ranks).
+	 * 
+	 * @param sb
+	 * @param sbs
+	 * @return An HTML string denoting the SchedBlock
+	 */
 	public static String formatted(SchedBlock sb, SBStatus sbs) {
 		final SchedBlockFormatter f = new SchedBlockFormatter();
 		
@@ -425,6 +436,14 @@ public class SchedBlockFormatter extends EntityFormatter {
 		return f.toString();
 	}
 	
+	/**
+	 * Format a SchedBlock with no status (for the given reason) and no
+	 * scores/ranks.
+	 * 
+	 * @param sb
+	 * @param reason - the reason there is no status
+	 * @return An HTML string denoting the SchedBlock
+	 */
 	public static String formatted(SchedBlock sb, String reason) {
 		final SchedBlockFormatter f = new SchedBlockFormatter();
 		
@@ -434,12 +453,32 @@ public class SchedBlockFormatter extends EntityFormatter {
 		
 		return f.toString();
 	}
+	
+	
+	/**
+	 * Format a SchedBlock with the given status and with the given
+	 * scores and ranks.
+	 * 
+	 * @param sb
+	 * @param sbs
+	 * @param currScore - the latest score for the SB
+	 * @param currRank  - the latest rank of the SB. An
+	 *                    <code>Integer</code> rather than an
+	 *                    <code>int</code> so that we can use
+	 *                    <code>null</code> to denote no rank.
+	 * @param prevScore - the previous score for the SB
+	 * @param prevRank  - the previous rank of the SB. An
+	 *                    <code>Integer</code> rather than an
+	 *                    <code>int</code> so that we can use
+	 *                    <code>null</code> to denote no rank.
+	 * @return An HTML string denoting the SchedBlock
+	 */
 	public static String formatted(SchedBlock sb,
-			                       SBStatus sbs,
-			                       SBRank currScore,
-			                       int    currRank,
-			                       SBRank prevScore,
-			                       int    prevRank) {
+			                       SBStatus   sbs,
+			                       SBRank     currScore,
+			                       Integer    currRank,
+			                       SBRank     prevScore,
+			                       Integer    prevRank) {
 		final SchedBlockFormatter f = new SchedBlockFormatter();
 		
 		f.startHTML();
@@ -450,12 +489,30 @@ public class SchedBlockFormatter extends EntityFormatter {
 		return f.toString();
 	}
 	
+	/**
+	 * Format a SchedBlock with no status (for the given reason) but
+	 * with the given scores and ranks.
+	 * 
+	 * @param sb
+	 * @param reason - the reason there is no status
+	 * @param currScore - the latest score for the SB
+	 * @param currRank  - the latest rank of the SB. An
+	 *                    <code>Integer</code> rather than an
+	 *                    <code>int</code> so that we can use
+	 *                    <code>null</code> to denote no rank.
+	 * @param prevScore - the previous score for the SB
+	 * @param prevRank  - the previous rank of the SB. An
+	 *                    <code>Integer</code> rather than an
+	 *                    <code>int</code> so that we can use
+	 *                    <code>null</code> to denote no rank.
+	 * @return An HTML string denoting the SchedBlock
+	 */
 	public static String formatted(SchedBlock sb,
-			                       String reason,
-			                       SBRank currScore,
-			                       int    currRank,
-			                       SBRank prevScore,
-			                       int    prevRank) {
+			                       String     reason,
+			                       SBRank     currScore,
+			                       Integer    currRank,
+			                       SBRank     prevScore,
+			                       Integer    prevRank) {
 		final SchedBlockFormatter f = new SchedBlockFormatter();
 		
 		f.startHTML();

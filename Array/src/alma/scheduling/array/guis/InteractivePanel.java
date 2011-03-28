@@ -96,7 +96,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.17 2011/03/22 16:14:51 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.18 2011/03/28 23:32:55 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -817,24 +817,24 @@ public class InteractivePanel extends AbstractArrayPanel
 			return;
 		}
 		
-		SBRank currScore = null;
-		int    currRank  = -1;
-		SBRank prevScore = null;
-		int    prevRank  = -1;
-		String excuse;
+		SBRank  currScore = null;
+		Integer currRank  = null;
+		SBRank  prevScore = null;
+		Integer prevRank  = null;
+		String  excuse;
 		
 		if (array.isDynamic()) {
 			if (currentScores != null) {
 				currScore = currentScores.get(entityId);
 			}
 			if (currentRanks != null) {
-				currRank  = currentRanks.get(entityId);
+				currRank = currentRanks.get(entityId);
 			}
 			if (previousScores != null) {
 				prevScore = previousScores.get(entityId);
 			}
 			if (previousRanks != null) {
-				prevRank  = previousRanks.get(entityId);
+				prevRank = previousRanks.get(entityId);
 			}
 		}
 		
