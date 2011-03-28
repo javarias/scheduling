@@ -20,9 +20,13 @@ SQLTOOL_RC_FILE=./config/sqltool.rc
 # State system
 RUNLOCATION=tst
 
+export SCHEDULING_TEST_OPTIONS="-Dscheduling.autoPopupPlugin -Dscheduling.convertPhase2ToReady"
+#export SCHEDULING_TEST_OPTIONS="-Dscheduling.autoPopupPlugin"
+
 JAVA_OPTIONS="-Darchive.configFile=$TESTDIR/archiveConfig.properties $JAVA_OPTIONS"
 JAVA_OPTIONS="-DACS.managerhost=localhost $JAVA_OPTIONS"
 JAVA_OPTIONS="-Xmx512M $JAVA_OPTIONS"
 JAVA_OPTIONS="-Dalma.run.location=$RUNLOCATION $JAVA_OPTIONS"
+JAVA_OPTIONS="$SCHEDULING_TEST_OPTIONS $JAVA_OPTIONS"
 
 # unset DISPLAY
