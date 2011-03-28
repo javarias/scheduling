@@ -21,11 +21,14 @@ import alma.acs.entityutil.EntityException;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.utils.ErrorHandling;
+import alma.scheduling.utils.SchedulingProperties;
 import alma.xmlentity.XmlEntityStruct;
 
 /**
@@ -214,17 +217,41 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		}
 	}
 
-	@Override
-	public  void upconvertProjects() {
-		convertProjects(
-				alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED,
-				alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY);
-	}
+	private void possiblyConvertProjects() {
+		final StatusTStateType from = StatusTStateType.PHASE2SUBMITTED;
+		final StatusTStateType to   = StatusTStateType.READY;
+		
+		ProjectImportEvent event;
+		
+		if (SchedulingProperties.isConvertPhase2ToReady()) {
+			event = new ProjectImportEvent();
+			event.setEntityId("Converting project states");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails(String.format("from %s to %s", from, to));
+			getNotifer().notifyEvent(event);
 
+			convertProjects(from, to);
+		} else {
+    		logger.info(String.format(
+    				"on-the-fly conversion of projects from %s to %s not enabled.",
+    				from, to));
+			event = new ProjectImportEvent();
+			event.setEntityId("Not converting project states");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("(this test option is not enabled)");
+			getNotifer().notifyEvent(event);
+		}
+	}
+	
 	@Override
 	protected void getInterestingProjects(ArchiveInterface archive) {
 		List<ProjectStatus> apdmProjectStatuses;
 		
+		possiblyConvertProjects();
 		apdmProjectStatuses = fetchAppropriateAPDMProjectStatuses(archive);
 		getAPDMProjectsFor(archive, apdmProjectStatuses);
 	}
@@ -245,14 +272,13 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	 * 
 	 * @param from - the state from which we wish to convert
 	 * @param to   - the state to which we wish to convert projects
-	 * @throws SchedulingException 
-	 * @throws SchedulingException 
 	 */
-	private void convertProjects(
-			alma.entity.xmlbinding.valuetypes.types.StatusTStateType from,
-			alma.entity.xmlbinding.valuetypes.types.StatusTStateType to) {
+	private void convertProjects(StatusTStateType from,
+								 StatusTStateType to) {
 		final String[] fromStates = new String[1];
 		fromStates[0] = from.toString();
+		
+		ProjectImportEvent event = new ProjectImportEvent();
 		
     	final Collection<String> fromPSIds;
     	
@@ -265,6 +291,13 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 							"cannot get project statuses from State Archive - %s",
 							e.getMessage()),
 					e);
+			event = new ProjectImportEvent();
+			event.setEntityId("Conversion failed");
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_WARNING);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails(e.getMessage());
+			getNotifer().notifyEvent(event);
 			return;
 		}
     	
@@ -287,22 +320,40 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			}
     	}
     	
+    	String description;
+    	ImportStatus status;
+    	
     	if (worked + failed == 0) {
     		// there were no projects to convert
+    		description = "no candidate projects found";
+    		status = ImportStatus.STATUS_INFO;
     		logger.info(String.format(
-    				"on-the-fly conversion of projects from %s to %s: no candidate projects found.",
-    				from, to));
+    				"on-the-fly conversion of projects from %s to %s: %s.",
+    				from, to, description));
     	} else if (failed == 0) {
     		// Don't admit to even the possibility of failure if you
     		// don't have to.
+    		description = String.format("%d converted", worked);
+    		status = ImportStatus.STATUS_INFO;
     		logger.info(String.format(
-    				"on-the-fly conversion of projects from %s to %s: %d converted.",
-    				from, to, worked));
+    				"on-the-fly conversion of projects from %s to %s: %s.",
+    				from, to, description));
     	} else {
+    		description = String.format("%d converted, %d failed", worked, failed);
+    		status = ImportStatus.STATUS_WARNING;
     		logger.warning(String.format(
-    				"on-the-fly conversion of projects from %s to %s: %d converted, %d failed.",
-    				from, to, worked, failed));
+    				"on-the-fly conversion of projects from %s to %s: %s.",
+    				from, to, description));
     	}
+    	
+		event = new ProjectImportEvent();
+		event.setEntityId("Conversion results");
+		event.setTimestamp(new Date());
+		event.setStatus(status);
+		event.setEntityType("<html><i>none</i></html>");
+		event.setDetails(description);
+		getNotifer().notifyEvent(event);
+
 	}
 
 	protected void getAPDMSchedBlocksFor(
@@ -419,9 +470,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
     public void getObsProjectChanges(Date since,
             List<String> newOrModifiedIds, List<String> deletedIds)
             throws DAOException {
-        convertProjects(
-                alma.entity.xmlbinding.valuetypes.types.StatusTStateType.PHASE2SUBMITTED,
-                alma.entity.xmlbinding.valuetypes.types.StatusTStateType.READY);
+        possiblyConvertProjects();
         super.getObsProjectChanges(since, newOrModifiedIds, deletedIds);
     }
 	

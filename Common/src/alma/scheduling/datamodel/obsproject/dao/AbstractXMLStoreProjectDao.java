@@ -153,7 +153,6 @@ public abstract class AbstractXMLStoreProjectDao
      * ================================================================
      */
 	// Abstract requirements upon subclasses.
-	public abstract void upconvertProjects();
 	protected abstract void getInterestingProjects(
 			ArchiveInterface archive);
 	protected abstract alma.entity.xmlbinding.obsproject.ObsUnitSetT

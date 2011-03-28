@@ -159,11 +159,6 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	}
 
 	@Override
-	public  void upconvertProjects() {
-		// Does nothing for Phase 1
-	}
-
-	@Override
 	protected void getInterestingProjects(ArchiveInterface archive) {
 		List<alma.entity.xmlbinding.obsproposal.ObsProposal> apdmProposals;
 		
