@@ -54,10 +54,10 @@ public class SchedBlockQueueCallbackNotifier implements Observer {
     	ArrayList<String> toBeUnregistered = new ArrayList<String>();
     	try {
     		QueueNotification notification = (QueueNotification) arg;
-    		logger.info(String.format(
-    				"received notification of queue change %s SB %s",
-    				notification.getOperation(),
-    				notification.getItem().getUid()));
+//    		logger.info(String.format(
+//    				"received notification of queue change %s SB %s",
+//    				notification.getOperation(),
+//    				notification.getItem().getUid()));
 
             String[] uids = new String[1];
             uids[0] = notification.getItem().getUid();
@@ -69,7 +69,7 @@ public class SchedBlockQueueCallbackNotifier implements Observer {
                 	callback.report(notification.getItem().getTimestamp(), notification.getOperation(), uids, "");
                 }
                 catch (org.omg.CORBA.TRANSIENT ex){
-                	logger.info("Forcing Unregister of Queue Callback with key: " + key);
+//                	logger.info("Forcing Unregister of Queue Callback with key: " + key);
                 	toBeUnregistered.add(key);
                 }
     		}
