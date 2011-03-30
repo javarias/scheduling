@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2011/01/28 00:35:30 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.3 2011/03/30 16:52:21 jagonzal Exp $"
 #
 # Makefile of ........
 #
@@ -122,6 +122,8 @@ COMPONENTS_JARFILES := SchedulingArchiveUpdaterImpl
 JARFILES = SchedulingArchiveUpdaterGUI
 SchedulingArchiveUpdaterImpl_DIRS := alma/scheduling/archiveupd/compimpl alma/scheduling/archiveupd/functionality alma/scheduling/archiveupd/mastercomp
 SchedulingArchiveUpdaterGUI_DIRS := alma/scheduling/archiveupd/gui
+SchedulingArchiveUpdaterImpl_JLIBS=SchedulingArchiveUpdater
+SchedulingArchiveUpdaterGUI_JLIBS=SchedulingArchiveUpdater
 jjj_EXTRAS= 
 #
 # java sources in Jarfile on/off
