@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.12 2011/04/05 14:36:19 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.13 2011/04/05 15:01:14 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -172,7 +172,7 @@ buildClean: build clean
 buildMan: build man
 
 findbugs:
-	findbugs -xml -output findbugs.xml ./Master/lib/SchedulingMasterGUI.jar \
+	@findbugs -auxclasspath `vltMakeJavaClasspath` -xml -output findbugs.xml ./Master/lib/SchedulingMasterGUI.jar \
 	./Master/lib/ACScomponents/SchedulingMasterImpl.jar \
 	./DSA/lib/SchedulingDSA.jar \
 	./Array/lib/SchedulingArrayImpl.jar \
