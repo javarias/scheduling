@@ -1,7 +1,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.11 2011/01/31 22:03:21 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.12 2011/04/05 14:36:19 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -170,6 +170,16 @@ man:
 buildClean: build clean
 
 buildMan: build man
+
+findbugs:
+	findbugs -xml -output findbugs.xml ./Master/lib/SchedulingMasterGUI.jar \
+	./Master/lib/ACScomponents/SchedulingMasterImpl.jar \
+	./DSA/lib/SchedulingDSA.jar \
+	./Array/lib/SchedulingArrayImpl.jar \
+	./ArchiveUpdater/lib/SchedulingArchiveUpdater.jar \
+	./ArchiveUpdater/lib/ACScomponents/SchedulingArchiveUpdaterImpl.jar \
+	./ArchiveUpdater/lib/SchedulingArchiveUpdaterGUI.jar \
+	./Common/lib/SchedulingCommon.jar
 
 #
 # ___oOo___
