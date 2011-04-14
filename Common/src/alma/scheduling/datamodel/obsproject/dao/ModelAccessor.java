@@ -75,17 +75,19 @@ public class ModelAccessor extends Observable {
 	    // There should be only one instance of the stateArchive in the process.
 	    // An implication of this is that this component cannot coexist with
 	    // the OBOPS StateArchive in the same container.
-		if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
-			final RoleProvider roleProvider = new RoleProviderMock();
-			StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
-					new StateArchiveDbConfig(logger));
-			stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
-			stateArchive.initStateArchive(logger);
-			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
-			stateEngine.initStateEngine(logger, stateArchive, roleProvider);
-		} else {
-            stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
-			stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
+		synchronized (ModelAccessor.class) {
+			if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
+				final RoleProvider roleProvider = new RoleProviderMock();
+				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
+						new StateArchiveDbConfig(logger));
+				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
+				stateArchive.initStateArchive(logger);
+				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
+				stateEngine.initStateEngine(logger, stateArchive, roleProvider);
+			} else {
+				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
+				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
+			}
 		}
 		
 		logger.info("Loading Context from factory");
