@@ -71,7 +71,7 @@ public class ControlManualArrayImpl implements ControlArray {
 	public void cleanUp() {
 		try {
 			container.releaseComponent(NameTranslator
-					.arrayToControlComponentName(arrayName));
+					.arrayToControlComponentName(arrayName), null);
 		} catch (TranslationException e) {
 			e.printStackTrace();
 		}

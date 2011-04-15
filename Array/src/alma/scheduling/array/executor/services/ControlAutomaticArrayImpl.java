@@ -64,7 +64,7 @@ public class ControlAutomaticArrayImpl implements ControlArray {
 
     @Override
     public void cleanUp() {
-        container.releaseComponent(array.getName());
+        container.releaseComponent(array.getName(), null);
     }
     
 }
