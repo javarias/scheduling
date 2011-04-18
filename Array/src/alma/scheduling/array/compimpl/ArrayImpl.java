@@ -143,7 +143,8 @@ public class ArrayImpl implements ComponentLifecycle,
 			q = new LinkedReorderingBlockingQueue<SchedBlockItem>();
 		}
 
-		queue = new DefaultSchedulingQueue<SchedBlockItem>(q);
+//		queue = new DefaultSchedulingQueue<SchedBlockItem>(q);
+		queue = new ObservableReorderingBlockingQueue<SchedBlockItem>(q);
 
 		executor = new Executor(arrayName, queue);
 		executor.configureManual(manual);
