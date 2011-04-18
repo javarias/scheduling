@@ -324,6 +324,7 @@ public class ArrayImpl implements ComponentLifecycle,
 	@Override
 	public void addMonitorQueue(String monitorName,
 			SchedBlockQueueCallback callback) {
+		logger.info("This method can throw an exception. This exception is handled by the GUI. If you see a backtrace below that, don't panic, everything is ok");
 		queueNotifier.registerMonitor(monitorName, callback);
 	}
     
