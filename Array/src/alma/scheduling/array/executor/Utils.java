@@ -17,28 +17,24 @@
  */
 package alma.scheduling.array.executor;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author rhiriart
  *
  */
 public class Utils {
 
-    static private int partIdCount = 0;
-    
-    static private char[] digit = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+//	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+//
+//    public static String genPartId() {
+//    	final Date d = new Date();
+//    	return dateFormat.format(d);
+//    }
     
     public static String genPartId() {
-        char[] s = new char [9];
-        s[0] = 'X';
-        for (int i = 1; i < s.length; ++i)
-            s[i] = '0';
-        int n = ++partIdCount;
-        for (int i = s.length -1; i > 1; --i) {
-            s[i] = digit[n % 16];
-            n /= 16;
-            if (n == 0)
-                break;
-        }
-        return new String(s);
+    	return String.format("X%Xd", System.currentTimeMillis());
     }
 }
