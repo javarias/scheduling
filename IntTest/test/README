@@ -1,5 +1,8 @@
 Running the Plugin Interactive Test
 
+The test must be installed in you INTROOT:
+make all install
+
 Pre-load the archive with some projects:
 
 	scripts/startup.sh

@@ -1,0 +1,14 @@
+#ifndef _SCHEDULING_TEST_ARRAY_IDL_
+#define _SCHEDULING_TEST_ARRAY_IDL_
+
+#include <ControlArrayInterfaces.idl>
+#include <ControlDataInterfaces.idl>
+
+module scheduling {
+	interface TestManualArray : Control::ManualArrayCommand, Control::ManualArrayMonitor{
+		void beginExecution();
+		void endExecution(in Control::Completion statusCode, in string message);
+	};
+};
+
+#endif

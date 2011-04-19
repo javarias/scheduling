@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.2 2009/09/22 22:40:17 rhiriart Exp $"
+# "@(#) $Id: Makefile,v 1.3 2011/04/19 22:35:00 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -43,6 +43,8 @@ EXECUTABLES_L   =
 xxxxx_OBJECTS   =	
 xxxxx_LDFLAGS   =
 xxxxx_LIBS      =
+
+SchedulingTestArrayStubs_LIBS = ControlArrayInterfacesStubs ControlDataInterfacesStubs TAO
 
 #
 # special compilation flags for single c sources
@@ -112,7 +114,7 @@ CDB_SCHEMAS =
 # 
 # IDL Files and flags
 # 
-IDL_FILES =
+IDL_FILES := SchedulingTestArray
 TAO_IDLFLAGS =
 USER_IDL =
 #
