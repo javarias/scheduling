@@ -4,7 +4,9 @@
 #include <ControlArrayInterfaces.idl>
 #include <ControlDataInterfaces.idl>
 
-module scheduling {
+#pragma prefix "alma"
+
+module Scheduling {
 	interface TestManualArray : Control::ManualArrayCommand, Control::ManualArrayMonitor{
 		void beginExecution();
 		void endExecution(in Control::Completion statusCode, in string message);
