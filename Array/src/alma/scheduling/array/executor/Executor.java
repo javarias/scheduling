@@ -518,29 +518,29 @@ public class Executor extends Observable {
      * an asdm produced. There will be a 'dummy' project with sb in the archive
      * to attach these asdms to its project status.
      */
-   public IDLEntityRef startManualModeSession(String sbid)
-       throws InvalidOperationEx {
-       final IDLEntityRef result = getSessions().observeSB(sbid);
-       StringBuilder b = new StringBuilder();
-       Formatter     f = new Formatter(b);
+	public IDLEntityRef startManualModeSession(String sbid)
+				throws InvalidOperationEx {
+		final IDLEntityRef result = getSessions().getCurrentSession();
+		StringBuilder b = new StringBuilder();
+		Formatter     f = new Formatter(b);
 
-       f.format("%s.startManualModeSession(%s) - ref created is %s",
-		getArrayName(),
-		sbid,
-		result.entityId);
-       if (currentExecution != null) {
-	   if (currentExecution.getSessionRef() == null) {
-	       currentExecution.setSessionRef(result);
-	       b.append(" - applying to current execution");
-	   } else {
-	       f.format(" - current execution already has a session ref (%s)",
-			currentExecution.getSessionRef().entityId);
-	   }
-       } else {
-	   b.append(" - no current execution");
-       }
-       logger.info(b.toString());
+		f.format("%s.startManualModeSession(%s) - ref obtained from SessionManager is %s",
+				getArrayName(),
+				sbid,
+				result.entityId);
+		if (currentExecution != null) {
+			if (currentExecution.getSessionRef() == null) {
+				currentExecution.setSessionRef(result);
+				b.append(" - applying to current execution");
+			} else {
+				f.format(" - current execution already has a session ref (%s)",
+						currentExecution.getSessionRef().entityId);
+			}
+		} else {
+			b.append(" - no current execution");
+		}
+		logger.info(b.toString());
 
-       return result;
-   }
+		return result;
+	}
 }
