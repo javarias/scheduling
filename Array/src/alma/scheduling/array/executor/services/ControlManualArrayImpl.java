@@ -44,7 +44,7 @@ public class ControlManualArrayImpl implements ControlArray {
 		this.container = container;
 		this.arrayName = arrayName;
 		array = ManualArrayCommandHelper.narrow(
-				container.getComponentNonSticky(NameTranslator.arrayToControlComponentName(arrayName)));
+				container.getComponent(NameTranslator.arrayToControlComponentName(arrayName)));
 		this.lastSB = "";
 	}
 
