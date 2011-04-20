@@ -18,7 +18,10 @@
 
 package alma.scheduling.array.sessions;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -29,9 +32,12 @@ import alma.acs.nc.CorbaNotificationChannel;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
+import alma.entity.xmlbinding.ousstatus.SessionT;
+import alma.entity.xmlbinding.valuetypes.ExecBlockRefT;
 import alma.lifecycle.persistence.StateArchive;
 import alma.pipelineql.QlDisplayManager;
 import alma.scheduling.EndSessionEvent;
+import alma.scheduling.SchedulingException;
 import alma.scheduling.StartSessionEvent;
 import alma.scheduling.array.executor.Utils;
 import alma.scheduling.array.executor.services.Services;
@@ -39,21 +45,33 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
-import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
 import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
+import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
 
 /**
  * Keep track of observing sessions for an array & invoke Quicklook as
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.5 2011/03/21 21:14:01 javarias Exp $
+ * $Id: SessionManager.java,v 1.6 2011/04/20 16:57:21 dclarke Exp $
  */
 public class SessionManager {
 
+	/*
+	 * ================================================================
+	 * Statics
+	 * ================================================================
+	 */
+	private final static DateFormat dateFormat =
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	/* End Statics
+	 * ============================================================= */
+
+	
+	
 	/*
 	 * ================================================================
 	 * Fields
@@ -68,11 +86,12 @@ public class SessionManager {
 
     private String arrayName;
 
-	private IDLEntityRef currentSession;
+	private IDLEntityRef currentSessionRef;
 	private IDLEntityRef currentSB;
 	private String       currentTitle;
 	private List<String> executionIds;
 	private boolean      useQuickLook;
+	private SessionT     currentSession;
 	/* End Fields
 	 * ============================================================= */
 
@@ -96,7 +115,7 @@ public class SessionManager {
         
         this.arrayName = arrayName;
         
-    	currentSession = null;
+    	currentSessionRef = null;
     	currentSB      = null;
     	currentTitle   = "";
     	useQuickLook   = false;
@@ -298,6 +317,36 @@ public class SessionManager {
 
         return ouss;
 	}
+
+	/**
+	 * Get the OUSStatus entity corresponding to the given id
+	 * 
+	 * @param id - an OUSStatus entity id
+	 * @return
+	 */
+	private OUSStatus getOUSStatusFor(String id) {
+		String[] ids = new String[1];
+		ids[0] = id;
+		
+        final StateArchive stateArchive = model.getStateArchive();
+        OUSStatus[] ousss = null;
+        ousss = stateArchive.getOUSStatusList(ids);
+
+        return ousss[0];
+	}
+
+	/**
+	 * Write the modified OUSStatus object back to the StateArchive
+	 * @param ouss
+	 * @throws AcsJStateIOFailedEx
+	 * @throws AcsJNoSuchEntityEx
+	 */
+	private void updateOUSStatus(OUSStatus ouss)
+				throws AcsJStateIOFailedEx,
+					   AcsJNoSuchEntityEx {
+       final StateArchive stateArchive = model.getStateArchive();
+       stateArchive.update(ouss);
+	}
 	
 	/**
 	 * Start a new observing session for the given SchedBlock
@@ -315,11 +364,15 @@ public class SessionManager {
 		try {
 			final OUSStatus ouss = getOUSStatusFor(sb);
 
-			currentSession = new IDLEntityRef();
-			currentSession.entityId        = ouss.getOUSStatusEntity().getEntityId();
-			currentSession.partId          = Utils.genPartId();
-			currentSession.entityTypeName  = ouss.getOUSStatusEntity().getEntityTypeName();
-			currentSession.instanceVersion = "1.0";
+			currentSessionRef = new IDLEntityRef();
+			currentSessionRef.entityId        = ouss.getOUSStatusEntity().getEntityId();
+			currentSessionRef.partId          = Utils.genPartId(ouss);
+			currentSessionRef.entityTypeName  = ouss.getOUSStatusEntity().getEntityTypeName();
+			currentSessionRef.instanceVersion = "1.0";
+			
+			currentSession = createSessionObject(currentSessionRef);
+			ouss.addSession(currentSession);
+			updateOUSStatus(ouss);
 
 			currentSB      = new IDLEntityRef();
 			currentSB.entityId        = sb.getUid();
@@ -329,7 +382,7 @@ public class SessionManager {
 
 			useQuickLook = sb.getRunQuicklook();
 			if (useQuickLook) {
-				quicklook.startQlSession(currentSession,
+				quicklook.startQlSession(currentSessionRef,
 										 currentSB,
 										 arrayName,
 										 currentTitle);
@@ -337,7 +390,7 @@ public class SessionManager {
 
 			final StartSessionEvent event = new StartSessionEvent(
 					UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-					currentSession,
+					currentSessionRef,
 					currentSB);
 			publish(event, "start session");
 			executionIds = new ArrayList<String>();
@@ -346,11 +399,83 @@ public class SessionManager {
 					String.format("Error starting observing session %s - %s",
 							currentTitle, e.getMessage()),
 							e);
-			currentSB      = null;
-			currentSession = null;
+			currentSB         = null;
+			currentSessionRef = null;
+			currentSession    = null;
 		}
 		
 	}
+	
+    private SessionT createSessionObject(IDLEntityRef reference) {
+		final SessionT result = new SessionT();
+		result.setEntityPartId(reference.partId);
+		result.setStartTime(dateFormat.format(new Date()));
+		result.setEndTime("End time not known yet.");
+		result.clearExecBlockRef();
+		
+		return result;
+	}
+
+	private SessionT findSession(OUSStatus ouss, String partId)
+			throws SchedulingException {
+		for (final SessionT session : ouss.getSession()) {
+			if (session.getEntityPartId().equals(partId)) {
+				return session;
+			}
+		}
+		throw new SchedulingException(String.format(
+				"Cannot find session %s in OUSStatus %s",
+				partId, ouss.getOUSStatusEntity().getEntityId()));
+	}
+	
+	private void appendExecution(String       executionId,
+			                     IDLEntityRef currentSessionRef,
+			                     SessionT     currentSession)
+	 		throws SchedulingException,
+	 		       AcsJStateIOFailedEx,
+	 		       AcsJNoSuchEntityEx {
+
+		// Get the OUSStatus for the current session
+		final OUSStatus ouss = getOUSStatusFor(currentSessionRef.entityId);
+		
+		// Get the SessionT for the current session within the OUSStatus
+		final SessionT session = findSession(
+				ouss,
+				currentSession.getEntityPartId());
+		
+		// Create the ExecBlockRef for the executionId and add
+		// it to the SessionT
+		final ExecBlockRefT ref = new ExecBlockRefT();
+		ref.setExecBlockId(executionId);
+		session.addExecBlockRef(ref);
+		
+		// Remember the changes in the StateArchive.
+		updateOUSStatus(ouss);
+	}
+	
+	private void bookkeepingForEndOfSession(
+					IDLEntityRef currentSessionRef,
+					SessionT     currentSession)
+	 		throws SchedulingException,
+	 		       AcsJStateIOFailedEx,
+	 		       AcsJNoSuchEntityEx {
+
+		// Get the OUSStatus for the current session
+		final OUSStatus ouss = getOUSStatusFor(currentSessionRef.entityId);
+		
+		// Get the SessionT for the current session within the OUSStatus
+		final SessionT session = findSession(
+				ouss,
+				currentSession.getEntityPartId());
+		
+		// Set the end time.
+		session.setEndTime(dateFormat.format(new Date()));
+		
+		// Remember the changes in the StateArchive.
+		updateOUSStatus(ouss);
+	}
+	
+
 	/* End Utility methods
 	 * ============================================================= */
 
@@ -362,7 +487,7 @@ public class SessionManager {
 	 * ================================================================
 	 */
 	public IDLEntityRef getCurrentSession() {
-		return currentSession;
+		return currentSessionRef;
 	}
 	
 	public IDLEntityRef getCurrentSB() {
@@ -373,6 +498,16 @@ public class SessionManager {
 		logger.info(String.format("%s.addExecution(%s)",
 				arrayName, execId));
 		executionIds.add(execId);
+		try {
+			appendExecution(execId, currentSessionRef, currentSession);
+		} catch (Exception e) {
+			ErrorHandling.warning(logger,
+					String.format("Error adding execution %s to current observing session %s - %s",
+							execId,
+							currentTitle,
+							e.getMessage()),
+							e);
+		}
 	}
 	
 	public IDLEntityRef observeSB(String sbId) {
@@ -396,16 +531,17 @@ public class SessionManager {
 	}
 
 	public void endObservingSession() {
-		if (currentSession != null) {
+		if (currentSessionRef != null) {
 			logger.info(String.format("%s.endObservingSession()",
 					arrayName));
 			try {
+				bookkeepingForEndOfSession(currentSessionRef, currentSession);
 				if (useQuickLook) {
-					quicklook.endQlSession(currentSession, currentSB);
+					quicklook.endQlSession(currentSessionRef, currentSB);
 				}
 				final EndSessionEvent event = new EndSessionEvent(
 						UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
-						currentSession,
+						currentSessionRef,
 						currentSB,
 						executionIds.toArray(new String[0]));
 				publish(event, "end session");
@@ -415,9 +551,9 @@ public class SessionManager {
 								currentTitle, e.getMessage()),
 								e);
 			} finally {
-				currentSB      = null;
-				currentSession = null;
-				currentTitle   = "";
+				currentSB         = null;
+				currentSessionRef = null;
+				currentTitle      = "";
 			}
 		}
 	}
