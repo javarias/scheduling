@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.14 2011/01/28 00:35:31 javarias Exp $"
+ * "@(#) $Id: XmlConfigurationDaoImpl.java,v 1.15 2011/04/20 22:09:40 javarias Exp $"
  */
 package alma.scheduling.datamodel.config.dao;
 
@@ -62,7 +62,7 @@ public class XmlConfigurationDaoImpl implements ConfigurationDao {
         File confFile = new File(confFileName);
         
         if (!confFile.exists()) {
-            logger.error("configuration file not found: " + confFileName);
+            logger.info("configuration file not found: " + confFileName);
             return null;
         }
         

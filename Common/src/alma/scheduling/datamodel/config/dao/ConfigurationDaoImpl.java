@@ -45,7 +45,7 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         query.setMaxResults(1);
         if (query.list().size() == 0) {
         	if (config == null){
-        		logger.warn("Ignoring configuration from XML file");
+        		logger.info("Ignoring configuration from XML file");
         		config = new Configuration();
         		config.setArrayCenterLatitude(-23.022894444444443);
         		config.setArrayCenterLongitude(-67.75492777777778);
@@ -55,7 +55,7 @@ public class ConfigurationDaoImpl extends GenericDaoImpl implements
         } else {
         	if (config == null)
         		config = new Configuration();
-        	logger.warn("Ignoring configuration from XML file. Using configuration stored in the DB");
+        	logger.info("Ignoring configuration from XML file. Using configuration stored in the DB");
             Configuration dbConf = (Configuration) query.list().get(0);
             config.setLastLoad(dbConf.getLastLoad());
             config.setNextStepTime(dbConf.getNextStepTime());
