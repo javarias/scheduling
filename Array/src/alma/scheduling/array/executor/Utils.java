@@ -17,9 +17,9 @@
  */
 package alma.scheduling.array.executor;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import alma.entity.xmlbinding.ousstatus.OUSStatus;
+import alma.entity.xmlbinding.ousstatus.PipelineProcessingRequestT;
+import alma.entity.xmlbinding.ousstatus.SessionT;
 
 /**
  * @author rhiriart
@@ -33,8 +33,30 @@ public class Utils {
 //    	final Date d = new Date();
 //    	return dateFormat.format(d);
 //    }
+	
+    public static String genPartId(OUSStatus ouss) {
+    	int numSessions = ouss.getSessionCount();
+    	return String.format("X%08x", numSessions);
+    }
     
-    public static String genPartId() {
-    	return String.format("X%Xd", System.currentTimeMillis());
+    public static String genPPRId(OUSStatus ouss) {
+    	// There's only 1 PPR per OUS, use a value which is never
+    	// going to be hit by the sessions count
+    	return "Xffffffff";
+    }
+    
+    public static void main(String args[]) {
+    	final OUSStatus s1 = new OUSStatus();
+    	final OUSStatus s2 = new OUSStatus();
+		System.out.format("%s\t%s%n", genPartId(s1), genPartId(s2));
+		for (int i = 0; i < 256; i++) {
+    		s1.addSession(new SessionT());
+    		if (i % 2 == 0) {
+    			s2.addSession(new SessionT());
+    		}
+    		System.out.format("%s\t%s%n", genPartId(s1), genPartId(s2));
+    	}
+		s1.setPipelineProcessingRequest(new PipelineProcessingRequestT());
+		System.out.format("%n%s\t%s%n", genPPRId(s1), genPPRId(s2));
     }
 }
