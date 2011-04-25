@@ -75,7 +75,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.9 2011/04/25 16:41:42 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.10 2011/04/25 17:05:53 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -1012,6 +1012,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 
 		@Override
 		public synchronized void start() {
+			destroyArray.setEnabled(false);
 			try {
 				arrayName = getArray().getArrayName();
 				setStatusMessage(
@@ -1034,6 +1035,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 					"Cannot destroy array - internal error! See logs for details."),
 					Color.RED);
 			}
+			destroyArray.setEnabled(true);
 		}
     }
 }
