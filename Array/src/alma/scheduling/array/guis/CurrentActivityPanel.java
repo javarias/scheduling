@@ -75,7 +75,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.8 2011/03/21 21:00:56 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.9 2011/04/25 16:41:42 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -368,28 +368,8 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 				new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent event) {
-						try {
-							arrayName = getArray().getArrayName();
-							setStatusMessage(
-									String.format("Destroying array %s...",
-									arrayName));
-							Master m = getMaster();
-							m.destroyArray(arrayName, getUserName(), getUserRole());
-						} catch (NullPointerException npe) {
-							npe.printStackTrace();
-							setStatusMessage(String.format(
-								"Cannot destroy array - cannot find master component! See logs for details."),
-								Color.RED);
-						} catch (Exception e) {
-							e.printStackTrace();
-							ErrorHandling.severe(services.getLogger(),
-									String.format("Internal error (%s) whilst destroying array - %s",
-											e.getClass().getSimpleName(), e.getMessage()),
-									e);
-							setStatusMessage(String.format(
-								"Cannot destroy array - internal error! See logs for details."),
-								Color.RED);
-						}
+						DestroyArrayThread thread = new DestroyArrayThread();
+						thread.start();
 					}
 					});
 		destroyArray.setEnabled(true);
@@ -1028,4 +1008,32 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * End Running stand-alone
 	 * ============================================================= */
     
+    private class DestroyArrayThread extends Thread {
+
+		@Override
+		public synchronized void start() {
+			try {
+				arrayName = getArray().getArrayName();
+				setStatusMessage(
+						String.format("Destroying array %s...",
+						arrayName));
+				Master m = getMaster();
+				m.destroyArray(arrayName, getUserName(), getUserRole());
+			} catch (NullPointerException npe) {
+				npe.printStackTrace();
+				setStatusMessage(String.format(
+					"Cannot destroy array - cannot find master component! See logs for details."),
+					Color.RED);
+			} catch (Exception e) {
+				e.printStackTrace();
+				ErrorHandling.severe(services.getLogger(),
+						String.format("Internal error (%s) whilst destroying array - %s",
+								e.getClass().getSimpleName(), e.getMessage()),
+						e);
+				setStatusMessage(String.format(
+					"Cannot destroy array - internal error! See logs for details."),
+					Color.RED);
+			}
+		}
+    }
 }

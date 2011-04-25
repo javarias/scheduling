@@ -89,7 +89,7 @@ public class MasterImpl implements ComponentLifecycle,
         try {
 			weatherComp = CurrentWeatherHelper.narrow(containerServices.getDefaultComponent("IDL:alma/Control/CurrentWeather:1.0"));
 			String nameComp = weatherComp.name();
-			containerServices.releaseComponent(nameComp, null);
+			containerServices.releaseComponent(nameComp);
 			weatherComp = null;
 			weatherComp = CurrentWeatherHelper.narrow(containerServices.getComponentNonSticky(nameComp));
 			WeatherStationDao.setWeatherStation(weatherComp);
@@ -261,7 +261,7 @@ public class MasterImpl implements ComponentLifecycle,
 		obj = null;
 		array = null;
 		m_logger.info ("Releasing Scheduling Array " + schedArrayName);
-		m_containerServices.releaseComponent(schedArrayName,null);
+		m_containerServices.releaseComponent(schedArrayName);
 		
 		//Notify to the callbacks
 		ArrayList<String> toBeDeleted =  new ArrayList<String>();
