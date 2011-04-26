@@ -21,7 +21,7 @@ acsStart -noloadifr >& ./${tmp}/acsStart.log
 
 echo "Starting java container"
 export JAVA_OPTIONS="-Darchive.configFile=archiveConfig.obsprep.properties"
-acsStartContainer -java frodoContainer ${tmp}/frodoContainer.log & 
+acsStartContainer -java frodoContainer &> ${tmp}/frodoContainer.log & 
 sleep 5
 unset JAVA_OPTIONS
 

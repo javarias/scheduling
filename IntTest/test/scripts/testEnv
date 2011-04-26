@@ -12,6 +12,7 @@ export ACS_TMP
 export ACS_CDB
 export ACS_LOG_STDOUT=2
 export RUNLOCATION
+JAVA_OPTIONS="$JAVA_OPTIONS -Dscheduling.convertPhase2ToReady"
 export JAVA_OPTIONS
 
 RETVAL=0
@@ -160,8 +161,8 @@ startACS() {
     # pid=$!
     # echo $pid > $ACS_TMP/archive.pid
     # acsutilBlock -t 60 -f $LOGFILE -b "Initialized Archive subsystem."
-    printf "Starting Tomcat\n"
-    tomcat start &> $ACS_TMP/archive.log
+    printf "Starting archive\n"
+    archive start &> $ACS_TMP/archive.log
     PID=$!
     echo $PID > $ACS_TMP/archive.pid
 }

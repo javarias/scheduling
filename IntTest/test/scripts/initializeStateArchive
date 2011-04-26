@@ -1,0 +1,2 @@
+#!/bin/bash
+acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server statearchive localhost sql/hsqldb-ddl.sql
