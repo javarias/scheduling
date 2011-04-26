@@ -10,10 +10,19 @@ Pre-load the archive with some projects:
 	scripts/shutdown.sh
 
 From SCHEDULING/IntTest/test:
-
 1) Start the system with
 
     ./scripts/testEnv start
+
+2) Pre-load the archive with some projects:
+
+	If you are using for first time this test directory:
+		archiveLoadSchema -c
+		archiveLoadSchema $ACSROOT/idl
+		archiveLoadSchema <Location of your ICD installation>/idl
+		./scripts/initializeStateArchive
+
+	./scripts/populate.sh projects/R80*.aot
 
 2) Prepare the system to run the Plugins interactively
 
