@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.13 2011/03/09 19:38:23 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.14 2011/05/04 23:21:21 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -71,7 +71,7 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
             else
                 score += 0;
             SBRank rank = new SBRank();
-            rank.setId(sb.getId());
+            rank.setUid(sb.getUid());
             rank.setRank(score);
             ranks.add(rank);
             logger.debug("rank: " + rank);

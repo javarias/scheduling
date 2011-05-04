@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.16 2011/03/25 15:21:32 dclarke Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.17 2011/05/04 23:21:21 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -45,13 +45,15 @@ import alma.scheduling.datamodel.obsproject.ObsUnit;
 public abstract class GenericDaoImpl extends HibernateDaoSupport implements GenericDao {
 
     @Override
+    @Transactional(readOnly=false)
     public <T> void delete(T obj) {
         getHibernateTemplate().delete(obj);
         getHibernateTemplate().evict(obj);
+        getHibernateTemplate().flush();
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly=false)
     public <T> void deleteAll(Collection<T> objs) {
         getHibernateTemplate().deleteAll(objs);
         getHibernateTemplate().flush();
@@ -61,13 +63,13 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     }
     
     @Override
-    @Transactional
+    @Transactional(readOnly=false)
     public <T> void saveOrUpdate(T obj) {
         getHibernateTemplate().saveOrUpdate(obj);
-        getHibernateTemplate().flush();
     }
 
     @Override
+    @Transactional(readOnly=false)
     public <T> void saveOrUpdate(Collection<T> objs){
     	for(T obj: objs){
     		try{

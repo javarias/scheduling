@@ -21,6 +21,7 @@ public class CommonContextFactory {
 	public static final String SCHEDULING_SCHEDBLOCK_DAO_BEAN = "sbDao";
 	public static final String SCHEDULING_CONFIGURATION_DAO_BEAN = "configDao";
 	public static final String SCHEDULING_EXECUTIVE_DAO_BEAN = "execDao";
+	public static final String SCHEDULING_ATM_DAO_BEAN = "atmDao";
 	
 	/**
 	 * Create the instance of the context just for the Common subset of Scheduling

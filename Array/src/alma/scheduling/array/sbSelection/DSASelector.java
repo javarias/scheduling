@@ -11,6 +11,8 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.utils.DSAContextFactory;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +58,7 @@ public class DSASelector extends AbstractSelector {
 				Result result = new Result();
 				result.setArrayName(array.getArrayName());
 				result.setTime(runDate);
-				result.setScores(new HashSet<SBRank>(results));
+				result.setScores(results);
 				resultsDao.saveOrUpdate(result);
 			} catch (NoSbSelectedException e) {
 				e.printStackTrace();

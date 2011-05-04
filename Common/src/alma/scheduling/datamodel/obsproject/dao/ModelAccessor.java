@@ -21,6 +21,7 @@ import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_ATM_DAO_BEAN;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.utils.CommonContextFactory;
+import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.utils.LoggerFactory;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 
@@ -54,7 +55,7 @@ import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
  * A class to be used by GUI models to get access to data held in the database. Currently
  * this includes the Scheduling (internal) data model and the State Archive.
  * 
- * This class gets all the DAOs neededto get data from the database, encapsulating the
+ * This class gets all the DAOs needed to get data from the database, encapsulating the
  * Spring interaction. It also provides methods to facilitate retrieving the data.
  * 
  * It notifies Observers about changes in the data model.
@@ -70,6 +71,7 @@ public class ModelAccessor extends Observable {
 	private ObsProjectDao projectDao;
 	private SchedBlockDao schedBlockDao;
 	private ExecutiveDAO execDao;
+	private AtmParametersDao atmDao;
 		
 	public ModelAccessor() throws Exception {
 	    // There should be only one instance of the stateArchive in the process.
@@ -98,6 +100,7 @@ public class ModelAccessor extends Observable {
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);
         execDao = (ExecutiveDAO) ctx.getBean(SCHEDULING_EXECUTIVE_DAO_BEAN);
+        atmDao = (AtmParametersDao) ctx.getBean(SCHEDULING_ATM_DAO_BEAN);
 	}
 	
 	public StateArchive getStateArchive() {
@@ -118,6 +121,10 @@ public class ModelAccessor extends Observable {
 	
 	public ExecutiveDAO getExecutiveDao() {
 		return execDao;
+	}
+	
+	public AtmParametersDao getAtmDao() {
+		return atmDao;
 	}
 
 	public ProjectStatus[] getAllProjectStatuses()

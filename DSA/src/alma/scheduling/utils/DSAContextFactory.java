@@ -14,12 +14,12 @@ import org.springframework.context.support.AbstractApplicationContext;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.7 2011/03/25 15:00:08 dclarke Exp $
+ * $Id: DSAContextFactory.java,v 1.8 2011/05/04 23:21:21 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
-	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
-//	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "file:/export/home/flaminia/dclarke/ALMA/Development/TRUNK/HEAD/IntTest/test/config/testPolicy.ctx";
+	//protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
+	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "file:/export/home/griffin/javarias/scm/ALMA/HEAD/SCHEDULING/DSA/test/testPolicy.xml.context.xml";
 	public static final String SCHEDULING_DSA_RESULTS_DAO_BEAN="DSAResultDAO";
 	
 	private static AbstractApplicationContext context = null;

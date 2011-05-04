@@ -31,7 +31,8 @@ public class HourAngleRanker extends AbstractBaseRanker {
 		ranks.clear();
 		for(SchedBlock sb: sbs){
 			SBRank rank = new SBRank();
-			rank.setId(sb.getId());
+			rank.setDetails(this.rankerName);
+			rank.setUid(sb.getUid());
 			double ra = sb.getSchedulingConstraints().getRepresentativeTarget()
 					.getSource().getCoordinates().getRA() / 15.0;
 			double ha = CoordinatesUtil.getHourAngle(ut, ra, Constants.CHAJNANTOR_LONGITUDE);

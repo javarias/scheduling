@@ -81,7 +81,7 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
             return 5;
         else if (pwv > 2.748) //  pwv > 5.186
             return 6;
-        return -1;
+        return 0;
     }
     
     @Transactional

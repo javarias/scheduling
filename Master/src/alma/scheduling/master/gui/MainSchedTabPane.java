@@ -277,7 +277,7 @@ public class MainSchedTabPane extends JTabbedPane {
         interactiveB.setEnabled(true);
 //      TODO: Activate queued scheduling button after adding queued scheduling
         queuedB.setEnabled(false);
-        dynamicB.setEnabled(false);
+        dynamicB.setEnabled(true);
         manualB.setEnabled(true);
     }
 

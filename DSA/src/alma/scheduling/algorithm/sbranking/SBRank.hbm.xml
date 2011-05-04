@@ -19,9 +19,9 @@
         </property>
         <list name="breakdownScore" inverse="false" table="SBRANK" lazy="false" cascade="save-update,lock, delete, delete-orphan">
             <key>
-                <column name="ID" />
+                <column name="PARENT_ID" />
             </key>
-            <list-index></list-index>
+            <list-index column="POSITION"/>
             <one-to-many class="alma.scheduling.algorithm.sbranking.SBRank" />
         </list>
     </class>

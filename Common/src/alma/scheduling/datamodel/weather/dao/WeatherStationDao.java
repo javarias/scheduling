@@ -7,6 +7,7 @@ import alma.Control.CurrentWeather;
 import alma.Control.CurrentWeatherPackage.Humidity;
 import alma.Control.CurrentWeatherPackage.Temperature;
 import alma.ControlExceptions.IllegalParameterErrorEx;
+import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
@@ -21,7 +22,7 @@ import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
  * @since ALMA-8.1
  *
  */
-public class WeatherStationDao implements WeatherHistoryDAO {
+public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryDAO {
 
 	/**
 	 * This component reference should be set before to run any DSA in the online system

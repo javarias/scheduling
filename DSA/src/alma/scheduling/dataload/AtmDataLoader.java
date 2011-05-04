@@ -21,14 +21,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmDataLoader.java,v 1.5 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: AtmDataLoader.java,v 1.6 2011/05/04 23:21:21 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,15 +76,21 @@ public class AtmDataLoader implements DataLoader {
         this.configurationDao = configurationDao;
     }
     
-    private void createDataReader() throws FileNotFoundException {
-        Configuration config = configurationDao.getConfiguration(); 
-        String workDir = config.getWorkDirectory();
-        String weatherDir = config.getWeatherDirectory();
-        String weatherDirFullPath = workDir + "/" + weatherDir + "/";
-        File atmfile = new File(weatherDirFullPath + file);
-        FileReader fr = new FileReader(atmfile);
-        reader = new AtmTableReader(fr);                
-    }
+	private void createDataReader() throws FileNotFoundException {
+		if (file.startsWith("classpath:")) {
+			Reader br = new BufferedReader(new InputStreamReader(getClass()
+					.getClassLoader().getResourceAsStream(file.substring(10))));
+			reader = new AtmTableReader(br);
+		} else {
+			Configuration config = configurationDao.getConfiguration();
+			String workDir = config.getWorkDirectory();
+			String weatherDir = config.getWeatherDirectory();
+			String weatherDirFullPath = workDir + "/" + weatherDir + "/";
+			File atmfile = new File(weatherDirFullPath + file);
+			FileReader fr = new FileReader(atmfile);
+			reader = new AtmTableReader(fr);
+		}
+	}
 
     protected AtmData getNextAtmDatum() throws NumberFormatException,
             IOException {

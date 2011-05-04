@@ -1,8 +1,11 @@
 package alma.scheduling.algorithm.results.dao;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.hibernate.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.results.Result;
 import alma.scheduling.algorithm.sbranking.SBRank;
@@ -15,20 +18,26 @@ import alma.scheduling.datamodel.GenericDaoImpl;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDaoImpl.java,v 1.6 2011/03/22 22:32:07 javarias Exp $
+ * $Id: ResultsDaoImpl.java,v 1.7 2011/05/04 23:21:21 javarias Exp $
  */
 public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 
 	@Override
+	@Transactional(readOnly=false)
 	public void saveOrUpdate(Result result) {
 		Query query = getSession().createQuery("select res from Result as res where res.arrayName = ? order by res.time desc");
 		query.setParameter(0, result.getArrayName());
 		try {
 			Result old = (Result) query.list().get(1);
-			delete(old);
+			super.delete(old);
 		} catch (IndexOutOfBoundsException ex) {
 			//Do nothing there are no old results
 		}
+//		for (SBRank score: result.getScores()) {
+//			super.saveOrUpdate(score);
+//			for(SBRank breakdownScore: score.getBreakdownScore())
+//				super.saveOrUpdate(breakdownScore);
+//		}
 		super.saveOrUpdate(result);
 	}
 
@@ -40,7 +49,7 @@ public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 			return (Result) query.list().get(0);
 		} catch (IndexOutOfBoundsException ex) {
 			Result retVal = new Result();
-			retVal.setScores(new HashSet<SBRank>());
+			retVal.setScores(new ArrayList<SBRank>());
 			return retVal;
 		}
 	}
@@ -53,7 +62,7 @@ public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 			return (Result) query.list().get(1);
 		} catch (IndexOutOfBoundsException ex) {
 			Result retVal = new Result();
-			retVal.setScores(new HashSet<SBRank>());
+			retVal.setScores(new ArrayList<SBRank>());
 			return retVal;
 		}
 	}

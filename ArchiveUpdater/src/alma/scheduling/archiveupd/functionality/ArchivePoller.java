@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.9 2011/03/28 22:41:55 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.10 2011/05/04 23:21:21 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -22,9 +22,11 @@ package alma.scheduling.archiveupd.functionality;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.logging.Logger;
 
 
@@ -32,9 +34,14 @@ import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveImportEvent;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.SchedulingException;
+import alma.scheduling.dataload.AtmDataLoader;
+import alma.scheduling.dataload.AtmTableReader.AtmData;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.ExecutivePercentage;
+import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
+import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
@@ -46,14 +53,15 @@ import alma.scheduling.datamodel.obsproject.dao.Phase2XMLStoreProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.datamodel.weather.AtmParameters;
+import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.utils.CommonContextFactory;
-import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.9 2011/03/28 22:41:55 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.10 2011/05/04 23:21:21 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -66,6 +74,7 @@ public class ArchivePoller implements Observer{
 //	private ObsUnitDao    obsUnitDao;
 	private ExecutiveDAO execDao;
 	private ObsProjectDao obsProjectDao;
+	private AtmParametersDao atmDao;
 	
 	private Logger logger;
 	private ErrorHandling handler;
@@ -83,6 +92,7 @@ public class ArchivePoller implements Observer{
 //    private StatusEntityQueueBundle     statusQs;
 	/* End Fields
 	 * ============================================================= */
+
 	
 	
 	
@@ -101,6 +111,7 @@ public class ArchivePoller implements Observer{
 		this.schedBlockDao = ma.getSchedBlockDao();
 		this.obsProjectDao = ma.getObsProjectDao();
 		this.execDao = ma.getExecutiveDao();
+		this.atmDao = ma.getAtmDao();
 		configDao = (ConfigurationDao) CommonContextFactory
 				.getContext()
 				.getBean(CommonContextFactory.SCHEDULING_CONFIGURATION_DAO_BEAN);
@@ -166,6 +177,8 @@ public class ArchivePoller implements Observer{
      */
     private void initialPollArchive() {
     	logger.info("Starting initial poll of the archive");
+    	
+    	fillAtmData();
     	
     	createExecutives();
     	
@@ -237,14 +250,30 @@ public class ArchivePoller implements Observer{
     private void createExecutives(){
     	//Names retrieved from ObsProposal.xsd
     	String [] executiveNames = {"NONALMA","OTHER", "CL", "CHILE", "EA", "EU", "NA"};
+    	List<Executive> execs = new ArrayList<Executive>();
+    	List<ObservingSeason> seasons = new ArrayList<ObservingSeason>();
+    	Set<ExecutivePercentage> eps = new HashSet<ExecutivePercentage>();
+		ObservingSeason season = new ObservingSeason();
+		season.setName("Current Observing Season");
+		season.setStartDate(new Date());
+		season.setEndDate(new Date(System.currentTimeMillis() + 315360000 ));
+		seasons.add(season);
     	for (int i = 0; i < executiveNames.length; i++){
     		Executive exec =  new Executive();
     		exec.setName(executiveNames[i]);
     		//All executives will have the same percentage
     		//TODO: Change this: each executive has different percentages 
     		exec.setDefaultPercentage((float) 0.20);
-    		execDao.saveOrUpdate(exec);
+    		execs.add(exec);
+    		ExecutivePercentage ep = new ExecutivePercentage();
+    		ep.setExecutive(exec);
+    		ep.setSeason(season);
+    		ep.setPercentage((float) 0.2);
+    		ep.setTotalObsTimeForSeason(315360000 * 0.2);
+    		eps.add(ep);
     	}
+    	season.setExecutivePercentage(eps);
+    	execDao.saveObservingSeasonsAndExecutives(seasons, execs);
     }
     
     private void linkData(ObsProject proj){
@@ -272,6 +301,58 @@ public class ArchivePoller implements Observer{
     		sb.setCsv(proj.getCsv());
     		sb.setManual(proj.getManual());
     	}
+    }
+    
+    private void fillAtmData() {
+    	AtmDataLoader loader1 = new AtmDataLoader();
+    	loader1.setDao(atmDao);
+    	loader1.setFile("classpath:config/otData/SKY.SPE0001.trim");
+    	loader1.setMaxNumRecords(-1);
+    	loader1.setPwc(0.4722);
+    	
+    	AtmDataLoader loader2 = new AtmDataLoader();
+    	loader2.setDao(atmDao);
+    	loader2.setFile("classpath:config/otData/SKY.SPE0002.trim");
+    	loader2.setMaxNumRecords(-1);
+    	loader2.setPwc(0.658);
+    	
+    	AtmDataLoader loader3 = new AtmDataLoader();
+    	loader3.setDao(atmDao);
+    	loader3.setFile("classpath:config/otData/SKY.SPE0003.trim");
+    	loader3.setMaxNumRecords(-1);
+    	loader3.setPwc(0.9134);
+    	
+    	AtmDataLoader loader4 = new AtmDataLoader();
+    	loader4.setDao(atmDao);
+    	loader4.setFile("classpath:config/otData/SKY.SPE0004.trim");
+    	loader4.setMaxNumRecords(-1);
+    	loader4.setPwc(1.262);
+    	
+    	AtmDataLoader loader5 = new AtmDataLoader();
+    	loader5.setDao(atmDao);
+    	loader5.setFile("classpath:config/otData/SKY.SPE0005.trim");
+    	loader5.setMaxNumRecords(-1);
+    	loader5.setPwc(1.796);
+    	
+    	AtmDataLoader loader6 = new AtmDataLoader();
+    	loader6.setDao(atmDao);
+    	loader6.setFile("classpath:config/otData/SKY.SPE0006.trim");
+    	loader6.setMaxNumRecords(-1);
+    	loader6.setPwc(2.748);
+    	
+    	AtmDataLoader loader7 = new AtmDataLoader();
+    	loader7.setDao(atmDao);
+    	loader7.setFile("classpath:config/otData/SKY.SPE0007.trim");
+    	loader7.setMaxNumRecords(-1);
+    	loader7.setPwc(5.186);
+    	
+    	loader1.load();
+    	loader2.load();
+    	loader3.load();
+    	loader4.load();
+    	loader5.load();
+    	loader6.load();
+    	loader7.load();
     }
 	/* End Initial Polling of the ALMA Archives
 	 * ============================================================= */
@@ -409,6 +490,11 @@ public class ArchivePoller implements Observer{
     			obsProjectDao.findAll(ObsProject.class));
     	schedBlockDao.deleteAll(
     			schedBlockDao.findAll(SchedBlock.class));
+    	execDao.deleteAll(execDao.findAll(ExecutivePercentage.class));
+    	execDao.deleteAll(execDao.findAll(ExecutiveTimeSpent.class));
+    	execDao.deleteAll(execDao.findAll(ObservingSeason.class));
+    	execDao.deleteAll(execDao.findAll(Executive.class));
+    	atmDao.deleteAll(atmDao.findAll(AtmParameters.class));
     }
     
     
@@ -481,6 +567,7 @@ public class ArchivePoller implements Observer{
 			event.details = evt.getDetails();
 			logger.finer("Received notification update for project: " +
 					event.entityId + " Type: " + event.entityType + " status: " + event.status);
+			ArrayList<String> toBeUnregister =  new ArrayList<String>();
 			for (String callback: callbacks.keySet()){
 				try{
 					callbacks.get(callback).report(event);
@@ -488,11 +575,13 @@ public class ArchivePoller implements Observer{
 					logger.warning("Found null field in event, id: " + callback + " Reason: " + ex.getMessage());
 					
 				} catch (org.omg.CORBA.SystemException ex){
-					logger.warning("Found dead callback, id: " + callback + " De-regestering callback. Reason: " + ex.getMessage());
+					logger.fine("Found dead callback, id: " + callback + " De-regestering callback. Reason: " + ex.getMessage());
 					ex.printStackTrace();
-					deregisterCallback(callback);
+					toBeUnregister.add(callback);
 				}
 			}
+			for (String callback: toBeUnregister)
+				deregisterCallback(callback);
 		}
 	}
 

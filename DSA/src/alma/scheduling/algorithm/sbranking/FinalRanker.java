@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FinalRanker.java,v 1.11 2011/03/14 23:56:26 javarias Exp $"
+ * "@(#) $Id: FinalRanker.java,v 1.12 2011/05/04 23:21:21 javarias Exp $"
  */
 
 package alma.scheduling.algorithm.sbranking;
@@ -84,6 +84,7 @@ public class FinalRanker extends AbstractBaseRanker {
 
 		for (int sb = 0; sb < sbs.size(); sb++) {
 			SBRank rank = new SBRank();
+			rank.setUid(sbs.get(sb).getUid());
 			double score = 0;
 			for (i = 0; i < results.length; i++) {
 				rank.addRank(results[i].get(sb));
@@ -92,7 +93,7 @@ public class FinalRanker extends AbstractBaseRanker {
 			rank.setRank(score);
 			ranks.put(rank, sbs.get(sb));
 		}
-
+		
 		ArrayList<SBRank> retVal = new ArrayList<SBRank>(ranks.keySet());
 		printVerboseInfo(retVal, arrConf.getId(), ut);
 		return retVal;

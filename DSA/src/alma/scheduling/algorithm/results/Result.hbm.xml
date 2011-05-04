@@ -11,11 +11,12 @@
         <property name="arrayName" type="java.lang.String">
             <column name="ARRAYNAME" />
         </property>
-        <set name="scores" table="SBRANK" inverse="false" lazy="false" cascade="save-update,lock, delete, delete-orphan">
+        <list name="scores" table="SBRANK" inverse="false" lazy="false" cascade="save-update,lock, delete, delete-orphan">
             <key>
-                <column name="TIME" />
+                <column name="RESULT_TIME" />
             </key>
+            <list-index column="POSITION"/>
             <one-to-many class="alma.scheduling.algorithm.sbranking.SBRank" />
-        </set>
+        </list>
     </class>
 </hibernate-mapping>

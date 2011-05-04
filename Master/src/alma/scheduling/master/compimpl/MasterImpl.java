@@ -95,6 +95,8 @@ public class MasterImpl implements ComponentLifecycle,
 			WeatherStationDao.setWeatherStation(weatherComp);
 		} catch (AcsJContainerServicesEx e) {
 			m_logger.warning("Unable to retrieve Weather Station Controller Component: IDL:alma/Control/CurrentWeather:1.0");
+		} catch (org.omg.CORBA.SystemException e) {
+			m_logger.warning("Unable to retrieve Weather Station Controller Component: IDL:alma/Control/CurrentWeather:1.0");
 		}
 		m_logger.finest("initialize() called...");
     }

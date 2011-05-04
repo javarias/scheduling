@@ -135,7 +135,7 @@
 	</bean>
 	
 	<!-- DAO Beans -->
-	<bean id="DSAResultDAO" 
+	<bean id="DSAResultDAO" scope="singleton"
 		class="alma.scheduling.algorithm.results.dao.ResultsDaoImpl">
 		<property name="sessionFactory" ref="dsaResultsSessionFactory"/>
 	</bean>

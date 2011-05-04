@@ -21,16 +21,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmParametersDao.java,v 1.3 2010/04/14 17:22:12 javarias Exp $"
+ * "@(#) $Id: AtmParametersDao.java,v 1.4 2011/05/04 23:21:21 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
 import java.util.List;
 import java.util.Set;
 
+import alma.scheduling.datamodel.GenericDao;
 import alma.scheduling.datamodel.weather.AtmParameters;
 
-public interface AtmParametersDao {
+public interface AtmParametersDao extends GenericDao{
 
     public void loadAtmParameter(Object domainObject);
 

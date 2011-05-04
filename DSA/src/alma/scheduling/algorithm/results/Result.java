@@ -1,8 +1,9 @@
 package alma.scheduling.algorithm.results;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+
 
 import alma.scheduling.algorithm.sbranking.SBRank;
 
@@ -29,7 +30,7 @@ public class Result {
 	 * 
 	 *  @see SBRank
 	 */
-	private Set<SBRank> scores = new HashSet<SBRank>();
+	private List<SBRank> scores = new ArrayList<SBRank>();
 	
 	public Date getTime() {
 		return time;
@@ -46,11 +47,11 @@ public class Result {
 	// this method to return the scores already sorted, either stop
 	// the InteractivePanel duplicating this effort or tell David and
 	// he'll do it.
-	public Set<SBRank> getScores() {
+	public List<SBRank> getScores() {
 		return scores;
 	}
 	
-	public void setScores(Set<SBRank> scores) {
+	public void setScores(List<SBRank> scores) {
 		this.scores = scores;
 	}
 	
