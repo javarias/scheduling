@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: GenericDaoImpl.java,v 1.17 2011/05/04 23:21:21 javarias Exp $"
+ * "@(#) $Id: GenericDaoImpl.java,v 1.18 2011/05/05 21:46:20 javarias Exp $"
  */
 package alma.scheduling.datamodel;
 
@@ -48,8 +48,6 @@ public abstract class GenericDaoImpl extends HibernateDaoSupport implements Gene
     @Transactional(readOnly=false)
     public <T> void delete(T obj) {
         getHibernateTemplate().delete(obj);
-        getHibernateTemplate().evict(obj);
-        getHibernateTemplate().flush();
     }
 
     @Override

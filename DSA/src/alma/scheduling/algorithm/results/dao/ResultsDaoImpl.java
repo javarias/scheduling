@@ -1,8 +1,6 @@
 package alma.scheduling.algorithm.results.dao;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import org.hibernate.Query;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +16,7 @@ import alma.scheduling.datamodel.GenericDaoImpl;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: ResultsDaoImpl.java,v 1.7 2011/05/04 23:21:21 javarias Exp $
+ * $Id: ResultsDaoImpl.java,v 1.8 2011/05/05 21:46:20 javarias Exp $
  */
 public class ResultsDaoImpl extends GenericDaoImpl implements ResultsDao {
 

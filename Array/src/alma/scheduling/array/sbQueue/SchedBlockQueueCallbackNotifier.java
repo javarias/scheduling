@@ -69,7 +69,6 @@ public class SchedBlockQueueCallbackNotifier implements Observer {
                 	callback.report(notification.getItem().getTimestamp(), notification.getOperation(), uids, "");
                 }
                 catch (org.omg.CORBA.TRANSIENT ex){
-//                	logger.info("Forcing Unregister of Queue Callback with key: " + key);
                 	toBeUnregistered.add(key);
                 }
     		}

@@ -18,17 +18,14 @@
 
 package alma.scheduling.array.sbQueue;
 
-import alma.scheduling.ArrayGUIOperation;
-import alma.scheduling.ArrayOperations;
 import alma.scheduling.QueueOperation;
-import alma.scheduling.array.guis.ArrayGUINotification;
 
 /**
  * Subclass to allow us to insert scheduling specific behaviour to an
  * ObservableReorderingBlockingQueue<E>.
  * 
  * @author dclarke
- * $Id: DefaultSchedulingQueue.java,v 1.3 2011/03/18 00:20:23 dclarke Exp $
+ * $Id: DefaultSchedulingQueue.java,v 1.4 2011/05/05 21:46:20 javarias Exp $
  */
 public class DefaultSchedulingQueue<E> extends
 		ObservableReorderingBlockingQueue<E> {
@@ -40,8 +37,10 @@ public class DefaultSchedulingQueue<E> extends
 	@Override
 	public E take() throws InterruptedException {
 		if (isEmpty()) {
+			//Empty item to avoid crash in the Queue callback notifier
+			final SchedBlockItem item = new SchedBlockItem("", System.currentTimeMillis());
     		final QueueNotification qn = new QueueNotification(
-    				QueueOperation.WAITING, null);
+    				QueueOperation.WAITING, item);
     		setChanged();
     		notifyObservers(qn);
 		}
