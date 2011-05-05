@@ -55,11 +55,11 @@ public class ExistingArraysTabController extends SchedulingPanelController
 		} catch (AcsJContainerServicesEx e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
+			cs.getLogger().info(e.getMessage());
 			masterScheduler.addMonitorMaster(
 					this.toString() + "_" + System.currentTimeMillis(),
 					callback._this());
 		} finally {
-			releaseMSRef();
 		}
 
 	}
