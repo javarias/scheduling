@@ -299,12 +299,19 @@ public class CreateArrayController extends SchedulingPanelController {
         String[] values = new String[map12.size()];
         //values = (String[])map12.values().toArray(values);
         values = (String[])map12.keySet().toArray(values);
-        
+  
         //map total power antennas
         String[] TPkeys = new String[mapTP.size()];
         TPkeys = (String[])((LinkedHashMap)mapTP).keySet().toArray(TPkeys);
         String[] TPvalues = new String[mapTP.size()];
         TPvalues = (String[])mapTP.keySet().toArray(TPvalues);
+        
+        //map 7m antennas
+        String[] SevenMkeys = new String[map7.size()];
+        SevenMkeys = (String[])((LinkedHashMap)map7).keySet().toArray(SevenMkeys);
+        String[] SevenMvalues = new String[map7.size()];
+        SevenMvalues = (String[])map7.keySet().toArray(SevenMvalues);
+        
         //logger.info("Number of Antennas be selected:"+cbEntries.length);
         for(int i=0; i < cbEntries.length; i++){
             //antennas[i] = (cbEntries[i].getDisplayName());
@@ -320,10 +327,17 @@ public class CreateArrayController extends SchedulingPanelController {
                 }
             }
             
-           
             for(int x=0; x < TPvalues.length; x++){
                 if(TPvalues[x].equals(cbEntries[i].getDisplayName()) ){
                     antennas[i] = TPkeys[x];
+                    logger.fine("AntennaName = "+antennas[i]);
+                    break;
+                }
+            }
+            
+            for(int x=0; x < SevenMvalues.length; x++){
+                if(SevenMvalues[x].equals(cbEntries[i].getDisplayName()) ){
+                    antennas[i] = SevenMkeys[x];
                     logger.fine("AntennaName = "+antennas[i]);
                     break;
                 }
