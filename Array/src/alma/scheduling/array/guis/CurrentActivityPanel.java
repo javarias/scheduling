@@ -70,12 +70,12 @@ import alma.scheduling.array.executor.StoppingExecutionState;
 import alma.scheduling.array.guis.SBExecutionTableModel.When;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
-import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
+
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.10 2011/04/25 17:05:53 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.11 2011/05/11 21:16:30 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -362,7 +362,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 					}});
 		stopExec.setEnabled(true);
 		
-		destroyArray = newButton("Destroy",
+		destroyArray = newButton("Destroy Array",
 			"Destroy the array");
 		destroyArray.addActionListener(
 				new ActionListener(){
@@ -724,7 +724,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		moveUp.setEnabled(false);
 		moveDown.setEnabled(false);
 		delete.setEnabled(false);
-//		destroyArray.setEnabled(false);
+		destroyArray.setEnabled(false);
 	}
 	/* End GUI management
 	 * ============================================================= */
