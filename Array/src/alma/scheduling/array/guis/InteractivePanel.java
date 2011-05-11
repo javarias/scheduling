@@ -29,6 +29,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -96,7 +97,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.18 2011/03/28 23:32:55 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.19 2011/05/11 21:19:04 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -356,15 +357,18 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		final JPanel opDetailsPanel = new JPanel();
 		final JPanel sbDetailsPanel = new JPanel();
-
+		JScrollPane scroll;
+		
 		opDetailsPanel.setLayout(new BorderLayout());
 		opDetailsPanel.add(new JLabel("Project Details"),
 				           BorderLayout.NORTH);
-		opDetailsPanel.add(opDetails, BorderLayout.CENTER);
+		scroll = new JScrollPane(opDetails);
+		opDetailsPanel.add(scroll, BorderLayout.CENTER);
 		sbDetailsPanel.setLayout(new BorderLayout());
 		sbDetailsPanel.add(new JLabel("SchedBlock Details"),
 				           BorderLayout.NORTH);
-		sbDetailsPanel.add(sbDetails, BorderLayout.CENTER);
+		scroll = new JScrollPane(sbDetails);
+		sbDetailsPanel.add(scroll, BorderLayout.CENTER);
 
 		
 		final JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
@@ -1437,12 +1441,23 @@ public class InteractivePanel extends AbstractArrayPanel
 			                          Map<String, SBRank>  scores,
 			                          Map<String, Integer> ranks) {
 
-		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(result.getScores());
-		// SBRank implements Comparable for us
+		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(
+				new Comparator<SBRank>(){
+
+					@Override
+					public int compare(SBRank o1, SBRank o2) {
+						// We want higher scores first, so reverse
+						// the natural ordering.
+						return o2.compareTo(o1);
+					}});
+		
+		sorted.addAll(result.getScores());
 
 		int r = 1;
 
 		for (final SBRank sbRank : sorted) {
+			System.out.format("Adding SB %s at rank %d with score %s%n",
+					sbRank.getUid(), r, sbRank);
 			ranks.put(sbRank.getUid(), r++);
 			scores.put(sbRank.getUid(), sbRank);
 		}
