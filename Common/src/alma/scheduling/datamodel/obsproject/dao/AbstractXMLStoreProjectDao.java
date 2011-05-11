@@ -820,7 +820,8 @@ public abstract class AbstractXMLStoreProjectDao
 
 	private void logOneProjectStatus(final ProjectStatus projectStatus,
 			                         final ArchiveInterface archive,
-			                         final Formatter f) {
+			                         final Formatter f,
+			                         final int count) {
 		String projectId = projectStatus.getObsProjectRef().getEntityId();
 		String projectName;
 		if (archive.hasObsProject(projectId)) {
@@ -828,7 +829,8 @@ public abstract class AbstractXMLStoreProjectDao
 		} else {
 			projectName = "<none>";
 		}
-		f.format("\tProject %s, PS %s, OP %s, status is %s%n",
+		f.format("%n%7d\tProject %s, PS %s, OP %s, status is %s%n",
+				count,
 				projectName, 
 				projectStatus.getProjectStatusEntity().getEntityId(),
 				projectStatus.getObsProjectRef().getEntityId(),
@@ -853,12 +855,14 @@ public abstract class AbstractXMLStoreProjectDao
 				archive.numSBStatuses(),
 			    ((archive.numSBStatuses()==1)? "": "es")));
 		
+		int output = 0;
+		
 		for (final ProjectStatus ps : archive.projectStatuses()) {
 			final StringBuilder sb = new StringBuilder();
 			final Formatter f = new Formatter(sb);
 			
 			try {
-				logOneProjectStatus(ps, archive, f);
+				logOneProjectStatus(ps, archive, f, ++output);
 				logger.info(sb.toString());
 			} catch (Exception e) {
 				logger.warning(String.format(
