@@ -375,33 +375,40 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			for (final alma.entity.xmlbinding.schedblock.SchedBlockRefT childSBRef : choice.getSchedBlockRef()) {
 				final String id = childSBRef.getEntityId();
 				final alma.entity.xmlbinding.sbstatus.SBStatus sbs = sbsByDomainId.get(id);
-				try {
-    				final String state = sbs.getStatus().getState().toString();
-    				if (sbPhase2RunnableStates.contains(state)) {
-    					try {
-    						archive.getSchedBlock(id);
-    						logger.info(String.format(
-    								"Succesfully got APDM SchedBlock %s",
-    								id));
-    					} catch (EntityException deserialiseEx) {
-    						logger.warning(String.format(
-    								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
-    								id,
-    								deserialiseEx.getMessage()));
-    					} catch (UserException retrieveEx) {
-    						logger.warning(String.format(
-    								"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
-    								id,
-    								retrieveEx.getMessage()));
-    					}
-    				} else {
-    					logger.info(String.format(
-    							"APDM SchedBlock %s is in an uninteresting state (%s) - skipping it",
-    							id, state));
-    				}
-				} catch (NullPointerException ex) {
-				    ex.printStackTrace();
-				    logger.severe("null pointer exception: " + ex);
+				if (sbs != null) {
+					try {
+						final String state = sbs.getStatus().getState().toString();
+						if (sbPhase2RunnableStates.contains(state)) {
+							try {
+								archive.getSchedBlock(id);
+								logger.info(String.format(
+										"Succesfully got APDM SchedBlock %s",
+										id));
+							} catch (EntityException deserialiseEx) {
+								logger.warning(String.format(
+										"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+										id,
+										deserialiseEx.getMessage()));
+							} catch (UserException retrieveEx) {
+								logger.warning(String.format(
+										"can not get APDM SchedBlock %s from XML Store - %s, (skipping it)",
+										id,
+										retrieveEx.getMessage()));
+							}
+						} else {
+							logger.info(String.format(
+									"APDM SchedBlock %s is in an uninteresting state (%s) - skipping it",
+									id, state));
+						}
+					} catch (NullPointerException ex) {
+						ex.printStackTrace();
+						logger.severe("null pointer exception: " + ex);
+					}
+				} else {
+					// Couldn't find SBStatus for child SB in cache
+					logger.warning(String.format(
+							"SBStatus for APDM SchedBlock %s (a child of APDM ObsUnitSet %s in APDM ObsProject %s) is not in cache - skipping it",
+							id, apdmOUS.getEntityPartId(), apdmOUS.getObsProjectRef().getEntityId()));
 				}
 			}
 		} else {
