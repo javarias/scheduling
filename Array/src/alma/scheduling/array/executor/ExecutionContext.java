@@ -90,7 +90,6 @@ public class ExecutionContext {
     private SchedBlockItem schedBlockItem;
     
     private SchedBlock schedBlock;
-    private boolean csv;
     
     private Executor executor;
     
@@ -119,7 +118,6 @@ public class ExecutionContext {
     	this.schedBlockItem = schedBlockItem;
     	this.executor = executor;
     	this.schedBlock = getModel().getSchedBlockFromEntityId(schedBlockItem.getUid());
-    	this.csv = this.schedBlock.getCsv();
     	this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     	if (manual) {
     		state = new ManualReadyExecutionState(this);
@@ -144,8 +142,10 @@ public class ExecutionContext {
 				|| (state instanceof ManualRunningExecutionState)) {
 			StatusTStateType fromStatus = null;
 			StatusTStateType toStatus = null;
+			SchedBlock sb  = getSchedBlock();
+			SBStatus   sbs = getSBStatusOrNullFor(sb);
 
-			if (getSchedBlock().getCsv()) {
+			if (sb.isOnCSVLifecycle(sbs)) {
 				fromStatus = StatusTStateType.CSVREADY;
 				toStatus = StatusTStateType.CSVRUNNING;
 			} else {
@@ -188,8 +188,10 @@ public class ExecutionContext {
 		} else if (state instanceof ManualCompleteExecutionState) {
 			StatusTStateType fromStatus = null;
 			StatusTStateType toStatus = null;
+			SchedBlock sb  = getSchedBlock();
+			SBStatus   sbs = getSBStatusOrNullFor(sb);
 
-			if (getSchedBlock().getCsv()) {
+			if (sb.isOnCSVLifecycle(sbs)) {
 				fromStatus = StatusTStateType.CSVRUNNING;
 				toStatus = StatusTStateType.CSVREADY;
 			} else {
@@ -221,28 +223,6 @@ public class ExecutionContext {
 				final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
 				addExecStatus(sbStatus, StatusTStateType.BROKEN);
 				accountFailure(sbStatus);
-			} catch (Exception e) {
-				ErrorHandling.warning(logger, String.format(
-						"Error post-processing failed SchedBlock %s @ %s - %s",
-						schedBlockItem.getUid(), schedBlockItem.getTimestamp(),
-						e.getMessage()), e);
-				// this.setState(new FailedExecutionState(this));
-			} // The state transition is done inside this method
-		} else if (state instanceof FailedArchivingExecutionState) {
-			try {
-				FailedArchivingExecutionState faes = (FailedArchivingExecutionState) state;
-				final String message = String.format(
-						"Archiving of execution %s of SB %s @ %s on %s %s",
-						getExecBlockRef().entityId,
-						getSbUid(),
-						getQueuedTimestamp(),
-						executor.getArrayName(),
-						faes.wasInterrupted()? "was interrupted": "FAILED");
-				if (faes.wasInterrupted()) {
-					logger.warning(message);
-				} else {
-					logger.severe(message);
-				}
 			} catch (Exception e) {
 				ErrorHandling.warning(logger, String.format(
 						"Error post-processing failed SchedBlock %s @ %s - %s",
@@ -439,6 +419,7 @@ public class ExecutionContext {
                 try {
                     received = archivedCV.await(timeout, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                     return null;
                 }
                 if (!received) {
@@ -485,10 +466,6 @@ public class ExecutionContext {
 	}
     }
     
-    protected boolean isCSV() {
-    	return this.csv;
-    }
-    
     protected boolean isFullAuto() {
     	return executor.isFullAuto();
     }
@@ -516,6 +493,41 @@ public class ExecutionContext {
 	final StateArchive s = getModel().getStateArchive();
 	result = s.getSBStatus(schedBlock.getStatusEntity());
 	return result;
+    }
+    
+    /**
+     * Get the SBStatus for the given SchedBlock, or null if there's a problem
+     * @throws AcsJNoSuchEntityEx
+     *             if there is no entity in the archive matching the supplied
+     *             statusEntityId argument
+     */
+    private SBStatus getSBStatusOrNullFor(SchedBlock schedBlock) {
+    	SBStatus result = null;
+
+    	try {
+    		result = getSBStatusFor(schedBlock);
+    	} catch (AcsJNullEntityIdEx e) {
+    		ErrorHandling.severe(logger,
+    				String.format("Missing SBStatus id in SchedBlock %s - %s",
+    						schedBlock.getUid(),
+    						e.getMessage()),
+    				e);
+    	} catch (AcsJNoSuchEntityEx e) {
+    		ErrorHandling.severe(logger,
+    				String.format("Cannot get SBStatus %s for SchedBlock %s from the StateArchive - %s",
+    						schedBlock.getStatusEntity().getEntityId(),
+    						schedBlock.getUid(),
+    						e.getMessage()),
+    				e);
+    	} catch (AcsJInappropriateEntityTypeEx e) {
+    		ErrorHandling.severe(logger,
+    				String.format("Entity %s is not an SBStatus (which we were expecting as it was referenced in SchedBlock %s) - %s",
+    						schedBlock.getStatusEntity().getEntityId(),
+    						schedBlock.getUid(),
+    						e.getMessage()),
+    				e);
+    	}
+    	return result;
     }
     
     /**
@@ -789,40 +801,40 @@ public class ExecutionContext {
     	schedBlock.getSchedBlockControl().setExecutionCount(schedBlock.getSchedBlockControl().getExecutionCount() + 1);
     	ObsProject prj = getModel().getObsProjectDao().findByEntityId(schedBlock.getProjectUid());
     	prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
-    	
-    	//Avoid saves to the SWDB, due synch issues
-//    	model.getObsProjectDao().saveOrUpdate(prj);
-//		model.getSchedBlockDao().saveOrUpdate(schedBlock);
-		
-		// Update State Archive Statuses
-		SchedBlock sb = getSchedBlock();
-		SBStatusEntityT sbId = sb.getStatusEntity();
+
+ //     Avoid saves to the SWDB, due synch issues
+//     	model.getObsProjectDao().saveOrUpdate(prj);
+// 		model.getSchedBlockDao().saveOrUpdate(schedBlock);
+
+    	// Update State Archive Statuses
+    	SchedBlock sb = getSchedBlock();
+    	SBStatusEntityT sbId = sb.getStatusEntity();
 
     	updateForSuccess(sbStatus,
-		                 dateFormat.format(new Date()),
-		                 (int) secs,
-		                 sb.getCsv());
-    	
-	// Do the state transition
-	StatusTStateType fromStatus = null;
-	StatusTStateType toStatus = null;
+    			dateFormat.format(new Date()),
+    			(int) secs,
+    			sb.getCsv() || sb.isOnCSVLifecycle(sbStatus));
 
-	if (sb.getCsv()) {
-	    fromStatus = StatusTStateType.CSVRUNNING;
-	    toStatus = StatusTStateType.CSVREADY;
-	} else {
-	    fromStatus = StatusTStateType.RUNNING;
-	    if (executor.fullAuto()) {
-		if (getSchedBlock().needsMoreExecutions(sbStatus)) {
-		    toStatus = StatusTStateType.READY;
-		} else {
-		    toStatus = StatusTStateType.SUSPENDED;
-		}
-	    } else {
-		toStatus = StatusTStateType.SUSPENDED;
-	    }
-	}
-	doStateArchiveTransition(sbId, fromStatus, toStatus);
+    	// Do the state transition
+    	StatusTStateType fromStatus = null;
+    	StatusTStateType toStatus = null;
+
+    	if (sb.isOnCSVLifecycle(sbStatus)) {
+    		fromStatus = StatusTStateType.CSVRUNNING;
+    		toStatus = StatusTStateType.CSVREADY;
+    	} else {
+    		fromStatus = StatusTStateType.RUNNING;
+    		if (executor.fullAuto()) {
+    			if (getSchedBlock().needsMoreExecutions(sbStatus)) {
+    				toStatus = StatusTStateType.READY;
+    			} else {
+    				toStatus = StatusTStateType.SUSPENDED;
+    			}
+    		} else {
+    			toStatus = StatusTStateType.SUSPENDED;
+    		}
+    	}
+    	doStateArchiveTransition(sbId, fromStatus, toStatus);
     }
     
     public void accountFailure(SBStatus sbStatus)
@@ -852,12 +864,12 @@ public class ExecutionContext {
     	StatusTStateType fromStatus = null;
     	StatusTStateType toStatus = null;
 	
-    	if (getSchedBlock().getCsv()) {
-	    fromStatus = StatusTStateType.CSVRUNNING;
-	    toStatus = StatusTStateType.CSVREADY;
+    	if (getSchedBlock().isOnCSVLifecycle(sbStatus)) {
+    		fromStatus = StatusTStateType.CSVRUNNING;
+    		toStatus = StatusTStateType.CSVREADY;
     	} else {
-	    fromStatus = StatusTStateType.RUNNING;
-	    toStatus = StatusTStateType.SUSPENDED;
+    		fromStatus = StatusTStateType.RUNNING;
+    		toStatus = StatusTStateType.SUSPENDED;
     	}
     	doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus, toStatus);
     }
