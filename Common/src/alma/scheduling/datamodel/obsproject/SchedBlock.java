@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.13 2011/03/11 00:04:47 dclarke Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.14 2011/05/11 21:09:23 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -254,6 +254,15 @@ public class SchedBlock extends ObsUnit {
 				getCoordinates();
 		} catch (NullPointerException npe) {
 			return null;
+		}
+	}
+
+	public boolean isOnCSVLifecycle(SBStatus sbStatus) {
+		try {
+			final String state = sbStatus.getStatus().getState().toString();
+			return state.startsWith("CSV");
+		} catch (Exception e) {
+			return false;
 		}
 	}
 
