@@ -36,7 +36,7 @@ import alma.scheduling.utils.Format;
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.3 2011/03/28 23:32:55 dclarke Exp $
+ * $Id: SchedBlockFormatter.java,v 1.4 2011/05/11 21:17:27 dclarke Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*
@@ -308,7 +308,7 @@ public class SchedBlockFormatter extends EntityFormatter {
 		
 		if (!noScores) {
 			startTR();
-			tdItalic("Overall", 2);
+			tdItalic("Overall Score", 2);
 			try {
 				td(currScore.getRank());
 			} catch (NullPointerException e) {
@@ -341,7 +341,7 @@ public class SchedBlockFormatter extends EntityFormatter {
 				final SBRank r = either.get(i);
 				startTR();
 				td("");
-				tdItalic(r.getDetails());
+				tdItalic(stripSuffix(r.getDetails()));
 				try {
 					td(currParts.get(i).getRank());
 				} catch (NullPointerException e) {
@@ -356,6 +356,19 @@ public class SchedBlockFormatter extends EntityFormatter {
 			}
 		}
 
+	}
+	
+	final static String[] CommonSuffixes = { "Ranker", "Scorer" };
+
+	private String stripSuffix(String details) {
+		for (final String suffix : CommonSuffixes) {
+			int pos = details.lastIndexOf(suffix);
+			if (pos > 0) {
+				// > 0 to avoid the suffix being at the start of the String
+				return details.substring(0, pos);
+			}
+		}
+		return details;
 	}
 	/* End Utilities
 	 * ============================================================= */
