@@ -23,7 +23,7 @@ import java.util.Formatter;
 /**
  *
  * @author dclarke
- * $Id: EntityFormatter.java,v 1.1 2011/03/11 00:06:34 dclarke Exp $
+ * $Id: EntityFormatter.java,v 1.2 2011/05/11 21:17:00 dclarke Exp $
  */
 public abstract class EntityFormatter {
 
@@ -135,12 +135,12 @@ public abstract class EntityFormatter {
 	}
 	public void td(double contents) {
 		buffer.append("<td>");
-		format.format("%5.2f", contents);
+		format.format("%8.5f", contents);
 		buffer.append("</td>");
 	}
 	public void td(double contents, int span) {
 		format.format("<td colspan=\"%d\">", span);
-		format.format("%5.2f", contents);
+		format.format("%8.5f", contents);
 		buffer.append("</td>");
 	}
 	public void header(int level, String contents) {
