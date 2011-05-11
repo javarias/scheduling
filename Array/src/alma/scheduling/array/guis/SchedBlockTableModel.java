@@ -42,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.11 2011/03/18 21:47:28 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.12 2011/05/11 21:18:02 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -149,6 +149,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		final int[] result = {
 				Column_Rank,
 				Column_Score,
+				Column_PrevRank,
+				Column_PrevScore,
 				Column_EntityId,
 				Column_PI,
 				Column_Executive,
@@ -197,6 +199,12 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	/** The ranks of the data, keyed by SchedBlock UID */
 	private Map<String, Integer> ranks;
 	
+	/** The previous scores  of the data, keyed by SchedBlock UID */
+	private Map<String, SBRank> prevScores;
+	
+	/** The previous ranks of the data, keyed by SchedBlock UID */
+	private Map<String, Integer> prevRanks;
+	
 	/** Do we use the scores? */
 	private boolean useScores;
 	
@@ -207,6 +215,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		this.data = new ArrayList<SchedBlock>();
 		this.scores = new HashMap<String, SBRank>();
 		this.ranks  = new HashMap<String, Integer>();
+		this.prevScores = new HashMap<String, SBRank>();
+		this.prevRanks  = new HashMap<String, Integer>();
 		this.fireTableDataChanged();
 	}
 	
@@ -225,6 +235,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	public void setScores(Map<String, SBRank>  scores,
 						  Map<String, Integer> ranks) {
 		if (useScores) {
+			this.prevScores = this.scores;
+			this.prevRanks  = this.ranks;
 			this.scores = scores;
 			this.ranks  = ranks;
 			fireTableDataChanged();
@@ -261,6 +273,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int       Column_Dec = 11;
 	private static final int      Column_Rank = 12;
 	private static final int     Column_Score = 13;
+	private static final int  Column_PrevRank = 14;
+	private static final int Column_PrevScore = 15;
 	
 
 	/* (non-Javadoc)
@@ -285,6 +299,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		final SchedBlock schedBlock;
+		final String     uid;
 
 		try {
 			schedBlock = getData().get(rowIndex);
@@ -330,7 +345,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				return "n/a";
 			}
 		case Column_Rank:
-			final String uid = schedBlock.getUid();
+			uid = schedBlock.getUid();
 			if (ranks.containsKey(uid)) {
 				return ranks.get(uid);
 			}
@@ -338,6 +353,19 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_Score:
 			try {
 				final SBRank rank = scores.get(schedBlock.getUid());
+				return rank.getRank();
+			} catch (Exception e) {
+			}
+			return noScore;
+		case Column_PrevRank:
+			uid = schedBlock.getUid();
+			if (prevRanks.containsKey(uid)) {
+				return prevRanks.get(uid);
+			}
+			return noRank;
+		case Column_PrevScore:
+			try {
+				final SBRank rank = prevScores.get(schedBlock.getUid());
 				return rank.getRank();
 			} catch (Exception e) {
 			}
@@ -385,6 +413,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return Integer.class;
 		case Column_Score:
 			return Double.class;
+		case Column_PrevRank:
+			return Integer.class;
+		case Column_PrevScore:
+			return Double.class;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnClass(%d)",
@@ -431,6 +463,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Rank";
 		case Column_Score:
 			return "Score";
+		case Column_PrevRank:
+			return "Previous Rank";
+		case Column_PrevScore:
+			return "Previous Score";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
