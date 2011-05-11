@@ -41,27 +41,6 @@ public class ArrayPanel extends AbstractArrayPanel {
 		initialize();
 	}
 	
-	private void initializeWithArrayName() {
-		cup = new CurrentActivityPanel(this.arrayName);
-		ip = new InteractivePanel(this.arrayName);
-		
-		JPanel left = new JPanel(new BorderLayout());
-		JPanel right = new JPanel(new BorderLayout());
-		right.add(cup, BorderLayout.CENTER);
-		left.add(ip, BorderLayout.CENTER);
-		
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(450);
-		cup.setSize(400, 800);
-		ip.setSize(400, 800);
-		this.add(splitPane, BorderLayout.CENTER);
-		
-		title = new JLabel();
-		setTitle(arrayName, "Initializing");
-		this.add(title, BorderLayout.NORTH);
-	}
-	
 	private void initialize(){
 		cup = new CurrentActivityPanel();
 		ip = new InteractivePanel();
@@ -86,7 +65,7 @@ public class ArrayPanel extends AbstractArrayPanel {
 	private void setTitle(String arrayName, String arrayMode) {
 		title.setText(String.format(
 				"<html><font size=\"5\" color=%s>%s %s</font></html>",
-				this.TitleColour,
+				ArrayPanel.TitleColour,
 				arrayMode,
 				arrayName
 		));
