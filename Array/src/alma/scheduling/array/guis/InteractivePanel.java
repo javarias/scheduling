@@ -97,7 +97,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.19 2011/05/11 21:19:04 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.20 2011/05/12 00:05:59 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1448,7 +1448,11 @@ public class InteractivePanel extends AbstractArrayPanel
 					public int compare(SBRank o1, SBRank o2) {
 						// We want higher scores first, so reverse
 						// the natural ordering.
-						return o2.compareTo(o1);
+						final int first = o2.compareTo(o1);
+						if (first != 0) {
+							return first;
+						}
+						return o2.getUid().compareTo(o1.getUid());
 					}});
 		
 		sorted.addAll(result.getScores());
@@ -1456,8 +1460,6 @@ public class InteractivePanel extends AbstractArrayPanel
 		int r = 1;
 
 		for (final SBRank sbRank : sorted) {
-			System.out.format("Adding SB %s at rank %d with score %s%n",
-					sbRank.getUid(), r, sbRank);
 			ranks.put(sbRank.getUid(), r++);
 			scores.put(sbRank.getUid(), sbRank);
 		}
