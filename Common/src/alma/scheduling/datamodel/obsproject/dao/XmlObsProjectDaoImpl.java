@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.21 2011/02/15 12:42:43 ahoffsta Exp $"
+ * "@(#) $Id: XmlObsProjectDaoImpl.java,v 1.22 2011/05/15 22:18:38 ahoffsta Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -42,6 +42,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ArrayType;
@@ -210,7 +212,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     scip.setRepresentativeBandwidth(xmlSciParams.getRepresentativeBandwidth());
                     scip.setRepresentativeFrequency(xmlSciParams.getRepresentativeFrequency());
                     scip.setSensitivityGoal(xmlSciParams.getSensitivityGoal());
-		System.out.println("Sensitivity Goal: " + scip.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
+					System.out.println("Sensitivity Goal: " + scip.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
                     schedBlock.addObservingParameters(scip);
                     for (Target t : targets.values()) { // TODO fix this
                         HashSet<ObservingParameters> obsParams = new HashSet<ObservingParameters>();
@@ -283,6 +285,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         return null;
     }
     
+    @Transactional(readOnly=true)
     public void saveObsProject(ObsProject prj) {
         String prjDir = configurationDao.getConfiguration().getProjectDirectory();
         String absPrjDir = System.getenv("APRC_WORK_DIR") + "/" + prjDir;
@@ -318,6 +321,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
         }
     }
     
+    @Transactional(readOnly=true)
     private alma.scheduling.input.obsproject.generated.ObsUnitT getXmlObsUnit(ObsUnit obsUnit) {
         
         if (obsUnit instanceof ObsUnitSet) {
@@ -339,12 +343,14 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 new alma.scheduling.input.obsproject.generated.SchedBlockT();
             SchedBlock sb = (SchedBlock) obsUnit;
             // WeatherConstraints
-            WeatherConstraintsT wc = new WeatherConstraintsT();
-            wc.setMaxOpacity(sb.getWeatherConstraints().getMaxOpacity());
-            wc.setMaxSeeing(sb.getWeatherConstraints().getMaxSeeing());
-            wc.setMaxWindVelocity(sb.getWeatherConstraints().getMaxWindVelocity());
-            wc.setMinPhaseStability(sb.getWeatherConstraints().getMinPhaseStability());
-            xmlSchedBlock.setWeatherConstraints(wc);
+            if( sb.getWeatherConstraints() != null ){
+            	WeatherConstraintsT wc = new WeatherConstraintsT();
+	            wc.setMaxOpacity(sb.getWeatherConstraints().getMaxOpacity());
+	            wc.setMaxSeeing(sb.getWeatherConstraints().getMaxSeeing());
+	            wc.setMaxWindVelocity(sb.getWeatherConstraints().getMaxWindVelocity());
+	            wc.setMinPhaseStability(sb.getWeatherConstraints().getMinPhaseStability());
+	            xmlSchedBlock.setWeatherConstraints(wc);
+            }            
             // ObservingParameters
             Set<ObservingParameters> obsParams = sb.getObservingParameters();
             Map<XmlDomainXRef, ObsParametersT> xmlObsParams =
@@ -360,7 +366,7 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                     xmlSciParams.setRepresentativeBandwidth(scp.getRepresentativeBandwidth());
                     xmlSciParams.setRepresentativeFrequency(scp.getRepresentativeFrequency());
                     xmlSciParams.setSensitivityGoal(scp.getSensitivityGoal());
-		System.out.println("Sensitivity Goal: " + scp.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
+					System.out.println("Sensitivity Goal: " + scp.getSensitivityGoal() + " XXXX " + xmlSciParams.getSensitivityGoal() );
                     xmlOP.setScienceParameters(xmlSciParams);
                     xmlObsParams.put(new XmlDomainXRef(ObsParametersT.class, scp.getId()), xmlOP);
                     theOne = xmlOP;
@@ -376,13 +382,16 @@ public class XmlObsProjectDaoImpl implements XmlObsProjectDao {
                 XmlDomainXRef xref = new XmlDomainXRef(TargetT.class, t.getId());
                 xmlTarget.setId(xref.xmlRefId);
                 xmlTarget.setInstrumentSpecIdRef("");
-                xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().iterator().next().getId()));
+                if( t.getObservingParameters().iterator().hasNext() ){
+                	xmlTarget.setObsParametersIdRef(getXmlRefId(ObsParametersT.class, t.getObservingParameters().iterator().next().getId()));
+                }
                 xmlTarget.setSourceIdRef(getXmlRefId(FieldSourceT.class, t.getSource().getId()));
                 xmlTargets.put(xref, xmlTarget);
                 FieldSource src = t.getSource();
                 FieldSourceT xmlSrc = new FieldSourceT();
                 xmlSrc.setId(getXmlRefId(FieldSourceT.class, src.getId()));
-                xmlSrc.setName(src.getName());
+				if( src.getName() != null )
+	                xmlSrc.setName(src.getName());
                 xmlSrc.setRA(src.getCoordinates().getRA());
                 xmlSrc.setDec(src.getCoordinates().getDec());
                 if (!xmlSources.containsKey(new XmlDomainXRef(FieldSourceT.class, src.getId())))

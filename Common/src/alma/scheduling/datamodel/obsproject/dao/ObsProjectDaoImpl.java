@@ -11,11 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
+import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.Target;
 
 @Transactional
 public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, Remote {
@@ -63,10 +65,24 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
             logger.trace("hydrating SchedBlock");
             SchedBlock sb = (SchedBlock) ou;
             sb.getSchedulingConstraints().getMaxAngularResolution();
+            if( sb.getWeatherConstraints() != null )
+            	sb.getWeatherConstraints().getMaxOpacity();
             for (Iterator<ObservingParameters> iter = sb.getObservingParameters().iterator(); iter.hasNext();) {
 	            ObservingParameters params = iter.next();
 	            params.getId();
 	        }
+            for( Iterator<Target> iter = sb.getTargets().iterator(); iter.hasNext(); ){
+            	Target tar = iter.next();
+            	tar.getId();
+                for (Iterator<ObservingParameters> iter2 = tar.getObservingParameters().iterator(); iter2.hasNext();) {
+    	            ObservingParameters params = iter2.next();
+    	            params.getId();
+    	        }
+                tar.getSource().getId();
+				tar.getSource().getName();
+
+            }
+
             logger.debug("successfully casted SchedBlock");
             return;
         } else if (ou instanceof ObsUnitSet) {
