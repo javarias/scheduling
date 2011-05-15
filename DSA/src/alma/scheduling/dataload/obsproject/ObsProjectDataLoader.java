@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoader.java,v 1.5 2010/09/03 16:47:43 javarias Exp $"
+ * "@(#) $Id: ObsProjectDataLoader.java,v 1.6 2011/05/15 22:24:30 ahoffsta Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
@@ -92,7 +92,14 @@ public class ObsProjectDataLoader implements DataLoader {
 //    	for(ObsProject p: projects){
 //    	    dao.saveOrUpdate(p);
 //    	}
-        dao.saveOrUpdate(projects);
+    	try{
+    		dao.saveOrUpdate(projects);
+    	}catch(NullPointerException e){
+    		logger.error("List of project to save or update has " + projects.size() + " elements.");
+    		if( projects.size() == 0 )
+    			logger.error("No obs projects retrived. Please check your sources.");
+    		else e.printStackTrace();
+    	}
     }
 
     @Override

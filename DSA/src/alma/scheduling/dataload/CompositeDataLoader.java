@@ -21,18 +21,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CompositeDataLoader.java,v 1.6 2010/09/03 16:47:43 javarias Exp $"
+ * "@(#) $Id: CompositeDataLoader.java,v 1.7 2011/05/15 22:24:30 ahoffsta Exp $"
  */
 package alma.scheduling.dataload;
 
 import java.util.Iterator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 public class CompositeDataLoader implements DataLoader {
+	
+	private static Logger logger = LoggerFactory.getLogger(DataLinkerLocal.class);
 
     private List<DataLoader> loaders;
         
@@ -44,7 +48,13 @@ public class CompositeDataLoader implements DataLoader {
     @Transactional(readOnly=false)
     public void load() throws Exception {
         for (Iterator<DataLoader> iter = loaders.iterator(); iter.hasNext(); ) {
-            iter.next().load();
+        	DataLoader it = iter.next();
+            try{            	
+            	it.load();
+            }catch( Exception e ){
+            	logger.error("Bean: " + it.getClass());
+            	throw e;
+            }
         }
     }
     
