@@ -2,6 +2,8 @@ package alma.scheduling.psm.web;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.Path;
@@ -16,9 +18,12 @@ import org.zkoss.zul.Panel;
 import org.zkoss.zul.api.Window;
 
 import alma.scheduling.input.config.generated.Configuration;
+import alma.scheduling.psm.cli.Console;
 import alma.scheduling.psm.util.PsmContext;
 
 public class ConfigurationController extends GenericForwardComposer implements Initiator {
+
+    private static Logger logger = LoggerFactory.getLogger(Console.class);
 
 	private static final long serialVersionUID = -7010591114060503476L;
 	private Button buttonCancel;

@@ -31,7 +31,15 @@ public class PsmCli {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (args[0].compareTo("remote") == 0) {
+		System.out.println(	"\n" +
+							"Planning Mode Simulator - APRC Tool \n" +
+							"Version 0.8.1 \n" + 
+							"More info at: http://almasw.hq.eso.org/almasw/bin/view/SCHEDULING/PlanningModeSimulator \n"
+				);
+		if( args.length == 0 ){
+			Console console = Console.getConsole();
+			console.help();
+		}else if (args[0].compareTo("remote") == 0) {
 			System.out.println("Entering Remote mode");
 			RMIServer server = new RMIServer();
 			server.start();
@@ -41,14 +49,14 @@ public class PsmCli {
 			console.run(args);
 			// Wait until HSQLDB thread is finished to do his job
 			// This case applies when the simulator is using HSQLDB in File mode
-			if (Thread.activeCount() > 1) {
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+//			if (Thread.activeCount() > 1) {
+//				try {
+//					Thread.sleep(10000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
 		}
 		System.exit(0); // Exit code 0: normal termination
 	}

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="200"/>
+	<property name="ireport.y" value="118"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
 	<style name="Default"/>
 	<parameter name="totalAvailableTime" class="java.lang.String"/>
+	<parameter name="scientificTime" class="java.lang.String"/>
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="subtitle" class="java.lang.String"/>
+	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="seasonEnd" class="java.lang.String"/>
 	<field name="band" class="java.lang.String"/>
 	<field name="executive" class="java.lang.String"/>
 	<field name="lstRange" class="java.lang.String"/>
 	<field name="executionTime" class="java.lang.Double"/>
 	<field name="frequency" class="java.lang.Double"/>
+	<field name="totalExecutionTime" class="java.lang.Double"/>
 	<variable name="time0" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[($F{lstRange}.compareTo("0-1") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
@@ -117,7 +121,7 @@
 	</variable>
 	<group name="reportGroup">
 		<groupHeader>
-			<band height="46">
+			<band height="55">
 				<textField>
 					<reportElement style="Heading 2" mode="Opaque" x="0" y="0" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
 					<textElement verticalAlignment="Middle" markup="none">
@@ -126,57 +130,71 @@
 					<textFieldExpression class="java.lang.String"><![CDATA[$P{subtitle}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="338" y="26" width="100" height="20"/>
+					<reportElement style="Default" x="323" y="26" width="52" height="20"/>
 					<textElement>
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Time [hours]]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="26" width="43" height="20"/>
+					<reportElement style="Default" x="286" y="26" width="26" height="20"/>
 					<textElement>
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[RA]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="69" y="26" width="100" height="20"/>
+					<reportElement style="Default" x="44" y="26" width="52" height="20"/>
 					<textElement>
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Time [hours]]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="26" width="43" height="20"/>
+					<reportElement style="Default" x="4" y="26" width="26" height="20"/>
 					<textElement>
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
 					<text><![CDATA[RA]]></text>
 				</staticText>
 				<line>
-					<reportElement x="0" y="42" width="539" height="1"/>
+					<reportElement x="0" y="52" width="539" height="1"/>
 				</line>
 				<staticText>
-					<reportElement x="169" y="26" width="100" height="20"/>
+					<reportElement style="Default" x="192" y="26" width="59" height="20"/>
 					<textElement>
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Percentage]]></text>
+					<text><![CDATA[Percentage (Season)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="439" y="26" width="100" height="20"/>
+					<reportElement style="Default" x="468" y="26" width="59" height="20"/>
 					<textElement>
-						<font isBold="true"/>
+						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Percentage]]></text>
+					<text><![CDATA[Percentage (Season)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="115" y="26" width="59" height="20"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Percentage (Observed)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="392" y="26" width="59" height="20"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Percentage (Observed)]]></text>
 				</staticText>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="494">
+			<band height="405">
 				<barChart>
 					<chart isShowLegend="false">
-						<reportElement x="0" y="258" width="539" height="212"/>
+						<reportElement x="0" y="193" width="539" height="212"/>
 						<chartTitle/>
 						<chartSubtitle/>
 						<chartLegend>
@@ -187,7 +205,7 @@
 						<categorySeries>
 							<seriesExpression><![CDATA[""]]></seriesExpression>
 							<categoryExpression><![CDATA[$F{lstRange}]]></categoryExpression>
-							<valueExpression><![CDATA[$V{totalLstRangeTime}/3600]]></valueExpression>
+							<valueExpression><![CDATA[$V{totalLstRangeTime}]]></valueExpression>
 						</categorySeries>
 					</categoryDataset>
 					<barPlot isShowLabels="true" isShowTickLabels="true" isShowTickMarks="true">
@@ -199,7 +217,9 @@
 							<seriesColor seriesOrder="4" color="#004A94"/>
 							<seriesColor seriesOrder="5" color="#00356A"/>
 						</plot>
-						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font size="6"/>
+						</itemLabel>
 						<categoryAxisLabelExpression><![CDATA[new String("RA [hours]")]]></categoryAxisLabelExpression>
 						<categoryAxisFormat labelRotation="45.0">
 							<axisFormat verticalTickLabels="true">
@@ -225,592 +245,1106 @@
 					</barPlot>
 				</barChart>
 				<staticText>
-					<reportElement x="26" y="0" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="3" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[0-1]]></text>
 				</staticText>
-				<textField>
-					<reportElement x="69" y="0" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time0}/3600]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="0" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="true">
+					<reportElement style="Default" mode="Transparent" x="192" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time0}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time0}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="26" y="20" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="16" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[1-2]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="40" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="29" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[2-3]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="60" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="42" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[3-4]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="80" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="55" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[4-5]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="100" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="68" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[5-6]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="120" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="81" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[6-7]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="140" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="94" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[7-8]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="160" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="107" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[8-9]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="180" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="120" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[9-10]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="200" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="133" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[10-11]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="26" y="220" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="4" y="146" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[11-12]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="69" y="20" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time1}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="16" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time1}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="40" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time2}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="29" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time2}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="60" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time3}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="42" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time3}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="80" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time4}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="55" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time4}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="100" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time5}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="68" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time5}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="120" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time6}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="81" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time6}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="140" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time7}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="94" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time7}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="160" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time8}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="107" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time8}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="180" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time9}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="120" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time9}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="200" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time10}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="133" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time10}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="69" y="220" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time11}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="44" y="146" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time11}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="295" y="40" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="29" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[14-15]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="60" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="42" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[15-16]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="80" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="55" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[16-17]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="100" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="68" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[17-18]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="120" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="81" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[18-19]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="140" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="94" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[19-20]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="160" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="107" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[20-21]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="200" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="133" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[22-23]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="295" y="220" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="146" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[23-24]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="338" y="40" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time14}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="29" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time14}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="200" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time22}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="133" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time22}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="295" y="20" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="16" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[13-14]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="338" y="20" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time13}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="16" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time13}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="140" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time19}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="94" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time19}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="80" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time16}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="55" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time16}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="160" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time20}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="107" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time20}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="0" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time12}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="3" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time12}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="180" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time21}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="120" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time21}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="60" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time15}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="42" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time15}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="295" y="180" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="120" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[21-22]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="338" y="100" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time17}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="68" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time17}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement x="338" y="120" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time18}/3600]]></textFieldExpression>
+					<reportElement style="Default" x="323" y="81" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time18}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="295" y="0" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="286" y="3" width="26" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[12-13]]></text>
 				</staticText>
 				<textField>
-					<reportElement x="338" y="220" width="100" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time23}/3600]]></textFieldExpression>
-				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="20" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<reportElement style="Default" x="323" y="146" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time1}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time23}]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="40" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time2}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time1}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="60" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time3}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time2}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="80" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time4}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time3}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="100" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time5}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time4}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="120" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time6}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time5}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="140" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time7}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time6}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="160" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time8}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time7}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="180" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time9}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time8}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="200" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time10}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time9}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="169" y="220" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="true">
+					<reportElement style="Default" mode="Transparent" x="192" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time11}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time10}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="0" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="192" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time12}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time11}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="20" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time13}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time12}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="40" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time14}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time13}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="60" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time15}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time14}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="80" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time16}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time15}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="100" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time17}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time16}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="120" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time18}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time17}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="140" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time19}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time18}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="160" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time20}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time19}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="180" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time21}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time20}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="200" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time22}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time21}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="" isBlankWhenNull="false">
-					<reportElement mode="Transparent" x="438" y="220" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
-						<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time23}.doubleValue()/3600)/(Double.parseDouble($P{totalAvailableTime})/3600)*100]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time22}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="468" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time23}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="212" y="0" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="3" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="40" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="29" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="20" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="16" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="60" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="42" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="80" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="55" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="100" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="68" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="120" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="81" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="140" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="94" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="160" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="107" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="180" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="120" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="200" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="133" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="212" y="220" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="217" y="146" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="120" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="81" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="0" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="3" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="200" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="133" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="20" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="16" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="160" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="107" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="80" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="55" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="220" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="146" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="40" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="29" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="60" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="42" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="180" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="120" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="140" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="94" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="481" y="100" width="43" height="20"/>
-					<textElement/>
+					<reportElement style="Default" x="498" y="68" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
+				<line>
+					<reportElement style="Default" x="270" y="3" width="1" height="155" forecolor="#7A87CD"/>
+				</line>
+				<textField>
+					<reportElement style="Default" x="44" y="3" width="52" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{time0}]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time4}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time7}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time6}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time9}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="94" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="140" y="68" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time5}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="81" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="140" y="29" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time8}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="146" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="140" y="55" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="true">
+					<reportElement style="Default" mode="Transparent" x="115" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time10}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="133" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time2}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="42" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="true">
+					<reportElement style="Default" mode="Transparent" x="115" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time0}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="16" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time1}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="3" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time11}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="140" y="107" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="140" y="120" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="115" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time3}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="55" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time16}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="94" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time19}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="81" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time18}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="120" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time21}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="94" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="417" y="68" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="68" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time17}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="81" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="417" y="29" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="107" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time20}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="146" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="417" y="55" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="true">
+					<reportElement style="Default" mode="Transparent" x="392" y="133" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time22}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="133" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="29" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time14}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="42" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="true">
+					<reportElement style="Default" mode="Transparent" x="392" y="3" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time12}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="16" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="16" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time13}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="3" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="146" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time23}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Default" x="417" y="107" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Default" x="417" y="120" width="9" height="12"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<textField pattern="##0.0" isBlankWhenNull="false">
+					<reportElement style="Default" mode="Transparent" x="392" y="42" width="25" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
+						<font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{time15}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupFooter>
 	</group>
 	<group name="lstRangeGroup">
 		<groupExpression><![CDATA[$F{lstRange}]]></groupExpression>
 	</group>
-	<pageHeader>
-		<band height="68">
-			<rectangle>
-				<reportElement x="43" y="0" width="247" height="52" backcolor="#0C1068"/>
-				<graphicElement>
-					<pen lineWidth="0.0" lineStyle="Double"/>
-				</graphicElement>
-			</rectangle>
-			<rectangle>
-				<reportElement x="292" y="0" width="247" height="52" backcolor="#7A87CD"/>
-				<graphicElement>
-					<pen lineWidth="0.0"/>
-				</graphicElement>
-			</rectangle>
+	<title>
+		<band height="67">
 			<image>
 				<reportElement x="0" y="0" width="43" height="52"/>
 				<imageExpression class="java.lang.String"><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="308" y="10" width="88" height="14" forecolor="#010101"/>
+				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Hours in Season:]]></text>
 			</staticText>
 			<textField pattern="#,##0.0#;(#)">
-				<reportElement x="415" y="10" width="50" height="14" forecolor="#010101"/>
+				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime}) / 3600]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Heading 1" x="52" y="4" width="227" height="18" forecolor="#C5C5C5"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Planning Mode Simulator]]></text>
 			</staticText>
-			<line>
-				<reportElement x="0" y="52" width="539" height="1" forecolor="#1A0067"/>
-				<graphicElement>
-					<pen lineWidth="1.75"/>
-				</graphicElement>
-			</line>
 			<textField>
-				<reportElement style="Heading 1" x="52" y="28" width="227" height="18" forecolor="#FEFEFE"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{title}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067"/>
+				<graphicElement>
+					<pen lineWidth="1.75"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season starts:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season ends:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonStart}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonEnd}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
 		</band>
+	</title>
+	<pageHeader>
+		<band height="11"/>
 	</pageHeader>
 	<pageFooter>
 		<band height="40">
@@ -826,4 +1360,28 @@
 			</textField>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="247">
+			<staticText>
+				<reportElement x="0" y="12" width="250" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Explanation of the report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="38" width="539" height="148"/>
+				<textElement textAlignment="Justified">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[This report shows the requested/observed time dedicated to teach RA range.
+
+Column "RA" shows the range in question. This are express using Hour Angles.
+Column "Time" sums up time from each SB which representative target fall into the specific RA.
+Column "Percentage" indicates how much represents the time dedicated to the specified RA, compared to the "Hours in Season" value, which represents the total number of hours tha tthe observing season has.
+
+In the ordered axis of the bar chart, the RA ranges are given, meanwhile in the dependant axis, is igven its hours.]]></text>
+			</staticText>
+		</band>
+	</summary>
 </jasperReport>

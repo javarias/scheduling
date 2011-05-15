@@ -3,7 +3,7 @@
         ahoffsta, UTFSM-NRAO, 01-06-2010
 -->
 
-<project name="SchedulingPSMWui" default="warfile">
+<project name="SchedulingPMSWui" default="warfile">
 
 	<!-- useful definitions -->
 	<property name="webcontent" location="WebContent" />
@@ -14,8 +14,8 @@
 	<property name="lib" location="${webinf}/lib" />
 	<property name="doc" location="doc" />
 	<property name="dist" location="dist" />
-	<property name="jarfile" location="SchedulingPSMWui.jar" />
-	<property name="warfile" location="SchedulingPSMWui.war" />
+	<property name="jarfile" location="SchedulingPMSWui.jar" />
+	<property name="warfile" location="SchedulingPMSWui.war" />
 
 	<!-- 
 	   WARNING 
@@ -43,8 +43,8 @@
 		<pathelement location="${TOMCAT_LIB}/servlet-api.jar" />
 		<pathelement location="${TOMCAT_LIB}/jsp-api.jar" />
 			
-		<pathelement location="${INTROOT}/lib/SchedulingPSM.jar" />
-		<pathelement location="${INTROOT}/lib/SchedulingPSMCli.jar" />
+		<pathelement location="${INTROOT}/lib/SchedulingPMS.jar" />
+		<pathelement location="${INTROOT}/lib/SchedulingPMSCli.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingCommon.jar" />
 		<pathelement location="${INTROOT}/lib/SchedulingDSA.jar" />
 	
@@ -58,7 +58,6 @@
 		<pathelement location="${ACSROOT}/lib/hibernate-annotations.jar" />
 		<pathelement location="${ACSROOT}/lib/hibernate-commons-annotations.jar" />
 		<pathelement location="${ACSROOT}/lib/hibernate-entitymanager.jar" />
-		<pathelement location="${ACSROOT}/lib/hsqldb.jar" />
 		<pathelement location="${ACSROOT}/lib/jta-1.1.jar" />
 		<pathelement location="${ACSROOT}/lib/log4j-1.2.15.jar" />
 		<pathelement location="${ACSROOT}/lib/slf4j-api-1.5.8.jar" />
@@ -75,12 +74,15 @@
 		<pathelement location="${lib}/js.jar" />
 		<pathelement location="${lib}/jython.jar" />
 		<pathelement location="${lib}/slf4j-log4j12-1.5.2-jar" />
-		<pathelement location="${lib}/spring.jar" />
+<!--		<pathelement location="${lib}/spring.jar" /> -->
+		<pathelement location="${ACSROOT}/lib/spring-2.5.5.jar" />
+		<pathelement location="${ACSROOT}/lib/spring-security-cas-client-2.0.5.RELEASE.jar" />
 		<pathelement location="${lib}/ehcache-core-2.1.0.jar" />
 		<pathelement location="${lib}/castor.jar" />
 		<pathelement location="${lib}/xalan.jar" />
 		<pathelement location="${lib}/xalan_serializer.jar" />
 		<pathelement location="${lib}/xercesImpl.jar" />
+		<pathelement location="${lib}/hsqldb.jar" />
 
 		<pathelement location="${lib}/zcommon.jar" />
 		<pathelement location="${lib}/zcommons-el.jar" />
@@ -103,13 +105,14 @@
 
 
 	<!-- cleanup  -->
-	<target name="clean" depends="clear-dist">
+	<target name="clean">
 		<delete file="${warfile}" />
+		<delete file="${jarfile}" />
 		<delete dir="${bin}" />
 		<delete dir="${lib}" />
 	</target>
 
-	<target name="clear-dist">
+	<target name="clear-dist" depends="clean">
 		<delete dir="${dist}" />
 	</target>
 

@@ -8,6 +8,8 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 
 public interface Ph1mSynchronizer extends Remote {
 	
+	public void setWorkDir(String workDir);
+	
 	public void syncrhonizeProject(ObsProject p) throws RemoteException;
 	
 	public void synchPh1m() throws RemoteException;

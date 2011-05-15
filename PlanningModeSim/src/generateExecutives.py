@@ -10,10 +10,10 @@ from users import users
 # the users.py module.
 # 
 
-NORTH_AMERICA_EXEC = "North America"
-EUROPE_EXEC = "Europe"
-ASIA_EXEC = "Asia"
-CHILE_EXEC = "Chile"
+NORTH_AMERICA_EXEC = "NA"
+EUROPE_EXEC = "EU"
+ASIA_EXEC = "EA"
+CHILE_EXEC = "CHILE"
 countryToExecutive = {
     "USA" : NORTH_AMERICA_EXEC,
     "Canada" : NORTH_AMERICA_EXEC,

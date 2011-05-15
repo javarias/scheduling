@@ -49,7 +49,7 @@ public class ReportsController extends GenericForwardComposer implements
 		ReportGenerator rg = new ReportGenerator(workDir);
 	//	ReportGenerator.setApplicationContext(SpringUtil
 	//	.getApplicationContext());
-		JasperPrint print = rg.createCrowdingReport();
+		JasperPrint print = rg.createLstRangesBeforeSimReport();
 		JRHtmlExporter exporter = new JRHtmlExporter();
 		final StringBuffer out = new StringBuffer();
     	exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STRING_BUFFER, out);

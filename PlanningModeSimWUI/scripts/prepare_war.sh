@@ -17,19 +17,27 @@ cp spring-framework-2.5.5/lib/cglib/cglib-nodep-2.1_3.jar $TARGET/;
 cp spring-framework-2.5.5/lib/jakarta-commons/commons-collections.jar $TARGET/;
 cp spring-framework-2.5.5/lib/jakarta-commons/commons-fileupload.jar $TARGET/;
 cp spring-framework-2.5.5/lib/jakarta-commons/commons-io.jar $TARGET/;
-cp spring-framework-2.5.5/lib/dom4j/dom4j-1.6.1.jar $TARGET/;
+#cp spring-framework-2.5.5/lib/dom4j/dom4j-1.6.1.jar $TARGET/;
 cp spring-framework-2.5.5/lib/groovy/groovy-1.5.5.jar $TARGET/;
-cp spring-framework-2.5.5/lib/hibernate/hibernate3.jar $TARGET/;
-cp spring-framework-2.5.5/lib/hibernate/hibernate-annotations.jar $TARGET/;
-cp spring-framework-2.5.5/lib/hibernate/hibernate-commons-annotations.jar $TARGET/;
-cp spring-framework-2.5.5/lib/hibernate/hibernate-entitymanager.jar $TARGET/;
+#cp spring-framework-2.5.5/lib/hibernate/hibernate3.jar $TARGET/;
+#cp spring-framework-2.5.5/lib/hibernate/hibernate-annotations.jar $TARGET/;
+#cp spring-framework-2.5.5/lib/hibernate/hibernate-commons-annotations.jar $TARGET/;
+#cp spring-framework-2.5.5/lib/hibernate/hibernate-entitymanager.jar $TARGET/;
 cp spring-framework-2.5.5/lib/jruby/jruby.jar $TARGET/;
 cp spring-framework-2.5.5/lib/j2ee/jta.jar $TARGET/;
-cp spring-framework-2.5.5/lib/log4j/log4j-1.2.15.jar $TARGET/;
-cp spring-framework-2.5.5/dist/spring.jar $TARGET/;
+#cp spring-framework-2.5.5/lib/log4j/log4j-1.2.15.jar $TARGET/;
+#cp spring-framework-2.5.5/dist/modules/spring-web.jar $TARGET/;
+#cp spring-framework-2.5.5/dist/modules/spring-webmvc.jar $TARGET/;
+#cp spring-framework-2.5.5/dist/spring.jar $TARGET/;
 
-echo "Copying HSQLDB libraries from ACS..."
-cp $ACSROOT/lib/hsqldb.jar $TARGET
+echo "Checking HSQLDB libraries..."
+if [ ! -f hsqldb_1_8_0_10.zip ] ; then
+        echo "   * Not present, downloading...";
+        wget http://sourceforge.net/projects/hsqldb/files/hsqldb/hsqldb_1_8_0/hsqldb_1_8_0_10.zip/download;
+fi
+unzip -o hsqldb_1_8_0_10.zip > /dev/null;
+#cp hsqldb/lib/hsqldb.jar $TARGET;
+
 
 echo "Checking for SFL4J libraries..."
 if [ ! -f slf4j-1.5.2.zip ] ; then
@@ -80,7 +88,7 @@ cp zkpe-bin-eval-5.0.3/dist/lib/ext/jython.jar $TARGET;
 cp zkpe-bin-eval-5.0.3/dist/lib/zkforge/fckez.jar $TARGET;
 
 echo "Getting jars from INTROOT..."
-cp $INTROOT/lib/SchedulingPSM.jar $INTROOT/lib/SchedulingPSMCli.jar $INTROOT/lib/SchedulingCommon.jar $INTROOT/lib/SchedulingDSA.jar $TARGET;
+cp $INTROOT/lib/Scheduling* $TARGET;
 
 echo "Checking for EHCache libraries..."
 if [ ! -f ehcache-core-2.1.0-distribution.tar.gz ] ; then
@@ -125,5 +133,6 @@ cp $ACSROOT/lib/castor.jar $TARGET;
 cp $ACSROOT/lib/c3p0-0.9.1.2.jar $TARGET;
 cp $ACSROOT/lib/xalan.jar $TARGET;
 cp $ACSROOT/lib/xalan_serializer.jar $TARGET;
-cp $ACSROOT/lib/systementities.jar $TARGET;
-cp $ACSROOT/lib/APDMEntities.jar $TARGET;
+#cp $ACSROOT/lib/systementities.jar $TARGET;
+#cp $ACSROOT/lib/APDMEntities.jar $TARGET;
+#cp $INTROOT/lib/APDMEntities.jar $TARGET;

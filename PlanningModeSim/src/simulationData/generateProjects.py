@@ -173,7 +173,7 @@ sbTemplate = """        <SchedBlock>
 """
 
 def createObsProjectFile(i, params):
-    sbTime = 0.5*60*60
+    sbTime = 0.5
     fileName = "GenObsProject%04d.xml" % i
     file = open(fileName, 'w')
     srcName = "%.4f-%.3f" % (params[0][0], params[0][1])
@@ -216,7 +216,7 @@ def createObsProjectFile(i, params):
 for i in range(nschedblks):
     src_coords = points[random.randint(0, len(points)-1)]
     freq = freqs[random.randint(0, len(freqs)-1)]
-    obsTime = times[random.randint(0, len(times)-1)]*60*60
+    obsTime = times[random.randint(0, len(times)-1)]
     resolution = random.uniform(0.001, 3.0)
     arrayReq = arrayRequestedDist[random.randint(0, len(arrayRequestedDist)-1)]
     # sbparams.append((src_coords, freq, obsTime, resolution, sensitivity(freq, obsTime)))

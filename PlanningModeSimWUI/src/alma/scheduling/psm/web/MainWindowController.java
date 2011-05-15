@@ -57,7 +57,7 @@ public class MainWindowController extends GenericForwardComposer {
     	}
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowBeforeSimBand");
-    	param.put("title", "Requested time per ALMA Band ");
+    	param.put("title", "Frequency Bands Usage (Before simulation)");
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -69,7 +69,7 @@ public class MainWindowController extends GenericForwardComposer {
     	}
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowBeforeSimLST");
-    	param.put("title", "Requested time per LST Range ");
+    	param.put("title", "Right Ascension Distribution (Before simulation)");
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -81,7 +81,7 @@ public class MainWindowController extends GenericForwardComposer {
     	}
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimExec");
-    	param.put("title", "Executive Percentage Balancing");
+    	param.put("title", "Executive Percentage Balance");
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -93,7 +93,7 @@ public class MainWindowController extends GenericForwardComposer {
     	}
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimLST");
-    	param.put("title", "Requested time per LST Range ");
+    	param.put("title", "Right Ascension Distribution (After simulation)");
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -105,10 +105,23 @@ public class MainWindowController extends GenericForwardComposer {
     	}
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimBand");
-    	param.put("title", "Executed time per ALMA band");
+    	param.put("title", "Frequency Bands Usage (After simulation)");
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
+    
+    public void onClick$menuItemObsProjectCompletion(Event event) {
+    	Window mainWindow = (Window) Path.getComponent("//");
+    	if( mainWindow == null ){
+    		System.out.println("mainWindow is null");
+    	}
+    	HashMap<String, String> param = new HashMap<String, String>();
+    	param.put("id", "reportWindowAfterSimCompletion");
+    	param.put("title", "Observation Projects Completion");
+    	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
+    	reportsWindow.doOverlapped();
+    }
+    
     
     public void onClick$menuItemHelp(Event event) {
     	Window helpWindow = (Window) Path.getComponent("/mainWindow/helpWindow");

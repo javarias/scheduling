@@ -68,7 +68,7 @@ public class InputActions extends PsmContext {
             try {
 				loader.load();
 			} catch (Exception e) {
-				logger.error("Data loading error: fullload()");
+				logger.error("Data loading error during fullload, in bean: " + loadersNames[i]);
 				e.printStackTrace();
 			}
         }
@@ -156,6 +156,20 @@ public class InputActions extends PsmContext {
 		}
 		
 	}    
+
+	public void remoteRun() {
+		ApplicationContext ctx = getApplicationContext();
+		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
+		String[] args= new String[1];
+		args[0]="run";
+		try {
+			console.runTask(args);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
     
 	public static InputActions getInstance(String workDir){
 		if (InputActions.instance == null)

@@ -4,7 +4,22 @@
 	<window title="Planning Mode Simulator" width="100%" height="100%"
 		mode="embedded" border="normal"
 		apply="${sessionScope.mainWindowController}" id="mainWindow">
-<!--		<caption/> -->
+		<caption image="/images/ALMA.png" />
+	  <zscript><![CDATA[
+	  
+	  Boolean noWorkDir = (Boolean)session.getAttribute("noWorkDir");
+	  if( noWorkDir ){
+		  Messagebox.show(
+				  "Enviroment variable APRC_WORK_DIR has not been set for the WUI. " + 
+				  "Please contact the system administrator to correct this issue.",
+				  "Critical error",
+				  Messagebox.OK,
+				  Messagebox.ERROR);
+		  Window mainWindow = (Window) Path.getComponent("//");
+		  
+	  }
+	  
+	  ]]></zscript>
 		<menubar>
 			<menu label="Simulation">
 				<menupopup>
@@ -22,14 +37,15 @@
 					<menu label="Before Simulation">
 						<menupopup>
 							<menuitem label="Requested time per ALMA band" id="menuItemBeforeSimBand"/>
-							<menuitem label="Requested time per LST Ranges" id="menuItemBeforeSimLST"/>
+							<menuitem label="Right Ascension Distribution" id="menuItemBeforeSimLST"/>
 						</menupopup>
 					</menu>
 					<menu label="After Simulation">
 						<menupopup>
 							<menuitem label="Executed time per ALMA band" id="menuItemAfterSimBand"/>
-							<menuitem label="Executed time per LST Ranges" id="menuItemAfterSimLST"/>
-							<menuitem label="Executive Percentage Balancing" id="menuItemAfterSimExec"/>
+							<menuitem label="Right Ascension Distribution" id="menuItemAfterSimLST"/>
+							<menuitem label="Executive Percentage Balance" id="menuItemAfterSimExec"/>
+							<menuitem label="Observation Projects Completion" id="menuItemObsProjectCompletion"/>
 						</menupopup>
 					</menu>
 				</menupopup>

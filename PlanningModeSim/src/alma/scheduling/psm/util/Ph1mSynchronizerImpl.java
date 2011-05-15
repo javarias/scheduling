@@ -53,6 +53,7 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 	private DataLoader linker;
 	private ApplicationContext simCtx;
 
+	
 	public Ph1mSynchronizerImpl(String workDir) {
 		super(workDir);
 
@@ -71,6 +72,10 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			throw new RuntimeException(e);
 		}
 		ph1mDao = Ph1mContextFactory.INSTANCE.getPh1mDao();
+	}
+	
+	public void setWorkDir(String workDir){
+		
 	}
 
 	/**

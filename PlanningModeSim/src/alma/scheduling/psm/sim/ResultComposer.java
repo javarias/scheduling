@@ -54,6 +54,7 @@ import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
+import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
@@ -205,8 +206,8 @@ public class ResultComposer {
 		// Bring one by one observation project and create the output object for them
 		for( ObsProject op : obsProjectDao.getObsProjectsOrderBySciRank() ){
 			
-			//If the project was Cancelled, we do not consider it for results. 
-			if( op.getStatus() == "CANCELLED" )
+			//If the project was Cancelled, or Grade is D we do not consider it for results. 
+			if( op.getStatus().compareTo("CANCELLED") == 0 || op.getLetterGrade() == ScienceGrade.D )
 				continue;
 			
 			System.out.println("\\-Completing observation project #" + op.getId());

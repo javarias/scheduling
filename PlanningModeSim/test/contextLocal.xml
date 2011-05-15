@@ -10,21 +10,42 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
+<!--
+################ Database definitions Beans ###################################################
+################   Used only for internal Scheduling DB, please select accordingly  ########### 
+################    in the sessionFactory bean                                      ###########
+-->
 
- 	<bean id="dataSource2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+ 	<bean id="hsqldbServer" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url">
+			<value>jdbc:hsqldb:hsql://localhost:8090/data_model</value>
+		</property>
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+	
+	 <bean id="hsqldbFile" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 <!--		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" /> -->
 		<property name="url">
-<!--			<value>jdbc:hsqldb:mem:data_model</value> -->
- 			<value>jdbc:hsqldb:file:/diska/home/almamgr/repos/SCHEDULING/PlanningModeSim/test/APRC/tmp/hsqldb/data_model</value>
-<!--   		<value>jdbc:hsqldb:hsql://localhost:8090/data_model</value> -->
-<!--            <value>jdbc:oracle:thin:@localhost:1521:xe</value> -->
+		  <!--			<value>jdbc:hsqldb:mem:data_model</value> -->
+			<value>jdbc:hsqldb:file:/diska/home/almamgr/APRC/tmp/hsqldb/data_model</value>
+		</property>
+		<property name="username" value="hibernate" />
+		<property name="password" value="aprc" />
+	</bean> 
+	
+	<bean id="oracleThin" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url">
+			<value>jdbc:oracle:thin:@localhost:1521:xe</value>
 		</property>
 		<property name="username" value="hibernate" />
 		<property name="password" value="aprc" />
 	</bean> 
 
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+	<bean id="pooledHsqldb" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
 <!--  		<property name="user" value="hibernate" />
 		<property name="password" value="aprc" />
@@ -43,7 +64,7 @@
 
 	<!-- Hibernate SessionFactory -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource2"/>
+		<property name="dataSource" ref="hsqldbServer"/>
 		<property name="mappingResources">
 			<list>
 				<value>alma/scheduling/datamodel/executive/Executive.hbm.xml</value>
@@ -71,8 +92,8 @@
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.cache.use_query_cache">true</prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
-<!--				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop> -->
-				<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<!--				<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop> -->
 				<prop key="hibernate.transaction.flush_before_completion">true</prop>
 				<prop key="hibernate.transaction.auto_close_session">true</prop>
 				<prop key="hibernate.max_fetch_depth">5</prop>
@@ -183,8 +204,8 @@
 	</bean>
 	
 	<bean id="dataLinker" class="alma.scheduling.dataload.DataLinkerLocal">
-	    <property name="sbDao" ref="sbDao"/>
 	    <property name="execDao" ref="execDao"/>
+	    <property name="sbDao" ref="sbDao"/>
 	    <property name="configDao" ref="configDao"/>
 	    <property name="obsPrjDao" ref="obsProjectDao"/>
 	</bean>
@@ -192,16 +213,16 @@
 	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
-				<ref bean="obsProjectDataLoader"/>
-				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
-					<property name="dbDao" ref="execDao"/>
-					<property name="xmlDao" ref="xmlExecDao"/>
-				</bean>
+ 				<ref bean="obsProjectDataLoader"/>
+ 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
+ 					<property name="dbDao" ref="execDao"/>
+ 					<property name="xmlDao" ref="xmlExecDao"/>
+ 				</bean>
 				<bean class="alma.scheduling.dataload.observatory.ObservatoryDataLoader">
 					<property name="dao" ref="observatoryDao"/>
 					<property name="xmlDao" ref="xmlObservatoryDao"/>
 				</bean>
-				<ref bean="dataLinker"/>
+ 				<ref bean="dataLinker"/>
 			</list>
 		</property>
 	</bean>

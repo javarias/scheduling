@@ -169,7 +169,7 @@ public class Simulator extends PsmContext {
         }
                 
 //        setPreconditions(ctx, new Date());
-	setPreconditions(ctx, time );
+        setPreconditions(ctx, time );
         SchedBlockExecutor sbExecutor =
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");

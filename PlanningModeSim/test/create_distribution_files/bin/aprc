@@ -47,6 +47,14 @@ clean() {
     java $JAVA_OPTS alma.scheduling.psm.cli.PsmCli $@ 
 }
 
+ph1m() {
+    java $JAVA_OPTS alma.scheduling.psm.cli.PsmCli $@
+}
+
+help() {
+    java $JAVA_OPTS alma.scheduling.psm.cli.PsmCli $@
+}
+
 startHSQLDB() {
     printf "Starting HSQLDB\n"
     java org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT" &> $APRC_WORK_DIR/logs/hsqldb.log &
@@ -55,9 +63,7 @@ startHSQLDB() {
 stopHSQLDB() {
     printf "Stopping HSQLDB\n"
     # Get the location of hsqldb.jar.
-    HSQLDB_JAR=`find $APRC_HOME -name hsqldb.jar`
-    SQLTOOL_RC_FILE=$APRC_HOME/config/sqltool.rc
-    java -jar "$HSQLDB_JAR" --rcfile "$SQLTOOL_RC_FILE" --sql "shutdown;" "$DBNAME"
+    bsh $APRC_HOME/bin/shutdownSQL.bsh
 }
 
 case "$1" in
@@ -88,8 +94,17 @@ case "$1" in
     report)
         report $@
         ;;
+    ph1m)
+	ph1m $@
+	;;
+    help)
+        help
+        ;;
+    --help)
+        help
+        ;;
     *)
-        printf "Usage: $0 {start|stop|fullload|load|unload|step|run|clean}\n"
+        help
         exit 1
 esac
 

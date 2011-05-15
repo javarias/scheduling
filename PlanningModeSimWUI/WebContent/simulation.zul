@@ -9,7 +9,8 @@
 		sizable="true" maximizable="true" closable="true" width="600px"
 		height="500px" apply="${sessionScope.simulationController}"
 		id="simulationWindow">
-		
+
+<!-- 		
 		<zscript>
 	    import alma.scheduling.psm.web.SimRunner;
 	    import java.util.Date;
@@ -25,7 +26,7 @@
 	        thread.start();        
 	    }       
 		</zscript>
-
+ -->
 		<borderlayout>
 			<west border="none" splittable="true" width="200"
 				minsize="200" size="34%">
@@ -57,31 +58,23 @@
 												width="100%" id="buttonFullLoad" />
 										</row>
 										<row>
+											<button
+												label="Ph1m Sync" width="100%" id="buttonPh1mSynch" />
+										</row>
+<!-- 									<row>
 											<button label="Load data"
 												width="100%" id="buttonLoad" />
 										</row>
 										<row>
 											<button label="Clean data"
-												width="100%" id="buttonClean" />
-										</row>
-<!--										<row>
-											<button label="Unload simulation data"
-												width="100%" id="buttonUnload" />
-										</row>-->
+												width="100%"  />
+										</row>  -->
 										<row>
 											<button
-												label="Run simulation" width="100%"
-												onClick="startServerpush()" />
+												label="Run simulation" width="100%" id="buttonRun" />
+<!-- 												onClick="startServerpush()" /> -->
+												
 										</row>
-										<row>
-											<button
-												label="Ph1m Synchronization Tool" width="100%"
-												id="buttonPh1mSynch" />
-										</row>
-										<!--  									<row>
-											<button
-												label="Generate reports" width="100%" id="buttonReports" />
-										</row> -->	
 									</rows>
 								</grid>
 							</panelchildren>

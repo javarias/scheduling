@@ -9,6 +9,7 @@ public class ObsProjectReportBean {
 	private String grade;
 	private long scienceRank;
 	private double scienceScore;
+	private String status;
 	
 	public static double totalExecutionTime;
 
@@ -74,5 +75,13 @@ public class ObsProjectReportBean {
 
 	public void setScienceScore( double scienceScore ){
 		this.scienceScore = scienceScore;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getStatus() {
+		return status;
 	}
 }

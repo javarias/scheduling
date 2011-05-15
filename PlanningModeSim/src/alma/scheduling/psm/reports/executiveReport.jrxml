@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" columnCount="2" pageWidth="595" pageHeight="842" columnWidth="251" columnSpacing="36" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="15"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
 	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
 	<style name="Heading 1" fontSize="16" isBold="true"/>
 	<style name="Default"/>
 	<parameter name="totalAvailableTime" class="java.lang.String"/>
+	<parameter name="scientificTime" class="java.lang.String"/>
 	<parameter name="title" class="java.lang.String"/>
 	<parameter name="subtitle" class="java.lang.String"/>
+	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="seasonEnd" class="java.lang.String"/>
 	<field name="executive" class="java.lang.String"/>
 	<field name="executionTime" class="java.lang.Double"/>
 	<field name="totalExecutionTime" class="java.lang.Double"/>
 	<field name="grade" class="java.lang.String"/>
-	<variable name="totalTime" class="java.lang.Double" calculation="Sum">
+	<variable name="totalTime" class="java.lang.Double" resetType="Group" resetGroup="reportGroup" calculation="Sum">
 		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
@@ -34,13 +37,9 @@
 		<variableExpression><![CDATA[($F{grade}.compareTo("C") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
 	</variable>
-	<variable name="dTime" class="java.lang.Double" resetType="Group" resetGroup="executiveGroup" calculation="Sum">
-		<variableExpression><![CDATA[($F{grade}.compareTo("D") == 0 ) ? $F{executionTime} : 0]]></variableExpression>
-		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
-	</variable>
 	<group name="reportGroup">
 		<groupFooter>
-			<band height="437">
+			<band height="211">
 				<pie3DChart>
 					<chart isShowLegend="true" evaluationTime="Report">
 						<reportElement x="0" y="0" width="245" height="190"/>
@@ -58,15 +57,8 @@
 						<keyExpression><![CDATA[$F{executive}]]></keyExpression>
 						<valueExpression><![CDATA[$V{totalExecTime}]]></valueExpression>
 					</pieDataset>
-					<pie3DPlot>
-						<plot backgroundAlpha="0.5" foregroundAlpha="0.8">
-							<seriesColor seriesOrder="0" color="#3399FF"/>
-							<seriesColor seriesOrder="1" color="#00CCFF"/>
-							<seriesColor seriesOrder="2" color="#0066CC"/>
-							<seriesColor seriesOrder="3" color="#6699FF"/>
-							<seriesColor seriesOrder="4" color="#004A94"/>
-							<seriesColor seriesOrder="5" color="#00356A"/>
-						</plot>
+					<pie3DPlot isCircular="true">
+						<plot backgroundAlpha="0.5" foregroundAlpha="0.8"/>
 						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					</pie3DPlot>
 				</pie3DChart>
@@ -76,253 +68,340 @@
 	<group name="executiveGroup">
 		<groupExpression><![CDATA[$F{executive}]]></groupExpression>
 		<groupHeader>
-			<band height="38">
-				<textField>
-					<reportElement style="Heading 4" x="0" y="0" width="70" height="19"/>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{executive}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="85" y="19" width="80" height="19"/>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Hours]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="173" y="19" width="60" height="19"/>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Percentage]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="0" y="19" width="80" height="19"/>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
-					</textElement>
-					<text><![CDATA[Executive]]></text>
-				</staticText>
-			</band>
+			<band height="8"/>
 		</groupHeader>
 		<groupFooter>
-			<band height="96">
-				<rectangle>
-					<reportElement x="0" y="59" width="250" height="15"/>
-				</rectangle>
+			<band height="168">
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="85" y="61" width="80" height="15"/>
+					<reportElement x="47" y="95" width="48" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalExecTime} ]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalExecTime}]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.00">
-					<reportElement x="173" y="61" width="50" height="15"/>
+				<textField pattern="##0.0">
+					<reportElement x="166" y="95" width="26" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="223" y="61" width="10" height="15"/>
+					<reportElement x="192" y="95" width="10" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="46" width="70" height="15"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[D]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="0" y="31" width="70" height="15"/>
+					<reportElement x="0" y="77" width="43" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[C]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Default" x="0" y="1" width="70" height="15"/>
+					<reportElement style="Default" x="0" y="47" width="43" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[A]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="0" y="16" width="70" height="15"/>
+					<reportElement x="0" y="62" width="43" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[B]]></text>
 				</staticText>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="85" y="46" width="80" height="15"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{dTime} ]]></textFieldExpression>
-				</textField>
-				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="85" y="31" width="80" height="15"/>
+					<reportElement x="47" y="77" width="48" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{cTime}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="85" y="16" width="80" height="15"/>
+					<reportElement x="47" y="62" width="48" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{bTime} ]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{bTime}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.0#;(#)">
-					<reportElement x="85" y="1" width="80" height="15"/>
+					<reportElement x="47" y="47" width="48" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{aTime} ]]></textFieldExpression>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{aTime}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="0" y="61" width="70" height="15"/>
+					<reportElement x="0" y="95" width="43" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Total]]></text>
 				</staticText>
 				<line>
-					<reportElement x="0" y="-1" width="250" height="1"/>
+					<reportElement x="0" y="44" width="250" height="1"/>
 				</line>
 				<staticText>
-					<reportElement x="223" y="46" width="10" height="14"/>
+					<reportElement x="192" y="77" width="10" height="14"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="223" y="31" width="10" height="14"/>
+					<reportElement x="192" y="62" width="10" height="14"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="223" y="16" width="10" height="14"/>
+					<reportElement x="192" y="47" width="10" height="14"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[%]]></text>
 				</staticText>
-				<staticText>
-					<reportElement x="223" y="1" width="10" height="14"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<text><![CDATA[%]]></text>
-				</staticText>
-				<textField pattern="##0.00">
-					<reportElement x="173" y="46" width="50" height="15"/>
-					<textElement>
-						<font size="8"/>
-					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[($V{dTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
-				</textField>
-				<textField pattern="##0.00">
-					<reportElement x="173" y="31" width="50" height="15"/>
+				<textField pattern="##0.0">
+					<reportElement x="166" y="77" width="26" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.00">
-					<reportElement x="173" y="16" width="50" height="15"/>
+				<textField pattern="##0.0">
+					<reportElement x="166" y="62" width="26" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
-				<textField pattern="##0.00">
-					<reportElement x="173" y="1" width="50" height="15"/>
+				<textField pattern="##0.0">
+					<reportElement x="166" y="47" width="26" height="15"/>
 					<textElement>
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{totalAvailableTime}))*100]]></textFieldExpression>
 				</textField>
+				<textField pattern="##0.0">
+					<reportElement x="101" y="47" width="26" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{aTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0">
+					<reportElement x="101" y="62" width="26" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{bTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0">
+					<reportElement x="101" y="77" width="26" height="15"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{cTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.0">
+					<reportElement x="101" y="95" width="26" height="15"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[($V{totalExecTime}.doubleValue())/(Double.parseDouble($P{scientificTime}))*100]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="127" y="47" width="10" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="127" y="95" width="10" height="15"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="127" y="62" width="10" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="127" y="77" width="10" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[%]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="93" width="250" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="111" width="250" height="1"/>
+				</line>
+				<pie3DChart>
+					<chart isShowLegend="true" evaluationTime="Report">
+						<reportElement x="260" y="1" width="279" height="158"/>
+						<chartTitle>
+							<font size="9"/>
+						</chartTitle>
+						<chartSubtitle>
+							<font size="8"/>
+						</chartSubtitle>
+						<chartLegend position="Right">
+							<font size="8"/>
+						</chartLegend>
+					</chart>
+					<pieDataset>
+						<keyExpression><![CDATA[$F{grade}]]></keyExpression>
+						<valueExpression><![CDATA[$F{executionTime}]]></valueExpression>
+					</pieDataset>
+					<pie3DPlot isCircular="true">
+						<plot backgroundAlpha="0.5" foregroundAlpha="0.8"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					</pie3DPlot>
+				</pie3DChart>
+				<textField>
+					<reportElement style="Heading 4" x="0" y="4" width="70" height="19"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{executive}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="47" y="23" width="48" height="19"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Hours]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="166" y="23" width="52" height="19"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Percentage (season)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="23" width="43" height="19"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Project grade]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="101" y="23" width="52" height="19"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Percentage (observed)]]></text>
+				</staticText>
 			</band>
 		</groupFooter>
 	</group>
-	<pageHeader>
-		<band height="74">
-			<rectangle>
-				<reportElement x="43" y="0" width="247" height="52" backcolor="#0C1068"/>
-				<graphicElement>
-					<pen lineWidth="0.0" lineStyle="Double"/>
-				</graphicElement>
-			</rectangle>
-			<rectangle>
-				<reportElement x="292" y="0" width="247" height="52" backcolor="#7A87CD"/>
-				<graphicElement>
-					<pen lineWidth="0.0"/>
-				</graphicElement>
-			</rectangle>
+	<title>
+		<band height="67">
 			<image>
 				<reportElement x="0" y="0" width="43" height="52"/>
 				<imageExpression class="java.lang.String"><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="308" y="10" width="88" height="14" forecolor="#010101"/>
+				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Hours in Season:]]></text>
 			</staticText>
 			<textField pattern="#,##0.0#;(#)">
-				<reportElement x="415" y="10" width="50" height="14" forecolor="#010101"/>
+				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Heading 1" x="52" y="4" width="227" height="18" forecolor="#C5C5C5"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Planning Mode Simulator]]></text>
 			</staticText>
-			<line>
-				<reportElement x="0" y="52" width="539" height="1" forecolor="#1A0067"/>
-				<graphicElement>
-					<pen lineWidth="1.75"/>
-				</graphicElement>
-			</line>
 			<textField>
-				<reportElement style="Heading 1" x="52" y="28" width="227" height="18" forecolor="#FEFEFE"/>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
 				<textElement verticalAlignment="Middle" markup="none">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{title}]]></textFieldExpression>
 			</textField>
-		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="25">
+			<line>
+				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067"/>
+				<graphicElement>
+					<pen lineWidth="1.75"/>
+				</graphicElement>
+			</line>
 			<staticText>
-				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="250" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season starts:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season ends:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonStart}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonEnd}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="27">
+			<textField>
+				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
 				<textElement verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[$P{subtitle}]]></text>
-			</staticText>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{subtitle}]]></textFieldExpression>
+			</textField>
 		</band>
-	</columnHeader>
+	</pageHeader>
 	<pageFooter>
 		<band height="50">
 			<textField>
@@ -343,4 +422,31 @@
 			</line>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="197">
+			<staticText>
+				<reportElement x="0" y="26" width="539" height="148"/>
+				<textElement textAlignment="Justified">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[This report shows the resulting assignation of time to each executive, for observation purposes.
+
+Information is given per executive.
+"Project grade" column, indicates the grade of the observation project, as given during Phase1.
+"Hours" indicates how much time is dedicated to this category of observation projects.
+"Percentage" is calculated using the number of hours spend on a certain grade of a certain executive, compared to the "Hours in Season" available. (Number which can be seen on top of the report).
+
+The last row of each executive shows the total amounts per executive.
+
+The pie charts shows a comparison of the "Hours" observed by each executive. This is regardless of the grade, and only considering the hours observed.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="250" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Explanation of the report]]></text>
+			</staticText>
+		</band>
+	</summary>
 </jasperReport>

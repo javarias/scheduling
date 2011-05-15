@@ -13,6 +13,13 @@ public class MySessionInit implements SessionInit {
 		System.out.println("Session Init.");
 		
 		String workDir = System.getenv("APRC_WORK_DIR");
+		//workDir = System.getenv("HOME") + "/APRC/tmp";
+		if( workDir == null ){
+			session.setAttribute("noWorkDir", true );
+			return;
+		}else{
+			session.setAttribute("noWorkDir", false );
+		}
 		PsmContext psmCtx = new PsmContext(workDir);
 		
 		// Setting ApplicationContext

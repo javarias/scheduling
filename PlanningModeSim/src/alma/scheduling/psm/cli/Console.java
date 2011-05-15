@@ -38,6 +38,7 @@ import alma.scheduling.psm.sim.ReportGenerator;
 import alma.scheduling.psm.sim.Simulator;
 import alma.scheduling.psm.util.Ph1mSynchronizer;
 import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
+import alma.scheduling.psm.util.Porter;
 import alma.scheduling.psm.util.PsmContext;
 
 public class Console {
@@ -74,82 +75,110 @@ public class Console {
     
     private void selectAction(String[] args) throws IllegalArgumentException{
     	//TODO Obtain context.xml location properly
-    	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
     	
         if(args[0].compareTo("createWorkDir") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
         	simulator.createWorkDir(workDir);
         }
         else if (args[0].compareTo("fullload") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.fullLoad();
         }        	
         else if (args[0].compareTo("load") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.load();
         }
         else if (args[0].compareTo("unload") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.unload();
         }
         else if (args[0].compareTo("clean") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.clean();
         }
         else if (args[0].compareTo("run") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
         	simulator.run();
         }
         else if (args[0].compareTo("step") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
         	simulator.setToBeInterrupted(true);
         	simulator.run();
         }
         else if (args[0].compareTo("remoteFullLoad") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	InputActions inputActions = InputActions.getInstance(workDir);;
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteFullLoad();
         }
         else if (args[0].compareTo("remoteLoad") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteLoad();
         }
         else if (args[0].compareTo("report")==0){
-        	ReportGenerator reportGenerator = new ReportGenerator( workDir );
-        		if(args.length == 1)
+        		if(args.length == 1){
         			reportHelp();
-        		else if(args[1].compareTo("help") == 0)
+        		}else if(args[1].compareTo("help") == 0){
                     reportHelp();
-                else if(args[1].compareTo("1") == 0)
-                	reportGenerator.crowdingReport();
-                else if(args[1].compareTo("2") == 0)
+        		}else if(args[1].compareTo("1") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.bandsBeforeSim();
+        		}else if(args[1].compareTo("2") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.bandsAfterSim();
+        		}else if(args[1].compareTo("3") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.lstRangesBeforeSim();
+        		}else if(args[1].compareTo("4") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.lstRangesAfterSim();
+        		}else if(args[1].compareTo("5") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.executiveBeforeSim();
+        		}else if(args[1].compareTo("6") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.executiveAfterSim();
+        		}else if(args[1].compareTo("7") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.completionReport();
+        		}else if(args[1].compareTo("8") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.finalreport();
-                else if(args[1].compareTo("3") == 0)
-                	reportGenerator.printLSTRangesReport();
-                else if(args[1].compareTo("4") == 0)
-                	reportGenerator.executiveReport();
-                else if(args[1].compareTo("5") == 0)
-                	reportGenerator.bandUsageReport();
-                else if(args[1].compareTo("6") == 0)
-                	reportGenerator.lstRangeBeforeSimReport();
-                else if(args[1].compareTo("7") == 0)
-                	reportGenerator.lstRangeAfterSimReport();
-		else if(args[1].compareTo("8") == 0)
-			reportGenerator.lstRangesBeforeSim();
-                else
+        		}else if(args[1].compareTo("all") == 0){
+                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+                	ReportGenerator reportGenerator = new ReportGenerator( workDir );
+                	reportGenerator.createAllReports();
+        		}else
                     reportHelp();
             
         }
         else if(args[0].compareTo("ph1m") == 0){
             if(args[1].compareTo("list") == 0){
+            	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
             	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
             	try {
 					ph1mSychronizer.listPh1mProposals();
@@ -159,6 +188,7 @@ public class Console {
 				}
             }                
             else if(args[1].compareTo("sync") == 0){
+            	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
             	Ph1mSynchronizer ph1mSychronizer = new Ph1mSynchronizerImpl(workDir); 
             	try {
 					ph1mSychronizer.synchPh1m();
@@ -166,11 +196,15 @@ public class Console {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-            }else
+            }else{
+				help();
             	System.exit(1);
+			}
         }
-        else if (args[0].compareTo("go")==0){
-            System.out.println("I'm doing something useful 4");
+        else if (args[0].compareTo("export") == 0){
+        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	Porter porter = Porter.getInstance(workDir);
+        	porter.obsprojectExport();
         }
         else if (args[0].compareTo("help")==0){
             help();
@@ -181,7 +215,7 @@ public class Console {
         }
     }
 	
-    private void help(){
+    public void help(){
         System.out.println("APRC Tool Command Line Interface");
         System.out.println("Usage: ");
         System.out.println("AprcTool <command> [options]");
@@ -193,8 +227,7 @@ public class Console {
         System.out.println("clean:\t\t unload from database obsproject, executive, results, and observatory data.");
         System.out.println("step:\t\t step through each cycle of simulation, returning to command prompt.");
         System.out.println("run:\t\t runs a simulation, generating an output file.");
-        System.out.println("ph1m:\t\t synchronizes the proposals with the Phase 1 Manager.");
-        System.out.println("go:\t\t loads and run a simulation.");
+        System.out.println("ph1m <list, sync>:\t\t synchronizes the proposals with the Phase 1 Manager.");
         System.out.println("help:\t\t Display this helpful message.");
         System.out.println("report <help, 1, 2>:\t\t Generate reports from the results of the simulation.");
         System.out.println("\nList of Options:");
@@ -207,18 +240,21 @@ public class Console {
 
     }
     
+   
     private void reportHelp(){
         System.out.println("Reports help");
         System.out.println("Usage: ");
         System.out.println("aprc report <command>");
         System.out.println("\nList of Commands:");
-        System.out.println("1:\tGenerate statistics report containing SBs per ALMA Receiver Bands.");
-        System.out.println("2:\tGenerate result report (after run the simulation).");
-        System.out.println("3:\tGenerate statistics report containing SBs per LST ranges.");
-	System.out.println("4:\tGenerate executive balancing report.");
-	System.out.println("5:\tBand usage report.");
-	System.out.println("6:\tLST crowding before simulation.");
-	System.out.println("7:\tLST crowding after simulation.");
+        System.out.println("1:\tReceiver bands crowding report, before simulation");
+        System.out.println("2:\tReceiver bands crowding report, after simulation");
+		System.out.println("3:\tRight ascension crowding before simulation.");
+		System.out.println("4:\tRight ascension crowding after simulation.");
+        System.out.println("5:\tExecutive time requested.");
+        System.out.println("6:\tExecutive time observed.");
+		System.out.println("7:\tCompletion of observation projects");
+        System.out.println("8:\tGenerated detailed information of executions");
+        System.out.println("all:\tGenerates all previous reports");
         System.out.println("help:\tShow this help message.");
     }
     

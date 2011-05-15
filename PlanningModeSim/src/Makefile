@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.19 2011/03/07 12:51:40 ahoffsta Exp $"
+# "@(#) $Id: Makefile,v 1.20 2011/05/15 21:55:00 ahoffsta Exp $"
 #
 # Makefile of ........
 #
@@ -118,16 +118,17 @@ USER_IDL =
 #
 # Jarfiles and their directories
 #
-JARFILES=SchedulingPSM SchedulingPSMCli
-SchedulingPSM_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim alma/scheduling/psm/reports
-SchedulingPSM_EXTRAS=alma/scheduling/psm/reports/general_report.xsl \
+JARFILES=SchedulingPMS SchedulingPMSCli
+SchedulingPMS_DIRS=alma/scheduling/psm/util alma/scheduling/psm/sim alma/scheduling/psm/reports
+SchedulingPMS_EXTRAS=alma/scheduling/psm/reports/general_report.xsl \
 					 ph1mContext.xml \
-					 alma/scheduling/psm/reports/crowdingReport.jasper \
+					 alma/scheduling/psm/reports/bandsBeforeSim.jasper \
 					 alma/scheduling/psm/reports/executiveReport.jasper \
-					 alma/scheduling/psm/reports/LSTRangesReport.jasper \
 					 alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
+					 alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
+					 alma/scheduling/psm/reports/completionReport.jasper \
 					 alma/scheduling/psm/reports/images/alma-logo.jpg
-SchedulingPSMCli_DIRS=alma/scheduling/psm/cli
+SchedulingPMSCli_DIRS=alma/scheduling/psm/cli
 
 #
 # java sources in Jarfile on/off
@@ -216,10 +217,11 @@ build_compiler: alma/util/JasperReportsCompiler.java
 	@javac -cp $(shell vltMakeJavaClasspath) $^
 	@jar cf ../lib/jasperCompiler.jar alma/util/*.class
 
-build_reports: 	alma/scheduling/psm/reports/crowdingReport.jasper \
+build_reports: 	alma/scheduling/psm/reports/bandsBeforeSim.jasper \
 				alma/scheduling/psm/reports/executiveReport.jasper \
-				alma/scheduling/psm/reports/LSTRangesReport.jasper \
 				alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
+				alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
+				alma/scheduling/psm/reports/completionReport.jasper \
 	
 %.jasper: %.jrxml
 	acsStartJava -endorsed alma.util.JasperReportsCompiler $^

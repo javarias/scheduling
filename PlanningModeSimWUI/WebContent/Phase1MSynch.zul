@@ -30,13 +30,14 @@ sizable="true" onCreate="fillGrid()">
 	</borderlayout>
   <zscript><![CDATA[
 	import org.zkoss.zkplus.spring.SpringUtil;
-	import alma.scheduling.psm.util.Ph1mSynchronizer;
+	import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
 	import java.util.List;
 	import java.util.ArrayList;
 	import alma.scheduling.psm.util.ProposalComparison;
 	
+	Ph1mSynchronizerImpl ph1mSync = new Ph1mSynchronizerImpl( System.getenv("APRC_WORK_DIR") );
+	
 	void fillGrid() {
-		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
 		List propList;
 		try{
 			propList=ph1mSync.listPh1mProposals();
@@ -73,7 +74,6 @@ sizable="true" onCreate="fillGrid()">
 	}
 	
 	public void ph1mSyncronize(){
-		Ph1mSynchronizer ph1mSync = (Ph1mSynchronizer)SpringUtil.getBean("ph1mSynchronizerService");
 		ph1mSync.synchPh1m();
 		fillGrid();
 		synchPh1mButton.setDisabled(true);
