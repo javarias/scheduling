@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Crowding Report" pageWidth="595" pageHeight="842" columnWidth="539" leftMargin="36" rightMargin="20" topMargin="30" bottomMargin="30">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Heading 4" fontSize="12" isBold="true" isItalic="true"/>
+	<style name="Heading 2" fontSize="14" isBold="true" isItalic="true"/>
+	<style name="Heading 1" fontSize="16" isBold="true"/>
+	<style name="Default"/>
+	<parameter name="totalAvailableTime" class="java.lang.String"/>
+	<parameter name="title" class="java.lang.String"/>
+	<parameter name="subtitle" class="java.lang.String"/>
+	<parameter name="seasonStart" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="seasonEnd" class="java.lang.String"/>
+	<field name="band" class="java.lang.String"/>
+	<field name="executionTime" class="java.lang.Double"/>
+	<variable name="totalSchedBlocks" class="java.lang.Integer" resetType="Group" resetGroup="bandGroup" calculation="Count">
+		<variableExpression><![CDATA[$F{band}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="totalHoursExec" class="java.lang.Double" resetType="Group" resetGroup="bandGroup" calculation="Sum">
+		<variableExpression><![CDATA[$F{executionTime}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Double(0)]]></initialValueExpression>
+	</variable>
+	<group name="bandGroup">
+		<groupExpression><![CDATA[$F{band}]]></groupExpression>
+		<groupFooter>
+			<band height="15">
+				<textField>
+					<reportElement x="0" y="0" width="80" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{band}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="83" y="0" width="81" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{totalSchedBlocks}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.0#;(#)">
+					<reportElement x="181" y="0" width="69" height="15"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalHoursExec}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="67">
+			<image>
+				<reportElement x="0" y="0" width="43" height="52"/>
+				<imageExpression class="java.lang.String"><![CDATA["alma/scheduling/psm/reports/images/alma-logo.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="0" width="88" height="18" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hours in Season:]]></text>
+			</staticText>
+			<textField pattern="#,##0.0#;(#)">
+				<reportElement mode="Opaque" x="396" y="0" width="143" height="18" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[Double.parseDouble($P{totalAvailableTime})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="0" width="243" height="28" forecolor="#C5C5C5" backcolor="#00026F"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Planning Mode Simulator]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="Heading 1" mode="Opaque" x="53" y="28" width="243" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{title}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="55" width="539" height="1" forecolor="#1A0067"/>
+				<graphicElement>
+					<pen lineWidth="1.75"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="18" width="88" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season starts:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="308" y="32" width="88" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Season ends:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="396" y="18" width="143" height="14" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonStart}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="396" y="32" width="143" height="20" forecolor="#010101" backcolor="#7A87CD"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{seasonEnd}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="302" y="0" width="6" height="52" backcolor="#7A87CD"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="47" y="0" width="6" height="52" backcolor="#00026F"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="11"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="50">
+			<textField>
+				<reportElement style="Heading 2" mode="Opaque" x="0" y="1" width="539" height="24" forecolor="#FEFEFE" backcolor="#00026F"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{subtitle}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="35" width="80" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Band]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="83" y="35" width="98" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Number of SBs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="181" y="35" width="81" height="15"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Time [Hours]]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="50">
+			<textField evaluationTime="Report">
+				<reportElement x="282" y="7" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="199" y="7" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="415">
+			<barChart>
+				<chart isShowLegend="false">
+					<reportElement x="0" y="15" width="539" height="212"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend>
+						<font size="8"/>
+					</chartLegend>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[""]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{band}]]></categoryExpression>
+						<valueExpression><![CDATA[$V{totalHoursExec}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowLabels="true" isShowTickLabels="true" isShowTickMarks="true">
+					<plot backgroundAlpha="0.5" foregroundAlpha="0.8" labelRotation="45.0">
+						<seriesColor seriesOrder="0" color="#3399FF"/>
+						<seriesColor seriesOrder="1" color="#00CCFF"/>
+						<seriesColor seriesOrder="2" color="#0066CC"/>
+						<seriesColor seriesOrder="3" color="#6699FF"/>
+						<seriesColor seriesOrder="4" color="#004A94"/>
+						<seriesColor seriesOrder="5" color="#00356A"/>
+					</plot>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF">
+						<font size="6"/>
+					</itemLabel>
+					<categoryAxisLabelExpression><![CDATA[new String("Receiver Band")]]></categoryAxisLabelExpression>
+					<categoryAxisFormat labelRotation="45.0">
+						<axisFormat verticalTickLabels="true">
+							<labelFont>
+								<font size="5"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="6"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA[new String("Time dedicated [Hours]")]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font size="6"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="6"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<staticText>
+				<reportElement x="0" y="281" width="539" height="134"/>
+				<textElement textAlignment="Justified">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Bands are presented as ALMA has named its observing bands.
+Number of SB are the number of scheduling blocks, either requested o observed, in the corresponding frequency band.
+Time is the number of hours that the requested or observed scheduling blocks has as a set.
+
+The bar chart, shows per observing band, the number of hours requested or observed.
+
+It is important to notice that the second column, gives the number of scheduling blocks instead of the number of observation projects, as a single observation project, could observe more than one frequency band through several scheduling blocks.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="248" width="250" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Explanation of the report]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

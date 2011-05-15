@@ -1,0 +1,15 @@
+import java.sql.*;
+
+Class.forName("org.hsqldb.jdbcDriver");
+String url = "jdbc:hsqldb:hsql://localhost:8090/data_model";
+try{
+	Connection con = DriverManager.getConnection(url, "sa", "");
+	String sql = "SHUTDOWN";
+	Statement stmt = con.createStatement();
+	stmt.executeUpdate(sql);
+	stmt.close();
+}catch(java.sql.SQLException e){
+	System.out.println("No socket available at " + url );
+	System.exit(0);
+}
+

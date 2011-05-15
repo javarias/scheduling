@@ -1,0 +1,16 @@
+---+ Planning Mode Simulator README file:
+
+
+---++ External Dependencies:
+  * *IMPORTANT* hsqldb.jar must be erased from ACS installation.
+   HSQLDB 2.0 has a bug that does not allow to used the server instance of this tool, which must be used during remote operations used for PlanningModeSimWUI module.
+  * All external dependencies are downloaded automatically using test make file.
+
+---++ Depencies:
+   * ACS
+   * ICD
+   * ARCHIVE
+   * OBOBPS
+   * SCHEDULING/Common
+   * SCHEDULING/DSA
+

@@ -1,0 +1,970 @@
+2011-03-28 15:30  ahoffsta
+
+	* src/alma/scheduling/psm/sim/InputActions.java: Latest changes to
+	  Console, for WUI remote commands compatibility
+
+2011-03-23 13:06  ahoffsta
+
+	* src/alma/scheduling/psm/reports/lstRangesBeforeSim.jrxml:
+	  Corrincting precentage calcuations on report LST Ranges
+
+2011-03-23 11:31  ahoffsta
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizerService.java: [no
+	  log message]
+
+2011-03-23 11:21  ahoffsta
+
+	* src/alma/scheduling/psm/util/: Ph1mSynchronizer.java,
+	  Ph1mSynchronizerImpl.java: Fixing interfaces for ph1m
+
+2011-03-23 11:16  ahoffsta
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizerService.java: Adding
+	  ph1m sync service to repo.
+
+2011-03-23 10:33  ahoffsta
+
+	* test/create_distribution_files/bin/aprcServices.sh: Adding
+	  scripts for server version of PMS
+
+2011-03-23 10:32  ahoffsta
+
+	* test/create_distribution_files/bin/shutdownSQL.bsh: Adding
+	  shutdown script
+
+2011-03-23 10:31  ahoffsta
+
+	* src/alma/scheduling/psm/cli/PsmCli.java: Last updates to Console
+
+2011-03-18 09:45  ahoffsta
+
+	* src/alma/scheduling/psm/sim/InputActions.java: Adding more
+	  logging to InputActions
+
+2011-03-15 15:29  ahoffsta
+
+	* src/alma/scheduling/psm/reports/: bandsBeforeSim.jrxml,
+	  completionReport.jrxml, lstRangesAfterSim.jrxml: Adding missing
+	  reports of IT3
+
+2011-03-14 11:28  ahoffsta
+
+	* src/Makefile, src/generateExecutives.py, src/generateProjects.py,
+	  src/alma/scheduling/psm/cli/Console.java,
+	  src/alma/scheduling/psm/cli/PsmCli.java,
+	  src/alma/scheduling/psm/reports/LSTRangesReport.jrxml,
+	  src/alma/scheduling/psm/reports/executiveReport.jrxml,
+	  src/alma/scheduling/psm/reports/lstRangesBeforeSim.jrxml,
+	  src/alma/scheduling/psm/reports/domain/ObsProjectReportBean.java,
+	  src/alma/scheduling/psm/sim/ReportGenerator.java,
+	  src/simulationData/generateProjects.py,
+	  test/create_distribution.sh,
+	  test/create_distribution_files/bin/aprc: BUGS FIXED: COMP-5095
+	  Observatory configurations update COMP-5094	  Simulations help
+	  commands takes to long COMP-5073	 Observation completion
+	  report COMP-5063	   PI entries in executive.xml for
+	  simulations are not created COMP-5053   D graded projects are
+	  being executed Plus presentation of reports improvements
+
+2011-03-07 09:51  ahoffsta
+
+	* src/: Makefile, alma/scheduling/psm/cli/Console.java,
+	  alma/scheduling/psm/util/Ph1mSynchronizerImpl.java: Adding help
+	  to Ph1m
+
+2011-03-04 18:09  ahoffsta
+
+	* src/alma/scheduling/psm/reports/executiveReport.jrxml: Seconds to
+	  hours
+
+2011-03-04 18:05  ahoffsta
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java: Seconds to hours
+
+2011-03-04 16:32  ahoffsta
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java: Results no
+	  longer consider projects that have CANCELLED status.
+
+2011-03-03 18:59  ahoffsta
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizerImpl.java: Adding
+	  grade to ph1m list command.
+
+2011-03-03 13:04  ahoffsta
+
+	* test/: context.xml, contextLocal.xml, contextRemote.xml: Fixing
+	  COMP-5053, missing entry in context.xml for
+	  ProjectQualitySelector
+
+2011-02-25 07:06  ahoffsta
+
+	* test/: contextLocal.xml, contextRemote.xml: Adding new
+	  context.xml files, either for local projects, or remote projects.
+
+2011-02-24 17:45  ahoffsta
+
+	* src/Makefile: Fixing Makile, deleting old report entry
+
+2011-02-24 17:33  ahoffsta
+
+	* src/: Makefile, alma/scheduling/psm/cli/Console.java,
+	  alma/scheduling/psm/reports/executiveReport.jrxml,
+	  alma/scheduling/psm/reports/lstRangesBeforeSim.jrxml,
+	  alma/scheduling/psm/reports/domain/SchedBlockReportBean.java,
+	  alma/scheduling/psm/sim/ReportGenerator.java,
+	  alma/scheduling/psm/sim/ResultComposer.java: Adding new LST
+	  ranges report.
+
+2011-02-17 15:13  ahoffsta
+
+	* src/alma/scheduling/psm/: reports/executiveReport.jrxml,
+	  sim/ReportGenerator.java: Uploaded final executive report
+	  changes.
+
+2011-02-16 17:03  ahoffsta
+
+	* test/create_distribution.sh: Changes to executive reports
+
+2011-02-16 16:16  javarias
+
+	* .cvsignore: Added cvsignore file
+
+2011-02-15 18:08  ahoffsta
+
+	* src/alma/scheduling/psm/reports/executiveReport.jrxml: Exhancing
+	  executive report.
+
+2011-02-15 15:17  ahoffsta
+
+	* src/alma/scheduling/psm/: reports/executiveReport.jrxml,
+	  sim/ReportGenerator.java: Correcting Percentage calculations to
+	  use seconds
+
+2011-02-15 10:34  ahoffsta
+
+	* src/alma/scheduling/psm/reports/domain/ObsProjectReportBean.java:
+	  New data bean for report generation
+
+2011-02-15 09:43  ahoffsta
+
+	* src/alma/scheduling/psm/: cli/Console.java,
+	  reports/executiveReport.jrxml, sim/ReportGenerator.java,
+	  sim/ResultComposer.java: Enhancing executive reportes
+
+2011-02-11 18:06  ahoffsta
+
+	* test/create_distribution.sh: Adding a TODO in the script
+
+2011-02-08 11:55  ahoffsta
+
+	* src/alma/scheduling/psm/sim/: ResultComposer.java,
+	  Simulator.java: Modifying result composer to properly account
+	  time, using seconds and maximum time per SB.
+
+2011-02-08 11:55  ahoffsta
+
+	* src/simulationData/: Executives.xml, generateExecutives.py,
+	  generateProjects.py, sensitivity.py, users.py: Modifying scripts
+	  to use seconds insteads of hours
+
+2011-02-07 12:35  ahoffsta
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Fixing bug of
+	  negative time for weather consults.  This was solved changing the
+	  preconditions() time setted.	Now the observing season start time
+	  is used.
+
+2011-02-07 12:07  ahoffsta
+
+	* test/context.xml: Adding new context.xml for local run.  Also a
+	  small re-ordering of the file, and more comments.
+
+2011-02-07 12:06  ahoffsta
+
+	* src/alma/scheduling/psm/cli/PsmCli.java,
+	  test/create_distribution.sh,
+	  test/create_distribution_files/bin/aprc: Fixing java memory
+	  bounds.
+
+2010-12-22 15:43  ahoffsta
+
+	* test/create_distribution.sh: Fixing a problem on download URL for
+	  spring
+
+2010-09-23 15:19  javarias
+
+	* doc/Makefile, doc/SchedulingAPRCTool.xml, doc/psmWUI-1.png,
+	  doc/psmWUI-2.png, doc/psmWUI-3.png, doc/psmWUI-4.png,
+	  doc/psmWUI-5.png, doc/psmWUI-6.png, doc/psmWUI-7.png,
+	  src/Makefile, src/ph1mContext.xml,
+	  src/alma/scheduling/psm/cli/Console.java,
+	  src/alma/scheduling/psm/cli/PsmCli.java,
+	  src/alma/scheduling/psm/cli/RMIServer.java,
+	  src/alma/scheduling/psm/cli/RemoteConsole.java,
+	  src/alma/scheduling/psm/cli/RemoteConsoleImpl.java,
+	  src/alma/scheduling/psm/sim/InputActions.java,
+	  src/alma/scheduling/psm/sim/ResultComposer.java,
+	  src/alma/scheduling/psm/sim/Simulator.java,
+	  src/alma/scheduling/psm/util/Ph1mSynchronizer.java,
+	  src/alma/scheduling/psm/util/Ph1mSynchronizerImpl.java,
+	  src/alma/scheduling/psm/util/ProposalComparison.java,
+	  src/alma/scheduling/psm/util/PsmContext.java,
+	  test/create_distribution.sh: Merged from HEAD
+
+2010-09-22 14:07  javarias
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizerImpl.java: Linker is
+	  required
+
+2010-09-22 14:07  javarias
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizerImpl.java: file
+	  Ph1mSynchronizerImpl.java was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:10 +0000
+
+2010-09-22 13:42  javarias
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizerImpl.java: Linker is
+	  not longer required for each ph1m Synchronization
+
+2010-09-22 13:41  javarias
+
+	* src/alma/scheduling/psm/util/: Ph1mSynchronizerImpl.java,
+	  ProposalComparison.java: Added Letter Grade synchronization from
+	  Ph1m tool
+
+2010-09-22 13:41  javarias
+
+	* src/alma/scheduling/psm/util/ProposalComparison.java: file
+	  ProposalComparison.java was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:10 +0000
+
+2010-09-21 19:17  javarias
+
+	* src/: Makefile, ph1mContext.xml,
+	  alma/scheduling/psm/util/Ph1mSynchronizerImpl.java: Added fixes
+	  from APRC machine in Chile
+
+2010-09-16 05:17  ahoffsta
+
+	* test/create_distribution.sh: Adding new dependency
+
+2010-09-15 22:17  ahoffsta
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java: Fixing negative
+	  numbers in reports
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-1.png: file psmWUI-1.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:08 +0000
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-2.png: file psmWUI-2.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:08 +0000
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-3.png: file psmWUI-3.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:08 +0000
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-4.png: file psmWUI-4.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:08 +0000
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-5.png: file psmWUI-5.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:08 +0000
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-6.png: file psmWUI-6.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:09 +0000
+
+2010-09-15 09:06  javarias
+
+	* doc/psmWUI-7.png: file psmWUI-7.png was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:09 +0000
+
+2010-09-15 09:06  ahoffsta
+
+	* doc/: SchedulingAPRCTool.xml, psmWUI-1.png, psmWUI-2.png,
+	  psmWUI-3.png, psmWUI-4.png, psmWUI-5.png, psmWUI-6.png,
+	  psmWUI-7.png: Uploading latest screenshots of the GUI, and latest
+	  additions to it.
+
+2010-09-14 16:40  ahoffsta
+
+	* doc/SchedulingAPRCTool.xml: Fixing manual for 0.8 version of PSM.
+
+2010-09-14 16:13  javarias
+
+	* doc/Makefile: file Makefile was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:07 +0000
+
+2010-09-14 16:13  ahoffsta
+
+	* doc/: Makefile, SchedulingAPRCTool.xml: Updating PSM
+	  documentation
+
+2010-09-14 15:13  javarias
+
+	* src/alma/scheduling/psm/cli/RMIServer.java: file RMIServer.java
+	  was added on branch IntegratedTest2-2010-08-B on 2010-09-23
+	  19:19:09 +0000
+
+2010-09-14 15:13  ahoffsta
+
+	* src/alma/scheduling/psm/cli/RMIServer.java: Adding TODOS to the
+	  general exceptions catches.
+
+2010-09-14 15:12  ahoffsta
+
+	* src/alma/scheduling/psm/sim/: Simulator.java,
+	  ResultComposer.java: Fixing sensitivity values, and SBR creation.
+
+2010-09-10 17:53  ahoffsta
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java: Fixing array out
+	  of boundaries bug.
+
+2010-09-08 18:53  javarias
+
+	* src/alma/scheduling/psm/sim/InputActions.java: Removed another
+	  annoying system.exit
+
+2010-09-03 18:44  javarias
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Added static to the
+	  spring context name of the DSA
+
+2010-09-03 13:04  javarias
+
+	* src/alma/scheduling/psm/: cli/Console.java, cli/RMIServer.java,
+	  sim/InputActions.java, util/Ph1mSynchronizerImpl.java,
+	  util/ProposalComparison.java, util/PsmContext.java: Fixed some
+	  bugs in the deployment
+
+2010-08-30 14:06  javarias
+
+	* src/alma/scheduling/psm/util/ProposalComparison.java: Added
+	  serializable to the ph1m comparison object
+
+2010-08-30 13:57  javarias
+
+	* src/alma/scheduling/psm/: cli/Console.java, cli/RMIServer.java,
+	  util/Ph1mSynchronizer.java, util/Ph1mSynchronizerImpl.java: Added
+	  Ph1mSynch RMI service
+
+2010-08-24 16:48  javarias
+
+	* src/alma/scheduling/psm/util/: Ph1mSynchronizer.java,
+	  ProposalComparison.java: Added support to show the differences in
+	  ph1mSunch tool using the WebGUI
+
+2010-08-24 16:47  javarias
+
+	* src/alma/scheduling/psm/sim/InputActions.java: Added RemoteClean
+
+2010-08-23 17:34  javarias
+
+	* src/alma/scheduling/psm/: cli/Console.java,
+	  sim/InputActions.java: Added Remote operations
+
+2010-08-23 17:31  javarias
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizer.java: Added
+	  checking for cancelled projects
+
+2010-08-23 14:13  javarias
+
+	* src/alma/scheduling/psm/: cli/Console.java, cli/PsmCli.java,
+	  cli/RMIServer.java, cli/RemoteConsole.java,
+	  cli/RemoteConsoleImpl.java, sim/InputActions.java: Added remote
+	  console
+
+2010-08-23 14:13  javarias
+
+	* src/alma/scheduling/psm/cli/RemoteConsole.java: file
+	  RemoteConsole.java was added on branch IntegratedTest2-2010-08-B
+	  on 2010-09-23 19:19:09 +0000
+
+2010-08-23 14:13  javarias
+
+	* src/alma/scheduling/psm/cli/RemoteConsoleImpl.java: file
+	  RemoteConsoleImpl.java was added on branch
+	  IntegratedTest2-2010-08-B on 2010-09-23 19:19:09 +0000
+
+2010-08-17 16:08  javarias
+
+	* src/Makefile: Added new reports
+
+2010-08-17 16:07  javarias
+
+	* src/alma/scheduling/psm/reports/domain/SchedBlockReportBean.java:
+	  Updated ReportBean according to the new parameters needed for the
+	  new reports
+
+2010-08-17 16:07  javarias
+
+	* src/: ph1mContext.xml, alma/scheduling/psm/cli/Console.java,
+	  alma/scheduling/psm/reports/LSTRangesReport.jrxml,
+	  alma/scheduling/psm/sim/ReportGenerator.java: Added
+	  LSTRangesReport Update Ph1mContext
+
+2010-08-13 13:42  javarias
+
+	* src/alma/scheduling/psm/: cli/Console.java,
+	  reports/crowdingReport.jrxml, reports/executiveReport.jrxml,
+	  reports/domain/SchedBlockReportBean.java,
+	  sim/ReportGenerator.java: Improved reports Added Band Report
+	  after Execution
+
+2010-08-11 19:12  ahoffsta
+
+	* src/alma/scheduling/psm/sim/SimulatorThread.java: Adding new
+	  thread runner for simulation
+
+2010-08-11 19:10  ahoffsta
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Adding threaded
+	  execution compat.
+
+2010-08-11 18:25  ahoffsta
+
+	* test/create_distribution.sh: Adding external dependencies for
+	  reports.
+
+2010-08-11 18:15  javarias
+
+	* src/alma/scheduling/psm/reports/crowdingReport.jrxml: Fixed
+	  report Layout
+
+2010-08-11 17:47  javarias
+
+	* src/alma/scheduling/psm/sim/ReportGenerator.java: Removed unused
+	  imports
+
+2010-08-11 15:57  javarias
+
+	* src/alma/scheduling/psm/sim/ReportGenerator.java: Added executive
+	  report generation
+
+2010-08-11 15:57  javarias
+
+	* src/alma/scheduling/psm/util/PsmContext.java: Removed System.exit
+	  's
+
+2010-08-11 15:55  javarias
+
+	* src/alma/scheduling/psm/reports/executiveReport.jrxml: Improved
+	  design of executive report
+
+2010-08-10 11:55  javarias
+
+	* src/: Makefile, alma/scheduling/psm/cli/Console.java,
+	  alma/scheduling/psm/reports/crowdingReport.jrxml,
+	  alma/scheduling/psm/reports/executiveReport.jrxml,
+	  alma/scheduling/psm/reports/domain/SchedBlockReportBean.java,
+	  alma/scheduling/psm/sim/ReportGenerator.java,
+	  alma/scheduling/psm/util/PsmContext.java: Improved reports with
+	  ALMA logo.  Added executive Report Added a way to generate
+	  executive report
+
+2010-08-09 13:04  javarias
+
+	* src/alma/scheduling/psm/reports/images/alma-logo.jpg: Added alma
+	  logo to be used in the reports
+
+2010-08-06 11:42  ahoffsta
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java: Correct counting
+	  of SB fixed in simulator.
+
+2010-08-05 15:43  ahoffsta
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java,
+	  test/create_distribution.sh: Correcting Results composition.
+
+2010-08-03 18:20  javarias
+
+	* src/alma/scheduling/psm/reports/executiveReport.jrxml: Added
+	  Executive Balancing Report
+
+2010-08-03 14:04  javarias
+
+	* src/: Makefile, alma/scheduling/psm/reports/crowdingReport.jrxml,
+	  alma/scheduling/psm/reports/domain/SchedBlockReportBean.java,
+	  alma/scheduling/psm/sim/ReportGenerator.java,
+	  alma/util/JasperReportsCompiler.java: Added serious reporting for
+	  aprc simulator
+
+2010-08-03 13:23  ahoffsta
+
+	* src/alma/scheduling/psm/util/PsmContext.java: Fixing reports
+	  errors on class not found.
+
+2010-08-02 18:35  dclarke
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java,
+	  src/alma/scheduling/psm/sim/EventType.java,
+	  src/alma/scheduling/psm/sim/InputActions.java,
+	  src/alma/scheduling/psm/sim/ReportGenerator.java,
+	  src/alma/scheduling/psm/sim/Simulator.java,
+	  src/alma/scheduling/psm/sim/TimeEvent.java,
+	  src/alma/scheduling/psm/sim/TimeHandler.java,
+	  src/alma/scheduling/psm/sim/TimeReal.java,
+	  src/alma/scheduling/psm/sim/TimeSim.java,
+	  test/create_distribution_files/bin/aprc,
+	  src/alma/scheduling/psm/cli/Console.java,
+	  src/alma/scheduling/psm/cli/PsmCli.java,
+	  src/alma/scheduling/psm/util/Ph1mSynchronizer.java,
+	  src/alma/scheduling/psm/util/PsmContext.java,
+	  src/alma/scheduling/psm/util/XsltTransformer.java, test/Makefile,
+	  test/create_distribution.sh, src/Makefile, src/aprc,
+	  src/ph1mContext.xml,
+	  src/alma/scheduling/psm/reports/general_report.xsl: Merged from
+	  TRUNK into LifeCycle-2010-06-B branch
+
+2010-08-02 10:38  ahoffsta
+
+	* test/: Makefile, create_distribution.sh: Moving download and
+	  temporary directory creation to a TMP directory.
+
+2010-08-02 10:38  dclarke
+
+	* test/Makefile: file Makefile was added on branch
+	  LifeCycle-2010-06-B on 2010-08-02 22:35:15 +0000
+
+2010-07-29 19:17  ahoffsta
+
+	* test/create_distribution.sh: Adding new libraries.
+
+2010-07-27 18:38  ahoffsta
+
+	* src/alma/scheduling/psm/: cli/Console.java,
+	  sim/InputActions.java, sim/ReportGenerator.java,
+	  sim/ResultComposer.java, sim/Simulator.java,
+	  util/PsmContext.java: Adding support in DSA Common and
+	  PlanningModeSim for Web interface of PlanningModeSim
+
+2010-07-27 18:38  dclarke
+
+	* src/alma/scheduling/psm/cli/Console.java: file Console.java was
+	  added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:10 +0000
+
+2010-07-27 18:38  dclarke
+
+	* src/alma/scheduling/psm/sim/InputActions.java: file
+	  InputActions.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:06 +0000
+
+2010-07-27 18:38  dclarke
+
+	* src/alma/scheduling/psm/util/PsmContext.java: file
+	  PsmContext.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:12 +0000
+
+2010-07-27 18:38  dclarke
+
+	* src/alma/scheduling/psm/sim/ReportGenerator.java: file
+	  ReportGenerator.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:06 +0000
+
+2010-07-27 18:38  dclarke
+
+	* src/alma/scheduling/psm/sim/ResultComposer.java: file
+	  ResultComposer.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:05 +0000
+
+2010-07-27 18:38  dclarke
+
+	* src/alma/scheduling/psm/sim/Simulator.java: file Simulator.java
+	  was added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:06
+	  +0000
+
+2010-07-14 17:21  ahoffsta
+
+	* src/alma/scheduling/psm/: reports/general_report.xsl,
+	  sim/ReportGenerator.java: Fixing reports xsl problems.
+
+2010-07-14 17:21  dclarke
+
+	* src/alma/scheduling/psm/reports/general_report.xsl: file
+	  general_report.xsl was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:18 +0000
+
+2010-07-14 17:08  ahoffsta
+
+	* src/: Makefile, alma/scheduling/psm/reports/general_report.xsl:
+	  Fixing problem with xsl inclusion through makefile
+
+2010-07-14 16:58  ahoffsta
+
+	* src/Makefile, src/alma/scheduling/psm/sim/ReportGenerator.java,
+	  src/alma/scheduling/psm/sim/ResultComposer.java,
+	  src/alma/scheduling/psm/sim/Simulator.java,
+	  src/alma/scheduling/psm/util/PsmContext.java,
+	  test/create_distribution.sh: Moving simulation results
+	  calculation from iterations to the end of execution.
+
+2010-07-12 16:41  javarias
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Added more time
+	  measurements
+
+2010-07-09 21:25  rhiriart
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Investigations on
+	  strange behaviour from Hibernate. We just don't understand how
+	  the Cache works. With these modifications, Hibernate seems to be
+	  doing the correct thing: use the cache in the pre-select, don't
+	  refresh objects during the update/post-select.  These
+	  modifications *break* the final reporting.
+
+2010-07-09 13:18  javarias
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Updated simulator to
+	  use DSA initialize instead update model in the initialization
+	  process
+
+2010-07-07 16:30  javarias
+
+	* src/ph1mContext.xml: Added ph1m Context file
+
+2010-07-07 16:30  dclarke
+
+	* src/ph1mContext.xml: file ph1mContext.xml was added on branch
+	  LifeCycle-2010-06-B on 2010-08-02 22:35:17 +0000
+
+2010-07-07 13:00  ahoffsta
+
+	* src/alma/scheduling/psm/: cli/Console.java, cli/PsmCli.java,
+	  sim/ReportGenerator.java: Fixing report generation bug.
+
+2010-07-07 13:00  dclarke
+
+	* src/alma/scheduling/psm/cli/PsmCli.java: file PsmCli.java was
+	  added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:11 +0000
+
+2010-07-07 12:42  ahoffsta
+
+	* src/alma/scheduling/psm/util/ReportGenerator.java: Deleting
+	  duplciated file.
+
+2010-07-07 12:02  ahoffsta
+
+	* src/alma/scheduling/psm/cli/Console.java,
+	  src/alma/scheduling/psm/sim/InputActions.java,
+	  src/alma/scheduling/psm/sim/Simulator.java,
+	  test/create_distribution.sh,
+	  test/create_distribution_files/bin/aprc: Fixing general
+	  exceptions. Using specific exceptions. For data loader, the
+	  exceptions are caught earlier.
+
+2010-07-07 11:45  ahoffsta
+
+	* src/alma/scheduling/psm/sim/Simulator.java: Fixing over
+	  consuption of memory problem.
+
+2010-07-06 14:54  ahoffsta
+
+	* test/create_distribution.sh: Adding a comment.
+
+2010-07-06 14:52  ahoffsta
+
+	* test/create_distribution.sh: Fixing some scripts in PSM tests.
+
+2010-07-06 14:09  ahoffsta
+
+	* test/Makefile: Adding Planning Mode Sim /test Makefile
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/util/XsltTransformer.java: file
+	  XsltTransformer.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:12 +0000
+
+2010-07-06 14:07  ahoffsta
+
+	* src/Makefile, src/aprc, src/alma/scheduling/psm/cli/Console.java,
+	  src/alma/scheduling/psm/cli/PsmCli.java,
+	  src/alma/scheduling/psm/reports/general_report.xsl,
+	  src/alma/scheduling/psm/sim/EventType.java,
+	  src/alma/scheduling/psm/sim/InputActions.java,
+	  src/alma/scheduling/psm/sim/ReportGenerator.java,
+	  src/alma/scheduling/psm/sim/ResultComposer.java,
+	  src/alma/scheduling/psm/sim/Simulator.java,
+	  src/alma/scheduling/psm/sim/TimeEvent.java,
+	  src/alma/scheduling/psm/sim/TimeHandler.java,
+	  src/alma/scheduling/psm/sim/TimeReal.java,
+	  src/alma/scheduling/psm/sim/TimeSim.java,
+	  src/alma/scheduling/psm/util/Ph1mSynchronizer.java,
+	  src/alma/scheduling/psm/util/PsmContext.java,
+	  src/alma/scheduling/psm/util/ReportGenerator.java,
+	  src/alma/scheduling/psm/util/XsltTransformer.java,
+	  test/create_distribution.sh,
+	  test/create_distribution_files/bin/aprc: Refactoring of Planning
+	  Mode Simulator.
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/sim/EventType.java: file EventType.java
+	  was added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:06
+	  +0000
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/util/Ph1mSynchronizer.java: file
+	  Ph1mSynchronizer.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:12 +0000
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/sim/TimeEvent.java: file TimeEvent.java
+	  was added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:05
+	  +0000
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/sim/TimeHandler.java: file
+	  TimeHandler.java was added on branch LifeCycle-2010-06-B on
+	  2010-08-02 22:35:06 +0000
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/sim/TimeReal.java: file TimeReal.java was
+	  added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:06 +0000
+
+2010-07-06 14:07  dclarke
+
+	* src/alma/scheduling/psm/sim/TimeSim.java: file TimeSim.java was
+	  added on branch LifeCycle-2010-06-B on 2010-08-02 22:35:06 +0000
+
+2010-06-02 12:34  rhiriart
+
+	* doc/SchedulingAPRCTool.xml: Adding a section about the
+	  integration with the Ph1M Tool DB.
+
+2010-06-01 13:22  rhiriart
+
+	* src/Makefile: Fixing several problems, in order to get the
+	  operational e2e tests working.
+
+2010-05-29 12:49  ahoffsta
+
+	* doc/SchedulingAPRCTool.xml: Orthographic corrections to manual.
+
+2010-05-29 12:44  ahoffsta
+
+	* doc/: SchedulingAPRCTool.xml, mainWindow.png,
+	  obsProjectsWindow.png, simConfigWindow.png, simWindow.png: Adding
+	  first draft for GUI section of the manual.
+
+2010-05-28 11:30  rhiriart
+
+	* src/: Makefile, PlanningModeSimulator: Merging from HEAD.
+
+2010-05-27 13:45  rhiriart
+
+	* doc/: APRCArch.png, Executive.png, ObsProject.png,
+	  Observatory.png, Output.png, SchedulingAPRCTool.xml, Weather.png:
+	  Adding APRC documentation.
+
+2010-05-20 12:00  ahoffsta
+
+	* test/create_distribution_files/bin/aprc: New aprc script for
+	  "report" option
+
+2010-05-19 17:00  ahoffsta
+
+	* src/Makefile, src/PlanningModeSimulator,
+	  test/create_distribution.sh: Enhancing several report
+	  capabilities of PlanningModeSim Solving a lot of bugs concerning
+	  XML processing, POJOs Daos, and output datamodels.  Adding
+	  automatic report creation using XALAN and XSLT.  New command:
+	  aprc report.	New aprc-config entry: ReportDirectory
+
+2010-05-17 12:21  ahoffsta
+
+	* test/: create_distribution.sh,
+	  create_distribution_files/getJarsFromIntroot.sh,
+	  create_distribution_files/OO/DSA.odb,
+	  create_distribution_files/bin/aprc,
+	  create_distribution_files/bin/setup.sh,
+	  create_distribution_files/bin/sqltool,
+	  create_distribution_files/config/aprc-env,
+	  create_distribution_files/config/sqltool.rc: Adding scripts for
+	  creation of distribution tar.gz
+
+2010-04-28 15:23  ahoffsta
+
+	* config/general_report.xsl: Several bugs fixed on output
+	  generation and DAOs.	  * Affiliation correctly saved now    *
+	  Percentage has the correct value    * Change time values to
+	  seconds  Updated the XLST report generator
+
+2010-04-28 12:51  ahoffsta
+
+	* config/: README, general_report.xsl: Adding first XSL
+	  Transformation for a general report.
+
+2010-04-22 15:43  ahoffsta
+
+	* src/generateProjects.py: Correcting discrepancies between input
+	  and output datamodels.   Done
+	  OUTPUT_SCHED_BLOCK_RESULT.ASSIGNED_PRIORITY is not the same as
+	  from the input datamodel:    * Data model was changed to reflect
+	  the latest modifications on ObsProjects .	 * FIXED: The data
+	  is now correct. As a side note, the IDs the aprcTool reports is
+	  from native keys, not from ObsProjects .    * Done
+	  OUTPUT_OBSERVATION_PROJECT.EXECUTION_TIME is allways 0.0.	 *
+	  FIXED: There was a long temporary variable used to sum the times,
+	  instead of a double.
+
+2010-04-19 13:14  javarias
+
+	* src/: Executives.xml, generateExecutives.py, generateProjects.py:
+	  Added scripts to generate projects and SBs
+
+2010-03-12 18:56  rhiriart
+
+	* src/: Makefile, aprc, aprcTool: Changing the name aprcTool for
+	  just aprc.
+
+2010-03-11 13:39  javarias
+
+	* unoComp/: README, build.xml, nbproject/build-impl.xml,
+	  nbproject/build-uno-impl.xml, nbproject/genfiles.properties,
+	  nbproject/project-uno.properties, nbproject/project.properties,
+	  nbproject/project.xml, nbproject/private/config.properties,
+	  nbproject/private/private.properties,
+	  nbproject/private/private.xml, src/description.xml,
+	  src/uno-extension-manifest.xml,
+	  src/alma/scheduling/CentralRegistrationClass.java,
+	  src/alma/scheduling/DSAUno.java,
+	  src/alma/scheduling/DSAUnoService.idl,
+	  src/alma/scheduling/XDSAUno.idl: Added netbeans project to
+	  generate UNO Compnent for Scheduling
+
+2010-03-05 17:33  javarias
+
+	* src/: Makefile, aprcTool: Added script to start aprcTool
+
+2010-02-10 20:29  ahoffsta
+
+	* src/PlanningModeSimulator: Addign script to start the GUI
+
+2010-02-10 20:22  ahoffsta
+
+	* src/Makefile: Adding new external dependency, JDateChooser.
+	  Adding a different and simple screen for first SimProject
+	  configuration.
+
+2010-02-04 18:17  ahoffsta
+
+	* src/Makefile: Adding Makefile for skeleton gui.  Adding simple
+	  screens.
+
+2004-11-03 11:38  sroberts
+
+	* test/: TestList.grep, TestList.lite, TestList.sed, input.txt,
+	  testAlgorithmWeights, testAlgorithmWeightsTab,
+	  testFrequencyBandsTab, testRunSimulator,
+	  testSimulationPropertiesTab, testTestA, testTestB,
+	  testTestDateTime, testTestSimulator, testWeatherDataTab,
+	  testFrequencyBands: [no log message]
+
+2004-08-12 09:26  sroberts
+
+	* test/Makefile: [no log message]
+
+2004-08-10 12:03  sroberts
+
+	* src/: Makefile, go: [no log message]
+
+2004-08-10 11:57  sroberts
+
+	* doc/: allclasses-frame.html, allclasses-noframe.html,
+	  constant-values.html, deprecated-list.html, help-doc.html,
+	  index.html, overview-frame.html, overview-summary.html,
+	  overview-tree.html, package-list, packages.html,
+	  serialized-form.html, stylesheet.css: [no log message]
+
+2004-05-10 11:07  sroberts
+
+	* test/input.txt: [no log message]
+
+2004-04-29 10:40  sroberts
+
+	* test/: Makefile, TestList.lite, testAlgorithmWeightsTab,
+	  testFrequencyBandsTab, testWeatherDataTab: [no log message]
+
+2004-04-27 18:32  sroberts
+
+	* test/testSimulationPropertiesTab: [no log message]
+
+2004-04-27 15:46  sroberts
+
+	* test/testFrequencyBands: [no log message]
+
+2004-04-27 13:00  sroberts
+
+	* test/testAlgorithmWeights: [no log message]
+
+2004-04-22 11:32  sroberts
+
+	* src/Makefile: [no log message]
+
+2004-03-23 17:18  sroberts
+
+	* src/go: [no log message]
+
+2004-01-08 15:05  sroberts
+
+	* test/TestList.grep: [no log message]
+
+2004-01-08 12:24  sroberts
+
+	* test/: testRunSimulator, testTestA, testTestB, testTestDateTime,
+	  testTestSimulator: changed abeansStart to acsStartJava
+
+2003-11-07 19:35  sroberts
+
+	* test/Makefile: updated makefile
+
+2003-11-07 19:31  sroberts
+
+	* test/TestList.sed: added sed file
+
+2003-11-07 19:26  sroberts
+
+	* test/: testTestA, testTestB, testTestDateTime, testTestSimulator:
+	  added testscripts
+
+2003-11-07 19:23  sroberts
+
+	* test/: Makefile, TestList.lite: added planning mode sim tests
+
+2003-11-06 21:00  sroberts
+
+	* test/: Makefile, TestList.grep, TestList.lite, input.txt,
+	  testRunSimulator: adding simulator test
+
+2003-11-06 20:30  sroberts
+
+	* src/Makefile: adding simulator code
+
+2003-11-06 20:23  sroberts
+
+	* doc/: allclasses-frame.html, allclasses-noframe.html,
+	  constant-values.html, deprecated-list.html, help-doc.html,
+	  index.html, overview-frame.html, overview-summary.html,
+	  overview-tree.html, package-list, packages.html,
+	  serialized-form.html, stylesheet.css: adding simulator javadoc
+
