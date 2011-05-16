@@ -56,7 +56,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.6 2011/04/20 16:57:21 dclarke Exp $
+ * $Id: SessionManager.java,v 1.7 2011/05/16 22:15:53 javarias Exp $
  */
 public class SessionManager {
 
@@ -308,8 +308,22 @@ public class SessionManager {
 				throws AcsJNullEntityIdEx,
 				       AcsJNoSuchEntityEx,
 				       AcsJInappropriateEntityTypeEx {
-        ObsUnitSet ous = sb.getParent();
-        model.getSchedBlockDao().hydrateObsUnitSet(ous);
+        ObsUnitSet ous = null;
+        try {
+        	SchedBlock freshSb = model.getSchedBlockDao().findByEntityId(sb.getUid());
+        	ous = freshSb.getParent();
+        	model.getSchedBlockDao().hydrateObsUnitSet(ous);
+        } catch (Exception ex) {
+        	//HACK: The Archive Updater removed the old reference for the SchedBlock
+        	//TODO: Remove this after create a proper merge strategy for SWDB
+        	try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+			}
+        	SchedBlock freshSb = model.getSchedBlockDao().findByEntityId(sb.getUid());
+        	ous = freshSb.getParent();
+        	model.getSchedBlockDao().hydrateObsUnitSet(ous);
+        }
         
         final StateArchive stateArchive = model.getStateArchive();
         OUSStatus ouss = null;
