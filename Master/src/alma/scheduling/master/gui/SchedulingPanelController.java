@@ -107,7 +107,6 @@ public class SchedulingPanelController {
         try {
             getMSRef();
             masterScheduler.destroyArray(arrayname, name, role);
-            releaseMSRef();
         }catch(Exception e){
             logger.warning("SCHEDULING_PANEL: Error destorying array "+arrayname+", see if it still exists.");
         }

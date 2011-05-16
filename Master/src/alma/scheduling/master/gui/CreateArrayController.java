@@ -369,21 +369,5 @@ public class CreateArrayController extends SchedulingPanelController {
         return arrayInfo.arrayId;
 
     }
-	private void logArray(Logger logger, String label, String[] choices) {
-		final StringBuilder sb = new StringBuilder();
-
-		sb.append(label);
-		sb.append(String.format("[%2d] = [", choices.length));
-		
-		String sep = "";
-		for (String choice : choices) {
-			sb.append(sep);
-			sb.append(choice);
-			sep = ", ";
-		}
-		sb.append("]");
-		
-		logger.fine(sb.toString());
-	}
 
 }

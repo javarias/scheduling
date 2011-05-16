@@ -50,7 +50,6 @@ public class ArrayTableController extends SchedulingPanelController {
             try {
                 getMSRef();
                 masterScheduler.destroyArray(name, getUserName(), getUserRole());
-                releaseMSRef();
             } catch(Exception e){
                 e.printStackTrace();
                 logger.severe("SCHEDULING_PANEL: Array "+name+" was not destroyed");

@@ -90,7 +90,6 @@ public class ExistingArraysTabController extends SchedulingPanelController
         try {
             getMSRef();
             String[] a = masterScheduler.getActiveAutomaticArrays();
-            releaseMSRef();
             return a;
         }catch(Exception e){
             return new String[0];
@@ -100,7 +99,6 @@ public class ExistingArraysTabController extends SchedulingPanelController
         try {
             getMSRef();
             String[] a = masterScheduler.getActiveManualArrays();
-            releaseMSRef();
             return a;
         }catch(Exception e){
             return new String[0];
