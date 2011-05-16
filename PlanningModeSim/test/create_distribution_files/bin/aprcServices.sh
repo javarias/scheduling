@@ -9,7 +9,8 @@ start()
 	. ./bin/setup.sh
 	
 	echo -n "Starting java RMI Registry..."
-	CLASSPATH=`vltMakeJavaClasspath`:$CLASSPATH rmiregistry &
+#	CLASSPATH=`vltMakeJavaClasspath`:$CLASSPATH rmiregistry &
+	rmiregistry &
 	echo -e "\t done"
 
 	echo -n "Starting HSQLDB Database server..."
@@ -24,7 +25,8 @@ start()
 	MANAGER_REFERENCE=corbaloc::${manager}:3${ACS_INSTANCE}00/Manager acsStartJava -endorsed -Djava.security.policy=../server.policy -maxHeapSize 2g  alma.scheduling.psm.cli.PsmCli remote &> $APRC_WORK_DIR/logs/remote.log &
 	sleep 2
 	echo -e "\t done"
-	MANAGER_REFERENCE=corbaloc::${manager}:3${ACS_INSTANCE}00/Manager tomcat start
+#	MANAGER_REFERENCE=corbaloc::${manager}:3${ACS_INSTANCE}00/Manager tomcat start
+	LANG=en_US tomcat start
 }
 
 stop()

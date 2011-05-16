@@ -7,7 +7,7 @@
 . "$APRC_HOME/config/aprc-env"
 
 RETVAL=0
-JAVA_OPTS='-Xmn788M -Xms1024M'
+JAVA_OPTS='-Xmn788M -Xms1024M -DACS.Manager=$MANAGER_REFERENCE'
 #JAVA_OPTS='-Xmn512M -Xms1512M'
 #JAVA_OPTS='-XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSParallelRemarkEnabled'
 
