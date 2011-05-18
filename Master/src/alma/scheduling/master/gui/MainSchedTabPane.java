@@ -352,15 +352,6 @@ public class MainSchedTabPane extends JTabbedPane {
     private void updateAntennaView(){
     }
 
-    protected void setExistingArrays(String[] automatic, String[] manual) {
-        for(int i=0; i < automatic.length; i++){
-            arraysTab.addArray(automatic[i],"automatic");
-        }
-        for(int i=0; i < manual.length; i++){
-            arraysTab.addArray(manual[i],"manual");
-        }
-    }
-
     private void showConnectMessage(){
         JOptionPane.showMessageDialog(this,"System not operational yet.",
                 "Not Connected", JOptionPane.ERROR_MESSAGE);
