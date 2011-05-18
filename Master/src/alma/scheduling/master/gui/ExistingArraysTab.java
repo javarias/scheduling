@@ -39,6 +39,7 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     private ExistingArraysTabController controller;
     private JPanel topPanel, centerPanel, bottomPanel;
     private ArrayTable table;
+	private boolean filledExistingArrays = false;
     /**
       *Tester constructor
       */
@@ -54,10 +55,14 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
         checkCurrentExistingArrays();
     }
 
-    private void checkCurrentExistingArrays() {
-        CheckExistingArrays foo  = new CheckExistingArrays();
-        Thread t = controller.getCS().getThreadFactory().newThread(foo);
-        t.start();
+    private synchronized void checkCurrentExistingArrays() {
+    		//HACK: To avoid to show duplicated entries in the current arrays table
+    		if (filledExistingArrays )
+    			return;
+    		filledExistingArrays = true;
+    		CheckExistingArrays foo  = new CheckExistingArrays();
+    		Thread t = controller.getCS().getThreadFactory().newThread(foo);
+    		t.start();
     }
 
     
@@ -102,11 +107,7 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     protected void addArray(String arrayname, String arraytype) {
         updateArrayName = arrayname;
         updateArrayType = arraytype;
-        javax.swing.SwingUtilities.invokeLater(new Runnable(){
-                public void run(){
-                    table.addArray(updateArrayName, updateArrayType);
-                }
-        });
+        table.addArray(updateArrayName, updateArrayType);
         repaint();
         validate();
     }
@@ -142,17 +143,17 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     		return sb.toString();
     	}
     	
-    	public void run() {
-    		String[] a_arrays = controller.getCurrentAutomaticArrays();
-    		String[] m_arrays = controller.getCurrentManualArrays();
-    		
-    		System.out.println(formatArray("Automatic Arrays", a_arrays));
-    		System.out.println(formatArray("Manual    Arrays", m_arrays));
-    		
-    		for(String s : a_arrays){
-    					addArray(s , "automatic");
-    		}
-    		
+		public void run() {
+			String[] a_arrays = controller.getCurrentAutomaticArrays();
+			String[] m_arrays = controller.getCurrentManualArrays();
+
+			System.out.println(formatArray("Automatic Arrays", a_arrays));
+			System.out.println(formatArray("Manual    Arrays", m_arrays));
+
+			for (String s : a_arrays) {
+				addArray(s, "automatic");
+			}
+
 			for (String s : m_arrays) {
 				addArray(s, "manual");
 			}
