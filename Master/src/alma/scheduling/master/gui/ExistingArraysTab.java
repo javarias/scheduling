@@ -129,7 +129,7 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
     	public CheckExistingArrays(){ }
     	
-    	private String formatArray(String label, String[] strings) {
+    	private String formatArray(final String label, final String[] strings) {
     		StringBuilder sb = new StringBuilder();
     		String sep = "";
     		sb.append(label);
@@ -145,6 +145,7 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     		}
     		return sb.toString();
     	}
+    	
     	public void run() {
     		a_arrays = controller.getCurrentAutomaticArrays();
     		m_arrays = controller.getCurrentManualArrays();
@@ -152,21 +153,13 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     		System.out.println(formatArray("Automatic Arrays", a_arrays));
     		System.out.println(formatArray("Manual    Arrays", m_arrays));
     		
-    		for(i=0; i < a_arrays.length; i++){
-    			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-    				public void run() {
-    					addArray(a_arrays[i], "automatic");
-    				}
-    			});
+    		for(String s : a_arrays){
+    					addArray(s , "automatic");
     		}
-    		for(i=0; i < m_arrays.length; i++){
-    			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-    				public void run() {
-    					addArray(m_arrays[i], "manual");
-    				}
-    			});
-
-    		}
+    		
+			for (String s : m_arrays) {
+				addArray(s, "manual");
+			}
     	}
     }
 }
