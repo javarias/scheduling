@@ -123,10 +123,6 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
 
     class CheckExistingArrays implements Runnable{
-    	private String[] m_arrays;
-    	private String[] a_arrays;
-    	private int i;
-
     	public CheckExistingArrays(){ }
     	
     	private String formatArray(final String label, final String[] strings) {
@@ -147,8 +143,8 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     	}
     	
     	public void run() {
-    		a_arrays = controller.getCurrentAutomaticArrays();
-    		m_arrays = controller.getCurrentManualArrays();
+    		String[] a_arrays = controller.getCurrentAutomaticArrays();
+    		String[] m_arrays = controller.getCurrentManualArrays();
     		
     		System.out.println(formatArray("Automatic Arrays", a_arrays));
     		System.out.println(formatArray("Manual    Arrays", m_arrays));
