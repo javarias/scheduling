@@ -18,12 +18,13 @@
 
 package alma.scheduling.archiveupd.compimpl;
 
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.OperatorLogger;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.ArchiveUpdaterOperations;
 import alma.scheduling.SchedulingException;
@@ -36,6 +37,7 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     private ContainerServices m_containerServices;
 
     private Logger m_logger;
+    private OperatorLogger m_opLogger;
     
     private ArchivePoller poller = null;
     private Loop          loop = null;
@@ -52,7 +54,9 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 
     public void initialize(ContainerServices containerServices) {
         m_containerServices = containerServices;
-        m_logger = m_containerServices.getLogger();
+        final AcsLogger acsLogger = m_containerServices.getLogger();
+        m_logger   = acsLogger;
+        m_opLogger = new OperatorLogger(acsLogger);
 		handler = new ErrorHandling(m_logger);
 		getPoller(containerServices);
 		
@@ -173,7 +177,14 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
     	public void run() {
     		while (!this.isInterrupted()) {
     			System.out.println("Interrupted: " + this.isInterrupted());
-    			update();
+    			try {
+    				update();
+    			} catch (Exception e) {
+    				final String message = String.format(
+    						"Error updating Scheduler from ALMA Archive and State Archive - %s - some project updates might have been missed",
+    						e.getMessage());
+    				m_opLogger.severe(message);
+    			}
     			try {
     				Thread.sleep(pollInterval);
     			} catch (InterruptedException e) {
@@ -198,4 +209,5 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 	public int getPollInterval() {
 		return (int) (pollInterval / 1000);
 	}
+
 }
