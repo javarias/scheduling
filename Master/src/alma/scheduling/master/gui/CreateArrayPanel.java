@@ -503,8 +503,47 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     		}
     		NumberOfantennaSelected = NumberOfantennaSelected+TPSelected.length;
     	}
+    	
+    	ChessboardEntry[] ACASelected = sevenMeterChessboard.getSelectedEntries();
+    	if(ACASelected!=null) {
+    		for(int i=0; i <ACASelected.length; i++){
+    			if(ACASelected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+    				JOptionPane.showMessageDialog(this, 
+    						"Selected Antenna not available",
+    						"Antenna "+ACASelected[i].getDisplayName()+" is not available "+
+    						"to be included in an array", JOptionPane.ERROR_MESSAGE);
+    				return false;
+    			}
+    		}
+    		NumberOfantennaSelected = NumberOfantennaSelected+ACASelected.length;
+    	}
+    	
+    	
 
     	ChessboardEntry[] selected = new ChessboardEntry[NumberOfantennaSelected];
+	int antennasSoFar = 0;
+    	if( ACSselected != null ){
+    		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
+		antennasSoFar = antennasSoFar + ACSselected.length;
+		logger.info("Number of 12m antennas for new array: " + ACSselected.length );
+    	}
+
+	if( TPSelected != null ){
+    		System.arraycopy(TPSelected, 0, selected, antennasSoFar, TPSelected.length);
+		antennasSoFar = antennasSoFar + TPSelected.length;
+		logger.info("Number of TP antennas for new array: " + TPSelected.length );
+    	}
+	if( ACASelected != null ){
+    		System.arraycopy(ACASelected, 0, selected, antennasSoFar, ACASelected.length);
+		logger.info("Number of 7m antennas for new array: " + ACASelected.length );
+    	}
+	if( ACSselected == null && TPSelected == null && ACASelected == null){
+    		JOptionPane.showMessageDialog(this, 
+    				"None Antenna Selected",
+					"Please select at least one antenna to create array",JOptionPane.ERROR_MESSAGE);
+    	}
+    	
+    	/* 
     	if(ACSselected!=null && TPSelected==null){
     		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
     	} else if(ACSselected==null && TPSelected!=null) {
@@ -517,6 +556,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     				"No Antenna Selected",
 					"Please select at least one antenna to create array",JOptionPane.ERROR_MESSAGE);
     	}
+    	*/
     	
     	//for(int i=0;i<selected.length;i++) {
     	//	logger.info("index "+i+" : "+selected[i].getDisplayName());
