@@ -20,6 +20,7 @@ package alma.scheduling.master.compimpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.Object;
@@ -58,6 +59,8 @@ import alma.scheduling.MasterOperations;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 import alma.scheduling.datamodel.weather.dao.WeatherStationDao;
+import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 
 public class MasterImpl implements ComponentLifecycle,
         MasterOperations {
@@ -464,6 +467,18 @@ public class MasterImpl implements ComponentLifecycle,
 	public void removeMonitorQueue(String monitorName) {
 		callbacks.remove(monitorName);
 		
+	}
+
+	@Override
+	public String[] getSchedulingPolicies() {
+		List<String> policies = DSAContextFactory.getPolicyNames();
+		String[] retval = new String[policies.size()];
+		return policies.toArray(retval);
+	}
+
+	@Override
+	public void addSchedulingPolicies(String xmlString) {
+		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(xmlString);
 	}
 	
 }
