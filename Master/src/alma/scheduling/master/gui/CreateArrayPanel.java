@@ -49,13 +49,16 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
 import alma.Control.CorrelatorType;
+import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.common.gui.chessboard.ChessboardEntry;
 import alma.common.gui.chessboard.ChessboardPanel;
 import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.Master;
 import alma.scheduling.array.guis.ArrayPanel;
 import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
@@ -77,6 +80,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     private ButtonGroup photonicsGroup;
     private JComboBox correlatorType;
     private JComboBox schedulingPolicy;
+    private Master masterScheduler;
+	private Master master;
 
     public CreateArrayPanel() {
         super();
@@ -98,6 +103,13 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         logger = cs.getLogger();
         logger.fine("SECOND SETUP FOR ANTENNA PANEL");
         controller.secondSetup(cs);
+        try {
+			master = alma.scheduling.MasterHelper.narrow(
+					cs.getComponentNonSticky("SCHEDULING_MASTERSCHEDULER"));
+		} catch (AcsJContainerServicesEx ex) {
+			ex.printStackTrace();
+			master = null;
+		}
         //the controlMaster must be ready before we do the initializing
         CheckControlReady controlComponent = new CheckControlReady();
         Thread t = controller.getCS().getThreadFactory().newThread(controlComponent);
@@ -326,8 +338,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
     private JPanel createPolicyComponent() {
-    	final Vector<String> policies = new Vector<String>(
-		DSAContextFactory.getPolicyNames());
+    	final Vector<String> policies = new Vector<String>();
+    	for (String policyName: master.getSchedulingPolicies()) {
+    		policies.add(policyName);
+    	}
 //    	final Vector<String> policies = new Vector<String>();
     	    	
     	schedulingPolicy = new JComboBox(policies);
