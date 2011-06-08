@@ -6,9 +6,58 @@ From:
    David Clarke
 
 Version: 
-   "@(#) $Id: RELEASE_NOTES,v 1.24 2011/01/28 00:35:30 javarias Exp $"
+   "@(#) $Id: RELEASE_NOTES,v 1.25 2011/06/08 21:31:45 dclarke Exp $"
 
 ********************************************************************
+
+Release 8.1
+===========
+
+Development Notes
+~~~~~~~~~~~~~~~~~
+
+ * Threads which previously were hanging around after a Destroy Array
+   are now tidied up
+
+ * The ICDs within the Scheduling subsystem have been slightly
+   reorganised.
+
+ * A lot of preparation work has been done towards the release of
+   Dynamic Scheduling, though this is not yet available to the user.
+
+ * We now have a prototype plugin which monitors (and controls) the
+   activity of the Archive Poller, though this is not yet
+   "productised" for use by end users.
+
+User Notes
+~~~~~~~~~~
+
+From the users' perspective, the following changes have been made to
+the Scheduling subsystem for R8.1:
+
+ * The interaction between the Array plugin and the OMC's tabbing
+   structure has been corrected.
+
+ * A "Destroy Array" button has been added to each Array's
+   plugin. This can be used to destroy the Array, having exactly the
+   same effect as the Destroy Array entry on the Existing Arrays tab
+   of the Create Array plugin. It is the recommended way to destroy an
+   Array, and will gracefully terminate any SchedBlock executing on
+   the Array, stop the execution queue of the Array, release resources
+   associated with the Array and disable plugins for the Array.
+
+ * The display of the status of a completed SchedBlock execution on
+   the Array plugin is now much clearer - it is colour coded for
+   success (green) or failure (red), and distinguishes between failure
+   of execution of the SchedBlock's script, failure of archiving of
+   the observation data and complete success of the execution.
+
+ * A new panel has been added to the Array plugin in which details of
+   the selected Project and SchedBlock are displayed.
+
+ * Creation of extraneous Observing Sessions for a Manual scheduler
+   has been corrected.
+
 
 Release 8.0
 ===========
