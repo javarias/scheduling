@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.8 2011/03/01 21:53:21 ahoffsta Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.9 2011/06/14 16:32:15 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -53,21 +53,21 @@ public class CoordinatesUtil {
      * @return hour angle (decimal hours)
      */
     public static double getHourAngle(Date ut, double ra, double longitude) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-        cal.setTime(ut);
-        double hours = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 1000.0);
-        double gst = TimeUtil.getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), hours);
-        double lst = TimeUtil.getLocalSiderealTime(gst, longitude);
+//        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+//        cal.setTime(ut);
+//        double hours = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
+//                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 1000.0);
+//        double gst = TimeUtil.getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR),
+//                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), hours);
+        double lst = TimeUtil.getLocalSiderealTime(ut, longitude);
         double ha = lst - ra - 12;
-        if (ha < 0) ha += 24;
-        if (ha > 24) ha -= 24;
+        if (ha < 0) ha += ((int)(ha / 24) + 1) * 24;
+        if (ha > 24) ha -= ((int)(ha / 24) + 1) * 24;
         return ha;
     }
     
     /**
-     * Get the right ascencion of a given sky coordinate.
+     * Get the right ascension of a given sky coordinate.
      * 
      * @param ut Time (UT)
      * @param ha Hour Angle (decimal hours)
@@ -75,13 +75,13 @@ public class CoordinatesUtil {
      * @return right ascencion (decimal hours)
      */
     public static double getRA(Date ut, double ha, double longitude) {
-    	Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
-    	cal.setTime(ut);
-    	double hours = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 1000.0);
-    	double gst = TimeUtil.getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), hours);
-    	double lst = TimeUtil.getLocalSiderealTime(gst, longitude);
+//    	Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
+//    	cal.setTime(ut);
+//    	double hours = TimeUtil.toDecimalHours(cal.get(Calendar.HOUR_OF_DAY),
+//                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND) / 1000.0);
+//    	double gst = TimeUtil.getGreenwichMeanSiderealTime(cal.get(Calendar.YEAR),
+//                cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), hours);
+    	double lst = TimeUtil.getLocalSiderealTime(ut, longitude);
     	double ra = lst - ha;
     	if ( ra < 0 ) ra +=24;
     	return ra;
@@ -182,8 +182,10 @@ public class CoordinatesUtil {
         if (LSTs > 24.0) {
             LSTs -= 24.0;
         }
-        double r = TimeUtil.lstToGST(LSTr, longitude);
-        double s = TimeUtil.lstToGST(LSTs, longitude);
+//        double r = TimeUtil.lstToGST(LSTr, longitude);
+//        double s = TimeUtil.lstToGST(LSTs, longitude);
+        double r = LSTr;
+        double s = LSTs;
         
 //        Date utRising = TimeUtil.gstToUT(r, year, month, day);
 //        Date utSetting = TimeUtil.gstToUT(s, year, month, day);

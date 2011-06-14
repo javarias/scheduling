@@ -44,8 +44,10 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
     public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
             throws NoSbSelectedException {
         double longitude = configDao.getConfiguration().getArrayCenterLongitude();
-        double lst = TimeUtil.gstToLST(TimeUtil.utToGST(ut), longitude);
+        double lst = TimeUtil.getLocalSiderealTime(ut, longitude);
         logger.debug("lst = " + lst);
+        logger.debug("time = " + ut.toString());
+        logger.debug("longitude = " + longitude);
         Collection<SchedBlock> sbs = 
             schedBlockDao.findSchedBlocksWithVisibleRepresentativeTarget(lst);
         printVerboseInfo(sbs, arrConf.getId(), ut);
@@ -55,7 +57,10 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
     @Override
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
         double longitude = configDao.getConfiguration().getArrayCenterLongitude();
-        double lst = TimeUtil.gstToLST(TimeUtil.utToGST(ut), longitude);
+        double lst = TimeUtil.getLocalSiderealTime(ut, longitude);
+        System.out.println("lst = " + lst);
+        System.out.println("time = " + ut.toString());
+        System.out.println("longitude = " + longitude);
         /*
          *         from SchedBlock sb where
        (sb.schedulingConstraints.representativeTarget.source.observability.risingTime <

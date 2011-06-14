@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.6 2010/04/28 20:01:07 javarias Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.7 2011/06/14 16:32:15 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -34,13 +34,15 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.common.gui.components.astrotime.AstroTime;
+
 public class TimeUtil {
 
     private static Logger logger = LoggerFactory.getLogger(TimeUtil.class);
     
     private final static DateFormat format = 
         new SimpleDateFormat("'['yyyy-MM-dd'T'HH:mm:ss'] '");
-
+    
     public static double getJulianDate(Date ut) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         cal.setTime(ut);
@@ -85,6 +87,9 @@ public class TimeUtil {
     }
     
     /**
+     * 
+     * @deprecated Instead use {@link AstroTime#getGMST(Date)}
+     * 
      * Get the Greenwich Mean sidereal time (GST) from UT.
      * 
      * @param year Year
@@ -108,7 +113,20 @@ public class TimeUtil {
         return gst;
     }
     
+    /**
+     * 
+     * @param date Time to transform
+     * @param longitude  Longitude (degrees, 'E' is positive and 'W' is negative)
+     * @return LST, in hours
+     */
+    
+    public static double getLocalSiderealTime(Date date, double longitude) {
+    	//The AstroUtils already consider the longitude as negative
+    	return AstroTime.getLST(date, -longitude);
+    }
+    
     /** 
+     * @deprecated instead use {@link #getLocalSiderealTime(Date, double) }
      * Get Local Sidereal Time (LST).
      * @param gst Greenwich Sidereal Time, in decimal hours
      * @param longitude Longitude (degrees, 'E' is positive and 'W' is negative)
@@ -128,6 +146,7 @@ public class TimeUtil {
     }
 
     // TODO change names
+
     public static double gstToLST(double gst, double longitude) {
         return getLocalSiderealTime(gst, longitude);
     }
@@ -145,6 +164,9 @@ public class TimeUtil {
         return gst;
     }
     
+    /**
+     * @deprecated Instead use {@link AstroTime#getGMST(Date)}
+     */
     public static double utToGST(Date ut) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         cal.setTime(ut);
