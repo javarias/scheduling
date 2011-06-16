@@ -87,14 +87,21 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private Selector selector = null;
     
+    void setLogger(Logger logger) {
+    	this.logger = logger;
+    	LoggerFactory.SINGLETON.setLogger(logger);
+    }
+    
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
     /////////////////////////////////////////////////////////////
 
     public void initialize(ContainerServices containerServices) {
         this.containerServices = containerServices;
-        this.logger = this.containerServices.getLogger();
-        LoggerFactory.SINGLETON.setLogger(logger);
+        if(this.containerServices.getLogger() != null) {
+        	this.logger = this.containerServices.getLogger();
+        	LoggerFactory.SINGLETON.setLogger(logger);
+        }
         
         logger.finest("initialize() called...");
     }

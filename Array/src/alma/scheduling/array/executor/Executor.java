@@ -476,9 +476,17 @@ public class Executor extends Observable {
     public Services getServices() {
     	return services;
     }
+    
+    void setServices(Services services) {
+    	this.services = services;
+    }
 
     public SessionManager getSessions() {
     	return sessions;
+    }
+    
+    void setSessions(SessionManager sessions) {
+    	this.sessions = sessions;
     }
 
     public String getArrayName() {
