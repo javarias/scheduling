@@ -365,7 +365,7 @@ public class ExecutionContext {
                 try {
                     received = startedCV.await(timeout, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.info("Shutting down thread at waitForExecBlockStartedEvent");
                     return null;
                 }
                 if (!received) {
@@ -747,7 +747,8 @@ public class ExecutionContext {
     	final String startTime = dateFormat.format(new Date(startTimestamp));
     	final String endTime   = dateFormat.format(new Date(stopTimestamp));
 
-    	ref.setExecBlockId(getExecBlockRef().entityId);
+    	if(getExecBlockRef() != null)
+    		ref.setExecBlockId(getExecBlockRef().entityId);
     	es.setExecBlockRef(ref);
     	es.setArrayName(executor.getArrayName());
     	es.setTimeOfCreation(startTime);

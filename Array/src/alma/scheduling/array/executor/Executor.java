@@ -56,7 +56,7 @@ public class Executor extends Observable {
     private ExecutionContext currentExecution;
     private final List<ArchivalWaitThread> pastExecutions = new ArrayList<ArchivalWaitThread>();
     private Lock pastExecutionsLock = new ReentrantLock();
-    private Thread executionThread;
+    private ExecutorConsumer executionThread;
     private boolean fullAuto;
     private boolean manual;
     private boolean running;
@@ -74,6 +74,7 @@ public class Executor extends Observable {
     private class ExecutorConsumer extends Thread {
         
         private Executor executor;
+        private boolean interruptRun = false;
 	
         public ExecutorConsumer(Executor e) {
             this.executor = e;
@@ -81,7 +82,7 @@ public class Executor extends Observable {
         
         @Override
         public void run() {
-        	while(!isInterrupted()) {
+        	while(!interruptRun) {
         		synchronized (this) {
         			// Synchronize so that this Executor will only have
         			// one current execution at once.
@@ -147,6 +148,10 @@ public class Executor extends Observable {
         		}
         	}
         }
+
+		public void stopRun() {
+			interruptRun = true;
+		}
     }
     
     private class ArchivalWaitThread extends Thread {
@@ -205,7 +210,7 @@ public class Executor extends Observable {
      */
     public void stop(String name, String role) {
         if (executionThread != null)
-            executionThread.interrupt();
+            executionThread.stopRun();
         setRunning(false, name, role);
     }
 
