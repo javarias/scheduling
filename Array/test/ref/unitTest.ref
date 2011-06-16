@@ -1,0 +1,327 @@
+1 -  -- alma.scheduling.array.ArrayTestSuite
+1 - ----------T--:--:--.--- INFO [acsStartJava] Starting Java application: alma.scheduling.array.ArrayTestSuite
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ReadyExecutionState to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from RunningExecutionState to ArchivingExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Suspended, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ArchivingExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ArchivingExecutionState to CompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to CompleteExecutionState
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ReadyExecutionState to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from RunningExecutionState to ArchivingExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Ready, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ArchivingExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ReadyExecutionState to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ArchivingExecutionState to CompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to CompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState abortObservation
+1 - INFO: abortObservation called when state is RunningExecutionState
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ManualReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState startObservation
+1 - INFO: startObservation called when state is ManualReadyExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualReadyExecutionState to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: just before context.getControlArray().observe(uid://A000/X000/X01, null)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: waiting for ExecBlockStartedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualRunningExecutionState to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Ready, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState waitArchival
+1 - INFO: waitArchival called when state is ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ManualReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState startObservation
+1 - INFO: startObservation called when state is ManualReadyExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualReadyExecutionState to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: just before context.getControlArray().observe(uid://A000/X000/X01, null)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: waiting for ExecBlockStartedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState stopObservation
+1 - INFO: stopObservation called when state is ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext interruptWaitForExecBlockStartedEvent
+1 - INFO: ExecutionContext: interrupting wait for ExecBlockStartedEvent
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: No ExecBlockStartedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualRunningExecutionState to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Ready, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState waitArchival
+1 - INFO: waitArchival called when state is ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ReadyExecutionState to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from RunningExecutionState to FailedExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Suspended, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to FailedExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState waitArchival
+1 - INFO: waitArchival called when state is FailedExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ReadyExecutionState to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from RunningExecutionState to FailedExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Suspended, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to FailedExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState waitArchival
+1 - INFO: waitArchival called when state is FailedExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ReadyExecutionState to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is RunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from RunningExecutionState to ArchivingExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Suspended, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ArchivingExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - .Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ManualReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState startObservation
+1 - INFO: startObservation called when state is ManualReadyExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualReadyExecutionState to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: just before context.getControlArray().observe(uid://A000/X000/X01, null)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: waiting for ExecBlockStartedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processing ExecBlockStartedEvent for uid://A000/X000/X01 (execId = uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockStartedEvent
+1 - INFO: ExecutionContext: processed ExecBlockStartedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processing ExecBlockEndedEvent for uid://A000/X000/X01
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processExecBlockEndedEvent
+1 - INFO: ExecutionContext: processed ExecBlockEndedEvent for uid://A000/X000/X01 (execRef now uid://A000/X000/X00)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualRunningExecutionState to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Ready, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.Executor$ExecutorConsumer run
+1 - INFO: executor consumer took item SchedBlockItem [uid=uid://A000/X000/X01, timestamp=XXXXXX]
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext <init>
+1 - INFO: Creating ExecutionContext for SB uid://A000/X000/X01 @ XXXXXXX (in state ManualReadyExecutionState)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState startObservation
+1 - INFO: startObservation called when state is ManualReadyExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualReadyExecutionState to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Ready to: Running, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState observe
+1 - INFO: observe called when state is ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: just before context.getControlArray().observe(uid://A000/X000/X01, null)
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: waiting for ExecBlockStartedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState waitArchival
+1 - INFO: waitArchival called when state is ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processing ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext processASDMArchivedEvent
+1 - INFO: ExecutionContext: processed ASDMArchivedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState stopObservation
+1 - INFO: stopObservation called when state is ManualRunningExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext interruptWaitForExecBlockStartedEvent
+1 - INFO: ExecutionContext: interrupting wait for ExecBlockStartedEvent
+1 - 
+1 - Time: XX.XXX
+1 - 
+1 - OK (7 tests)
+1 - 
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ManualRunningExecutionState observe
+1 - INFO: ManualRunningExecutionState: No ExecBlockStartedEvent
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext setState
+1 - INFO: ExecutionContext.setState(): moving SB uid://A000/X000/X01 @ XXXXXXX from ManualRunningExecutionState to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionContext doStateArchiveTransition
+1 - INFO: Doing transition of SBStatusEntityT: uid://A000/X000/X03 from: Running to: Ready, Role: aod
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutorCallbackNotifier update
+1 - INFO: received notification of execution state change SB uid://A000/X000/X01 to ManualCompleteExecutionState
+1 - Xxx XX, XXXX XX:XX:XX XM alma.scheduling.array.executor.ExecutionState waitArchival
+1 - INFO: waitArchival called when state is ManualCompleteExecutionState

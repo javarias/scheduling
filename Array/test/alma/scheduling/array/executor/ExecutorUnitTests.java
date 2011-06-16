@@ -293,11 +293,13 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		}});
 		executor.start("UnitTest", "MasterOfTheUniverse");
 		Thread.sleep(1000);
-		executor.getCurrentExecution().processExecBlockStartedEvent(startEvent);
+		ExecutionContext execContext = executor.getCurrentExecution();
+		execContext.processExecBlockStartedEvent(startEvent);
 		Thread.sleep(1000);
 		executor.stop("UnitTest", "MasterOfTheUniverse");
-		executor.getCurrentExecution().processExecBlockEndedEvent(endEvent);
+		execContext.processExecBlockEndedEvent(endEvent);
 		Thread.sleep(1000);
+		execContext.processASDMArchivedEvent(null);
 		executor.stopCurrentExecution("UnitTest", "MasterOfTheUniverse");
 	}
 	
@@ -342,12 +344,14 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		executor.setFullAuto(true, "UnitTest", "MasterOfTheUniverse");
 		executor.start("UnitTest", "MasterOfTheUniverse");
 		Thread.sleep(1000);
-		executor.getCurrentExecution().processExecBlockStartedEvent(startEvent);
+		ExecutionContext execContext = executor.getCurrentExecution();
+		execContext.processExecBlockStartedEvent(startEvent);
 		Thread.sleep(1000);
 		executor.stop("UnitTest", "MasterOfTheUniverse");
-		executor.getCurrentExecution().processExecBlockEndedEvent(endEvent);
+		execContext.processExecBlockEndedEvent(endEvent);
 		Thread.sleep(1000);
-		executor.stopCurrentExecution("UnitTest", "MasterOfTheUniverse");
+		execContext.processASDMArchivedEvent(null);
+		executor.abortCurrentExecution("UnitTest", "MasterOfTheUniverse");
 	}
 	
 	public void testFailArchivingSemiAutoArray() throws Exception {
@@ -399,7 +403,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		Thread.sleep(1000);
 		execContext.processASDMArchivedEvent(archEvent);
 		Thread.sleep(1000);
-		executor.stopCurrentExecution("UnitTest", "MasterOfTheUniverse");
+		executor.abortCurrentExecution("UnitTest", "MasterOfTheUniverse");
 	}
 	
 	public void testFailManualArray() throws Exception {
@@ -448,8 +452,9 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		Thread.sleep(1000);
 		execContext.processASDMArchivedEvent(archEvent);
 		Thread.sleep(1000);
+		execContext.processASDMArchivedEvent(null);
 		executor.stop("UnitTest", "MasterOfTheUniverse");
-		executor.stopCurrentExecution("UnitTest", "MasterOfTheUniverse");
+		executor.abortCurrentExecution("UnitTest", "MasterOfTheUniverse");
 	}
 	
 	private class TestExecCallback implements SchedBlockExecutionCallback {
@@ -489,7 +494,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		public void _release() {
 		}
 
-		@Override
+		
 		public InterfaceDef _get_interface() {
 			return null;
 		}
