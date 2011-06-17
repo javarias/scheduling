@@ -56,7 +56,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.7 2011/05/16 22:15:53 javarias Exp $
+ * $Id: SessionManager.java,v 1.8 2011/06/17 22:03:08 javarias Exp $
  */
 public class SessionManager {
 
@@ -534,7 +534,17 @@ public class SessionManager {
 			// Start a new session
 			endObservingSession();
 			final String projectUID = sb.getProjectUid();
-			final ObsProject op = model.getObsProjectDao().findByEntityId(projectUID);
+			ObsProject op = model.getObsProjectDao().findByEntityId(projectUID);
+			//HACK: Sometimes the project cannot be found because it was deleted to be refreshed
+            //TODO: Remove the following 'while' after fix the data synchronization issues
+			while(op == null) {
+				op = model.getObsProjectDao().findByEntityId(projectUID);
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					//Do nothing
+				}
+			}
 			startObservingSession(op, sb);
 		} else {
 			logger.info(String.format("%s.continueObservingSession",
