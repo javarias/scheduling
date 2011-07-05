@@ -10,7 +10,7 @@
 export ACS_INSTANCE
 export ACS_TMP
 export ACS_CDB
-export ACS_LOG_STDOUT=2
+export ACS_LOG_STDOUT=1
 export RUNLOCATION
 JAVA_OPTIONS="$JAVA_OPTIONS -Dscheduling.convertPhase2ToReady"
 export JAVA_OPTIONS
@@ -163,6 +163,10 @@ startACS() {
     # acsutilBlock -t 60 -f $LOGFILE -b "Initialized Archive subsystem."
     printf "Starting archive\n"
     archive start &> $ACS_TMP/archive.log
+	#LDAP deletion
+	ldapdelete -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -r "dc=alma,dc=info" &> $ACS_TMP/ur-ldapdelete.out
+	#LDAP tree creation
+	ldapadd -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -f config/test_data.ldif &> $ACS_TMP/ur-ldapadd.out
     PID=$!
     echo $PID > $ACS_TMP/archive.pid
 }
