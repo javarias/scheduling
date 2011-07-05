@@ -1,0 +1,376 @@
+version: 1
+dn: dc=alma,dc=info
+objectClass: organization
+objectClass: dcObject
+dc: alma
+o: ALMA User Repository
+
+#- empty skeleton structure ----------------------------------------------------
+
+dn: ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: master
+
+dn: ou=people,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=group,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: group
+
+dn: ou=roles,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: roles
+
+dn: ou=projects,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: projects
+
+#- read-only user -------------------------------------------------------------
+
+# Necessary as the LdapDirectorySessionFactory converts anonymous connections
+# into read-only connections. That shouldn't happen in my view, but..
+
+dn: uid=readUser,ou=master,dc=alma,dc=info
+objectClass: account
+objectClass: simpleSecurityObject
+objectClass: top
+description: Account for user with read-only access
+uid: readUser
+userPassword: {SHA}hadIsZQByuZ1LOzOI3xspnaqqWI=
+
+#- groups example data ---------------------------------------------------------
+
+dn: cn=alma,ou=group,ou=master,dc=alma,dc=info
+objectClass: posixGroup
+objectClass: top
+cn: alma
+gidNumber: 335
+memberUid: john
+
+dn: cn=users,ou=group,ou=master,dc=alma,dc=info
+objectClass: posixGroup
+objectClass: top
+cn: users
+gidNumber: 100
+memberUid: george
+memberUid: ringo
+memberUid: paul
+memberUid: john
+
+#- users example data (john, paul, george, ringo) ------------------------------
+
+dn: uid=john,ou=people,ou=master,dc=alma,dc=info
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: top
+objectClass: almaUser
+objectClass: almaPreferences
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: almaAddress
+objectClass: outlookAttributes
+cn: John Lennon
+gecos: John Lennon
+gidNumber: 335
+givenName: John
+homeDirectory: /home/john
+loginShell: /bin/bash
+shadowMax: 99999
+shadowWarning: 7
+sn: Lennon
+uid: john
+uidNumber: 1000
+userPassword:: e21kNX1VbnZWdGRhSjRzTXE2WFRHSXAvM2hRPT0=
+c: UK
+facsimileTelephoneNumber: fax
+l: city
+mail: john@localhost
+mobile: mobile
+o: organization
+ou: 1003
+pager: pager
+postalCode: postcode
+st: region
+street: street address
+title: job title
+almaPreference1: eu
+almaPreference2: ea
+
+dn: uid=paul,ou=people,ou=master,dc=alma,dc=info
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: top
+objectClass: almaUser
+objectClass: almaPreferences
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: almaAddress
+objectClass: outlookAttributes
+cn: Paul McCartney
+gecos: Paul McCartney
+gidNumber: 335
+givenName: Paul
+homeDirectory: /home/paul
+loginShell: /bin/bash
+shadowMax: 99999
+shadowWarning: 7
+sn: McCartney
+uid: paul
+uidNumber: 1001
+userPassword:: e21kNX1iR01oS3JTT2hBSHE5cldibGRnV3FRPT0=
+mail: paul@localhost
+almaPreference1: eu
+almaPreference2: eu
+
+dn: uid=george,ou=people,ou=master,dc=alma,dc=info
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: top
+objectClass: almaUser
+objectClass: almaPreferences
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: almaAddress
+objectClass: outlookAttributes
+cn: George Harrison
+gecos: George Harrison
+gidNumber: 335
+givenName: George
+homeDirectory: /home/george
+loginShell: /bin/bash
+shadowMax: 99999
+shadowWarning: 7
+sn: Harrison
+uid: george
+uidNumber: 1003
+userPassword:: e21kNX1tekJxc0U3MTRsK2Z1SnlaaW1ydHF3PT0=
+mail: george@localhost
+title: Drummer
+almaPreference1: eu
+almaPreference2: na
+
+dn: uid=ringo,ou=people,ou=master,dc=alma,dc=info
+objectClass: top
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: almaUser
+objectClass: almaPreferences
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: almaAddress
+objectClass: outlookAttributes
+cn: Ringo Starr
+gecos: Ringo Starr
+gidNumber: 335
+givenName: Ringo
+homeDirectory: /home/ringo
+loginShell: /bin/bash
+shadowMax: 99999
+shadowWarning: 7
+sn: Starr
+uid: ringo
+uidNumber: 1004
+userPassword:: e21kNX1XWTllOC9EVEhQeG5RL2VXRkxERmJnPT0=
+mail: ringo@localhost
+almaPreference1: eu
+almaPreference2: NoA
+
+
+#- MASTER roles ----------------------------------------------------------------
+
+dn: ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: MASTER
+
+dn: cn=ADMINISTRATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ADMINISTRATOR
+member: uid=nobody
+member: uid=john,ou=people,ou=master,dc=alma,dc=info
+
+dn: cn=MANAGER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: MANAGER
+member: uid=nobody
+member: cn=ADMINISTRATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+dn: cn=OPERATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: OPERATOR
+member: uid=nobody
+member: cn=MANAGER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: uid=paul,ou=people,ou=master,dc=alma,dc=info
+
+dn: cn=EDITOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: EDITOR
+member: uid=nobody
+member: cn=OPERATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: uid=george,ou=people,ou=master,dc=alma,dc=info
+
+dn: cn=OWNER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: OWNER
+member: uid=nobody
+member: cn=OPERATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+dn: cn=AUDITOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: AUDITOR
+member: uid=nobody
+member: cn=OPERATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+dn: cn=REVIEWER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: REVIEWER
+member: uid=nobody
+member: cn=OPERATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+dn: cn=SUBMISSION_ADMINISTRATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: SUBMISSION_ADMINISTRATOR
+member: uid=nobody
+member: uid=george,ou=people,ou=master,dc=alma,dc=info
+
+dn: cn=USER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: USER
+member: uid=nobody
+member: cn=AUDITOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: cn=REVIEWER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: cn=EDITOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: cn=OWNER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: uid=john,ou=people,ou=master,dc=alma,dc=info
+member: uid=paul,ou=people,ou=master,dc=alma,dc=info
+member: uid=george,ou=people,ou=master,dc=alma,dc=info
+member: uid=ringo,ou=people,ou=master,dc=alma,dc=info
+
+#- PRC roles -------------------------------------------------------------------
+
+dn: ou=PRC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: PRC
+
+dn: cn=SUPPORT_TEAM_MEMBER,ou=PRC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: SUPPORT_TEAM_MEMBER
+member: uid=nobody
+member: cn=OPERATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+dn: cn=ASSESSOR,ou=PRC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ASSESSOR
+member: uid=nobody
+
+dn: cn=REVIEW_COMMITTEE_MEMBER,ou=PRC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: REVIEW_COMMITTEE_MEMBER
+member: uid=nobody
+
+dn: cn=DIRECTORS_COUNCIL_MEMBER,ou=PRC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: DIRECTORS_COUNCIL_MEMBER
+member: uid=nobody
+
+#- OMC roles -------------------------------------------------------------------
+
+dn: ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: OMC
+
+dn: cn=ENGINEER,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ENGINEER
+member: uid=nobody
+
+dn: cn=ASTRONOMER_ON_DUTY,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ASTRONOMER_ON_DUTY
+member: uid=nobody
+
+dn: cn=MONITOR,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: MONITOR
+member: uid=nobody
+
+dn: cn=SOFTWARE_DEVELOPER,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: SOFTWARE_DEVELOPER
+member: uid=nobody
+
+dn: cn=ARRAY_OPERATOR,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ARRAY_OPERATOR
+member: uid=nobody
+
+dn: cn=MASTER_OPERATOR,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: MASTER_OPERATOR
+member: uid=nobody
+member: cn=ADMINISTRATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+dn: ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info
+objectClass: organizationalUnit
+ou: OBSPREP
+
+#- OBSPREP roles ---------------------------------------------------------------
+
+dn: cn=SOFTWARE_DEVELOPER,ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: SOFTWARE_DEVELOPER
+member: uid=nobody
+member: uid=john,ou=people,ou=master,dc=alma,dc=info
+
+dn: cn=ASTRONOMER_ON_DUTY,ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ASTRONOMER_ON_DUTY
+member: uid=nobody
+
+dn: cn=ARRAY_OPERATOR,ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info
+objectClass: groupOfNames
+cn: ARRAY_OPERATOR
+member: uid=nobody
+
+dn: cn=USER,ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info
+objectclass: alias
+objectclass: extensibleObject
+cn: USER
+aliasedobjectname: cn=USER,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+
+
+#- example project data --------------------------------------------------------
+
+dn: cn=currentSubmissionPeriod,ou=projects,ou=master,dc=alma,dc=info
+objectClass: almaSubmissionPeriod
+cn: currentSubmissionPeriod
+almaSubmissionYear: 2010
+almaSubmissionSemester: 1
+
+dn: almaProjectCode=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+objectClass: almaProject
+almaProjectCode: 2009.1.00001.C
+almaProjectRoleGroupReference: almaProjectRoleName=PI,cn=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+almaProjectRoleGroupReference: almaProjectRoleName=COI,cn=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+almaProjectRoleGroupReference: almaProjectRoleName=ADMINISTRATOR,cn=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+
+dn: almaProjectRoleName=ADMINISTRATOR,almaProjectCode=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+objectClass: almaProjectRoleGroup
+almaProjectRoleName: ADMINISTRATOR
+member: cn=ADMINISTRATOR,ou=MASTER,ou=roles,ou=master,dc=alma,dc=info
+member: cn=ASTRONOMER_ON_DUTY,ou=OMC,ou=roles,ou=master,dc=alma,dc=info
+
+dn: almaProjectRoleName=PRIMARY_INVESTIGATOR,almaProjectCode=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+objectClass: almaProjectRoleGroup
+almaProjectRoleName: PRIMARY_INVESTIGATOR
+member: uid=george,ou=people,ou=master,dc=alma,dc=info
+
+dn: almaProjectRoleName=COOPERATING_INVESTIGATOR,almaProjectCode=2009.1.00001.C,ou=projects,ou=master,dc=alma,dc=info
+objectClass: almaProjectRoleGroup
+almaProjectRoleName: COOPERATING_INVESTIGATOR
+member: uid=ringo,ou=people,ou=master,dc=alma,dc=info
