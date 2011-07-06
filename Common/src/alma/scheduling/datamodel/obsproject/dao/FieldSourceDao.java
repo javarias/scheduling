@@ -21,12 +21,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceDao.java,v 1.1 2010/02/19 00:23:53 rhiriart Exp $"
+ * "@(#) $Id: FieldSourceDao.java,v 1.2 2011/07/06 15:37:48 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.List;
+
 import alma.scheduling.datamodel.GenericDao;
+import alma.scheduling.datamodel.obsproject.FieldSource;
 
 public interface FieldSourceDao extends GenericDao {
-
+	
+	public List<FieldSource> getSourcesWithoutRiseAndSetTimes();
+	
+	public int getNumberOfSourcesWithoutUpdate();
 }

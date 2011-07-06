@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.3 2010/07/09 17:17:31 javarias Exp $"
+ * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.4 2011/07/06 15:37:49 javarias Exp $"
  */
 package alma.scheduling.algorithm.obsproject;
 
@@ -45,8 +45,6 @@ import alma.scheduling.datamodel.obsproject.dao.FieldSourceDao;
 public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmPart {
 
     private static Logger logger = LoggerFactory.getLogger(FieldSourceObservabilityUpdater.class);
-    
-    private boolean hasUpdated = false;
     
     // --- Spring set properties and accessors ---
     
@@ -93,17 +91,22 @@ public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmP
     public boolean needsToUpdate(Date date) {
         // As the rising and setting times in the FieldSourceObservability are kept
         // in LST, this updater only needs to be run once, in the beginning.
-        return !hasUpdated;
+    	int sourcesToUpdate = sourceDao.getNumberOfSourcesWithoutUpdate();
+    	if (sourcesToUpdate > 0) {
+    		logger.info("DSA needs to update " + sourcesToUpdate + " field sources");
+    		return true;
+    	}
+    	return false;
     }
 
     @Override
-    public void update(Date date) {
+    public synchronized void update(Date date) {
         logger.trace("updating for time " + date);
         
         double latitude = configDao.getConfiguration().getArrayCenterLatitude();
         double longitude = configDao.getConfiguration().getArrayCenterLongitude();
         
-        List<FieldSource> sources = sourceDao.findAll(FieldSource.class);
+        List<FieldSource> sources = sourceDao.getSourcesWithoutRiseAndSetTimes();
         for (Iterator<FieldSource> iter = sources.iterator(); iter.hasNext();) {
             FieldSource src = iter.next();
             logger.debug("src name: " + src.getName());
@@ -114,7 +117,6 @@ public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmP
             srcObs.setValidUntil(null);
             sourceDao.saveOrUpdate(src);
         }
-        hasUpdated = true;
     }
 
     @Override
