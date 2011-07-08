@@ -2,7 +2,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{moreverb}
-\title{ALMA Dynamic Scheduling Algorithm\footnote{CVS tags for LaTeX file: $Id: algorithm.tex,v 1.7 2011/07/08 17:27:42 dclarke Exp $}}
+\title{ALMA Dynamic Scheduling Algorithm\footnote{CVS tags for LaTeX file: $Id: algorithm.tex,v 1.8 2011/07/08 22:41:00 dclarke Exp $}}
 \author{David Clarke, Jorge Avarias, Rafael Hiriart}
 
 \begin{document}
@@ -548,7 +548,14 @@ Then the algorithm
 \item Filters out all the SBs for which $\tau_\nu/\sin(el) > x^{max}$.
 \item Applies a scoring function that prioritize the SBs with higher
 $(\tau_\nu/\sin(el))$. The higher this parameter, the more stringent are 
-the weather conditions that the SB require.
+the weather conditions that the SB require. The proposed $T_{sys}$ score is
+$$
+   S = \left\{ \begin{array}{ll}
+               0 & \text{if $x > x_{max}$} \\
+               x / x_{max} & \text{otherwise}
+               \end{array}
+       \right . \
+$$
 \end{enumerate}
 
 \begin{figure}
@@ -559,7 +566,7 @@ the weather conditions that the SB require.
 
 
 Besides this, it will be necessary to filter out SBs for which the
-current phase stability  and wind speed are to bad to observe.
+current phase stability  and wind speed are too bad to observe.
 The APDM directly defines requirements for these parameters.
 
 The APDM required fields are:
