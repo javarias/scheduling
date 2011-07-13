@@ -303,7 +303,7 @@ public class PluginStarter extends JFrame {
     		}
     	}
     	// Everything is ok: create the window
-    	PluginStarter pluginStarter = new PluginStarter(args[0],plugin,props);
+    	//PluginStarter pluginStarter = new PluginStarter(args[0],plugin,props);
     }
     
     /**

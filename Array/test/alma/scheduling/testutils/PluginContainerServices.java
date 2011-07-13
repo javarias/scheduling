@@ -22,27 +22,12 @@
 package alma.scheduling.testutils;
 
 import java.util.Properties;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
-import org.omg.PortableServer.Servant;
-
-import si.ijs.maci.ComponentSpec;
-import alma.ACS.OffShoot;
-import alma.ACS.OffShootOperations;
-import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-import alma.acs.component.ComponentDescriptor;
-import alma.acs.component.ComponentQueryDescriptor;
-import alma.acs.component.ComponentStateManager;
-import alma.acs.container.AdvancedContainerServices;
 import alma.acs.container.ContainerServices;
-import alma.acs.logging.AcsLogger;
-import alma.entities.commonentity.EntityT;
 import alma.exec.extension.subsystemplugin.PluginContainerException;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
-
-import com.cosylab.CDB.DAL;
 
 public class PluginContainerServices extends alma.acs.container.ContainerServicesProxy implements
 		alma.exec.extension.subsystemplugin.PluginContainerServices {
@@ -77,8 +62,8 @@ public class PluginContainerServices extends alma.acs.container.ContainerService
 	public void startChildPlugin(String childName, SubsystemPlugin child)
 			throws PluginContainerException {
 		try {
-			PluginStarter pluginStarter = new PluginStarter(childName, child,
-					new Properties());
+			//PluginStarter pluginStarter = new PluginStarter(childName, child,
+			//		new Properties());
 		} catch (Exception ex) {
 			throw new PluginContainerException(
 					"Exception caught trying to start child plugin!");

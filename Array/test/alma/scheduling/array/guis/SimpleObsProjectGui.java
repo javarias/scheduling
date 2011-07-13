@@ -28,7 +28,7 @@ public class SimpleObsProjectGui extends JPanel {
 		JTextArea area = new JTextArea();
 		area.setPreferredSize(new Dimension(450, 150));
 		area.setMinimumSize(new Dimension(450, 150));
-		ObsProjectGuiController ctrl = new ObsProjectGuiController(model, table, area);
+		//ObsProjectGuiController ctrl = new ObsProjectGuiController(model, table, area);
 		add(new JScrollPane(table), BorderLayout.NORTH);
 		add(area, BorderLayout.SOUTH);
 	}
