@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 /**
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.3 2011/03/11 00:04:21 dclarke Exp $
+ * $Id: ErrorHandling.java,v 1.4 2011/07/13 21:47:45 dclarke Exp $
  */
 public final class ErrorHandling {
 	/*
@@ -217,11 +217,22 @@ public final class ErrorHandling {
 	 * Miscellany
 	 * ================================================================
 	 */
-	public static void logArray(Logger logger, String label, Object[] choices) {
+	public static void logArray(Logger   logger,
+			                    String   label,
+			                    Object[] choices) {
+		logger.fine(formatArray(label, true, choices));
+	}
+	
+	public static String formatArray(String   label,
+			                         boolean  showCount,
+			                         Object[] choices) {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(label);
-		sb.append(String.format("[%2d] = [", choices.length));
+		if (showCount) {
+			sb.append(String.format("[%d]", choices.length));
+		}
+		sb.append(" = [");
 		
 		String sep = "";
 		for (Object choice : choices) {
@@ -231,7 +242,20 @@ public final class ErrorHandling {
 		}
 		sb.append("]");
 		
-		logger.fine(sb.toString());
+		return sb.toString();
+	}
+	
+	public static String formatList(Object[] choices) {
+		final StringBuilder sb = new StringBuilder();
+
+		String sep = "";
+		for (Object choice : choices) {
+			sb.append(sep);
+			sb.append(choice.toString());
+			sep = ", ";
+		}
+	
+		return sb.toString();
 	}
 	/* End Miscellany
 	 * ============================================================= */
