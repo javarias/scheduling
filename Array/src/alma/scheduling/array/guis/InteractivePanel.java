@@ -28,7 +28,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -80,13 +80,8 @@ import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
-import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.SchedBlockControl;
-import alma.scheduling.datamodel.obsproject.SchedBlockState;
-import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
@@ -97,7 +92,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.21 2011/07/13 17:02:44 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.22 2011/07/13 21:48:31 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1426,7 +1421,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	
 	private void getFirstScoresAndRanks() {
 		Result result;
-
+		
 		AbstractApplicationContext ctx = DSAContextFactory.getContext();
 		resultsDao = (ResultsDao) ctx.getBean(
 				DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
@@ -1477,88 +1472,6 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbModel.setScores(currentScores, currentRanks);
 	}
 	/* End Scores and Ranks
-	 * ============================================================= */
-
-
-
-	/*
-	 * ================================================================
-	 * Fake data
-	 * ================================================================
-	 */
-	final static int numFakeOP = 5000;
-	private static final String pi[] = {
-		"David", "David", "David", "Andrew", "Andrew",
-		"Simon", "Simon", "Andrew", "Simon", "Mike",
-		"Mike", "Mike"
-	};
-	
-	private static final String ex[] = {
-		"North America", "North America", "Chile", "Japan", "Japan",
-		"Europe", "Europe", "Chile", "Japan", "Europe",
-		"North America", "Japan"
-	};
-	
-	private static final int sbPerOP[] = {
-		1, 1, 2, 1, 1, 1, 1, 4, 1, 6, 1, 1, 21, 1, 1, 1
-	};
-	
-	@SuppressWarnings("unused")
-	private void fakeData(ObsProjectTableModel opModel,
-			              SchedBlockTableModel sbModel) {
-		final Collection<ObsProject> ops = new ArrayList<ObsProject>();
-		final Collection<SchedBlock> sbs = new ArrayList<SchedBlock>();
-		
-		final Map<String, Executive> exs = new HashMap<String, Executive>();
-		for (String x : ex) {
-			if (!exs.containsKey(x)) {
-				final Executive e = new Executive();
-				e.setName(x);
-				e.setDefaultPercentage((float)100);
-				exs.put(x, e);
-			}
-		}
-		
-		int sc = 0;
-		
-		for (int p = 0; p < numFakeOP; p++, sc++) {
-			final ObsProject op = new ObsProject();
-			op.setUid(String.format("uid://X007/X%04x/X01", p));
-			op.setPrincipalInvestigator(pi[p % pi.length]);
-			op.setScienceScore((float)Math.sqrt(p));
-			op.setScienceRank(numFakeOP - p);
-			op.setLetterGrade(ScienceGrade.values()[p % ScienceGrade.values().length]);
-			op.setStatus("READY");
-			op.setTotalExecutionTime(Math.sqrt(p) * p * p);
-			ops.add(op);
-			
-			final ObsUnitSet ous = new ObsUnitSet();
-			ous.setUid(String.format("ous%04X", sc));
-			
-			final int numSBs = sbPerOP[p % sbPerOP.length];
-			for (int s = 0; s < numSBs; s++) {
-				final SchedBlock sb = new SchedBlock();
-				sb.setUid(String.format("uid://X007/X%04x/X%02x", p, s+2));
-				sb.setPiName(pi[p % pi.length]);
-				sb.setExecutive(exs.get(ex[sc % ex.length]));
-				sb.setProjectUid(op.getUid());
-				
-				final SchedBlockControl sbc = new SchedBlockControl();
-				sbc.setAccumulatedExecutionTime(op.getTotalExecutionTime()/numSBs);
-				sbc.setState(SchedBlockState.READY);
-				
-				sb.setSchedBlockControl(sbc);
-				ous.addObsUnit(sb);
-				sbs.add(sb);
-			}
-			
-			op.setObsUnit(ous);
-			ous.setProject(op);
-		}
-		opModel.setData(ops);
-		sbModel.setData(sbs);
-	}
-	/* End Fake data
 	 * ============================================================= */
 
 	
