@@ -97,7 +97,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.20 2011/05/12 00:05:59 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.21 2011/07/13 17:02:44 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1426,7 +1426,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	
 	private void getFirstScoresAndRanks() {
 		Result result;
-		
+
 		AbstractApplicationContext ctx = DSAContextFactory.getContext();
 		resultsDao = (ResultsDao) ctx.getBean(
 				DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
