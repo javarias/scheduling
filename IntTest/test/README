@@ -29,9 +29,13 @@ no mode is specified, CreateArray is used.
 
     ./scripts/startCreateArrayPlugin
 
-and to start the Interactive or Queued plugin:
+to start the Interactive or Queued plugin:
 
     ./scripts/startSchedulerPlugin
+
+and to start the automated test:
+
+	./scripts/startSchedulerPlugin Automated
 
 4) Interact with the plugins, load projects, execute them, etc.
 
