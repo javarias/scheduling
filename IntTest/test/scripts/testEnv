@@ -175,7 +175,7 @@ stopACS() {
     acsutilTATEpilogue
     printf "Stopping Tomcat\n"
     if [ -r "$ACS_TMP/archive.pid" ]; then
-	    tomcat stop &> $ACS_TMP/archiveStop.log
+	    archive stop &> $ACS_TMP/archiveStop.log
     fi
 }
 
