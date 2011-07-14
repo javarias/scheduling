@@ -16,11 +16,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingPluginsTest.java,v 1.8 2011/03/02 16:43:25 javarias Exp $
+ * $Id: SchedulingPluginsTest.java,v 1.9 2011/07/14 17:26:25 javarias Exp $
  */
 
 package alma.scheduling.inttest;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import junit.framework.Test;
@@ -37,14 +40,18 @@ import alma.ACSSim.SimulatorHelper;
 import alma.Control.ControlMaster;
 import alma.Control.ControlMasterHelper;
 import alma.Control.CorrelatorType;
+import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.TMCDB.Access;
 import alma.TMCDB.AccessHelper;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdater;
-import alma.scheduling.Interactive_PI_to_Scheduling;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.OLDArrayModeEnum;
+import alma.scheduling.Array;
+import alma.scheduling.ArrayCreationInfo;
+import alma.scheduling.ArrayModeEnum;
+import alma.scheduling.ArraySchedulerLifecycleType;
+import alma.scheduling.Master;
+import alma.scheduling.SchedBlockQueueItem;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.Identifier;
 import alma.xmlstore.Operational;
@@ -66,9 +73,10 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     
     private Access tmcdb;
     private MasterComponent schedulingMC;
-    private MasterSchedulerIF masterScheduler;
+    private Master masterScheduler;
     private ArchiveUpdater archiveUpdater;
     private ControlMaster control;
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     public static Test suite() {
     	TestSuite suite = new TestSuite();
@@ -88,7 +96,9 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
                     suite.addTest(new SchedulingPluginsTest("testManualSchedulingPlugin"));
                 } else if (testSuite.equals("InteractiveFailed")) {
                     suite.addTest(new SchedulingPluginsTest("testInteractiveSchedulingPluginFailedExecution"));
-                } else {
+                } else if (testSuite.equals("Automated")) {
+                    suite.addTest(new SchedulingPluginsTest("testAutomated"));
+                }else {
                 	System.err.println("No test suite with this name: " + testSuite);
                 }
             }
@@ -168,7 +178,7 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
 
     public void notestControlNotOperational() throws Exception {
     	
-    	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
         
     	logger.info("Setting CONTROL state to INACCESSIBLE");
@@ -200,28 +210,77 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
         System.in.read();
     }
     
-    public void testInteractiveSchedulingPlugin() throws Exception {
-    	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+    public void testAutomated() throws Exception {
+    	String timestamp = dateFormat.format(new Date());
+    	container.getLogger().info("Populating Archive with Projects");
+    	Process pop = Runtime.getRuntime().exec("./scripts/populate.sh");
+    	assertEquals(0, pop.waitFor());
+    	internalTestAutomaticArray(timestamp);
+    	internalTestManualArray(timestamp);
+    }
+    
+    private void internalTestAutomaticArray(String timestamp) throws Exception {
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(
+    	container.getLogger().info("Testing Automatic Array");
+    	final String[] antennaList =  {"DV01", "DA41"};
+    	final String[] photonicsList = {};
+    	String [] sbs = archOperational.queryRecent("SchedBlock", timestamp);
+    	final ArrayCreationInfo arrayName = masterScheduler.createArray(antennaList, photonicsList, CorrelatorType.BL, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, "");
+    	Array array = alma.scheduling.ArrayHelper.narrow(container.getComponent(
+    			arrayName.arrayComponentName)); 
+    	for(String sb: sbs) {
+    		array.push(new SchedBlockQueueItem(System.currentTimeMillis(), sb));
+    	}
+    	array.start("SchedulingTest", "Test");
+    	Thread.sleep(5 * 60 * 1000);
+    	array.stop("SchedulingTest", "Test");
+    	Thread.sleep(30 * 1000);
+   		masterScheduler.destroyArray(arrayName.arrayId, "SchedulingTest", "Test");
+    	container.releaseComponent(masterScheduler.name(), null);
+    }
+    
+    private void internalTestManualArray(String timestamp) throws Exception {
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
+                container.getComponent("SCHEDULING_MASTERSCHEDULER"));
+    	container.getLogger().info("Testing Manual Array");
+    	final String[] antennaList =  {"DV01", "DA41"};
+    	final String[] photonicsList = {};
+    	String [] sbs = archOperational.queryRecent("SchedBlock", timestamp);
+    	final ArrayCreationInfo arrayName = masterScheduler.createArray(antennaList, photonicsList, CorrelatorType.BL, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, "");
+    	Array array = alma.scheduling.ArrayHelper.narrow(container.getComponent(
+    			arrayName.arrayComponentName));
+    	array.push(new SchedBlockQueueItem(System.currentTimeMillis(), sbs[0]));
+    	array.start("SchedulingTest", "Test");
+    	Process proc = Runtime.getRuntime().exec("python testManualScript.py");
+    	proc.waitFor();
+    	proc = Runtime.getRuntime().exec("python testManualScript.py");
+    	proc.waitFor();
+    	masterScheduler.destroyArray(arrayName.arrayId, "SchedulingTest", "Test");
+    	container.releaseComponent(masterScheduler.name(), null);
+    }
+    
+    public void testInteractiveSchedulingPlugin() throws Exception {
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
+                container.getComponent("SCHEDULING_MASTERSCHEDULER"));
+        ArrayCreationInfo arrayName = masterScheduler.createArray(
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
-                OLDArrayModeEnum.OLDINTERACTIVE);
+                ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, "");
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");
-        String schedulerName = masterScheduler.startInteractiveScheduling1(arrayName);
-        Interactive_PI_to_Scheduling scheduler =
-            alma.scheduling.Interactive_PI_to_SchedulingHelper.narrow(
-                container.getComponent(schedulerName));
+        Array scheduler =
+            alma.scheduling.ArrayHelper.narrow(
+                container.getComponent(arrayName.arrayComponentName));
         
         // Wait here until a key is entered, so the OMC Plugins can be tested.
         System.out.print("Press a key to continue...");
         System.in.read();
         
         container.releaseComponent(scheduler.name());
-    	masterScheduler.destroyArray(arrayName);
+    	masterScheduler.destroyArray(arrayName.arrayId, "SchedulingTest", "Test");
         container.releaseComponent(masterScheduler.name());
     }
 
@@ -264,38 +323,21 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     	simulator.removeMethod("CONTROL/Array001", "observe");
 
     }
-    
-    public void testQueuedSchedulingPlugin() throws Exception {
-    	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
-                container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(
-        		new String[] {"DV01"},
-                new String[] {"PhotonicReference1"},
-                CorrelatorType.BL,
-                OLDArrayModeEnum.OLDQUEUED);
-        logger.info("Array name: "+arrayName);
-    	
-        System.out.print("Press a key to continue...");
-        System.in.read();
-        
-    	masterScheduler.destroyArray(arrayName);
-        container.releaseComponent(masterScheduler.name());
-    }
 
     public void testManualSchedulingPlugin() throws Exception {
-    	masterScheduler = alma.scheduling.MasterSchedulerIFHelper.narrow(
+    	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        String arrayName = masterScheduler.createArray(
+        ArrayCreationInfo arrayName = masterScheduler.createArray(
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
-                OLDArrayModeEnum.OLDMANUAL);
+                ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, "");
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");
         System.in.read();
         
-    	masterScheduler.destroyArray(arrayName);
+        masterScheduler.destroyArray(arrayName.arrayId, "SchedulingTest", "Test");
         container.releaseComponent(masterScheduler.name());
     }
     
