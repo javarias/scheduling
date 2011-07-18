@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.lib.legacy.ClassImposteriser;
 
 import si.ijs.maci.ComponentInfo;
 import alma.Control.ArrayIdentifier;
@@ -18,6 +19,7 @@ import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.acs.component.ComponentDescriptor;
 import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
+import alma.acs.logging.AcsLogger;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
@@ -34,13 +36,13 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 	ArraySchedulerMode[] dynamicPassiveMode = {ArraySchedulerMode.DYNAMIC_PASSIVE_I};
 	ArraySchedulerMode[] simpleManualArrayMode = {ArraySchedulerMode.MANUAL_I};
 	MasterImpl schedMaster;
-	Logger logger;
+	AcsLogger logger;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-//		setImposteriser(ClassImposteriser.INSTANCE);
+		setImposteriser(ClassImposteriser.INSTANCE);
 		final ArrayStatusCallback callback = mock(ArrayStatusCallback.class);
-		logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+		logger = mock(AcsLogger.class);
 		schedMaster = new MasterImpl();
 		schedMaster.setControlMaster(controlMaster);
 		schedMaster.setLogger(logger);
@@ -52,6 +54,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 			allowing(contServices).getComponent(with(any(String.class))); will(returnValue(retArray));
 			allowing(callback);
 			ignoring(contServices);
+			ignoring(logger);
 //			oneOf(contServices).getDefaultComponent("IDL:alma/Control/CurrentWeather:1.0");
 		}});
 	}
@@ -127,6 +130,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 			oneOf(retArray).stopRunningSchedBlock(with(any(String.class)), with(any(String.class)));
 			oneOf(retArray).destroyArray("Array001", "Scheduling");
 			oneOf(controlMaster).destroyArray("Array001");
+			oneOf(retArray).hasRunningSchedBlock(); will(returnValue(false));
 		} } );
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
