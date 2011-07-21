@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
- * $Id: SchedulingContextFactory.java,v 1.4 2011/01/28 00:35:31 javarias Exp $
+ * $Id: SchedulingContextFactory.java,v 1.5 2011/07/21 23:13:49 javarias Exp $
  */
 
 package alma.scheduling.utils;
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
@@ -67,27 +68,7 @@ public class SchedulingContextFactory {
     	return result;
     }
     
-    /**
-     * Create a new instance of a spring context using the resource defined in the url.
-     * The url could contain the following identifiers: <i> file: </i> or  <i>classpath: </i> 
-     * </br>
-     * Ex. file:../context.xml classpath:alma/scheduling/CommonContext.xml
-     * </br>
-     * If no resource identifier is provided will be assumed that a file's url is passed as
-     * parameter. </br>
-     * 
-     * This method requires the file scheduling.properties located into $ACSDATA/config </br>
-     * There is no way to use other config file yet. </br>
-     * 
-     * Other factories can make use of this class to create specific factories tied to 
-     * a specific Spring context file configuration (i.e {@code CommonContextFactory}
-     * 
-     * @since ALMA 8.0.0
-     * @param url the url of the Context xml file to be read.
-     * @return a spring Context initialized and ready to be used. 
-     */
-	public static AbstractApplicationContext getContext(String url) {
-        XmlBeanFactory factory = null;
+    public static String setPropertyFilePath() {
         if (path == null) {
             try {
                 path = System.getProperty("alma.scheduling.properties");
@@ -98,14 +79,39 @@ public class SchedulingContextFactory {
                 path = System.getenv("ACSDATA") + "/config/" + PROPERTIES_FILE;
             }
         }
-        if (url.startsWith("file:")) {
-            factory = new XmlBeanFactory(new FileSystemResource(url
+        return path;
+    }
+    
+    /**
+     * Create a new instance of a spring context using the resource defined in the parameter.
+     * The url could contain the following identifiers: <i> file: </i> or  <i>classpath: </i> 
+     * </br>
+     * Ex. file:../context.xml classpath:alma/scheduling/CommonContext.xml
+     * </br>
+     * If no resource identifier is provided will be assumed that a file's url is passed as
+     * parameter. </br>
+     * 
+     * This method requires the file scheduling.properties located into $ACSDATA/config 
+     * or defined in the property <b>alma.scheduling.properties</b></br>
+     * 
+     * Other factories can make use of this class to create specific factories tied to 
+     * a specific Spring context file configuration (i.e {@code CommonContextFactory}
+     * 
+     * @since ALMA 8.0.0
+     * @param contextFileURL the URL of the Context xml file to be read.
+     * @return a spring Context initialized and ready to be used. 
+     */
+	public static AbstractApplicationContext getContext(String contextFileURL) {
+        XmlBeanFactory factory = null;
+        setPropertyFilePath();
+        if (contextFileURL.startsWith("file:")) {
+            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL
                     .substring(5)));
-        } else if (url.startsWith("classpath:")) {
-            factory = new XmlBeanFactory(new ClassPathResource(url
+        } else if (contextFileURL.startsWith("classpath:")) {
+            factory = new XmlBeanFactory(new ClassPathResource(contextFileURL
                     .substring(10)));
         } else {
-            factory = new XmlBeanFactory(new FileSystemResource(url));
+            factory = new XmlBeanFactory(new FileSystemResource(contextFileURL));
         }
         PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
         cfg.setLocation(new FileSystemResource(path));
@@ -125,4 +131,29 @@ public class SchedulingContextFactory {
         
         return ctx;
     }
+	
+	/**
+	 * Create a new instance of a spring context using an array of bytes
+	 * 
+	 * This method requires the file scheduling.properties located into $ACSDATA/config 
+     * or defined in the property <b>alma.scheduling.properties</b></br>
+	 * 
+	 * @param context
+	 * @return a spring Context initialized and ready to be used.
+	 * 
+	 * @since ALMA 8.1.1
+	 */
+	public static AbstractApplicationContext getContext(byte[] context) {
+		setPropertyFilePath();
+		if (context == null) {
+			throw new IllegalArgumentException("Spring context byte array cannot be null");
+		}
+		XmlBeanFactory factory = new XmlBeanFactory(new ByteArrayResource(context));
+		PropertyPlaceholderConfigurer cfg = new PropertyPlaceholderConfigurer();
+        cfg.setLocation(new FileSystemResource(path));
+        cfg.postProcessBeanFactory(factory);
+        AbstractApplicationContext ctx = new GenericApplicationContext(factory);
+        ctx.refresh();
+		return ctx;
+	}
 }

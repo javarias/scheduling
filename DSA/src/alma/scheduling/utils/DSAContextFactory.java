@@ -1,10 +1,17 @@
 package alma.scheduling.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.context.support.AbstractApplicationContext;
+
+import alma.scheduling.algorithm.SchedulingPolicyValidator;
 
 /**
  * 
@@ -14,7 +21,7 @@ import org.springframework.context.support.AbstractApplicationContext;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.9 2011/07/20 17:06:56 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.10 2011/07/21 23:13:48 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -38,18 +45,49 @@ public class DSAContextFactory extends CommonContextFactory {
 	}
 	
 	public static synchronized AbstractApplicationContext getContext(String contextPath) {
-		System.out.println(DSAContextFactory.class);
 		if (context == null) {
 			context = SchedulingContextFactory.getContext(contextPath);
 		}
 		return context;
-		
+	}
+	
+	/**
+	 * Create a new instance of a spring context using the resource defined in 
+	 * scheduling properties file. The property to be read is <b>dsa.policy.file</b>
+	 * 
+	 * @see SchedulingContextFactory#getContext(String)
+	 * @return a spring Context initialized and ready to be used.
+	 * 
+	 * @since ALMA 8.1.1
+	 */
+	public static AbstractApplicationContext getContextFromPropertyFile(){
+		if (context != null)
+			return context;
+		String path = SchedulingContextFactory.setPropertyFilePath();
+		InputStream isProp;
+		try {
+			isProp = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return getContext();
+		} 
+		Properties properties = new Properties();
+		try {
+			properties.load(isProp);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return getContext();
+		}
+		String policyFilePath = properties.getProperty("dsa.policy.file");
+		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
+		context = SchedulingContextFactory.getContext(contextString.getBytes());
+		return context;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List<String> getPolicyNames() {
 		if (context == null) {
-			DSAContextFactory.getContext();
+			DSAContextFactory.getContextFromPropertyFile();
 		}
 		if (availablePolicies == null) {
 			Map policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);

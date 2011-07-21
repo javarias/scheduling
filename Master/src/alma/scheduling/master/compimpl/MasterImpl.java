@@ -518,6 +518,8 @@ public class MasterImpl implements ComponentLifecycle,
 	}
 	
 	private void initialize() throws AcsJContainerServicesEx {
+		m_logger.finest("Initialazing Spring Context");
+		DSAContextFactory.getContextFromPropertyFile();
 		m_logger.finest("About to get reference of "
 				+ Constants.CONTROL_MASTER_URL);
 		controlMaster = ControlMasterHelper.narrow(m_containerServices

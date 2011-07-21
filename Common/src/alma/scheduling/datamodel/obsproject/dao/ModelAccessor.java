@@ -95,7 +95,7 @@ public class ModelAccessor extends Observable {
 		logger.info("Loading Context from factory");
 		//TODO: Remove this reflection call
 		Class<?> factoryClass = Class.forName("alma.scheduling.utils.DSAContextFactory");
-		Method m = factoryClass.getMethod("getContext");
+		Method m = factoryClass.getMethod("getContextFromPropertyFile");
         AbstractApplicationContext ctx = (AbstractApplicationContext) m.invoke(factoryClass, (Object [])null);
         projectDao = (ObsProjectDao) ctx.getBean(SCHEDULING_OBSPROJECT_DAO_BEAN);
         schedBlockDao = (SchedBlockDao) ctx.getBean(SCHEDULING_SCHEDBLOCK_DAO_BEAN);

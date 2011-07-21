@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.10 2011/05/04 23:21:21 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.11 2011/07/21 23:13:47 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -29,13 +29,11 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Logger;
 
-
 import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveImportEvent;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.SchedulingException;
 import alma.scheduling.dataload.AtmDataLoader;
-import alma.scheduling.dataload.AtmTableReader.AtmData;
 import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.Executive;
@@ -44,9 +42,9 @@ import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.Phase2XMLStoreProjectDao;
@@ -56,12 +54,13 @@ import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.weather.AtmParameters;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.utils.CommonContextFactory;
+import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.10 2011/05/04 23:21:21 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.11 2011/07/21 23:13:47 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -112,8 +111,8 @@ public class ArchivePoller implements Observer{
 		this.obsProjectDao = ma.getObsProjectDao();
 		this.execDao = ma.getExecutiveDao();
 		this.atmDao = ma.getAtmDao();
-		configDao = (ConfigurationDao) CommonContextFactory
-				.getContext()
+		configDao = (ConfigurationDao) DSAContextFactory
+				.getContextFromPropertyFile()
 				.getBean(CommonContextFactory.SCHEDULING_CONFIGURATION_DAO_BEAN);
 	}
 	/* End Construction
