@@ -21,7 +21,7 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.10 2011/07/21 23:13:48 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.11 2011/07/22 20:00:50 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -79,6 +79,8 @@ public class DSAContextFactory extends CommonContextFactory {
 			return getContext();
 		}
 		String policyFilePath = properties.getProperty("dsa.policy.file");
+		if(policyFilePath == null)
+			return getContext();
 		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
 		context = SchedulingContextFactory.getContext(contextString.getBytes());
 		return context;
