@@ -12,7 +12,6 @@ import java.util.Properties;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.scheduling.algorithm.SchedulingPolicyValidator;
-
 /**
  * 
  * Handle Spring context singleton for the Scheduling Dynamic Algorithm names. The application
@@ -21,10 +20,11 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.11 2011/07/22 20:00:50 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.12 2011/07/22 20:02:19 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
+	private static final String DSA_POLICY_FILE_PROP = "dsa.policy.file"; 
 	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
 	//protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "file:/export/home/griffin/javarias/scm/ALMA/HEAD/SCHEDULING/DSA/test/testPolicy.xml.context.xml";
 	public static final String SCHEDULING_DSA_RESULTS_DAO_BEAN="DSAResultDAO";
@@ -78,7 +78,7 @@ public class DSAContextFactory extends CommonContextFactory {
 			e.printStackTrace();
 			return getContext();
 		}
-		String policyFilePath = properties.getProperty("dsa.policy.file");
+		String policyFilePath = properties.getProperty(DSA_POLICY_FILE_PROP);
 		if(policyFilePath == null)
 			return getContext();
 		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
