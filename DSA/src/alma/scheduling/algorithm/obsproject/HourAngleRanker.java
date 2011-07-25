@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import alma.scheduling.algorithm.astro.Constants;
+import static alma.scheduling.algorithm.astro.Constants.CHAJNANTOR_LATITUDE;
+import static alma.scheduling.algorithm.astro.Constants.CHAJNANTOR_LONGITUDE;
 import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+
 
 public class HourAngleRanker extends AbstractBaseRanker {
 
@@ -35,14 +37,20 @@ public class HourAngleRanker extends AbstractBaseRanker {
 			rank.setUid(sb.getUid());
 			double ra = sb.getSchedulingConstraints().getRepresentativeTarget()
 					.getSource().getCoordinates().getRA() / 15.0;
-			double ha = CoordinatesUtil.getHourAngle(ut, ra, Constants.CHAJNANTOR_LONGITUDE);
-			if (ha >= 12 && ha <= 16)
-				rank.setRank(-0.25 * (ha - 12.0) + 1.0);
-			else if (ha < 12  && ha >= 8) {
-				rank.setRank((0.25 * (ha - 12.0) ) + 1.0);
-			}
-			else
-				rank.setRank(0);
+			//HA in rads
+			double ha = (CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) - 12.0)
+					* Math.PI / 12.0;
+			//Dec in rads
+			double delta = sb.getSchedulingConstraints().getRepresentativeTarget()
+					.getSource().getCoordinates().getDec() * Math.PI / 180.0;
+			//Chajnantor longitude in rads
+			double phi = CHAJNANTOR_LONGITUDE * Math.PI / 180.0;
+			System.out.println("ha=" + ha + "(" + CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) +")" + "; delta=" + delta +"; phi=" + phi);
+			double score = (Math.cos(ha) + Math.tan(delta) * Math.tan(phi)) /
+					(1 + Math.tan(delta) * Math.tan(phi));
+			System.out.println("up=" + (Math.cos(ha) + Math.tan(delta) * Math.tan(phi))
+					+ "; down=" + (1 + Math.tan(delta) * Math.tan(phi)) + "; score=" + score);
+			rank.setRank(score);
 			ranks.add(rank);
 		}
 		printVerboseInfo(ranks, arrConf.getId(), ut);
