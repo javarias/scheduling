@@ -21,18 +21,44 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.6 2011/03/01 21:53:21 ahoffsta Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.7 2011/07/25 21:59:40 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
 import java.util.Date;
-
 /**
  * Calculates the system temperature (Tsys).
  * 
  */
 public class SystemTemperatureCalculator {
     
+	/**
+	 * 
+	 * @param tau_zero opacity at the zenith
+     * @param ra Right Ascension (degrees)
+     * @param declination Declination (degrees)
+     * @param latitude Latitude (degrees)
+     * @param ut Time in Universal Time system
+	 * @return the opacity for the given coordinate
+	 */
+	public static double getOpacity (double tau_zero, double ra, double declination,
+            double latitude, Date ut) {
+        double latitudeRad = Math.toRadians(latitude);
+        double decRad = Math.toRadians(declination);
+
+        double sinDec = Math.sin(decRad);
+        double sinLat = Math.sin(latitudeRad);
+        double cosDec = Math.cos(decRad);
+        double cosLat = Math.cos(latitudeRad);
+        double haHours = CoordinatesUtil.getHourAngle(ut, ra/15.0, Constants.CHAJNANTOR_LONGITUDE);
+        double ha = Math.PI * haHours / 12;
+        System.out.println("getTsys: ha = " + haHours);
+        double cosHa = Math.cos(ha);
+		double sinAltitude = sinDec * sinLat + cosDec * cosLat * cosHa;
+		double tau = tau_zero / sinAltitude;
+		return tau;
+	}
+	
     /**
      * Get system temperature (K).
      * @param ra Right Ascension (degrees)
@@ -74,21 +100,50 @@ public class SystemTemperatureCalculator {
         
         double tauZero = opacity;
         double Tatm = atmBrightnessTemperature;
+        double tau = tauZero * Airmass;
         
-        double f = Math.exp(tauZero * Airmass);
-        double Tcmb = 2.725; // [K]
+        double Tant = getAntennaTemperature(frequency, etaFeed, Tamb, Tatm, tau);
         
-        Trx  = planck(frequency, Trx);
-        Tatm = planck(frequency, Tatm);
-        Tamb = planck(frequency, Tamb);
-
-        double Tsys = (Trx + Tatm * etaFeed * (1.0 - 1 / f)
-                    + Tamb * (1.0 - etaFeed));
-        // GHz, K
-        Tsys = f * Tsys + Tcmb;
+        double Tsys = (Trx + Tant) * Math.exp(tau);
+        Tsys = Tsys / etaFeed;
+//        double f = Math.exp(tauZero * Airmass);
+//        double Tcmb = 2.725; // [K]
+//        
+//        Trx  = planck(frequency, Trx);
+//        Tatm = planck(frequency, Tatm);
+//        Tamb = planck(frequency, Tamb);
+//
+//        double Tsys = (Trx + Tatm * etaFeed * (1.0 - 1 / f)
+//                    + Tamb * (1.0 - etaFeed));
+//        // GHz, K
+//        Tsys = f * Tsys + Tcmb;
         return Tsys;
     }
     
+    /**
+     * Get zenith system temperature (K)
+     * 
+     * @param frequency Frequency (GHz)
+     * @param opacity Opacity or optical depth (neper)
+     * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @return System temperature (K)
+     */
+    
+    public static double getCurrentTsys(double frequency, double opacity,
+            double atmBrightnessTemperature) {
+    	double etaFeed = 0.95;
+    	// TODO Shouldn't this be the current temperature?
+        // TODO Replace for weather temperature
+        double Tamb = 270; // Ambient temperature (260 - 280 K)
+    	double Trx = getReceiverTemperature(frequency);
+        double tauZero = opacity;
+        double Tatm = atmBrightnessTemperature;
+    	double Tant = getAntennaTemperature(frequency, etaFeed, Tamb, Tatm, tauZero);
+    	
+    	double Tsys = (Trx + Tant) * Math.exp(tauZero);
+    	Tsys = Tsys / etaFeed;
+    	return Tsys;
+    }
     /**
      * Return the receiver temperature
      * 
@@ -137,5 +192,24 @@ public class SystemTemperatureCalculator {
         double tmp = Constants.PLANCK * freqHz / k;
         double ret = tmp / (Math.exp(tmp / temperature) - 1.0);
         return ret;
+    }
+    
+    /**
+     * Calculate Antenna temperature
+     * 
+     * @param frequency (GHz)
+     * @param etaFeed Forward efficiency
+     * @param Tamb Ambient temperature (from weather station)
+     * @param Tatm Atmospheric temperature (interpolated)
+     * @param tau tau_zero / Math.sin(el)
+     * @return Antenna temperature
+     */
+    protected static double getAntennaTemperature(double frequency, double etaFeed,
+    		double Tamb, double Tatm, double tau) {
+    	double Tsky = Tatm * (1 - Math.exp(-tau));
+    	double TSpill = 0.95 * Tamb;
+    	double Tbg = 2.76 * Math.exp(-tau);
+    	double Tant = etaFeed * Tsky + (1 - etaFeed) * TSpill + etaFeed * Tbg; 
+    	return Tant;
     }
 }
