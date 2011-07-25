@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherDependentVariables.java,v 1.1 2010/02/24 20:55:09 rhiriart Exp $"
+ * "@(#) $Id: WeatherDependentVariables.java,v 1.2 2011/07/25 21:57:17 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -45,6 +45,12 @@ public class WeatherDependentVariables implements Updateable {
     
     /** Projection time increment (hours) */
     Double projectionTimeIncr;
+    
+    /** zenith System Temperature (K) */
+    Double currTsys;
+    
+    /** Opacity (nepers)*/
+    Double opacity;
     
     public WeatherDependentVariables() { }
     
@@ -91,4 +97,20 @@ public class WeatherDependentVariables implements Updateable {
     public void setProjectionTimeIncr(Double projectionTimeIncr) {
         this.projectionTimeIncr = projectionTimeIncr;
     }
+
+	public Double getCurrTsys() {
+		return currTsys;
+	}
+
+	public void setCurrTsys(Double currTsys) {
+		this.currTsys = currTsys;
+	}
+
+	public Double getOpacity() {
+		return opacity;
+	}
+
+	public void setOpacity(Double opacity) {
+		this.opacity = opacity;
+	}
 }
