@@ -38,13 +38,13 @@ public class HourAngleRanker extends AbstractBaseRanker {
 			double ra = sb.getSchedulingConstraints().getRepresentativeTarget()
 					.getSource().getCoordinates().getRA() / 15.0;
 			//HA in rads
-			double ha = (CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) - 12.0)
+			double ha = CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE)
 					* Math.PI / 12.0;
 			//Dec in rads
-			double delta = sb.getSchedulingConstraints().getRepresentativeTarget()
-					.getSource().getCoordinates().getDec() * Math.PI / 180.0;
+			double delta = Math.toRadians(sb.getSchedulingConstraints().getRepresentativeTarget()
+					.getSource().getCoordinates().getDec());
 			//Chajnantor longitude in rads
-			double phi = CHAJNANTOR_LONGITUDE * Math.PI / 180.0;
+			double phi = Math.toRadians(CHAJNANTOR_LONGITUDE);
 			System.out.println("ha=" + ha + "(" + CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) +")" + "; delta=" + delta +"; phi=" + phi);
 			double score = (Math.cos(ha) + Math.tan(delta) * Math.tan(phi)) /
 					(1 + Math.tan(delta) * Math.tan(phi));

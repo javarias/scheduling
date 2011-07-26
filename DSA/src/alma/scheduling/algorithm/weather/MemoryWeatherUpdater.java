@@ -76,17 +76,26 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
                     latitude, frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
-            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
-            tau_zero = tmp[0];
-            Tatm = tmp[1];
-            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
-                    latitude, frequency, tau_zero, Tatm, date);
+            double currTsys = SystemTemperatureCalculator.getCurrentTsys(frequency,
+            		tau_zero, Tatm);
+            logger.info("curr tsys: " + currTsys);
+            
+            double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
+//            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
+//            tau_zero = tmp[0];
+//            Tatm = tmp[1];
+//            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+//                    latitude, frequency, tau_zero, Tatm, date);
 
+            
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
-            vars.setProjectedTsys(ptsys);
-            vars.setProjectionTimeIncr(projTimeIncr);
+//            vars.setProjectedTsys(ptsys);
+//            vars.setProjectionTimeIncr(projTimeIncr);
+            vars.setOpacity(tau);
+            vars.setCurrTsys(currTsys);
             sb.setWeatherDependentVariables(vars);
+            schedBlockDao.saveOrUpdate(sb);
         }
     }
 
@@ -141,17 +150,27 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
                 latitude, frequency, tau_zero, Tatm, date);
         logger.info("tsys: " + tsys);
 
-        tmp = interpolateOpacityAndTemperature(ppwv, frequency);
-        tau_zero = tmp[0];
-        Tatm = tmp[1];
-        double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
-                latitude, frequency, tau_zero, Tatm, date);
+        double currTsys = SystemTemperatureCalculator.getCurrentTsys(frequency,
+        		tau_zero, Tatm);
+        logger.info("curr tsys: " + currTsys);
+        
+        double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
+        System.out.println("tau_zero:" + tau_zero + "; " + "tau: " + tau);
+//        tmp = interpolateOpacityAndTemperature(ppwv, frequency);
+//        tau_zero = tmp[0];
+//        Tatm = tmp[1];
+//        double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+//                latitude, frequency, tau_zero, Tatm, date);
 
+        
         WeatherDependentVariables vars = new WeatherDependentVariables();
         vars.setTsys(tsys);
-        vars.setProjectedTsys(ptsys);
-        vars.setProjectionTimeIncr(projTimeIncr);
+//        vars.setProjectedTsys(ptsys);
+//        vars.setProjectionTimeIncr(projTimeIncr);
+        vars.setOpacity(tau);
+        vars.setCurrTsys(currTsys);
         sb.setWeatherDependentVariables(vars);
+        schedBlockDao.saveOrUpdate(sb);
     }
 
     private class PWV{

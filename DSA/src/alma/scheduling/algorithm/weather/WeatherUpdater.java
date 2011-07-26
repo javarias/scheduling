@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.15 2011/03/01 21:53:21 ahoffsta Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.16 2011/07/26 22:35:38 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -192,16 +192,24 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
                     latitude, frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
-            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
-            tau_zero = tmp[0];
-            Tatm = tmp[1];
-            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
-                    latitude, frequency, tau_zero, Tatm, date);
+            double currTsys = SystemTemperatureCalculator.getCurrentTsys(frequency,
+            		tau_zero, Tatm);
+            logger.info("curr tsys: " + currTsys);
+            
+            double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
+//            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
+//            tau_zero = tmp[0];
+//            Tatm = tmp[1];
+//            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+//                    latitude, frequency, tau_zero, Tatm, date);
 
+            
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
-            vars.setProjectedTsys(ptsys);
-            vars.setProjectionTimeIncr(projTimeIncr);
+//            vars.setProjectedTsys(ptsys);
+//            vars.setProjectionTimeIncr(projTimeIncr);
+            vars.setOpacity(tau);
+            vars.setCurrTsys(currTsys);
             sb.setWeatherDependentVariables(vars);
             schedBlockDao.saveOrUpdate(sb);
         }
