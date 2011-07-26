@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservabilityUpdaterTest.java,v 1.1 2010/03/12 17:14:04 rhiriart Exp $"
+ * "@(#) $Id: FieldSourceObservabilityUpdaterTest.java,v 1.2 2011/07/26 22:39:21 javarias Exp $"
  */
 package alma.scheduling.algorithm.obsproject;
 
@@ -68,7 +68,7 @@ public class FieldSourceObservabilityUpdaterTest extends TestCase {
         sourceUpd.update(ut);
         // select SchedBlocks
         SchedBlockSelector sourceSel = (SchedBlockSelector) ctx.getBean("sourceSelector");
-        Collection<SchedBlock> sbs = sourceSel.select();
+        Collection<SchedBlock> sbs = sourceSel.select(new Date(), null);
         logger.info("number of sbs selected: " + sbs.size());
     }
 
