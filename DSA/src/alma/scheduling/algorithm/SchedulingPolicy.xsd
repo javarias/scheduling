@@ -8,13 +8,10 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	
-	<xs:element name="SchedulingPolicy" type="SchedulingPolicyT">
-	</xs:element>
 
 	<xs:complexType name="SchedulingPolicyT">
 		<xs:sequence>
-			<xs:element name="SelectionCriterion" type="SelectionCriteriaT"
+			<xs:element name="SelectionCriterion" type="SelectionCriterionT"
 				maxOccurs="1" />
 			<xs:element name="Scorers" type="ScorersT" maxOccurs="1" />
 		</xs:sequence>
@@ -22,17 +19,18 @@
 		<xs:attribute name="version" type="xs:string" use="optional" />
 	</xs:complexType>
 	
-    <xs:complexType name="SelectionCriteriaT">
+    <xs:complexType name="SelectionCriterionT">
     	<xs:sequence>
     		<xs:choice minOccurs="0" maxOccurs="unbounded">
     			<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
-    			<xs:element name="WeatherSelector" type="WeatherSelectorT"/>
+<!--   			<xs:element name="WeatherSelector" type="WeatherSelectorT"/>   --> 
     			<xs:element name="SourceSelector" type="SourceSelectorT"/>
     			<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>
     			<xs:element name="HourAngleSelector" type="HourAngleSelectorT"/>
     			<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT"/>
     			<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
     			<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT"/>
+    			<xs:element name="OpacitySelector" type="OpacitySelectorT"/>
     		</xs:choice>
     	</xs:sequence>
     </xs:complexType>
@@ -42,6 +40,7 @@
     		<xs:choice minOccurs="0" maxOccurs="unbounded">
     			<xs:element name="SciScorer" type="SciScorerT" />
     			<xs:element name="HourAngleScorer" type="HourAngleScorerT" />
+    			<xs:element name="TsysScorer" type="TsysScorerT" />
     		</xs:choice>
     	</xs:sequence>
     </xs:complexType>
@@ -58,7 +57,7 @@
 		</xs:sequence>
 	</xs:complexType>
   
-<!-- Definition of available selection Criterias -->  
+<!-- Definition of available selection Criterion -->  
    	<xs:complexType name="ExecutiveSelectorT" />
 	
 	<xs:complexType name="WeatherSelectorT" >
@@ -85,6 +84,8 @@
 	
 	<xs:complexType name="SchedBlockGradeSelectorT" />
 	
+	<xs:complexType name="OpacitySelectorT"/>
+	
 <!-- Definition of available scorers -->
 	
 	<xs:complexType name="SciScorerT" >
@@ -94,6 +95,12 @@
 	</xs:complexType>
 	
 	<xs:complexType name="HourAngleScorerT" >
+		<xs:complexContent>
+			<xs:extension base="ScorerT" />
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="TsysScorerT" >
 		<xs:complexContent>
 			<xs:extension base="ScorerT" />
 		</xs:complexContent>
