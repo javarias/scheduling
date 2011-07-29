@@ -1,0 +1,56 @@
+<prp:ObsProposal xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes" xmlns:prp="Alma/ObsPrep/ObsProposal"
+    xmlns:orv="Alma/ObsPrep/ObsReview"
+    xmlns:ps="Alma/ObsPrep/ProjectStatus"
+    xmlns:oat="Alma/ObsPrep/ObsAttachment"
+    xmlns:prj="Alma/ObsPrep/ObsProject"
+    xmlns:sbl="Alma/ObsPrep/SchedBlock"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    schemaVersion="12" revision="1.102.2.1.4.3.2.3"
+    almatype="APDM::ObsProposal" xsi:type="prp:ObsProposal">
+    <prj:ObsPlan status="NewPhase2" entityPartId="X7109230" almatype="APDM::ObsUnitSet">
+        <prj:name>ObsUnitSet</prj:name>
+        <prj:runSciencePipeline>false</prj:runSciencePipeline>
+    </prj:ObsPlan>
+    <prp:ObsProposalEntity entityId="entityId_-1222758140"
+        entityIdEncrypted="-- id encryption not implemented --"
+        entityTypeName="ObsProposal" schemaVersion="12" documentVersion="1"/>
+    <prp:ObsProjectRef entityId="entityId_1467432980"
+        entityTypeName="ObsProject" documentVersion="1"/>
+    <prp:abstract></prp:abstract>
+    <prp:relatedProposals></prp:relatedProposals>
+    <prp:previousProposals></prp:previousProposals>
+    <prp:cycle>9999.4</prp:cycle>
+    <prp:recentPublications></prp:recentPublications>
+    <prp:scientificCategoryCode>10</prp:scientificCategoryCode>
+    <prp:proposalTypeCode>S</prp:proposalTypeCode>
+    <prp:scientificCategoryString></prp:scientificCategoryString>
+    <prp:proposalTypeString></prp:proposalTypeString>
+    <prp:PrincipalInvestigator associatedArc="OTHER">
+        <prp:fullName>John Lennon</prp:fullName>
+        <prp:organisation>N/A</prp:organisation>
+        <prp:eMail>john@thebeatles.com</prp:eMail>
+        <prp:verfiedUser>true</prp:verfiedUser>
+        <prp:userId>john</prp:userId>
+        <prp:index>1</prp:index>
+    </prp:PrincipalInvestigator>
+    <prp:ProposalFeedback>
+        <prp:TimeAllocationBreakdown>
+            <prp:ExecutiveFraction name="OTHER">
+                <prp:timeFraction>_OTFRAC_</prp:timeFraction>
+            </prp:ExecutiveFraction>
+            <prp:ExecutiveFraction name="CL">
+                <prp:timeFraction>_CLFRAC_</prp:timeFraction>
+            </prp:ExecutiveFraction>
+            <prp:ExecutiveFraction name="EA">
+                <prp:timeFraction>_EAFRAC_</prp:timeFraction>
+            </prp:ExecutiveFraction>
+            <prp:ExecutiveFraction name="EU">
+                <prp:timeFraction>_EUFRAC_</prp:timeFraction>
+            </prp:ExecutiveFraction>
+            <prp:ExecutiveFraction name="NA">
+                <prp:timeFraction>_NAFRAC_</prp:timeFraction>
+            </prp:ExecutiveFraction>
+        </prp:TimeAllocationBreakdown>
+    </prp:ProposalFeedback>
+</prp:ObsProposal>
