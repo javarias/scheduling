@@ -42,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.12 2011/05/11 21:18:02 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.13 2011/07/29 21:56:27 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -132,6 +132,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Note,
 				Column_RA,
 				Column_Dec,
+				Column_HourAngle,
+				Column_Elevation,
 				Column_minHA,
 				Column_maxHA
 		};
@@ -161,6 +163,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Note,
 				Column_RA,
 				Column_Dec,
+				Column_HourAngle,
+				Column_Elevation,
 				Column_minHA,
 				Column_maxHA
 		};
@@ -275,6 +279,9 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int     Column_Score = 13;
 	private static final int  Column_PrevRank = 14;
 	private static final int Column_PrevScore = 15;
+	private static final int Column_HourAngle = 16;
+	private static final int Column_Elevation = 17;
+	private static final int   Column_Azimuth = 18;
 	
 
 	/* (non-Javadoc)
@@ -370,6 +377,24 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			} catch (Exception e) {
 			}
 			return noScore;
+		case Column_HourAngle:
+			try {
+				return Format.formatHA(schedBlock.getRepresentativeCoordinates().getHourAngle());
+			} catch (NullPointerException npe) {
+				return "n/a";
+			}
+		case Column_Elevation:
+			try {
+				return schedBlock.getRepresentativeCoordinates().getElevation();
+			} catch (NullPointerException npe) {
+				return "n/a";
+			}
+		case Column_Azimuth:
+			try {
+				return schedBlock.getRepresentativeCoordinates().getAzimuth();
+			} catch (NullPointerException npe) {
+				return "n/a";
+			}
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -416,6 +441,12 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_PrevRank:
 			return Integer.class;
 		case Column_PrevScore:
+			return Double.class;
+		case Column_HourAngle:
+			return String.class;
+		case Column_Elevation:
+			return Double.class;
+		case Column_Azimuth:
 			return Double.class;
 		default:
 			logger.severe(String.format(
@@ -467,6 +498,12 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Previous Rank";
 		case Column_PrevScore:
 			return "Previous Score";
+		case Column_HourAngle:
+			return "HA";
+		case Column_Elevation:
+			return "Alt";
+		case Column_Azimuth:
+			return "Az";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
