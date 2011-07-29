@@ -24,13 +24,15 @@
  */
 package alma.scheduling.utils;
 
+import java.util.Random;
+
 
 /**
  * Utility class to do various common formatting things.
  * 
  * @author dclarke
  * <br>
- * $Id: Format.java,v 1.2 2011/02/04 19:31:58 javarias Exp $
+ * $Id: Format.java,v 1.3 2011/07/29 21:54:09 dclarke Exp $
  */
 public final class Format {
 
@@ -193,7 +195,7 @@ public final class Format {
     
     /*
 	 * ================================================================
-	 * RA & Dec
+	 * RA & Dec, HA
 	 * ================================================================
 	 */
 	public static String formatRA(double degrees) {
@@ -238,6 +240,22 @@ public final class Format {
 		return String.format("%s%02d:%02d:%06.3f",
 				sign, dd, mm, remaining);
 	}
+	
+	public static String formatHA(double hours) {
+		double remaining = hours;
+		
+		// Extract the whole hours, hh  in [0, 23]
+		final long hh = Math.round(Math.floor(remaining)); 
+		// Subtract the hours, remaining in [0.0, 60.0)
+		remaining = (remaining - hh) * 60.0;
+		
+		// Extract the whole minutes, mm  in [0, 59]
+		final long mm = Math.round(remaining); 
+
+		return String.format(" %02d:%02d",
+				hh, mm, remaining);
+	}
+	
 	/* End RA & Dec
 	 * ============================================================= */
 
@@ -324,8 +342,18 @@ public final class Format {
 		System.out.println(formatArray(nostrings, open, sep, close));
 	}
 	
+	private static void testHAs() {
+		for (double ha = 0.25; ha < 24.0; ha += .5) {
+			System.out.format("%7.3f -> %s%n", ha, formatHA(ha));
+		}
+		final Random gen = new Random();
+		for (double ha = 0.0; ha < 24.0; ha += gen.nextDouble()) {
+			System.out.format("%7.3f -> %s%n", ha, formatHA(ha));
+		}
+	}
+	
 	public static void main(String[] args) {
-		testArrays();
+		testHAs();
 	}
 	/* End Main
 	 * ============================================================= */
