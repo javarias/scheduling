@@ -21,9 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SkyCoordinates.java,v 1.2 2010/03/09 01:51:24 rhiriart Exp $"
+ * "@(#) $Id: SkyCoordinates.java,v 1.3 2011/07/29 21:55:25 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
+
+import java.util.Date;
+
+import alma.scheduling.algorithm.astro.Constants;
+import alma.scheduling.algorithm.astro.CoordinatesUtil;
 
 public class SkyCoordinates {
 
@@ -56,5 +61,83 @@ public class SkyCoordinates {
         Dec = dec;
     }
     
+    /*
+     * ================================================================
+     * Utilities
+     * ================================================================
+     */
+    /**
+     * Get our hour angle at Chajnantor for the given UTC time.
+     * 
+     * @param when (Date) - the UTC time for which we want the hour angle
+     * @return hour angle (decimal hours, [0:24))
+     */
+    public double getHourAngle(Date when) {
+        return CoordinatesUtil.getHourAngle(
+        		when,
+        		getRA() * 24.0 / 360.0,
+        		Constants.CHAJNANTOR_LONGITUDE);
+    }
+    
+    /**
+     * Get our current hour angle at Chajnantor.
+     * 
+     * @return hour angle (decimal hours)
+     */
+    public double getHourAngle() {
+        return getHourAngle(new Date()); // TODO: Make this UTC!
+    }
+    
+    /**
+     * Get our elevation at Chajnantor for the given UTC time.
+     * 
+     * @param when (Date) - the UTC time for which we want the elevation
+     * @return elevation (in degrees, [0:360))
+     */
+    public double getElevation(Date when) {
+    	final HorizonCoordinates h = CoordinatesUtil.equatorialToHorizon(
+    			this,
+    			when,
+    			Constants.CHAJNANTOR_LATITUDE,
+    			Constants.CHAJNANTOR_LONGITUDE);
+
+        return h.getAltitude();
+    }
+    
+    /**
+     * Get our current elevation at Chajnantor.
+     * 
+     * @return elevation (in degrees, [0:360))
+     */
+    public double getElevation() {
+        return getElevation(new Date()); // TODO: Make this UTC!
+    }
+    
+    /**
+     * Get our azimuth at Chajnantor for the given UTC time.
+     * 
+     * @param when (Date) - the UTC time for which we want the azimuth
+     * @return azimuth (in degrees, [0:360))
+     */
+    public double getAzimuth(Date when) {
+    	final HorizonCoordinates h = CoordinatesUtil.equatorialToHorizon(
+    			this,
+    			when,
+    			Constants.CHAJNANTOR_LATITUDE,
+    			Constants.CHAJNANTOR_LONGITUDE);
+
+        return h.getAzimuth();
+    }
+    
+    /**
+     * Get our current azimuth at Chajnantor.
+     * 
+      * @return azimuth (in degrees, [0:360))
+     */
+    public double getAzimuth() {
+        return getAzimuth(new Date()); // TODO: Make this UTC!
+    }
+    /* End Utilities
+     * ============================================================= */
     
 }
