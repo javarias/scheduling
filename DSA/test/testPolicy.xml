@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policies>
-<SchedulingPolicy name="MyTestDSAPolicy">
+<SchedulingPolicy name="AllEqual">
     <SelectionCriterion>
         <ExecutiveSelector/>
         <OpacitySelector/>
@@ -13,6 +13,38 @@
         </HourAngleScorer> 
         <TsysScorer>
             <weight>1.0</weight>
+        </TsysScorer>
+    </Scorers>
+</SchedulingPolicy>
+<SchedulingPolicy name="BiasToHA">
+    <SelectionCriterion>
+        <ExecutiveSelector/>
+        <OpacitySelector/>
+        <ArrayConfigSelector/>
+        <SourceSelector/>
+    </SelectionCriterion>
+    <Scorers>
+        <HourAngleScorer>
+            <weight>2.0</weight>
+        </HourAngleScorer> 
+        <TsysScorer>
+            <weight>1.0</weight>
+        </TsysScorer>
+    </Scorers>
+</SchedulingPolicy>
+<SchedulingPolicy name="BiasToTsys">
+    <SelectionCriterion>
+        <ExecutiveSelector/>
+        <OpacitySelector/>
+        <ArrayConfigSelector/>
+        <SourceSelector/>
+    </SelectionCriterion>
+    <Scorers>
+        <HourAngleScorer>
+            <weight>1.0</weight>
+        </HourAngleScorer> 
+        <TsysScorer>
+            <weight>2.0</weight>
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
