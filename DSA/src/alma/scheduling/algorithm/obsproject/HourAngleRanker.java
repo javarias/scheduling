@@ -44,7 +44,7 @@ public class HourAngleRanker extends AbstractBaseRanker {
 			double delta = Math.toRadians(sb.getSchedulingConstraints().getRepresentativeTarget()
 					.getSource().getCoordinates().getDec());
 			//Chajnantor longitude in rads
-			double phi = Math.toRadians(CHAJNANTOR_LONGITUDE);
+			double phi = Math.toRadians(CHAJNANTOR_LATITUDE);
 			System.out.println("ha=" + ha + "(" + CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) +")" + "; delta=" + delta +"; phi=" + phi);
 			double score = (Math.cos(ha) + Math.tan(delta) * Math.tan(phi)) /
 					(1 + Math.tan(delta) * Math.tan(phi));
