@@ -31,6 +31,7 @@
     			<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
     			<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT"/>
     			<xs:element name="OpacitySelector" type="OpacitySelectorT"/>
+    			<xs:element name="InteractiveProjectsSelector" type="InteractiveProjectsSelectorT"/>
     		</xs:choice>
     	</xs:sequence>
     </xs:complexType>
@@ -85,6 +86,8 @@
 	<xs:complexType name="SchedBlockGradeSelectorT" />
 	
 	<xs:complexType name="OpacitySelectorT"/>
+	
+	<xs:complexType name="InteractiveProjectsSelectorT"/>
 	
 <!-- Definition of available scorers -->
 	

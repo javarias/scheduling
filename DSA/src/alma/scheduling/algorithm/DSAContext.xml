@@ -87,6 +87,13 @@
 			<value>opacitySelector</value>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="interactiveProjectsSelector" class="alma.scheduling.algorithm.obsproject.InteractiveSchedBlockSelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>interactiveProjectsSelector</value>
+		</constructor-arg>
+	</bean>
 
 	<bean id="weatherUpdater" class="alma.scheduling.algorithm.weather.MemoryWeatherUpdater">
 		<property name="dao" ref="atmDao" />

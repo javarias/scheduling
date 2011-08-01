@@ -61,6 +61,9 @@
                         <xsl:if test="count(SelectionCriterion/SchedBlockGradeSelector) = 1">
                             <ref bean="sbStatusSelector" />
                         </xsl:if>
+                        <xsl:if test="count(SelectionCriterion/InteractiveProjectsSelector) = 1">
+                            <ref bean="interactiveProjectsSelector" />
+                        </xsl:if>
                     </set>
                 </property>
             </bean>
