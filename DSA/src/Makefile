@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.9 2011/03/21 22:19:59 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.10 2011/08/01 21:21:49 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -66,7 +66,7 @@ lllll_OBJECTS   =
 #
 # Scripts (public and local)
 # ----------------------------
-SCRIPTS         =
+SCRIPTS         = schedulingPolicyValidator
 SCRIPTS_L       =
 
 #
