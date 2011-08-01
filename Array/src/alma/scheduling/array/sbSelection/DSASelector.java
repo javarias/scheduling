@@ -12,9 +12,7 @@ import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.utils.DSAContextFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 public class DSASelector extends AbstractSelector {
@@ -33,6 +31,10 @@ public class DSASelector extends AbstractSelector {
 		notify(agn);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see alma.scheduling.array.sbSelection.Selector#selectNextSB()
+	 */
 	@Override
 	public void selectNextSB() {
 		notifyWorking(true);
@@ -43,7 +45,7 @@ public class DSASelector extends AbstractSelector {
 					throw new SchedulingException(
 							"Scheduling Policy has not been properly set for Array: "
 							+ array.getArrayName());
-				dsa = (DynamicSchedulingAlgorithm) DSAContextFactory.getContext().getBean(array.getSchedulingPolicy());
+				dsa = (DynamicSchedulingAlgorithm) DSAContextFactory.getContextFromPropertyFile().getBean(array.getSchedulingPolicy());
 				ArrayConfiguration arrConf = new ArrayConfiguration();
 				arrConf.setStartTime(new Date());
 				arrConf.setEndTime(new Date(System.currentTimeMillis() + 365 * 24 * 3600 * 1000));
