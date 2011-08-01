@@ -117,7 +117,7 @@
                 <property name="rankers">
                     <set>
                         <xsl:if test="count(Scorers/SciScorer) = 1">
-                            <ref bean="{concat('sciRanker', '_', @name)}"/>
+                            <ref bean="{concat('sciScorer', '_', @name)}"/>
                         </xsl:if>
                         <xsl:if test="count(Scorers/HourAngleScorer) = 1">
                             <ref bean="{concat('hourAngleScorer', '_', @name)}"/>
