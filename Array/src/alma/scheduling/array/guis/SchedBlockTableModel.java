@@ -24,8 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.swing.table.AbstractTableModel;
@@ -42,7 +40,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.13 2011/07/29 21:56:27 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.14 2011/08/01 21:15:10 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -68,6 +66,12 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	
 	/** Value to use in the absence of a rank */
 	private final static int noRank = 999999;
+	
+	/** Value to use in the absence of an elevation */
+	private final static int noElevation = -1;
+	
+	/** Value to use in the absence of an azimuth */
+	private final static int noAzimuth = -1;
 	
 	/* End Fields
 	 * ============================================================= */
@@ -387,14 +391,14 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			try {
 				return schedBlock.getRepresentativeCoordinates().getElevation();
 			} catch (NullPointerException npe) {
-				return "n/a";
 			}
+			return noElevation;
 		case Column_Azimuth:
 			try {
 				return schedBlock.getRepresentativeCoordinates().getAzimuth();
 			} catch (NullPointerException npe) {
-				return "n/a";
 			}
+			return noAzimuth;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
