@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 
 import alma.scheduling.algorithm.VerboseLevel;
-import alma.scheduling.algorithm.astro.TimeUtil;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.TimeUtil;
 
 
 public abstract class AbstractBaseSelector implements SchedBlockSelector {

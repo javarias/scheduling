@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.4 2011/07/06 15:37:49 javarias Exp $"
+ * "@(#) $Id: FieldSourceObservabilityUpdater.java,v 1.5 2011/08/01 15:47:25 dclarke Exp $"
  */
 package alma.scheduling.algorithm.obsproject;
 
@@ -34,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import alma.scheduling.algorithm.AlgorithmPart;
-import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.FieldSourceDao;
+import alma.scheduling.utils.CoordinatesUtil;
 
 public class FieldSourceObservabilityUpdater implements ModelUpdater, AlgorithmPart {
 

@@ -21,14 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SkyCoordinates.java,v 1.3 2011/07/29 21:55:25 dclarke Exp $"
+ * "@(#) $Id: SkyCoordinates.java,v 1.4 2011/08/01 15:48:11 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.Date;
 
-import alma.scheduling.algorithm.astro.Constants;
-import alma.scheduling.algorithm.astro.CoordinatesUtil;
+import alma.scheduling.utils.Constants;
+import alma.scheduling.utils.CoordinatesUtil;
 
 public class SkyCoordinates {
 

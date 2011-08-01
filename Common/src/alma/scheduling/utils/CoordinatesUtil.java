@@ -21,13 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CoordinatesUtil.java,v 1.10 2011/07/26 22:35:38 javarias Exp $"
+ * "@(#) $Id: CoordinatesUtil.java,v 1.1 2011/08/01 15:48:11 dclarke Exp $"
  */
-package alma.scheduling.algorithm.astro;
+package alma.scheduling.utils;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

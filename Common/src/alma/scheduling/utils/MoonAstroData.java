@@ -1,4 +1,4 @@
-package alma.scheduling.algorithm.astro;
+package alma.scheduling.utils;
 
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 
@@ -12,19 +12,19 @@ public class MoonAstroData extends SkyCoordinates {
         super(Ra, Dec);
     }
 
-    double getMmp() {
+    public double getMmp() {
         return Mmp;
     }
 
-    void setMmp(double mmp) {
+    public void setMmp(double mmp) {
         Mmp = mmp;
     }
 
-    double getEc() {
+    public double getEc() {
         return Ec;
     }
 
-    void setEc(double ec) {
+    public void setEc(double ec) {
         Ec = ec;
     }
 

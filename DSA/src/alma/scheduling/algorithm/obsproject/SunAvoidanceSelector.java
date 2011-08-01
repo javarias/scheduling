@@ -8,13 +8,13 @@ import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import alma.scheduling.algorithm.astro.CoordinatesUtil;
-import alma.scheduling.algorithm.astro.SunAstroData;
 import alma.scheduling.algorithm.sbselection.AbstractBaseSelector;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
+import alma.scheduling.utils.CoordinatesUtil;
+import alma.scheduling.utils.SunAstroData;
 
 public class SunAvoidanceSelector extends AbstractBaseSelector {
 

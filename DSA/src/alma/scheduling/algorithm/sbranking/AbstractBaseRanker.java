@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import alma.scheduling.algorithm.VerboseLevel;
-import alma.scheduling.algorithm.astro.TimeUtil;
+import alma.scheduling.utils.TimeUtil;
 
 public abstract class AbstractBaseRanker implements SchedBlockRanker {
 

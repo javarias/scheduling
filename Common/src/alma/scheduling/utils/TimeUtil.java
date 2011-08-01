@@ -21,9 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: TimeUtil.java,v 1.7 2011/06/14 16:32:15 javarias Exp $"
+ * "@(#) $Id: TimeUtil.java,v 1.1 2011/08/01 15:48:11 dclarke Exp $"
  */
-package alma.scheduling.algorithm.astro;
+package alma.scheduling.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

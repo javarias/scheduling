@@ -6,11 +6,11 @@ import java.util.List;
 
 import static alma.scheduling.utils.Constants.CHAJNANTOR_LATITUDE;
 import static alma.scheduling.utils.Constants.CHAJNANTOR_LONGITUDE;
-import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.CoordinatesUtil;
 
 
 public class HourAngleRanker extends AbstractBaseRanker {

@@ -1,4 +1,4 @@
-package alma.scheduling.algorithm.astro;
+package alma.scheduling.utils;
 
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 
@@ -11,11 +11,11 @@ public class SunAstroData extends SkyCoordinates {
         super(ra, dec);
     }
 
-    double getTrueAnomaly() {
+    public double getTrueAnomaly() {
         return trueAnomaly;
     }
 
-    void setTrueAnomaly(double trueAnomaly) {
+    public void setTrueAnomaly(double trueAnomaly) {
         this.trueAnomaly = trueAnomaly;
     }
 
