@@ -16,8 +16,8 @@
 \renewcommand{\footrulewidth}{0.4pt}
 
 %RCS stuff
-\RCS $Date: 2011/08/01 17:18:37 $
-\RCS $Id: algorithm.tex,v 1.10 2011/08/01 17:18:37 javarias Exp $
+\RCS $Date: 2011/08/01 18:10:55 $
+\RCS $Id: algorithm.tex,v 1.11 2011/08/01 18:10:55 javarias Exp $
 
 
 \title{ALMA Dynamic Scheduling Algorithm}
@@ -359,10 +359,10 @@ The required fields in the APDM are:
 
 The purpose of these selection operation is to restrict the SBs selected to
 only the ones with representative targets close to the zenith. Given that the observatory
-is in the southern hemisphere, a source is close to the zenith when $HA' = HA + 12.0 = LST - \alpha + 12.0$
+is in the southern hemisphere, a source is close to the zenith when $HA' = HA = LST - \alpha$
 is small. We express this condition as a quey over the right ascension $\alpha$.
 
-Currently we restrict the $HA$ to be between 8.0 and 16.0 hours.
+Currently we restrict the $HA$ to be between 0 to 6.0 and 18.0 and 24.0 hours.
 
 The required fields in the APDM are:
 \begin{itemize}
@@ -639,18 +639,19 @@ The required fields in the APDM are:
 
 Given that the observatory is located in the southern hemisphere, in order to favor the
 SBs that at the current time have their representative source close to the zenith, 
-their hour angle should be in the vicinity of 12.0 hours. The hour angle score is
+their hour angle should be in the vicinity of 0.0 hours. The hour angle score is
 $$
-   S = \left\{ \begin{array}{ll}
-                0.25\cdot (HA - 12.0) + 1.0 & \text{if $8.0 \leq HA < 12.0$} \\
-               -0.25\cdot (HA - 12.0) + 1.0 & \text{if $12.0 \leq HA \leq 16.0$}
-               \end{array}
-       \right . \
+	S = \frac{AM_{current}}{AM_{transit}} = \frac{\cos(HA) + \tan(\delta) \tan(\varphi)}
+											{1 + \tan(\delta) \tan(\varphi)}
 $$
+
+Where $AM$ is the Air Mass at transit (at source meridian transit) and current
+(current value of $AM$ if observed), $HA$ Hour Angle, $\delta$ target declination
+ and $\varphi$ latitude of ALMA
 
 The required fields in the APDM are:
 \begin{itemize}
-\item {\tt SchedulingContraints.representativeFrequency}
+\item {\tt TBC}
 \end{itemize}
 
 \end{document}
