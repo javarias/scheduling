@@ -1,3 +1,4 @@
+prologues:=3;
 beginfig(0);
 numeric u;
 u = 1cm;
