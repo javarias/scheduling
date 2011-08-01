@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.10 2011/08/01 15:47:25 dclarke Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.11 2011/08/01 19:44:30 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -135,7 +135,7 @@ public class SystemTemperatureCalculator {
      * @return System temperature (K)
      */
     
-    public static double getCurrentTsys(double frequency, double opacity,
+    public static double getZenithTsys(double frequency, double opacity,
             double atmBrightnessTemperature) {
     	double etaFeed = 0.95;
     	// TODO Shouldn't this be the current temperature?

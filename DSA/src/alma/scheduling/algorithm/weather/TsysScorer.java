@@ -26,8 +26,8 @@ public class TsysScorer extends AbstractBaseRanker {
 			SBRank rank = new SBRank();
 			rank.setDetails(this.rankerName);
 			rank.setUid(sb.getUid());
-			double score = sb.getWeatherDependentVariables().getTsys() / 
-					sb.getWeatherDependentVariables().getCurrTsys();
+			double score = sb.getWeatherDependentVariables().getZenithTsys() / 
+					sb.getWeatherDependentVariables().getTsys();
 			rank.setRank(score);
 			ranks.add(rank);
 		}

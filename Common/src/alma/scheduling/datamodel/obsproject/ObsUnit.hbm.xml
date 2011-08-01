@@ -80,8 +80,8 @@
      lazy="false" name="projectedTsys" type="double"/>
     <property column="WEATHER_VARS_PROJ_DELTA_T" generated="never"
      lazy="false" name="projectionTimeIncr" type="double"/>
-    <property column="WEATHER_VARS_CURR_TSYS" generated="never"
-     lazy="false" name="currTsys" type="double"/>
+    <property column="WEATHER_VARS_ZENITH_TSYS" generated="never"
+     lazy="false" name="zenithTsys" type="double"/>
     <property column="WEATHER_VARS_OPACITY" generated="never"
      lazy="false" name="opacity" type="double"/>
    </component>

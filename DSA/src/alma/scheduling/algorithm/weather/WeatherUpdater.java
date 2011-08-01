@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.16 2011/07/26 22:35:38 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.17 2011/08/01 19:44:30 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -192,7 +192,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
                     latitude, frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
-            double currTsys = SystemTemperatureCalculator.getCurrentTsys(frequency,
+            double currTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
             		tau_zero, Tatm);
             logger.info("curr tsys: " + currTsys);
             
@@ -209,7 +209,7 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 //            vars.setProjectedTsys(ptsys);
 //            vars.setProjectionTimeIncr(projTimeIncr);
             vars.setOpacity(tau);
-            vars.setCurrTsys(currTsys);
+            vars.setZenithTsys(currTsys);
             sb.setWeatherDependentVariables(vars);
             schedBlockDao.saveOrUpdate(sb);
         }

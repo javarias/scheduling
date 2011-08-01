@@ -76,9 +76,9 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
                     latitude, frequency, tau_zero, Tatm, date);
             logger.info("tsys: " + tsys);
 
-            double currTsys = SystemTemperatureCalculator.getCurrentTsys(frequency,
+            double zenithTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
             		tau_zero, Tatm);
-            logger.info("curr tsys: " + currTsys);
+            logger.info("curr tsys: " + zenithTsys);
             
             double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
 //            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
@@ -93,7 +93,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 //            vars.setProjectedTsys(ptsys);
 //            vars.setProjectionTimeIncr(projTimeIncr);
             vars.setOpacity(tau);
-            vars.setCurrTsys(currTsys);
+            vars.setZenithTsys(zenithTsys);
             sb.setWeatherDependentVariables(vars);
             schedBlockDao.saveOrUpdate(sb);
         }
@@ -150,7 +150,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
                 latitude, frequency, tau_zero, Tatm, date);
         logger.info("tsys: " + tsys);
 
-        double currTsys = SystemTemperatureCalculator.getCurrentTsys(frequency,
+        double currTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
         		tau_zero, Tatm);
         logger.info("curr tsys: " + currTsys);
         
@@ -168,7 +168,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 //        vars.setProjectedTsys(ptsys);
 //        vars.setProjectionTimeIncr(projTimeIncr);
         vars.setOpacity(tau);
-        vars.setCurrTsys(currTsys);
+        vars.setZenithTsys(currTsys);
         sb.setWeatherDependentVariables(vars);
         schedBlockDao.saveOrUpdate(sb);
     }
