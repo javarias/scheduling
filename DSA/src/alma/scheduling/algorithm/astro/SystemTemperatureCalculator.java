@@ -21,11 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.8 2011/07/26 22:35:38 javarias Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.9 2011/08/01 15:28:17 dclarke Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
 import java.util.Date;
+
+import alma.scheduling.utils.Constants;
 /**
  * Calculates the system temperature (Tsys).
  * 

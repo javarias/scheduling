@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.14 2011/03/04 20:30:29 ahoffsta Exp $"
+ * "@(#) $Id: SchedBlockExecutorImpl.java,v 1.15 2011/08/01 15:28:18 dclarke Exp $"
  */
 package alma.scheduling.algorithm;
 
@@ -32,7 +32,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import alma.scheduling.algorithm.astro.Constants;
 import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.astro.InterferometrySensitivityCalculator;
 import alma.scheduling.algorithm.weather.OpacityInterpolator;
@@ -51,6 +50,7 @@ import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
+import alma.scheduling.utils.Constants;
 
 public class SchedBlockExecutorImpl implements SchedBlockExecutor {
 

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static alma.scheduling.algorithm.astro.Constants.CHAJNANTOR_LATITUDE;
-import static alma.scheduling.algorithm.astro.Constants.CHAJNANTOR_LONGITUDE;
+import static alma.scheduling.utils.Constants.CHAJNANTOR_LATITUDE;
+import static alma.scheduling.utils.Constants.CHAJNANTOR_LONGITUDE;
 import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
 import alma.scheduling.algorithm.sbranking.SBRank;
