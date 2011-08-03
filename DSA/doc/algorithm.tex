@@ -16,8 +16,8 @@
 \renewcommand{\footrulewidth}{0.4pt}
 
 %RCS stuff
-\RCS $Date: 2011/08/01 18:10:55 $
-\RCS $Id: algorithm.tex,v 1.11 2011/08/01 18:10:55 javarias Exp $
+\RCS $Date: 2011/08/03 17:46:52 $
+\RCS $Id: algorithm.tex,v 1.12 2011/08/03 17:46:52 javarias Exp $
 
 
 \title{ALMA Dynamic Scheduling Algorithm}
@@ -526,17 +526,24 @@ T_{atm} & = & T_{atm}(\nu_i, PWV_j)
 \end{eqnarray*}
 where $\nu_i$ covers the range $20-1000$ GHz with 100 MHz granularity, and $PWV_j$
 covers the 7 values 0.4772, 0.658, 0.9134, 1.262, 1.796, 2.748, and 5.186 (mm). 
-\item The system temperature is calculated as
+\item The system temperature is calculated as:
+
 $$
-T_{sys} = T_{rx} + \eta T_{atm} \left ( 1 - e^{-\tau/\sin(el)} \right ) + (1 - \eta) T_{amb}
+T_{sys} = \frac {\left ( T_{rx} + T_{ant} + \xi T_{ant} \right ) e^{\tau / \sin(el)}}
+{\eta}
 $$
 where $T_{rx}$ is the receiver temperature, $\eta$ is the forward efficiency (or
-feed efficiency, or spillover factor), and $T_{amb}$ is the ambient temperature.
+feed efficiency, or spillover factor), $T_{ant}$ is the antenna temperature and $\xi$
+is the sideband ratio, which for practical purposes will be $0$
 
-Finally, $Tsys$ is moved to a scale outside the atmosphera:
+Expanding the calculation of above:
+
 $$
-T_{sys}' = T_{sys} e^{\tau/\sin(el)}
+T_{sys} = \frac{\left ( T_{rx} + \eta T_{atm} \left ( 1 - e^{-\tau/\sin(el)} \right ) + (1 - \eta) 0.95 T_{amb} + \eta 2.76 e^{-\tau/\sin(el)} \right )  e^{\tau / \sin(el)}}
+{\eta}
 $$
+where $T_{amb}$ is the ambient temperature, which is read from weather station.
+
 \end{enumerate}
 
 The selection operation filters out all the SBs that don't comply with
@@ -552,36 +559,33 @@ favour the SBs that require the most stringent conditions. The stringency of the
 required weather conditions can be defined in terms of the opacity and/or $T_{sys}$,
 and the phase stability.
 
-Regarding the opacity, a scoring function should be defined to push up SBs with
+Regarding the opacity, a selection criteria and a scoring function have been defined to push up SBs with
 representative frequency in the higher bands, considering in addition the losses in transparency
 in the edges of the bands. In the same way, SBs with representative targets
-at low elevations will require better opacity. The exact form of these scoring functions
-haven't been defined yet.
+at low elevations will require better opacity.
 
-A possibility would be to invert the $T_{sys}$ equation for the argument $\tau_\nu/\sin(el)$
-(see Figure~\ref{fig:tsyscrit}),
-so for a given $T_{sys}^{max}$ the corresponding $x^{max}$ is calculated.
-Then the algorithm
-\begin{enumerate}
-\item Filters out all the SBs for which $\tau_\nu/\sin(el) > x^{max}$.
-\item Applies a scoring function that prioritize the SBs with higher
-$(\tau_\nu/\sin(el))$. The higher this parameter, the more stringent are 
-the weather conditions that the SB require. The proposed $T_{sys}$ score is
+\begin{itemize}
+\item \textbf{Selection criteria:} For opacity selection a simple criteria is used based in
+quartiles at 225 GHz.
+
 $$
-   S = \left\{ \begin{array}{ll}
-               0 & \text{if $x > x_{max}$} \\
-               x / x_{max} & \text{otherwise}
-               \end{array}
-       \right . \
+S(\nu_{rep}, \tau_{225}) = \left\{
+    \begin{array}{l l}
+    true & \text{if } \nu_{rep} > 370 \text{GHz } \land \tau_{225} \leq 0.037 \\
+    true & \text{if } 370 \text{GHz } \geq \nu_{rep} > 270 \text{GHz } \land \tau_{225} \leq 0.061 \\
+    true & \text{if } \nu_{rep} < 270 \text{GHz } \land \tau_{225} \leq 0.6\\
+    false & \text{otherwhise}
+    \end{array} \right . 
 $$
-\end{enumerate}
 
-\begin{figure}
-\includegraphics[width=\textwidth]{tsyscrit.mps}
-\caption{$T_{sys}$ based selection and scoring.}
-\label{fig:tsyscrit}
-\end{figure}
+where $\nu_{rep}$ is the representative frequency and $\tau_{225}$ is the Opacity
+at Zenith based in 225 Ghz.
 
+\item \textbf{Scoring:} 
+$$
+	S_{T_{sys}} = \frac{T_{sys}^{transit}}{T_{sys}^{current}}
+$$
+\end{itemize}
 
 Besides this, it will be necessary to filter out SBs for which the
 current phase stability  and wind speed are too bad to observe.
