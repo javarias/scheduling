@@ -22,7 +22,7 @@ From SCHEDULING/IntTest/test:
 
     ./scripts/runSchedulingPluginsTest <Mode>
 
-where mode can be CreateArray, Interactive or Queued. If
+where mode can be CreateArray, Interactive, Queued or Automated. If
 no mode is specified, CreateArray is used.
 
 3) Start the plugin. To start the CreateArray plugin use:
@@ -32,10 +32,6 @@ no mode is specified, CreateArray is used.
 to start the Interactive or Queued plugin:
 
     ./scripts/startSchedulerPlugin
-
-and to start the automated test:
-
-	./scripts/startSchedulerPlugin Automated
 
 4) Interact with the plugins, load projects, execute them, etc.
 
