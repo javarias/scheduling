@@ -27,7 +27,6 @@ package alma.scheduling.master.gui;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import alma.Control.ControlMaster;
 import alma.Control.CorrelatorType;

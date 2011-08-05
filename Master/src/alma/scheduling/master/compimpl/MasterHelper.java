@@ -28,7 +28,6 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;
 import alma.scheduling.MasterOperations;
 import alma.scheduling.MasterPOATie;
-import alma.scheduling.master.compimpl.MasterImpl;
 
 /**
  * Component helper class. 

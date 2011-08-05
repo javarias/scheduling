@@ -24,10 +24,10 @@ package alma.schedulingmaster.compimpl;
 
 import java.util.logging.Logger;
 
+import alma.ACS.MasterComponentOperations;
+import alma.ACS.MasterComponentPOATie;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ComponentHelper;
-import alma.ACS.MasterComponentPOATie;
-import alma.ACS.MasterComponentOperations;
 
 /**
  * Component helper class. 
@@ -41,7 +41,7 @@ import alma.ACS.MasterComponentOperations;
  * Name="SCHEDULINGMASTERCOMPONENT2" Code="alma.schedulingmaster.compimpl.SchedulingMasterComponentHelper" Type="IDL:alma/ACS/MasterComponent:1.0" Container="java"
  * <p>
  * @author alma-component-helper-generator-tool
- * @version $Id: SchedulingMasterComponentHelper.java,v 1.2 2011/01/28 00:35:38 javarias Exp $
+ * @version $Id: SchedulingMasterComponentHelper.java,v 1.3 2011/08/05 21:36:49 dclarke Exp $
  */
 public class SchedulingMasterComponentHelper extends ComponentHelper
 {

@@ -32,15 +32,11 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import alma.SchedulingExceptions.InvalidOperationEx;
+import alma.SchedulingMasterExceptions.ArrayNotFoundExceptionEx;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Master;
-import alma.scheduling.MasterSchedulerIF;
-import alma.scheduling.ArrayModeEnum;
-import alma.SchedulingExceptions.InvalidOperationEx;
-import alma.SchedulingMasterExceptions.ArrayNotFoundExceptionEx;
 
 public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlugin {
     protected PluginContainerServices container;

@@ -27,9 +27,6 @@ package alma.scheduling.master.gui;
 import alma.Control.ControlMaster;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
-import alma.scheduling.SchedulerInfo;
-import alma.scheduling.SchedulingState;
-import alma.scheduling.SchedulingStateEvent;
 
 public class MainSchedTabPaneController extends SchedulingPanelController{
     private ControlMaster control = null;

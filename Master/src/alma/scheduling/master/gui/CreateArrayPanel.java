@@ -57,8 +57,6 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Master;
 import alma.scheduling.array.guis.ArrayPanel;
-import alma.scheduling.utils.DSAContextFactory;
-import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
