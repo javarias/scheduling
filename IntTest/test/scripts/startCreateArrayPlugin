@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA 02111-1307  USA
 #
-# $Id: startCreateArrayPlugin,v 1.5 2011/03/28 22:38:12 dclarke Exp $
+# $Id: startCreateArrayPlugin,v 1.6 2011/08/05 21:38:24 dclarke Exp $
 #
 
 # Documentation about the test goes here.
@@ -38,7 +38,7 @@ export RUNLOCATION
 declare PLUGIN_STARTER=alma.scheduling.plugintest.PluginStarter
 declare PLUGIN=alma.scheduling.master.gui.SchedulingPanelMainFrame
 
-acsStartJava -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &
+acsStartJava -maxHeapSize 2g -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &
 # acsStartJava -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &> ${ACS_TMP}/plugin.log
 
 # __oOo__

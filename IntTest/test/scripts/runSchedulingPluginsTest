@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA 02111-1307  USA
 #
-# $Id: runSchedulingPluginsTest,v 1.4 2011/01/28 00:35:36 javarias Exp $
+# $Id: runSchedulingPluginsTest,v 1.5 2011/08/05 21:38:24 dclarke Exp $
 #
 
 # Documentation about the test goes here.
@@ -54,7 +54,7 @@ fi
 
 printf "Test suite is %s\n" $TEST_SUITE
 
-acsStartJava -endorsed -Dsuite="$TEST_SUITE" junit.textui.TestRunner "$TEST_CLASS" &> "$TEST_LOG"
+acsStartJava -endorsed -Dsuite="$TEST_SUITE" $SCHEDULING_TEST_OPTIONS junit.textui.TestRunner "$TEST_CLASS" &> "$TEST_LOG"
 
 RESULT=$?
 if [ "$RESULT" = "0" ]; then
