@@ -24,8 +24,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.logging.Logger;
 
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -40,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.14 2011/08/01 21:15:10 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.15 2011/08/05 21:46:03 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -55,6 +57,9 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	/** Map the displayed columns to the internal logical columns */
 	private int viewToModelColumnMap[];
 	
+	/** The displayed columns which are to be updated periodically */
+	private Collection<Integer> liveDisplayColumns;
+	
 	/** Track where to find the project id under the current map */
 	private int unmappedProjectIdColumn;
 	
@@ -67,11 +72,11 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	/** Value to use in the absence of a rank */
 	private final static int noRank = 999999;
 	
-	/** Value to use in the absence of an elevation */
-	private final static int noElevation = -1;
-	
-	/** Value to use in the absence of an azimuth */
-	private final static int noAzimuth = -1;
+	/**
+	 * Thread to do live updating of the display (NOT of the projects
+	 * and SBs)
+	 */
+	private PeriodicUpdater updater = null;
 	
 	/* End Fields
 	 * ============================================================= */
@@ -102,8 +107,22 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		}
 		unmappedProjectIdColumn = unmap(Column_Project);
 		unmappedSBIdColumn = unmap(Column_EntityId);
+		liveDisplayColumns = new Vector<Integer>();
+		for (int internalCol : Live_Columns) {
+			int um = unmap(internalCol);
+			if (um >= 0) {
+				liveDisplayColumns.add(um);
+			}
+		}
 		fireTableStructureChanged();
 		initialiseData();
+	}
+	
+	public void stopLiveUpdates() {
+		if (updater != null) {
+			updater.stopRunning();
+			updater = null;
+		}
 	}
 	/* End Construction and configuration
 	 * ============================================================= */
@@ -148,6 +167,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	/**
 	 * Create the map from view columns to logical columns for a
 	 * dynamic scheduler.
+	 * @param liveDisplayColumns2 
 	 * 
 	 * @return
 	 */
@@ -235,6 +255,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		data.clear();
 		data.addAll(schedBlocks);
 		fireTableDataChanged();
+		if (updater == null) {
+			updater = new PeriodicUpdater(this, 1000);
+			updater.start();
+		}
 	}
 	
 	/**
@@ -287,6 +311,14 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int Column_Elevation = 17;
 	private static final int   Column_Azimuth = 18;
 	
+	/**
+	 * All  of the columns which should be updated in (near) real time
+	 * (whether we use them or not - that will be figured out when the
+	 * mapping from display to internal is set up)
+	 */
+	private static final int[] Live_Columns =
+		{ Column_HourAngle, Column_Azimuth, Column_Elevation };
+
 
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnCount()
@@ -389,16 +421,18 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			}
 		case Column_Elevation:
 			try {
-				return schedBlock.getRepresentativeCoordinates().getElevation();
+				return String.format("% 6.2f",
+						schedBlock.getRepresentativeCoordinates().getElevation());
 			} catch (NullPointerException npe) {
+				return "n/a";
 			}
-			return noElevation;
 		case Column_Azimuth:
 			try {
-				return schedBlock.getRepresentativeCoordinates().getAzimuth();
+				return String.format("% 6.2f",
+						schedBlock.getRepresentativeCoordinates().getAzimuth());
 			} catch (NullPointerException npe) {
+				return "n/a";
 			}
-			return noAzimuth;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -449,9 +483,9 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_HourAngle:
 			return String.class;
 		case Column_Elevation:
-			return Double.class;
+			return String.class;
 		case Column_Azimuth:
-			return Double.class;
+			return String.class;
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnClass(%d)",
@@ -612,5 +646,69 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		return result;
 	}
 	/* End Comparators for sorting certain columns
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * "Live" display management
+	 * ================================================================
+	 */
+	private class PeriodicUpdater extends Thread {
+		private SchedBlockTableModel table;
+		private int     milliSecs = 1000; // Default of 1 second
+		private boolean running   = true;
+		
+		public PeriodicUpdater(SchedBlockTableModel table, int milliSecs) {
+			this.table = table;
+			setInterval(milliSecs);
+			setDaemon(true);
+//			System.out.format("%nCreating %s @ %h%n%n",
+//					this.getClass().getSimpleName(),
+//					this.hashCode());
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Thread#run()
+		 */
+		@Override
+		public void run() {
+			while (running) {
+				try {
+					sleep(milliSecs);
+//					System.out.format("Updating with %s @ %h%n",
+//							this.getClass().getSimpleName(),
+//							this.hashCode());
+					if (running) {
+						for (final int i : liveDisplayColumns ) {
+							final TableModelEvent event = new TableModelEvent(
+									table,
+									0, getRowCount()-1, i);
+							System.out.format("Updating column %d with %s @ %h%n",
+									i,
+									this.getClass().getSimpleName(),
+									this.hashCode());
+							fireTableChanged(event);
+						}
+					}
+				} catch (InterruptedException e) {
+				}
+			}
+		}
+
+		public void stopRunning() {
+			running = false;
+//			System.out.format("%nDeactivating %s @ %h%n%n",
+//					this.getClass().getSimpleName(),
+//					this.hashCode());
+		}
+		
+		public void setInterval(int milliSecs) {
+			this.milliSecs = milliSecs;
+			this.interrupt();
+		}
+	}
+	/* End "Live" display management
 	 * ============================================================= */
 }

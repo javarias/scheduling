@@ -61,6 +61,19 @@ public class ArrayPanel extends AbstractArrayPanel {
 		setTitle("", "Initializing");
 		this.add(title, BorderLayout.NORTH);
 	}
+
+	/* (non-Javadoc)
+	 * @see alma.scheduling.array.guis.AbstractArrayPanel#stop()
+	 */
+	@Override
+	public void stop() throws Exception {
+		if (cup != null) {
+			cup.stop();
+		}
+		if (ip != null) {
+			ip.stop();
+		}
+	}
 	
 	private void setTitle(String arrayName, String arrayMode) {
 		title.setText(String.format(

@@ -28,7 +28,6 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,7 +91,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.23 2011/07/21 23:13:52 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.24 2011/08/05 21:46:03 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -180,6 +179,26 @@ public class InteractivePanel extends AbstractArrayPanel
     /** Do we Queue or Configure? */
     private String processSB = "Queue";
     /* End Fields for widgets &c
+     * ============================================================= */
+
+	
+
+	/*
+	 * ================================================================
+	 * Being a SubsystemPlugin
+	 * ================================================================
+	 */
+
+	/* (non-Javadoc)
+	 * @see alma.scheduling.array.guis.AbstractArrayPanel#stop()
+	 */
+	@Override
+	public void stop() throws Exception {
+		if (sbModel != null) {
+			sbModel.stopLiveUpdates();
+		}
+	}
+    /* End Being a SubsystemPlugin
      * ============================================================= */
 	
 	

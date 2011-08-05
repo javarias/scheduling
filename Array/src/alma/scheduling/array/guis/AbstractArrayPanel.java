@@ -17,8 +17,8 @@
  */
 package alma.scheduling.array.guis;
 
-import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -28,14 +28,13 @@ import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
-import alma.scheduling.utils.DSAContextFactory;
 
 
 /**
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.12 2011/03/21 21:00:56 javarias Exp $
+ * $Id: AbstractArrayPanel.java,v 1.13 2011/08/05 21:46:02 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel

@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.PrintStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,7 +76,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.11 2011/05/11 21:16:30 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.12 2011/08/05 21:46:02 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -866,16 +867,18 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 				final String[] item = (String[]) evt.getNewValue();
 				if (operation.equals(ArrayGUIOperation.DESTROYED.toString())) {
 					setStatusMessage(String.format(
-							"<html>Array %s by %s</html>",
+							"<html>Array %s by %s at %TT</html>",
 							operation.toString(),
-							item[0]));
+							item[0],
+							new Date()));
 					deactivateAllButtons();
 				} else {
 					setStatusMessage(String.format(
-							"<html>Array set to %s by %s (%s)</html>",
+							"<html>Array set to %s by %s (%s) at %TT</html>",
 							operation.toString(),
 							item[0],
-							item[1]));
+							item[1],
+							new Date()));
 					updateArrayButtons();
 				}
 			}
