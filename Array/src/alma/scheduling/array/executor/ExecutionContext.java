@@ -51,8 +51,10 @@ import alma.scheduling.array.executor.services.EventPublisher;
 import alma.scheduling.array.executor.services.Pipeline;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.datamodel.helpers.ConversionException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
@@ -600,35 +602,35 @@ public class ExecutionContext {
      * @throws SchedulingException
      */
     private void updateForSuccess(OUSStatus ousStatus,
-				  String    endTime,
-				  int       timeInSec,
-				  boolean   updateSBCounts)
+				                  String    endTime,
+				                  int       timeInSec,
+				                  boolean   updateSBCounts)
 				throws SchedulingException {
     	if (ousStatus != null) {
-	    final int time   = ousStatus.getTotalUsedTimeInSec();
-	    
-	    if (updateSBCounts) {
-		final int worked = ousStatus.getNumberSBsCompleted();
-		ousStatus.setNumberSBsCompleted(worked + 1);
-	    }
-	    ousStatus.setTotalUsedTimeInSec(time + timeInSec);
-	    ousStatus.setTimeOfUpdate(endTime);
-	    try {
-		getModel().getStateArchive().update(ousStatus);
-		updateForSuccess(getContainingOUSStatus(ousStatus),
-				 endTime,
-				 timeInSec,
-				 false);
-	    } catch (Exception e) {
-		ErrorHandling.warning(logger,
-				      String.format(
-						    "Error updating OUSStatus %s for ObsUnitSet %s in %s: %s",
-						    ousStatus.getOUSStatusEntity().getEntityId(),
-						    ousStatus.getObsUnitSetRef().getPartId(),
-						    ousStatus.getObsUnitSetRef().getEntityId(),
-						    e.getMessage()),
-				      e);
-	    }
+    		final int time   = ousStatus.getTotalUsedTimeInSec();
+
+    		if (updateSBCounts) {
+    			final int worked = ousStatus.getNumberSBsCompleted();
+    			ousStatus.setNumberSBsCompleted(worked + 1);
+    		}
+    		ousStatus.setTotalUsedTimeInSec(time + timeInSec);
+    		ousStatus.setTimeOfUpdate(endTime);
+    		try {
+    			getModel().getStateArchive().update(ousStatus);
+    			updateForSuccess(getContainingOUSStatus(ousStatus),
+    					endTime,
+    					timeInSec,
+    					false);
+    		} catch (Exception e) {
+    			ErrorHandling.warning(logger,
+    					String.format(
+    							"Error updating OUSStatus %s for ObsUnitSet %s in %s: %s",
+    							ousStatus.getOUSStatusEntity().getEntityId(),
+    							ousStatus.getObsUnitSetRef().getPartId(),
+    							ousStatus.getObsUnitSetRef().getEntityId(),
+    							e.getMessage()),
+    							e);
+    		}
     	}
     }
     
@@ -643,33 +645,33 @@ public class ExecutionContext {
      * @throws SchedulingException
      */
     private void updateForSuccess(SBStatus sbStatus,
-				  String   endTime,
-				  int      secs,
-				  boolean  csv) {
+    		                      String   endTime,
+    		                      int      secs,
+    		                      boolean  csv) {
     	final int execs = sbStatus.getExecutionsRemaining();
     	final int time  = sbStatus.getTotalUsedTimeInSec();
-    	
-		
+
+
     	if (execs > 0 && !csv) {
-	    // 0 used for indefinite repeat, so execs == 0 could happen
-	    sbStatus.setExecutionsRemaining(execs-1);
+    		// 0 used for indefinite repeat, so execs == 0 could happen
+    		sbStatus.setExecutionsRemaining(execs-1);
     	}
-        sbStatus.setTotalUsedTimeInSec(time + secs);
-        sbStatus.setTimeOfUpdate(endTime);
+    	sbStatus.setTotalUsedTimeInSec(time + secs);
+    	sbStatus.setTimeOfUpdate(endTime);
     	try {
-	    getModel().getStateArchive().update(sbStatus);
-            updateForSuccess(getContainingOUSStatus(sbStatus),
-			     endTime,
-			     secs,
-			     true);
+    		getModel().getStateArchive().update(sbStatus);
+    		updateForSuccess(getContainingOUSStatus(sbStatus),
+    				         endTime,
+    				         secs,
+    				         true);
     	} catch (Exception e) {
-	    ErrorHandling.warning(logger,
-				  String.format(
+    		ErrorHandling.warning(logger,
+    				String.format(
     						"Error updating SBStatus %s for SchedBlock %s: %s",
     						sbStatus.getSBStatusEntity().getEntityId(),
     						sbStatus.getSchedBlockRef().getEntityId(),
     						e.getMessage()),
-				  e);
+    						e);
     	}
     }
     
@@ -686,29 +688,29 @@ public class ExecutionContext {
      * @throws SchedulingException
      */
     private void updateForFailure(OUSStatus ousStatus,
-				  String    endTime,
-				  boolean   updateSBCounts) {
+				                  String    endTime,
+				                  boolean   updateSBCounts) {
     	if (ousStatus != null) {
-	    if (updateSBCounts) {
-		final int failed = ousStatus.getNumberSBsFailed();
-		ousStatus.setNumberSBsFailed(failed + 1);
-	    }
-	    ousStatus.setTimeOfUpdate(endTime);
-	    try {
-		getModel().getStateArchive().update(ousStatus);
-		updateForFailure(getContainingOUSStatus(ousStatus),
-				 endTime,
-				 false);
-	    } catch (Exception e) {
-		ErrorHandling.warning(logger,
-				      String.format(
-						    "Error updating OUSStatus %s for ObsUnitSet %s in %s: %s",
-						    ousStatus.getOUSStatusEntity().getEntityId(),
-						    ousStatus.getObsUnitSetRef().getPartId(),
-						    ousStatus.getObsUnitSetRef().getEntityId(),
-						    e.getMessage()),
-				      e);
-	    }
+    		if (updateSBCounts) {
+    			final int failed = ousStatus.getNumberSBsFailed();
+    			ousStatus.setNumberSBsFailed(failed + 1);
+    		}
+    		ousStatus.setTimeOfUpdate(endTime);
+    		try {
+    			getModel().getStateArchive().update(ousStatus);
+    			updateForFailure(getContainingOUSStatus(ousStatus),
+    					endTime,
+    					false);
+    		} catch (Exception e) {
+    			ErrorHandling.warning(logger,
+    					String.format(
+    							"Error updating OUSStatus %s for ObsUnitSet %s in %s: %s",
+    							ousStatus.getOUSStatusEntity().getEntityId(),
+    							ousStatus.getObsUnitSetRef().getPartId(),
+    							ousStatus.getObsUnitSetRef().getEntityId(),
+    							e.getMessage()),
+    							e);
+    		}
     	}
     }
         
@@ -723,18 +725,18 @@ public class ExecutionContext {
      */
     private void updateForFailure(SBStatus sbStatus, String endTime) {
     	try {
-	    getModel().getStateArchive().update(sbStatus);
-	    updateForFailure(getContainingOUSStatus(sbStatus),
-			     endTime,
-			     true);
+    		getModel().getStateArchive().update(sbStatus);
+    		updateForFailure(getContainingOUSStatus(sbStatus),
+    				         endTime,
+    				         true);
     	} catch (Exception e) {
-	    ErrorHandling.warning(logger,
-				  String.format(
+    		ErrorHandling.warning(logger,
+    				String.format(
     						"Error updating SBStatus %s for SchedBlock %s: %s",
     						sbStatus.getSBStatusEntity().getEntityId(),
     						sbStatus.getSchedBlockRef().getEntityId(),
     						e.getMessage()),
-				  e);
+    						e);
     	}
     }
     
@@ -872,25 +874,26 @@ public class ExecutionContext {
     		fromStatus = StatusTStateType.RUNNING;
     		toStatus = StatusTStateType.SUSPENDED;
     	}
-    	doStateArchiveTransition(getSchedBlock().getStatusEntity(), fromStatus, toStatus);
+    	doStateArchiveTransition(getSchedBlock().getStatusEntity(),
+    			                 fromStatus, toStatus);
     }
 
     private void doStateArchiveTransition(SBStatusEntityT  sbStatusId,
-					  StatusTStateType fromStatus,
-					  StatusTStateType toStatus)
+					                      StatusTStateType fromStatus,
+					                      StatusTStateType toStatus)
     		throws AcsJNoSuchTransitionEx,
-		       AcsJNotAuthorizedEx,
-		       AcsJPreconditionFailedEx,
-		       AcsJPostconditionFailedEx,
-		       AcsJIllegalArgumentEx,
-		       AcsJNoSuchEntityEx {
+		           AcsJNotAuthorizedEx,
+		           AcsJPreconditionFailedEx,
+		           AcsJPostconditionFailedEx,
+		           AcsJIllegalArgumentEx,
+		           AcsJNoSuchEntityEx {
     	
-	final String subsystem = Subsystem.SCHEDULING;
-	final String role = Role.AOD;
-	
-	logger.info("Doing transition of SBStatusEntityT: " + sbStatusId.getEntityId() +  
-		    " from: " + fromStatus + " to: " + toStatus + ", Role: " + role);
-	getModel().getStateEngine().changeState(sbStatusId, toStatus, subsystem, role);
+    	final String subsystem = Subsystem.SCHEDULING;
+    	final String role = Role.AOD;
+
+    	logger.info("Doing transition of SBStatusEntityT: " + sbStatusId.getEntityId() +  
+    			" from: " + fromStatus + " to: " + toStatus + ", Role: " + role);
+    	getModel().getStateEngine().changeState(sbStatusId, toStatus, subsystem, role);
     }
 
     /**
