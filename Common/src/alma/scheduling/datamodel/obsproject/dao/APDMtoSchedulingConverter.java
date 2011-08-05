@@ -1209,22 +1209,14 @@ public class APDMtoSchedulingConverter {
 	
 	private SchedBlockState sbState(SBStatus sbStatus)
 		throws ConversionException {
-		switch (sbStatus.getStatus().getState().getType()) {
-			case StatusTStateType.READY_TYPE:
-			case StatusTStateType.PHASE1SUBMITTED_TYPE:
-			case StatusTStateType.PHASE2SUBMITTED_TYPE:
-			case StatusTStateType.CSVREADY_TYPE:
-				return SchedBlockState.READY;
-			case StatusTStateType.RUNNING_TYPE:
-			case StatusTStateType.CSVRUNNING_TYPE:
-				return SchedBlockState.RUNNING;
-			case StatusTStateType.FULLYOBSERVED_TYPE:
-				return SchedBlockState.FULLY_OBSERVED;
-			default:
-				throw new ConversionException(String.format(
-						"APDM SchedBlock %s in unexpected state (%s)",
-						sbStatus.getSBStatusEntity().getEntityId(),
-						sbStatus.getStatus().getState().toString()));
+
+		try {
+			return SchedBlockState.getFrom(sbStatus.getStatus().getState());
+		} catch (ConversionException e) {
+			throw new ConversionException(String.format(
+					"APDM SchedBlock %s in unexpected state (%s)",
+					sbStatus.getSBStatusEntity().getEntityId(),
+					sbStatus.getStatus().getState().toString()), e);
 		}
 	}
 

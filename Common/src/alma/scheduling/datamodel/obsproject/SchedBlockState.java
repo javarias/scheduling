@@ -21,13 +21,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockState.java,v 1.3 2010/08/23 21:33:26 javarias Exp $"
+ * "@(#) $Id: SchedBlockState.java,v 1.4 2011/08/05 21:41:23 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
+
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.scheduling.datamodel.helpers.ConversionException;
 
 public enum SchedBlockState {
     READY,
     RUNNING,
     FULLY_OBSERVED,
-    CANCELED
+    CANCELED;
+    
+    public static SchedBlockState getFrom(StatusTStateType apdmStatus)
+    	throws ConversionException {
+    	switch (apdmStatus.getType()) {
+    	case StatusTStateType.READY_TYPE:
+    	case StatusTStateType.PHASE1SUBMITTED_TYPE:
+    	case StatusTStateType.PHASE2SUBMITTED_TYPE:
+    	case StatusTStateType.CSVREADY_TYPE:
+    		return SchedBlockState.READY;
+    	case StatusTStateType.RUNNING_TYPE:
+    	case StatusTStateType.CSVRUNNING_TYPE:
+    		return SchedBlockState.RUNNING;
+    	case StatusTStateType.FULLYOBSERVED_TYPE:
+    		return SchedBlockState.FULLY_OBSERVED;
+    	default:
+    		throw new ConversionException(String.format(
+    				"Unexpected APDM state (%s) - don't know how to interpret this for Scheduling",
+    				apdmStatus.toString()));
+    	}
+    }
 }
