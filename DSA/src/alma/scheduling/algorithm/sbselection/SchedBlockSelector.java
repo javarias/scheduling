@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.9 2010/07/20 23:07:00 javarias Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.10 2011/08/05 18:17:10 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -55,9 +55,11 @@ public interface SchedBlockSelector {
     
    
     /**
-     * The name of the property used for the restrictions must be 'sb'. 
+     * If the query is done over SchedBlocks, who implement this method must use the alias
+     * sb for schedblocks: For Example: </br>
+     * Do a query for SchecBlock.manual: "sb.manual"
      * 
-     * SchedBlock properties alias that are used:
+     * Aliases also must be used for:
      * "schedulingConstraints.representativeTarget","rt" </br>
      * "schedulingConstraints.representativeTarget.source","s" </br>
      * "executive.executivePercentage", "ep" </br>
