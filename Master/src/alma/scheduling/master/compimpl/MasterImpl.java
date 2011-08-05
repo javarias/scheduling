@@ -123,9 +123,16 @@ public class MasterImpl implements ComponentLifecycle,
         //Change this if Master Scheduler is not longer deployed in the same container
         //than the SCHEDULING Arrays
         try {
-			weatherComp = CurrentWeatherHelper.narrow(containerServices.getDefaultComponent(Constants.WEATHER_STATION_IF));
+        	try {
+        		//Check for the real weather station controller
+        		weatherComp = CurrentWeatherHelper.narrow(containerServices.getDefaultComponent(Constants.WEATHER_STATION_IF));
+        	}
+        	catch (Exception ex) {
+        		//If not, use the simulated one
+        		weatherComp = CurrentWeatherHelper.narrow(containerServices.getDefaultComponent(Constants.WEATHER_STATION_SIM_IF));
+        	}
 			String nameComp = weatherComp.name();
-			containerServices.releaseComponent(nameComp);
+			containerServices.releaseComponent(nameComp, null);
 			weatherComp = null;
 			weatherComp = CurrentWeatherHelper.narrow(containerServices.getComponentNonSticky(nameComp));
 			WeatherStationDao.setWeatherStation(weatherComp);
