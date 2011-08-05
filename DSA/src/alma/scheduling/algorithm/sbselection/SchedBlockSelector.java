@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.10 2011/08/05 18:17:10 javarias Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.11 2011/08/05 18:23:05 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -55,19 +55,19 @@ public interface SchedBlockSelector {
     
    
     /**
-     * If the query is done over SchedBlocks, who implement this method must use the alias
-     * sb for schedblocks: For Example: </br>
-     * Do a query for SchecBlock.manual: "sb.manual"
-     * 
-     * Aliases also must be used for:
-     * "schedulingConstraints.representativeTarget","rt" </br>
-     * "schedulingConstraints.representativeTarget.source","s" </br>
-     * "executive.executivePercentage", "ep" </br>
-     * 
-     * If you want to use, for example: </br>
+     * If the query is done over <i>SchedBlocks</i>, who implement this method must use the alias
+     * <b>sb</b> for schedblocks. For Example: </br>
+     * Do a query for SchecBlock.manual: <i><b>sb.manual</b></i> </br>
+     * </br>
+     * Aliases also must be used for:</br>
+     * <i>schedulingConstraints.representativeTarget</i>: <b>rt</b> </br>
+     * <i>schedulingConstraints.representativeTarget.source</i>:<b>s</b> </br>
+     * <i>executive.executivePercentage</i>: <b>ep</b> </br>
+     * </br>
+     * for example: </br>
      * "schedulingConstraints.representativeTarget.source.coordinates.RA" you
      * must replace it by "s.coordinates.RA"
-     * 
+     * </br>
      * All this alias are defined as part of the criteria created by the {@link MasterSelector#select()}
      * 
      * @return the criterion for the SchedBlocks ('sb') to be used in conjunction
