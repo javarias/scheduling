@@ -32,7 +32,7 @@ import java.util.Random;
  * 
  * @author dclarke
  * <br>
- * $Id: Format.java,v 1.3 2011/07/29 21:54:09 dclarke Exp $
+ * $Id: Format.java,v 1.4 2011/08/05 21:40:06 dclarke Exp $
  */
 public final class Format {
 
@@ -212,15 +212,15 @@ public final class Format {
 		// Subtract the minutes, remaining in [0.0, 60.0)
 		remaining = (remaining - mm) * 60.0;
 
-		return String.format(" %02d:%02d:%06.3f",
+		return String.format("%02d:%02d:%06.3f",
 				hh, mm, remaining);
 	}
 	
 	public static String formatDec(double degrees) {
 		
-		String sign = "";
+		int sign = 1;
 		if (degrees < 0.0) {
-			sign = "-";
+			sign = -1;
 			degrees = Math.abs(degrees);
 		}
 		
@@ -237,8 +237,8 @@ public final class Format {
 		// Subtract the minutes, remaining in [0.0, 60.0)
 		remaining = (remaining - mm) * 60.0;
 
-		return String.format("%s%02d:%02d:%06.3f",
-				sign, dd, mm, remaining);
+		return String.format("% 03d:%02d:%06.3f",
+				sign * dd, mm, remaining);
 	}
 	
 	public static String formatHA(double hours) {
@@ -252,7 +252,7 @@ public final class Format {
 		// Extract the whole minutes, mm  in [0, 59]
 		final long mm = Math.round(remaining); 
 
-		return String.format(" %02d:%02d",
+		return String.format("% 03d:%02d",
 				hh, mm, remaining);
 	}
 	
@@ -277,7 +277,7 @@ public final class Format {
 		}
 		final int before = spaces / 2;
 		final int after  = spaces - before;
-		return spaces(before) + s + spaces(after);
+		return spaces(before) + '\'' + s + '\'' + spaces(after);
 	}
 	
 	private static void testRAandDec() {
@@ -354,6 +354,7 @@ public final class Format {
 	
 	public static void main(String[] args) {
 		testHAs();
+		testRAandDec();
 	}
 	/* End Main
 	 * ============================================================= */
