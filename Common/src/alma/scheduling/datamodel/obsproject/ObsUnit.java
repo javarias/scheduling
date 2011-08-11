@@ -21,9 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnit.java,v 1.6 2011/01/28 00:35:31 javarias Exp $"
+ * "@(#) $Id: ObsUnit.java,v 1.7 2011/08/11 22:48:35 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
+
+import alma.scheduling.utils.StringUtil;
 
 public abstract class ObsUnit {
 
@@ -106,7 +108,7 @@ public abstract class ObsUnit {
 	}
 
 	public void setNote(String note) {
-		this.note = note;
+		this.note = StringUtil.trimmed(note);
 	}
     
 }
