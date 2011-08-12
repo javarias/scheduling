@@ -25,7 +25,7 @@ public class InteractiveSchedBlockSelector extends AbstractBaseSelector {
 
 	@Override
 	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-		return Restrictions.not(Restrictions.eq("sb.manual", false));
+		return Restrictions.not(Restrictions.eq("manual", false));
 	}
 
 }
