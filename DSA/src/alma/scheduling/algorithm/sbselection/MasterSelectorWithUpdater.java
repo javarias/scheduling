@@ -7,6 +7,8 @@ import java.util.Date;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.DSAErrorStruct;
+import alma.scheduling.utils.ErrorHandling;
 
 public class MasterSelectorWithUpdater extends MasterSelector implements
         SchedBlockSelector, ModelUpdater{
@@ -41,21 +43,66 @@ public class MasterSelectorWithUpdater extends MasterSelector implements
     public synchronized void update(Date date, Collection<SchedBlock> sbs) {
         this.sbs = sbs;
         ArrayList<SchedBlock> trash = new ArrayList<SchedBlock>();
+        ArrayList<DSAErrorStruct> updateErrors =  new ArrayList<DSAErrorStruct>();
+        ArrayList<DSAErrorStruct> selectorErrors =  new ArrayList<DSAErrorStruct>();
        // for(ModelUpdater up: fullUpdates)
        //     up.update(date, sbs);
         for(SchedBlock sb: sbs){
             for(ModelUpdater up: partialUpdates){
-                up.update(date, sb);
+            	try {
+            		up.update(date, sb);
+            	} catch(Exception ex) {
+            		updateErrors.add(new DSAErrorStruct(up.getClass().getCanonicalName(), 
+            				sb.getUid(), "SchedBlock", ex));
+            		trash.add(sb);
+            	}
             }
             for(SchedBlockSelector s: selectors){
-                if(!s.canBeSelected(sb)){
-                    trash.add(sb);
-                    break;
-                }
+            	try {
+            		if(!s.canBeSelected(sb)){
+            			trash.add(sb);
+            			break;
+            		}
+            	}catch (Exception ex) {
+            		selectorErrors.add(new DSAErrorStruct(s.getClass().getCanonicalName(), 
+            				sb.getUid(), "SchedBlock", ex));
+            		trash.add(sb);
+            	}
             }
         }
-        for(SchedBlock sb: trash)
-            this.sbs.remove(sb);
+        //Report errors
+        if (updateErrors.size() > 0 && updateErrors.size() != sbs.size()) {
+        	for(DSAErrorStruct struct: updateErrors)
+        		ErrorHandling.getInstance().warning(
+        				"Failed " + struct.getDSAPart() + 
+        				" when updating " + struct.getEntityType() + 
+        				" Id: " + struct.getEntityId(), struct.getException());
+        }
+        else if (updateErrors.size() == sbs.size()) {
+        	ErrorHandling.getInstance().severe("Failed " + updateErrors.get(0).getDSAPart()
+        			+ ". No " + updateErrors.get(0).getEntityType() + "s were updated"
+        			, updateErrors.get(0).getException());
+        }
+        
+        if (selectorErrors.size() > 0 && selectorErrors.size() != sbs.size()) {
+        	for(DSAErrorStruct struct: selectorErrors)
+        		ErrorHandling.getInstance().warning(
+        				"Failed " + struct.getDSAPart() + 
+        				" when selecting " + struct.getEntityType() + 
+        				" Id: " + struct.getEntityId(), struct.getException());
+        }
+        else if (selectorErrors.size() == sbs.size()) {
+        	ErrorHandling.getInstance().severe("Failed " + selectorErrors.get(0).getDSAPart()
+        			+ ". No " + selectorErrors.get(0).getEntityType() + "s were removed from prvious selection"
+        			, selectorErrors.get(0).getException());
+        }
+        for(SchedBlock sb: trash) {
+        	try{
+        		this.sbs.remove(sb);
+        	} catch (Exception ex) {
+        		//Do nothing, it could be that the sb was already removed
+        	}
+        }
     }
 
     @Override

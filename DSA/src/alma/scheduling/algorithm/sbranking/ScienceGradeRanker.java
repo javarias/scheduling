@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ScienceGradeRanker.java,v 1.15 2011/08/03 17:59:54 javarias Exp $"
+ * "@(#) $Id: ScienceGradeRanker.java,v 1.16 2011/08/12 17:04:34 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbranking;
 
@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
+import alma.scheduling.utils.DSAErrorStruct;
 
 public class ScienceGradeRanker extends AbstractBaseRanker {
 
@@ -60,23 +61,34 @@ public class ScienceGradeRanker extends AbstractBaseRanker {
     public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf, Date ut, int nProjects){
         ranks.clear();
         double score;
+        ArrayList<DSAErrorStruct> errors =  new ArrayList<DSAErrorStruct>();
         for(SchedBlock sb: sbs){
-            score = ((double)nProjects - (sb.getScienceRank() - 1.0))/((double) nProjects);
-            if(sb.getLetterGrade() == ScienceGrade.A)
-                score += 4.0;
-            else if (sb.getLetterGrade() == ScienceGrade.B)
-                score += 2.0;
-            else if (sb.getLetterGrade() == ScienceGrade.C)
-                score += 1.0;
-            else
-                score += 0;
-            score = score / 5.0; ///to normalize the calculation
-            SBRank rank = new SBRank();
-            rank.setUid(sb.getUid());
-            rank.setRank(score);
-            ranks.add(rank);
-            logger.debug("rank: " + rank);
+        	try {
+	            score = ((double)nProjects - (sb.getScienceRank() - 1.0))/((double) nProjects);
+	            if(sb.getLetterGrade() == ScienceGrade.A)
+	                score += 4.0;
+	            else if (sb.getLetterGrade() == ScienceGrade.B)
+	                score += 2.0;
+	            else if (sb.getLetterGrade() == ScienceGrade.C)
+	                score += 1.0;
+	            else
+	                score += 0;
+	            score = score / 5.0; ///to normalize the calculation
+	            SBRank rank = new SBRank();
+	            rank.setUid(sb.getUid());
+	            rank.setRank(score);
+	            ranks.add(rank);
+	            logger.debug("rank: " + rank);
+	        } catch (RuntimeException ex) {
+	        	errors.add(new DSAErrorStruct(this.getClass().getCanonicalName(), 
+        				sb.getUid(), "SchedBlock", ex));
+	            SBRank rank = new SBRank();
+	            rank.setUid(sb.getUid());
+	            rank.setRank(0.0);
+	            ranks.add(rank);
+        	}
         }
+        reportErrors(errors, sbs);
         printVerboseInfo(ranks, arrConf.getId(), ut);
         return ranks;
     }

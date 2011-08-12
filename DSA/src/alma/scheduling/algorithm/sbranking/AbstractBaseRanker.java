@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import alma.scheduling.algorithm.VerboseLevel;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.DSAErrorStruct;
+import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.TimeUtil;
 
 public abstract class AbstractBaseRanker implements SchedBlockRanker {
@@ -67,6 +71,21 @@ public abstract class AbstractBaseRanker implements SchedBlockRanker {
 
 	public void setFactor(double factor) {
 		this.factor = factor;
+	}
+	
+	protected void reportErrors(List<DSAErrorStruct> errors, List<SchedBlock> sbs) {
+        if (errors.size() > 0 && errors.size() != sbs.size()) {
+        	for(DSAErrorStruct struct: errors)
+        		ErrorHandling.getInstance().warning(
+        				"Failed " + struct.getDSAPart() + 
+        				" when scoring " + struct.getEntityType() + 
+        				" Id: " + struct.getEntityId(), struct.getException());
+        }
+        else if (errors.size() == sbs.size()) {
+        	ErrorHandling.getInstance().severe("Failed " + errors.get(0).getDSAPart()
+        			+ ". No " + errors.get(0).getEntityType() + "s were scored"
+        			, errors.get(0).getException());
+        }
 	}
 
 }

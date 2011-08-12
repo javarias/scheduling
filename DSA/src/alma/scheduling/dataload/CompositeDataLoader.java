@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: CompositeDataLoader.java,v 1.7 2011/05/15 22:24:30 ahoffsta Exp $"
+ * "@(#) $Id: CompositeDataLoader.java,v 1.8 2011/08/12 17:04:34 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class CompositeDataLoader implements DataLoader {
 	
-	private static Logger logger = LoggerFactory.getLogger(DataLinkerLocal.class);
+	private static Logger logger = LoggerFactory.getLogger(CompositeDataLoader.class);
 
     private List<DataLoader> loaders;
         
