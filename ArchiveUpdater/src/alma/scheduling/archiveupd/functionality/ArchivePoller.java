@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.11 2011/07/21 23:13:47 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.12 2011/08/12 17:03:38 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -60,7 +60,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.11 2011/07/21 23:13:47 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.12 2011/08/12 17:03:38 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -106,7 +106,9 @@ public class ArchivePoller implements Observer{
 
 		this.containerServices = containerServices;
 		this.logger = logger;
-		this.handler = new ErrorHandling(logger);
+        if (!ErrorHandling.isInitialized())
+        	ErrorHandling.initialize(logger);
+		this.handler = ErrorHandling.getInstance();
 		this.schedBlockDao = ma.getSchedBlockDao();
 		this.obsProjectDao = ma.getObsProjectDao();
 		this.execDao = ma.getExecutiveDao();

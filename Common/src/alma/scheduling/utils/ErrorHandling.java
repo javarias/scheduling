@@ -24,9 +24,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * To get an instance of this class, use {@link ErrorHandling#getInstance()}
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.4 2011/07/13 21:47:45 dclarke Exp $
+ * $Id: ErrorHandling.java,v 1.5 2011/08/12 17:03:39 javarias Exp $
  */
 public final class ErrorHandling {
 	/*
@@ -59,7 +60,7 @@ public final class ErrorHandling {
 	/**
 	 * Create a helper for the given AcsLogger.
 	 */
-	public ErrorHandling(Logger logger) {
+	private ErrorHandling(Logger logger) {
 		this.logger = logger;
 	}
 	/* End Construction
@@ -259,4 +260,46 @@ public final class ErrorHandling {
 	}
 	/* End Miscellany
 	 * ============================================================= */
+
+	private static ErrorHandling instance;
+	
+	/**
+	 * 
+	 * @return true if the singleton is initialized, false otherwise
+	 */
+	public static boolean isInitialized() {
+		if (instance == null)
+			return false;
+		else
+			return true;
+	}
+	
+	/**
+	 * Initialize the instance to be used in the singleton.
+	 * If the instance is already initialized and created , 
+	 * this method create a new instance with given logger.
+	 * 
+	 * @param logger the instance of the logger to be used in the handler instance
+	 */
+	public static void initialize(Logger logger) {
+		if (logger == null)
+			throw new IllegalArgumentException("logger cannot be null");
+		instance = new ErrorHandling(logger);
+	}
+	
+	/**
+	 * 
+	 * It will return the instance of this class already initialized with
+	 * the specified logger. If the instance was not properly initialized
+	 * the logger to be set will be the default java logger ({@link Logger})
+	 *
+	 * @see ErrorHandling#initialize(Logger)
+	 * 
+	 * @return the ErrorHandling singleton
+	 */
+	public static ErrorHandling getInstance() {
+		if (instance == null)
+			initialize(Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
+		return instance;
+	}
 }

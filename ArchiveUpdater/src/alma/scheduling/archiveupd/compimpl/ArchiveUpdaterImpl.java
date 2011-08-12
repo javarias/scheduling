@@ -57,7 +57,9 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
         final AcsLogger acsLogger = m_containerServices.getLogger();
         m_logger   = acsLogger;
         m_opLogger = new OperatorLogger(acsLogger);
-		handler = new ErrorHandling(m_logger);
+        if (!ErrorHandling.isInitialized())
+        	ErrorHandling.initialize(m_logger);
+		handler = ErrorHandling.getInstance();
 		getPoller(containerServices);
 		
 		m_logger.finest("initialize() called...");
