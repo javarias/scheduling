@@ -42,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.15 2011/08/05 21:46:03 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.16 2011/08/15 14:34:52 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -685,10 +685,6 @@ public class SchedBlockTableModel extends AbstractTableModel {
 							final TableModelEvent event = new TableModelEvent(
 									table,
 									0, getRowCount()-1, i);
-							System.out.format("Updating column %d with %s @ %h%n",
-									i,
-									this.getClass().getSimpleName(),
-									this.hashCode());
 							fireTableChanged(event);
 						}
 					}
