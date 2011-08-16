@@ -20,6 +20,7 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.ExecStatusT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.schedblock.TargetT;
+import alma.entity.xmlbinding.schedblock.types.SchedulingConstraintsTRepresentativeReceiverBandType;
 import alma.entity.xmlbinding.valuetypes.types.AngleTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.AngularVelocityTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.FrequencyTUnitType;
@@ -886,6 +887,15 @@ public class APDMtoSchedulingConverter {
 		result.setRepresentativeFrequency(FrequencyConverter.convertedValue(
 				constraints.getRepresentativeFrequency(),
 				FrequencyTUnitType.GHZ));
+		
+		// The APDM band enum runs is 0-indexed, we want 1-indexed...
+		try {
+			result.setRepresentativeBand(
+				constraints.getRepresentativeReceiverBand().getType() + 1);
+		} catch (NullPointerException e) {
+			// ...and we use -1 to mean no band specified
+			result.setRepresentativeBand(-1);
+		}
 		return result;
 	}
 

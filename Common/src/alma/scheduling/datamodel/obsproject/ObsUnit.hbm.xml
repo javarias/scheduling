@@ -67,6 +67,8 @@
      name="maxAngularResolution" type="double"/>
     <property column="REPR_FREQ" generated="never" lazy="false"
      name="representativeFrequency" type="double"/>
+    <property column="REPR_BAND" generated="never" lazy="false"
+     name="representativeBand" type="int"/>
     <many-to-one class="Target" column="REPR_TARGET" name="representativeTarget"/>
    </component>
    <component class="WeatherDependentVariables" name="weatherDependentVariables">

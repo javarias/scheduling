@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedulingConstraints.java,v 1.2 2010/02/24 20:55:09 rhiriart Exp $"
+ * "@(#) $Id: SchedulingConstraints.java,v 1.3 2011/08/16 17:20:43 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -32,6 +32,9 @@ public class SchedulingConstraints {
     
     /** Representative frequency (GHz) */
     private Double representativeFrequency;
+    
+    /** Representative band */
+    private Integer representativeBand;
     
     private Target representativeTarget;
 
@@ -59,6 +62,14 @@ public class SchedulingConstraints {
 
     public void setRepresentativeFrequency(Double representativeFrequency) {
         this.representativeFrequency = representativeFrequency;
+    }
+
+    public Integer getRepresentativeBand() {
+        return representativeBand;
+    }
+
+    public void setRepresentativeBand(Integer representativeBand) {
+        this.representativeBand = representativeBand;
     }
 
     public Target getRepresentativeTarget() {
