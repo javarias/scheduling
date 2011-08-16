@@ -30,13 +30,14 @@ import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.obsproject.Preconditions;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.utils.Format;
 
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.4 2011/05/11 21:17:27 dclarke Exp $
+ * $Id: SchedBlockFormatter.java,v 1.5 2011/08/16 17:21:29 dclarke Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*
@@ -151,6 +152,29 @@ public class SchedBlockFormatter extends EntityFormatter {
 		th("Dec");
 		if (coords != null) {
 			td(Format.formatDec(coords.getDec()));
+		} else {
+			td("n/a");
+		}
+		endTR();
+	}
+	
+	private void formatFrequency(SchedBlock sb) {
+		final SchedulingConstraints constraints = sb.getSchedulingConstraints();
+		startTR();
+		th("Freq");
+		if (constraints != null) {
+			td(String.format("%4.1f GHz", constraints.getRepresentativeFrequency()));
+		} else {
+			td("n/a");
+		}
+		th("Band");
+		if (constraints != null) {
+			final int band = constraints.getRepresentativeBand();
+			if (band > 0) {
+				td(String.format("  %02d", band));
+			} else {
+				td("n/a");
+			}
 		} else {
 			td("n/a");
 		}
@@ -395,6 +419,7 @@ public class SchedBlockFormatter extends EntityFormatter {
 		td(sb.getStatusEntity().getEntityId(), 3);
 		endTR();
 		formatCoords(sb);
+		formatFrequency(sb);
 		formatHA(sb);
 		endTable();
 
@@ -418,6 +443,7 @@ public class SchedBlockFormatter extends EntityFormatter {
 		td(sb.getUid(), 3);
 		endTR();
 		formatCoords(sb);
+		formatFrequency(sb);
 		formatHA(sb);
 		
 		endTable();
