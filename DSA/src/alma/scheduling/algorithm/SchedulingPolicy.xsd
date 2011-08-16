@@ -11,7 +11,7 @@
 
 	<xs:complexType name="SchedulingPolicyT">
 		<xs:sequence>
-			<xs:element name="SelectionCriterion" type="SelectionCriterionT"
+			<xs:element name="SelectionCriteria" type="SelectionCriteriaT"
 				maxOccurs="1" />
 			<xs:element name="Scorers" type="ScorersT" maxOccurs="1" />
 		</xs:sequence>
@@ -19,19 +19,19 @@
 		<xs:attribute name="version" type="xs:string" use="optional" />
 	</xs:complexType>
 	
-    <xs:complexType name="SelectionCriterionT">
+    <xs:complexType name="SelectionCriteriaT">
     	<xs:sequence>
     		<xs:choice minOccurs="0" maxOccurs="unbounded">
     			<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
 <!--   			<xs:element name="WeatherSelector" type="WeatherSelectorT"/>   --> 
-    			<xs:element name="SourceSelector" type="SourceSelectorT"/>
+<!--    		<xs:element name="SourceSelector" type="SourceSelectorT"/> -->
     			<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>
     			<xs:element name="HourAngleSelector" type="HourAngleSelectorT"/>
     			<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT"/>
     			<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
     			<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT"/>
     			<xs:element name="OpacitySelector" type="OpacitySelectorT"/>
-    			<xs:element name="InteractiveProjectsSelector" type="InteractiveProjectsSelectorT"/>
+<!--   			<xs:element name="InteractiveProjectsSelector" type="InteractiveProjectsSelectorT"/> -->
     		</xs:choice>
     	</xs:sequence>
     </xs:complexType>

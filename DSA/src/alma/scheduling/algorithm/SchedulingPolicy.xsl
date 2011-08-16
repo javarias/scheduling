@@ -27,7 +27,7 @@
             default-lazy-init="true" default-autowire="byName">
             <import resource="classpath:alma/scheduling/algorithm/DSAContext.xml"/>
         <xsl:for-each select="SchedulingPolicy">
-            <xsl:if test="count(SelectionCriterion/WeatherSelector) = 1">
+            <xsl:if test="count(SelectionCriteria/WeatherSelector) = 1">
                 <bean id="{concat('weatherTsysSelector', '_', @name)}" class="alma.scheduling.algorithm.weather.WeatherTsysSelector"
                     scope="prototype">
                     <constructor-arg><value>weatherTsysSelector</value></constructor-arg>
@@ -40,30 +40,26 @@
                 scope="prototype">
                 <property name="selectors">
                     <set>
-                        <xsl:if test="count(SelectionCriterion/ExecutiveSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/ExecutiveSelector) = 1">
                             <ref bean="execSelector"/>
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/SourceSelector) = 1">
                             <ref bean="sourceSelector"/>
-                        </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/ArrayConfigSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/ArrayConfigSelector) = 1">
                             <ref bean="arrayConfigSelector"/>
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/HourAngleSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/HourAngleSelector) = 1">
                             <ref bean="hourAngleSelector" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/SunAvoidanceSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/SunAvoidanceSelector) = 1">
                             <ref bean="sunAvoidanceSelector" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/MoonAvoidanceSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/MoonAvoidanceSelector) = 1">
                             <ref bean="moonAvoidanceSelector" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/SchedBlockGradeSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/SchedBlockGradeSelector) = 1">
                             <ref bean="sbStatusSelector" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/InteractiveProjectsSelector) = 1">
                             <ref bean="interactiveProjectsSelector" />
-                        </xsl:if>
                     </set>
                 </property>
             </bean>
@@ -71,10 +67,10 @@
             <bean id="{concat('postUpdateSelectorAndUpdater', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelectorWithUpdater">
                 <property name="selectors">
                     <set>
-                        <xsl:if test="count(SelectionCriterion/WeatherSelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/WeatherSelector) = 1">
                             <ref bean="{concat('weatherTsysSelector', '_', @name)}" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriterion/OpacitySelector) = 1">
+                        <xsl:if test="count(SelectionCriteria/OpacitySelector) = 1">
                             <ref bean="opacitySelector" />
                         </xsl:if> 
                     </set>
