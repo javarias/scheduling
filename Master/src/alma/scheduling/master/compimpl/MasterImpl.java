@@ -554,12 +554,6 @@ public class MasterImpl implements ComponentLifecycle,
 		String[] retval = new String[policies.size()];
 		return policies.toArray(retval);
 	}
-
-	@Override
-	public void addSchedulingPolicies(String xmlString) {
-		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(xmlString);
-	}
-	
 	
 	public static void main(String args[]) {
 		final FakeAudienceFlogger operatorLog =
@@ -668,5 +662,16 @@ public class MasterImpl implements ComponentLifecycle,
 		operatorLog.warning("Cannot release CONTROL component for %s - CONTROL internal error", arrayName);
 		operatorLog.warning("Cannot release CONTROL component for %s - CONTROL internal error", arrayName);
 
+	}
+
+	@Override
+	public void addSchedulingPolicies(String fileName, String xmlString) {
+		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(xmlString);	
+	}
+
+	@Override
+	public void removeSchedulingPolicies(String fileName) {
+		// TODO Auto-generated method stub
+		
 	}
 }
