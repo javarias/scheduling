@@ -158,6 +158,7 @@
                 </property>
             </bean>
         </xsl:for-each>
+        </beans>
     </xsl:template>
     
 </xsl:stylesheet>
