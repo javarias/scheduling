@@ -15,7 +15,7 @@
 				maxOccurs="1" />
 			<xs:element name="Scorers" type="ScorersT" maxOccurs="1" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="name" type="xs:ID" use="required" />
 		<xs:attribute name="version" type="xs:string" use="optional" />
 	</xs:complexType>
 	

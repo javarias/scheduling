@@ -4,13 +4,22 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.transform.stream.StreamSource;
+
 import org.springframework.context.support.AbstractApplicationContext;
 
+import com.thoughtworks.xstream.persistence.FileStreamStrategy;
+
+import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
+import alma.scheduling.algorithm.PoliciesContainer;
+import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.SchedulingPolicyValidator;
 /**
  * 
@@ -20,7 +29,7 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.14 2011/08/01 17:35:24 dclarke Exp $
+ * $Id: DSAContextFactory.java,v 1.15 2011/08/29 20:48:12 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -61,7 +70,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	 * 
 	 * @since ALMA 8.1.1
 	 */
-	public static AbstractApplicationContext getContextFromPropertyFile(){
+	public static synchronized AbstractApplicationContext getContextFromPropertyFile(){
 		if (context != null)
 			return context;
 		String path = SchedulingContextFactory.setPropertyFilePath();
@@ -84,6 +93,19 @@ public class DSAContextFactory extends CommonContextFactory {
 			return getContext();
 		String contextString = SchedulingPolicyValidator.convertPolicyFile(policyFilePath);
 		context = SchedulingContextFactory.getContext(contextString.getBytes());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
+		PoliciesContainer container = null;
+		try {
+			container = new PoliciesContainer(
+					InetAddress.getLocalHost().getHostName(), "system", true);
+		} catch (UnknownHostException e) {
+			container = new PoliciesContainer("system", "system", true);
+		}
+		for (String name: policies.keySet()) {
+			container.getPolicies().add(name);
+		}
+		PoliciesContainersDirectory.getInstance().put(container.getUuid(), container);
 		return context;
 	}
 	

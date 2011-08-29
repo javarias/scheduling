@@ -158,6 +158,7 @@
                 </property>
             </bean>
         </xsl:for-each>
+                <bean id="UUIDuid"/>
         </beans>
     </xsl:template>
     

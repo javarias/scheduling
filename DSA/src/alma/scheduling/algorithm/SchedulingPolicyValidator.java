@@ -1,10 +1,10 @@
 package alma.scheduling.algorithm;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -37,11 +37,12 @@ public class SchedulingPolicyValidator {
 		SchedulingPolicyValidator validator = new SchedulingPolicyValidator();
 		if(args.length > 0) {
 			for(String file: args){
-				if (validator.validate(file)){
-					String outFile = validator.convert(".", file);
-					if(outFile != null)
-						validator.loadContext(outFile);
-				}
+				SchedulingPolicyValidator.convertPolicyFile(file);
+//				if (validator.validate(file)){
+//					String outFile = validator.convert(".", file);
+//					if(outFile != null)
+//						validator.loadContext(outFile);
+//				}
 			}
 		}
 		else {
@@ -50,24 +51,51 @@ public class SchedulingPolicyValidator {
 	}	
 	
 	public static String convertPolicyFile(String filePath) {
-		System.out.print("Generating DSA application context file" + filePath +" ... ");
 		SchedulingPolicyValidator validator = new SchedulingPolicyValidator();
-		validator.validate(filePath);
+		validator.validate(new StreamSource(filePath));
 		try {
 			Transformer transformer = validator.tFactory.newTransformer(new StreamSource(validator.xslURL.toString()));
 			StreamResult res = new StreamResult();
 			StringWriter writer = new StringWriter();
 			res.setWriter(writer);
 			transformer.transform(new StreamSource(filePath), res);
-			System.out.println(writer.getBuffer().toString());
-			return writer.getBuffer().toString();
+			String xmlString = writer.getBuffer().toString();
+			System.out.println(xmlString);
+			return xmlString;
 		} catch (TransformerConfigurationException e) {
 			System.out.println("FAILED.");
 			System.out.println("Reason: " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		} catch (TransformerException e) {
 			System.out.println("FAILED.");
 			System.out.println("Reason: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static String convertPolicyString(String policyXML) {
+		SchedulingPolicyValidator validator = new SchedulingPolicyValidator();
+		validator.validate(new StreamSource(new ByteArrayInputStream(policyXML.getBytes())));
+		try {
+			Transformer transformer = validator.tFactory.newTransformer(new StreamSource(validator.xslURL.toString()));
+			StreamResult res = new StreamResult();
+			StringWriter writer = new StringWriter();
+			res.setWriter(writer);
+			transformer.transform(new StreamSource(new ByteArrayInputStream(policyXML.getBytes())), res);
+			String xmlString = writer.getBuffer().toString();
+			System.out.println(xmlString);
+			return xmlString;
+		} catch (TransformerConfigurationException e) {
+			System.out.println("FAILED.");
+			System.out.println("Reason: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		} catch (TransformerException e) {
+			System.out.println("FAILED.");
+			System.out.println("Reason: " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -102,13 +130,11 @@ public class SchedulingPolicyValidator {
 		}
 	}
 
-	private boolean validate(String file) {
-		System.out.print("Validating " + file +" ... ");
+	private boolean validate(StreamSource stream) {
 		try {
 			Schema schema = sFactory.newSchema(schemaURL);
 			Validator validator = schema.newValidator();
-			Source source = new StreamSource(file);
-			validator.validate(source);
+			validator.validate(stream);
 			System.out.println("SUCCESS.");
 			return true;
 		} catch (SAXException e) {

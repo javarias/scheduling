@@ -20,7 +20,7 @@ package alma.scheduling.master.compimpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.UUID;
 
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
@@ -75,6 +75,9 @@ import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
+import alma.scheduling.SchedulingPolicyFile;
+import alma.scheduling.algorithm.PoliciesContainersDirectory;
+import alma.scheduling.algorithm.SchedulingPolicyValidator;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 import alma.scheduling.datamodel.weather.dao.WeatherStationDao;
@@ -339,7 +342,7 @@ public class MasterImpl implements ComponentLifecycle,
 		obj = null;
 		array = null;
 		m_logger.info ("Releasing Scheduling Array " + schedArrayName);
-		m_containerServices.releaseComponent(schedArrayName);
+		m_containerServices.releaseComponent(schedArrayName, null);
 		operatorLog.info("Releasing Scheduling component %s", schedArrayName);
 		
 		//Notify to the callbacks
@@ -548,12 +551,12 @@ public class MasterImpl implements ComponentLifecycle,
 		
 	}
 
-	@Override
-	public String[] getSchedulingPolicies() {
-		List<String> policies = DSAContextFactory.getPolicyNames();
-		String[] retval = new String[policies.size()];
-		return policies.toArray(retval);
-	}
+//	@Override
+//	public String[] getSchedulingPolicies() {
+//		List<String> policies = DSAContextFactory.getPolicyNames();
+//		String[] retval = new String[policies.size()];
+//		return policies.toArray(retval);
+//	}
 	
 	public static void main(String args[]) {
 		final FakeAudienceFlogger operatorLog =
@@ -664,13 +667,32 @@ public class MasterImpl implements ComponentLifecycle,
 
 	}
 
+//	@Override
+//	public void addSchedulingPolicies(String fileName, String xmlString) {
+//		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(xmlString);	
+//	}
+
 	@Override
-	public void addSchedulingPolicies(String fileName, String xmlString) {
-		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(xmlString);	
+	public void removeSchedulingPolicies(String fileUUID) throws alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx {
+		PoliciesContainersDirectory.getInstance().remove(UUID.fromString(fileUUID));
+		
 	}
 
 	@Override
-	public void removeSchedulingPolicies(String fileName) {
+	public void addSchedulingPolicies(String hostname, String filePath,
+			String xmlString) {
+		String springCtxXml = SchedulingPolicyValidator.convertPolicyString(xmlString);
+		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(hostname, filePath, springCtxXml);
+	}
+
+	@Override
+	public SchedulingPolicyFile[] getSchedulingPolicies() {
+		return PoliciesContainersDirectory.getInstance().getAllPoliciesFiles();
+	}
+
+	@Override
+	public void refreshSchedulingPolicies(String fileUUID, String hostname,
+			String filePath, String xmlString) {
 		// TODO Auto-generated method stub
 		
 	}
