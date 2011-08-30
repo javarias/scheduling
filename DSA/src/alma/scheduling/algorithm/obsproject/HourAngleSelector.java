@@ -59,9 +59,9 @@ public class HourAngleSelector extends AbstractBaseSelector {
 
     @Override
     public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-        double raLowLimit = CoordinatesUtil.getRA(ut, 16.0,
+        double raLowLimit = CoordinatesUtil.getRA(ut, 20.0,
                 Constants.CHAJNANTOR_LONGITUDE);
-        double raHighLimit = CoordinatesUtil.getRA(ut, 8.0,
+        double raHighLimit = CoordinatesUtil.getRA(ut, 4.0,
                 Constants.CHAJNANTOR_LONGITUDE);
 
         Criterion crit = null;

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.11 2011/08/01 19:44:30 javarias Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.12 2011/08/30 23:05:02 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
@@ -29,6 +29,7 @@ import java.util.Date;
 
 import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.CoordinatesUtil;
+import alma.scheduling.utils.ErrorHandling;
 /**
  * Calculates the system temperature (Tsys).
  * 
@@ -79,6 +80,24 @@ public class SystemTemperatureCalculator {
     public static double getTsys(double ra, double declination,
             double latitude, double frequency, double opacity,
             double atmBrightnessTemperature, Date ut) {
+    	return getTsys(ra, declination, latitude, frequency, opacity, atmBrightnessTemperature, ut, 270.0);
+    }
+	
+    /**
+     * Get system temperature (K).
+     * @param ra Right Ascension (degrees)
+     * @param declination Declination (degrees)
+     * @param latitude Latitude (degrees)
+     * @param frequency Frequency (GHz)
+     * @param opacity Opacity or optical depth (neper)
+     * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @param ut Time in Universal Time system
+     * @param Tamb ambient temperature (K)
+     * @return System temperature (K)
+     */
+    public static double getTsys(double ra, double declination,
+            double latitude, double frequency, double opacity,
+            double atmBrightnessTemperature, Date ut, double Tamb) {
         
     	// sinAltitud Calculation
         double latitudeRad = Math.toRadians(latitude);
@@ -98,15 +117,13 @@ public class SystemTemperatureCalculator {
         // Airmass
         double Airmass = 1.0 / sinAltitude;
 
-        // TODO Shouldn't this be the current temperature?
-        // TODO Replace for weather temperature
-        double Tamb = 270; // Ambient temperature (260 - 280 K) 
         double etaFeed = 0.95; // forward efficiency
         double Trx = getReceiverTemperature(frequency);
         
         double tauZero = opacity;
         double Tatm = atmBrightnessTemperature;
         double tau = tauZero * Airmass;
+        ErrorHandling.getInstance().debug("Opacity at source: " + tau);
         
         double Tant = getAntennaTemperature(frequency, etaFeed, Tamb, Tatm, tau);
         
@@ -137,10 +154,22 @@ public class SystemTemperatureCalculator {
     
     public static double getZenithTsys(double frequency, double opacity,
             double atmBrightnessTemperature) {
+    	return getZenithTsys(frequency, opacity, atmBrightnessTemperature, 270);
+    }
+    
+    /**
+     * Get zenith system temperature (K)
+     * 
+     * @param frequency Frequency (GHz)
+     * @param opacity Opacity or optical depth (neper)
+     * @param atmBrightnessTemperature Atmospheric brightness temperature (K)
+     * @param Tamb ambient temperature (K)
+     * @return System temperature (K)
+     */
+    
+    public static double getZenithTsys(double frequency, double opacity,
+            double atmBrightnessTemperature, double Tamb) {
     	double etaFeed = 0.95;
-    	// TODO Shouldn't this be the current temperature?
-        // TODO Replace for weather temperature
-        double Tamb = 270; // Ambient temperature (260 - 280 K)
     	double Trx = getReceiverTemperature(frequency);
         double tauZero = opacity;
         double Tatm = atmBrightnessTemperature;

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  * To get an instance of this class, use {@link ErrorHandling#getInstance()}
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.5 2011/08/12 17:03:39 javarias Exp $
+ * $Id: ErrorHandling.java,v 1.6 2011/08/30 23:05:00 javarias Exp $
  */
 public final class ErrorHandling {
 	/*
@@ -177,6 +177,35 @@ public final class ErrorHandling {
     }
     
     /**
+     * Put out an debug message to the Logger we're helping
+     * 
+     * @param message
+     */
+    public void trace(String message) {
+    	logger.log(Level.FINEST, message);
+    }
+    
+    /**
+     * Put out an debug message to the Logger we're helping
+     * 
+     * @param message
+     */
+    public void debug(String message) {
+    	logger.log(Level.FINER, message);
+    }
+    
+    /**
+     * Put out an debug message to the Logger we're helping and then
+     * quietly put out the stack trace of the given Throwable.
+     * 
+     * @param message
+     * @param t
+     */
+    public void debug(String message, Throwable t) {
+    	log(Level.FINER, message, Level.FINER, t);
+    }
+    
+    /**
      * Put out an info message to the Logger we're helping and then
      * quietly put out the stack trace of the given Throwable.
      * 
@@ -185,6 +214,10 @@ public final class ErrorHandling {
      */
     public void info(String message, Throwable t) {
     	log(Level.INFO, message, DetailsLevel, t);
+    }
+    
+    public void info(String message) {
+    	logger.log(Level.INFO, message);
     }
     
     /**

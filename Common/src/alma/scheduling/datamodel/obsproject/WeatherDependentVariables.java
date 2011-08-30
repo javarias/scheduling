@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherDependentVariables.java,v 1.3 2011/08/01 19:44:32 javarias Exp $"
+ * "@(#) $Id: WeatherDependentVariables.java,v 1.4 2011/08/30 23:05:00 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -52,7 +52,10 @@ public class WeatherDependentVariables implements Updateable {
     /** Opacity (nepers)*/
     Double opacity;
     
-    public WeatherDependentVariables() { }
+    /** Opacity at Zenith (nepers)*/
+    Double zenithOpacity;
+
+	public WeatherDependentVariables() { }
     
     @Override
     public Date getLastUpdate() {
@@ -112,5 +115,13 @@ public class WeatherDependentVariables implements Updateable {
 
 	public void setOpacity(Double opacity) {
 		this.opacity = opacity;
+	}
+    
+    public Double getZenithOpacity() {
+		return zenithOpacity;
+	}
+
+	public void setZenithOpacity(Double zenithOpacity) {
+		this.zenithOpacity = zenithOpacity;
 	}
 }

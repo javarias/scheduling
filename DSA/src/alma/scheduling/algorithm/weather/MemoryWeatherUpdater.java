@@ -5,9 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import alma.scheduling.algorithm.astro.SystemTemperatureCalculator;
 import alma.scheduling.algorithm.modelupd.ModelUpdater;
 import alma.scheduling.datamodel.obsproject.FieldSource;
@@ -16,13 +13,12 @@ import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.WeatherDependentVariables;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
+import alma.scheduling.utils.ErrorHandling;
 
 public class MemoryWeatherUpdater extends WeatherUpdater implements
         ModelUpdater {
 
     private HashMap<Date, PWV> cache;
-    
-    private static Logger logger = LoggerFactory.getLogger(MemoryWeatherUpdater.class);
     
     public MemoryWeatherUpdater(){
         super();
@@ -36,18 +32,18 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             return;
         lastUpdate = date;
         
-        logger.trace("entering");
-        logger.debug("updating for time " + date);
+        ErrorHandling.getInstance().trace("entering");
+        ErrorHandling.getInstance().debug("updating for time " + date);
         
         if(latitude == null)
             latitude = configDao.getConfiguration().getArrayCenterLatitude();
 
         // get current PWV
         TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-        logger.info("temperature record: time = " + tr.getTime() + "; value = "
+        ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
                 + tr.getValue());
         HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-        logger.info("humidity record: time = " + hr.getTime() + "; value = "
+        ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime() + "; value = "
                 + hr.getValue());
         double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
 
@@ -61,6 +57,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 
         for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
             SchedBlock sb = iter.next();
+            ErrorHandling.getInstance().debug("Calculations for SchedBlock: " + sb.getUid());
             double frequency = sb.getSchedulingConstraints()
                     .getRepresentativeFrequency(); // GHz
             Target target = sb.getSchedulingConstraints()
@@ -71,14 +68,15 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 
             double[] tmp = interpolateOpacityAndTemperature(pwv, frequency);
             double tau_zero = tmp[0];
+            ErrorHandling.getInstance().debug("Opacity at zenith: " + tau_zero);
             double Tatm = tmp[1];
             double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
                     latitude, frequency, tau_zero, Tatm, date);
-            logger.info("tsys: " + tsys);
+            ErrorHandling.getInstance().info("tsys: " + tsys);
 
             double zenithTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
             		tau_zero, Tatm);
-            logger.info("curr tsys: " + zenithTsys);
+            ErrorHandling.getInstance().info("curr tsys: " + zenithTsys);
             
             double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
 //            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
@@ -110,10 +108,10 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             System.out.println("Start Calculations");
             Date t1 = new Date();
             TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-            logger.info("temperature record: time = " + tr.getTime()
+            ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime()
                     + "; value = " + tr.getValue());
             HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-            logger.info("humidity record: time = " + hr.getTime()
+            ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime()
                     + "; value = " + hr.getValue());
             double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
 
@@ -148,11 +146,11 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         double Tatm = tmp[1];
         double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
                 latitude, frequency, tau_zero, Tatm, date);
-        logger.info("tsys: " + tsys);
+        ErrorHandling.getInstance().info("tsys: " + tsys);
 
         double currTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
         		tau_zero, Tatm);
-        logger.info("curr tsys: " + currTsys);
+        ErrorHandling.getInstance().info("curr tsys: " + currTsys);
         
         double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
         System.out.println("tau_zero:" + tau_zero + "; " + "tau: " + tau);
@@ -168,6 +166,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 //        vars.setProjectedTsys(ptsys);
 //        vars.setProjectionTimeIncr(projTimeIncr);
         vars.setOpacity(tau);
+        vars.setZenithOpacity(tau_zero);
         vars.setZenithTsys(currTsys);
         sb.setWeatherDependentVariables(vars);
         schedBlockDao.saveOrUpdate(sb);

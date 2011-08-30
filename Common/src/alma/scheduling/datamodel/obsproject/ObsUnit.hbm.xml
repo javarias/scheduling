@@ -86,6 +86,8 @@
      lazy="false" name="zenithTsys" type="double"/>
     <property column="WEATHER_VARS_OPACITY" generated="never"
      lazy="false" name="opacity" type="double"/>
+    <property column="WEATHER_VARS_ZENITH_OPACITY" generated="never"
+     lazy="false" name="zenithOpacity" type="double"/>
    </component>
    <component class="SchedBlockControl" name="schedBlockControl">
     <property column="SCHEDBLOCK_CTRL_LAST_UPDATE" generated="never"

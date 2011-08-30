@@ -62,7 +62,9 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
         System.out.println("time = " + ut.toString());
         System.out.println("longitude = " + longitude);
         /*
-         *         from SchedBlock sb where
+         *         from SchedBlock sb where 
+       sb.schedulingConstraints.representativeTarget.source.observability.alwaysVisible = true
+       or
        (sb.schedulingConstraints.representativeTarget.source.observability.risingTime <
         sb.schedulingConstraints.representativeTarget.source.observability.settingTime and
         sb.schedulingConstraints.representativeTarget.source.observability.risingTime < ? and
@@ -88,6 +90,7 @@ public class FieldSourceObservableSelector extends AbstractBaseSelector {
                 "s.observability.risingTime", "s.observability.settingTime"),
                 disj3);
         Criterion crit = Restrictions.or(conj1, crit2);
+        crit = Restrictions.or(Restrictions.eq("s.observability.alwaysVisible", true), crit);
         return crit;
     }
 

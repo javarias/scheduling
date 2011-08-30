@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherUpdater.java,v 1.17 2011/08/01 19:44:30 javarias Exp $"
+ * "@(#) $Id: WeatherUpdater.java,v 1.18 2011/08/30 23:05:01 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.AlgorithmPart;
@@ -50,6 +48,7 @@ import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
+import alma.scheduling.utils.ErrorHandling;
 
 /**
  * The WeatherUpdater calculates the current and projected Tsys (for a given
@@ -62,7 +61,6 @@ import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
  */
 public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
 
-    private static Logger logger = LoggerFactory.getLogger(WeatherUpdater.class);
     protected static Date lastUpdate = new Date(0);
     protected static Double latitude = null;
     
@@ -153,27 +151,27 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
             return;
         lastUpdate = date;
         
-        logger.trace("entering");
-        logger.debug("updating for time " + date);
+        ErrorHandling.getInstance().trace("entering");
+        ErrorHandling.getInstance().debug("updating for time " + date);
         
         double latitude = configDao.getConfiguration().getArrayCenterLatitude();
 
         // get current PWV
         TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-        logger.info("temperature record: time = " + tr.getTime() + "; value = "
+        ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime() + "; value = "
                 + tr.getValue());
         HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-        logger.info("humidity record: time = " + hr.getTime() + "; value = "
+        ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime() + "; value = "
                 + hr.getValue());
         double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
 
-        long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
+//        long deltaT = (long) (projTimeIncr * 3600.0 * 1000.0); // delta T in
                                                                // milliseconds
-        Date projDate = new Date(date.getTime() + deltaT);
-        TemperatureHistRecord ptr = weatherDao.getTemperatureForTime(projDate);
-        HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
-        double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected
-                                                                   // PWV, in mm
+//        Date projDate = new Date(date.getTime() + deltaT);
+//        TemperatureHistRecord ptr = weatherDao.getTemperatureForTime(projDate);
+//        HumidityHistRecord phr = weatherDao.getHumidityForTime(projDate);
+//        double ppwv = estimatePWV(phr.getValue(), ptr.getValue()); // projected
+//                                                                   // PWV, in mm
 
         for (Iterator<SchedBlock> iter = sbs.iterator(); iter.hasNext();) {
             SchedBlock sb = iter.next();
@@ -189,12 +187,12 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
             double tau_zero = tmp[0];
             double Tatm = tmp[1];
             double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
-                    latitude, frequency, tau_zero, Tatm, date);
-            logger.info("tsys: " + tsys);
+                    latitude, frequency, tau_zero, Tatm, date, tr.getValue() + 273.15); //conversion to Kelvin deg
+            ErrorHandling.getInstance().info("tsys: " + tsys);
 
             double currTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
-            		tau_zero, Tatm);
-            logger.info("curr tsys: " + currTsys);
+            		tau_zero, Tatm, tr.getValue() + 273.15); //conversion to Kelvin deg
+            ErrorHandling.getInstance().info("curr tsys: " + currTsys);
             
             double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
 //            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
@@ -238,10 +236,10 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         T_0 = temperature + 273.15;
         theta = 300.0/T_0;
         P_0 = 2.409E12 * humidity * Math.pow(theta, 4) * Math.exp(-22.64 * theta);
-        logger.debug("P_0 = " + P_0);
+        ErrorHandling.getInstance().debug("P_0 = " + P_0);
         
         h = ( m_w * P_0 * H ) / ( rho_l * k * T_0 );
-        logger.debug("h = " + h);
+        ErrorHandling.getInstance().debug("h = " + h);
         return h * 1E3; // in mm
     }
 
@@ -259,33 +257,33 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
      */
     protected double[] interpolateOpacityAndTemperature(double pwv, double freq) {
         double[] retVal = new double[2];
-        logger.debug("pwv: " + pwv);
-        logger.debug("freq: " + freq);
+        ErrorHandling.getInstance().debug("pwv: " + pwv);
+        ErrorHandling.getInstance().debug("freq: " + freq);
         // First get the PWV interval
         Double[] pwvInterval = dao.getEnclosingPwvInterval(pwv);
-        logger.debug("pwv lower bound: " + pwvInterval[0]);
-        logger.debug("pwv upper bound: " + pwvInterval[1]);
+        ErrorHandling.getInstance().debug("pwv lower bound: " + pwvInterval[0]);
+        ErrorHandling.getInstance().debug("pwv upper bound: " + pwvInterval[1]);
         // For the PWV lower bound, interpolate opacity and temperature as functions of frequency
         AtmParameters[] atm;
         atm = dao.getEnclosingIntervalForPwvAndFreq(pwvInterval[0], freq);
-        logger.debug("freq lower bound: " + atm[0].getFreq());
-        logger.debug("freq upper bound: " + atm[1].getFreq());
+        ErrorHandling.getInstance().debug("freq lower bound: " + atm[0].getFreq());
+        ErrorHandling.getInstance().debug("freq upper bound: " + atm[1].getFreq());
         
         double interpOpacity1 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getOpacity(), atm[1].getOpacity());
-        logger.debug("interpolated opacity 1: " + interpOpacity1);
+        ErrorHandling.getInstance().debug("interpolated opacity 1: " + interpOpacity1);
         double interpTemp1 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getAtmBrightnessTemp(), atm[1].getAtmBrightnessTemp());
-        logger.debug("interpolated temperature 1: " + interpTemp1);
+        ErrorHandling.getInstance().debug("interpolated temperature 1: " + interpTemp1);
         
         // For the PWV upper bound, interpolate opacity and temperature as functions of frequency
         atm = dao.getEnclosingIntervalForPwvAndFreq(pwvInterval[1], freq);
         double interpOpacity2 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getOpacity(), atm[1].getOpacity());
-        logger.debug("interpolated opacity 2: " + interpOpacity2);
+        ErrorHandling.getInstance().debug("interpolated opacity 2: " + interpOpacity2);
         double interpTemp2 = interpolate(freq, atm[0].getFreq(), atm[1].getFreq(),
                 atm[0].getAtmBrightnessTemp(), atm[1].getAtmBrightnessTemp());
-        logger.debug("interpolated temperature 2: " + interpTemp2);
+        ErrorHandling.getInstance().debug("interpolated temperature 2: " + interpTemp2);
         
         // Finally, interpolate opacity and temperature again as functions of PWV.
         // Do this only if the PWV's are different, if not just return the first interpolated
@@ -293,10 +291,10 @@ public class WeatherUpdater implements ModelUpdater, AlgorithmPart {
         if (pwvInterval[0] != pwvInterval[1]) {
             double finalOpacity = interpolate(pwv, pwvInterval[0], pwvInterval[1],
                     interpOpacity1, interpOpacity2);
-            logger.debug("final opacity: " + finalOpacity);
+            ErrorHandling.getInstance().debug("final opacity: " + finalOpacity);
             double finalTemp = interpolate(pwv, pwvInterval[0], pwvInterval[1],
                     interpTemp1, interpTemp2);
-            logger.debug("final temperature: " + finalTemp);
+            ErrorHandling.getInstance().debug("final temperature: " + finalTemp);
             retVal[0] = finalOpacity;
             retVal[1] = finalTemp;
         } else {

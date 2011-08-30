@@ -31,10 +31,7 @@ public class OpacitySelector extends AbstractBaseSelector {
 
 	@Override
 	public boolean canBeSelected(SchedBlock sb) {
-		/*TODO: What opacity should we use? (at zenith or at source)
-		 * Currently we are using opacity at source for this
-		 */
-		double opacity = sb.getWeatherDependentVariables().getOpacity();
+		double opacity = sb.getWeatherDependentVariables().getZenithOpacity();
         double frequency = sb.getSchedulingConstraints()
                 .getRepresentativeFrequency(); // GHz
         if (frequency > 370.0){
