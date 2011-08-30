@@ -48,8 +48,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
-import org.python.modules.newmodule;
-
 import alma.Control.CorrelatorType;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.common.gui.chessboard.ChessboardEntry;
