@@ -21,6 +21,7 @@ package alma.scheduling.array.compimpl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import alma.ACS.ComponentStates;
@@ -39,6 +40,7 @@ import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
+import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.array.executor.ExecutionContext;
 import alma.scheduling.array.executor.Executor;
 import alma.scheduling.array.executor.ExecutorCallbackNotifier;
@@ -218,6 +220,15 @@ public class ArrayImpl implements ComponentLifecycle,
         logger.finest("cleanUp() called");
         serviceProvider.getControlEventReceiver().end();
         serviceProvider.cleanUp();
+        try {
+        	//The policy file must be unlocked before the array is destroyed
+        	if(schedulingPolicy.startsWith("uuid")) {
+        		String fileUUID = schedulingPolicy.substring(4, 41);
+        		PoliciesContainersDirectory.getInstance().unlockPolicyContainer(UUID.fromString(fileUUID));
+        	}
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
     }
 
     public void aboutToAbort() {

@@ -79,7 +79,7 @@ public class DynamicSchedulingPolicyFactory {
 	}
 	
 	public synchronized void removePolicies(PoliciesContainer container) {
-		final String prefix = "uuid" + container.getUuid();
+		final String prefix = "uuid" + container.getUuid() + "-";
 		for (String policy: container.getPolicies()) {
 			ctx.removeBeanDefinition(prefix + policy);
 			ctx.removeBeanDefinition(prefix + "preUpdateSelector_" + policy);

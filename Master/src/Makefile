@@ -1,7 +1,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.4 2011/02/07 17:44:06 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.5 2011/08/30 22:25:48 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -130,7 +130,7 @@ JARFILES := SchedulingMasterGUI
 SchedulingMasterImpl_DIRS := alma/scheduling/master/compimpl alma/schedulingmaster/compimpl
 jjj_EXTRAS= 
 
-SchedulingMasterGUI_DIRS := alma/scheduling/master/gui
+SchedulingMasterGUI_DIRS := alma/scheduling/master/gui alma/scheduling/master/util
 #
 # java sources in Jarfile on/off
 DEBUG= 

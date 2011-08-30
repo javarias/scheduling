@@ -307,7 +307,7 @@ public class MasterImpl implements ComponentLifecycle,
 	}
 
 	@Override
-	public void destroyArray(String arrayName, String name, String role) throws ACSInternalExceptionEx,
+	public synchronized void destroyArray(String arrayName, String name, String role) throws ACSInternalExceptionEx,
 			ControlInternalExceptionEx, SchedulingInternalExceptionEx{
 		Object obj = null;
 		String schedArrayName = null;
@@ -490,6 +490,12 @@ public class MasterImpl implements ComponentLifecycle,
 		array.configure(arrayName, 
 				convertToArraySchedulerMode(schedulingMode),lifecycleType);
 		if (schedulingMode == ArrayModeEnum.DYNAMIC) {
+			//If the policy name doesn't start with uuid that means that it is a system policy
+			if(policyName.startsWith("uuid")) {
+				//Lock the file for non system policies
+				String fileUUID = policyName.substring(4, 41);
+				PoliciesContainersDirectory.getInstance().lockPolicyContainer(UUID.fromString(fileUUID));
+			}
 			array.configureDynamicScheduler(policyName);
 		}
 		return array;
@@ -747,7 +753,6 @@ public class MasterImpl implements ComponentLifecycle,
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
 			e.toSchedulingInternalExceptionEx();
 		}
-		
 		removeSchedulingPolicies(fileUUID);
 		PoliciesContainer container = 
 				DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(hostname, filePath, springCtxXml);

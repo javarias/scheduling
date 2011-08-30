@@ -48,6 +48,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
+import org.python.modules.newmodule;
+
 import alma.Control.CorrelatorType;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.common.gui.chessboard.ChessboardEntry;
@@ -56,7 +58,9 @@ import alma.common.gui.chessboard.ChessboardStatusEvent;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Master;
+import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.array.guis.ArrayPanel;
+import alma.scheduling.master.util.SchedulingPolicyWrapper;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
@@ -336,10 +340,12 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     }
     
     private JPanel createPolicyComponent() {
-    	final Vector<String> policies = new Vector<String>();
-//    	for (String policyName: master.getSchedulingPolicies()) {
-//    		policies.add(policyName);
-//    	}
+    	final Vector<SchedulingPolicyWrapper> policies = new Vector<SchedulingPolicyWrapper>();
+    	for (SchedulingPolicyFile policiesFile: master.getSchedulingPolicies()) {
+    		for (String policy: policiesFile.schedulingPolicies) {
+    			policies.add(new SchedulingPolicyWrapper(policiesFile, policy));
+    		}
+    	}
 //    	final Vector<String> policies = new Vector<String>();
     	    	
     	schedulingPolicy = new JComboBox(policies);
@@ -586,7 +592,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	CorrelatorType correlator = getCorrelatorType();
     	logger.info(String.format("The selected correlator is: %s",
     			correlator));
-    	String policy = getPolicy();
+    	String policy = getPolicy().getSpringBeanName();
     	logger.info(String.format("The selected scheduling policy is: %s",
     			policy));
 
@@ -649,15 +655,15 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	return result;
     }
     
-    private String getPolicy() {
-    	String result;
+    private SchedulingPolicyWrapper getPolicy() {
+    	SchedulingPolicyWrapper result;
     	if (schedulingPolicy.isEnabled()) {
-        	result = (String)schedulingPolicy.getSelectedItem();
+        	result = (SchedulingPolicyWrapper)schedulingPolicy.getSelectedItem();
         	if (result == null) {
-        		result = "<null>";
+        		result = null;
         	}
     	} else {
-    		result = "<none>";
+    		result = null;
     	}
     	return result;
     }
