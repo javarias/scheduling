@@ -3,6 +3,8 @@ package alma.scheduling.algorithm;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 
@@ -59,6 +61,7 @@ public class PoliciesContainersDirectory extends ConcurrentHashMap<UUID, Policie
 
 	/**
 	 * @throws PoliciesContainerLockedException if the Policies container to be removed is locked
+	 * @throws UnexpectedException if there is a problem with the deletion of the spring beans
 	 */
 	@Override
 	public PoliciesContainer remove(Object key) {
@@ -67,7 +70,11 @@ public class PoliciesContainersDirectory extends ConcurrentHashMap<UUID, Policie
 				throw new PoliciesContainerLockedException(this.get(key)
 						.getUuid());
 			}
-			DynamicSchedulingPolicyFactory.getInstance().removePolicies(this.get(key));
+			try {
+				DynamicSchedulingPolicyFactory.getInstance().removePolicies(this.get(key));
+			} catch (NoSuchBeanDefinitionException ex) {
+				throw new UnexpectedException(this.get(key).getUuid(), ex);
+			}
 			return super.remove(key);
 		}
 	}
@@ -116,6 +123,20 @@ public class PoliciesContainersDirectory extends ConcurrentHashMap<UUID, Policie
 		
 		public PoliciesContainerLockedException(UUID containerUuid) {
 			super("Policies container UUID: " + containerUuid.toString() + " is locked and it cannot be deleted");
+		}
+	}
+	
+	public class UnexpectedException extends RuntimeException {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6506424755783855552L;
+		
+		
+		public UnexpectedException(UUID containerUuid, Throwable cause) {
+			super("Policies container UUID: " + containerUuid.toString() + 
+					" cannot be deleted" , cause);
 		}
 	}
 }

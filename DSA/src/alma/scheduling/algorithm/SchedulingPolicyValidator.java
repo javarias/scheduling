@@ -75,10 +75,10 @@ public class SchedulingPolicyValidator {
 		}
 	}
 	
-	public static String convertPolicyString(String policyXML) {
+	public static String convertPolicyString(String policyXML) throws TransformerException {
 		SchedulingPolicyValidator validator = new SchedulingPolicyValidator();
 		validator.validate(new StreamSource(new ByteArrayInputStream(policyXML.getBytes())));
-		try {
+//		try {
 			Transformer transformer = validator.tFactory.newTransformer(new StreamSource(validator.xslURL.toString()));
 			StreamResult res = new StreamResult();
 			StringWriter writer = new StringWriter();
@@ -87,17 +87,17 @@ public class SchedulingPolicyValidator {
 			String xmlString = writer.getBuffer().toString();
 			System.out.println(xmlString);
 			return xmlString;
-		} catch (TransformerConfigurationException e) {
-			System.out.println("FAILED.");
-			System.out.println("Reason: " + e.getMessage());
-			e.printStackTrace();
-			return null;
-		} catch (TransformerException e) {
-			System.out.println("FAILED.");
-			System.out.println("Reason: " + e.getMessage());
-			e.printStackTrace();
-			return null;
-		}
+//		} catch (TransformerConfigurationException e) {
+//			System.out.println("FAILED.");
+//			System.out.println("Reason: " + e.getMessage());
+//			e.printStackTrace();
+//			return null;
+//		} catch (TransformerException e) {
+//			System.out.println("FAILED.");
+//			System.out.println("Reason: " + e.getMessage());
+//			e.printStackTrace();
+//			return null;
+//		}
 	}
 	
 	private void loadContext(String file) {

@@ -19,8 +19,11 @@
 package alma.scheduling.master.compimpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+
+import javax.xml.transform.TransformerException;
 
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
@@ -76,7 +79,9 @@ import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
 import alma.scheduling.SchedBlockQueueItem;
 import alma.scheduling.SchedulingPolicyFile;
+import alma.scheduling.algorithm.PoliciesContainer;
 import alma.scheduling.algorithm.PoliciesContainersDirectory;
+import alma.scheduling.algorithm.PoliciesContainersDirectory.PoliciesContainerLockedException;
 import alma.scheduling.algorithm.SchedulingPolicyValidator;
 import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
@@ -673,16 +678,50 @@ public class MasterImpl implements ComponentLifecycle,
 //	}
 
 	@Override
-	public void removeSchedulingPolicies(String fileUUID) throws alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx {
-		PoliciesContainersDirectory.getInstance().remove(UUID.fromString(fileUUID));
+	public synchronized void removeSchedulingPolicies(String fileUUID) throws alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx {
+		try {
+			m_logger.info("Trying to remove scheduling policies in file: "  + fileUUID);
+			operatorLog.info("Trying to remove scheduling policies in file: "  + fileUUID);
+			PoliciesContainersDirectory.getInstance().remove(UUID.fromString(fileUUID));
+			m_logger.info("Successfully removed the scheduling policies in file: " + fileUUID);
+			operatorLog.info("Successfully removed the scheduling policies in file: "  + fileUUID);
+		} catch (PoliciesContainerLockedException ex) {
+			m_logger.warning("Unable to remove scheduling policies in the file. Reason: " + ex.getMessage());
+			operatorLog.warning("Unable to remove scheduling policies in the file. Reason: " + ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+			e.toSchedulingInternalExceptionEx();
+		} catch (alma.scheduling.algorithm.PoliciesContainersDirectory.UnexpectedException ex) {
+			m_logger.warning("Unable to remove scheduling policies in the file. Reason: " + ex.getMessage());
+			operatorLog.warning("Unable to remove scheduling policies in the file. Reason: " + ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+			e.toSchedulingInternalExceptionEx();
+		}
 		
 	}
 
 	@Override
-	public void addSchedulingPolicies(String hostname, String filePath,
-			String xmlString) {
-		String springCtxXml = SchedulingPolicyValidator.convertPolicyString(xmlString);
-		DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(hostname, filePath, springCtxXml);
+	public synchronized void addSchedulingPolicies(String hostname, String filePath,
+			String xmlString) throws alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx {
+		m_logger.info("Adding new Scheduling Policies from: " + hostname + ":" + filePath);
+		operatorLog.info("Adding new Scheduling Policies from: " + hostname + ":" + filePath);
+		String springCtxXml = null;
+		try {
+			springCtxXml = SchedulingPolicyValidator.convertPolicyString(xmlString);
+		} catch (TransformerException ex) {
+			m_logger.warning("Unable to add scheduling policies in the file. Reason: " + ex.getMessage());
+			operatorLog.warning("Unable to add scheduling policies in the file. Reason: " + ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+			e.toSchedulingInternalExceptionEx();
+		}
+		PoliciesContainer container = 
+				DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(hostname, filePath, springCtxXml);
+		m_logger.info("New Policies file loaded successfully (" + 
+				hostname + ":" + filePath + ") : " + 
+				Arrays.toString(container.getPoliciesAsArray()));
+		operatorLog.info("New Policies file loaded successfully (" + 
+				hostname + ":" + filePath + ") : " + 
+				Arrays.toString(container.getPoliciesAsArray()));
+		
 	}
 
 	@Override
@@ -691,9 +730,32 @@ public class MasterImpl implements ComponentLifecycle,
 	}
 
 	@Override
-	public void refreshSchedulingPolicies(String fileUUID, String hostname,
-			String filePath, String xmlString) {
-		// TODO Auto-generated method stub
+	public synchronized void refreshSchedulingPolicies(String fileUUID, String hostname,
+			String filePath, String xmlString) throws alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx{
+		m_logger.info("Refreshing Scheduling Policies: " + hostname + ":" + filePath);
+		operatorLog.info("Refreshing Scheduling Policies: " + hostname + ":" + filePath);
+		String springCtxXml = null;
+		try {
+			m_logger.info("Validating file: " + hostname + ":" + filePath);
+			operatorLog.info("Validating file: " + hostname + ":" + filePath);
+			springCtxXml = SchedulingPolicyValidator.convertPolicyString(xmlString);
+			m_logger.info("Validation Successful");
+			operatorLog.info("Validation Successful");
+		} catch (TransformerException ex) {
+			m_logger.warning("Validation failed. Reason: " + ex.getMessage());
+			operatorLog.warning("Validation failed. Reason: " + ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+			e.toSchedulingInternalExceptionEx();
+		}
 		
+		removeSchedulingPolicies(fileUUID);
+		PoliciesContainer container = 
+				DynamicSchedulingPolicyFactory.getInstance().createDSAPolicyBeans(hostname, filePath, springCtxXml);
+		m_logger.info("File refresh successfull (" + 
+				hostname + ":" + filePath + ") : " + 
+				Arrays.toString(container.getPoliciesAsArray()));
+		operatorLog.info("File refresh successfull (" + 
+				hostname + ":" + filePath + ") : " + 
+				Arrays.toString(container.getPoliciesAsArray()));
 	}
 }

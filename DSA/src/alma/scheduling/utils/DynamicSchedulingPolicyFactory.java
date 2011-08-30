@@ -81,21 +81,9 @@ public class DynamicSchedulingPolicyFactory {
 	public synchronized void removePolicies(PoliciesContainer container) {
 		final String prefix = "uuid" + container.getUuid();
 		for (String policy: container.getPolicies()) {
-			try {
-				ctx.removeBeanDefinition(prefix + policy);
-			} catch (NoSuchBeanDefinitionException ex) {
-				//Bean not registered... continue
-			}
-			try {
+			ctx.removeBeanDefinition(prefix + policy);
 			ctx.removeBeanDefinition(prefix + "preUpdateSelector_" + policy);
-			} catch (NoSuchBeanDefinitionException ex) {
-				//Bean not registered... continue
-			}
-			try {
 			ctx.removeBeanDefinition(prefix + "postUpdateSelectorAndUpdater_" + policy);
-			} catch (NoSuchBeanDefinitionException ex) {
-				//Bean not registered... continue
-			}
 			try {
 				ctx.removeBeanDefinition(prefix + "weatherTsysSelector_" + policy);
 			} catch (NoSuchBeanDefinitionException ex) {
