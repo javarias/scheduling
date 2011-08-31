@@ -778,7 +778,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     			policies.add(new SchedulingPolicyWrapper(policiesFile, policy));
     		}
     	}
-    	if (schedulingPolicy != null && schedulingPolicy.isEnabled()) {
+    	if (schedulingPolicy != null ) {
     		schedulingPolicy.removeAllItems();
     		for (SchedulingPolicyWrapper policy: policies)
     			schedulingPolicy.addItem(policy);
