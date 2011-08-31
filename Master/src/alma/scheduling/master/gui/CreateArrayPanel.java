@@ -731,7 +731,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     
     class LOActionListener implements ActionListener {
         public void actionPerformed(ActionEvent ev) {
-          String choice = photonicsGroup.getSelection().getActionCommand();
+//          String choice = photonicsGroup.getSelection().getActionCommand();
           photonicsGroup.getSelection().setSelected(false);
           //System.out.println("ACTION Choice Selected: " + choice);
         }

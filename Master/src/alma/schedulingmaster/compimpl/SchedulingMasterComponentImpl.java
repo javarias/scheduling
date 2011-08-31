@@ -38,7 +38,7 @@ import alma.scheduling.SchedulingStateEvent;
 /**
   *
   * @author Jorge Avarias <javarias[at]nrao.edu>
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.2 2011/01/28 00:35:38 javarias Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.3 2011/08/31 19:50:07 javarias Exp $
   */
 //TODO: Start archive poller
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
@@ -46,7 +46,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     
 
     private Master masterScheduler;
-    private ArchiveUpdater archiveUpdater;
+//    private ArchiveUpdater archiveUpdater;
     
     private SimpleSupplier nc;
     /**

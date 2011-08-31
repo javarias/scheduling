@@ -47,7 +47,7 @@ public class SchedTabUI extends BasicTabbedPaneUI {
     protected static final int BUTTONSIZE = 12;
     protected static final int WIDTHDELTA = 3;
     private BufferedImage img;
-    private BufferedImage img1;
+//    private BufferedImage img1;
     private JButton closeB;
     private int overTabIndex = -1;
     private boolean mousePressed = false;
@@ -79,7 +79,7 @@ public class SchedTabUI extends BasicTabbedPaneUI {
             Rectangle iconRect, Rectangle textRect, boolean isSelected) {
 
         textRect.x = textRect.y = iconRect.x = iconRect.y = 0;
-        View v = getTextViewForTab(tabIndex);
+//        View v = getTextViewForTab(tabIndex);
         SwingUtilities.layoutCompoundLabel((JComponent) tabPane, metrics,
                 title, icon, SwingUtilities.CENTER, SwingUtilities.LEFT,
                 SwingUtilities.CENTER, SwingUtilities.CENTER, tabRect,

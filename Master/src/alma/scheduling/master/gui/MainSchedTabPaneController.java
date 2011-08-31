@@ -69,7 +69,7 @@ public class MainSchedTabPaneController extends SchedulingPanelController{
         try {
             res = control.getAvailableAntennas();
         } catch(Exception e){
-            res[0] = new String("Problem getting antennas from control: "+e.toString());
+            res[0] = "Problem getting antennas from control: "+e.toString();
             logger.severe("SCHEDULING_PANEL: Problem getting antennas from control - "+e.toString());
             e.printStackTrace();
         }

@@ -533,7 +533,7 @@ public class MasterImpl implements ComponentLifecycle,
 		
 	}
 	
-	void setControlMaster(ControlMaster controlComp) {
+	synchronized void setControlMaster(ControlMaster controlComp) {
 		controlMaster = controlComp;
 	}
 	
