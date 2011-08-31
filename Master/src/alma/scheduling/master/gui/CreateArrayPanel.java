@@ -32,6 +32,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -62,7 +64,7 @@ import alma.scheduling.master.util.SchedulingPolicyWrapper;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
-public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
+public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements PolicyChangeListener{
 
     private String[] availableAntennas;
     private Vector<String> allArrays;
@@ -127,6 +129,19 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
         createALMAAntennaChessboards();
         add(chessboardPanel, BorderLayout.CENTER);
         setEnabled(false);
+        
+        PolicyChangeCallbackImpl callback = new PolicyChangeCallbackImpl(this);
+        try {
+			cs.activateOffShoot(callback);
+			master.addMonitorPolicy(InetAddress.getLocalHost().getHostName() + "_"
+					+ this.toString() + "_"
+					+ System.currentTimeMillis(), callback._this());
+		} catch (AcsJContainerServicesEx e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			master.addMonitorPolicy(this.toString() + "_"
+					+ System.currentTimeMillis(), callback._this());
+		}
     }
 
     protected void initializeChessboards() {
@@ -749,6 +764,26 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel {
     	}
     	
     }
+
+	@Override
+	public void refreshPolyList() {
+		refreshComboBoxPolicies();
+		
+	}
+	
+	private synchronized void refreshComboBoxPolicies() {
+    	final Vector<SchedulingPolicyWrapper> policies = new Vector<SchedulingPolicyWrapper>();
+    	for (SchedulingPolicyFile policiesFile: master.getSchedulingPolicies()) {
+    		for (String policy: policiesFile.schedulingPolicies) {
+    			policies.add(new SchedulingPolicyWrapper(policiesFile, policy));
+    		}
+    	}
+    	if (schedulingPolicy != null && schedulingPolicy.isEnabled()) {
+    		schedulingPolicy.removeAllItems();
+    		for (SchedulingPolicyWrapper policy: policies)
+    			schedulingPolicy.addItem(policy);
+    	}
+	}
 
 }
 

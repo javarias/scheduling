@@ -123,7 +123,6 @@ public class CreateArrayController extends SchedulingPanelController {
         try{
             getControlRef();
             antennas= control.getAvailableAntennas();
-            releaseControlRef();
         } catch(Exception e){
             logger.severe("SCHEDULING_PANEL: Control not accessible yet. Try again when its opeational");
             e.printStackTrace();

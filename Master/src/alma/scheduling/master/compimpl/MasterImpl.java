@@ -74,6 +74,8 @@ import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
 import alma.scheduling.ArrayStatusCallback;
 import alma.scheduling.MasterOperations;
+import alma.scheduling.PolicyChangeCallback;
+import alma.scheduling.PolicyEvent;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockQueueCallback;
@@ -98,8 +100,9 @@ public class MasterImpl implements ComponentLifecycle,
     private AcsLogger m_logger;
     private AudienceFlogger operatorLog;
     private ControlMaster controlMaster;
-    private HashMap<String, ArrayModeEnum> activeArrays;
-    private HashMap<String, ArrayStatusCallback> callbacks;
+    private final HashMap<String, ArrayModeEnum> activeArrays;
+    private final HashMap<String, ArrayStatusCallback> arrayCallbacks;
+    private final HashMap<String, PolicyChangeCallback> policyCallbacks;
     private CurrentWeather weatherComp;
 	
     /////////////////////////////////////////////////////////////
@@ -120,7 +123,8 @@ public class MasterImpl implements ComponentLifecycle,
 
     public MasterImpl(){
     	activeArrays = new HashMap<String, ArrayModeEnum>();
-    	callbacks =  new HashMap<String, ArrayStatusCallback>();
+    	arrayCallbacks =  new HashMap<String, ArrayStatusCallback>();
+    	policyCallbacks =  new HashMap<String, PolicyChangeCallback>();
     }
     
     public void initialize(ContainerServices containerServices) {
@@ -185,7 +189,6 @@ public class MasterImpl implements ComponentLifecycle,
 				operatorLog.warning("Cannot destroy %s - Scheduling internal error", arrayName);
 			}
     	}
-    	activeArrays = null;
         m_logger.finest("cleanUp() called");
     }
 
@@ -290,16 +293,16 @@ public class MasterImpl implements ComponentLifecycle,
 		
 		//Notify to the callbacks
 		ArrayList<String> toBeDeleted =  new ArrayList<String>();
-		for (String key: callbacks.keySet()){
+		for (String key: arrayCallbacks.keySet()){
 			try {
-				callbacks.get(key).report(ArrayEvent.CREATION, schedulingMode, arrayInfo.arrayId);
+				arrayCallbacks.get(key).report(ArrayEvent.CREATION, schedulingMode, arrayInfo.arrayId);
 			} catch (org.omg.CORBA.SystemException e) {
-				m_logger.warning("Forcing release of callback " + key + ". Callback is not responding");
+				m_logger.fine("Forcing release of callback " + key + ". Callback is not responding");
 				toBeDeleted.add(key);
 			}
 		}
 		for (String key: toBeDeleted)
-			callbacks.remove(key);
+			arrayCallbacks.remove(key);
 		
 		operatorLog.info("Created %s", arrayName);
 
@@ -352,20 +355,20 @@ public class MasterImpl implements ComponentLifecycle,
 		
 		//Notify to the callbacks
 		ArrayList<String> toBeDeleted =  new ArrayList<String>();
-		for (String key: callbacks.keySet()){
+		for (String key: arrayCallbacks.keySet()){
 			try {
 				try {
-					callbacks.get(key).report(ArrayEvent.DESTRUCTION, getSchedulerModeForArray(arrayName), arrayName);
+					arrayCallbacks.get(key).report(ArrayEvent.DESTRUCTION, getSchedulerModeForArray(arrayName), arrayName);
 				} catch (ArrayNotFoundExceptionEx e) {
-					//This exception should not be throw
+					//This exception should not be thrown
 				}
 			} catch (org.omg.CORBA.SystemException e) {
-				m_logger.warning("Forcing release of callback " + key + ". Callback is not responding");
+				m_logger.fine("Forcing release of callback " + key + ". Callback is not responding");
 				toBeDeleted.add(key);
 			}
 		}
 		for (String key: toBeDeleted)
-			callbacks.remove(key);
+			arrayCallbacks.remove(key);
 		
 		try {
 			m_logger.finest("About to release CONTROL Array");
@@ -552,13 +555,13 @@ public class MasterImpl implements ComponentLifecycle,
 	@Override
 	public void addMonitorMaster(String monitorName,
 			ArrayStatusCallback callback) {
-		callbacks.put(monitorName, callback);
+		arrayCallbacks.put(monitorName, callback);
 		
 	}
 
 	@Override
 	public void removeMonitorQueue(String monitorName) {
-		callbacks.remove(monitorName);
+		arrayCallbacks.remove(monitorName);
 		
 	}
 
@@ -703,6 +706,18 @@ public class MasterImpl implements ComponentLifecycle,
 			e.toSchedulingInternalExceptionEx();
 		}
 		
+		ArrayList<String> toBeDeleted = new ArrayList<String>();
+		for (String key : policyCallbacks.keySet()) {
+			try {
+				policyCallbacks.get(key).report(PolicyEvent.CHANGE);
+			} catch (org.omg.CORBA.SystemException e) {
+				m_logger.fine("Forcing release of callback " + key
+						+ ". Callback is not responding");
+				toBeDeleted.add(key);
+			}
+		}
+		for (String key : toBeDeleted)
+			arrayCallbacks.remove(key);
 	}
 
 	@Override
@@ -728,6 +743,18 @@ public class MasterImpl implements ComponentLifecycle,
 				hostname + ":" + filePath + ") : " + 
 				Arrays.toString(container.getPoliciesAsArray()));
 		
+		ArrayList<String> toBeDeleted = new ArrayList<String>();
+		for (String key : policyCallbacks.keySet()) {
+			try {
+				policyCallbacks.get(key).report(PolicyEvent.CHANGE);
+			} catch (org.omg.CORBA.SystemException e) {
+				m_logger.fine("Forcing release of callback " + key
+						+ ". Callback is not responding");
+				toBeDeleted.add(key);
+			}
+		}
+		for (String key : toBeDeleted)
+			arrayCallbacks.remove(key);
 	}
 
 	@Override
@@ -762,5 +789,31 @@ public class MasterImpl implements ComponentLifecycle,
 		operatorLog.info("File refresh successfull (" + 
 				hostname + ":" + filePath + ") : " + 
 				Arrays.toString(container.getPoliciesAsArray()));
+		
+		ArrayList<String> toBeDeleted = new ArrayList<String>();
+		for (String key : policyCallbacks.keySet()) {
+			try {
+				policyCallbacks.get(key).report(PolicyEvent.CHANGE);
+			} catch (org.omg.CORBA.SystemException e) {
+				m_logger.fine("Forcing release of callback " + key
+						+ ". Callback is not responding");
+				toBeDeleted.add(key);
+			}
+		}
+		for (String key : toBeDeleted)
+			arrayCallbacks.remove(key);
+	}
+
+	@Override
+	public void addMonitorPolicy(String monitorName,
+			PolicyChangeCallback callback) {
+		policyCallbacks.put(monitorName, callback);
+		
+	}
+
+	@Override
+	public void removeMonitorPolicy(String monitorName) {
+		policyCallbacks.remove(monitorName);
+		
 	}
 }
