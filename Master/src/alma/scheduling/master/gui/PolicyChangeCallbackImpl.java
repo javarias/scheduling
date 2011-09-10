@@ -13,7 +13,7 @@ public class PolicyChangeCallbackImpl extends PolicyChangeCallbackPOA{
 	
 	@Override
 	public void report(PolicyEvent operation) {
-		listener.refreshPolyList();
+		listener.refreshPolicyList();
 	}
 
 }

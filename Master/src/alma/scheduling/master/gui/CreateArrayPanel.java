@@ -43,6 +43,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -60,6 +61,7 @@ import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.array.guis.ArrayPanel;
+import alma.scheduling.master.gui.policy.PolicyManagementPanel;
 import alma.scheduling.master.util.SchedulingPolicyWrapper;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
@@ -363,10 +365,23 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     	    	
     	schedulingPolicy = new JComboBox(policies);
     	final JLabel    label = new JLabel("Scheduling Policy");
-    	
+    	JButton testPolicyTree =  new JButton("Test Tree");
+    	testPolicyTree.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame frame = new JFrame();
+				PolicyManagementPanel panel = new PolicyManagementPanel(master);
+				frame.getContentPane().add(panel);
+				frame.pack();
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				frame.setVisible(true);
+			}
+		});
     	JPanel result = new JPanel();
     	result.add(label);
     	result.add(schedulingPolicy);
+    	result.add(testPolicyTree);
     	setPolicyEnabled(false);
     	
     	return result;
@@ -766,7 +781,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     }
 
 	@Override
-	public void refreshPolyList() {
+	public void refreshPolicyList() {
 		refreshComboBoxPolicies();
 		
 	}
