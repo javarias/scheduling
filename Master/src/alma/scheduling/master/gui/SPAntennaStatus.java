@@ -3,6 +3,7 @@ package alma.scheduling.master.gui;
 import java.awt.Color;
 
 import alma.common.gui.chessboard.ChessboardStatus;
+import alma.common.gui.standards.StandardColors;
 
 public class SPAntennaStatus implements ChessboardStatus {
 	private static final String ONLINE_STRING = "ANT_ONLINE";
@@ -27,10 +28,10 @@ public class SPAntennaStatus implements ChessboardStatus {
         this.fgColor = Color.black;
 		// configure the status with proper colors and/or flashing attributes
 		if(description.equals(ONLINE_STRING)) {
-			this.bgColor = Color.green;
+			this.bgColor = StandardColors.STATUS_OKAY_BG.color;
 		    this.isSelectable = true;
 		} else if(description.equals(OFFLINE_STRING)) {
-			this.bgColor = Color.lightGray;
+			this.bgColor = StandardColors.STATUS_UNAVAILABLE_BG.color;
 		    this.isSelectable = false;
 		} 
 	}
