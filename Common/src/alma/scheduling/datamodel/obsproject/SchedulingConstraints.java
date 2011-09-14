@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedulingConstraints.java,v 1.3 2011/08/16 17:20:43 dclarke Exp $"
+ * "@(#) $Id: SchedulingConstraints.java,v 1.4 2011/09/14 22:09:15 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -37,8 +37,10 @@ public class SchedulingConstraints {
     private Integer representativeBand;
     
     private Target representativeTarget;
+    
+    private SchedBlockMode schedBlockMode;
 
-    public SchedulingConstraints() { }
+	public SchedulingConstraints() { }
     
     public SchedulingConstraints(Double maxAngularResolution,
             Double representativeFrequency,
@@ -80,4 +82,11 @@ public class SchedulingConstraints {
         this.representativeTarget = representativeTarget;
     }
     
+	public SchedBlockMode getSchedBlockMode() {
+		return schedBlockMode;
+	}
+
+	public void setSchedBlockMode(SchedBlockMode schedBlockMode) {
+		this.schedBlockMode = schedBlockMode;
+	}
 }

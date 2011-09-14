@@ -8,6 +8,9 @@
  <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="SchedBlockState">
   <param name="enumClassName">alma.scheduling.datamodel.obsproject.SchedBlockState</param>
  </typedef>
+ <typedef class="alma.scheduling.datamodel.StringEnumUserType" name="SchedBlockMode">
+  <param name="enumClassName">alma.scheduling.datamodel.obsproject.SchedBlockMode</param>
+ </typedef>
  <class name="ObsUnit" table="OBSUNIT">
   <cache include="all"
    region="alma.scheduling.datamodel.obsproject.ObsUnit" usage="read-write"/>
@@ -70,6 +73,8 @@
     <property column="REPR_BAND" generated="never" lazy="false"
      name="representativeBand" type="int"/>
     <many-to-one class="Target" column="REPR_TARGET" name="representativeTarget"/>
+    <property column="SCHEDBLOCK_MODE" generated="never"
+     lazy="false" name="schedBlockMode" type="SchedBlockMode"/>
    </component>
    <component class="WeatherDependentVariables" name="weatherDependentVariables">
     <property column="WEATHER_VARS_LAST_UPDATE" generated="never"
