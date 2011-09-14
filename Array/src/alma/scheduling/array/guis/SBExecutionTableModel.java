@@ -26,16 +26,17 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
-import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.obsproject.SchedBlockState;
+import alma.common.gui.standards.StandardColors;
 
 /**
  * A model for a table showing a collection of executions of
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SBExecutionTableModel.java,v 1.3 2011/03/12 00:10:28 dclarke Exp $
+ * $Id: SBExecutionTableModel.java,v 1.4 2011/09/14 20:37:10 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SBExecutionTableModel extends AbstractTableModel {
@@ -191,6 +192,15 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		return result;
 	}
 	
+	private  int unmap(int modelColumn) {
+		for (int viewColumn = 0; viewColumn < viewToModelColumnMap.length; viewColumn++) {
+			if (map(viewColumn) == modelColumn) {
+				return viewColumn;
+			}
+		}
+		return -1;
+	}
+	
 	private int map(int viewColumn) {
 		return viewToModelColumnMap[viewColumn];
 	}
@@ -336,6 +346,25 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	 * Support methods
 	 * ================================================================
 	 */
+	public TableCellRenderer getSchedBlockStateRenderer() {
+		return new DefaultTableCellRenderer() {
+			public void setValue(Object value) {
+				try {
+					final String es = (String) value;
+					if (es.startsWith("Failed")) {
+						setForeground(StandardColors.STATUS_ERROR_BG.color);
+					} else if (es.startsWith("Complete")) {
+						setForeground(StandardColors.STATUS_OKAY_BG.color);
+					} else {
+						setForeground(StandardColors.STATUS_WARNING_BG.color);
+					}
+					setText(es);
+				} catch (ClassCastException e) {
+					setText(value.getClass().getSimpleName());
+				}
+			}
+		};
+	}
 	/* End Support methods
 	 * ============================================================= */
 
@@ -399,22 +428,23 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		case Column_Name:
 			return schedBlock.getName();
 		case Column_State:
-			final StringBuffer sb = new StringBuffer();
-			final String       es = schedBlock.getExecutionState();
-			sb.append("<html>");
-			if (es.startsWith("Failed")) {
-				sb.append("<font color=\"RED\">");
-				sb.append(es);
-				sb.append("</font>");
-			} else if (es.startsWith("Complete")) {
-				sb.append("<b><font color=\"GREEN\">");
-				sb.append(es);
-				sb.append("</font></b>");
-			} else {
-				sb.append(es);
-			}
-			sb.append("</html>");
-			return sb.toString();
+			return schedBlock.getExecutionState();
+//			final StringBuffer sb = new StringBuffer();
+//			final String       es = schedBlock.getExecutionState();
+//			sb.append("<html>");
+//			if (es.startsWith("Failed")) {
+//				sb.append("<font color=\"RED\">");
+//				sb.append(es);
+//				sb.append("</font>");
+//			} else if (es.startsWith("Complete")) {
+//				sb.append("<b><font color=\"GREEN\">");
+//				sb.append(es);
+//				sb.append("</font></b>");
+//			} else {
+//				sb.append(es);
+//			}
+//			sb.append("</html>");
+//			return sb.toString();
 		case Column_Project:
 			return schedBlock.getProjectUid();
 		case Column_Position:
@@ -456,11 +486,11 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		case Column_PI:
 			return String.class;
 		case Column_Executive:
-			return Executive.class;
+			return String.class;
 		case Column_Name:
 			return String.class;
 		case Column_State:
-			return SchedBlockState.class;
+			return String.class;
 		case Column_Project:
 			return String.class;
 		case Column_Position:
@@ -479,13 +509,12 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Return the text of the column's name. Leave it up to
-	 * getColumnName() to apply any HTML formatting.
+	 * Return the text of the column's name without any HTML additions.
 	 * 
 	 * @param columnIndex
 	 * @return
 	 */
-	private String getColumnInnerName(int columnIndex) {
+	public String getColumnInnerName(int columnIndex) {
 		switch (map(columnIndex)) {
 		case Column_EntityId:
 			return "Entity ID";
@@ -514,13 +543,17 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.table.TableModel#getColumnName(int)
+	/**
+	 * Return the text of the column's name with HTML flags to make it
+	 * bold.
+	 * 
+	 * @param columnIndex
+	 * @return
 	 */
-	@Override
 	public String getColumnName(int columnIndex) {
-		return String.format("<html><b>%s</b></html>",
-				getColumnInnerName(columnIndex));
+		return "<html><b>"
+				+ getColumnInnerName(columnIndex)
+				+ "</b></html>";
 	}
 	/* End TableModel implementation
 	 * ============================================================= */
@@ -532,8 +565,12 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	 * External interface specific to this class (uses view columns)
 	 * ================================================================
 	 */
-	public static int projectIdColumn() {
-		return Column_Project;
+	public int projectIdColumn() {
+		return unmap(Column_Project);
+	}
+	
+	public int stateColumn() {
+		return unmap(Column_State);
 	}
 	
 	public String getSchedBlockId(int row) {

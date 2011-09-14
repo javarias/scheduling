@@ -48,6 +48,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -76,7 +77,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.12 2011/08/05 21:46:02 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.13 2011/09/14 20:37:10 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel {
@@ -240,11 +241,22 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 							(getArray() != null)
 								&& (row >= 0));
 				}});
+
 		currentTable = new JTable(currentModel);
 		currentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		pastTable = new JTable(pastModel);
 		pastTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
+		final int stateColumn = pastModel.stateColumn();
+		if (stateColumn >= 0) {
+			// -1 is used to denote "none", so if we get here there
+			// should be a State column.
+			final TableColumn tc = pastTable.getColumnModel().getColumn(stateColumn);
+			if (tc != null) {
+				tc.setCellRenderer(pastModel.getSchedBlockStateRenderer());
+			}
+		}
+
 		moveUp   = newButton("Promote",
 				"Move the selected execution up the queue");
 		moveUp.addActionListener(

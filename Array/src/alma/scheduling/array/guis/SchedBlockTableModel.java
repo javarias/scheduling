@@ -42,7 +42,7 @@ import alma.scheduling.utils.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.16 2011/08/15 14:34:52 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.17 2011/09/14 20:37:10 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -157,8 +157,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Dec,
 				Column_HourAngle,
 				Column_Elevation,
+				Column_Azimuth,
 				Column_minHA,
-				Column_maxHA
+				Column_maxHA,
+				Column_Mode
 		};
 		
 		return result;
@@ -189,8 +191,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Dec,
 				Column_HourAngle,
 				Column_Elevation,
+				Column_Azimuth,
 				Column_minHA,
-				Column_maxHA
+				Column_maxHA,
+				Column_Mode
 		};
 		
 		return result;
@@ -310,6 +314,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int Column_HourAngle = 16;
 	private static final int Column_Elevation = 17;
 	private static final int   Column_Azimuth = 18;
+	private static final int      Column_Mode = 19;
 	
 	/**
 	 * All  of the columns which should be updated in (near) real time
@@ -433,6 +438,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			} catch (NullPointerException npe) {
 				return "n/a";
 			}
+		case Column_Mode:
+			return schedBlock.getSchedulingConstraints().getSchedBlockMode().toString();
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -485,6 +492,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_Elevation:
 			return String.class;
 		case Column_Azimuth:
+			return String.class;
+		case Column_Mode:
 			return String.class;
 		default:
 			logger.severe(String.format(
@@ -542,6 +551,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Alt";
 		case Column_Azimuth:
 			return "Az";
+		case Column_Mode:
+			return "Mode";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",
