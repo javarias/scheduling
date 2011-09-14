@@ -49,6 +49,7 @@ import javax.swing.table.TableModel;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
+@SuppressWarnings("serial")
 public class ArrayTable extends JTable {
     private final String[] arrayColumnInfo = {"Array Name","Array Type"};
     private Object[][] arrayRowInfo;
@@ -120,6 +121,18 @@ public class ArrayTable extends JTable {
     	}
     }
 
+    public String getCurrentArray() {
+    	try {
+    		int row = getSelectedRow();
+    		if(row >= 0) {
+    			return (String)arrayRowInfo[row][0];
+    		}
+
+    	} catch(Exception e){
+    	}
+		return null;
+    }
+
     private void createRightClickMenu() {
         rtClickMenu = new JPopupMenu();
        // rtClickMenu.removeAll();
@@ -157,7 +170,7 @@ public class ArrayTable extends JTable {
         parent = p;
     }
     
-    private void createTableModel() {
+	private void createTableModel() {
         arrayTableModel = new AbstractTableModel() {
             public int getColumnCount() { return arrayColumnInfo.length; }
             public String getColumnName(int column) { return arrayColumnInfo[column]; }
