@@ -113,9 +113,9 @@ public class MainSchedTabPane extends JTabbedPane {
         container = cs;
         controller.setup(cs);
         logger = cs.getLogger();
-        arraysTab.connectedSetup(cs);
         //archiveTab.connectedSetup(cs);
         middlePanel.connectedSetup(cs);
+        arraysTab.connectedSetup(cs);
         controller.checkOperationalState();
         logger.fine("SCHEDULING_PANEL: Second setup, connected to manager");
         try {

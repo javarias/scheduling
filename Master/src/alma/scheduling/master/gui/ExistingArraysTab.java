@@ -30,15 +30,21 @@ import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 
+@SuppressWarnings("serial")
 public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     private ExistingArraysTabController controller;
-    private JPanel topPanel, centerPanel, bottomPanel;
+    private JPanel tablePanel, reportagePanel;
+    private JTextPane arrayDetails;
     private ArrayTable table;
+
 	private boolean filledExistingArrays = false;
     /**
       *Tester constructor
@@ -51,9 +57,10 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
     public void connectedSetup(PluginContainerServices cs){
         super.onlineSetup(cs);
         controller = new ExistingArraysTabController(cs, this);
+        controller.secondSetup(cs);
         table.setCS(cs);
         checkCurrentExistingArrays();
-    }
+   }
 
     private synchronized void checkCurrentExistingArrays() {
     		//HACK: To avoid to show duplicated entries in the current arrays table
@@ -67,33 +74,57 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
     
     private void createLayout() {
-        setBorder(new TitledBorder("Existing Arrays"));
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        createTopPanel();
-        createCenterPanel();
-        createBottomPanel();
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        createTablePanel();
+        createReportagePanel();
     }
 
-    private void createTopPanel(){
-        topPanel = new JPanel();
-        add(topPanel);//,BorderLayout.NORTH);
-    }
-    private void createCenterPanel(){
+    private void createTablePanel(){
         table = new ArrayTable(new Dimension(300,200));
         table.setOwner(this);
+        table.getSelectionModel().addListSelectionListener(tableListener());
         JScrollPane pane = new JScrollPane(table,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        centerPanel = new JPanel();
-        centerPanel.add(pane);
-        add(centerPanel, BorderLayout.CENTER);
+        tablePanel = new JPanel();
+        tablePanel.setLayout(new BorderLayout());
+        tablePanel.setBorder(new TitledBorder("Existing Arrays"));
+        tablePanel.add(pane);
+        add(tablePanel);
     }
     
-    private void createBottomPanel() {
-        bottomPanel = new JPanel();
-        //JLabel foo = new JLabel("NOTE: Manual Arrays are not currently displayed here!");
-        //bottomPanel.add(foo);
-        //add(bottomPanel, BorderLayout.SOUTH);
+    private ListSelectionListener tableListener() {
+		return new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				final String array = table.getCurrentArray();
+				if (array != null) {
+					// TODO: display the array details:
+					//	Antennas
+					//	Photonic (if there is one)
+					//	Correlator (if there is one)
+					//	Scheduling Mode (manual, dynamic, interactive)
+					//	Policy Name (if a dynamic array
+					// Actually, the scheduling mode is displayed in
+					// the table
+					arrayDetails.setText("Current array = " +
+							table.getCurrentArray());
+				} else {
+					arrayDetails.setText("no array selected");
+				}
+//				System.out.println("Current array = " + table.getCurrentArray());
+			}};
+	}
+
+	private void createReportagePanel() {
+    	reportagePanel = new JPanel();
+    	reportagePanel.setBorder(new TitledBorder("Resources In Array"));
+    	reportagePanel.setLayout(new BorderLayout());
+    	arrayDetails = new JTextPane();
+    	reportagePanel.add(arrayDetails);
+    	// TODO: add this when we have something useful to say in it
+//    	add(reportagePanel);
     }
 
     public void exit(){

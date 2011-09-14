@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.common.gui.chessboard.ChessboardEntry;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArrayModeEnum;
 
@@ -36,11 +37,12 @@ public class ExistingArraysTabController extends SchedulingPanelController
 	implements ArrayStatusListener{
     private ExistingArraysTab parent;
     private ArrayStatusCallbackImpl callback;
+    
   //  private PluginContainerServices container; 
 //    private Consumer consumer;
 
 	public ExistingArraysTabController(PluginContainerServices cs,
-			ExistingArraysTab p) {
+									   ExistingArraysTab       p) {
 		super(cs);
 		// container = cs;
 		parent = p;
@@ -63,6 +65,14 @@ public class ExistingArraysTabController extends SchedulingPanelController
 		}
 
 	}
+
+    public void secondSetup(PluginContainerServices cs){
+        super.onlineSetup(cs);
+        if(cs == null) {
+            //logger = Logger.getLogger("OFFLINE SP");
+            //logger.warning("SchedulingPanel: problem getting CS");
+        }
+    }
 /*
     public void receive(CreatedAutomaticArrayEvent event) {
         String name = event.arrayName;
@@ -115,5 +125,4 @@ public class ExistingArraysTabController extends SchedulingPanelController
 		parent.removeArray(name);
 		
 	}
-        
 }

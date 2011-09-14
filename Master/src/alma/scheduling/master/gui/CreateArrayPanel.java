@@ -62,10 +62,12 @@ import alma.scheduling.Master;
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.array.guis.ArrayPanel;
 import alma.scheduling.master.gui.policy.PolicyManagementPanel;
+import alma.scheduling.master.gui.policy.PolicySelectionListener;
 import alma.scheduling.master.util.SchedulingPolicyWrapper;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
+@SuppressWarnings("serial")
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements PolicyChangeListener{
 
     private String[] availableAntennas;
@@ -98,7 +100,14 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
         add(chessboardPanel);
     }
 
-    public void setOwner(JTabbedPane p){
+    /**
+	 * @return the controller
+	 */
+	public CreateArrayController getController() {
+		return controller;
+	}
+
+	public void setOwner(JTabbedPane p){
         parent = p;
     }
 
@@ -366,12 +375,20 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     	schedulingPolicy = new JComboBox(policies);
     	final JLabel    label = new JLabel("Scheduling Policy");
     	JButton testPolicyTree =  new JButton("Test Tree");
+    	final PolicySelectionListener polly = new PolicySelectionListener(){
+
+			@Override
+			public void policySelected(String beanName) {
+				System.out.format("CreateArrayPanel, policySelected: %s%n", beanName);
+				ErrorHandling.printStackTrace();
+			}
+		};
     	testPolicyTree.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrame frame = new JFrame();
-				PolicyManagementPanel panel = new PolicyManagementPanel(master);
+				PolicyManagementPanel panel = new PolicyManagementPanel(master, polly);
 				frame.getContentPane().add(panel);
 				frame.pack();
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -479,6 +496,11 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
             for(int i=0; i < all[0].length; i++){
                 event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
                 twelveMeterChessboard.processStatusChange(event);
+            }
+            
+            for(int i=0; i < all[1].length; i++){
+                event = new ChessboardStatusEvent(all[1][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
+                sevenMeterChessboard.processStatusChange(event);
             }
             
             for(int i=0; i < all[2].length; i++){
@@ -620,9 +642,18 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     	CorrelatorType correlator = getCorrelatorType();
     	logger.info(String.format("The selected correlator is: %s",
     			correlator));
-    	String policy = getPolicy().getSpringBeanName();
-    	logger.info(String.format("The selected scheduling policy is: %s",
-    			policy));
+    	
+    	SchedulingPolicyWrapper spw = getPolicy();
+    	String policy = "";
+    	if (spw == null) {
+    		// No policy selected
+        	logger.info("No scheduling policy is selected");
+    	} else {
+    		// There is a policy, so get its name
+    		policy = spw.getSpringBeanName();
+        	logger.info(String.format("The selected scheduling policy is: %s",
+        			policy));
+    	}
 
     	String arrayName;
     	disableCreateArrayPanel();
