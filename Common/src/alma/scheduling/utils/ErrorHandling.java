@@ -18,6 +18,7 @@
 
 package alma.scheduling.utils;
 
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Level;
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
  * To get an instance of this class, use {@link ErrorHandling#getInstance()}
  *
  * @author dclarke
- * $Id: ErrorHandling.java,v 1.6 2011/08/30 23:05:00 javarias Exp $
+ * $Id: ErrorHandling.java,v 1.7 2011/09/14 22:03:09 dclarke Exp $
  */
 public final class ErrorHandling {
 	/*
@@ -84,6 +85,25 @@ public final class ErrorHandling {
     	final StringWriter sw = new StringWriter();
     	t.printStackTrace(new PrintWriter(sw));
     	return sw.toString();
+    }
+    
+    /**
+     * Print a stack trace of where we are on to the given stream.
+     * 
+     * @return a String with the details.
+     */
+    public static void printStackTrace(PrintStream stream) {
+    	Exception e = new Exception();
+    	stream.println(printedStackTrace(e));
+    }
+    
+    /**
+     * Print a stack trace of where we are onto the System output.
+     * 
+     * @return a String with the details.
+     */
+    public static void printStackTrace() {
+    	printStackTrace(System.out);
     }
 	/* End Formatting
 	 * ============================================================= */
