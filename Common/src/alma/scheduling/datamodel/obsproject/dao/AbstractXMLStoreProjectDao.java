@@ -22,6 +22,7 @@ import alma.acs.component.client.ComponentClient;
 import alma.acs.container.ContainerServices;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
+import alma.acs.entityutil.EntitySerializer;
 import alma.asdmIDLTypes.IDLArrayTime;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
@@ -29,7 +30,6 @@ import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
-import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.persistence.domain.StateEntityType;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemOperations;
@@ -37,6 +37,7 @@ import alma.scheduling.acsFacades.ACSComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory;
 import alma.scheduling.acsFacades.ComponentFactory.ComponentDiagnosticTypes;
 import alma.scheduling.datamodel.DAOException;
+import alma.scheduling.datamodel.bookkeeping.Bookkeeper;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
@@ -70,8 +71,10 @@ public abstract class AbstractXMLStoreProjectDao
     protected StateSystemOperations stateSystem;
     
     protected ArchiveInterface archive;
+    protected Bookkeeper bookie = null;
 
     protected EntityDeserializer entityDeserializer;
+    protected EntitySerializer   entitySerializer;
     
     protected Logger logger;
     
@@ -129,7 +132,10 @@ public abstract class AbstractXMLStoreProjectDao
 		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		client.getContainerServices().getLogger());
-		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer);
+		this.entitySerializer = EntitySerializer.getEntitySerializer(
+        		client.getContainerServices().getLogger());
+		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+		bookie = new Bookkeeper(archive, logger);
 	}
 	
 	protected AbstractXMLStoreProjectDao(ContainerServices containerServices) throws AcsJContainerServicesEx, UserException {
@@ -140,7 +146,10 @@ public abstract class AbstractXMLStoreProjectDao
 		this.stateSystem = componentFactory.getDefaultStateSystem(stateSystemDiags);
 		this.entityDeserializer = EntityDeserializer.getEntityDeserializer(
         		containerServices.getLogger());
-		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer);
+		this.entitySerializer = EntitySerializer.getEntitySerializer(
+        		containerServices.getLogger());
+		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+		bookie = new Bookkeeper(archive, logger);
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -205,6 +214,18 @@ public abstract class AbstractXMLStoreProjectDao
         logAPDMObsProposals(archive);
         logAPDMObsProjects(archive);
         logStatuses(archive);
+        if (bookie != null) {
+        	Collection<ProjectStatus> projectStatuses
+        			= new ArrayList<ProjectStatus>(archive.projectStatuses());
+        	for (final ProjectStatus ps : projectStatuses) {
+        		try {
+	        		bookie.initialise(ps);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+        	}
+        	logStatuses(archive);
+        }
         
         // Get all the corresponding APDM SchedBlocks
         for (alma.entity.xmlbinding.obsproject.ObsProject apdmProject : archive.obsProjects()) {
@@ -792,6 +813,11 @@ public abstract class AbstractXMLStoreProjectDao
 				ousStatus.getObsUnitSetRef().getPartId(),
 				ousStatus.getObsUnitSetRef().getEntityId(),
 				ousStatus.getStatus().getState());
+		if (bookie != null) {
+			f.format("%sOUSStatus is %sinitialised%n",
+					indent, bookie.isInitialised(ousStatus)? "": "NOT ");
+			f.format("%s", bookie.print(indent + "\t", ousStatus));
+		}
 
 		
 		for (final OUSStatusRefT childRef : ousStatus.getOUSStatusChoice().getOUSStatusRef()) {
@@ -807,11 +833,21 @@ public abstract class AbstractXMLStoreProjectDao
 			final String childId = childRef.getEntityId();
 			if (archive.hasSBStatus(childId)) {
 				final SBStatus child = archive.cachedSBStatus(childId);
-				f.format("%s\tSBS uid: %s, SB uid: %s, status is %s%n",
+				final String sbId = child.getSchedBlockRef().getEntityId();
+				final String sbName = archive.hasSchedBlock(sbId)?
+						archive.cachedSchedBlock(sbId).getName():
+							"<unknown>";			
+				f.format("%s\tSBS uid: %s, SB uid: %s (%s), status is %s%n",
 						indent,
 						child.getSBStatusEntity().getEntityId(),
 						child.getSchedBlockRef().getEntityId(),
+						sbName,
 						child.getStatus().getState());
+				if (bookie != null) {
+					f.format("%s\tSBStatus is %sinitialised%n",
+							indent, bookie.isInitialised(child)? "": "NOT ");
+					f.format("%s\t", bookie.print(indent + "\t", child));
+				}
 			} else {
 				f.format("\t\tchild SBStatus %s not in cache", childId);
 			}
@@ -835,6 +871,12 @@ public abstract class AbstractXMLStoreProjectDao
 				projectStatus.getProjectStatusEntity().getEntityId(),
 				projectStatus.getObsProjectRef().getEntityId(),
 				projectStatus.getStatus().getState());
+		if (bookie != null) {
+			f.format("\tProjectsStatus is %sinitialised%n",
+					bookie.isInitialised(projectStatus)? "": "NOT ");
+			f.format("%s", bookie.print("\t", projectStatus));
+		}
+		
 		final String programId = projectStatus.getObsProgramStatusRef().getEntityId();
 		if (archive.hasOUSStatus(programId)) {
 			final OUSStatus ouss = archive.cachedOUSStatus(programId);

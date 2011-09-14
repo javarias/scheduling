@@ -28,6 +28,7 @@ import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.acs.logging.AcsLogger;
+import alma.acs.logging.domainspecific.AudienceLogger.Audience;
 import alma.acs.nc.CorbaNotificationChannel;
 import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
@@ -45,7 +46,10 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.utils.Constants;
+import alma.scheduling.utils.AudienceFlogger;
 import alma.scheduling.utils.ErrorHandling;
+import alma.scheduling.utils.FakeAudienceFlogger;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
 import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
@@ -56,7 +60,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.8 2011/06/17 22:03:08 javarias Exp $
+ * $Id: SessionManager.java,v 1.9 2011/09/14 22:14:43 dclarke Exp $
  */
 public class SessionManager {
 
@@ -79,6 +83,7 @@ public class SessionManager {
 	 */
     private ContainerServices containerServices;
     private final AcsLogger logger;
+    private final AudienceFlogger operatorLog;
     private QlDisplayManager quicklook;
     private ModelAccessor model;
     private CorbaNotificationChannel sched_nc;
@@ -107,10 +112,11 @@ public class SessionManager {
     		              Services          services,
     		              boolean           newSessionPerExecution) {
         this.containerServices = cs;
-        this.logger    = cs.getLogger();
-        this.quicklook = getPipelineComponents();
-        this.sched_nc  = getNotificationChannel();
-        this.model     = services.getModel();
+        this.logger      = cs.getLogger();
+        this.operatorLog = new AudienceFlogger(this.logger, Audience.OPERATOR);
+        this.quicklook   = getPipelineComponents();
+        this.sched_nc    = getNotificationChannel();
+        this.model       = services.getModel();
         this.newSessionPerExecution = newSessionPerExecution;
         
         this.arrayName = arrayName;
@@ -140,16 +146,20 @@ public class SessionManager {
         		arrayName));
         try {
         	final org.omg.CORBA.Object cobj =
-        		containerServices.getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0");
+        		containerServices.getDefaultComponent(Constants.QUICKLOOK_IF);
             result = alma.pipelineql.QlDisplayManagerHelper.narrow(cobj);
             logger.info(String.format(
             		"Succesfully connected %s to Quicklook",
             		arrayName));
+            operatorLog.info("Succesfully connected %s to Quicklook",
+            		arrayName);
         } catch (AcsJContainerServicesEx e) {
             ErrorHandling.severe(logger,
             		String.format("Error trying to connect %s to QuickLook - %s",
             				arrayName, e.getMessage()),
             		e);
+            operatorLog.severe("Could not connect %s to Quicklook",
+            		arrayName);
             result = null;
         }
         
@@ -583,4 +593,16 @@ public class SessionManager {
 	}
 	/* End Public Interface
 	 * ============================================================= */
+	
+	
+	public static void main(String args[]) {
+		final FakeAudienceFlogger operatorLog =
+			new FakeAudienceFlogger("Test", Audience.OPERATOR);
+		final String arrayName = "Array666";
+		
+		// initialize()
+		operatorLog.info("Connected to Weather Station Controller Component");
+		operatorLog.warning("Unable to retrieve Weather Station Controller Component %s", Constants.WEATHER_STATION_IF);
+		operatorLog.warning("Unable to retrieve Weather Station Controller Component %s", Constants.WEATHER_STATION_IF);
+	}
 }

@@ -5,6 +5,7 @@ package alma.scheduling.datamodel.obsproject.dao;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,8 +20,13 @@ import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.sbstatus.ExecStatusT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.entity.xmlbinding.schedblock.ACABaseBandConfigT;
+import alma.entity.xmlbinding.schedblock.ACACorrelatorConfigurationT;
+import alma.entity.xmlbinding.schedblock.BLBaseBandConfigT;
+import alma.entity.xmlbinding.schedblock.BLCorrelatorConfigurationT;
+import alma.entity.xmlbinding.schedblock.SpectralSpecTChoice;
 import alma.entity.xmlbinding.schedblock.TargetT;
-import alma.entity.xmlbinding.schedblock.types.SchedulingConstraintsTRepresentativeReceiverBandType;
+import alma.entity.xmlbinding.schedblock.types.AbstractBaseBandConfigTDataProductsType;
 import alma.entity.xmlbinding.valuetypes.types.AngleTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.AngularVelocityTUnitType;
 import alma.entity.xmlbinding.valuetypes.types.FrequencyTUnitType;
@@ -43,6 +49,7 @@ import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.Preconditions;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockControl;
+import alma.scheduling.datamodel.obsproject.SchedBlockMode;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.SchedulingConstraints;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
@@ -322,6 +329,8 @@ public class APDMtoSchedulingConverter {
 					"... program status %s is %sin dictionary",
 					programId,
 					archive.hasOUSStatus(programId)? "": "NOT "));
+				
+//				logGoals(projectStatus);
 			} else {
 				logger.info("... therefore cannot get program status");
 			}
@@ -403,6 +412,113 @@ public class APDMtoSchedulingConverter {
 		
 		// Return the result
 		return obsProject;
+	}
+
+	final static String tab = "   ";
+	
+	private void logBaseGoals(Formatter f,
+			                  alma.entity.xmlbinding.projectstatus.StatusBaseT status,
+			                  String    indent) {
+		f.format("%sExecution Counts%n", indent);
+		f.format("%s * hasExecutionCount:    %s (set: %s) %n", indent,
+				status.getHasExecutionCount(),
+				status.hasHasExecutionCount());
+		f.format("%s * executionsRemaining:  %d (set: %s) %n", indent,
+				status.getExecutionsRemaining(),
+				status.hasExecutionsRemaining());
+		f.format("%s * successfulExecutions: %d (set: %s) %n", indent,
+				status.getSuccessfulExecutions(),
+				status.hasSuccessfulExecutions());
+		f.format("%s * failedExecutions:     %d (set: %s) %n", indent,
+				status.getFailedExecutions(),
+				status.hasFailedExecutions());
+		f.format("%sTime Goals%n", indent);
+		f.format("%s * hasTimeLimit:         %s (set: %s) %n", indent,
+				status.getHasTimeLimit(),
+				status.hasHasTimeLimit());
+		f.format("%s * secondsRemaining:     %d (set: %s) %n", indent,
+				status.getSecondsRemaining(),
+				status.hasSecondsRemaining());
+		f.format("%s * successfulSeconds:    %d (set: %s) %n", indent,
+				status.getSuccessfulSeconds(),
+				status.hasSuccessfulSeconds());
+		f.format("%s * failedSeconds:        %d (set: %s) %n", indent,
+				status.getFailedSeconds(),
+				status.hasFailedSeconds());
+	}
+	
+	private void logGoals(Formatter f,
+			              SBStatus  sbStatus,
+			              String    indent) {
+		f.format("%sSBStatus %s {%n", indent,
+				sbStatus.getSBStatusEntity().getEntityId());
+		logBaseGoals(f, sbStatus, indent + tab);
+		f.format("%s%sSensitivity Goals%n", indent, tab);
+		f.format("%s%s * hasSensitivityGoal:  %s (set: %s) %n", indent, tab,
+				sbStatus.getHasSensitivityGoal(),
+				sbStatus.hasHasSensitivityGoal());
+		f.format("%s%s * sensitivityGoal:     %f (set: %s) %n", indent, tab,
+				sbStatus.getSensitivityGoalJy(),
+				sbStatus.hasSensitivityGoalJy());
+		f.format("%s%s * sensitivityAchieved: %f (set: %s) %n", indent, tab,
+				sbStatus.getSensitivityAchievedJy(),
+				sbStatus.hasSensitivityAchievedJy());
+		f.format("%s}%n", indent);
+	}
+	
+	private void logGoals(Formatter f,
+			              OUSStatus ousStatus,
+			              String    indent) {
+		f.format("%sOUSStatus %s {%n", indent,
+				ousStatus.getOUSStatusEntity().getEntityId());
+		logBaseGoals(f, ousStatus, indent + tab);
+		final alma.entity.xmlbinding.ousstatus.OUSStatusChoice choice = ousStatus.getOUSStatusChoice();
+		for (final alma.entity.xmlbinding.ousstatus.OUSStatusRefT ousRef :
+			choice.getOUSStatusRef()) {
+			final String childId = ousRef.getEntityId();
+			if (!archive.hasOUSStatus(childId)) {
+				f.format("%s%sgetting child OUSStatus %s just for this", indent, tab, childId);
+			}
+			try {
+				logGoals(f, archive.getOUSStatus(childId), indent + tab);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		for (final alma.entity.xmlbinding.sbstatus.SBStatusRefT sbRef :
+			choice.getSBStatusRef()) {
+			final String childId = sbRef.getEntityId();
+			if (!archive.hasSBStatus(childId)) {
+				f.format("%s%sgetting child SBStatus %s just for this", indent, tab, childId);
+			}
+			try {
+				logGoals(f, archive.getSBStatus(childId), indent + tab);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		f.format("%s}%n", indent);
+	}
+	
+	private void logGoals(ProjectStatus projectStatus) {
+		StringBuilder b = new StringBuilder();
+		Formatter     f = new Formatter(b);
+		f.format("ProjectStatus %s { %n",
+				projectStatus.getProjectStatusEntity().getEntityId());
+		logBaseGoals(f, projectStatus, tab);
+		final alma.entity.xmlbinding.ousstatus.OUSStatusRefT ousRef =
+			projectStatus.getObsProgramStatusRef();
+		final String childId = ousRef.getEntityId();
+		if (!archive.hasOUSStatus(childId)) {
+			f.format("%sgetting child OUSStatus %s just for this", tab, childId);
+		}
+		try {
+			logGoals(f, archive.getOUSStatus(childId), tab);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		f.format("}%n");
+		logger.fine(b.toString());
 	}
 
 	private ObsUnitSet createObsUnitSet(
@@ -727,6 +843,9 @@ public class APDMtoSchedulingConverter {
 					if (representativeTarget != null) {
 						schedBlock.getSchedulingConstraints()
 							.setRepresentativeTarget(representativeTarget);
+						schedBlock.getSchedulingConstraints()
+						    .setSchedBlockMode(determineSchedBlockMode(
+						    		apdmSB, representativeTargetId));
 					} else {
 						throw new ConversionException(
 									"Cannot find representative target");
@@ -896,7 +1015,81 @@ public class APDMtoSchedulingConverter {
 			// ...and we use -1 to mean no band specified
 			result.setRepresentativeBand(-1);
 		}
+		
+		result.setSchedBlockMode(SchedBlockMode.SINGLE_DISH); // default, possibly overwritten later
 		return result;
+	}
+
+	private SchedBlockMode determineSchedBlockMode(
+			alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+			String                                       targetName) {
+		
+		final alma.entity.xmlbinding.schedblock.TargetT apdmTarget
+					= findTarget(apdmSB, targetName);
+		final String spectralSpecName = apdmTarget.getAbstractInstrumentSpecRef().getPartId();
+		final alma.entity.xmlbinding.schedblock.SpectralSpecT apdmSpectralSpec
+					= findSpectralSpec(apdmSB, spectralSpecName);
+		
+		if (apdmSpectralSpec != null) {
+			final SpectralSpecTChoice choice = apdmSpectralSpec.getSpectralSpecTChoice();
+			final ACACorrelatorConfigurationT aca = choice.getACACorrelatorConfiguration();
+			final BLCorrelatorConfigurationT  bl  = choice.getBLCorrelatorConfiguration();
+			
+			if (aca != null) {
+				for (final ACABaseBandConfigT bb : aca.getACABaseBandConfig()) {
+					switch (bb.getDataProducts().getType()) {
+					case AbstractBaseBandConfigTDataProductsType.AUTO_ONLY_TYPE:
+						return SchedBlockMode.SINGLE_DISH;
+					case AbstractBaseBandConfigTDataProductsType.CROSS_AND_AUTO_TYPE:
+					case AbstractBaseBandConfigTDataProductsType.CROSS_ONLY_TYPE:
+						return SchedBlockMode.INTERFEROMETRY;
+					}
+				}
+			}
+			
+			if (bl != null) {
+				for (final BLBaseBandConfigT bb : bl.getBLBaseBandConfig()) {
+					switch (bb.getDataProducts().getType()) {
+					case AbstractBaseBandConfigTDataProductsType.AUTO_ONLY_TYPE:
+						return SchedBlockMode.SINGLE_DISH;
+					case AbstractBaseBandConfigTDataProductsType.CROSS_AND_AUTO_TYPE:
+					case AbstractBaseBandConfigTDataProductsType.CROSS_ONLY_TYPE:
+						return SchedBlockMode.INTERFEROMETRY;
+					}
+				}
+			}
+		}
+		return SchedBlockMode.SINGLE_DISH;
+	}
+
+	private alma.entity.xmlbinding.schedblock.TargetT findTarget(
+			alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+			String                                       targetName) {
+		for (alma.entity.xmlbinding.schedblock.TargetT
+				apdmTarget : apdmSB.getTarget()) {
+			String partId = apdmTarget.getEntityPartId();
+			
+			if (partId.equals(targetName)) {
+				return apdmTarget;
+			}
+		}
+		return null;
+	}
+
+	private alma.entity.xmlbinding.schedblock.SpectralSpecT findSpectralSpec(
+			alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+			String                                       spectralSpecName) {
+		final alma.entity.xmlbinding.schedblock.SchedBlockChoice choice = apdmSB.getSchedBlockChoice();
+		
+		for (alma.entity.xmlbinding.schedblock.SpectralSpecT
+				apdmSpectralSpec : choice.getSpectralSpec()) {
+			String partId = apdmSpectralSpec.getEntityPartId();
+			
+			if (partId.equals(spectralSpecName)) {
+				return apdmSpectralSpec;
+			}
+		}
+		return null;
 	}
 
 	private SchedBlockControl createSchedBlockControl(

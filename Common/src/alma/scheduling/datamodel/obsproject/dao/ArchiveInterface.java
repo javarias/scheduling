@@ -18,6 +18,7 @@ import org.omg.CORBA.UserException;
 import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.acs.entityutil.EntityDeserializer;
 import alma.acs.entityutil.EntityException;
+import alma.acs.entityutil.EntitySerializer;
 import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.obsproject.ObsProjectEntityT;
 import alma.entity.xmlbinding.obsproposal.ObsProposal;
@@ -86,12 +87,15 @@ public class ArchiveInterface  {
 	
     /** Something to deserialize objects */
     private EntityDeserializer entityDeserializer;
+    
+    /** Something to serialize objects */
+    private EntitySerializer entitySerializer;
 
 	/** The connection to the state system */
-	private StateSystemOperations stateSystem;
+	protected StateSystemOperations stateSystem;
 	
 	/** How to lay out dates */
-	private DateFormat dateFormat;
+	protected DateFormat dateFormat;
 	/* End of other fields
 	 * ============================================================= */
 
@@ -103,11 +107,27 @@ public class ArchiveInterface  {
 	 * ================================================================
 	 */
 	public ArchiveInterface(OperationalOperations archive,
-			                StateSystemOperations stateSystem,
-			                EntityDeserializer    entityDeserializer) {
+            				StateSystemOperations stateSystem,
+            				EntityDeserializer    entityDeserializer,
+            				EntitySerializer      entitySerializer) {
 		this.archive     = archive;
 		this.stateSystem = stateSystem;
 		this.entityDeserializer = entityDeserializer;
+		this.entitySerializer   = entitySerializer;
+		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+		obsProposals    = new HashMap<String, ObsProposal>();
+		obsProjects     = new HashMap<String, ObsProject>();
+		schedBlocks     = new HashMap<String, SchedBlock>();
+		projectStatuses = new HashMap<String, ProjectStatus>();
+		ousStatuses     = new HashMap<String, OUSStatus>();
+		sbStatuses      = new HashMap<String, SBStatus>();
+	}
+
+	protected ArchiveInterface(ArchiveInterface that) {
+		this.archive            = that.archive;
+		this.stateSystem        = that.stateSystem;
+		this.entityDeserializer = that.entityDeserializer;
 		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
 		obsProposals    = new HashMap<String, ObsProposal>();
@@ -634,6 +654,21 @@ public class ArchiveInterface  {
 	public int numProjectStatuses() {
 		return projectStatuses.size();
 	}
+	
+	/**
+	 * Write the given ProjectStatus back to the StateArchive.
+	 * 
+	 * @param status - the ProjectStatus to cache
+	 * @throws EntityException 
+	 * @throws UserException 
+	 */
+	public void write(ProjectStatus status)
+			throws EntityException, UserException {
+		XmlEntityStruct e = entitySerializer.serializeEntity(
+				status, status.getProjectStatusEntity());
+		stateSystem.updateProjectStatus(e);
+		refreshProjectStatus(status);	// Forces a refresh when asked
+	}
 	/* End of ProjectStatuses
 	 * ============================================================= */
 
@@ -763,6 +798,21 @@ public class ArchiveInterface  {
 	 */
 	public int numOUSStatuses() {
 		return ousStatuses.size();
+	}
+
+	/**
+	 * Write the given OUSStatus back to the StateArchive.
+	 * 
+	 * @param status - the OUSStatus to cache
+	 * @throws EntityException 
+	 * @throws UserException 
+	 */
+	public void write(OUSStatus status)
+			throws EntityException, UserException {
+		XmlEntityStruct e = entitySerializer.serializeEntity(
+				status, status.getOUSStatusEntity());
+		stateSystem.updateOUSStatus(e);
+		refreshOUSStatus(status);	// Forces a refresh when asked
 	}
 	/* End of OUSStatuses
 	 * ============================================================= */
@@ -894,6 +944,21 @@ public class ArchiveInterface  {
 	public int numSBStatuses() {
 		return sbStatuses.size();
 	}
+
+	/**
+	 * Write the given SBStatus back to the StateArchive.
+	 * 
+	 * @param status - the SBStatus to cache
+	 * @throws EntityException 
+	 * @throws UserException 
+	 */
+	public void write(SBStatus status)
+			throws EntityException, UserException {
+		XmlEntityStruct e = entitySerializer.serializeEntity(
+				status, status.getSBStatusEntity());
+		stateSystem.updateSBStatus(e);
+		refreshSBStatus(status);	// Forces a refresh when asked
+	}
 	/* End of SBStatuses
 	 * ============================================================= */
 
@@ -1010,7 +1075,7 @@ public class ArchiveInterface  {
 		return schedBlocks.values();
 	}
 	
-	public Iterable<ProjectStatus> projectStatuses() {
+	public Collection<ProjectStatus> projectStatuses() {
 		return projectStatuses.values();
 	}
 	
