@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Constants.java,v 1.1 2011/08/01 15:48:11 dclarke Exp $"
+ * "@(#) $Id: Constants.java,v 1.2 2011/09/14 22:02:43 dclarke Exp $"
  */
 package alma.scheduling.utils;
 
@@ -39,4 +39,14 @@ public class Constants {
     public static final double CHAJNANTOR_LATITUDE = -23.022778;
     /** Chajnantor longitude */
     public static final double CHAJNANTOR_LONGITUDE = -67.755;
+
+    // Component and interface names
+    public static final String CONTROL_MASTER_URL = "CONTROL/MASTER";
+    public static final String SCHEDULING_MASTER_URL = "SCHEDULING_MASTERSCHEDULER";
+    public static final String MASTER_SCHEDULING_COMP_URL = "SCHEDULING_MASTER_COMP";
+    
+    public static final String QUICKLOOK_IF = "IDL:alma/pipelineql/QlDisplayManager:1.0";
+    
+    public static final String WEATHER_STATION_IF = "IDL:alma/Control/WeatherStationController:1.0";
+    public static final String WEATHER_STATION_SIM_IF = "IDL:alma/Control/CurrentWeather:1.0";  
 }
