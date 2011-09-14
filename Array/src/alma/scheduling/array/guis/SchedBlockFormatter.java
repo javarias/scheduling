@@ -37,7 +37,7 @@ import alma.scheduling.utils.Format;
 /**
  *
  * @author dclarke
- * $Id: SchedBlockFormatter.java,v 1.5 2011/08/16 17:21:29 dclarke Exp $
+ * $Id: SchedBlockFormatter.java,v 1.6 2011/09/14 00:32:17 dclarke Exp $
  */
 public class SchedBlockFormatter extends EntityFormatter {
 	/*
@@ -169,8 +169,8 @@ public class SchedBlockFormatter extends EntityFormatter {
 		}
 		th("Band");
 		if (constraints != null) {
-			final int band = constraints.getRepresentativeBand();
-			if (band > 0) {
+			final Integer band = constraints.getRepresentativeBand();
+			if (band != null && band > 0) {
 				td(String.format("  %02d", band));
 			} else {
 				td("n/a");
