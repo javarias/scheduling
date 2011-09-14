@@ -34,7 +34,7 @@ import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
-import alma.scheduling.master.compimpl.Constants;
+import alma.scheduling.utils.Constants;
 
 public class SchedulingPanelController {
     protected Master masterScheduler;
