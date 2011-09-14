@@ -40,6 +40,7 @@ import alma.scheduling.ArrayCreationInfo;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.SchedulingException;
+import alma.scheduling.utils.Constants;
 
 public class CreateArrayController extends SchedulingPanelController {
 
@@ -97,7 +98,7 @@ public class CreateArrayController extends SchedulingPanelController {
     	boolean isControlMasterReady =false;
         try {
             control = alma.Control.ControlMasterHelper.narrow(
-                    container.getComponentNonSticky(alma.scheduling.master.compimpl.Constants.CONTROL_MASTER_URL));
+                    container.getComponentNonSticky(Constants.CONTROL_MASTER_URL));
             logger.fine("SCHEDULING_PANEL: Got control system in array creator");
             isControlMasterReady = true;
             return isControlMasterReady;
