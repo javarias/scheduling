@@ -35,7 +35,7 @@ import alma.scheduling.SchedulingException;
  * template projects into masses of real projects.
  * 
  * @author dclarke
- * $Id: TestProjectGenerator.java,v 1.1 2011/07/29 15:52:46 dclarke Exp $
+ * $Id: TestProjectGenerator.java,v 1.2 2011/09/14 20:35:11 dclarke Exp $
  */
 public class TestProjectGenerator {
 
@@ -107,36 +107,46 @@ public class TestProjectGenerator {
 	
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			inner("-name", "Various_RA_Dec_%03d",
+			inner("-name", "Lots_%05d",
 					"-template", "R81Template",
-					"-script",   "Various_RA_Dec.script",
+					"-script",   "lots.script",
 					"-ra", "0:359:45",
-					"-dec", "60,35:-70:-35,-85",
-					"-minHA", "0",
-					"-maxHA", "24",
-					"-freq", "100",
-					"-grade", "B",
-					"-exec", "cl");
-			inner("-name", "Various_HA_%03d",
-					"-template", "R81Template",
-					"-script",   "Various_HA.script",
-					"-ra", "0",
-					"-dec", "-23",
-					"-minHA", "0:6,18:23",
-					"-maxHA", "1:6,18:24",
-					"-freq", "100.0",
-					"-grade", "B",
-					"-exec", "na");
-			inner("-name", "Various_Freq_Grade_%03d",
-					"-template", "R81Template",
-					"-script",   "Various_Freq_Grade.script",
-					"-ra", "90",
-					"-dec", "-65,-75,-85",
-					"-minHA", "0",
-					"-maxHA", "24",
+					"-dec", "60:-85:-10",
+					"-minHA", "0,12",
+					"-maxHA", "12,24",
 					"-freq", "38.15,78.5,100,144,187,243,324,442.5,661,868.5",
 					"-grade", "abc",
 					"-exec", "eu");
+//			inner("-name", "Various_RA_Dec_%03d",
+//					"-template", "R81Template",
+//					"-script",   "Various_RA_Dec.script",
+//					"-ra", "0:359:45",
+//					"-dec", "60,35:-70:-35,-85",
+//					"-minHA", "0",
+//					"-maxHA", "24",
+//					"-freq", "100",
+//					"-grade", "B",
+//					"-exec", "cl");
+//			inner("-name", "Various_HA_%03d",
+//					"-template", "R81Template",
+//					"-script",   "Various_HA.script",
+//					"-ra", "0",
+//					"-dec", "-23",
+//					"-minHA", "0:6,18:23",
+//					"-maxHA", "1:6,18:24",
+//					"-freq", "100.0",
+//					"-grade", "B",
+//					"-exec", "na");
+//			inner("-name", "Various_Freq_Grade_%03d",
+//					"-template", "R81Template",
+//					"-script",   "Various_Freq_Grade.script",
+//					"-ra", "90",
+//					"-dec", "-65,-75,-85",
+//					"-minHA", "0",
+//					"-maxHA", "24",
+//					"-freq", "38.15,78.5,100,144,187,243,324,442.5,661,868.5",
+//					"-grade", "abc",
+//					"-exec", "eu");
 		} else {
 			inner(args);
 		}
