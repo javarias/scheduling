@@ -220,14 +220,16 @@ public class ArrayImpl implements ComponentLifecycle,
         logger.finest("cleanUp() called");
         serviceProvider.getControlEventReceiver().end();
         serviceProvider.cleanUp();
-        try {
-        	//The policy file must be unlocked before the array is destroyed
-        	if(schedulingPolicy.startsWith("uuid")) {
-        		String fileUUID = schedulingPolicy.substring(4, 41);
-        		PoliciesContainersDirectory.getInstance().unlockPolicyContainer(UUID.fromString(fileUUID));
+        if (schedulingPolicy != null) {
+        	try {
+        		//The policy file must be unlocked before the array is destroyed
+        		if(schedulingPolicy.startsWith("uuid")) {
+        			String fileUUID = schedulingPolicy.substring(4, 41);
+        			PoliciesContainersDirectory.getInstance().unlockPolicyContainer(UUID.fromString(fileUUID));
+        		}
+        	} catch (Exception ex) {
+        		ex.printStackTrace();
         	}
-        } catch (Exception ex) {
-        	ex.printStackTrace();
         }
     }
 
