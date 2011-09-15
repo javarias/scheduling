@@ -214,18 +214,18 @@ public abstract class AbstractXMLStoreProjectDao
         logAPDMObsProposals(archive);
         logAPDMObsProjects(archive);
         logStatuses(archive);
-        if (bookie != null) {
-        	Collection<ProjectStatus> projectStatuses
-        			= new ArrayList<ProjectStatus>(archive.projectStatuses());
-        	for (final ProjectStatus ps : projectStatuses) {
-        		try {
-	        		bookie.initialise(ps);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        	}
-        	logStatuses(archive);
-        }
+//        if (bookie != null) {
+//        	Collection<ProjectStatus> projectStatuses
+//        			= new ArrayList<ProjectStatus>(archive.projectStatuses());
+//        	for (final ProjectStatus ps : projectStatuses) {
+//        		try {
+//	        		bookie.initialise(ps);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//        	}
+//        	logStatuses(archive);
+//        }
         
         // Get all the corresponding APDM SchedBlocks
         for (alma.entity.xmlbinding.obsproject.ObsProject apdmProject : archive.obsProjects()) {
