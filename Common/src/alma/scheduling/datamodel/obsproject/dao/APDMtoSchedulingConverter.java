@@ -1032,29 +1032,37 @@ public class APDMtoSchedulingConverter {
 		
 		if (apdmSpectralSpec != null) {
 			final SpectralSpecTChoice choice = apdmSpectralSpec.getSpectralSpecTChoice();
-			final ACACorrelatorConfigurationT aca = choice.getACACorrelatorConfiguration();
-			final BLCorrelatorConfigurationT  bl  = choice.getBLCorrelatorConfiguration();
 			
-			if (aca != null) {
-				for (final ACABaseBandConfigT bb : aca.getACABaseBandConfig()) {
-					switch (bb.getDataProducts().getType()) {
-					case AbstractBaseBandConfigTDataProductsType.AUTO_ONLY_TYPE:
-						return SchedBlockMode.SINGLE_DISH;
-					case AbstractBaseBandConfigTDataProductsType.CROSS_AND_AUTO_TYPE:
-					case AbstractBaseBandConfigTDataProductsType.CROSS_ONLY_TYPE:
-						return SchedBlockMode.INTERFEROMETRY;
+			if (choice != null) {
+				// We have a correlator setup, so determine which
+				// correlator and then if it's generating cross-
+				// products (in which case it's an interferometric
+				// setup) or not.
+
+				final ACACorrelatorConfigurationT aca = choice.getACACorrelatorConfiguration();
+				final BLCorrelatorConfigurationT  bl  = choice.getBLCorrelatorConfiguration();
+
+				if (aca != null) {
+					for (final ACABaseBandConfigT bb : aca.getACABaseBandConfig()) {
+						switch (bb.getDataProducts().getType()) {
+						case AbstractBaseBandConfigTDataProductsType.AUTO_ONLY_TYPE:
+							return SchedBlockMode.SINGLE_DISH;
+						case AbstractBaseBandConfigTDataProductsType.CROSS_AND_AUTO_TYPE:
+						case AbstractBaseBandConfigTDataProductsType.CROSS_ONLY_TYPE:
+							return SchedBlockMode.INTERFEROMETRY;
+						}
 					}
 				}
-			}
-			
-			if (bl != null) {
-				for (final BLBaseBandConfigT bb : bl.getBLBaseBandConfig()) {
-					switch (bb.getDataProducts().getType()) {
-					case AbstractBaseBandConfigTDataProductsType.AUTO_ONLY_TYPE:
-						return SchedBlockMode.SINGLE_DISH;
-					case AbstractBaseBandConfigTDataProductsType.CROSS_AND_AUTO_TYPE:
-					case AbstractBaseBandConfigTDataProductsType.CROSS_ONLY_TYPE:
-						return SchedBlockMode.INTERFEROMETRY;
+
+				if (bl != null) {
+					for (final BLBaseBandConfigT bb : bl.getBLBaseBandConfig()) {
+						switch (bb.getDataProducts().getType()) {
+						case AbstractBaseBandConfigTDataProductsType.AUTO_ONLY_TYPE:
+							return SchedBlockMode.SINGLE_DISH;
+						case AbstractBaseBandConfigTDataProductsType.CROSS_AND_AUTO_TYPE:
+						case AbstractBaseBandConfigTDataProductsType.CROSS_ONLY_TYPE:
+							return SchedBlockMode.INTERFEROMETRY;
+						}
 					}
 				}
 			}
