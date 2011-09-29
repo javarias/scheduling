@@ -26,11 +26,12 @@ import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.scheduling.array.util.StatusCollection;
 import alma.scheduling.datamodel.obsproject.ObsProject;
+import alma.scheduling.formatting.EntityFormatter;
 
 /**
  *
  * @author dclarke
- * $Id: ObsProjectFormatter.java,v 1.1 2011/03/11 00:06:34 dclarke Exp $
+ * $Id: ObsProjectFormatter.java,v 1.2 2011/09/29 20:59:37 dclarke Exp $
  */
 public class ObsProjectFormatter extends EntityFormatter {
 	/*

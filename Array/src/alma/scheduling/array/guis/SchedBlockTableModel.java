@@ -35,14 +35,14 @@ import alma.scheduling.algorithm.sbranking.SBRank;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
-import alma.scheduling.utils.Format;
+import alma.scheduling.formatting.Format;
 
 /**
  * A model for a table showing a collection of
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.17 2011/09/14 20:37:10 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.18 2011/09/29 20:59:37 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {

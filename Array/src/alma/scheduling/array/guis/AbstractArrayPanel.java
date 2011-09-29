@@ -19,6 +19,7 @@ package alma.scheduling.array.guis;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -34,7 +35,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.13 2011/08/05 21:46:02 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.14 2011/09/29 20:59:37 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -67,11 +68,13 @@ public abstract class AbstractArrayPanel extends JPanel
     /** The access to the Array for which we are a panel */
     protected ArrayAccessor array = null;
     /** Is this panel running in control mode (or monitor mode)? */
-    private boolean                 controlPanel = true;
+    private boolean controlPanel = true;
     /** Name of the Array to be controlled */
     protected String arrayName;
     /** Are we in Manual Mode? */
     private boolean manualMode = false;
+    /** Could we exist without a logger? */
+    protected Logger logger = null;
     /* End Fields
      * ============================================================= */
     
@@ -96,10 +99,12 @@ public abstract class AbstractArrayPanel extends JPanel
 	 */
 	@Override
 	public void setServices(PluginContainerServices services) {
-		System.out.format("%s (AbstractArrayPanel).setServices, new arrayName = %s, old arrayName = %s%n",
+		this.logger = services.getLogger();
+		logger.fine(String.format(
+				"%s (AbstractArrayPanel).setServices, new arrayName = %s, old arrayName = %s%n",
 				this.getClass().getSimpleName(),
 				services.getSessionProperties().getArrayName(),
-				this.arrayName);
+				this.arrayName));
 		this.services = services;
 		final String newArrayName = services.getSessionProperties().getArrayName();
 		if ((this.arrayName == null) || (this.arrayName.length() == 0)) {
@@ -249,6 +254,14 @@ public abstract class AbstractArrayPanel extends JPanel
 		for (final JComponent c : components) {
 			final Dimension d = c.getPreferredSize();
 			d.setSize(maxWidth, d.getHeight());
+			c.setMinimumSize(d);
+			c.setPreferredSize(d);
+			c.setMaximumSize(d);
+		}
+	}
+
+	protected void forceToSize(Dimension d, JComponent... components) {
+		for (final JComponent c : components) {
 			c.setMinimumSize(d);
 			c.setPreferredSize(d);
 			c.setMaximumSize(d);

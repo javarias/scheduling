@@ -26,10 +26,12 @@ import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.asdmIDLTypes.IDLEntityRef;
+import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
+import alma.scheduling.DynamicSchedulerOperations;
 import alma.scheduling.SchedBlockExecutionCallback;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.SchedBlockExecutionManagerOperations;
@@ -43,16 +45,16 @@ import alma.scheduling.SchedBlockQueueManagerOperations;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.10 2011/03/19 00:33:36 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.11 2011/09/29 20:58:36 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
 
 	private ContainerServices m_containerServices;
     private Logger m_logger;
-    private String policyName;
 	private SchedBlockExecutionManagerOperations sbExecDelegate;
     private SchedBlockQueueManagerOperations sbQueueDelegate;
+    private DynamicSchedulerOperations dynamicSchedulerDelegate;
 
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -100,7 +102,8 @@ public class DelegatedArray implements ComponentLifecycle,
      */
     public DelegatedArray(
     		SchedBlockExecutionManagerOperations sbExecDelegate,
-    		SchedBlockQueueManagerOperations     sbQueueDelegate) {
+    		SchedBlockQueueManagerOperations     sbQueueDelegate,
+    		DynamicSchedulerOperations           dynamicSchedulerDelegate) {
     	setSchedBlockExecutionManager(sbExecDelegate);
     	setSchedBlockQueueManager(sbQueueDelegate);
     }
@@ -129,6 +132,14 @@ public class DelegatedArray implements ComponentLifecycle,
 			SchedBlockQueueManagerOperations sbQueueDelegate) {
 		this.sbQueueDelegate = sbQueueDelegate;
 	}
+
+	/**
+	 * @param dynamicSchedulerDelegate the dynamicSchedulerDelegate to set
+	 */
+	public void setDynamicScheduler(
+			DynamicSchedulerOperations dynamicSchedulerDelegate) {
+		this.dynamicSchedulerDelegate = dynamicSchedulerDelegate;
+	}
     /* End Setting of delegates
      * ============================================================= */
 
@@ -140,26 +151,31 @@ public class DelegatedArray implements ComponentLifecycle,
      * ================================================================
      */
 	private String name;
-	private ArraySchedulerLifecycleType type;
 	private ArraySchedulerMode[] modes;
+	private ArrayDescriptor descriptor;
 	
 	@Override
 	public void configure(String name,
-						  ArraySchedulerMode[] modes,
-						  ArraySchedulerLifecycleType type) {
-		this.name = name;
-		this.type = type;
-		this.modes = modes;
+			              ArraySchedulerMode[] modes,
+			              ArrayDescriptor descriptor) {
+		this.name       = name;
+		this.descriptor = descriptor;
+		this.modes      = modes;
 	}
 
-	@Override
-	public void configureDynamicScheduler(String policyName) {
-		this.policyName = policyName;
-	}
+//	@Override
+//	public void configureDynamicScheduler(String policyName) {
+//		this.descriptor = policyName;
+//	}
 
 	@Override
 	public ArraySchedulerLifecycleType getLifecycleType() {
-		return type;
+		return descriptor.lifecycleType;
+	}
+
+	@Override
+	public ArrayDescriptor getDescriptor() {
+		return descriptor;
 	}
 
 	@Override
@@ -328,10 +344,36 @@ public class DelegatedArray implements ComponentLifecycle,
 	}
 
 	public void removeMonitorQueue(String arg0) {
-		sbQueueDelegate.removeMonitorQueue(arg0);
-		
+		sbQueueDelegate.removeMonitorQueue(arg0);	
 	}
     /* End Delegation of SchedBlockQueueManagerOperations
      * ============================================================= */
+	
 
+    
+    /*
+     * ================================================================
+     * Delegation of DynamicSchedulerOperations
+     * ================================================================
+     */
+    public void configureDynamicScheduler(String policyName) {
+    	dynamicSchedulerDelegate.configureDynamicScheduler(policyName);
+    	getDescriptor().policyName = policyName;
+    }
+    
+    public boolean isActiveDynamic() {
+    	return dynamicSchedulerDelegate.isActiveDynamic();
+    }
+    
+    public void setActiveDynamic(boolean on,
+			                     String name,
+			                     String role) {
+    	dynamicSchedulerDelegate.setActiveDynamic(on, name, role);
+    }
+    
+    public String getSchedulingPolicy() {
+    	return dynamicSchedulerDelegate.getSchedulingPolicy();
+    }
+    /* End Delegation of DynamicSchedulerOperations
+     * ============================================================= */
 }

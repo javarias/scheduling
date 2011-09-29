@@ -23,6 +23,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.PrintStream;
@@ -72,16 +74,19 @@ import alma.scheduling.array.executor.StoppingExecutionState;
 import alma.scheduling.array.guis.SBExecutionTableModel.When;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
+import alma.scheduling.policy.gui.PolicyChangeListener;
+import alma.scheduling.policy.gui.PolicyManagementPanel;
+import alma.scheduling.policy.gui.PolicySelectionListener;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.13 2011/09/14 20:37:10 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.14 2011/09/29 20:59:37 dclarke Exp $
  */
 @SuppressWarnings("serial")
-public class CurrentActivityPanel extends AbstractArrayPanel {
-//							 implements ChangeListener, MouseListener {
+public class CurrentActivityPanel extends AbstractArrayPanel
+							 implements PolicyChangeListener {
 	/*
 	 * ================================================================
 	 * Constants
@@ -147,6 +152,8 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	/** The buttons for manipulating the executor */
 	private JButton   stopSB;
 	private JCheckBox fullAuto;
+	private JCheckBox activeMode;
+	private JButton   setPolicy;
 	private JButton   startExec;
 	private JButton   stopExec;
 	private JButton   destroyArray;
@@ -168,10 +175,12 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	private JPanel commonButtons;
 	private JPanel normalButtons;
 	private JPanel manualButtons;
+	private JPanel dynamicButtons;
 	private JLabel currentPanelLabel;
+	
+	private PolicyManagementPanel policyPanel = null;
 
 	private boolean deactivated = false;
-
 	/* End Fields for widgets &c
 	 * ============================================================= */
 	
@@ -332,7 +341,17 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		stopSB.setEnabled(true);
 		
 		fullAuto = new JCheckBox("Full Auto");
-		fullAuto.setToolTipText("If checked, run the executor in Full Auto mode");
+		fullAuto.setToolTipText("<html>" +
+					"When checked, run the Scheduler in Full Auto" +
+					" mode. Completed SchedBlocks will be made" +
+					" available for re-execution if applicable." +
+					"<br>" +
+					"When not checked, run the Scheduler in Semi" +
+					" Auto mode. Completed SchedBlocks will not be" +
+					" made available for re-execution - they will" +
+					" be marked as SUSPENDED (unless they are CSV" +
+					" SBs)." +
+				"</html>");
 		fullAuto.addActionListener(
 				new ActionListener(){
 					@Override
@@ -345,7 +364,76 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 						} catch (NullPointerException npe) {
 						}
 					}});
-		fullAuto.setSelected(false);
+		
+		activeMode = new JCheckBox("Active");
+		activeMode.setToolTipText("<html>" +
+				"When checked, the Dynamic Scheduler scores and" +
+				" ranks the SchedBlocks, it will automatically queue" +
+				" the highest scoring SchedBlock for execution." +
+				"<br>" +
+				"When not checked, the Dynamic Scheduler scores and" +
+				" ranks the SchedBlocks but does not automatically" +
+				" queue any for execution." +
+				"</html>");
+
+		activeMode.addActionListener(
+				new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							getArray().setActiveDynamic(
+									activeMode.isSelected(),
+									getUserName(),
+									getUserRole());
+						} catch (NullPointerException npe) {
+						}
+					}});
+		
+    	final PolicySelectionListener polly = new PolicySelectionListener(){
+
+			@Override
+			public void policySelected(String beanName) {
+				logger.fine(
+						String.format(
+								"%n%nCurrentActivityPanel, policySelected: %s%n%n%n",
+								beanName));
+				getArray().setSchedulingPolicy(beanName);
+//				ErrorHandling.printStackTrace();
+			}
+		};
+
+		setPolicy = newButton("Set Policy",
+				   "Set the current scheduling policy");
+		setPolicy.addActionListener(
+				new ActionListener(){
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame frame = new JFrame();
+						policyPanel = new PolicyManagementPanel(getMaster());
+						policyPanel.addListener(polly);
+						frame.addWindowListener(new WindowListener(){
+
+							@Override
+							public void windowClosed(WindowEvent e) {
+								policyPanel.removeListener(polly);
+								policyPanel = null;
+							}
+
+							@Override public void windowOpened(WindowEvent e) {} // ignore
+							@Override public void windowClosing(WindowEvent e) {} // ignore
+							@Override public void windowIconified(WindowEvent e) {} // ignore
+							@Override public void windowDeiconified(WindowEvent e) {} // ignore
+							@Override public void windowActivated(WindowEvent e) {} // ignore
+							@Override public void windowDeactivated(WindowEvent e) {} // ignore
+						});
+						frame.getContentPane().add(policyPanel);
+						frame.pack();
+						frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+						frame.setVisible(true);
+					}
+				});
+		setPolicy.setEnabled(true);
 
 		startExec = newButton("Start Queue",
 							  "Start execution of SchedBlocks on this array");
@@ -469,12 +557,19 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		commonButtons.add(destroyArray);
 		commonButtons.setAlignmentY(Component.TOP_ALIGNMENT);
 
+		dynamicButtons = new JPanel();
+		dynamicButtons.setLayout(new BoxLayout(dynamicButtons, BoxLayout.Y_AXIS));
+		dynamicButtons.add(activeMode);
+		dynamicButtons.add(setPolicy);
+		dynamicButtons.setAlignmentY(Component.TOP_ALIGNMENT);
+
 		normalButtons = new JPanel();
 		normalButtons.setLayout(new BoxLayout(normalButtons, BoxLayout.Y_AXIS));
 		normalButtons.add(stopSB);
 		normalButtons.add(Box.createVerticalStrut(
 				moveUp.getPreferredSize().height/2));
 		normalButtons.add(fullAuto);
+		normalButtons.add(dynamicButtons);
 		normalButtons.add(Box.createVerticalStrut(
 				moveUp.getPreferredSize().height/2));
 		normalButtons.add(startExec);
@@ -524,8 +619,9 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 */
 	private void addWidgets() {
 		makeSameWidth(stopSB, startExec, stopExec,
-			      moveUp, moveDown, delete, destroyArray);
-
+			      moveUp, moveDown, delete, destroyArray,
+			      setPolicy);
+		forceToSize(stopSB.getPreferredSize(), fullAuto, activeMode);
 		pendingPanel = createPendingPanel();
 		currentPanel = createCurrentPanel();
 		pastPanel    = createPastPanel();
@@ -717,10 +813,14 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 				startExec.setEnabled(false);
 				stopExec.setEnabled(false);
 				fullAuto.setSelected(false);
+				activeMode.setSelected(false);
+				setPolicy.setEnabled(false);
 			} else {
 				startExec.setEnabled(!a.isRunning());
 				stopExec.setEnabled(a.isRunning());
 				fullAuto.setSelected(a.isFullAuto());
+				activeMode.setSelected(a.isActiveDynamic());
+				setPolicy.setEnabled(true);
 			}
 		}
 	}
@@ -733,11 +833,13 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		startExec.setEnabled(false);
 		stopExec.setEnabled(false);
 		fullAuto.setEnabled(false);
+		activeMode.setEnabled(false);
 		stopSB.setEnabled(false);
 		moveUp.setEnabled(false);
 		moveDown.setEnabled(false);
 		delete.setEnabled(false);
 		destroyArray.setEnabled(false);
+		setPolicy.setEnabled(false);
 	}
 	/* End GUI management
 	 * ============================================================= */
@@ -794,7 +896,6 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 	 * Listening
 	 * ================================================================
 	 */
-
 	@Override
 	protected void setArray(ArrayAccessor array) {
 		super.setArray(array);
@@ -947,6 +1048,18 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		stopSB.setEnabled(runningExecution != null);
 	}
 
+	@Override
+	public void refreshPolicyList() {
+		if (policyPanel != null) {
+			// Decided to pass on the notification from this parent GUI
+			// rather than have the policyPanel listen for itself - it
+			// seemed a bit of a hack to have policyPanel need to know
+			// about the environment in which it operated (e.g. the
+			// ContainerServices which it would need in order to set up
+			// an offshoot callback thingy.
+			policyPanel.refreshPolicyList();
+		}
+	}
 	/* End Listening
 	 * ============================================================= */
 
@@ -973,7 +1086,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel {
 		}
 		return result;
 	}
-	/* End Listening
+	/* End Interaction with components
 	 * ============================================================= */
 
 	

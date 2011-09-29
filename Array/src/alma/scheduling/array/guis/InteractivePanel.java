@@ -81,6 +81,7 @@ import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
+import alma.scheduling.utils.SchedBlockFormatter;
 import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
@@ -91,7 +92,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.24 2011/08/05 21:46:03 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.25 2011/09/29 20:59:37 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel

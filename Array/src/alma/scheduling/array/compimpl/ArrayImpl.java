@@ -32,6 +32,7 @@ import alma.acs.component.ComponentLifecycle;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.asdmIDLTypes.IDLEntityRef;
+import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayOperations;
 import alma.scheduling.ArraySchedulerLifecycleType;
@@ -81,11 +82,9 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private ArraySchedulerMode[] modes;
     
-    private ArraySchedulerLifecycleType lifecycleType;
+    private ArrayDescriptor descriptor;
     
     private AcsProvider serviceProvider;
-    
-    private String schedulingPolicy;
     
     private Selector selector = null;
     
@@ -119,11 +118,12 @@ public class ArrayImpl implements ComponentLifecycle,
     }
     
 	@Override
-	public void configure(String arrayName, ArraySchedulerMode[] modes,
-			ArraySchedulerLifecycleType lifecycleType) {
-		this.arrayName = arrayName;
-		this.modes = modes;
-		this.lifecycleType = lifecycleType;
+	public void configure(String arrayName,
+			              ArraySchedulerMode[] modes,
+			              ArrayDescriptor descriptor) {
+		this.arrayName  = arrayName;
+		this.modes      = modes;
+		this.descriptor = descriptor;
 
 		final boolean manual = isManual(modes);
 		Services services = null;
@@ -190,19 +190,28 @@ public class ArrayImpl implements ComponentLifecycle,
 				"Configuring %s as a dynamic array with policy %s",
 				arrayName, policyName));
 		
-		this.schedulingPolicy = policyName;
-		final AbstractSelector dsa = new DSASelector();
-		dsa.configureArray(this, queue);
-		dsa.addObserver(guiNotifier);
-		this.selector = dsa;
+		descriptor.policyName = policyName;
+		if (this.selector == null) {
+			final AbstractSelector dsa = new DSASelector();
+			dsa.configureArray(this, queue);
+			dsa.addObserver(guiNotifier);
+			this.selector = dsa;
+		} else {
+			logger.fine("DSA object already exists, not creating a new one (worried that this will not work as it might continue to use the old policy)");
+		}
 	}
 
     @Override
     public ArraySchedulerLifecycleType getLifecycleType() {
-        return lifecycleType;
+        return descriptor.lifecycleType;
     }
 
-    @Override
+	@Override
+	public ArrayDescriptor getDescriptor() {
+		return descriptor;
+	}
+
+	@Override
     public String getArrayName() {
         return arrayName;
     }
@@ -217,20 +226,22 @@ public class ArrayImpl implements ComponentLifecycle,
     }
 
     public void cleanUp() {
-        logger.finest("cleanUp() called");
-        serviceProvider.getControlEventReceiver().end();
-        serviceProvider.cleanUp();
-        if (schedulingPolicy != null) {
-        	try {
-        		//The policy file must be unlocked before the array is destroyed
-        		if(schedulingPolicy.startsWith("uuid")) {
-        			String fileUUID = schedulingPolicy.substring(4, 41);
-        			PoliciesContainersDirectory.getInstance().unlockPolicyContainer(UUID.fromString(fileUUID));
-        		}
-        	} catch (Exception ex) {
-        		ex.printStackTrace();
-        	}
-        }
+    	logger.finest("cleanUp() called");
+    	serviceProvider.getControlEventReceiver().end();
+    	serviceProvider.cleanUp();
+    	if (descriptor != null) {
+    		if (descriptor.policyName != null) {
+    			try {
+    				//The policy file must be unlocked before the array is destroyed
+    				if(descriptor.policyName.startsWith("uuid")) {
+    					String fileUUID = descriptor.policyName.substring(4, 41);
+    					PoliciesContainersDirectory.getInstance().unlockPolicyContainer(UUID.fromString(fileUUID));
+    				}
+    			} catch (Exception ex) {
+    				ex.printStackTrace();
+    			}
+    		}
+    	}
     }
 
     public void aboutToAbort() {
@@ -393,6 +404,11 @@ public class ArrayImpl implements ComponentLifecycle,
 	}
 
 	@Override
+	public boolean isActiveDynamic() {
+		return executor.isActiveDynamic();
+	}
+
+	@Override
 	public boolean isManual() {
 		return executor.isManual();
 	}
@@ -405,6 +421,11 @@ public class ArrayImpl implements ComponentLifecycle,
 	@Override
 	public void setFullAuto(boolean on, String name, String role) {
 		executor.setFullAuto(on, name, role);
+	}
+
+	@Override
+	public void setActiveDynamic(boolean on, String name, String role) {
+		executor.setActiveDynamic(on, name, role);
 	}
 	
 	@Override
@@ -424,16 +445,16 @@ public class ArrayImpl implements ComponentLifecycle,
      * an asdm produced. There will be a 'dummy' project with sb in the archive
      * to attach these asdms to its project status.
      */
-   public IDLEntityRef startManualModeSession(String sbid)
-       throws InvalidOperationEx {
-	   return executor.startManualModeSession(sbid);
-   }
-   
-   public String getSchedulingPolicy() {
-	   return schedulingPolicy;
-   }
-   
-   public void setSchedulingPolicy(String policy) {
-	   this.schedulingPolicy = policy;
-   }
+	@Override
+	public IDLEntityRef startManualModeSession(String sbid)
+			throws InvalidOperationEx {
+		return executor.startManualModeSession(sbid);
+	}
+	
+	@Override
+    public String getSchedulingPolicy() {
+    	return descriptor.policyName;
+
+    }
+
 }

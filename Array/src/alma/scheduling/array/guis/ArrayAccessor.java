@@ -297,6 +297,29 @@ public class ArrayAccessor {
 		return array.isRunning();
 	}
 	
+	public boolean isActiveDynamic() {
+		final long maxWaitTimeMillis = System.currentTimeMillis()
+				+ MAX_WAIT_TIME_MILLIS;
+		boolean succeed = false;
+		Exception ex = null;
+		while (!succeed && (System.currentTimeMillis() <= maxWaitTimeMillis)) {
+			try {
+				return array.isActiveDynamic();
+			} catch (Exception e) {
+				ex = e; // Save last Exception just in case
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		services.getLogger().severe(
+				"Could not get connection to the Array.");
+		throw new RuntimeException(
+				"Could not get connection to the Array.", ex);
+	}
+	
 	public boolean isDynamic() {
 		return dynamic;
 	}
@@ -349,7 +372,15 @@ public class ArrayAccessor {
 		array.setFullAuto(on, name, role);
 	}
 	
+	public void setActiveDynamic(boolean on, String name, String role) {
+		array.setActiveDynamic(on, name, role);
+	}
+	
 	public ArraySchedulerMode[] getModes() {
 		return array.getModes();
+	}
+	
+	public void setSchedulingPolicy(String name) {
+		array.configureDynamicScheduler(name);
 	}
 }

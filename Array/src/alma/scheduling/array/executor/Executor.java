@@ -58,6 +58,7 @@ public class Executor extends Observable {
     private Lock pastExecutionsLock = new ReentrantLock();
     private ExecutorConsumer executionThread;
     private boolean fullAuto;
+    private boolean activeDynamic;
     private boolean manual;
     private boolean running;
     
@@ -378,6 +379,10 @@ public class Executor extends Observable {
     	return fullAuto;
     }
 
+    public boolean isActiveDynamic() {
+    	return activeDynamic;
+    }
+
     public void configureManual(boolean manual) {
     	this.manual = manual;
     }
@@ -401,6 +406,17 @@ public class Executor extends Observable {
     public void setFullAuto(boolean on, String name, String role) {
     	if (fullAuto != on) {
     		fullAuto = on;
+    		final ArrayGUINotification agn = new ArrayGUINotification(
+    				on? ArrayGUIOperation.FULLAUTO: ArrayGUIOperation.SEMIAUTO,
+    						name,
+    						role);
+    		notify(agn);
+    	}
+    }
+
+    public void setActiveDynamic(boolean on, String name, String role) {
+    	if (activeDynamic != on) {
+    		activeDynamic = on;
     		final ArrayGUINotification agn = new ArrayGUINotification(
     				on? ArrayGUIOperation.FULLAUTO: ArrayGUIOperation.SEMIAUTO,
     						name,
