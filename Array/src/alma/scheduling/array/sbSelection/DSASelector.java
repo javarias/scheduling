@@ -1,5 +1,6 @@
 package alma.scheduling.array.sbSelection;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.scheduling.SchedulingException;
 
 import alma.scheduling.ArrayGUIOperation;
@@ -18,6 +19,7 @@ import java.util.List;
 public class DSASelector extends AbstractSelector {
 
 	private DynamicSchedulingAlgorithm dsa = null;
+	private String lastPolicy = null;
 	private ResultsDao resultsDao = (ResultsDao) DSAContextFactory.getContext()
 			.getBean(DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
 
@@ -25,7 +27,7 @@ public class DSASelector extends AbstractSelector {
 		final ArrayGUINotification agn = new ArrayGUINotification(
 				start? ArrayGUIOperation.CALCULATINGSCORES:
 					   ArrayGUIOperation.SCORESREADY,
-				array.getSchedulingPolicy(),
+				array.getDescriptor().policyName,
 				String.format("Dynamic Scheduler on %s",
 						array.getArrayName()));
 		notify(agn);
@@ -40,12 +42,39 @@ public class DSASelector extends AbstractSelector {
 		notifyWorking(true);
 		try {
 			Date runDate = new Date();
+			final String thisPolicy = array.getDescriptor().policyName;
+			
+			if (thisPolicy == null) {
+				// There's no policy, give up.
+				throw new SchedulingException(
+						"Scheduling Policy has not been properly set for Array: "
+						+ array.getArrayName());
+			}
+			
+			if (!thisPolicy.equals(lastPolicy)) {
+				// It's a new policy, so force a refresh of the dsa bean
+				System.out.println(String.format(
+						"Policy was %s, now %s%n", lastPolicy, thisPolicy));
+				lastPolicy = thisPolicy;
+				dsa = null;
+			}
+			
 			if (dsa == null) {
-				if (array.getSchedulingPolicy() == null)
-					throw new SchedulingException(
-							"Scheduling Policy has not been properly set for Array: "
-							+ array.getArrayName());
-				dsa = (DynamicSchedulingAlgorithm) DSAContextFactory.getContextFromPropertyFile().getBean(array.getSchedulingPolicy());
+				final DynamicSchedulingAlgorithm lastDSA = dsa;
+				try {
+					dsa = (DynamicSchedulingAlgorithm) DSAContextFactory.getContextFromPropertyFile().getBean(thisPolicy);
+				} catch (NoSuchBeanDefinitionException e) {
+					System.out.println("Known Policies");
+					System.out.println("--------------");
+					final List<String> policies = DSAContextFactory.getPolicyNames();
+					for (final String policy : policies) {
+						System.out.print('\t');
+						System.out.println(policy);
+					}
+					System.out.println("==============");
+					e.printStackTrace();
+					dsa = lastDSA; // meaningless, but it keeps us running
+				}
 				ArrayConfiguration arrConf = new ArrayConfiguration();
 				arrConf.setStartTime(new Date());
 				arrConf.setEndTime(new Date(System.currentTimeMillis() + 365 * 24 * 3600 * 1000));
