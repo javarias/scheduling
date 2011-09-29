@@ -32,9 +32,12 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -48,6 +51,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
@@ -61,18 +65,17 @@ import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.array.guis.ArrayPanel;
-import alma.scheduling.master.gui.policy.PolicyManagementPanel;
-import alma.scheduling.master.gui.policy.PolicySelectionListener;
 import alma.scheduling.master.util.SchedulingPolicyWrapper;
+import alma.scheduling.policy.gui.PolicyChangeListener;
+import alma.scheduling.policy.gui.PolicyManagementPanel;
+import alma.scheduling.policy.gui.PolicySelectionListener;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedulingProperties;
 
 @SuppressWarnings("serial")
 public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements PolicyChangeListener{
 
-    private String[] availableAntennas;
     private Vector<String> allArrays;
-    private int columnIndex = 0;
     private JButton createArrayB;
     private JButton cancelB;
     private ArrayModeEnum arrayMode;
@@ -86,8 +89,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     private ButtonGroup photonicsGroup;
     private JComboBox correlatorType;
     private JComboBox schedulingPolicy;
-    private Master masterScheduler;
-	private Master master;
+    private Master master;
+	private PolicyManagementPanel policyPanel = null;
+
 
     public CreateArrayPanel() {
         super();
@@ -233,7 +237,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
         
-        chessboardPanel.add(cbPanel,BorderLayout.CENTER);
+        chessboardPanel.add(new JScrollPane(cbPanel),BorderLayout.CENTER);
         chessboardPanel.add(createSouthPanel(),BorderLayout.SOUTH);
         validate();
     }
@@ -241,8 +245,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     private JPanel createTwelveMeterChessboard(ChessboardEntry[] foo) {
         ChessboardEntry[][] entries = new ChessboardEntry[5][10];
         int ctr=0;
-        for(int i=0; i < 5;i++){
-            for(int j=0; j < 10; j++){
+        for(int i=0; i < ACS_ANTENNAS_ROWS;i++){
+            for(int j=0; j < ACS_ANTENNAS_COLS; j++){
                 entries[i][j] = foo[ctr++];
             }
         }
@@ -263,8 +267,8 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     private JPanel createSevenMeterChessboard(ChessboardEntry[] foo) {
         ChessboardEntry[][] entries = new ChessboardEntry[2][6];
         int ctr=0;
-        for(int i=0; i < 2;i++){
-            for(int j=0; j < 6; j++){
+        for(int i=0; i < ACA_ANTENNAS_ROWS;i++){
+            for(int j=0; j < ACA_ANTENNAS_COLS; j++){
                 entries[i][j] = foo[ctr++];
             }
         }
@@ -284,8 +288,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     private JPanel createTPChessboard(ChessboardEntry[] foo) {
         ChessboardEntry[][] entries = new ChessboardEntry[1][4];
         int ctr=0;
-         for(int j=0; j < 4; j++){
-            entries[0][j] = foo[ctr++];
+        for (int i=0; i < TP_ANTENNAS_ROWS; i++) {
+        	for(int j=0; j < TP_ANTENNAS_COLS; j++){
+        		entries[0][j] = foo[ctr++];
+        	}
         }
          JPanel p = new JPanel(new GridBagLayout());
          GridBagConstraints gridBagConstraints= new GridBagConstraints();
@@ -371,16 +377,19 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     		}
     	}
 //    	final Vector<String> policies = new Vector<String>();
-    	    	
+    	
     	schedulingPolicy = new JComboBox(policies);
-    	final JLabel    label = new JLabel("Scheduling Policy");
-    	JButton testPolicyTree =  new JButton("Test Tree");
+    	final JLabel label = new JLabel("Scheduling Policy");
+    	JButton testPolicyTree =  new JButton("Setup Policy");
     	final PolicySelectionListener polly = new PolicySelectionListener(){
 
 			@Override
 			public void policySelected(String beanName) {
-				System.out.format("CreateArrayPanel, policySelected: %s%n", beanName);
-				ErrorHandling.printStackTrace();
+				logger.fine(
+						String.format(
+								"%n%nCreateArrayPanel, policySelected: %s%n%n%n",
+								beanName));
+//				ErrorHandling.printStackTrace();
 			}
 		};
     	testPolicyTree.addActionListener(new ActionListener() {
@@ -388,8 +397,24 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrame frame = new JFrame();
-				PolicyManagementPanel panel = new PolicyManagementPanel(master, polly);
-				frame.getContentPane().add(panel);
+				policyPanel = new PolicyManagementPanel(master);
+				policyPanel.addListener(polly);
+				frame.addWindowListener(new WindowListener(){
+
+					@Override
+					public void windowClosed(WindowEvent e) {
+						policyPanel.removeListener(polly);
+						policyPanel = null;
+					}
+
+					@Override public void windowOpened(WindowEvent e) {} // ignore
+					@Override public void windowClosing(WindowEvent e) {} // ignore
+					@Override public void windowIconified(WindowEvent e) {} // ignore
+					@Override public void windowDeiconified(WindowEvent e) {} // ignore
+					@Override public void windowActivated(WindowEvent e) {} // ignore
+					@Override public void windowDeactivated(WindowEvent e) {} // ignore
+				});
+				frame.getContentPane().add(policyPanel);
 				frame.pack();
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				frame.setVisible(true);
@@ -438,15 +463,6 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
         return p;
     }
 
-    private boolean isIn(int is, int[] in){
-        for(int i=0; i < in.length; i++){
-            if(in[i] == is) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void updateChessboard(String[] antNames) {
     //show the available antennas as online
         //for each available antenna
@@ -457,7 +473,9 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
         ChessboardStatusEvent event=null;
         for (int i=0; i < antNames.length; i++){
         	//logger.info("updateChessboard active antenna name:"+antNames[i]);
-            event = new ChessboardStatusEvent(antNames[i], SPAntennaStatus.ONLINE);//, null);
+            event = new ChessboardStatusEvent(antNames[i],
+            		SPAntennaStatus.ONLINE,
+            		controller.toolTipForAntenna(antNames[i]));
             if(antNames[i].contains("PM"))
             	tpChessboard.processStatusChange(event);
             else if(antNames[i].contains("CM")) 
@@ -493,18 +511,28 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
         tpChessboard.setEnabled(enabled);
         if( !enabled) {
             ChessboardEntry[][] all = controller.getAntennasForOfflineChessboards();
+            String name;
             for(int i=0; i < all[0].length; i++){
-                event = new ChessboardStatusEvent(all[0][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
+            	name = all[0][i].getDisplayName();
+                event = new ChessboardStatusEvent(name,
+                		SPAntennaStatus.OFFLINE,
+                		controller.toolTipForAntenna(name));
                 twelveMeterChessboard.processStatusChange(event);
             }
             
             for(int i=0; i < all[1].length; i++){
-                event = new ChessboardStatusEvent(all[1][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
-                sevenMeterChessboard.processStatusChange(event);
+            	name = all[1][i].getDisplayName();
+                event = new ChessboardStatusEvent(name,
+                		SPAntennaStatus.OFFLINE,
+                		controller.toolTipForAntenna(name));
+               sevenMeterChessboard.processStatusChange(event);
             }
             
             for(int i=0; i < all[2].length; i++){
-                event = new ChessboardStatusEvent(all[2][i].getDisplayName(), SPAntennaStatus.OFFLINE);//, null);
+            	name = all[2][i].getDisplayName();
+                event = new ChessboardStatusEvent(name,
+                		SPAntennaStatus.OFFLINE,
+                		controller.toolTipForAntenna(name));
                 tpChessboard.processStatusChange(event);
             }
         }
@@ -540,109 +568,92 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
        
 
     private boolean createArray() {
-    	//get selected antenns from chessboard
+    	// Get selected antennas from each chessboard and check that
+    	// they are online (really, we should prevent selection of
+    	// offline ones).
+    	Collection<ChessboardEntry> antennas = new Vector<ChessboardEntry>();
+
     	ChessboardEntry[] ACSselected = twelveMeterChessboard.getSelectedEntries();
-    	int NumberOfantennaSelected=0 ;
-    	//check the ones selected have online status
-    	//temporary: change so that can't select ones not online
-    	if(ACSselected!=null) {
-    		for(int i=0; i <ACSselected.length; i++){
-    			if(ACSselected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+    	if (ACSselected != null) {
+    		for (final ChessboardEntry antenna : ACSselected) {
+    			if (antenna.getCurrentStatus() == SPAntennaStatus.ONLINE) {
+    				antennas.add(antenna);
+    			} else {
     				JOptionPane.showMessageDialog(this, 
     						"Selected Antenna not available",
-    						"Antenna "+ACSselected[i].getDisplayName()+" is not available "+
-    						"to be included in an array", JOptionPane.ERROR_MESSAGE);
+    						"Antenna "+antenna.getDisplayName()+" is not available "+
+    						"to be included in an array",
+    						JOptionPane.ERROR_MESSAGE);
     				return false;
     			}
     		}
-    		NumberOfantennaSelected = ACSselected.length;
     	}
 
     	ChessboardEntry[] TPSelected = tpChessboard.getSelectedEntries();
-    	if(TPSelected!=null) {
-    		for(int i=0; i <TPSelected.length; i++){
-    			if(TPSelected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+    	if (TPSelected != null) {
+    		for (final ChessboardEntry antenna : TPSelected) {
+    			if (antenna.getCurrentStatus() == SPAntennaStatus.ONLINE) {
+    				antennas.add(antenna);
+    			} else {
     				JOptionPane.showMessageDialog(this, 
     						"Selected Antenna not available",
-    						"Antenna "+TPSelected[i].getDisplayName()+" is not available "+
-    						"to be included in an array", JOptionPane.ERROR_MESSAGE);
+    						"Antenna "+antenna.getDisplayName()+" is not available "+
+    						"to be included in an array",
+    						JOptionPane.ERROR_MESSAGE);
     				return false;
     			}
     		}
-    		NumberOfantennaSelected = NumberOfantennaSelected+TPSelected.length;
     	}
-    	
+
     	ChessboardEntry[] ACASelected = sevenMeterChessboard.getSelectedEntries();
-    	if(ACASelected!=null) {
-    		for(int i=0; i <ACASelected.length; i++){
-    			if(ACASelected[i].getCurrentStatus() != SPAntennaStatus.ONLINE){
+    	if (ACASelected != null) {
+    		for (final ChessboardEntry antenna : ACASelected) {
+    			if (antenna.getCurrentStatus() == SPAntennaStatus.ONLINE) {
+    				antennas.add(antenna);
+    			} else {
     				JOptionPane.showMessageDialog(this, 
     						"Selected Antenna not available",
-    						"Antenna "+ACASelected[i].getDisplayName()+" is not available "+
-    						"to be included in an array", JOptionPane.ERROR_MESSAGE);
+    						"Antenna "+antenna.getDisplayName()+" is not available "+
+    						"to be included in an array",
+    						JOptionPane.ERROR_MESSAGE);
     				return false;
     			}
     		}
-    		NumberOfantennaSelected = NumberOfantennaSelected+ACASelected.length;
-    	}
-    	
-    	
-
-    	ChessboardEntry[] selected = new ChessboardEntry[NumberOfantennaSelected];
-	int antennasSoFar = 0;
-    	if( ACSselected != null ){
-    		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
-		antennasSoFar = antennasSoFar + ACSselected.length;
-		logger.info("Number of 12m antennas for new array: " + ACSselected.length );
     	}
 
-	if( TPSelected != null ){
-    		System.arraycopy(TPSelected, 0, selected, antennasSoFar, TPSelected.length);
-		antennasSoFar = antennasSoFar + TPSelected.length;
-		logger.info("Number of TP antennas for new array: " + TPSelected.length );
+    	if (ACSselected != null) {
+    		logger.info("Number of 12m antennas for new array: " + ACSselected.length );
     	}
-	if( ACASelected != null ){
-    		System.arraycopy(ACASelected, 0, selected, antennasSoFar, ACASelected.length);
-		logger.info("Number of 7m antennas for new array: " + ACASelected.length );
+    	if (TPSelected != null) {
+    		logger.info("Number of TP antennas for new array: " + TPSelected.length );
     	}
-	if( ACSselected == null && TPSelected == null && ACASelected == null){
+    	if (ACASelected != null) {
+    		logger.info("Number of 7m antennas for new array: " + ACASelected.length );
+    	}
+    	if (antennas.size() == 0){
     		JOptionPane.showMessageDialog(this, 
-    				"None Antenna Selected",
-					"Please select at least one antenna to create array",JOptionPane.ERROR_MESSAGE);
+    				"No Antennas Selected",
+    				"Please select at least one antenna to create array",
+    				JOptionPane.ERROR_MESSAGE);
+    		return false;
     	}
     	
-    	/* 
-    	if(ACSselected!=null && TPSelected==null){
-    		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
-    	} else if(ACSselected==null && TPSelected!=null) {
-    		System.arraycopy(TPSelected, 0, selected, 0, TPSelected.length);
-    	} else if(ACSselected!=null && TPSelected!=null) {
-    		System.arraycopy(ACSselected, 0, selected, 0, ACSselected.length);
-    		System.arraycopy(TPSelected, 0, selected, ACSselected.length, TPSelected.length);
-    	}  else if(ACSselected==null && TPSelected==null) {
-    		JOptionPane.showMessageDialog(this, 
-    				"No Antenna Selected",
-					"Please select at least one antenna to create array",JOptionPane.ERROR_MESSAGE);
-    	}
-    	*/
-    	
-    	//for(int i=0;i<selected.length;i++) {
-    	//	logger.info("index "+i+" : "+selected[i].getDisplayName());
-    	//}
-    	//get select LO photonic
-    	//String selectPhotonic= selectRadioButton.getText();
+    	// Get the optional photonic reference
     	String[] photonicsChoice = getSelectedLOPhotonics();
-    	if(photonicsChoice.length>0){
+    	if (photonicsChoice.length > 0) {
         	logger.info(String.format("The selected photonic reference is: %s",
         			photonicsChoice[0]));
-    	}
-    	else {
+    	} else {
     		logger.info("None of the photonics is selected in CreateArray stage");
     	}
+    	
+    	
+    	// Get the optional correlator
     	CorrelatorType correlator = getCorrelatorType();
     	logger.info(String.format("The selected correlator is: %s",
     			correlator));
     	
+    	// Get the optional scheduling policy
     	SchedulingPolicyWrapper spw = getPolicy();
     	String policy = "";
     	if (spw == null) {
@@ -659,7 +670,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     	disableCreateArrayPanel();
     	try {
     		arrayName = controller.createArray(arrayMode,
-    				selected,
+    				antennas,
     				photonicsChoice,
     				correlator,
     				policy);
@@ -674,6 +685,10 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     				"Error creating array", JOptionPane.ERROR_MESSAGE);
     		return false;
     	}
+    	
+    	// We can automagically pop-up the array panel if the magic
+    	// option is set. This is for testing, not the deployed
+    	// environment.
     	if (SchedulingProperties.isAutoPopupArrayPlugin()) {
     		try {
     			ArrayPanel arrayPanel = new ArrayPanel(arrayName);
@@ -814,7 +829,15 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 	@Override
 	public void refreshPolicyList() {
 		refreshComboBoxPolicies();
-		
+		if (policyPanel != null) {
+			// Decided to pass on the notification from this parent GUI
+			// rather than have the policyPanel listen for itself - it
+			// seemed a bit of a hack to have policyPanel need to know
+			// about the environment in which it operated (e.g. the
+			// ContainerServices which it would need in order to set up
+			// an offshoot callback thingy.
+			policyPanel.refreshPolicyList();
+		}
 	}
 	
 	private synchronized void refreshComboBoxPolicies() {

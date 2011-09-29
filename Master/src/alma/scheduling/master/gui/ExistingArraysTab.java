@@ -27,9 +27,9 @@ package alma.scheduling.master.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
@@ -37,6 +37,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
+import alma.scheduling.Array;
+import alma.scheduling.ArrayDescriptor;
+import alma.scheduling.formatting.ArrayDescriptorFormatter;
 
 @SuppressWarnings("serial")
 public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
@@ -74,23 +77,30 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
     
     private void createLayout() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        createTablePanel();
-        createReportagePanel();
-    }
+        setLayout(new BorderLayout());
+        tablePanel = createTablePanel();
+        reportagePanel = createReportagePanel();
 
-    private void createTablePanel(){
+		final JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
+		split.setTopComponent(tablePanel);
+		split.setBottomComponent(reportagePanel);
+		split.setDividerLocation(0.6);
+		split.setOneTouchExpandable(true);
+		add(split, BorderLayout.CENTER);
+}
+
+    private JPanel createTablePanel(){
         table = new ArrayTable(new Dimension(300,200));
         table.setOwner(this);
         table.getSelectionModel().addListSelectionListener(tableListener());
         JScrollPane pane = new JScrollPane(table,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        tablePanel = new JPanel();
-        tablePanel.setLayout(new BorderLayout());
-        tablePanel.setBorder(new TitledBorder("Existing Arrays"));
-        tablePanel.add(pane);
-        add(tablePanel);
+        final JPanel result = new JPanel();
+        result.setLayout(new BorderLayout());
+        result.setBorder(new TitledBorder("Existing Arrays"));
+        result.add(pane);
+        return result;
     }
     
     private ListSelectionListener tableListener() {
@@ -98,33 +108,33 @@ public class ExistingArraysTab extends SchedulingPanelGeneralPanel {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				final String array = table.getCurrentArray();
-				if (array != null) {
-					// TODO: display the array details:
-					//	Antennas
-					//	Photonic (if there is one)
-					//	Correlator (if there is one)
-					//	Scheduling Mode (manual, dynamic, interactive)
-					//	Policy Name (if a dynamic array
-					// Actually, the scheduling mode is displayed in
-					// the table
-					arrayDetails.setText("Current array = " +
-							table.getCurrentArray());
+				final String arrayName = table.getCurrentArray();
+				if (arrayName != null) {
+					final Array array = controller.getArray(arrayName);
+					if (array != null) {
+						final ArrayDescriptor details = array.getDescriptor();
+						arrayDetails.setText(ArrayDescriptorFormatter.formatted(arrayName, details));
+					} else {
+						arrayDetails.setText("<html>" +
+								"Cannot connect to component for array " +
+								arrayName +
+								"</html>");
+					}
 				} else {
-					arrayDetails.setText("no array selected");
+					arrayDetails.setText("<html>No array selected</html>");
 				}
-//				System.out.println("Current array = " + table.getCurrentArray());
-			}};
+			}
+		};
 	}
 
-	private void createReportagePanel() {
-    	reportagePanel = new JPanel();
-    	reportagePanel.setBorder(new TitledBorder("Resources In Array"));
-    	reportagePanel.setLayout(new BorderLayout());
+	private JPanel createReportagePanel() {
+		final JPanel result = new JPanel();
+		result.setBorder(new TitledBorder("Resources In Array"));
+		result.setLayout(new BorderLayout());
     	arrayDetails = new JTextPane();
-    	reportagePanel.add(arrayDetails);
-    	// TODO: add this when we have something useful to say in it
-//    	add(reportagePanel);
+    	arrayDetails.setContentType("text/html");
+    	result.add(new JScrollPane(arrayDetails));
+    	return result;
     }
 
     public void exit(){

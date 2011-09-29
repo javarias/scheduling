@@ -31,10 +31,14 @@ import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.nc.Consumer;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
+import alma.scheduling.Array;
+import alma.scheduling.ArrayHelper;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
+import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.utils.Constants;
+import alma.scheduling.utils.ErrorHandling;
 
 public class SchedulingPanelController {
     protected Master masterScheduler;
@@ -197,5 +201,23 @@ public class SchedulingPanelController {
 		}
 	}
 
+    protected Array getArray(String arrayName) {
+    	Array result = null;
+        final org.omg.CORBA.Object obj;
+		try {
+			final String component = NameTranslator.arrayToComponentName(arrayName);
+			obj = container.getComponent(component);
+	        result = ArrayHelper.narrow(obj);
+		} catch (Exception e) {
+			String message = e.getMessage();
+			if (message == null) {
+				message = e.getClass().getSimpleName();
+			}
+			ErrorHandling.warning(logger, String.format(
+					"Error getting component for array %s - %s",
+					arrayName, message), e);
+		}
+    	return result;
+    }
 }
 

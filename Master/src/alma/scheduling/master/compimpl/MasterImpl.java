@@ -40,7 +40,6 @@ import alma.ACS.ComponentStates;
 import alma.Control.ArrayIdentifier;
 import alma.Control.ControlMaster;
 import alma.Control.ControlMasterHelper;
-import alma.Control.CorrelatorType;
 import alma.Control.CurrentWeather;
 import alma.Control.CurrentWeatherHelper;
 import alma.Control.InaccessibleException;
@@ -66,6 +65,7 @@ import alma.acs.logging.domainspecific.AudienceLogger.Audience;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
+import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayEvent;
 import alma.scheduling.ArrayGUICallback;
 import alma.scheduling.ArrayHelper;
@@ -89,10 +89,10 @@ import alma.scheduling.array.util.NameTranslator;
 import alma.scheduling.array.util.NameTranslator.TranslationException;
 import alma.scheduling.datamodel.weather.dao.WeatherStationDao;
 import alma.scheduling.utils.AudienceFlogger;
+import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.DSAContextFactory;
 import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 import alma.scheduling.utils.FakeAudienceFlogger;
-import alma.scheduling.utils.Constants;
 
 public class MasterImpl implements ComponentLifecycle, MasterOperations {
 
@@ -234,12 +234,10 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 	// ///////////////////////////////////////////////////////////
 
 	@Override
-	public synchronized ArrayCreationInfo createArray(String[] antennaIdList,
-			String[] photonicsList, CorrelatorType corrType,
-			ArrayModeEnum schedulingMode,
-			ArraySchedulerLifecycleType lifecycleType, String policyName)
-			throws ControlInternalExceptionEx, ACSInternalExceptionEx,
-			SchedulingInternalExceptionEx {
+	public synchronized ArrayCreationInfo createArray(ArrayDescriptor details)
+		throws ControlInternalExceptionEx,
+		       SchedulingInternalExceptionEx,
+		       ACSInternalExceptionEx {
 		String arrayName = null;
 		while (!isInitialized()) {
 			try {
@@ -249,8 +247,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 			}
 		}
 		try {
-			arrayName = createNewControlArray(antennaIdList, photonicsList,
-					corrType, schedulingMode);
+			arrayName = createNewControlArray(details);
 			if (arrayName == null) {
 				operatorLog
 						.warning(
@@ -287,8 +284,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		}
 
 		try {
-			createNewSchedulingArray(arrayName, schedulingMode, lifecycleType,
-					policyName);
+			createNewSchedulingArray(arrayName, details);
 			operatorLog.info("Created SCHEDULING component for %s", arrayName);
 		} catch (AcsJContainerServicesEx e) {
 			operatorLog
@@ -314,16 +310,16 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		}
 
 		m_logger.info(String.format("adding (%s, %s) to active arrays",
-				arrayInfo.arrayId, schedulingMode));
+				arrayInfo.arrayId, details.schedulingMode));
 
-		activeArrays.put(arrayInfo.arrayId, schedulingMode);
+		activeArrays.put(arrayInfo.arrayId, details.schedulingMode);
 
 		// Notify to the callbacks
 		ArrayList<String> toBeDeleted = new ArrayList<String>();
 		for (String key : arrayCallbacks.keySet()) {
 			try {
 				arrayCallbacks.get(key).report(ArrayEvent.CREATION,
-						schedulingMode, arrayInfo.arrayId);
+						details.schedulingMode, arrayInfo.arrayId);
 			} catch (org.omg.CORBA.SystemException e) {
 				m_logger.fine("Forcing release of callback " + key
 						+ ". Callback is not responding");
@@ -514,21 +510,23 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 	 * @throws InaccessibleException
 	 * @throws InvalidRequest
 	 */
-	private String createNewControlArray(String[] antennaIdList,
-			String[] photonicsList, CorrelatorType corrType,
-			ArrayModeEnum schedulingMode) throws InaccessibleException,
-			InvalidRequest {
+	private String createNewControlArray(ArrayDescriptor details)
+			throws InaccessibleException, InvalidRequest {
 
 		if (controlMaster.getMasterState() == alma.Control.SystemState.OPERATIONAL) {
 			m_logger.info("Control master reference is OPERATIONAL. About to create CONTROL Array");
 			ArrayIdentifier arrayId;
-			if (schedulingMode == ArrayModeEnum.MANUAL) {
-				arrayId = controlMaster.createManualArray(antennaIdList,
-						photonicsList, corrType);
+			if (details.schedulingMode == ArrayModeEnum.MANUAL) {
+				arrayId = controlMaster.createManualArray(
+						details.antennaIdList,
+						details.photonicsList,
+						details.corrType);
 				return arrayId.arrayName;
 			} else { // DYNAMIC, INTERACTIVE and QUEUE
-				arrayId = controlMaster.createAutomaticArray(antennaIdList,
-						photonicsList, corrType);
+				arrayId = controlMaster.createAutomaticArray(
+						details.antennaIdList,
+						details.photonicsList,
+						details.corrType);
 				return arrayId.arrayName;
 			}
 
@@ -537,9 +535,8 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		return null;
 	}
 
-	private Array createNewSchedulingArray(String arrayName,
-			ArrayModeEnum schedulingMode,
-			ArraySchedulerLifecycleType lifecycleType, String policyName)
+	private Array createNewSchedulingArray(String          arrayName,
+			                               ArrayDescriptor details)
 			throws AcsJContainerServicesEx, AcsJSchedulingInternalExceptionEx {
 		String schedArrayURL = null;
 		try {
@@ -562,18 +559,18 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		if (dynamicComponent == null)
 			return null;
 		Array array = ArrayHelper.narrow(dynamicComponent);
-		array.configure(arrayName, convertToArraySchedulerMode(schedulingMode),
-				lifecycleType);
-		if (schedulingMode == ArrayModeEnum.DYNAMIC) {
+		array.configure(arrayName, convertToArraySchedulerMode(details.schedulingMode),
+				details);
+		if (details.schedulingMode == ArrayModeEnum.DYNAMIC) {
 			// If the policy name doesn't start with uuid that means that it is
 			// a system policy
-			if (policyName.startsWith("uuid")) {
+			if (details.policyName.startsWith("uuid")) {
 				// Lock the file for non system policies
-				String fileUUID = policyName.substring(4, 41);
+				String fileUUID = details.policyName.substring(4, 41);
 				PoliciesContainersDirectory.getInstance().lockPolicyContainer(
 						UUID.fromString(fileUUID));
 			}
-			array.configureDynamicScheduler(policyName);
+			array.configureDynamicScheduler(details.policyName);
 		}
 		return array;
 	}
@@ -660,7 +657,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 
 			@Override
 			public void configure(String arrayName, ArraySchedulerMode[] modes,
-					ArraySchedulerLifecycleType lifecycleType) {
+					ArrayDescriptor descriptor) {
 			}
 
 			@Override
@@ -876,6 +873,25 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 			@Override
 			public Object _set_policy_override(Policy[] policies,
 					SetOverrideType set_add) {
+				return null;
+			}
+
+			@Override
+			public ArrayDescriptor getDescriptor() {
+				return null;
+			}
+
+			@Override
+			public boolean isActiveDynamic() {
+				return false;
+			}
+
+			@Override
+			public void setActiveDynamic(boolean on, String name, String role) {
+			}
+
+			@Override
+			public String getSchedulingPolicy() {
 				return null;
 			}
 		};

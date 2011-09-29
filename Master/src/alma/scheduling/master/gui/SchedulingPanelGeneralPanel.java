@@ -39,6 +39,16 @@ import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.Master;
 
 public class SchedulingPanelGeneralPanel extends JPanel implements SubsystemPlugin {
+	
+	final static int ACS_ANTENNAS_COLS = 10;
+	final static int ACS_ANTENNAS_ROWS = 5;
+	
+	final static int ACA_ANTENNAS_COLS = 6;
+	final static int ACA_ANTENNAS_ROWS = 2;
+	
+	final static int TP_ANTENNAS_COLS = 4;
+	final static int TP_ANTENNAS_ROWS = 1;
+	
     protected PluginContainerServices container;
     protected Logger logger;
     protected String title;
