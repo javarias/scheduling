@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * $Id: SchedulingPluginsTest.java,v 1.9 2011/07/14 17:26:25 javarias Exp $
+ * $Id: SchedulingPluginsTest.java,v 1.10 2011/09/29 20:53:55 dclarke Exp $
  */
 
 package alma.scheduling.inttest;
@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import alma.ACS.MasterComponent;
 import alma.ACS.MasterComponentHelper;
 import alma.ACS.ROstringSeq;
@@ -40,7 +39,6 @@ import alma.ACSSim.SimulatorHelper;
 import alma.Control.ControlMaster;
 import alma.Control.ControlMasterHelper;
 import alma.Control.CorrelatorType;
-import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.TMCDB.Access;
 import alma.TMCDB.AccessHelper;
 import alma.acs.component.client.ComponentClientTestCase;
@@ -48,6 +46,7 @@ import alma.acs.container.ContainerServices;
 import alma.scheduling.ArchiveUpdater;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayCreationInfo;
+import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.Master;
@@ -226,7 +225,8 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     	final String[] antennaList =  {"DV01", "DA41"};
     	final String[] photonicsList = {};
     	String [] sbs = archOperational.queryRecent("SchedBlock", timestamp);
-    	final ArrayCreationInfo arrayName = masterScheduler.createArray(antennaList, photonicsList, CorrelatorType.BL, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, "");
+    	final ArrayDescriptor desc = new ArrayDescriptor(antennaList, photonicsList, CorrelatorType.BL, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, "");
+    	final ArrayCreationInfo arrayName = masterScheduler.createArray(desc);
     	Array array = alma.scheduling.ArrayHelper.narrow(container.getComponent(
     			arrayName.arrayComponentName)); 
     	for(String sb: sbs) {
@@ -247,7 +247,8 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     	final String[] antennaList =  {"DV01", "DA41"};
     	final String[] photonicsList = {};
     	String [] sbs = archOperational.queryRecent("SchedBlock", timestamp);
-    	final ArrayCreationInfo arrayName = masterScheduler.createArray(antennaList, photonicsList, CorrelatorType.BL, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, "");
+    	final ArrayDescriptor desc = new ArrayDescriptor(antennaList, photonicsList, CorrelatorType.BL, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, "");
+    	final ArrayCreationInfo arrayName = masterScheduler.createArray(desc);
     	Array array = alma.scheduling.ArrayHelper.narrow(container.getComponent(
     			arrayName.arrayComponentName));
     	array.push(new SchedBlockQueueItem(System.currentTimeMillis(), sbs[0]));
@@ -263,11 +264,12 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testInteractiveSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        ArrayCreationInfo arrayName = masterScheduler.createArray(
+    	final ArrayDescriptor desc = new ArrayDescriptor(
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
                 ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, "");
+        ArrayCreationInfo arrayName = masterScheduler.createArray(desc);
         logger.info("Array name: "+arrayName);
         
         logger.info("Creating Scheduler");
@@ -327,11 +329,12 @@ public class SchedulingPluginsTest extends ComponentClientTestCase {
     public void testManualSchedulingPlugin() throws Exception {
     	masterScheduler = alma.scheduling.MasterHelper.narrow(
                 container.getComponent("SCHEDULING_MASTERSCHEDULER"));
-        ArrayCreationInfo arrayName = masterScheduler.createArray(
+        ArrayDescriptor desc = new ArrayDescriptor (
         		new String[] {"DV01"},
                 new String[] {"PhotonicReference1"},
                 CorrelatorType.BL,
                 ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, "");
+        ArrayCreationInfo arrayName = masterScheduler.createArray(desc);
         logger.info("Array name: "+arrayName);
     	
         System.out.print("Press a key to continue...");
