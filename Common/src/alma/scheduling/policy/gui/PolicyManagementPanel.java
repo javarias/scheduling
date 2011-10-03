@@ -73,11 +73,22 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 								selectPolicyButton.setEnabled(false);
 							}
 							else {
-								beanSelectedName = "uuid"
-										+ ((PoliciesFileTreeNode) e.getPath()
-												.getPath()[1]).getFile().uuid + "-";
-								beanSelectedName += (String)e.getPath().getPath()[2];
-								selectPolicyButton.setEnabled(true);
+								//System policies
+								if (((PoliciesFileTreeNode) e.getPath()
+										.getPath()[1]).getFile().path
+										.compareTo("system") == 0) {
+									beanSelectedName = (String) e.getPath().getPath()[2];
+								}
+								//Runtime imported policies
+								else {
+									beanSelectedName = "uuid"
+											+ ((PoliciesFileTreeNode) e
+													.getPath().getPath()[1])
+													.getFile().uuid + "-";
+									beanSelectedName += (String) e.getPath()
+											.getPath()[2];
+									selectPolicyButton.setEnabled(true);
+								}
 							}
 						}
 					}
