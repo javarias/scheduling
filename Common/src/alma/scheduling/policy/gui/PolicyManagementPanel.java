@@ -62,33 +62,32 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	private JTree initializePoliciesTree() {
 		JTree tree = new JTree();
 		tree.setModel(new PoliciesTreeModel(master.getSchedulingPolicies()));
-		tree.getSelectionModel().setSelectionMode(DefaultTreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.getSelectionModel().addTreeSelectionListener( new TreeSelectionListener() {
-			
+		tree.getSelectionModel().setSelectionMode(
+				DefaultTreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.getSelectionModel().addTreeSelectionListener(
+				new TreeSelectionListener() {
+
 					@Override
 					public void valueChanged(TreeSelectionEvent e) {
 						if (e.getPath() != null) {
 							if (e.getPath().getPathCount() != 3) {
 								beanSelectedName = "";
 								selectPolicyButton.setEnabled(false);
-							}
-							else {
-								//System policies
+							} else {
+								// System policies
 								if (((PoliciesFileTreeNode) e.getPath()
-										.getPath()[1]).getFile().path
-										.compareTo("system") == 0) {
-									beanSelectedName = (String) e.getPath().getPath()[2];
-								}
-								//Runtime imported policies
-								else {
-									beanSelectedName = "uuid"
-											+ ((PoliciesFileTreeNode) e
-													.getPath().getPath()[1])
-													.getFile().uuid + "-";
-									beanSelectedName += (String) e.getPath()
+										.getPath()[1]).isSystemFile()) {
+									beanSelectedName = (String) e.getPath()
 											.getPath()[2];
-									selectPolicyButton.setEnabled(true);
 								}
+								// Runtime imported policies
+								else {
+									beanSelectedName = ((PoliciesFileTreeNode) e
+											.getPath().getPath()[1])
+											.getBeanName((String) e.getPath()
+													.getPath()[2]);
+								}
+								selectPolicyButton.setEnabled(true);
 							}
 						}
 					}

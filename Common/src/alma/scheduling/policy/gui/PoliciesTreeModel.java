@@ -127,6 +127,16 @@ public class PoliciesTreeModel implements TreeModel, PolicyChangeListener, Polic
 		public String toString() {
 			return file.username + "@" + file.hostname + ":" + file.path;
 		}
+		
+		public boolean isSystemFile() {
+			if (file.path.compareTo("system") == 0)
+				return true;
+			return false;
+		}
+		
+		public String getBeanName(String policyName) {
+			return "uuid" + file.uuid + "-" + policyName;
+		}
 	}
 
 	
