@@ -380,7 +380,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     	
     	schedulingPolicy = new JComboBox(policies);
     	final JLabel label = new JLabel("Scheduling Policy");
-    	JButton testPolicyTree =  new JButton("Setup Policy");
+    	final JButton testPolicyTree =  new JButton("Setup Policy");
     	final PolicySelectionListener polly = new PolicySelectionListener(){
 
 			@Override
@@ -396,6 +396,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				testPolicyTree.setEnabled(false);
 				JFrame frame = new JFrame("Policy Selection for new Array");
 				policyPanel = new PolicyManagementPanel(master);
 				policyPanel.addListener(polly);
@@ -405,6 +406,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 					public void windowClosed(WindowEvent e) {
 						policyPanel.removeListener(polly);
 						policyPanel = null;
+						testPolicyTree.setEnabled(true);
 					}
 
 					@Override public void windowOpened(WindowEvent e) {} // ignore

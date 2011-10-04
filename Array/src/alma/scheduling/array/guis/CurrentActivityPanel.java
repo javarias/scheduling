@@ -82,7 +82,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.15 2011/10/04 17:54:26 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.16 2011/10/04 20:50:17 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -409,15 +409,18 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						setPolicy.setEnabled(false);
 						JFrame frame = new JFrame("Policy selection for " + array.getArrayName());
 						policyPanel = new PolicyManagementPanel(getMaster());
 						policyPanel.addListener(polly);
+						frame.setSize(320, 400);
 						frame.addWindowListener(new WindowListener(){
 
 							@Override
 							public void windowClosed(WindowEvent e) {
 								policyPanel.removeListener(polly);
 								policyPanel = null;
+								setPolicy.setEnabled(true);
 							}
 
 							@Override public void windowOpened(WindowEvent e) {} // ignore

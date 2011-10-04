@@ -2,6 +2,7 @@ package alma.scheduling.policy.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -74,19 +75,10 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 								beanSelectedName = "";
 								selectPolicyButton.setEnabled(false);
 							} else {
-								// System policies
-								if (((PoliciesFileTreeNode) e.getPath()
-										.getPath()[1]).isSystemFile()) {
-									beanSelectedName = (String) e.getPath()
-											.getPath()[2];
-								}
-								// Runtime imported policies
-								else {
-									beanSelectedName = ((PoliciesFileTreeNode) e
-											.getPath().getPath()[1])
-											.getBeanName((String) e.getPath()
-													.getPath()[2]);
-								}
+								beanSelectedName = ((PoliciesFileTreeNode) e
+										.getPath().getPath()[1])
+										.getBeanName((String) e.getPath()
+												.getPath()[2]);
 								selectPolicyButton.setEnabled(true);
 							}
 						}
@@ -302,8 +294,11 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	 */
 	private JPanel createCentrePanel() {
 		final JPanel result = new JPanel();
+		result.setLayout(new BorderLayout(5, 5));
+		policiesTree.setSize(320, 400);
+		policiesTree.setMinimumSize(new Dimension(320, 400));
 		final JScrollPane scroll = new JScrollPane(policiesTree);
-		result.add(scroll);
+		result.add(scroll, BorderLayout.CENTER);
 		return result;
 	}
 	

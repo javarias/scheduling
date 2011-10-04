@@ -135,7 +135,10 @@ public class PoliciesTreeModel implements TreeModel, PolicyChangeListener, Polic
 		}
 		
 		public String getBeanName(String policyName) {
-			return "uuid" + file.uuid + "-" + policyName;
+			if (isSystemFile())
+				return policyName;
+			else
+				return "uuid" + file.uuid + "-" + policyName;
 		}
 	}
 
