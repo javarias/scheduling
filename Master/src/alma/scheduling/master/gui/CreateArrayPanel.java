@@ -396,7 +396,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFrame frame = new JFrame();
+				JFrame frame = new JFrame("Policy Selection for new Array");
 				policyPanel = new PolicyManagementPanel(master);
 				policyPanel.addListener(polly);
 				frame.addWindowListener(new WindowListener(){
