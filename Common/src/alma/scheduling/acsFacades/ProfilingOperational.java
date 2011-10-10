@@ -35,12 +35,13 @@ import alma.xmlstore.OperationalPackage.MalformedURI;
 import alma.xmlstore.OperationalPackage.NotFound;
 import alma.xmlstore.OperationalPackage.NotYetThere;
 import alma.xmlstore.OperationalPackage.StatusStruct;
+import alma.xmlstore.OperationalPackage.TimestampInconsistency;
 
 
 /**
  * A facade for the XMLstore Operational which logs calls made to it.
  *
- * @version $Id: ProfilingOperational.java,v 1.1 2010/04/30 22:43:12 dclarke Exp $
+ * @version $Id: ProfilingOperational.java,v 1.2 2011/10/10 17:39:24 javarias Exp $
  * @author David Clarke
  */
 public class ProfilingOperational
@@ -156,7 +157,7 @@ public class ProfilingOperational
 	 * @see alma.xmlstore.OperationalOperations#forceUpdate(alma.xmlentity.XmlEntityStruct)
 	 */
 	public void forceUpdate(XmlEntityStruct entity) throws IllegalEntity,
-			ArchiveInternalError {
+			ArchiveInternalError, TimestampInconsistency {
 		profiler.start("forceUpdate");
 		delegate.forceUpdate(entity);
 		profiler.end();
@@ -363,7 +364,7 @@ public class ProfilingOperational
 	 * @see alma.xmlstore.OperationalOperations#update(alma.xmlentity.XmlEntityStruct)
 	 */
 	public void update(XmlEntityStruct entity) throws IllegalEntity,
-			ArchiveInternalError {
+			ArchiveInternalError, TimestampInconsistency{
 		profiler.start("update");
 		delegate.update(entity);
 		profiler.end();
