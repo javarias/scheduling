@@ -6,7 +6,7 @@
 
 #pragma prefix "alma"
 
-module Scheduling {
+module scheduling {
 	interface TestManualArray : Control::ManualArrayCommand, Control::ManualArrayMonitor{
 		void beginExecution();
 		void endExecution(in Control::Completion statusCode, in string message);
