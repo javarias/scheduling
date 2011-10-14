@@ -45,7 +45,7 @@ import alma.scheduling.SchedBlockQueueManagerOperations;
  * interface.
  * 
  * @author dclarke
- * $Id: DelegatedArray.java,v 1.11 2011/09/29 20:58:36 dclarke Exp $
+ * $Id: DelegatedArray.java,v 1.12 2011/10/14 23:00:23 dclarke Exp $
  */
 public class DelegatedArray implements ComponentLifecycle,
         ArrayOperations {
@@ -374,6 +374,16 @@ public class DelegatedArray implements ComponentLifecycle,
     public String getSchedulingPolicy() {
     	return dynamicSchedulerDelegate.getSchedulingPolicy();
     }
+
+	@Override
+	public int getLogAmount() {
+		return dynamicSchedulerDelegate.getLogAmount();
+	}
+
+	@Override
+	public void setLogAmount(int n) {
+		dynamicSchedulerDelegate.setLogAmount(n);
+	}
     /* End Delegation of DynamicSchedulerOperations
      * ============================================================= */
 }

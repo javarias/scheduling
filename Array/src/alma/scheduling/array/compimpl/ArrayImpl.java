@@ -192,7 +192,7 @@ public class ArrayImpl implements ComponentLifecycle,
 		
 		descriptor.policyName = policyName;
 		if (this.selector == null) {
-			final AbstractSelector dsa = new DSASelector();
+			final AbstractSelector dsa = new DSASelector(logger);
 			dsa.configureArray(this, queue);
 			dsa.addObserver(guiNotifier);
 			this.selector = dsa;
@@ -456,5 +456,21 @@ public class ArrayImpl implements ComponentLifecycle,
     	return descriptor.policyName;
 
     }
+
+	@Override
+	public int getLogAmount() {
+		if (selector != null) {
+			return selector.getLogAmount();
+		} else {
+			return -1;
+		}
+	}
+
+	@Override
+	public void setLogAmount(int n) {
+		if (selector != null) {
+			selector.setLogAmount(n);
+		}
+	}
 
 }
