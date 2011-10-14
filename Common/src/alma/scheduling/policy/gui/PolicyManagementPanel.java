@@ -5,10 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +21,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -26,6 +33,7 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 
 import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
 import alma.scheduling.Master;
+import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.policy.gui.PoliciesTreeModel.PoliciesFileTreeNode;
 
 public class PolicyManagementPanel extends JPanel implements PolicyChangeListener {
@@ -40,8 +48,13 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	private JButton selectPolicyButton;
 	private JButton refreshPoliciesButton;
 	private JButton loadFile;
+	private JMenuItem selectPolicyMenuItem;
+	private JMenuItem deletePoicyMenuItem;
+	private JMenuItem refreshPolicyMenuItem;
+	private JPopupMenu treePopupMenu;
 	private String beanSelectedName = "";
 	private List<PolicySelectionListener> listeners;
+	private SchedulingPolicyFile selectedPolicyFile = null;
 	
 	public PolicyManagementPanel(Master masterSchedulierRef) {
 		this.master = masterSchedulierRef;
@@ -71,19 +84,72 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 					@Override
 					public void valueChanged(TreeSelectionEvent e) {
 						if (e.getPath() != null) {
-							if (e.getPath().getPathCount() != 3) {
-								beanSelectedName = "";
-								selectPolicyButton.setEnabled(false);
-							} else {
+							System.out.println(e.getPath().getPathCount());
+							if (e.getPath().getPathCount() == 3) {
 								beanSelectedName = ((PoliciesFileTreeNode) e
 										.getPath().getPath()[1])
 										.getBeanName((String) e.getPath()
 												.getPath()[2]);
 								selectPolicyButton.setEnabled(true);
+								selectPolicyMenuItem.setEnabled(true);
+								selectedPolicyFile = null;
+								refreshPolicyMenuItem.setEnabled(false);
+							} else if (e.getPath().getPathCount() == 2
+									&& !((PoliciesFileTreeNode) e.getPath()
+											.getPath()[1]).isSystemFile()) {
+								beanSelectedName = "";
+								selectPolicyButton.setEnabled(false);
+								selectPolicyMenuItem.setEnabled(false);
+								selectedPolicyFile = ((PoliciesFileTreeNode) e
+										.getPath().getPath()[1]).getFile();
+								try {
+									if (InetAddress
+											.getLocalHost()
+											.getHostName()
+											.compareToIgnoreCase(
+													selectedPolicyFile.hostname) == 0) {
+										refreshPolicyMenuItem.setEnabled(true);
+									} else {
+										selectedPolicyFile = null;
+										refreshPolicyMenuItem.setEnabled(false);
+									}
+
+								} catch (UnknownHostException e1) {
+									e1.printStackTrace();
+									refreshPolicyMenuItem.setEnabled(false);
+								}
+							} else {
+								beanSelectedName = "";
+								selectPolicyButton.setEnabled(false);
+								selectPolicyMenuItem.setEnabled(false);
+								selectedPolicyFile = null;
+								refreshPolicyMenuItem.setEnabled(false);
 							}
 						}
 					}
 				});
+		treePopupMenu = initializeTreePopupMenu();
+		tree.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				openPopupMenu(e);
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+					//TODO: select the policy, throw close event to close the window
+					System.out.println("Policy: " + beanSelectedName + " selected");
+				}
+			}
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				openPopupMenu(e);
+			}
+			
+			private void openPopupMenu(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					treePopupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+		});
 		return tree;
 	}
 	
@@ -99,6 +165,61 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			}
 		});
 		return button;
+	}
+	
+	private JPopupMenu initializeTreePopupMenu() {
+		JPopupMenu menu = new JPopupMenu();
+		selectPolicyMenuItem = new JMenuItem("Select policy");
+		selectPolicyMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectPolicyButton.setEnabled(false);
+				notifyPolicySelected(beanSelectedName);
+				selectPolicyButton.setEnabled(true);
+			}
+		});
+		menu.add(selectPolicyMenuItem);
+		refreshPolicyMenuItem =  new JMenuItem("Refresh policy");
+		refreshPolicyMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StringBuilder b = new StringBuilder();
+				FileReader reader = null;
+				try {
+					reader = new FileReader(selectedPolicyFile.path);
+				int c;
+				while ((c = reader.read()) != -1) {
+					b.append((char)c);
+				}
+				} catch (FileNotFoundException ex) {
+					// TODO Add dialog showing the error and details
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					// TODO Add dialog showing the error and details
+					ex.printStackTrace();
+				} finally {
+					if (reader != null)
+						try {
+							reader.close();
+						} catch (IOException ex) {
+							// TODO Add dialog showing the error and details
+							ex.printStackTrace();
+						}
+				}
+				try {
+					master.refreshSchedulingPolicies(
+							selectedPolicyFile.uuid, 
+							selectedPolicyFile.hostname, 
+							selectedPolicyFile.path, b.toString());
+				} catch (SchedulingInternalExceptionEx ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		menu.add(refreshPolicyMenuItem	);
+		return menu;
 	}
 	
 	public synchronized void refreshPolicyList() {
@@ -123,7 +244,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			try {
 				policiesTree.setModel(new PoliciesTreeModel(master.getSchedulingPolicies()));
 			} catch (org.omg.CORBA.SystemException ex) {
-				//Show dialog, connectivity problem perhaps
+				//Add dialog showing the error and details 
 			} catch (Exception ex) {}
 			finally {
 				try {
