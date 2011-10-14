@@ -379,17 +379,46 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 //    	final Vector<String> policies = new Vector<String>();
     	
     	schedulingPolicy = new JComboBox(policies);
+    	schedulingPolicy.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				logger.fine(String.format("Action performed on scheduling policy combo box, %s at %d selected",
+						schedulingPolicy.getSelectedItem(), schedulingPolicy.getSelectedIndex()));
+			}});
+    	
     	final JLabel label = new JLabel("Scheduling Policy");
     	final JButton testPolicyTree =  new JButton("Setup Policy");
     	final PolicySelectionListener polly = new PolicySelectionListener(){
 
 			@Override
 			public void policySelected(String beanName) {
+				boolean foundIt = false;
 				logger.fine(
 						String.format(
-								"%n%nCreateArrayPanel, policySelected: %s%n%n%n",
+								"CreateArrayPanel, policySelected: %s",
 								beanName));
-//				ErrorHandling.printStackTrace();
+				for (int i = 0; i < schedulingPolicy.getItemCount(); i++) {
+					SchedulingPolicyWrapper spw = (SchedulingPolicyWrapper) schedulingPolicy.getItemAt(i);
+					try {
+						if (spw.getSpringBeanName().equals(beanName)) {
+							schedulingPolicy.setSelectedIndex(i);
+							foundIt = true;
+						}
+					} catch (Exception e) {
+						ErrorHandling.warning(logger, String.format(
+								"Exception at index %d (itemCount = %d)",
+								i, schedulingPolicy.getItemCount()), e);
+					}
+				}
+				if (!foundIt) {
+					logger.warning("Cannot find policy called " + beanName + ", policies on widget are:");
+					for (int i = 0; i < schedulingPolicy.getItemCount(); i++) {
+						SchedulingPolicyWrapper spw = (SchedulingPolicyWrapper) schedulingPolicy.getItemAt(i);
+						logger.warning("\t" + spw.getSpringBeanName());
+					}
+				} else {
+					logger.fine("Found policy " + beanName);
+				}
 			}
 		};
     	testPolicyTree.addActionListener(new ActionListener() {
