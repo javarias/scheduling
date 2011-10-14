@@ -1,5 +1,9 @@
 package alma.scheduling.array.sbSelection;
 
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.scheduling.SchedulingException;
 
@@ -12,17 +16,61 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.utils.DSAContextFactory;
-
-import java.util.Date;
-import java.util.List;
+import alma.scheduling.utils.ErrorHandling;
 
 public class DSASelector extends AbstractSelector {
-
+	/*
+	 * ================================================================
+	 * Fields
+	 * ================================================================
+	 */
+	/** The DynamicSchedulingAlgorithm to use */
 	private DynamicSchedulingAlgorithm dsa = null;
+	
+	/** Which SchedulingPolicy we used last */
 	private String lastPolicy = null;
+	
+	/** DAO to get and store results */
 	private ResultsDao resultsDao = (ResultsDao) DSAContextFactory.getContext()
 			.getBean(DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
+	
+	/** Object to log the DSA results in a separate thread */
+	private ResultsLogger resultsLogger = null;
+	
+	/** Value of N in the sens of logging the top N results */
+	private int numToLog = 10;
+	
+	/** A logger, for, well, you know, logging */
+	private Logger logger;
+	/* End Fields
+	 * ============================================================= */
 
+	
+	
+	/*
+	 * ================================================================
+	 * Construction
+	 * ================================================================
+	 */
+	public DSASelector(Logger logger) {
+		super();
+		this.logger = logger;
+	}
+	/* End Construction
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * Notifying
+	 * ================================================================
+	 */
+	/**
+	 * Notify our listeners about starting and finishing the scoring.
+	 * 
+	 * @param start - true if it's a notification that we're starting
+	 */
 	private void notifyWorking(boolean start) {
 		final ArrayGUINotification agn = new ArrayGUINotification(
 				start? ArrayGUIOperation.CALCULATINGSCORES:
@@ -32,7 +80,16 @@ public class DSASelector extends AbstractSelector {
 						array.getArrayName()));
 		notify(agn);
 	}
+	/* End Notifying
+	 * ============================================================= */
+
 	
+	
+	/*
+	 * ================================================================
+	 * SchedBlock scoring
+	 * ================================================================
+	 */
 	/*
 	 * (non-Javadoc)
 	 * @see alma.scheduling.array.sbSelection.Selector#selectNextSB()
@@ -51,9 +108,26 @@ public class DSASelector extends AbstractSelector {
 						+ array.getArrayName());
 			}
 			
+			if (lastPolicy == null) {
+				// First time
+				resultsLogger = new ResultsLogger(logger,
+						                          resultsDao,
+												  array.getArrayName(),
+												  thisPolicy,
+												  numToLog);
+			} else {
+				// Second or subsequent time
+				resultsLogger = new ResultsLogger(logger,
+						                          resultsDao,
+												  array.getArrayName(),
+												  thisPolicy,
+												  lastPolicy,
+												  numToLog);
+			}
+
 			if (!thisPolicy.equals(lastPolicy)) {
 				// It's a new policy, so force a refresh of the dsa bean
-				System.out.println(String.format(
+				logger.info(String.format(
 						"Policy was %s, now %s%n", lastPolicy, thisPolicy));
 				lastPolicy = thisPolicy;
 				dsa = null;
@@ -64,15 +138,25 @@ public class DSASelector extends AbstractSelector {
 				try {
 					dsa = (DynamicSchedulingAlgorithm) DSAContextFactory.getContextFromPropertyFile().getBean(thisPolicy);
 				} catch (NoSuchBeanDefinitionException e) {
-					System.out.println("Known Policies");
-					System.out.println("--------------");
+					final StringBuilder b = new StringBuilder();
+					b.append('\n');
+					b.append("Known Policies\n");
+					b.append("--------------\n");
 					final List<String> policies = DSAContextFactory.getPolicyNames();
 					for (final String policy : policies) {
-						System.out.print('\t');
-						System.out.println(policy);
+						b.append('\t').append(policy).append('\n');
 					}
-					System.out.println("==============");
-					e.printStackTrace();
+					b.append("==============\n\n");
+
+					b.append("All Beans\n");
+					b.append("---------\n");
+					final String[] beans = DSAContextFactory.getContextFromPropertyFile().getBeanDefinitionNames();
+					for (final String bean : beans) {
+						b.append('\t').append(bean).append('\n');
+					}
+					b.append("=========\n");
+					b.append(ErrorHandling.printedStackTrace(e));
+					logger.info(b.toString());
 					dsa = lastDSA; // meaningless, but it keeps us running
 				}
 				ArrayConfiguration arrConf = new ArrayConfiguration();
@@ -96,8 +180,33 @@ public class DSASelector extends AbstractSelector {
 			}
 		} finally {
 			notifyWorking(false);
+			if (resultsLogger != null) {
+				Thread fred = new Thread(resultsLogger,
+						resultsLogger.generateThreadName());
+				fred.start();
+			}
 		}
 
 	}
+	/* End SchedBlock scoring
+	 * ============================================================= */
 
+	
+	
+	/*
+	 * ================================================================
+	 * Logging of results
+	 * ================================================================
+	 */
+	@Override
+	public int getLogAmount() {
+		return numToLog;
+	}
+
+	@Override
+	public void setLogAmount(int n) {
+		numToLog = n;
+	}
+	/* End Logging of results
+	 * ============================================================= */
 }
