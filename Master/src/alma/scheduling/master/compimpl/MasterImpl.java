@@ -894,6 +894,16 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 			public String getSchedulingPolicy() {
 				return null;
 			}
+
+			@Override
+			public int getLogAmount() {
+				// TODO Auto-generated method stub
+				return 10;
+			}
+
+			@Override
+			public void setLogAmount(int n) {
+			}
 		};
 
 		// initialize()
