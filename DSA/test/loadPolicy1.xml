@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policies>
-<SchedulingPolicy name="AllEqual">
+<SchedulingPolicy name="lf1_AllEqual">
     <SelectionCriterion>
         <ExecutiveSelector/>
         <OpacitySelector/>
@@ -16,7 +16,7 @@
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
-<SchedulingPolicy name="BiasToHA">
+<SchedulingPolicy name="lf1_BiasToHA">
     <SelectionCriterion>
         <ExecutiveSelector/>
         <OpacitySelector/>
@@ -32,7 +32,7 @@
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
-<SchedulingPolicy name="BiasToTsys">
+<SchedulingPolicy name="lf1_BiasToTsys">
     <SelectionCriterion>
         <ExecutiveSelector/>
         <OpacitySelector/>
@@ -48,7 +48,7 @@
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
-<SchedulingPolicy name="Funkadelic">
+<SchedulingPolicy name="Gadzooks">
     <SelectionCriterion>
         <ExecutiveSelector/>
         <OpacitySelector/>
@@ -57,10 +57,10 @@
     </SelectionCriterion>
     <Scorers>
         <HourAngleScorer>
-            <weight>100.0</weight>
+            <weight>-1.0</weight>
         </HourAngleScorer> 
         <TsysScorer>
-            <weight>100.0</weight>
+            <weight>1.0</weight>
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>

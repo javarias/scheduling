@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policies>
-<SchedulingPolicy name="AllEqual">
-    <SelectionCriterion>
+<SchedulingPolicy name="lf2_AllEqual">
+    <SelectionCriteria>
         <ExecutiveSelector/>
         <OpacitySelector/>
         <ArrayConfigSelector/>
-        <SourceSelector/>
-    </SelectionCriterion>
+    </SelectionCriteria>
     <Scorers>
         <HourAngleScorer>
             <weight>1.0</weight>
@@ -16,13 +15,12 @@
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
-<SchedulingPolicy name="BiasToHA">
-    <SelectionCriterion>
+<SchedulingPolicy name="lf2_BiasToHA">
+    <SelectionCriteria>
         <ExecutiveSelector/>
         <OpacitySelector/>
         <ArrayConfigSelector/>
-        <SourceSelector/>
-    </SelectionCriterion>
+    </SelectionCriteria>
     <Scorers>
         <HourAngleScorer>
             <weight>2.0</weight>
@@ -32,7 +30,22 @@
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
-<SchedulingPolicy name="BiasToTsys">
+<SchedulingPolicy name="lf2_BiasToTsys">
+    <SelectionCriteria>
+        <ExecutiveSelector/>
+        <OpacitySelector/>
+        <ArrayConfigSelector/>
+    </SelectionCriteria>
+    <Scorers>
+        <HourAngleScorer>
+            <weight>1.0</weight>
+        </HourAngleScorer> 
+        <TsysScorer>
+            <weight>2.0</weight>
+        </TsysScorer>
+    </Scorers>
+</SchedulingPolicy>
+<SchedulingPolicy name="Zounds">
     <SelectionCriterion>
         <ExecutiveSelector/>
         <OpacitySelector/>
@@ -44,23 +57,7 @@
             <weight>1.0</weight>
         </HourAngleScorer> 
         <TsysScorer>
-            <weight>2.0</weight>
-        </TsysScorer>
-    </Scorers>
-</SchedulingPolicy>
-<SchedulingPolicy name="Funkadelic">
-    <SelectionCriterion>
-        <ExecutiveSelector/>
-        <OpacitySelector/>
-        <ArrayConfigSelector/>
-        <SourceSelector/>
-    </SelectionCriterion>
-    <Scorers>
-        <HourAngleScorer>
-            <weight>100.0</weight>
-        </HourAngleScorer> 
-        <TsysScorer>
-            <weight>100.0</weight>
+            <weight>-1.0</weight>
         </TsysScorer>
     </Scorers>
 </SchedulingPolicy>
