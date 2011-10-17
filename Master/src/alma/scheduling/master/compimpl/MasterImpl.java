@@ -1085,6 +1085,11 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 				+ filePath);
 		operatorLog.info("Refreshing Scheduling Policies: " + hostname + ":"
 				+ filePath);
+		if (xmlString.compareTo("") == 0) {
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
+					new IllegalArgumentException("xmlString cannot be empty"));
+			throw e.toSchedulingInternalExceptionEx();
+		}
 		String springCtxXml = null;
 		try {
 			m_logger.info("Validating file: " + hostname + ":" + filePath);
