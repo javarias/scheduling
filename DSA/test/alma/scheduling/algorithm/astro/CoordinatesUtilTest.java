@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
 import alma.scheduling.datamodel.obsproject.HorizonCoordinates;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
+import alma.scheduling.utils.CoordinatesUtil;
+import alma.scheduling.utils.MoonAstroData;
+import alma.scheduling.utils.SunAstroData;
 
 public class CoordinatesUtilTest extends TestCase {
 

@@ -8,6 +8,8 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.utils.TimeUtil;
+
 import junit.framework.TestCase;
 
 public class TimeUtilTest extends TestCase {

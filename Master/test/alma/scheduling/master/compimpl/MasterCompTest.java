@@ -4,12 +4,11 @@ import org.omg.CORBA.Object;
 
 import alma.ACS.MasterComponent;
 import alma.ACS.MasterComponentHelper;
-import alma.ACS.MasterComponentImpl.statemachine.AlmaSubsystemActions;
 import alma.ACS.MasterComponentPackage.SubsystemStateEvent;
-import alma.ACS.MasterComponentPackage.SubsystemStateEventHolder;
 import alma.ACSErrTypeCommon.IllegalStateEventEx;
 import alma.acs.component.client.ComponentClientTestCase;
 import alma.acs.genfw.runtime.sm.AcsStateActionException;
+import alma.scheduling.utils.Constants;
 
 public class MasterCompTest extends ComponentClientTestCase {
 

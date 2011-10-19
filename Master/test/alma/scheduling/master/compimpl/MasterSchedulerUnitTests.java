@@ -21,6 +21,7 @@ import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.scheduling.Array;
+import alma.scheduling.ArrayDescriptor;
 import alma.scheduling.ArrayModeEnum;
 import alma.scheduling.ArraySchedulerLifecycleType;
 import alma.scheduling.ArraySchedulerMode;
@@ -60,72 +61,78 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 	}
 	
 	public void testCreateAutomaticArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, AcsJContainerServicesEx {
+		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, null);
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
 					CorrelatorType.NONE); will(returnValue(new ArrayIdentifier("Array001", "CONTROL/Array001")));
-			oneOf(retArray).configure("Array001", simpleAutoArrayMode , ArraySchedulerLifecycleType.NORMAL);
+			oneOf(retArray).configure("Array001", simpleAutoArrayMode , details);
 //			oneOf(contServices).getDefaultComponent("IDL:alma/Control/CurrentWeather:1.0");
 		} } );
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
-		schedMaster.createArray(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, null);
+		schedMaster.createArray(details);
 	}
 	
 	public void testCreateCSVAutomaticArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest {
+		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.COMMISSIONING, null);
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
 					CorrelatorType.NONE); will(returnValue(new ArrayIdentifier("Array001", "CONTROL/Array001")));
-			oneOf(retArray).configure("Array001", simpleAutoArrayMode , ArraySchedulerLifecycleType.COMMISSIONING);
+			oneOf(retArray).configure("Array001", simpleAutoArrayMode , details);
 		} } );
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
-		schedMaster.createArray(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.COMMISSIONING, null);
+		schedMaster.createArray(details);
 	}
 	
 	public void testCreateManualArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest {
+		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, null);
 		checking( new Expectations() { { 
 			oneOf(controlMaster).createManualArray(antennas, photonics,
 					CorrelatorType.NONE); will(returnValue(new ArrayIdentifier("Array001", "CONTROL/Array001")));
-			oneOf(retArray).configure("Array001", simpleManualArrayMode , ArraySchedulerLifecycleType.NORMAL);
+			oneOf(retArray).configure("Array001", simpleManualArrayMode , details);
 		} });
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
-		schedMaster.createArray(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.NORMAL, null);
+		schedMaster.createArray(details);
 	}
 	
 	public void testCreateDynamicArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest, AcsJContainerServicesEx {
+		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.DYNAMIC, ArraySchedulerLifecycleType.NORMAL, "DefaultPolicy");
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
 					CorrelatorType.NONE); will(returnValue(new ArrayIdentifier("Array001", "CONTROL/Array001")));
-			oneOf(retArray).configure("Array001", dynamicPassiveMode , ArraySchedulerLifecycleType.NORMAL);
+			oneOf(retArray).configure("Array001", dynamicPassiveMode , details);
 			oneOf(retArray).configureDynamicScheduler("DefaultPolicy");
 		} } );
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
-		schedMaster.createArray(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.DYNAMIC, ArraySchedulerLifecycleType.NORMAL, "DefaultPolicy");
+		schedMaster.createArray(details);
 	}
 	
 	public void testCreateManualCSVArray() throws ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, InaccessibleException, InvalidRequest {
+		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.COMMISSIONING, null);
 		checking( new Expectations() { { 
 			oneOf(controlMaster).createManualArray(antennas, photonics,
 					CorrelatorType.NONE); will(returnValue(new ArrayIdentifier("Array001", "CONTROL/Array001")));
-			oneOf(retArray).configure("Array001", simpleManualArrayMode , ArraySchedulerLifecycleType.COMMISSIONING);
+			oneOf(retArray).configure("Array001", simpleManualArrayMode, details);
 		} });
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
-		schedMaster.createArray(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.MANUAL, ArraySchedulerLifecycleType.COMMISSIONING, null);
+		schedMaster.createArray(details);
 	}
 	
 	public void testDestroyArray() throws InaccessibleException, InvalidRequest, ControlInternalExceptionEx, ACSInternalExceptionEx, SchedulingInternalExceptionEx, AcsJContainerServicesEx {
+		final ArrayDescriptor details =  new ArrayDescriptor(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, null);
 		checking(new Expectations() { {
 			oneOf(controlMaster).createAutomaticArray(antennas, photonics,
 					CorrelatorType.NONE); will(returnValue(new ArrayIdentifier("Array001", "CONTROL/Array001")));
-			oneOf(retArray).configure("Array001", simpleAutoArrayMode , ArraySchedulerLifecycleType.NORMAL);
+			oneOf(retArray).configure("Array001", simpleAutoArrayMode, details);
 			oneOf(retArray).stop(with(any(String.class)), with(any(String.class)));
 			oneOf(retArray).stopRunningSchedBlock(with(any(String.class)), with(any(String.class)));
 			oneOf(retArray).destroyArray("Array001", "Scheduling");
@@ -135,7 +142,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 		schedMaster.initialize(contServices);
 		schedMaster.setLogger(logger);
 		schedMaster.setControlMaster(controlMaster);
-		schedMaster.createArray(antennas, photonics, CorrelatorType.NONE, ArrayModeEnum.INTERACTIVE, ArraySchedulerLifecycleType.NORMAL, null);
+		schedMaster.createArray(details);
 		schedMaster.destroyArray("Array001", "Array001", "Scheduling");
 	}
 }
