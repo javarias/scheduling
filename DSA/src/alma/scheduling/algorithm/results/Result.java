@@ -1,6 +1,7 @@
 package alma.scheduling.algorithm.results;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +48,11 @@ public class Result {
 	// this method to return the scores already sorted, either stop
 	// the InteractivePanel duplicating this effort or tell David and
 	// he'll do it.
+	//
+	// The scores now can be sorted descending according to the score obtained from DSA,
+	// @see sortScores. Once the scores are stored into DB sorted it is not longer necessary to
+	// sort them again.
+	// TODO: Remove all the code in the GUI which are sorting the scores.
 	public List<SBRank> getScores() {
 		return scores;
 	}
@@ -61,6 +67,20 @@ public class Result {
 	
 	public void setArrayName(String arrayName) {
 		this.arrayName = arrayName;
+	}
+	
+	/**
+	 * Sort the scores added to this result.
+	 * The order will be descending according to the score obtained from the DSA
+	 */
+	public synchronized void sortScores() {
+		if (scores.size() == 0)
+			return;
+		Collections.sort(scores);
+		ArrayList<SBRank> descSortedList =  new ArrayList<SBRank>(scores.size());
+		for (int i = scores.size() - 1; i >= 0; i--){
+			descSortedList.add(scores.get(i));
+		}
 	}
 	
 }

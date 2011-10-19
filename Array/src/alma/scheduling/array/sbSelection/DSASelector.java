@@ -174,6 +174,7 @@ public class DSASelector extends AbstractSelector {
 				result.setArrayName(array.getArrayName());
 				result.setTime(runDate);
 				result.setScores(results);
+				result.sortScores();
 				resultsDao.saveOrUpdate(result);
 			} catch (NoSbSelectedException e) {
 				e.printStackTrace();
