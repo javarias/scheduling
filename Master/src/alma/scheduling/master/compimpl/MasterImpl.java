@@ -562,14 +562,6 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		array.configure(arrayName, convertToArraySchedulerMode(details.schedulingMode),
 				details);
 		if (details.schedulingMode == ArrayModeEnum.DYNAMIC) {
-			// If the policy name doesn't start with uuid that means that it is
-			// a system policy
-			if (details.policyName.startsWith("uuid")) {
-				// Lock the file for non system policies
-				String fileUUID = details.policyName.substring(4, 41);
-				PoliciesContainersDirectory.getInstance().lockPolicyContainer(
-						UUID.fromString(fileUUID));
-			}
 			array.configureDynamicScheduler(details.policyName);
 		}
 		return array;

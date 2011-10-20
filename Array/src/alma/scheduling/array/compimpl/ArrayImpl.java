@@ -189,7 +189,19 @@ public class ArrayImpl implements ComponentLifecycle,
 		logger.info(String.format(
 				"Configuring %s as a dynamic array with policy %s",
 				arrayName, policyName));
-		
+		//The policy file must be unlocked before change it to a new one
+		if(descriptor.policyName.startsWith("uuid")) {
+			String fileUUID = descriptor.policyName.substring(4, 41);
+			PoliciesContainersDirectory.getInstance().unlockPolicyContainer(UUID.fromString(fileUUID));
+		}
+		// If the policy name doesn't start with uuid that means that it is
+		// a system policy
+		if (policyName.startsWith("uuid")) {
+			// Lock the file for non system policies
+			String fileUUID = policyName.substring(4, 41);
+			PoliciesContainersDirectory.getInstance().lockPolicyContainer(
+					UUID.fromString(fileUUID));
+		}
 		descriptor.policyName = policyName;
 		if (this.selector == null) {
 			final AbstractSelector dsa = new DSASelector(logger);
