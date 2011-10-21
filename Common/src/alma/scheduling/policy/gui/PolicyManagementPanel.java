@@ -3,12 +3,13 @@ package alma.scheduling.policy.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,10 +50,10 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	private JButton refreshPoliciesButton;
 	private JButton loadFile;
 	private JMenuItem selectPolicyMenuItem;
-	private JMenuItem deletePoicyMenuItem;
+	private JMenuItem deletePolicyMenuItem;
 	private JMenuItem refreshPolicyMenuItem;
 	private JPopupMenu treePopupMenu;
-	private String beanSelectedName = "";
+	private String selectedBeanName = "";
 	private List<PolicySelectionListener> listeners;
 	private SchedulingPolicyFile selectedPolicyFile = null;
 	
@@ -86,7 +87,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 						if (e.getPath() != null) {
 							System.out.println(e.getPath().getPathCount());
 							if (e.getPath().getPathCount() == 3) {
-								beanSelectedName = ((PoliciesFileTreeNode) e
+								selectedBeanName = ((PoliciesFileTreeNode) e
 										.getPath().getPath()[1])
 										.getBeanName((String) e.getPath()
 												.getPath()[2]);
@@ -97,7 +98,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 							} else if (e.getPath().getPathCount() == 2
 									&& !((PoliciesFileTreeNode) e.getPath()
 											.getPath()[1]).isSystemFile()) {
-								beanSelectedName = "";
+								selectedBeanName = "";
 								selectPolicyButton.setEnabled(false);
 								selectPolicyMenuItem.setEnabled(false);
 								selectedPolicyFile = ((PoliciesFileTreeNode) e
@@ -119,7 +120,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 									refreshPolicyMenuItem.setEnabled(false);
 								}
 							} else {
-								beanSelectedName = "";
+								selectedBeanName = "";
 								selectPolicyButton.setEnabled(false);
 								selectPolicyMenuItem.setEnabled(false);
 								selectedPolicyFile = null;
@@ -133,9 +134,11 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			@Override
 			public void mousePressed(MouseEvent e) {
 				openPopupMenu(e);
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-					//TODO: select the policy, throw close event to close the window
-					System.out.println("Policy: " + beanSelectedName + " selected");
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 &&
+						selectedBeanName.compareTo("") != 0) {
+					System.out.println("Policy: " + selectedBeanName + " selected");
+					notifyPolicySelected(selectedBeanName);
+					closeFrame();
 				}
 			}
 			
@@ -160,7 +163,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectPolicyButton.setEnabled(false);
-				notifyPolicySelected(beanSelectedName);
+				notifyPolicySelected(selectedBeanName);
 				selectPolicyButton.setEnabled(true);
 			}
 		});
@@ -175,7 +178,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectPolicyButton.setEnabled(false);
-				notifyPolicySelected(beanSelectedName);
+				notifyPolicySelected(selectedBeanName);
 				selectPolicyButton.setEnabled(true);
 			}
 		});
@@ -214,11 +217,27 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 							selectedPolicyFile.hostname, 
 							selectedPolicyFile.path, b.toString());
 				} catch (SchedulingInternalExceptionEx ex) {
+					// TODO Dialog here
 					ex.printStackTrace();
 				}
 			}
 		});
 		menu.add(refreshPolicyMenuItem	);
+		
+		deletePolicyMenuItem =  new JMenuItem("Delete policies file");
+		deletePolicyMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					master.removeSchedulingPolicies(selectedPolicyFile.uuid);
+					refreshPolicyList();
+				} catch (SchedulingInternalExceptionEx e1) {
+					// TODO Dialog here
+					e1.printStackTrace();
+				}
+			}
+		});
+		menu.add(deletePolicyMenuItem);
 		return menu;
 	}
 	
@@ -433,4 +452,14 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	}
 	/* End Subsidiary Panel Creation
 	 * ============================================================= */
+	
+	private void closeFrame() {
+		for (Frame f : Frame.getFrames()) {
+			if (f.isActive()) {
+				WindowEvent windowClosing = new WindowEvent(f,
+						WindowEvent.WINDOW_CLOSING);
+				f.dispatchEvent(windowClosing);
+			}
+		}
+	}
 }
