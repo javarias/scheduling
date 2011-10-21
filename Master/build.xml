@@ -8,7 +8,7 @@
     <property environment="env"/>
     <property name="ArchiveUpdater.location" value="../ArchiveUpdater"/>
     <property name="Common.location" value="../Common"/>
-    <property name="junit.output.dir" value="junit"/>
+    <property name="junit.output.dir" value="../junit"/>
     <property name="DSA.location" value="../DSA"/>
     <property name="Array.location" value="../Array"/>
     <property name="debuglevel" value="source,lines,vars"/>

@@ -8,7 +8,7 @@
 	<property environment="env"/>
 	<property name="Common.location" value="../Common"/>
 	<property name="Master.location" value="../Master"/>
-	<property name="junit.output.dir" value="junit"/>
+	<property name="junit.output.dir" value="../junit"/>
 	<property name="DSA.location" value="../DSA"/>
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.6"/>
