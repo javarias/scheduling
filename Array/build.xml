@@ -48,14 +48,6 @@
 		<mkdir dir="${junit.output.dir}" />
 		<junit fork="yes" printsummary="withOutAndErr">
 			<formatter type="xml" />
-			<test name="alma.scheduling.array.compimpl.ArrayImplUnitTests" todir="${junit.output.dir}" />
-			<classpath>
-				<pathelement path="${classpath}"/>
-				<pathelement path="bin"/>
-			</classpath>
-		</junit>
-		<junit fork="yes" printsummary="withOutAndErr">
-			<formatter type="xml" />
 			<test name="alma.scheduling.array.executor.ExecutorUnitTests" todir="${junit.output.dir}" />
 			<classpath>
 				<pathelement path="${classpath}"/>
