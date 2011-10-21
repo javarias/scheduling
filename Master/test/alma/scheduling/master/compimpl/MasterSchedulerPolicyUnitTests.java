@@ -51,7 +51,7 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		try {
 			schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
 		} catch (SchedulingInternalExceptionEx ex) {
-			System.out.println("This failure is expected: " + ex.errorTrace.previousError[0].shortDescription);
+			//System.out.println("This failure is expected: " + ex.errorTrace.previousError[0].shortDescription);
 		}
 	}
 }
