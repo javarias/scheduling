@@ -4,12 +4,8 @@ import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 import org.jmock.lib.legacy.ClassImposteriser;
 
-import si.ijs.maci.ComponentInfo;
-
 import alma.Control.ControlMaster;
 import alma.SchedulingMasterExceptions.SchedulingInternalExceptionEx;
-import alma.acs.component.ComponentDescriptor;
-import alma.acs.component.ComponentQueryDescriptor;
 import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.scheduling.Array;
