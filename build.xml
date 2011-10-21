@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="test" name="SCHEDULING">
+	<target name="build">
+<!--		<ant antfile="build.xml" dir="Common" target="build-test" />
+		<ant antfile="build.xml" dir="DSA" target="build-test" /> -->
+		<ant antfile="build.xml" dir="Array" target="build"/> 
+		<ant antfile="build.xml" dir="Master" target="build" />
+	</target>
+	<target name="test" depends="build">
+		<ant antfile="build.xml" dir="Array" target="test" />
+		<ant antfile="build.xml" dir="Master" target="test" />
+	</target>
+</project>
