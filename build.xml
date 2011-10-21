@@ -10,4 +10,8 @@
 		<ant antfile="build.xml" dir="Array" target="test" />
 		<ant antfile="build.xml" dir="Master" target="test" />
 	</target>
+	<target name="clean">
+		<ant antfile="build.xml" dir="Array" target="clean" />
+		<ant antfile="build.xml" dir="Master" target="clean" />
+	</target>
 </project>
