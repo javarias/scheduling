@@ -52,7 +52,18 @@ public class SchedulingPolicyValidator {
 	
 	public static String convertPolicyFile(String filePath) {
 		SchedulingPolicyValidator validator = new SchedulingPolicyValidator();
-		validator.validate(new StreamSource(filePath));
+		try {
+			validator.validate(new StreamSource(filePath));
+		} catch (SAXException e) {
+			System.out.println("FAILED.");
+			System.out.println("Reason: " + e.getMessage());
+			return "";
+		} catch (IOException e) {
+			System.out.println("FAILED.");
+			System.out.println("Reason: " + e.getMessage());
+			return "";
+		}
+		System.out.println("SUCCESS.");
 		try {
 			Transformer transformer = validator.tFactory.newTransformer(new StreamSource(validator.xslURL.toString()));
 			StreamResult res = new StreamResult();
@@ -75,7 +86,7 @@ public class SchedulingPolicyValidator {
 		}
 	}
 	
-	public static String convertPolicyString(String policyXML) throws TransformerException {
+	public static String convertPolicyString(String policyXML) throws TransformerException, SAXException, IOException {
 		SchedulingPolicyValidator validator = new SchedulingPolicyValidator();
 		validator.validate(new StreamSource(new ByteArrayInputStream(policyXML.getBytes())));
 //		try {
@@ -130,21 +141,12 @@ public class SchedulingPolicyValidator {
 		}
 	}
 
-	private boolean validate(StreamSource stream) {
-		try {
+	private boolean validate(StreamSource stream) throws SAXException, IOException {
 			Schema schema = sFactory.newSchema(schemaURL);
 			Validator validator = schema.newValidator();
 			validator.validate(stream);
 			System.out.println("SUCCESS.");
 			return true;
-		} catch (SAXException e) {
-			System.out.println("FAILED.");
-			System.out.println("Reason: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("FAILED.");
-			System.out.println("Reason: " + e.getMessage());
-		}
-		return false;
 	}
 
 	private static void help() {

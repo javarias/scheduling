@@ -18,6 +18,7 @@
 
 package alma.scheduling.master.compimpl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
+import org.xml.sax.SAXException;
 
 import alma.ACS.ComponentStates;
 import alma.Control.ArrayIdentifier;
@@ -1038,7 +1040,25 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 							+ ex.getMessage());
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
 					ex);
-			e.toSchedulingInternalExceptionEx();
+			throw e.toSchedulingInternalExceptionEx();
+		} catch (SAXException ex) {
+			m_logger.warning("Unable to add scheduling policies in the file. Reason: "
+					+ ex.getMessage());
+			operatorLog
+					.warning("Unable to add scheduling policies in the file. Reason: "
+							+ ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
+					ex);
+			throw e.toSchedulingInternalExceptionEx();
+		} catch (IOException ex) {
+			m_logger.warning("Unable to add scheduling policies in the file. Reason: "
+					+ ex.getMessage());
+			operatorLog
+					.warning("Unable to add scheduling policies in the file. Reason: "
+							+ ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
+					ex);
+			throw e.toSchedulingInternalExceptionEx();
 		}
 		PoliciesContainer container = DynamicSchedulingPolicyFactory
 				.getInstance().createDSAPolicyBeans(hostname, filePath,
@@ -1096,7 +1116,21 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 					.warning("Validation failed. Reason: " + ex.getMessage());
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
 					ex);
-			e.toSchedulingInternalExceptionEx();
+			throw e.toSchedulingInternalExceptionEx();
+		} catch (SAXException ex) {
+			m_logger.warning("Validation failed. Reason: " + ex.getMessage());
+			operatorLog
+					.warning("Validation failed. Reason: " + ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
+					ex);
+			throw e.toSchedulingInternalExceptionEx();
+		} catch (IOException ex) {
+			m_logger.warning("Validation failed. Reason: " + ex.getMessage());
+			operatorLog
+					.warning("Validation failed. Reason: " + ex.getMessage());
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
+					ex);
+			throw e.toSchedulingInternalExceptionEx();
 		}
 		removeSchedulingPolicies(fileUUID);
 		PoliciesContainer container = DynamicSchedulingPolicyFactory
