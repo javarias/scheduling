@@ -53,14 +53,13 @@
 
 	<target name="instrument" depends="build">
 		<delete file="cobertura.ser"/>
+		<delete dir="${instrumented.dir}"/>
 		<cobertura-instrument todir="${instrumented.dir}">
-			<includeClasses regex=".*" />
-			<excludeClasses regex=".*\.*Test.*" />
-			<excludeClasses regex=".*\.*Tests.*" />
-			<ignore regex="com.vladium.*" />
-			<instrumentationClasspath>
-				<pathelement location="bin" />
-			</instrumentationClasspath>
+			<fileset dir="bin">
+				<include name="**/*.class" />
+				<exclude name="**/*Test*.class" />
+				<exclude name="**/*Tests*.class" />
+			</fileset>
 		</cobertura-instrument>
 	</target>
 
@@ -90,10 +89,11 @@
 				<pathelement path="${classpath}"/>
 			</classpath>
 		</junit>
+		<delete file="coverage.xml"/>
 		<cobertura-report format="xml" destdir="." >
-		    <fileset dir="src">
-		        <include name="src/**/*.java" />
-		    </fileset>
+			<fileset dir="src">
+				<include name="src/**/*.java" />
+			</fileset>
 		</cobertura-report>
 	</target>
 	<target name="junitreport">

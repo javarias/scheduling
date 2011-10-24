@@ -76,14 +76,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 	
 	<target name="instrument" depends="build">
 		<delete file="cobertura.ser"/>
+		<delete dir="${instrumented.dir}"/>
 		<cobertura-instrument todir="${instrumented.dir}">
-			<includeClasses regex=".*" />
-			<excludeClasses regex=".*\.*Test.*" />
-			<excludeClasses regex=".*\.*Tests.*" />
-			<ignore regex="com.vladium.*" />
-			<instrumentationClasspath>
-				<pathelement location="bin" />
-			</instrumentationClasspath>
+			<fileset dir="bin">
+				<include name="**/*.class" />
+				<exclude name="**/*Test*.class" />
+				<exclude name="**/*Tests*.class" />
+			</fileset>
 		</cobertura-instrument>
 	</target>
 	
@@ -115,6 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         		<pathelement path="${classpath}"/>
         	</classpath>
         </junit>
+    	<delete file="coverage.xml"/>
 		<cobertura-report format="xml" destdir="." >
 		    <fileset dir="src">
 		        <include name="src/**/*.java" />
