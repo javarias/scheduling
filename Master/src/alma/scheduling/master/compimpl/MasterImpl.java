@@ -994,7 +994,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 							+ ex.getMessage());
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
 					ex);
-			e.toSchedulingInternalExceptionEx();
+			throw e.toSchedulingInternalExceptionEx();
 		} catch (alma.scheduling.algorithm.PoliciesContainersDirectory.UnexpectedException ex) {
 			m_logger.warning("Unable to remove scheduling policies in the file. Reason: "
 					+ ex.getMessage());
@@ -1003,7 +1003,15 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 							+ ex.getMessage());
 			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(
 					ex);
-			e.toSchedulingInternalExceptionEx();
+			throw e.toSchedulingInternalExceptionEx();
+		} catch (NullPointerException ex) {
+			m_logger.warning("Unable to remove scheduling policies in the file. Reason: "
+					+ "UUID: " + fileUUID + "doesn't exist");
+			operatorLog
+					.warning("Unable to remove scheduling policies in the file. Reason: "
+							+ "UUID: " + fileUUID + "doesn't exist");
+			AcsJSchedulingInternalExceptionEx e = new AcsJSchedulingInternalExceptionEx(ex);
+			throw e.toSchedulingInternalExceptionEx();
 		}
 
 		ArrayList<String> toBeDeleted = new ArrayList<String>();

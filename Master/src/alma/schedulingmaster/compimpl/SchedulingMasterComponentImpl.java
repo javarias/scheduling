@@ -30,7 +30,6 @@ import alma.ACS.MasterComponentImpl.statemachine.AlmaSubsystemActions;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.genfw.runtime.sm.AcsStateActionException;
 import alma.acs.nc.SimpleSupplier;
-import alma.scheduling.ArchiveUpdater;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
@@ -38,7 +37,7 @@ import alma.scheduling.SchedulingStateEvent;
 /**
   *
   * @author Jorge Avarias <javarias[at]nrao.edu>
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.3 2011/08/31 19:50:07 javarias Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.4 2011/10/24 20:04:36 javarias Exp $
   */
 //TODO: Start archive poller
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 

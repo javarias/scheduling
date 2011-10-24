@@ -20,6 +20,8 @@
  *******************************************************************************/
 package alma.scheduling.master.compimpl;
 
+import java.util.UUID;
+
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 import org.jmock.lib.legacy.ClassImposteriser;
@@ -30,6 +32,7 @@ import alma.acs.container.ContainerServices;
 import alma.acs.logging.AcsLogger;
 import alma.scheduling.Array;
 import alma.scheduling.ArrayStatusCallback;
+import alma.scheduling.SchedulingPolicyFile;
 
 public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 	private ControlMaster controlMaster = mock(ControlMaster.class);
@@ -43,7 +46,6 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		setImposteriser(ClassImposteriser.INSTANCE);
 		schedMaster = new MasterImpl();
 		logger = mock(AcsLogger.class);
-		final ArrayStatusCallback callback = mock(ArrayStatusCallback.class);
 		checking(new Expectations() { {
 			ignoring(contServices);
 			ignoring(logger);
@@ -53,7 +55,7 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		schedMaster.setControlMaster(controlMaster);
 	}
 
-	public void testAddNewSchedulingPolicies() throws SchedulingInternalExceptionEx {
+	public void testAddNewPolicies() throws SchedulingInternalExceptionEx {
 		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria></SelectionCriteria>" +
 				"<Scorers></Scorers></SchedulingPolicy></Policies>";
@@ -62,7 +64,8 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
 	}
 	
-	public void testAddNewSchedulingPoliciesFailure() {
+	public void testAddPoliciesFailure() {
+		//Bad XML
 		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
 				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria></SelectionCriteria>" +
 				"<Scorers></Scorers><SchedulingPolicy></Policies>";
@@ -71,7 +74,48 @@ public class MasterSchedulerPolicyUnitTests extends MockObjectTestCase {
 		try {
 			schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
 		} catch (SchedulingInternalExceptionEx ex) {
-			//System.out.println("This failure is expected: " + ex.errorTrace.previousError[0].shortDescription);
+			System.out.println("This failure is expected: " + ex.errorTrace.previousError[0].shortDescription);
 		}
+	}
+	
+	public void testGetPolicies() throws SchedulingInternalExceptionEx {
+		SchedulingPolicyFile[] files = schedMaster.getSchedulingPolicies();
+		assertEquals(1, files.length);
+		assertEquals("TestPolicy", files[0].schedulingPolicies[0]);
+	}
+	
+	
+	public void testRemovePolicies() throws SchedulingInternalExceptionEx {
+		SchedulingPolicyFile[] files = schedMaster.getSchedulingPolicies();
+		schedMaster.removeSchedulingPolicies(files[0].uuid);
+		files = schedMaster.getSchedulingPolicies();
+		assertEquals(0, files.length);
+	}
+	
+	public void testRemovePoliciesFailure() {
+		try {
+			schedMaster.removeSchedulingPolicies(UUID.randomUUID().toString());
+		} catch (SchedulingInternalExceptionEx ex) {
+			System.out.println("This failure is expected: " + ex.errorTrace.previousError[0].shortDescription);
+		}
+	}
+	
+	public void testRefreshPolicies () throws SchedulingInternalExceptionEx {
+		final String xmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<Policies><SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria></SelectionCriteria>" +
+				"<Scorers></Scorers></SchedulingPolicy></Policies>";
+		final String newXmlToLoad = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+				"<Policies>" +
+				"<SchedulingPolicy name=\"TestPolicy\">\n<SelectionCriteria></SelectionCriteria>" +
+				"<Scorers></Scorers></SchedulingPolicy>" +
+				"<SchedulingPolicy name=\"TestPolicy2\">\n<SelectionCriteria></SelectionCriteria>" +
+				"<Scorers></Scorers></SchedulingPolicy>" +
+				"</Policies>";
+		schedMaster.addSchedulingPolicies("localhost", "lala.xml", xmlToLoad);
+		SchedulingPolicyFile[] files = schedMaster.getSchedulingPolicies();
+		schedMaster.refreshSchedulingPolicies(files[0].uuid, "localhost", files[0].path, newXmlToLoad);
+		files = schedMaster.getSchedulingPolicies();
+		assertEquals(1, files.length);
+		assertEquals(2, files[0].schedulingPolicies.length);
 	}
 }
