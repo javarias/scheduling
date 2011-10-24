@@ -31,10 +31,15 @@ import java.util.logging.Logger;
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
+import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
+import alma.entity.xmlbinding.projectstatus.ObsUnitStatusT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
 import alma.entity.xmlbinding.sbstatus.ExecStatusT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
@@ -51,10 +56,8 @@ import alma.scheduling.array.executor.services.EventPublisher;
 import alma.scheduling.array.executor.services.Pipeline;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
-import alma.scheduling.datamodel.helpers.ConversionException;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
@@ -113,7 +116,7 @@ public class ExecutionContext {
     private IDLEntityRef sessionRef;
     private IDLEntityRef schedBlockRef;
 
-    private long execTime;
+    private long execTime = 0;
     private DateFormat dateFormat;
     
     public ExecutionContext(SchedBlockItem schedBlockItem, Executor executor, boolean manual) {
@@ -223,8 +226,14 @@ public class ExecutionContext {
 		} else if (state instanceof FailedExecutionState) {
 			try {
 				final SBStatus sbStatus = getSBStatusFor(getSchedBlock());
+				final long now = System.currentTimeMillis();
+				long timeTaken = 0;
+				if (startedEvent != null) {
+					final long then = (long) UTCUtility.utcOmgToJava(startedEvent.startTime);
+					timeTaken = now - then;
+				}
 				addExecStatus(sbStatus, StatusTStateType.BROKEN);
-				accountFailure(sbStatus);
+				accountFailure(sbStatus, timeTaken);
 			} catch (Exception e) {
 				ErrorHandling.warning(logger, String.format(
 						"Error post-processing failed SchedBlock %s @ %s - %s",
@@ -243,7 +252,21 @@ public class ExecutionContext {
         return schedBlock;
     }
     
+    private String initialBookkeeping = "";
+    
     public void startObservation() {
+    	try {
+			initialBookkeeping = getSchedBlock().bookkeepingString(getSBStatusFor(getSchedBlock()));
+		} catch (AcsJNullEntityIdEx e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AcsJNoSuchEntityEx e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AcsJInappropriateEntityTypeEx e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         state.startObservation();
     }
     
@@ -487,14 +510,14 @@ public class ExecutionContext {
      * @throws AcsJNullEntityIdEx 
      */
     private SBStatus getSBStatusFor(SchedBlock schedBlock)
-    		throws AcsJNullEntityIdEx,
-    		       AcsJNoSuchEntityEx,
-    		       AcsJInappropriateEntityTypeEx {
-	SBStatus result = null;
-		
-	final StateArchive s = getModel().getStateArchive();
-	result = s.getSBStatus(schedBlock.getStatusEntity());
-	return result;
+    			throws AcsJNullEntityIdEx,
+    				   AcsJNoSuchEntityEx,
+    				   AcsJInappropriateEntityTypeEx {
+    	SBStatus result = null;
+
+    	final StateArchive s = getModel().getStateArchive();
+    	result = s.getSBStatus(schedBlock.getStatusEntity());
+    	return result;
     }
     
     /**
@@ -557,35 +580,109 @@ public class ExecutionContext {
      * @throws AcsJNoSuchEntityEx 
      * @throws AcsJNullEntityIdEx 
      */
+    private ProjectStatus getProjectStatus(ObsUnitStatusT status)
+    		throws AcsJNullEntityIdEx,
+    		       AcsJNoSuchEntityEx,
+    		       AcsJInappropriateEntityTypeEx {
+    	ProjectStatus result = null;
+
+    	final ProjectStatusRefT ref = status.getProjectStatusRef();
+    	if (ref != null) {
+    		final StateArchive s = getModel().getStateArchive();
+    		final ProjectStatusEntityT id = createEntity(ref);
+    		result = s.getProjectStatus(id);
+    	}
+    	return result;
+    }
+    
+    /**
+     * Get the OUSStatus which contains the given OUSStatus 
+     * @throws AcsJInappropriateEntityTypeEx 
+     * @throws AcsJNoSuchEntityEx 
+     * @throws AcsJNullEntityIdEx 
+     */
     private OUSStatus getContainingOUSStatus(OUSStatus ousStatus)
     		throws AcsJNullEntityIdEx,
     		       AcsJNoSuchEntityEx,
     		       AcsJInappropriateEntityTypeEx {
     	OUSStatus result = null;
-		   	
+
     	final OUSStatusRefT ref = ousStatus.getContainingObsUnitSetRef();
     	if (ref != null) {
-	    final StateArchive s = getModel().getStateArchive();
-	    final OUSStatusEntityT id = createEntity(ref);
-	    result = s.getOUSStatus(id);
+    		final StateArchive s = getModel().getStateArchive();
+    		final OUSStatusEntityT id = createEntity(ref);
+    		result = s.getOUSStatus(id);
     	}
-	return result;
+    	return result;
     }
     
     /**
-     * Create and EntityT from the given RefT.
+     * Create an EntityT from the given RefT.
+     * 
+     * @param ref
+     * @return
+     */
+    private ProjectStatusEntityT createEntity(ProjectStatusRefT ref) {
+    	final ProjectStatusEntityT result = new ProjectStatusEntityT();
+
+    	result.setDocumentVersion(ref.getDocumentVersion());
+    	result.setEntityId(ref.getEntityId());
+    	result.setEntityTypeName(ref.getEntityTypeName());
+
+    	return result;
+    }
+    
+    /**
+     * Create an EntityT from the given RefT.
      * 
      * @param ref
      * @return
      */
     private OUSStatusEntityT createEntity(OUSStatusRefT ref) {
-	final OUSStatusEntityT result = new OUSStatusEntityT();
-	
-	result.setDocumentVersion(ref.getDocumentVersion());
-	result.setEntityId(ref.getEntityId());
-	result.setEntityTypeName(ref.getEntityTypeName());
-	
-	return result;
+    	final OUSStatusEntityT result = new OUSStatusEntityT();
+
+    	result.setDocumentVersion(ref.getDocumentVersion());
+    	result.setEntityId(ref.getEntityId());
+    	result.setEntityTypeName(ref.getEntityTypeName());
+
+    	return result;
+    }
+
+    /**
+     * Update the given projectStatus after a successful execution of an SB
+     * within it.
+     * 
+     * @param projectStatus - the status object to update;
+     * @param endTime - when the exec block finished;
+     * @param timeInSec - the amount of observing time taken.
+     * 
+     * @throws SchedulingException
+     */
+    private void updateForSuccess(ProjectStatus projectStatus,
+				                  String        endTime,
+				                  int           secs)
+				throws SchedulingException {
+    	if (projectStatus.getHasExecutionCount()) {
+    		projectStatus.setSuccessfulExecutions(projectStatus.getSuccessfulExecutions() + 1);
+    		projectStatus.setExecutionsRemaining(projectStatus.getExecutionsRemaining() - 1);
+    	}
+
+    	if (projectStatus.getHasTimeLimit()) {
+    		projectStatus.setSuccessfulSeconds(projectStatus.getSuccessfulSeconds() + secs);
+    		projectStatus.setSecondsRemaining(projectStatus.getSecondsRemaining() - secs);
+    	}
+
+    	projectStatus.setTimeOfUpdate(endTime);
+    	try {
+    		getModel().getStateArchive().update(projectStatus);
+    	} catch (Exception e) {
+    		ErrorHandling.warning(logger,
+    				String.format(
+    						"Error updating ProjectStatus %s: %s",
+    						projectStatus.getProjectStatusEntity().getEntityId(),
+    						e.getMessage()),
+    						e);
+    	}
     }
 
     /**
@@ -607,6 +704,16 @@ public class ExecutionContext {
 				                  boolean   updateSBCounts)
 				throws SchedulingException {
     	if (ousStatus != null) {
+        	if (ousStatus.getHasExecutionCount()) {
+        		ousStatus.setSuccessfulExecutions(ousStatus.getSuccessfulExecutions() + 1);
+        		ousStatus.setExecutionsRemaining(ousStatus.getExecutionsRemaining() - 1);
+        	}
+
+        	if (ousStatus.getHasTimeLimit()) {
+        		ousStatus.setSuccessfulSeconds(ousStatus.getSuccessfulSeconds() + timeInSec);
+        		ousStatus.setSecondsRemaining(ousStatus.getSecondsRemaining() - timeInSec);
+        	}
+        	
     		final int time   = ousStatus.getTotalUsedTimeInSec();
 
     		if (updateSBCounts) {
@@ -617,10 +724,18 @@ public class ExecutionContext {
     		ousStatus.setTimeOfUpdate(endTime);
     		try {
     			getModel().getStateArchive().update(ousStatus);
-    			updateForSuccess(getContainingOUSStatus(ousStatus),
-    					endTime,
-    					timeInSec,
-    					false);
+    			final OUSStatus parent = getContainingOUSStatus(ousStatus);
+    			if (parent != null) {
+    				updateForSuccess(parent,
+    						         endTime,
+    						         timeInSec,
+    						         false);
+    			} else {
+    				final ProjectStatus projectStatus = getProjectStatus(ousStatus);
+    				updateForSuccess(projectStatus,
+					                 endTime,
+					                 timeInSec);
+    			}
     		} catch (Exception e) {
     			ErrorHandling.warning(logger,
     					String.format(
@@ -648,15 +763,20 @@ public class ExecutionContext {
     		                      String   endTime,
     		                      int      secs,
     		                      boolean  csv) {
-    	final int execs = sbStatus.getExecutionsRemaining();
-    	final int time  = sbStatus.getTotalUsedTimeInSec();
-
-
-    	if (execs > 0 && !csv) {
-    		// 0 used for indefinite repeat, so execs == 0 could happen
-    		sbStatus.setExecutionsRemaining(execs-1);
+    	if (sbStatus.getHasExecutionCount()) {
+        	sbStatus.setSuccessfulExecutions(sbStatus.getSuccessfulExecutions() + 1);
+    		sbStatus.setExecutionsRemaining(sbStatus.getExecutionsRemaining() - 1);
     	}
-    	sbStatus.setTotalUsedTimeInSec(time + secs);
+
+    	if (sbStatus.getHasTimeLimit()) {
+        	sbStatus.setSuccessfulSeconds(sbStatus.getSuccessfulSeconds() + secs);
+    		sbStatus.setSecondsRemaining(sbStatus.getSecondsRemaining() - secs);
+    	}
+    	
+    	// TODO: sensitivity
+    	
+    	sbStatus.setTotalUsedTimeInSec(sbStatus.getTotalUsedTimeInSec() + secs); // old stuff
+    	
     	sbStatus.setTimeOfUpdate(endTime);
     	try {
     		getModel().getStateArchive().update(sbStatus);
@@ -687,10 +807,56 @@ public class ExecutionContext {
      * 
      * @throws SchedulingException
      */
+    private void updateForFailure(ProjectStatus projectStatus,
+                                  String        endTime,
+                                  int           secs) {
+        	if (projectStatus.getHasExecutionCount()) {
+        		projectStatus.setFailedExecutions(projectStatus.getFailedExecutions() + 1);
+        	}
+
+        	if (projectStatus.getHasTimeLimit()) {
+        		projectStatus.setFailedSeconds(projectStatus.getFailedSeconds() + secs);
+        	}
+        	
+        	projectStatus.setTimeOfUpdate(endTime);
+        	
+    		try {
+    			getModel().getStateArchive().update(projectStatus);
+    		} catch (Exception e) {
+        		ErrorHandling.warning(logger,
+        				String.format(
+        						"Error updating ProjectStatus %s: %s",
+        						projectStatus.getProjectStatusEntity().getEntityId(),
+        						e.getMessage()),
+        						e);
+    	}
+    }
+    
+    /**
+     * Update the given ousStatus after an unsuccessful execution of an
+     * SB within it. Percolate the relevant info up the OUSStatus
+     * hierarchy.
+     * 
+     * @param ousStatus - the status object to update;
+     * @param endTime - when the exec block finished;
+     * @param updateSBCounts - do we update the SB counts (for when its
+     *                         the lowest level OUSStatus) or not?
+     * 
+     * @throws SchedulingException
+     */
     private void updateForFailure(OUSStatus ousStatus,
 				                  String    endTime,
+    		                      int       secs,
 				                  boolean   updateSBCounts) {
     	if (ousStatus != null) {
+        	if (ousStatus.getHasExecutionCount()) {
+        		ousStatus.setFailedExecutions(ousStatus.getFailedExecutions() + 1);
+        	}
+
+        	if (ousStatus.getHasTimeLimit()) {
+        		ousStatus.setFailedSeconds(ousStatus.getFailedSeconds() + secs);
+        	}
+        	
     		if (updateSBCounts) {
     			final int failed = ousStatus.getNumberSBsFailed();
     			ousStatus.setNumberSBsFailed(failed + 1);
@@ -698,9 +864,18 @@ public class ExecutionContext {
     		ousStatus.setTimeOfUpdate(endTime);
     		try {
     			getModel().getStateArchive().update(ousStatus);
-    			updateForFailure(getContainingOUSStatus(ousStatus),
-    					endTime,
-    					false);
+    			final OUSStatus parent = getContainingOUSStatus(ousStatus);
+    			if (parent != null) {
+        			updateForFailure(getContainingOUSStatus(ousStatus),
+					                 endTime,
+					                 secs,
+					                 false);
+    			} else {
+    				final ProjectStatus projectStatus = getProjectStatus(ousStatus);
+    				updateForFailure(projectStatus,
+					                 endTime,
+					                 secs);
+    			}
     		} catch (Exception e) {
     			ErrorHandling.warning(logger,
     					String.format(
@@ -723,11 +898,24 @@ public class ExecutionContext {
      * 
      * @throws SchedulingException
      */
-    private void updateForFailure(SBStatus sbStatus, String endTime) {
+    private void updateForFailure(SBStatus sbStatus,
+    		                      String   endTime,
+    		                      int      secs) {
+    	if (sbStatus.getHasExecutionCount()) {
+        	sbStatus.setFailedExecutions(sbStatus.getFailedExecutions() + 1);
+    	}
+
+    	if (sbStatus.getHasTimeLimit()) {
+        	sbStatus.setFailedSeconds(sbStatus.getFailedSeconds() + secs);
+    	}
+    	
+    	// TODO: sensitivity
+    	
     	try {
     		getModel().getStateArchive().update(sbStatus);
     		updateForFailure(getContainingOUSStatus(sbStatus),
     				         endTime,
+    				         secs,
     				         true);
     	} catch (Exception e) {
     		ErrorHandling.warning(logger,
@@ -805,7 +993,7 @@ public class ExecutionContext {
     	ObsProject prj = getModel().getObsProjectDao().findByEntityId(schedBlock.getProjectUid());
     	prj.setTotalExecutionTime(time + prj.getTotalExecutionTime());
 
- //     Avoid saves to the SWDB, due synch issues
+//      Avoid saves to the SWDB, due synch issues
 //     	model.getObsProjectDao().saveOrUpdate(prj);
 // 		model.getSchedBlockDao().saveOrUpdate(schedBlock);
 
@@ -818,6 +1006,9 @@ public class ExecutionContext {
     			(int) secs,
     			sb.getCsv() || sb.isOnCSVLifecycle(sbStatus));
 
+    	logger.fine("\n\n************\n\n" + initialBookkeeping +
+    			    "\n\n" + getSchedBlock().bookkeepingString(sbStatus) +
+    			    "\n\n************");
     	// Do the state transition
     	StatusTStateType fromStatus = null;
     	StatusTStateType toStatus = null;
@@ -840,7 +1031,7 @@ public class ExecutionContext {
     	doStateArchiveTransition(sbId, fromStatus, toStatus);
     }
     
-    public void accountFailure(SBStatus sbStatus)
+    public void accountFailure(SBStatus sbStatus, long secs)
     							 throws AcsJNoSuchTransitionEx,
                                         AcsJNotAuthorizedEx,
                                         AcsJPreconditionFailedEx,
@@ -863,7 +1054,8 @@ public class ExecutionContext {
 //			getModel().getStateArchive().update(ousS);
 			
     	updateForFailure(sbStatus,
-    			         dateFormat.format(new Date()));
+    			         dateFormat.format(new Date()),
+    			         (int) secs);
     	StatusTStateType fromStatus = null;
     	StatusTStateType toStatus = null;
 	

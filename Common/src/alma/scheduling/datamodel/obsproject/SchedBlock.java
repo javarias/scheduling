@@ -21,12 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.14 2011/05/11 21:09:23 dclarke Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.15 2011/10/24 17:32:36 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
@@ -231,20 +232,104 @@ public class SchedBlock extends ObsUnit {
 		this.manual = manual;
 	}
 
-	public boolean needsMoreExecutions(SBStatus status) {
+	public void initialiseBookkeeping(SBStatus status) {
 		if (schedBlockControl.getIndefiniteRepeat()) {
-			return true;
+			status.setHasExecutionCount(false);
+		} else {
+			status.setHasExecutionCount(true);
 		}
-		if (status.getExecutionsRemaining() <= 0) {
+	}
+
+	public boolean bookkeepingIsInitialised(SBStatus status) {
+		return isOnCSVLifecycle(status) ||
+				status.getHasExecutionCount() ||
+				status.getHasTimeLimit() ||
+				status.getHasSensitivityGoal();
+	}
+
+	public boolean needsMoreExecutions(SBStatus status) {
+//		if (schedBlockControl.getIndefiniteRepeat()) {
+//			return true;
+//		}
+		if (status.getHasExecutionCount() &&
+				status.getExecutionsRemaining() <= 0) {
 			// No more executions allowed
 			return false;
 		}
+		if (status.getHasTimeLimit() &&
+				status.getSecondsRemaining() <= 0) {
+			// No more time allowed
+			return false;
+		}
+		if (status.getHasSensitivityGoal() &&
+				status.getSensitivityAchievedJy() <= status.getSensitivityGoalJy()) {
+			// Sensitivity reached
+			return false;
+		}
 
-		// TODO R8 - Maximum time
-		// TODO R8 - Sensitivity?
 		return true;
 	}
 
+
+	public String bookkeepingString(SBStatus status) {
+		final StringBuilder b = new StringBuilder();
+		
+		b.append("SchedBlock: ");
+		b.append(getUid());
+		b.append(" - ");
+		b.append(status.getStatus().getState().toString());
+		b.append("\n");
+		
+		b.append("\tgetIndefiniteRepeat(): ");
+		b.append(schedBlockControl.getIndefiniteRepeat());
+		b.append('\n');
+		
+		b.append('\t');
+		if (status.getHasExecutionCount()) {
+			b.append("getHasExecutionCount(): true, getExecutionsRemaining(): ");
+			b.append(" (S: ");
+			b.append(status.getSuccessfulExecutions());
+			b.append(", F: ");
+			b.append(status.getFailedExecutions());
+			b.append(")");
+			b.append(status.getExecutionsRemaining());
+		} else {
+			b.append("getHasExecutionCount(): false");
+		}
+		b.append('\n');
+		
+		b.append('\t');
+		if (status.getHasTimeLimit()) {
+			b.append("getHasTimeLimit(): true, getSecondsRemaining(): ");
+			b.append(status.getExecutionsRemaining());
+			b.append(" (S: ");
+			b.append(status.getSuccessfulSeconds());
+			b.append(", F: ");
+			b.append(status.getFailedSeconds());
+			b.append(")");
+		} else {
+			b.append("getHasTimeLimit(): false");
+		}
+		b.append('\n');
+		
+		b.append('\t');
+		if (status.getHasSensitivityGoal()) {
+			b.append("getHasSensitivityGoal(): true, getSensitivityAchievedJy(): ");
+			b.append(status.getSensitivityAchievedJy());
+			b.append(", getSensitivityGoalJy(): ");
+			b.append(status.getSensitivityGoalJy());
+		} else {
+			b.append("getHasSensitivityGoal(): false");
+		}
+		b.append('\n');
+
+		final boolean result = needsMoreExecutions(status);
+		b.append("needsMoreExecutions = ");
+		b.append(result);
+		
+		return b.toString();
+	}
+	
 	public SkyCoordinates getRepresentativeCoordinates() {
 		try {
 			return this.
