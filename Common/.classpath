@@ -3,9 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-9.0/jar,zip"/>
-	<classpathentry exported="true" kind="con" path="acs.INTROOT_CONTAINER/home/ahoffsta/introots/intSched/jar,zip"/>
-	<classpathentry exported="true" kind="con" path="acs.INTLIST_CONTAINER/home/ahoffsta/repos/SCHEDULING/Common/jar,zip"/>
-	<classpathentry kind="lib" path="/home/ahoffsta/introots/intSched/lib/APDMEntities.jar" sourcepath="/home/ahoffsta/introots/intSched/lib/APDMEntities.jar"/>
+	<classpathentry kind="con" path="acs.INTROOT_CONTAINER/export/home/flaminia/dclarke/ALMA/Introots/TRUNK/HEAD/jar,zip"/>
+	<classpathentry kind="con" path="acs.INTLIST_CONTAINER/export/home/flaminia/dclarke/ALMA/Intlists/TRUNK/HEAD/jar,zip"/>
+	<classpathentry kind="con" path="acs.ACSROOT_CONTAINER/alma/ACS-10.0/jar,zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
