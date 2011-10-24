@@ -19,7 +19,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 -->
-<project basedir="." default="build" name="Master-HEAD">
+<project basedir="." default="build" name="Master">
     <property environment="env"/>
     <property name="ArchiveUpdater.location" value="../ArchiveUpdater"/>
     <property name="Common.location" value="../Common"/>
@@ -82,6 +82,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 				<include name="**/*.class" />
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
+				<exclude name="alma/scheduling/master/gui/*.class"/>
+				<exclude name="alma/scheduling/master/gui/MasterImpl$1.class"/>
 			</fileset>
 		</cobertura-instrument>
 	</target>
