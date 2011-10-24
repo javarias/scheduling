@@ -83,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
 				<exclude name="alma/scheduling/master/gui/*.class"/>
-				<exclude name="alma/scheduling/master/gui/MasterImpl$1.class"/>
+				<exclude name="alma/scheduling/master/compimpl/MasterImpl$1.class"/>
 			</fileset>
 		</cobertura-instrument>
 	</target>
