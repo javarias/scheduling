@@ -13,6 +13,16 @@
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.6"/>
 	<property name="source" value="1.6"/>
+	<property name="instrumented.dir" value="instrumented"/>
+	<property name="cobertura.dir" value="${env.COBERTURA_HOME}" />
+
+	<path id="cobertura.classpath">
+		<fileset dir="${cobertura.dir}">
+			<include name="cobertura.jar" />
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+
 	<target name="init">
 		<mkdir dir="bin"/>
 		<copy includeemptydirs="false" todir="bin">
@@ -34,7 +44,7 @@
 		<ant antfile="build.xml" dir="${DSA.location}" inheritAll="false" target="clean"/>
 	</target>
 	<target depends="build-project" name="build"/>
-	
+
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}"/>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
@@ -44,22 +54,44 @@
 			<src path="test"/>
 		</javac>
 	</target>
+
+	<target name="instrument" depends="build">
+		<delete file="cobertura.ser"/>
+		<cobertura-instrument todir="${instrumented.dir}">
+			<includeClasses regex=".*" />
+			<excludeClasses regex=".*\.Test.*" />
+			<excludeClasses regex=".*\.Tests.*" />
+			<ignore regex="com.vladium.*" />
+			<instrumentationClasspath>
+				<pathelement location="bin" />
+			</instrumentationClasspath>
+		</cobertura-instrument>
+	</target>
+
 	<target name="test">
 		<mkdir dir="${junit.output.dir}" />
 		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile"
+        		file="cobertura.ser" />
 			<formatter type="xml" />
 			<test name="alma.scheduling.array.executor.ExecutorUnitTests" todir="${junit.output.dir}" />
 			<classpath>
-				<pathelement path="${classpath}"/>
+				<pathelement path="${instrumented.dir}"/>
 				<pathelement path="bin"/>
+				<path refid="cobertura.classpath"/>
+				<pathelement path="${classpath}"/>
 			</classpath>
 		</junit>
 		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile"
+        		file="cobertura.ser" />
 			<formatter type="xml" />
 			<test name="alma.scheduling.array.sbQueue.ReorderingBlockingQueueTest" todir="${junit.output.dir}" />
 			<classpath>
-				<pathelement path="${classpath}"/>
+				<pathelement path="${instrumented.dir}"/>
 				<pathelement path="bin"/>
+				<path refid="cobertura.classpath"/>
+				<pathelement path="${classpath}"/>
 			</classpath>
 		</junit>
 	</target>

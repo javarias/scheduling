@@ -14,8 +14,19 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
+	<property name="instrumented.dir" value="instrumented"/>
+	<property name="cobertura.dir" value="${env.COBERTURA_HOME}" />
+	
+	<path id="cobertura.classpath">
+	    <fileset dir="${cobertura.dir}">
+	        <include name="cobertura.jar" />
+	        <include name="lib/**/*.jar" />
+	    </fileset>
+	</path>
+	
     <target name="init">
         <mkdir dir="bin"/>
+    	<mkdir dir="instrumented"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
                 <exclude name="**/*.java"/>
@@ -47,24 +58,46 @@
             <src path="test"/>
         </javac>
     </target>
+	
+	<target name="instrument" depends="build">
+		<delete file="cobertura.ser"/>
+		<cobertura-instrument todir="${instrumented.dir}">
+			<includeClasses regex=".*" />
+			<excludeClasses regex=".*\.Test.*" />
+			<excludeClasses regex=".*\.Tests.*" />
+			<ignore regex="com.vladium.*" />
+			<instrumentationClasspath>
+				<pathelement location="bin" />
+			</instrumentationClasspath>
+		</cobertura-instrument>
+	</target>
+	
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target name="test">
+    <target name="test" depends="instrument">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
+        	<sysproperty key="net.sourceforge.cobertura.datafile"
+        		file="cobertura.ser" />
             <formatter type="xml"/>
             <test name="alma.scheduling.master.compimpl.MasterSchedulerUnitTests" todir="${junit.output.dir}"/>
         	<classpath>
-        		<pathelement path="${classpath}"/>
+        		<pathelement path="${instrumented.dir}"/>
         		<pathelement path="bin"/>
+        		<path refid="cobertura.classpath"/>
+        		<pathelement path="${classpath}"/>
         	</classpath>
         </junit>
         <junit fork="yes" printsummary="withOutAndErr">
+        	<sysproperty key="net.sourceforge.cobertura.datafile"
+        	        		file="cobertura.ser" />
             <formatter type="xml"/>
         	<jvmarg value="-Dalma.scheduling.properties=Master/test/scheduling.properties" />
             <test name="alma.scheduling.master.compimpl.MasterSchedulerPolicyUnitTests" todir="${junit.output.dir}"/>
         	<classpath>
-        		<pathelement path="${classpath}"/>
+        		<pathelement path="${instrumented.dir}"/>
         		<pathelement path="bin"/>
+        		<path refid="cobertura.classpath"/>
+        		<pathelement path="${classpath}"/>
         	</classpath>
         </junit>
     </target>

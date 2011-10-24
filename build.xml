@@ -1,17 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="test" name="SCHEDULING">
+	<property environment="env"/>
+	
+	<property name="cobertura.dir" value="${env.COBERTURA_HOME}" />
+	
+	<path id="cobertura.classpath">
+	    <fileset dir="${cobertura.dir}">
+	        <include name="cobertura.jar" />
+	        <include name="lib/**/*.jar" />
+	    </fileset>
+	</path>
+	
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
 	<target name="build">
 <!--		<ant antfile="build.xml" dir="Common" target="build-test" />
 		<ant antfile="build.xml" dir="DSA" target="build-test" /> -->
 		<ant antfile="build.xml" dir="Array" target="build"/> 
 		<ant antfile="build.xml" dir="Master" target="build" />
 	</target>
-	<target name="test" depends="build">
+	<target name="test" depends="instrument, build">
+		<delete file="cobertura.ser"/>
 		<ant antfile="build.xml" dir="Array" target="test" />
 		<ant antfile="build.xml" dir="Master" target="test" />
 	</target>
 	<target name="clean">
 		<ant antfile="build.xml" dir="Array" target="clean" />
 		<ant antfile="build.xml" dir="Master" target="clean" />
+	</target>
+	<target name="instrument" depends="build">
+		<delete file="cobertura.ser"/>
+		<ant antfile="build.xml" dir="Array" target="instrument" />
+		<ant antfile="build.xml" dir="Master" target="instrument" />
+		
 	</target>
 </project>
