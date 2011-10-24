@@ -60,7 +60,7 @@
         </junit>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-        	<jvmarg value="-Dalma.scheduling.properties=test/scheduling.properties" />
+        	<jvmarg value="-Dalma.scheduling.properties=Master/test/scheduling.properties" />
             <test name="alma.scheduling.master.compimpl.MasterSchedulerPolicyUnitTests" todir="${junit.output.dir}"/>
         	<classpath>
         		<pathelement path="${classpath}"/>
