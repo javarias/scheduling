@@ -17,21 +17,19 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
--->/
+-->
 <?xml version="1.0" encoding="UTF-8"?>
-<Policies xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="file:/export/home/griffin/javarias/scm/ALMA/HEAD/SCHEDULING/DSA/src/alma/scheduling/algorithm/SchedulingPolicy.xsd">
+<Policies> 
     <SchedulingPolicy name="testPolicy1">
         <SelectionCriterion>
             <ExecutiveSelector/>
             <ArrayConfigSelector/>
-            <WeatherSelector>
-                <tsysVariation>1.0</tsysVariation>
-            </WeatherSelector>
+            <OpacitySelector/>
             <MoonAvoidanceSelector/>
             <SunAvoidanceSelector/>
             <HourAngleSelector/>
             <SourceSelector/>
+            <InteractiveProjectsSelector/>
         </SelectionCriterion>
         <Scorers>
             <HourAngleScorer>
@@ -40,6 +38,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             <SciScorer>
                 <weight>1.0</weight>
             </SciScorer>
+            <TsysScorer>
+                <weight>1.0</weight>
+            </TsysScorer>
         </Scorers>
     </SchedulingPolicy>
     
@@ -57,8 +58,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             <HourAngleScorer>
                 <weight>2</weight>
             </HourAngleScorer>
-            
-            
         </Scorers>
     </SchedulingPolicy>
     

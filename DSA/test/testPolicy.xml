@@ -17,16 +17,27 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
--->/
+-->
 <?xml version="1.0" encoding="UTF-8"?>
 <Policies>
+<SchedulingPolicy name="LalaFile-NoSelectors">
+    <SelectionCriteria>
+    </SelectionCriteria>
+    <Scorers>
+        <HourAngleScorer>
+            <weight>1.0</weight>
+        </HourAngleScorer> 
+        <TsysScorer>
+            <weight>1.0</weight>
+        </TsysScorer>
+    </Scorers>
+</SchedulingPolicy>
 <SchedulingPolicy name="AllEqual">
-    <SelectionCriterion>
+    <SelectionCriteria>
         <ExecutiveSelector/>
         <OpacitySelector/>
         <ArrayConfigSelector/>
-        <SourceSelector/>
-    </SelectionCriterion>
+    </SelectionCriteria>
     <Scorers>
         <HourAngleScorer>
             <weight>1.0</weight>
@@ -37,12 +48,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
     </Scorers>
 </SchedulingPolicy>
 <SchedulingPolicy name="BiasToHA">
-    <SelectionCriterion>
+    <SelectionCriteria>
         <ExecutiveSelector/>
         <OpacitySelector/>
         <ArrayConfigSelector/>
-        <SourceSelector/>
-    </SelectionCriterion>
+    </SelectionCriteria>
     <Scorers>
         <HourAngleScorer>
             <weight>2.0</weight>
@@ -53,12 +63,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
     </Scorers>
 </SchedulingPolicy>
 <SchedulingPolicy name="BiasToTsys">
-    <SelectionCriterion>
+    <SelectionCriteria>
         <ExecutiveSelector/>
         <OpacitySelector/>
         <ArrayConfigSelector/>
-        <SourceSelector/>
-    </SelectionCriterion>
+    </SelectionCriteria>
     <Scorers>
         <HourAngleScorer>
             <weight>1.0</weight>
