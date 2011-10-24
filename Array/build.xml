@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="Array-HEAD">
+
+<project basedir="." default="build" name="Array">
 	<property environment="env"/>
 	<property name="Common.location" value="../Common"/>
 	<property name="Master.location" value="../Master"/>
@@ -59,8 +55,8 @@
 		<delete file="cobertura.ser"/>
 		<cobertura-instrument todir="${instrumented.dir}">
 			<includeClasses regex=".*" />
-			<excludeClasses regex=".*\.Test.*" />
-			<excludeClasses regex=".*\.Tests.*" />
+			<excludeClasses regex=".*\.*Test.*" />
+			<excludeClasses regex=".*\.*Tests.*" />
 			<ignore regex="com.vladium.*" />
 			<instrumentationClasspath>
 				<pathelement location="bin" />
