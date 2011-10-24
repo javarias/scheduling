@@ -94,6 +94,11 @@
 				<pathelement path="${classpath}"/>
 			</classpath>
 		</junit>
+		<cobertura-report format="xml" destdir="." >
+		    <fileset dir="src">
+		        <include name="src/**/*.java" />
+		    </fileset>
+		</cobertura-report>
 	</target>
 	<target name="junitreport">
 		<junitreport todir="${junit.output.dir}">

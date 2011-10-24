@@ -3,7 +3,6 @@
 	<property environment="env"/>
 	
 	<property name="cobertura.dir" value="${env.COBERTURA_HOME}" />
-	<property name="coveragereport.dir" value="coverage"/> 
 	<path id="cobertura.classpath">
 	    <fileset dir="${cobertura.dir}">
 	        <include name="cobertura.jar" />
@@ -32,20 +31,5 @@
 		<delete file="cobertura.ser"/>
 		<ant antfile="build.xml" dir="Array" target="instrument" />
 		<ant antfile="build.xml" dir="Master" target="instrument" />
-		<cobertura-merge datafile="cobertura.ser">
-		    <fileset dir=".">
-		        <include name="Array/cobertura.ser" />
-		        <include name="Master/cobertura.ser" />
-		    </fileset>
-		</cobertura-merge>
-		<mkdir dir="${coveragereport.dir}"/>
-		<cobertura-report format="xml" destdir="${coveragereport.dir}" >
-		    <fileset dir="Array/src">
-		        <include name="**/*.java" />
-		    </fileset>
-		    <fileset dir="Master/src">
-		        <include name="**/*.java" />
-		    </fileset>
-		</cobertura-report>
 	</target>
 </project>
