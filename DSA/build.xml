@@ -4,13 +4,13 @@
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="DSA-HEAD">
+<project basedir="." default="build" name="DSA">
     <property environment="env"/>
-    <property name="ArchiveUpdater-HEAD.location" value="../ArchiveUpdater"/>
-    <property name="Array-HEAD.location" value="../Array"/>
-    <property name="Master-HEAD.location" value="../Master"/>
-    <property name="junit.output.dir" value="junit"/>
-    <property name="Common-HEAD.location" value="../Common"/>
+    <property name="ArchiveUpdater.location" value="../ArchiveUpdater"/>
+    <property name="Array.location" value="../Array"/>
+    <property name="Master.location" value="../Master"/>
+    <property name="junit.output.dir" value="../junit"/>
+    <property name="Common.location" value="../Common"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
@@ -68,7 +68,14 @@
 		</cobertura-instrument>
 	</target>
 	
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+	<path id="test.path">
+		<pathelement path="${instrumented.dir}"/>
+		<pathelement path="bin"/>
+		<path refid="cobertura.classpath"/>
+		<pathelement path="${classpath}"/>
+	</path>
+    
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target name="test" depends="instrument">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -78,10 +85,7 @@
         	<jvmarg value="-Dalma.scheduling.properties=Common/test/scheduling.properties" />
             <test name="alma.scheduling.algorithm.results.dao.ResultsDaoTest" todir="${junit.output.dir}"/>
         	<classpath>
-        		<pathelement path="${instrumented.dir}"/>
-        		<pathelement path="bin"/>
-        		<path refid="cobertura.classpath"/>
-        		<pathelement path="${classpath}"/>
+        		<path refid="test.path"/>
         	</classpath>
         </junit>
     	<delete file="coverage.xml"/>
