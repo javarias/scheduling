@@ -41,12 +41,17 @@ import alma.Control.Completion;
 import alma.Control.ExecBlockEndedEvent;
 import alma.Control.ExecBlockStartedEvent;
 import alma.asdmIDLTypes.IDLEntityRef;
+import alma.entity.xmlbinding.obsproject.ObsProjectRefT;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
 import alma.entity.xmlbinding.ousstatus.OUSStatusRefT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusRefT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlockRefT;
+import alma.entity.xmlbinding.valuetypes.StatusT;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.persistence.StateArchive;
 import alma.lifecycle.stateengine.StateEngine;
@@ -82,6 +87,10 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 	private SchedBlock sb = new SchedBlock();
 	private ObsProject prj = new ObsProject();
 	private ExecutorCallbackNotifier execNotifier;
+	private OUSStatus ousStatus = null;
+	private ProjectStatus prjStatus = null;
+	private StatusT status = null;
+	
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -104,6 +113,24 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 		sbStatusRef.setEntityTypeName("SCHEDBLOCK");
 		sb.setStatusEntity(sbStatusRef);
 		prj.setTotalExecutionTime(0.0);
+		
+		ousStatus = new OUSStatus();
+		ousStatus.setHasExecutionCount(true);
+		ousStatus.setExecutionsRemaining(10);
+		ousStatus.setHasTimeLimit(true);
+		ousStatus.setSecondsRemaining(3600);
+		ousStatus.setOUSStatusEntity(new OUSStatusEntityT());
+		ousStatus.setObsUnitSetRef(new ObsProjectRefT());
+		ousStatus.setContainingObsUnitSetRef(null);
+		ousStatus.setProjectStatusRef(new ProjectStatusRefT());
+		prjStatus = new ProjectStatus();
+		prjStatus.setHasExecutionCount(true);
+		prjStatus.setExecutionsRemaining(10);
+		prjStatus.setHasTimeLimit(true);
+		prjStatus.setSecondsRemaining(3600);
+		
+		status = new StatusT();
+		status.setState(StatusTStateType.READY);
 		
 		checking(new Expectations() {{ 
 			allowing(model).getStateArchive(); will(returnValue(stateArchive));
@@ -134,9 +161,11 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
-			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
+			OUSStatusRefT ousStatusR = new OUSStatusRefT();
+			sbStatus.setContainingObsUnitSetRef(ousStatusR);
 			allowing(stateArchive).getSBStatus(sb.getStatusEntity()); will(returnValue(sbStatus));
 			atLeast(1).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.RUNNING, Subsystem.SCHEDULING, Role.AOD);
 			atMost(2).of(stateEngine).changeState(sb.getStatusEntity(), StatusTStateType.SUSPENDED, Subsystem.SCHEDULING, Role.AOD);
@@ -152,8 +181,10 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
 			atMost(2).of(stateArchive).update(sbStatus);
-			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(new OUSStatus()));
+			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).update(with(any(OUSStatus.class)));
+			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
+			atMost(2).of(stateArchive).update(with(any(ProjectStatus.class)));
 			allowing(prjDao).findByEntityId("uid://A000/X000/X04"); will(returnValue(prj));
 		}});
 		executor.start("UnitTest", "MasterOfTheUniverse");
@@ -186,6 +217,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
@@ -205,8 +237,10 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
 			atMost(2).of(stateArchive).update(sbStatus);
-			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(new OUSStatus()));
+			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).update(with(any(OUSStatus.class)));
+			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
+			atMost(2).of(stateArchive).update(with(any(ProjectStatus.class)));
 			allowing(prjDao).findByEntityId("uid://A000/X000/X04"); will(returnValue(prj));
 		}});
 		executor.setFullAuto(true, "UnitTest", "MasterOfTheUniverse");
@@ -242,6 +276,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
@@ -289,6 +324,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
@@ -307,8 +343,10 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
 			atMost(2).of(stateArchive).update(sbStatus);
-			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(new OUSStatus()));
+			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).update(with(any(OUSStatus.class)));
+			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
+			atMost(2).of(stateArchive).update(with(any(ProjectStatus.class)));
 			allowing(prjDao).findByEntityId("uid://A000/X000/X04"); will(returnValue(prj));
 		}});
 		executor.start("UnitTest", "MasterOfTheUniverse");
@@ -339,6 +377,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
@@ -357,8 +396,10 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
 			atMost(2).of(stateArchive).update(sbStatus);
-			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(new OUSStatus()));
+			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).update(with(any(OUSStatus.class)));
+			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
+			atMost(2).of(stateArchive).update(with(any(ProjectStatus.class)));
 			allowing(prjDao).findByEntityId("uid://A000/X000/X04"); will(returnValue(prj));
 		}});
 		executor.setFullAuto(true, "UnitTest", "MasterOfTheUniverse");
@@ -391,6 +432,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
@@ -409,8 +451,10 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
 			atMost(2).of(stateArchive).update(sbStatus);
-			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(new OUSStatus()));
+			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).update(with(any(OUSStatus.class)));
+			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
+			atMost(2).of(stateArchive).update(with(any(ProjectStatus.class)));
 			allowing(prjDao).findByEntityId("uid://A000/X000/X04"); will(returnValue(prj));
 		}});
 		executor.start("UnitTest", "MasterOfTheUniverse");
@@ -445,6 +489,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			allowing(services).getModel(); will(returnValue(model));
 			atLeast(1).of(model).getSchedBlockFromEntityId("uid://A000/X000/X01"); will(returnValue(sb));
 			SBStatus sbStatus = new SBStatus();
+			sbStatus.setStatus(status);
 			sbStatus.setSBStatusEntity(new SBStatusEntityT());
 			sbStatus.setSchedBlockRef(new SchedBlockRefT());
 			sbStatus.setContainingObsUnitSetRef(new OUSStatusRefT());
