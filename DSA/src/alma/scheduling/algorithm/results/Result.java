@@ -101,6 +101,7 @@ public class Result {
 		for (int i = scores.size() - 1; i >= 0; i--){
 			descSortedList.add(scores.get(i));
 		}
+		scores = descSortedList;
 	}
 	
 }
