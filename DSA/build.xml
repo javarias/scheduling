@@ -91,7 +91,7 @@
     	<delete file="coverage.xml"/>
 		<cobertura-report format="xml" destdir="." >
 		    <fileset dir="src">
-		        <include name="src/**/*.java" />
+		        <include name="**/*.java" />
 		    </fileset>
 		</cobertura-report>
     </target>
