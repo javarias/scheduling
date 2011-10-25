@@ -82,7 +82,7 @@
         	<sysproperty key="net.sourceforge.cobertura.datafile"
         	        		file="cobertura.ser" />
             <formatter type="xml"/>
-        	<jvmarg value="-Dalma.scheduling.properties=Common/test/scheduling.properties" />
+        	<jvmarg value="-Dalma.scheduling.properties=Common/src/scheduling.properties" />
             <test name="alma.scheduling.algorithm.results.dao.ResultsDaoTest" todir="${junit.output.dir}"/>
         	<classpath>
         		<path refid="test.path"/>
