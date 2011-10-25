@@ -58,7 +58,7 @@
 			<fileset dir="bin">
 				<include name="**/*.class" />
 				<exclude name="alma/scheduling/array/guis/*.class"/>
-				<exclude name="alma/scheduling/array/swingx/*.class"/>
+				<exclude name="alma/scheduling/swingx/*.class"/>
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
 			</fileset>
