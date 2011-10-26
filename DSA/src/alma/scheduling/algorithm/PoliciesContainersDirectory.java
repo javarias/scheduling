@@ -58,7 +58,7 @@ public class PoliciesContainersDirectory extends ConcurrentHashMap<UUID, Policie
 	 * @throws IllegalArgumentException if the container is null or if the container doesn't
 	 * contain scheduling policies
 	 */
-	public static SchedulingPolicyFile convertTo(PoliciesContainer container){
+	static SchedulingPolicyFile convertTo(PoliciesContainer container){
 		if (container == null)
 			throw new IllegalArgumentException("Policies container cannot be null");
 		else if (container.getPolicies().size() == 0)
@@ -93,6 +93,8 @@ public class PoliciesContainersDirectory extends ConcurrentHashMap<UUID, Policie
 			try {
 				DynamicSchedulingPolicyFactory.getInstance().removePolicies(this.get(key));
 			} catch (NoSuchBeanDefinitionException ex) {
+				throw new UnexpectedException(this.get(key).getUuid(), ex);
+			} catch (Exception ex) {
 				throw new UnexpectedException(this.get(key).getUuid(), ex);
 			}
 			return super.remove(key);
@@ -153,9 +155,13 @@ public class PoliciesContainersDirectory extends ConcurrentHashMap<UUID, Policie
 		 */
 		private static final long serialVersionUID = 6506424755783855552L;
 		
+		public UnexpectedException(UUID containerUuid) {
+			super("Policies in container UUID: " + containerUuid.toString() + 
+					" cannot be deleted is not in the directory");
+		}
 		
 		public UnexpectedException(UUID containerUuid, Throwable cause) {
-			super("Policies container UUID: " + containerUuid.toString() + 
+			super("Policies in container UUID: " + containerUuid.toString() + 
 					" cannot be deleted" , cause);
 		}
 	}

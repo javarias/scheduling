@@ -5,111 +5,118 @@
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="DSA">
-    <property environment="env"/>
-    <property name="ArchiveUpdater.location" value="../ArchiveUpdater"/>
-    <property name="Array.location" value="../Array"/>
-    <property name="Master.location" value="../Master"/>
-    <property name="junit.output.dir" value="../junit"/>
-    <property name="Common.location" value="../Common"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
-    <property name="source" value="1.6"/>
-	<property name="instrumented.dir" value="instrumented"/>
+	<property environment="env" />
+	<property name="ArchiveUpdater.location" value="../ArchiveUpdater" />
+	<property name="Array.location" value="../Array" />
+	<property name="Master.location" value="../Master" />
+	<property name="junit.output.dir" value="../junit" />
+	<property name="Common.location" value="../Common" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	<property name="instrumented.dir" value="instrumented" />
 	<property name="cobertura.dir" value="${env.COBERTURA_HOME}" />
-	
+
 	<path id="cobertura.classpath">
-	    <fileset dir="${cobertura.dir}">
-	        <include name="cobertura.jar" />
-	        <include name="lib/**/*.jar" />
-	    </fileset>
+		<fileset dir="${cobertura.dir}">
+			<include name="cobertura.jar" />
+			<include name="lib/**/*.jar" />
+		</fileset>
 	</path>
-	
-    <target name="init">
-        <mkdir dir="bin"/>
-    	<mkdir dir="instrumented"/>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="test">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    </target>
-    <target name="clean">
-        <delete dir="bin"/>
-    </target>
-    <target depends="clean" name="cleanall">
-        <ant antfile="build.xml" dir="${Common.location}" inheritAll="false" target="clean"/>
-    </target>
-    <target depends="build-project" name="build"/>
-	
-    <target depends="init" name="build-project">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="src"/>
-        </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="test"/>
-        </javac>
-    </target>
-	
+
+	<target name="init">
+		<mkdir dir="bin" />
+		<mkdir dir="instrumented" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="test">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall">
+		<ant antfile="build.xml" dir="${Common.location}" inheritAll="false" target="clean" />
+	</target>
+	<target depends="build-project" name="build" />
+
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="src" />
+		</javac>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="test" />
+		</javac>
+	</target>
+
 	<target name="instrument" depends="build">
-		<delete file="cobertura.ser"/>
-		<delete dir="${instrumented.dir}"/>
+		<delete file="cobertura.ser" />
+		<delete dir="${instrumented.dir}" />
 		<cobertura-instrument todir="${instrumented.dir}">
 			<fileset dir="bin">
 				<include name="**/*.class" />
+				<exclude name="**/*Selector.class" />
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
 			</fileset>
 		</cobertura-instrument>
 	</target>
-	
+
 	<path id="test.path">
-		<pathelement path="${instrumented.dir}"/>
-		<pathelement path="bin"/>
-		<path refid="cobertura.classpath"/>
-		<pathelement path="${classpath}"/>
+		<pathelement path="${instrumented.dir}" />
+		<pathelement path="bin" />
+		<path refid="cobertura.classpath" />
+		<pathelement path="${classpath}" />
 	</path>
-    
-	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target name="test" depends="instrument">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-        	<sysproperty key="net.sourceforge.cobertura.datafile"
-        	        		file="cobertura.ser" />
-            <formatter type="xml"/>
-        	<jvmarg value="-Dalma.scheduling.properties=Common/src/scheduling.properties" />
-            <test name="alma.scheduling.algorithm.results.dao.ResultsDaoTest" todir="${junit.output.dir}"/>
-        	<classpath>
-        		<path refid="test.path"/>
-        	</classpath>
-        </junit>
-        <junit fork="yes" printsummary="withOutAndErr">
-        	<sysproperty key="net.sourceforge.cobertura.datafile"
-        	        		file="cobertura.ser" />
-            <formatter type="xml"/>
-            <test name="alma.scheduling.algorithm.PolicyValidatorTests" todir="${junit.output.dir}"/>
-        	<classpath>
-        		<path refid="test.path"/>
-        	</classpath>
-        </junit>
-    	<delete file="coverage.xml"/>
-		<cobertura-report format="xml" destdir="." >
-		    <fileset dir="src">
-		        <include name="**/*.java" />
-		    </fileset>
+
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects" />
+	<target name="test" depends="instrument">
+		<mkdir dir="${junit.output.dir}" />
+		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="cobertura.ser" />
+			<formatter type="xml" />
+			<jvmarg value="-Dalma.scheduling.properties=Common/src/scheduling.properties" />
+			<test name="alma.scheduling.algorithm.results.dao.ResultsDaoTest" todir="${junit.output.dir}" />
+			<classpath>
+				<path refid="test.path" />
+			</classpath>
+		</junit>
+		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="cobertura.ser" />
+			<formatter type="xml" />
+			<test name="alma.scheduling.algorithm.PolicyValidatorTests" todir="${junit.output.dir}" />
+			<classpath>
+				<path refid="test.path" />
+			</classpath>
+		</junit>
+		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="cobertura.ser" />
+			<formatter type="xml" />
+			<test name="alma.scheduling.algorithm.PoliciesContainerDirectoryTests" todir="${junit.output.dir}" />
+			<classpath>
+				<path refid="test.path" />
+			</classpath>
+		</junit>
+		<delete file="coverage.xml" />
+		<cobertura-report format="xml" destdir=".">
+			<fileset dir="src">
+				<include name="**/*.java" />
+			</fileset>
 		</cobertura-report>
-    </target>
-    <target name="junitreport">
-        <junitreport todir="${junit.output.dir}">
-            <fileset dir="${junit.output.dir}">
-                <include name="TEST-*.xml"/>
-            </fileset>
-            <report format="frames" todir="${junit.output.dir}"/>
-        </junitreport>
-    </target>
+	</target>
+	<target name="junitreport">
+		<junitreport todir="${junit.output.dir}">
+			<fileset dir="${junit.output.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${junit.output.dir}" />
+		</junitreport>
+	</target>
 </project>

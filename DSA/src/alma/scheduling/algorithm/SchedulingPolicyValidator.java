@@ -91,7 +91,6 @@ public class SchedulingPolicyValidator {
 			res.setWriter(writer);
 			transformer.transform(new StreamSource(filePath), res);
 			String xmlString = writer.getBuffer().toString();
-			System.out.println(xmlString);
 			return xmlString;
 		} catch (TransformerConfigurationException e) {
 			System.out.println("FAILED.");
@@ -116,7 +115,6 @@ public class SchedulingPolicyValidator {
 			res.setWriter(writer);
 			transformer.transform(new StreamSource(new ByteArrayInputStream(policyXML.getBytes())), res);
 			String xmlString = writer.getBuffer().toString();
-			System.out.println(xmlString);
 			return xmlString;
 //		} catch (TransformerConfigurationException e) {
 //			System.out.println("FAILED.");
@@ -141,24 +139,6 @@ public class SchedulingPolicyValidator {
 		}
 		context.getBean(DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
 		
-	}
-
-	private String convert(String dirPath, String file) {
-		System.out.print("Generating DSA application context file" + file +" ... ");
-		try {
-			Transformer transformer = tFactory.newTransformer(new StreamSource(xslURL.toString()));
-			transformer.transform(new StreamSource(file), new StreamResult(file +".context.xml"));
-			System.out.println("	SUCCESS. Output file: " + dirPath + "/" + file + ".context.xml");
-			return dirPath + "/" + file + ".context.xml";
-		} catch (TransformerConfigurationException e) {
-			System.out.println("FAILED.");
-			System.out.println("Reason: " + e.getMessage());
-			return null;
-		} catch (TransformerException e) {
-			System.out.println("FAILED.");
-			System.out.println("Reason: " + e.getMessage());
-			return null;
-		}
 	}
 
 	private boolean validate(StreamSource stream) throws SAXException, IOException {
