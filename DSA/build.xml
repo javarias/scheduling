@@ -62,7 +62,7 @@
 		<cobertura-instrument todir="${instrumented.dir}">
 			<fileset dir="bin">
 				<include name="**/*.class" />
-				<exclude name="**/*Selector.class" />
+				<exclude name="**/*Selector*.class" />
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
 			</fileset>
