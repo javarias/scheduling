@@ -64,6 +64,7 @@
 				<exclude name="**/*Test*.class" />
 				<exclude name="**/*Tests*.class" />
 				<exclude name="alma/scheduling/master/gui/*.class"/>
+				<exclude name="alma/scheduling/master/compimpl/MasterImpl$1.class"/>
 			</fileset>
 		</cobertura-instrument>
 	</target>
