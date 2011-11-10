@@ -65,7 +65,8 @@ public class PoliciesContainer {
 	
 	public void unlock() {
 		synchronized(this) {
-			locked--;
+			if (locked > 0)
+				locked--;
 		}
 	}
 	

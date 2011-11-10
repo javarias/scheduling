@@ -115,6 +115,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 								selectPolicyMenuItem.setEnabled(true);
 								selectedPolicyFile = null;
 								refreshPolicyMenuItem.setEnabled(false);
+								deletePolicyMenuItem.setEnabled(false);
 							} else if (e.getPath().getPathCount() == 2
 									&& !((PoliciesFileTreeNode) e.getPath()
 											.getPath()[1]).isSystemFile()) {
@@ -129,10 +130,12 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 											.getHostName()
 											.compareToIgnoreCase(
 													selectedPolicyFile.hostname) == 0) {
-										refreshPolicyMenuItem.setEnabled(true);
+										refreshPolicyMenuItem.setEnabled(!selectedPolicyFile.locked);
+										deletePolicyMenuItem.setEnabled(!selectedPolicyFile.locked);
 									} else {
 										selectedPolicyFile = null;
 										refreshPolicyMenuItem.setEnabled(false);
+										deletePolicyMenuItem.setEnabled(false);
 									}
 
 								} catch (UnknownHostException e1) {
@@ -145,6 +148,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 								selectPolicyMenuItem.setEnabled(false);
 								selectedPolicyFile = null;
 								refreshPolicyMenuItem.setEnabled(false);
+								deletePolicyMenuItem.setEnabled(false);
 							}
 						}
 					}
