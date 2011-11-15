@@ -54,6 +54,7 @@ import alma.scheduling.array.sbQueue.ObservableReorderingBlockingQueue;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sbQueue.SchedBlockQueueCallbackNotifier;
 import alma.scheduling.array.sbSelection.AbstractSelector;
+import alma.scheduling.array.sbSelection.ActiveDynamicArrayListener;
 import alma.scheduling.array.sbSelection.DSASelector;
 import alma.scheduling.array.sbSelection.Selector;
 import alma.scheduling.array.sessions.SessionManager;
@@ -88,10 +89,7 @@ public class ArrayImpl implements ComponentLifecycle,
     
     private Selector selector = null;
     
-    void setLogger(Logger logger) {
-    	this.logger = logger;
-    	LoggerFactory.SINGLETON.setLogger(logger);
-    }
+    private ActiveDynamicArrayListener activeDynListener;
     
     /////////////////////////////////////////////////////////////
     // Implementation of ComponentLifecycle
@@ -129,8 +127,9 @@ public class ArrayImpl implements ComponentLifecycle,
 		Services services = null;
 
 		try {
-			serviceProvider = new AcsProvider(containerServices, arrayName,
-					manual);
+			if (serviceProvider == null)
+				serviceProvider = new AcsProvider(containerServices, arrayName,
+						manual);
 			services = new Services(serviceProvider);
 		} catch (TranslationException e) {
 			ErrorHandling.warning(logger, String.format(
@@ -199,14 +198,17 @@ public class ArrayImpl implements ComponentLifecycle,
 		if (policyName.startsWith("uuid")) {
 			// Lock the file for non system policies
 			String fileUUID = policyName.substring(4, 41);
+			logger.fine("Locking policy Container: " + UUID.fromString(fileUUID).toString());
 			PoliciesContainersDirectory.getInstance().lockPolicyContainer(
 					UUID.fromString(fileUUID));
 		}
 		descriptor.policyName = policyName;
 		if (this.selector == null) {
 			final AbstractSelector dsa = new DSASelector(logger);
+			activeDynListener = new ActiveDynamicArrayListener(this);
 			dsa.configureArray(this, queue);
 			dsa.addObserver(guiNotifier);
+			dsa.addObserver(activeDynListener);
 			this.selector = dsa;
 		} else {
 			logger.fine("DSA object already exists, not creating a new one (worried that this will not work as it might continue to use the old policy)");
@@ -438,6 +440,7 @@ public class ArrayImpl implements ComponentLifecycle,
 	@Override
 	public void setActiveDynamic(boolean on, String name, String role) {
 		executor.setActiveDynamic(on, name, role);
+		activeDynListener.setActive(on);
 	}
 	
 	@Override
@@ -485,4 +488,18 @@ public class ArrayImpl implements ComponentLifecycle,
 		}
 	}
 
+	//Methods for testing purposes
+	void setServiceProvider(AcsProvider provider) {
+		this.serviceProvider = provider;
+	}
+	
+    void setLogger(Logger logger) {
+    	this.logger = logger;
+    	LoggerFactory.SINGLETON.setLogger(logger);
+    }
+    
+    void setSelector(Selector selector) {
+    	this.selector = selector;
+    	this.activeDynListener = new ActiveDynamicArrayListener(this);
+    }
 }

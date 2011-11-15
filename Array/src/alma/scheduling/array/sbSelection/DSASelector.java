@@ -91,10 +91,9 @@ public class DSASelector extends AbstractSelector {
 	 * 
 	 * @param start - true if it's a notification that we're starting
 	 */
-	private void notifyWorking(boolean start) {
+	private void notifyWorking(ArrayGUIOperation status) {
 		final ArrayGUINotification agn = new ArrayGUINotification(
-				start? ArrayGUIOperation.CALCULATINGSCORES:
-					   ArrayGUIOperation.SCORESREADY,
+				status,
 				array.getDescriptor().policyName,
 				String.format("Dynamic Scheduler on %s",
 						array.getArrayName()));
@@ -116,7 +115,7 @@ public class DSASelector extends AbstractSelector {
 	 */
 	@Override
 	public void selectNextSB() {
-		notifyWorking(true);
+		notifyWorking(ArrayGUIOperation.CALCULATINGSCORES);
 		try {
 			Date runDate = new Date();
 			final String thisPolicy = array.getDescriptor().policyName;
@@ -196,16 +195,18 @@ public class DSASelector extends AbstractSelector {
 				result.setScores(results);
 				result.sortScores();
 				resultsDao.saveOrUpdate(result);
+				notifyWorking(ArrayGUIOperation.SCORESREADY);
+				if (resultsLogger != null) {
+					Thread fred = new Thread(resultsLogger,
+							resultsLogger.generateThreadName());
+					fred.start();
+				}
 			} catch (NoSbSelectedException e) {
-				e.printStackTrace();
+				notifyWorking(ArrayGUIOperation.SCORESFAILED);
 			}
-		} finally {
-			notifyWorking(false);
-			if (resultsLogger != null) {
-				Thread fred = new Thread(resultsLogger,
-						resultsLogger.generateThreadName());
-				fred.start();
-			}
+		} catch (Exception ex) {
+			notifyWorking(ArrayGUIOperation.SCORESFAILED);
+			ex.printStackTrace();
 		}
 
 	}
