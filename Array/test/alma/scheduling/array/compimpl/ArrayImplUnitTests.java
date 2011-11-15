@@ -37,6 +37,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 	final private AcsLogger acsLogger = mock(AcsLogger.class);
 	private ArraySchedulerMode[] simpleAutoArrayMode = {ArraySchedulerMode.INTERACTIVE_I};
 	private ArraySchedulerMode[] dynamicPassiveMode = {ArraySchedulerMode.DYNAMIC_PASSIVE_I};
+	private ArraySchedulerMode[] dynamicActiveMode = {ArraySchedulerMode.DYNAMIC_ACTIVE_I};
 	private ArraySchedulerMode[] simpleManualArrayMode = {ArraySchedulerMode.MANUAL_I};
 	private ArrayImpl array;
 	final private AutomaticArray retAutoArray = mock(AutomaticArray.class);
@@ -138,7 +139,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 		array.stop("Scheduling", "MASTER_OF_THE_UNIVERSE");
 	}
 	
-	public void testDynamicArrayConfiguration() throws AcsJContainerServicesEx {
+	public void testPassiveDynamicArrayConfiguration() throws AcsJContainerServicesEx, InterruptedException {
 		final AcsProvider provider = mock(AcsProvider.class);
 		final ModelAccessor model = mock(ModelAccessor.class);
 		final AcsNotificationChannel controlEventReceiver = mock(AcsNotificationChannel.class);
@@ -158,11 +159,46 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 		descriptor.antennaIdList[0] = "DV01"; descriptor.antennaIdList[1] = "DA41";
 		descriptor.corrType = CorrelatorType.BL;
 		descriptor.lifecycleType = ArraySchedulerLifecycleType.NORMAL;
-		descriptor.policyName = "TestPolicy";
+		descriptor.policyName = "AllEqual";
 		descriptor.schedulingMode = ArrayModeEnum.MANUAL;
 		array.setServiceProvider(provider);
 		array.setSelector(selector);
 		array.configure("Array001", dynamicPassiveMode, descriptor);
 		array.configureDynamicScheduler(descriptor.policyName);
+		array.start("Scheduling", "MASTER_OF_THE_UNIVERSE");
+		Thread.sleep(20000);
+		array.stop("Scheduling", "MASTER_OF_THE_UNIVERSE");
+	}
+	
+	public void testActiveDynamicArrayConfiguration() throws AcsJContainerServicesEx, InterruptedException {
+		final AcsProvider provider = mock(AcsProvider.class);
+		final ModelAccessor model = mock(ModelAccessor.class);
+		final AcsNotificationChannel controlEventReceiver = mock(AcsNotificationChannel.class);
+		final DSASelector selector = mock(DSASelector.class);
+		checking(new Expectations() {{ 
+			//oneOf(contServices).getComponent("CONTROL/Array001"); will(returnValue(retAutoArray));
+			oneOf(contServices).getDefaultComponent("IDL:alma/pipelineql/QlDisplayManager:1.0"); will(returnValue(retQlDispMan));
+			atLeast(1).of(provider).getModel(); will(returnValue(model));
+			atLeast(1).of(provider).getControlEventReceiver(); will(returnValue(controlEventReceiver));
+			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockStartedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockEndedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).attach(with(equal("alma.offline.ASDMArchivedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).begin();
+		}});
+		ArrayDescriptor descriptor = new ArrayDescriptor();
+		descriptor.antennaIdList = new String[2];
+		descriptor.antennaIdList[0] = "DV01"; descriptor.antennaIdList[1] = "DA41";
+		descriptor.corrType = CorrelatorType.BL;
+		descriptor.lifecycleType = ArraySchedulerLifecycleType.NORMAL;
+		descriptor.policyName = "AllEqual";
+		descriptor.schedulingMode = ArrayModeEnum.MANUAL;
+		array.setServiceProvider(provider);
+		array.setSelector(selector);
+		array.configure("Array001", dynamicActiveMode, descriptor);
+		array.configureDynamicScheduler(descriptor.policyName);
+		array.setActiveDynamic(true,"Scheduling", "MASTER_OF_THE_UNIVERSE");
+		array.start("Scheduling", "MASTER_OF_THE_UNIVERSE");
+		Thread.sleep(20000);
+		array.stop("Scheduling", "MASTER_OF_THE_UNIVERSE");
 	}
 }
