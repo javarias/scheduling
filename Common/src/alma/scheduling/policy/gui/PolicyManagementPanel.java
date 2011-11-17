@@ -21,7 +21,6 @@
 package alma.scheduling.policy.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -43,6 +42,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -66,8 +66,8 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	
 	private final Master master;
 	private JTree policiesTree;
-	private JButton selectPolicyButton;
-	private JButton refreshPoliciesButton;
+//	private JButton selectPolicyButton;
+//	private JButton refreshPoliciesButton;
 	private JButton loadFile;
 	private JMenuItem selectPolicyMenuItem;
 	private JMenuItem deletePolicyMenuItem;
@@ -84,7 +84,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	}
 	
 	private void initialize() {
-		selectPolicyButton = initializeSelectionButton();
+//		selectPolicyButton = initializeSelectionButton();
 		policiesTree = initializePoliciesTree();
 		loadFile    = initialiseLoadFileControl();
 		final JPanel centre = createCentrePanel();
@@ -111,7 +111,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 										.getPath().getPath()[1])
 										.getBeanName((String) e.getPath()
 												.getPath()[2]);
-								selectPolicyButton.setEnabled(true);
+//								selectPolicyButton.setEnabled(true);
 								selectPolicyMenuItem.setEnabled(true);
 								selectedPolicyFile = null;
 								refreshPolicyMenuItem.setEnabled(false);
@@ -120,7 +120,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 									&& !((PoliciesFileTreeNode) e.getPath()
 											.getPath()[1]).isSystemFile()) {
 								selectedBeanName = "";
-								selectPolicyButton.setEnabled(false);
+//								selectPolicyButton.setEnabled(false);
 								selectPolicyMenuItem.setEnabled(false);
 								selectedPolicyFile = ((PoliciesFileTreeNode) e
 										.getPath().getPath()[1]).getFile();
@@ -144,7 +144,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 								}
 							} else {
 								selectedBeanName = "";
-								selectPolicyButton.setEnabled(false);
+//								selectPolicyButton.setEnabled(false);
 								selectPolicyMenuItem.setEnabled(false);
 								selectedPolicyFile = null;
 								refreshPolicyMenuItem.setEnabled(false);
@@ -180,19 +180,19 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 		return tree;
 	}
 	
-	private JButton initializeSelectionButton() {
-		JButton button = new JButton("Select Policy");
-		button.setEnabled(false);
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectPolicyButton.setEnabled(false);
-				notifyPolicySelected(selectedBeanName);
-				selectPolicyButton.setEnabled(true);
-			}
-		});
-		return button;
-	}
+//	private JButton initializeSelectionButton() {
+//		JButton button = new JButton("Select Policy");
+//		button.setEnabled(false);
+//		button.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				selectPolicyButton.setEnabled(false);
+//				notifyPolicySelected(selectedBeanName);
+//				selectPolicyButton.setEnabled(true);
+//			}
+//		});
+//		return button;
+//	}
 	
 	private JPopupMenu initializeTreePopupMenu() {
 		JPopupMenu menu = new JPopupMenu();
@@ -201,9 +201,10 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectPolicyButton.setEnabled(false);
+//				selectPolicyButton.setEnabled(false);
 				notifyPolicySelected(selectedBeanName);
-				selectPolicyButton.setEnabled(true);
+				closeFrame();
+//				selectPolicyButton.setEnabled(true);
 			}
 		});
 		menu.add(selectPolicyMenuItem);
@@ -221,17 +222,17 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 					b.append((char)c);
 				}
 				} catch (FileNotFoundException ex) {
-					// TODO Add dialog showing the error and details
+					showErrorDialog(ex);
 					ex.printStackTrace();
 				} catch (IOException ex) {
-					// TODO Add dialog showing the error and details
+					showErrorDialog(ex);
 					ex.printStackTrace();
 				} finally {
 					if (reader != null)
 						try {
 							reader.close();
 						} catch (IOException ex) {
-							// TODO Add dialog showing the error and details
+							showErrorDialog(ex);
 							ex.printStackTrace();
 						}
 				}
@@ -241,7 +242,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 							selectedPolicyFile.hostname, 
 							selectedPolicyFile.path, b.toString());
 				} catch (SchedulingInternalExceptionEx ex) {
-					// TODO Dialog here
+					showErrorDialog(ex);
 					ex.printStackTrace();
 				}
 			}
@@ -256,7 +257,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 					master.removeSchedulingPolicies(selectedPolicyFile.uuid);
 					refreshPolicyList();
 				} catch (SchedulingInternalExceptionEx e1) {
-					// TODO Dialog here
+					showErrorDialog(e1);
 					e1.printStackTrace();
 				}
 			}
@@ -266,14 +267,14 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	}
 	
 	public synchronized void refreshPolicyList() {
-		try {
-			refreshPoliciesButton.setEnabled(false);
-			refreshPoliciesButton.setForeground(Color.RED);
-			refreshPoliciesButton.setBackground(Color.PINK);
-		} catch (Exception ex) {}
-		try {
-			selectPolicyButton.setEnabled(false);
-		} catch (Exception ex) {}
+//		try {
+//			refreshPoliciesButton.setEnabled(false);
+//			refreshPoliciesButton.setForeground(Color.RED);
+//			refreshPoliciesButton.setBackground(Color.PINK);
+//		} catch (Exception ex) {}
+//		try {
+//			selectPolicyButton.setEnabled(false);
+//		} catch (Exception ex) {}
 		try {
 			policiesTree.setEnabled(false);
 		} catch (Exception ex) {}
@@ -291,11 +292,11 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			} catch (Exception ex) {}
 			finally {
 				try {
-					refreshPoliciesButton.setEnabled(true);
+//					refreshPoliciesButton.setEnabled(true);
 				} catch (Exception ex) {}
-				try {
-					selectPolicyButton.setEnabled(true);
-				} catch (Exception ex) {}
+//				try {
+//					selectPolicyButton.setEnabled(true);
+//				} catch (Exception ex) {}
 				try {
 					policiesTree.setEnabled(true);
 				} catch (Exception ex) {}
@@ -469,7 +470,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 	private JPanel createSouthPanel() {
 		final JPanel result = new JPanel();
 		result.setLayout(new BoxLayout(result, BoxLayout.X_AXIS));
-		result.add(selectPolicyButton);
+//		result.add(selectPolicyButton);
 		result.add(Box.createHorizontalGlue());
 		result.add(loadFile);
 		return result;
@@ -483,6 +484,24 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 				WindowEvent windowClosing = new WindowEvent(f,
 						WindowEvent.WINDOW_CLOSING);
 				f.dispatchEvent(windowClosing);
+			}
+		}
+	}
+	
+	private void showErrorDialog(Exception ex) {
+		String desc = "";
+		if (ex instanceof SchedulingInternalExceptionEx) {
+			SchedulingInternalExceptionEx e = (SchedulingInternalExceptionEx) ex;
+			desc = e.errorTrace.previousError[0].shortDescription;
+		}
+		else {
+			desc = ex.getMessage();
+		}
+		
+		for (Frame f : Frame.getFrames()) {
+			if (f.isActive()) {
+				JOptionPane.showMessageDialog(
+						f, desc + ".\n Check logs for more details ", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
