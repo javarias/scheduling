@@ -19,7 +19,6 @@ package alma.scheduling.array.executor;
 
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
@@ -306,8 +305,11 @@ public class Executor extends Observable {
             }
             if (!doneIt) {
             	logger.info("Checking past executions for match with event");
-            	for (Iterator<ExecutionContext> iter = getPastExecutions().iterator(); iter.hasNext();) {
-            		ExecutionContext ctx = iter.next();
+            	List<ExecutionContext> pastContexts = getPastExecutions();
+            	for (int i = pastContexts.size()-1; i >= 0; i--) {
+            		// Search backwards on the assumption that the event is more likely to be to
+            		// do with a relatively recent execution (the list is oldest first).
+            		final ExecutionContext ctx = pastContexts.get(i);
                     if (ctx.getExecBlockRef() != null) {
                     	// The past execution has an exec block ref set
                         if (event.asdmId.entityId.equals(ctx.getExecBlockRef().entityId)) {
@@ -356,8 +358,8 @@ public class Executor extends Observable {
         try {
             pastExecutionsLock.lock();
             List<ExecutionContext> retVal = new ArrayList<ExecutionContext>();
-            for (Iterator<ArchivalWaitThread> iter = pastExecutions.iterator(); iter.hasNext();) {
-                retVal.add(iter.next().getContext());
+            for (final ArchivalWaitThread thread : pastExecutions) {
+                retVal.add(thread.getContext());
             }
             return retVal;
         } finally {
@@ -529,12 +531,11 @@ public class Executor extends Observable {
 	    	retVal.add(sbei);
 	    }
 	    // Now add the past executions
-    	for (Iterator<ExecutionContext> iter = getPastExecutions().iterator(); iter.hasNext();) {
-    		ExecutionContext ctx = iter.next();
-	    	final SchedBlockExecutionItem sbei = new SchedBlockExecutionItem(
-	    			ctx.getQueuedTimestamp(),
-	    			ctx.getSbUid(),
-	    			ctx.getStateName());
+    	for (final ExecutionContext context : getPastExecutions()) {
+    		final SchedBlockExecutionItem sbei = new SchedBlockExecutionItem(
+    				context.getQueuedTimestamp(),
+    				context.getSbUid(),
+    				context.getStateName());
 	    	retVal.add(sbei);
     	}
 		return retVal.toArray(new SchedBlockExecutionItem[0]);
