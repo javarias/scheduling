@@ -18,8 +18,6 @@
 
 package alma.scheduling.array.sbSelection;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -31,7 +29,7 @@ import alma.scheduling.algorithm.sbranking.SBRank;
 /**
  *
  * @author dclarke
- * $Id: ResultsLogger.java,v 1.1 2011/10/14 23:00:41 dclarke Exp $
+ * $Id: ResultsLogger.java,v 1.2 2011/12/02 23:08:20 dclarke Exp $
  */
 public class ResultsLogger implements Runnable {
     	
@@ -120,14 +118,11 @@ public class ResultsLogger implements Runnable {
 		final Result currResult = dao.getCurrentResult(arrayName);
 		final List<SBRank> currList = currResult.getScores();
 
-		Collections.sort(currList, comparator());
-
 		if (prevPolicy == null) {
 			logCurrentScores(currList, currResult.getTime());
 		} else {
 			final Result prevResult = dao.getPreviousResult(arrayName);
 			final List<SBRank> prevList = prevResult.getScores();
-			Collections.sort(prevList, comparator());
 			logCurrentScores(currList, currResult.getTime(),
 					prevList, prevResult.getTime());
 			logPreviousScores(currList, currResult.getTime(),
@@ -143,33 +138,6 @@ public class ResultsLogger implements Runnable {
 	 * Sorting & utilities
 	 * ================================================================
 	 */
-	private Comparator<SBRank> _comparator = null;
-
-	/**
-	 * Create a Comparator for SBRanks which will result in high
-	 * scores being placed first.
-	 * 
-	 * @return
-	 */
-	private Comparator<SBRank> comparator() {
-		if (_comparator == null) {
-			_comparator = new Comparator<SBRank>(){
-
-				@Override
-				public int compare(SBRank o1, SBRank o2) {
-					// We want higher scores first, so reverse
-					// the natural ordering.
-					final int first = o2.compareTo(o1);
-					if (first != 0) {
-						return first;
-					}
-					return o2.getUid().compareTo(o1.getUid());
-				}
-			};
-		}
-		return _comparator;
-	}
-
 	private int findRank(List<SBRank> list, String uid) {
 		int rank = 0;
 		for (final SBRank score : list) {
