@@ -36,8 +36,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 	final private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	final private AcsLogger acsLogger = mock(AcsLogger.class);
 	private ArraySchedulerMode[] simpleAutoArrayMode = {ArraySchedulerMode.INTERACTIVE_I};
-	private ArraySchedulerMode[] dynamicPassiveMode = {ArraySchedulerMode.DYNAMIC_PASSIVE_I};
-	private ArraySchedulerMode[] dynamicActiveMode = {ArraySchedulerMode.DYNAMIC_ACTIVE_I};
+	private ArraySchedulerMode[] dynamicMode = {ArraySchedulerMode.DYNAMIC_I};
 	private ArraySchedulerMode[] simpleManualArrayMode = {ArraySchedulerMode.MANUAL_I};
 	private ArrayImpl array;
 	final private AutomaticArray retAutoArray = mock(AutomaticArray.class);
@@ -163,7 +162,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 		descriptor.schedulingMode = ArrayModeEnum.MANUAL;
 		array.setServiceProvider(provider);
 		array.setSelector(selector);
-		array.configure("Array001", dynamicPassiveMode, descriptor);
+		array.configure("Array001", dynamicMode, descriptor);
 		array.configureDynamicScheduler(descriptor.policyName);
 		array.start("Scheduling", "MASTER_OF_THE_UNIVERSE");
 		Thread.sleep(20000);
@@ -194,7 +193,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 		descriptor.schedulingMode = ArrayModeEnum.MANUAL;
 		array.setServiceProvider(provider);
 		array.setSelector(selector);
-		array.configure("Array001", dynamicActiveMode, descriptor);
+		array.configure("Array001", dynamicMode, descriptor);
 		array.configureDynamicScheduler(descriptor.policyName);
 		array.setActiveDynamic(true,"Scheduling", "MASTER_OF_THE_UNIVERSE");
 		array.start("Scheduling", "MASTER_OF_THE_UNIVERSE");

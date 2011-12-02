@@ -574,7 +574,7 @@ public class MasterImpl implements ComponentLifecycle, MasterOperations {
 		if (mode == ArrayModeEnum.INTERACTIVE || mode == ArrayModeEnum.QUEUED) {
 			arrayModes[0] = ArraySchedulerMode.INTERACTIVE_I;
 		} else if (mode == ArrayModeEnum.DYNAMIC) {
-			arrayModes[0] = ArraySchedulerMode.DYNAMIC_PASSIVE_I;
+			arrayModes[0] = ArraySchedulerMode.DYNAMIC_I;
 		} else if (mode == ArrayModeEnum.MANUAL) {
 			arrayModes[0] = ArraySchedulerMode.MANUAL_I;
 		}
