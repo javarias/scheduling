@@ -63,16 +63,9 @@ public class Result {
 	
 	// **** NOTE
 	//
-	// InteractivePanel.getScoresAndRanks() goes to a bit of trouble
-	// to sort the result it gets from this method. So, if you change
-	// this method to return the scores already sorted, either stop
-	// the InteractivePanel duplicating this effort or tell David and
-	// he'll do it.
-	//
-	// The scores now can be sorted descending according to the score obtained from DSA,
-	// @see sortScores. Once the scores are stored into DB sorted it is not longer necessary to
-	// sort them again.
-	// TODO: Remove all the code in the GUI which are sorting the scores.
+	// InteractivePanel.getScoresAndRanks(), the whole ResultsLogger
+	// class and possibly others assume that this method returns a
+	// sorted list.
 	public List<SBRank> getScores() {
 		return scores;
 	}
