@@ -92,7 +92,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.25 2011/09/29 20:59:37 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.26 2011/12/02 23:24:08 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1456,25 +1456,9 @@ public class InteractivePanel extends AbstractArrayPanel
 			                          Map<String, SBRank>  scores,
 			                          Map<String, Integer> ranks) {
 
-		final SortedSet<SBRank> sorted = new TreeSet<SBRank>(
-				new Comparator<SBRank>(){
-
-					@Override
-					public int compare(SBRank o1, SBRank o2) {
-						// We want higher scores first, so reverse
-						// the natural ordering.
-						final int first = o2.compareTo(o1);
-						if (first != 0) {
-							return first;
-						}
-						return o2.getUid().compareTo(o1.getUid());
-					}});
-		
-		sorted.addAll(result.getScores());
-
 		int r = 1;
 
-		for (final SBRank sbRank : sorted) {
+		for (final SBRank sbRank : result.getScores()) {
 			ranks.put(sbRank.getUid(), r++);
 			scores.put(sbRank.getUid(), sbRank);
 		}
