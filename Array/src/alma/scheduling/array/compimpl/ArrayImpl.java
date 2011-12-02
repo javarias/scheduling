@@ -403,13 +403,11 @@ public class ArrayImpl implements ComponentLifecycle,
 
     @Override
     public SchedBlockQueueItem[] getExecutedQueue() {
-        List<SchedBlockQueueItem> retVal = new ArrayList<SchedBlockQueueItem>();
-        for (Iterator<ExecutionContext> iter = executor.getPastExecutions().iterator();
-            iter.hasNext(); ) {
-            ExecutionContext ctx = iter.next();
-            retVal.add(new SchedBlockQueueItem(ctx.getStopTimestamp(), ctx.getSbUid()));
-        }
-        return retVal.toArray(new SchedBlockQueueItem[0]);
+    	List<SchedBlockQueueItem> retVal = new ArrayList<SchedBlockQueueItem>();
+    	for (final ExecutionContext context : executor.getPastExecutions()) {
+    		retVal.add(new SchedBlockQueueItem(context.getStopTimestamp(), context.getSbUid()));
+    	}
+    	return retVal.toArray(new SchedBlockQueueItem[0]);
     }
 
 	@Override
