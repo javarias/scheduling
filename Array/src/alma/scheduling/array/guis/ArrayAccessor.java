@@ -67,8 +67,7 @@ public class ArrayAccessor {
 	private boolean determineDynamic() {
 		ArraySchedulerMode[] modes = array.getModes();
 		for (ArraySchedulerMode mode : modes) {
-			if ((mode == ArraySchedulerMode.DYNAMIC_PASSIVE_I) ||
-					(mode == ArraySchedulerMode.DYNAMIC_ACTIVE_I)) {
+			if (mode == ArraySchedulerMode.DYNAMIC_I) {
 				return true;
 			}
 		}
