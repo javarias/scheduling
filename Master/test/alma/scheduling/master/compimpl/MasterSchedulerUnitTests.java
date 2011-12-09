@@ -20,8 +20,6 @@
  *******************************************************************************/
 package alma.scheduling.master.compimpl;
 
-import java.util.logging.Logger;
-
 import org.jmock.Expectations;
 import org.jmock.integration.junit3.MockObjectTestCase;
 import org.jmock.lib.legacy.ClassImposteriser;
@@ -54,7 +52,7 @@ public class MasterSchedulerUnitTests extends MockObjectTestCase {
 	String[] photonics = {};
 	final Array retArray = mock(Array.class);
 	ArraySchedulerMode[] simpleAutoArrayMode = {ArraySchedulerMode.INTERACTIVE_I};
-	ArraySchedulerMode[] dynamicPassiveMode = {ArraySchedulerMode.DYNAMIC_PASSIVE_I};
+	ArraySchedulerMode[] dynamicPassiveMode = {ArraySchedulerMode.DYNAMIC_I};
 	ArraySchedulerMode[] simpleManualArrayMode = {ArraySchedulerMode.MANUAL_I};
 	MasterImpl schedMaster;
 	AcsLogger logger;
