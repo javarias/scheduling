@@ -52,7 +52,6 @@ public class ActiveDynamicArrayListener implements Observer {
 	public void update(Observable o, Object arg) {
 		try {
 			ArrayGUINotification notification = (ArrayGUINotification) arg;
-			System.out.println("Active: " + active + ", op: " + notification.toString());
 			if (!active)
 				return;
 			if (notification.getOperation().value() == ArrayGUIOperation._SCORESREADY) {

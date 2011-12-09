@@ -22,6 +22,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -75,13 +76,18 @@ public class Executor extends Observable {
         
         private Executor executor;
         private boolean interruptRun = false;
+        private AtomicBoolean inCriticalSection;
+        private AtomicBoolean isRunning;
 	
         public ExecutorConsumer(Executor e) {
             this.executor = e;
+            inCriticalSection = new AtomicBoolean(false);
+            isRunning = new AtomicBoolean(false);
         }
         
         @Override
         public void run() {
+        	inCriticalSection.set(true);
         	while(!interruptRun) {
         		synchronized (this) {
         			// Synchronize so that this Executor will only have
@@ -90,9 +96,12 @@ public class Executor extends Observable {
         			try {
         				// Blocks waiting for an item.
         				item = queue.take();
+        				isRunning.set(true);
         			} catch (InterruptedException e) {
         				logger.warning("executor consumer has been interrupted");
-        				return;
+        				continue;
+        			} finally {
+        				inCriticalSection.set(false);
         			}
         			logger.info("executor consumer took item " + item);
 
@@ -116,7 +125,7 @@ public class Executor extends Observable {
         					this.getClass().getSimpleName(),
         					item.getUid(),
         					currentExecution.getClass().getSimpleName()));
-
+        			isRunning.set(false);
         			// The observation finished or failed.
 
         			// Pass on the execution to the pastExecutions list, where it will
@@ -146,11 +155,25 @@ public class Executor extends Observable {
         				pastExecutionsLock.unlock();
         			}
         		}
+        		inCriticalSection.set(true);
         	}
+        	inCriticalSection.set(false);
         }
 
 		public void stopRun() {
 			interruptRun = true;
+			if (this.inCriticalSection.get()) {
+            	while (this.inCriticalSection.get()
+            			&& this.getState() != Thread.State.WAITING) {
+            		//Wait for the thread until it is waiting to take an item from the queue
+    				try {
+    					Thread.sleep(5);
+    				} catch (InterruptedException e) {
+    				}
+            	}
+            	if (this.inCriticalSection.get())
+            		this.interrupt();
+            }
 		}
     }
     
@@ -193,12 +216,17 @@ public class Executor extends Observable {
         running  = false;
     }
 
-    public void start(String name, String role) {
-        executionThread = new ExecutorConsumer(this);
-        executionThread.setPriority(executionThread.getPriority()-1);
-        executionThread.start();
-        setRunning(true, name, role);
-    }
+	public void start(String name, String role) {
+		if (executionThread != null && executionThread.isRunning.get()) {
+			executionThread.interruptRun = false;
+		} else {
+			executionThread = new ExecutorConsumer(this);
+			executionThread.setPriority(executionThread.getPriority() - 1);
+			executionThread.setDaemon(true);
+			executionThread.start();
+		}
+		setRunning(true, name, role);
+	}
 
     /**
      * Stops the execution thread.
@@ -209,8 +237,9 @@ public class Executor extends Observable {
      * @param name 
      */
     public void stop(String name, String role) {
-        if (executionThread != null)
+        if (executionThread != null) {
             executionThread.stopRun();
+        }
         setRunning(false, name, role);
     }
 
