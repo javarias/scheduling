@@ -82,7 +82,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.16 2011/10/04 20:50:17 javarias Exp $
+ * $Id: CurrentActivityPanel.java,v 1.17 2011/12/14 23:52:10 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -586,6 +586,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 		
 		commonButtons.setVisible(false);
 		normalButtons.setVisible(false);
+		dynamicButtons.setVisible(false);
 		manualButtons.setVisible(false);
 
 		buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
@@ -726,6 +727,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
     		topSplit.setDividerLocation(1.0/2.0);
     		normalButtons.setVisible(true);
     		manualButtons.setVisible(false);
+    		dynamicButtons.setVisible(getArray().isDynamic());
     	}
     	commonButtons.setVisible(true);
     	
@@ -818,12 +820,14 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 				fullAuto.setSelected(false);
 				activeMode.setSelected(false);
 				setPolicy.setEnabled(false);
+				destroyArray.setEnabled(false);
 			} else {
 				startExec.setEnabled(!a.isRunning());
 				stopExec.setEnabled(a.isRunning());
 				fullAuto.setSelected(a.isFullAuto());
 				activeMode.setSelected(a.isActiveDynamic());
 				setPolicy.setEnabled(true);
+				destroyArray.setEnabled(true);
 			}
 		}
 	}
