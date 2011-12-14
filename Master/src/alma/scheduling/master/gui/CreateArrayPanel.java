@@ -89,6 +89,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     private ButtonGroup photonicsGroup;
     private JComboBox correlatorType;
     private JComboBox schedulingPolicy;
+    private JButton   setPolicyB;
     private Master master;
 	private PolicyManagementPanel policyPanel = null;
 
@@ -387,10 +388,11 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 			}});
     	
     	final JLabel label = new JLabel("Scheduling Policy");
-    	final JButton testPolicyTree =  new JButton("Setup Policy");
+   		setPolicyB = new JButton("Setup Policy");
+   		
     	final PolicySelectionListener polly = new PolicySelectionListener(){
 
-			@Override
+ 			@Override
 			public void policySelected(String beanName) {
 				boolean foundIt = false;
 				logger.fine(
@@ -421,11 +423,11 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 				}
 			}
 		};
-    	testPolicyTree.addActionListener(new ActionListener() {
+		setPolicyB.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				testPolicyTree.setEnabled(false);
+				setPolicyB.setEnabled(false);
 				JFrame frame = new JFrame("Policy Selection for new Array");
 				policyPanel = new PolicyManagementPanel(master);
 				policyPanel.addListener(polly);
@@ -435,7 +437,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
 					public void windowClosed(WindowEvent e) {
 						policyPanel.removeListener(polly);
 						policyPanel = null;
-						testPolicyTree.setEnabled(true);
+						setPolicyB.setEnabled(true);
 					}
 
 					@Override public void windowOpened(WindowEvent e) {} // ignore
@@ -454,7 +456,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     	JPanel result = new JPanel();
     	result.add(label);
     	result.add(schedulingPolicy);
-    	result.add(testPolicyTree);
+    	result.add(setPolicyB);
     	setPolicyEnabled(false);
     	
     	return result;
@@ -462,6 +464,7 @@ public class CreateArrayPanel extends SchedulingPanelGeneralPanel implements Pol
     
     protected void setPolicyEnabled(boolean b) {
     	schedulingPolicy.setEnabled(b);
+    	setPolicyB.setEnabled(b);
     }
     
     
