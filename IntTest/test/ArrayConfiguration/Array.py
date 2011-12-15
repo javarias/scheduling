@@ -8,7 +8,7 @@ from ArrayConfiguration.ArrayConfiguration import ArrayConfiguration
 from ArrayConfiguration.ArrayConfiguration import FailureMode
 from ArrayConfiguration.ArrayConfiguration import FailsNever
 from ArrayConfiguration.ArrayConfiguration import FailsRandomly
-from ArrayConfiguration.ArrayConfiguration import FailsRegularly
+from ArrayConfiguration.ArrayConfiguration import FailsEvery
 from ArrayConfiguration.ArrayConfiguration import TimingMode
 from ArrayConfiguration.ArrayConfiguration import TimingConstant
 from ArrayConfiguration.ArrayConfiguration import TimingNormal

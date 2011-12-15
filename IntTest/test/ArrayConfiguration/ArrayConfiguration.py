@@ -33,6 +33,62 @@ class ArrayConfiguration:
     def archSucceeds(self):
         return not self.archFailureMode.fails()
 
+    def __init__(self, arrayName):
+        if (arrayName == "Array001"):
+            self.execFailureMode = FailsNever()
+            self.execTimingMode  = TimingNormal(30, 10)
+            self.archFailureMode = FailsNever()
+            self.archTimingMode  = TimingConstant(10)
+        elif (arrayName == "Array002"):
+            self.execFailureMode = FailsEvery(5)
+            self.execTimingMode  = TimingNormal(30, 10)
+            self.archFailureMode = FailsNever()
+            self.archTimingMode  = TimingConstant(10)
+        elif (arrayName == "Array003"):
+            self.execFailureMode = FailsRandomly(0.25)
+            self.execTimingMode  = TimingNormal(30, 10)
+            self.archFailureMode = FailsNever()
+            self.archTimingMode  = TimingConstant(10)
+        elif (arrayName == "Array004"):
+            self.execFailureMode = FailsNever()
+            self.execTimingMode  = TimingNormal(30, 10)
+            self.archFailureMode = FailsEvery(5)
+            self.archTimingMode  = TimingConstant(10)
+        elif (arrayName == "Array005"):
+            self.execFailureMode = FailsNever()
+            self.execTimingMode  = TimingNormal(30, 10)
+            self.archFailureMode = FailsRandomly(0.25)
+            self.archTimingMode  = TimingConstant(10)
+        elif (arrayName == "Array006"):
+            self.execFailureMode = FailsEvery(5)
+            self.execTimingMode  = TimingNormal(10, 2)
+            self.archFailureMode = FailsEvery(7)
+            self.archTimingMode  = TimingConstant(5)
+        elif (arrayName == "Array007"):
+            self.execFailureMode = FailsEvery(5)
+            self.execTimingMode  = TimingNormal(30, 10)
+            self.archFailureMode = FailsEvery(7)
+            self.archTimingMode  = TimingConstant(10)
+        elif (arrayName == "Array008"):
+            self.execFailureMode = FailsEvery(5)
+            self.execTimingMode  = TimingNormal(30*60, 2*60)
+            self.archFailureMode = FailsEvery(7)
+            self.archTimingMode  = TimingNormal(60, 10)
+        elif (arrayName == "Array009"):
+            self.execFailureMode = FailsNever()
+            self.execTimingMode  = TimingNormal(30*60, 2*60)
+            self.archFailureMode = FailsNever()
+            self.archTimingMode  = TimingNormal(60, 10)
+        else:
+            print("WARNING: Unrecognised array " + str(arrayName) + " using default, slow configuration")
+            self.execFailureMode = FailsNever()
+            self.execTimingMode  = TimingConstant(30*60)
+            self.archFailureMode = FailsNever()
+            self.archTimingMode  = TimingConstant( 2*60)
+
+    def __str__(self):
+        return "ArrayConfiguration(exec: " + str(self.execFailureMode) + ", " + str(self.execTimingMode) + ", arch: " + str(self.archFailureMode) + ", " + str(self.archTimingMode) + ")"
+
 
 #
 # Modelling of the failure of SBs
@@ -44,12 +100,18 @@ class FailureMode:
     def fails(self):
         raise NotImplementedError("FailureMode subclass fails to implement fails() method and thus fails.")
 
+    def __str__(self):
+        return "FailureMode(supposed to be abstract!)"
+
 
 class FailsNever(FailureMode):
     '''A failure mode of never failing'''
 
     def fails(self):
         return False
+
+    def __str__(self):
+        return "FailsNever()"
 
 
 class FailsRandomly(FailureMode):
@@ -61,8 +123,11 @@ class FailsRandomly(FailureMode):
     def fails(self):
         return random.random() < self.rate
 
+    def __str__(self):
+        return "FailsRandomly(" + str(self.rate) + ")"
 
-class FailsRegularly(FailureMode):
+
+class FailsEvery(FailureMode):
     '''A failure mode of failing every fixed number of goes'''
 
     def __init__(self, every):
@@ -77,6 +142,9 @@ class FailsRegularly(FailureMode):
         else:
             return False
 
+    def __str__(self):
+        return "FailsEvery(" + str(self.every) + ")"
+
 
 #
 # Modelling of the timing of SBs
@@ -88,6 +156,9 @@ class TimingMode:
     def time(self):
         raise NotImplementedError("TimingMode subclass fails to implement time() method and thus fails this time.")
 
+    def __str__(self):
+        return "TimingMode(supposed to be abstract!)"
+
 
 class TimingConstant(TimingMode):
     '''Always the same time'''
@@ -97,6 +168,9 @@ class TimingConstant(TimingMode):
 
     def time(self):
         return self.seconds
+
+    def __str__(self):
+        return "TimingConstant(" + str(self.seconds) + ")"
 
 
 class TimingNormal(TimingMode):
@@ -111,5 +185,9 @@ class TimingNormal(TimingMode):
         while seconds <= 0:
             seconds = round(random.gauss(self.mean, self.variance))
         return seconds
+
+    def __str__(self):
+        return "TimingNormal(" + str(self.mean) + ", " + str(self.variance) + ")"
+
 
 
