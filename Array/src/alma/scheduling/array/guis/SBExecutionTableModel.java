@@ -36,7 +36,7 @@ import alma.common.gui.standards.StandardColors;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SBExecutionTableModel.java,v 1.4 2011/09/14 20:37:10 dclarke Exp $
+ * $Id: SBExecutionTableModel.java,v 1.5 2012/01/04 00:37:19 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SBExecutionTableModel extends AbstractTableModel {
@@ -232,6 +232,15 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		this.data.clear();
 		this.data.addAll(queue);
 		this.fireTableDataChanged();
+	}
+	
+	/**
+	 * Is the item in this model?
+	 */
+	public boolean contains(ManifestSchedBlockQueueItem item) {
+		final int i = findDataRow(item);
+		
+		return i >= 0; // -1 means not found
 	}
 	
 	/**
@@ -450,20 +459,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		case Column_Position:
 			return rowIndex + 1;
 		case Column_Timestamp:
-			final long nsSinceT0 = schedBlock.getItem().timestamp - TimeZeroNano;
-			final long msSinceT0 = nsSinceT0 / NanosPerMilli;
-			final long remainderNS = nsSinceT0 % NanosPerMilli;
-//			System.out.format(
-//					"%n%-13s = %21d%n%-13s = %21d%n%-13s = %15d (%s) %n%-13s = %21d%n%-13s = %15d%n%-13s = %21d%n",
-//					"timestamp", schedBlock.getItem().timestamp,
-//					"TimeZeroNano", TimeZeroNano,
-//					"TimeZeroMilli", TimeZeroMilli, new Date(TimeZeroMilli),
-//					"nsSinceT0", nsSinceT0,
-//					"msSinceT0", msSinceT0,
-//					"remainderNS", remainderNS);
-			return String.format("%s%02d",
-					dateFormat.format(new Date(TimeZeroMilli + msSinceT0)),
-					remainderNS / 10000);
+			return formattedOffsetTime(schedBlock.getItem().timestamp);
 		case Column_Note:
 			return schedBlock.getNote();
 		default:
@@ -473,6 +469,27 @@ public class SBExecutionTableModel extends AbstractTableModel {
 					rowIndex, columnIndex);
 			return null;
 		}
+	}
+
+	/**
+	 * @param schedBlock
+	 * @return
+	 */
+	public String formattedOffsetTime(long timestamp) {
+		final long nsSinceT0 = timestamp - TimeZeroNano;
+		final long msSinceT0 = nsSinceT0 / NanosPerMilli;
+		final long remainderNS = nsSinceT0 % NanosPerMilli;
+//			System.out.format(
+//					"%n%-13s = %21d%n%-13s = %21d%n%-13s = %15d (%s) %n%-13s = %21d%n%-13s = %15d%n%-13s = %21d%n",
+//					"timestamp", schedBlock.getItem().timestamp,
+//					"TimeZeroNano", TimeZeroNano,
+//					"TimeZeroMilli", TimeZeroMilli, new Date(TimeZeroMilli),
+//					"nsSinceT0", nsSinceT0,
+//					"msSinceT0", msSinceT0,
+//					"remainderNS", remainderNS);
+		return String.format("%s%02d",
+				dateFormat.format(new Date(TimeZeroMilli + msSinceT0)),
+				remainderNS / 10000);
 	}
 
 	/* (non-Javadoc)
