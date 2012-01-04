@@ -440,7 +440,7 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 						 b.toString());
 			}};
 		
-		final JButton result = new JButton("Load File");
+		final JButton result = new JButton("Load New File...");
 		result.setToolTipText("Load a new Policy File");
 		result.setName("Load File");
 		result.addActionListener(listener);
