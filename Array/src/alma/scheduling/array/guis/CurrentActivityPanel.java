@@ -82,7 +82,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.17 2011/12/14 23:52:10 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.18 2012/01/04 00:40:11 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -1022,9 +1022,9 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 		final ManifestSchedBlockQueueItem block = getSchedBlock(item);
 		addExecutionToModels(block, state);
 	}
-
+	
 	private void addExecutionToModels(ManifestSchedBlockQueueItem block, String state) {
-		if (!PastStates.contains(block.getExecutionState())) {
+		if (!pastModel.contains(block)) {
 			// Don't do anything if the execution is already in
 			// a past (terminal) state. The notifications are
 			// not guaranteed to arrive in the order sent!
@@ -1036,6 +1036,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 				pastModel.ensureIn(block);
 			}
 		}
+
 		if (RunningStates.contains(state)) {
 			// This execution is actively running.
 			if (runningExecution == null) {
