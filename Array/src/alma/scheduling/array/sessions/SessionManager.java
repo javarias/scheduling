@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
+import alma.QlDisplayExceptions.InvalidStateErrorEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.acs.logging.AcsLogger;
@@ -60,7 +61,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.9 2011/09/14 22:14:43 dclarke Exp $
+ * $Id: SessionManager.java,v 1.10 2012/01/11 23:56:25 dclarke Exp $
  */
 public class SessionManager {
 
@@ -165,6 +166,41 @@ public class SessionManager {
         
         return result;
     }
+    
+    private void startQlSession(IDLEntityRef session, IDLEntityRef sb, String array, String title, int attempts) {
+    	try {
+			quicklook.startQlSession(session, sb, array, title);
+		} catch (Exception e) {
+			if (attempts > 1) {
+				// Reset the quicklook connection and try again
+				quicklook = getPipelineComponents();
+				startQlSession(session, sb, array, title, attempts-1);
+			} else {
+				final String message = String.format("Error starting observing session %s on %s - %s",
+						                             title, array, e.getMessage());
+				ErrorHandling.warning(logger, message, e);
+				quicklook = null;
+			}
+		}
+    }
+    
+    private void endQlSession(IDLEntityRef session, IDLEntityRef sb, String array, String title, int attempts) {
+    	try {
+			quicklook.endQlSession(session, sb);
+		} catch (Exception e) {
+			if (attempts > 1) {
+				// Reset the quicklook connection and try again
+				quicklook = getPipelineComponents();
+				endQlSession(session, sb, array, title, attempts-1);
+			} else {
+				final String message = String.format("Error ending observing session %s on %s - %s",
+						                             title, array, e.getMessage());
+				ErrorHandling.warning(logger, message, e);
+				quicklook = null;
+			}
+		}
+    }
+
     
     /**
      * Get the notification channel we're going to use
@@ -287,14 +323,14 @@ public class SessionManager {
 				projectCode = project.getUid();
 			}
 		} catch (NullPointerException ex) {
-			projectName = "unnamed ObsProject";
+			projectCode = "codeless ObsProject";
 		}
 		try {
 			if (sb.getName().equals("")) {
-				projectName = "unnamed SchedBlock";
+				sbName = "unnamed SchedBlock";
 			}
 		} catch (NullPointerException ex) {
-			projectName = "unnamed ObsProject";
+			sbName = "unnamed SchedBlock";
 		}
 		
 		return String.format("%s (%s) %s (%s)",
@@ -406,10 +442,10 @@ public class SessionManager {
 
 			useQuickLook = sb.getRunQuicklook();
 			if (useQuickLook) {
-				quicklook.startQlSession(currentSessionRef,
-										 currentSB,
-										 arrayName,
-										 currentTitle);
+				if (quicklook == null) {
+					quicklook = getPipelineComponents();
+				}
+				startQlSession(currentSessionRef, currentSB, arrayName, currentTitle, 2);
 			}
 
 			final StartSessionEvent event = new StartSessionEvent(
@@ -571,7 +607,10 @@ public class SessionManager {
 			try {
 				bookkeepingForEndOfSession(currentSessionRef, currentSession);
 				if (useQuickLook) {
-					quicklook.endQlSession(currentSessionRef, currentSB);
+					if (quicklook == null) {
+						quicklook = getPipelineComponents();
+					}
+					endQlSession(currentSessionRef, currentSB, arrayName, currentTitle, 2);
 				}
 				final EndSessionEvent event = new EndSessionEvent(
 						UTCUtility.utcJavaToOmg(System.currentTimeMillis()),
