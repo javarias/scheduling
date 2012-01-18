@@ -206,7 +206,7 @@ public class SchedulingPanelController {
         final org.omg.CORBA.Object obj;
 		try {
 			final String component = NameTranslator.arrayToComponentName(arrayName);
-			obj = container.getComponent(component);
+			obj = container.getComponentNonSticky(component);
 	        result = ArrayHelper.narrow(obj);
 		} catch (Exception e) {
 			String message = e.getMessage();
