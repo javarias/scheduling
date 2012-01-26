@@ -33,14 +33,10 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
-import java.util.Vector;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -50,32 +46,28 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 
-import org.apache.commons.collections.ArrayStack;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
-import alma.scheduling.algorithm.astro.Constants;
-import alma.scheduling.algorithm.astro.CoordinatesUtil;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.FieldSourceObservability;
 import alma.scheduling.datamodel.obsproject.ObservingParameters;
+import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SchedBlockState;
 import alma.scheduling.datamodel.obsproject.ScienceGrade;
 import alma.scheduling.datamodel.obsproject.ScienceParameters;
-import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
 import alma.scheduling.datamodel.output.ObservationProject;
 import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.SchedBlockResult;
 import alma.scheduling.datamodel.output.dao.OutputDao;
-import alma.scheduling.psm.reports.domain.SchedBlockReportBean;
 import alma.scheduling.psm.reports.domain.ObsProjectReportBean;
-import alma.scheduling.psm.sim.ReportGenerator;
+import alma.scheduling.psm.reports.domain.SchedBlockReportBean;
 import alma.scheduling.psm.util.PsmContext;
 import alma.scheduling.psm.util.XsltTransformer;
+import alma.scheduling.utils.Constants;
+import alma.scheduling.utils.CoordinatesUtil;
 
 public class ReportGenerator extends PsmContext {
 
@@ -664,7 +656,7 @@ public class ReportGenerator extends PsmContext {
 
 
 	public void finalreport(){
-		ApplicationContext ctx = this.getApplicationContext();
+		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 
@@ -728,7 +720,7 @@ public class ReportGenerator extends PsmContext {
 	}
 
 	private String getFilename(reportTypes type){
-		ApplicationContext ctx = this.getApplicationContext();
+		ApplicationContext ctx = getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		Results lastResult = outDao.getResults().get(outDao.getResults().size()-1 );
 		Date date = lastResult.getStartRealDate();

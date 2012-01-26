@@ -25,23 +25,11 @@
 
 package alma.scheduling.psm.util;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-
-import alma.archive.database.helpers.wrappers.DbConfigException;
-import alma.archive.database.helpers.wrappers.RelationalDbConfig;
-import alma.obops.dam.config.Ph1mContextFactory;
-import alma.obops.dam.ph1m.constants.LetterGrade;
-import alma.obops.dam.ph1m.dao.Ph1mDao;
-import alma.obops.dam.ph1m.domain.Proposal;
-import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.datamodel.obsproject.ObsProject;
-import alma.scheduling.datamodel.obsproject.ScienceGrade;
-import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 
 public class Ph1mSynchronizerService implements Ph1mSynchronizer {
 

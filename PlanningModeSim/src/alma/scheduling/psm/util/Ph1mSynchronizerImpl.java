@@ -114,12 +114,12 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			obsProjDao.saveOrUpdate(p);
 			return;
 		}
-		p.setScienceRank(prop.getAssessment().getAprcRank());
-		p.setScienceScore(prop.getAssessment().getAprcScore().floatValue());
-		p.setLetterGrade(ScienceGrade.valueOf(prop.getAssessment().getAprcLetterGrade().toString()));
-		if (prop.getAssessment().getAprcScore() == null || 
-				prop.getAssessment().getAprcRank() == null || 
-				prop.getAssessment().getAprcLetterGrade() == null ){
+		p.setScienceRank(prop.getAprcRank());
+		p.setScienceScore(prop.getAprcScore().floatValue());
+		p.setLetterGrade(ScienceGrade.valueOf(prop.getAprcLetterGrade().toString()));
+		if (prop.getAprcScore() == null || 
+				prop.getAprcRank() == null || 
+				prop.getAprcLetterGrade() == null ){
 			p.setStatus("CANCELLED");
 			obsProjDao.saveOrUpdate(p);
 			throw new NullPointerException("aprc Score is null");
@@ -167,28 +167,29 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			
 			propC.setEntityID(p.getUid());
 
-			if (prop.getAssessment() == null) {
+			if (prop.getAprcScore() == null || prop.getAprcLetterGrade() == null
+					|| prop.getAprcRank() == null) {
 				System.out
 						.println("ERROR: Ph1m return null on prop.getAssessment()");
 				continue;
 			}
-			if (prop.getAssessment().getAprcScore() == null) {
+			if (prop.getAprcScore() == null) {
 				System.out
 						.println("ERROR: Ph1m return null on prop.getAssessment().getAprcScore()");
 				propC.setPh1mScore(9999);
 				continue;
 			}
-			propC.setPh1mScore(prop.getAssessment().getAprcScore());
+			propC.setPh1mScore(prop.getAprcScore());
 			propC.setLocalScore(p.getScienceScore());
-			propC.setPh1mRank(prop.getAssessment().getAprcRank());
+			propC.setPh1mRank(prop.getAprcRank());
 			propC.setLocalRank(p.getScienceRank());
-			propC.setPh1mGrade(ScienceGrade.valueOf(prop.getAssessment().getAprcLetterGrade().toString()));
+			propC.setPh1mGrade(ScienceGrade.valueOf(prop.getAprcLetterGrade().toString()));
 			propC.setLocalGrade(p.getLetterGrade());
 			retList.add(propC);
 			String line = p.getUid() + "\t";
-			line += prop.getAssessment().getAprcScore() + "\t";
-			line += prop.getAssessment().getAprcRank() + "\t";
-			line += prop.getAssessment().getAprcLetterGrade() + "\t";
+			line += prop.getAprcScore() + "\t";
+			line += prop.getAprcRank() + "\t";
+			line += prop.getAprcLetterGrade() + "\t";
 			System.out.println(line);
 		}
 		return retList;

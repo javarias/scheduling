@@ -28,7 +28,6 @@ package alma.scheduling.psm.sim;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,39 +39,29 @@ import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.SchedBlockExecutor;
-import alma.scheduling.algorithm.VerboseLevel;
-import alma.scheduling.algorithm.astro.TimeUtil;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
-import alma.scheduling.dataload.CompositeDataLoader;
-import alma.scheduling.dataload.DataLoader;
-import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
-import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.datamodel.config.dao.XmlConfigurationDaoImpl;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.observatory.dao.ObservatoryDao;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
-import alma.scheduling.datamodel.output.Results;
 import alma.scheduling.datamodel.output.dao.OutputDao;
 import alma.scheduling.datamodel.output.dao.XmlOutputDaoImpl;
 import alma.scheduling.datamodel.weather.dao.WeatherHistoryDAO;
 import alma.scheduling.psm.cli.Console;
 import alma.scheduling.psm.sim.EventType;
 import alma.scheduling.psm.sim.TimeEvent;
-import alma.scheduling.psm.util.Ph1mSynchronizer;
 import alma.scheduling.psm.util.PsmContext;
-import alma.scheduling.psm.util.XsltTransformer;
 import alma.scheduling.psm.sim.ResultComposer;
 import alma.scheduling.psm.sim.TimeHandler;
+import alma.scheduling.utils.TimeUtil;
 
 public class Simulator extends PsmContext {
     
