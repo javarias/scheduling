@@ -76,8 +76,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         <xsl:if test="count(SelectionCriteria/MoonAvoidanceSelector) = 1">
                             <ref bean="moonAvoidanceSelector" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriteria/SchedBlockGradeSelector) = 1">
                             <ref bean="sbStatusSelector" />
+                        <xsl:if test="count(SelectionCriteria/SchedBlockGradeSelector) = 1">
+                            <ref bean="projectQualitySelector" />
                         </xsl:if>
                             <ref bean="interactiveProjectsSelector" />
                     </set>

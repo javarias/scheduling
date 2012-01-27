@@ -92,6 +92,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		</constructor-arg>
 		<property name="sbDao" ref="sbDao" />
 	</bean>
+	
+    <bean id="projectQualitySelector"
+		class="alma.scheduling.algorithm.obsproject.ProjectQualitySelector"
+		scope="prototype">
+		<constructor-arg>
+			<value>sbStatusSelector</value>
+		</constructor-arg>
+		<property name="sbDao" ref="sbDao" />
+	</bean>
 
 	<bean id="weatherSelector" class="alma.scheduling.algorithm.weather.WeatherFullSelector"
 		scope="prototype">
