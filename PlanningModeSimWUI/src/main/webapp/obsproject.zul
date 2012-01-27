@@ -1,0 +1,29 @@
+<?init class="alma.scheduling.psm.web.ObsProjectController"?>
+
+<window title="Planning Mode Simulator, Web Interface -- Observation Projects"
+	border="normal" mode="embedded" id="obsprojectWindow"  apply="alma.scheduling.psm.web.ObsProjectController">
+
+	<grid  mold="paging" pageSize="20"> 
+		<columns>
+			<column label="Id" />
+			<column label="Principal Investigator" />
+			<column label="Science Score" />
+			<column label="Science Rank" />
+			<column label="Letter Grade" />
+			<column label="Status" />
+			<column label="Execution Time So Far" />
+		</columns>
+		<rows>
+			<row forEach="${allObsProjects}" >
+				<textbox value="${each.id}" />
+				<textbox value="${each.principalInvestigator}" />
+				<textbox value="${each.scienceScore}" />
+				<textbox value="${each.scienceRank}" />
+				<textbox value="${each.letterGrade}" />
+				<textbox value="${each.status}" />
+				<textbox value="${each.totalExecutionTime}" />
+			</row>
+		</rows>
+	</grid>
+
+</window>

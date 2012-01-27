@@ -1,0 +1,132 @@
+<?init class="alma.scheduling.psm.web.ReportsController"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./${arg.id}" ?>
+
+<?page title="Reports" contentType="text/html;charset=UTF-8" id="reportsPage"?>
+<zk>
+	<window title="${arg.title}" border="normal"
+		apply="${sessionScope.reportController}" id="${arg.id}"
+		height="600px" width="650px" closable="true" maximizable="true"
+		sizable="true" onCreate="showReport()">
+		<borderlayout >
+			<north maxsize="24" size="24" border="0">
+				<toolbar>
+					<toolbarbutton label="Save as pdf..." onClick="exportReport()" image="/images/document-save.png"/>
+				</toolbar>
+			</north>
+			<center border="none" flex="true" autoscroll="true" >
+				<iframe id="report" />
+			</center>
+		</borderlayout>
+		<zscript><![CDATA[
+	import org.zkoss.zkplus.spring.SpringUtil;
+	import alma.scheduling.psm.sim.ReportGenerator;
+	import net.sf.jasperreports.engine.JRException;
+	import net.sf.jasperreports.engine.export.JRHtmlExporter;
+	import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+	import net.sf.jasperreports.j2ee.servlets.ImageServlet;
+	import java.io.ByteArrayInputStream;
+	import java.io.InputStream;
+	import org.zkoss.util.media.AMedia;
+	void showReport() {
+		showReport("html");
+	}
+	
+	void exportReport(){
+		showReport("pdf");
+	}
+	
+	void showReport (String format){
+		Component parent = Path.getComponent("//");
+		Window w;
+		for(Object o: parent.getChildren()){
+			try{
+				w = (Window)o;
+			}catch(ClassCastException ex){
+				
+			}
+		}
+		System.out.println(w.getId());
+		String workDir = System.getenv("APRC_WORK_DIR");
+		ReportGenerator rg = new ReportGenerator(workDir);
+		JasperPrint print = null;
+		if(w.getId().compareTo("reportWindowBeforeSimBand") == 0)
+			print = rg.createBandsBeforeSimReport();
+		else if (w.getId().compareTo("reportWindowBeforeSimLST") == 0)
+			print = rg.createLstRangesBeforeSimReport();
+		else if(w.getId().compareTo("reportWindowAfterSimExec") == 0)
+			print = rg.createExecutiveReport();
+		else if (w.getId().compareTo("reportWindowAfterSimLST") == 0)
+			print = rg.createLstRangeAfterSimReport();
+		else if(w.getId().compareTo("reportWindowAfterSimBand") == 0)
+			print = rg.createBandsAfterSimReport();
+		else if(w.getId().compareTo("reportWindowAfterSimCompletion") == 0)
+			print = rg.createCompletionReport();
+		showReport(print, report, format);
+	}
+]]>
+	</zscript>
+	</window>
+	
+	<zscript><![CDATA[
+	    import net.sf.jasperreports.engine.JRException;
+	    import net.sf.jasperreports.engine.JasperPrint;
+	    import net.sf.jasperreports.engine.export.JRPdfExporter;
+		import net.sf.jasperreports.engine.export.JRHtmlExporter;
+		import net.sf.jasperreports.engine.JRExporter;
+		import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+		import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+		import net.sf.jasperreports.j2ee.servlets.ImageServlet;	
+		import java.io.ByteArrayOutputStream;
+		import java.io.ByteArrayInputStream;
+		import java.io.InputStream;
+		import org.zkoss.util.media.AMedia;
+		
+	    void showReport(JasperPrint print, org.zkoss.zul.api.Iframe report, String format){
+	    	JRExporter exporter = null;
+	    	//StringBuffer out = new StringBuffer();
+	    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    	if(format.compareTo("html") == 0){
+				String contextPath = Executions.getCurrent().getContextPath();
+	    		exporter = new JRHtmlExporter();
+				Sessions.getCurrent().setAttribute(
+						ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print);
+				report.setAttribute(
+						ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print,
+						Iframe.SESSION_SCOPE);
+				exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI,
+						contextPath + "/servlets/jasperimage?image=");
+				exporter.setParameter(JRHtmlExporterParameter.OUTPUT_STREAM, out);
+				exporter.setParameter(JRHtmlExporterParameter.JASPER_PRINT, print);
+	    	}
+	    	else if(format.compareTo("pdf") == 0){
+	    		exporter = new JRPdfExporter();
+	    		exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, out);
+	    		exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT, print);
+	    	}
+			try {
+				exporter.exportReport();
+			} catch (JRException e) {
+				e.printStackTrace();
+				return;
+			}
+			String localString = null;
+			try{
+				localString = out.toString("ISO-8859-1");
+			} catch (java.io.UnsupportedEncodingException ex){
+				ex.printStackTrace();
+			}
+			InputStream mediais = new ByteArrayInputStream(localString.getBytes());
+			AMedia amedia = null;
+			if(format.compareTo("html") == 0)
+				amedia = new AMedia(print.getName() + ".html", "html", "text/html", mediais);
+			else if(format.compareTo("pdf") == 0)
+				amedia = new AMedia(print.getName() + ".pdf", "pdf", "application/pdf", mediais);
+			try {
+				report.setContent(amedia);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+		]]>
+	</zscript>
+</zk>

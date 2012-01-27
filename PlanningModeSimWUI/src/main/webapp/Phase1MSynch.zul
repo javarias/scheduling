@@ -1,0 +1,83 @@
+<?page title="Phase1M Tool Synchronization" contentType="text/html;charset=UTF-8"?>
+<?init class="org.zkoss.zkplus.databind.AnnotateDataBinderInit" root="./windowPh1MSynch" ?>
+<zk>
+<window id="windowPh1MSynch" title="Phase1M Tool Synchronization" border="normal" 
+height="600px" width="600px" closable="true" maximizable="true" 
+sizable="true" onCreate="fillGrid()">
+	<borderlayout id="layout">
+		<north>
+			<button id="synchPh1mButton" label="Synch with Ph1M Tool" disabled="true" onClick="ph1mSyncronize()"/>
+		</north>
+		<center flex="true" id="center">
+			<grid fixedLayout="true" id="grid">
+				<auxhead>
+					<auxheader label="Local Data" colspan="4" />
+					<auxheader label="Ph1M Data" colspan="4" />
+				</auxhead>
+				<columns>
+					<column label="Entity ID" />
+					<column label="Score" />
+					<column label="Rank" />
+					<column label="Grade" />
+					<column label="Entity ID" />
+					<column label="Score" />
+					<column label="Rank" />
+					<column label="Grade" />
+				</columns>
+				<rows></rows>
+			</grid>
+		</center>
+	</borderlayout>
+  <zscript><![CDATA[
+	import org.zkoss.zkplus.spring.SpringUtil;
+	import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
+	import java.util.List;
+	import java.util.ArrayList;
+	import alma.scheduling.psm.util.ProposalComparison;
+	
+	Ph1mSynchronizerImpl ph1mSync = new Ph1mSynchronizerImpl( System.getenv("APRC_WORK_DIR") );
+	
+	void fillGrid() {
+		List propList;
+		try{
+			propList=ph1mSync.listPh1mProposals();
+		}catch(java.rmi.RemoteException ex){
+			ex.printStackTrace();
+			return;
+		}
+//		ArrayList propList;
+//		propList = new ArrayList();
+//		ProposalComparison pc = new ProposalComparison();
+//		pc.setEntityID("uid://lala/123");
+//		pc.setLocalRank(1);
+//		pc.setLocalScore(10);
+//		pc.setPh1mRank(2);
+//		pc.setPh1mScore(8);
+//		propList.add(pc);
+		String[][] model = new String[propList.size()][8];
+		for(int i = 0; i < propList.size(); i++){
+			model[i][0]=propList.get(i).getEntityID();
+			model[i][1]=Double.toString(propList.get(i).getLocalScore());
+			model[i][2]=Integer.toString(propList.get(i).getLocalRank());
+			model[i][3]=propList.get(i).getLocalGrade().toString();
+			model[i][4]=propList.get(i).getEntityID();
+			model[i][5]=Double.toString(propList.get(i).getPh1mScore());
+			model[i][6]=Integer.toString(propList.get(i).getPh1mRank());
+			model[i][7]=propList.get(i).getPh1mGrade().toString();
+		}
+		
+		 ListModel strset = new SimpleListModel(model);
+		 grid.setModel(strset);
+		 grid.setRowRenderer(new alma.scheduling.psm.web.Ph1MSychGridRowRenderer());
+		 if(propList.size() > 0)
+			 synchPh1mButton.setDisabled(false);
+	}
+	
+	public void ph1mSyncronize(){
+		ph1mSync.synchPh1m();
+		fillGrid();
+		synchPh1mButton.setDisabled(true);
+	}
+]]></zscript>
+</window>
+</zk>

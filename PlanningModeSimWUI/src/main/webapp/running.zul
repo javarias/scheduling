@@ -1,0 +1,12 @@
+<?page title="Simulation" contentType="text/html;charset=UTF-8" id="simulationPage"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+
+<zk>
+	<window title="Running simulation" border="normal" mode="overlapped"
+		sizable="true" maximizable="true" closable="true" width="600px"
+		height="600px" apply="alma.scheduling.psm.web.SimulationController"
+		id="simulationWindow">
+
+
+	</window>
+</zk>
