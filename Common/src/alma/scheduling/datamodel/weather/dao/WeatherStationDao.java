@@ -23,6 +23,9 @@ package alma.scheduling.datamodel.weather.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import alma.Control.CurrentWeather;
 import alma.Control.CurrentWeatherPackage.Humidity;
 import alma.Control.CurrentWeatherPackage.Temperature;
@@ -44,6 +47,7 @@ import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
  */
 public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryDAO {
 
+	private static Logger logger = LoggerFactory.getLogger(WeatherHistoryDAO.class);
 	/**
 	 * This component reference should be set before to run any DSA in the online system
 	 * @see WeatherStationDao.setWeatherStation
@@ -109,6 +113,10 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	@Override
 	public TemperatureHistRecord getTemperatureForTime(Date ut) {
 		Temperature temp  = null;
+		if (weatherStationComponent == null) {
+			logger.warn("Weather station reference is not available for DSA. Using default values.");
+			return new TemperatureHistRecord(0.0, 0.0, 0.0 ,0.0);
+		}
 		try {
 			temp = weatherStationComponent.getTemperature(WS_NAMES[1]);
 		} catch (IllegalParameterErrorEx e) {
