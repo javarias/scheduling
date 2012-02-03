@@ -30,6 +30,7 @@ import alma.Control.CurrentWeather;
 import alma.Control.CurrentWeatherPackage.Humidity;
 import alma.Control.CurrentWeatherPackage.Temperature;
 import alma.ControlExceptions.IllegalParameterErrorEx;
+import alma.acs.exceptions.CorbaExceptionConverter;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
@@ -96,14 +97,24 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	@Override
 	public HumidityHistRecord getHumidityForTime(Date ut) {
 		Humidity hum = null;
+		if (weatherStationComponent == null) {
+			logger.warn("Weather station reference is not available for DSA. Using default values for humidity: 0.0");
+			return new HumidityHistRecord(0.0, 0.0, 0.0 ,0.0);
+		}
 		try {
 			hum = weatherStationComponent.getHumidity(WS_NAMES[1]);
 		} catch (IllegalParameterErrorEx e) {
 			e.printStackTrace();
+		} catch (org.omg.CORBA.SystemException ex) {
+			logger.warn("CORBA Problem when trying to access weather station reference: " +
+					"Weather station is not available for DSA. Using default values for humidity: 0.0");
+			ex.printStackTrace();
+			new HumidityHistRecord(0.0, 0.0, 0.0, 0.0);
 		}
-		if (hum == null)
+		if (hum == null) {
+			logger.warn("Invalid return value for weather station. Using default values for humidity: 0.0");
 			return new HumidityHistRecord(0.0, 0.0, 0.0, 0.0);
-		
+		}
 		return new HumidityHistRecord((double)hum.timestamp, hum.value, 0.0, 0.0);
 	}
 
@@ -114,17 +125,22 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	public TemperatureHistRecord getTemperatureForTime(Date ut) {
 		Temperature temp  = null;
 		if (weatherStationComponent == null) {
-			logger.warn("Weather station reference is not available for DSA. Using default values.");
-			return new TemperatureHistRecord(0.0, 0.0, 0.0 ,0.0);
+			logger.warn("Weather station reference is not available for DSA. Using default values for temp: 270.0 K");
+			return new TemperatureHistRecord(0.0, 270.0, 0.0 ,0.0);
 		}
 		try {
 			temp = weatherStationComponent.getTemperature(WS_NAMES[1]);
 		} catch (IllegalParameterErrorEx e) {
 			e.printStackTrace();
+		} catch (org.omg.CORBA.SystemException ex) {
+			logger.warn("CORBA Problem when trying to access weather station reference: " +
+					"Weather station is not available for DSA. Using default values for temp: 270.0 K");
+			ex.printStackTrace();
+			return new TemperatureHistRecord(0.0, 270.0, 0.0 ,0.0);
 		}
-		
 		if (temp == null) {
-			return new TemperatureHistRecord(0.0, 0.0, 0.0 ,0.0);
+			logger.warn("Invalid return value for weather station. Using default values for temp: 270.0 K");
+			return new TemperatureHistRecord(0.0, 270.0, 0.0 ,0.0);
 		}
 		return new TemperatureHistRecord((double)temp.timestamp, temp.value, 0.0 ,0.0);
 	}
