@@ -28,6 +28,7 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,7 +83,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.18 2012/01/04 00:40:11 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.19 2012/02/06 22:44:19 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -1099,7 +1100,6 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 
 	
 	
-
 	/*
 	 * ================================================================
 	 * Running stand-alone
@@ -1174,4 +1174,48 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 			destroyArray.setEnabled(true);
 		}
     }
+
+	
+	
+	/*
+	 * ================================================================
+	 * IStateKeeping implementation
+	 * ================================================================
+	 */
+	@Override
+	public CurrentActivityPanelState getState() {
+		logger.info(String.format("%s.getState():%n%s",
+				this.getClass().getSimpleName(),
+				ErrorHandling.printedStackTrace(new Exception())));
+		final CurrentActivityPanelState state = new CurrentActivityPanelState();
+		
+		if (getArray().isManual()) {
+			// No top pane showing.
+			state.setTopSplitDividerLocation(0.0);
+			state.setBottomSplitDividerLocation(calculateSplitPaneDividerLocation(bottomSplit));
+		} else {
+			state.setTopSplitDividerLocation(calculateSplitPaneDividerLocation((JSplitPane)bottomSplit.getTopComponent()));
+			state.setBottomSplitDividerLocation(calculateSplitPaneDividerLocation(bottomSplit));
+		}
+
+		return state;
+	}
+
+	@Override
+	public void setState(Serializable inState) throws Exception {
+		logger.info(String.format("%s.setState(Serializable):%n%s",
+				this.getClass().getSimpleName(),
+				ErrorHandling.printedStackTrace(new Exception())));
+		final CurrentActivityPanelState state = (CurrentActivityPanelState) inState;
+		
+		if (!getArray().isManual()) {
+			// Top pane showing, so restore it
+			final JSplitPane topSplit = (JSplitPane) bottomSplit.getTopComponent();
+			topSplit.setDividerLocation(state.getTopSplitDividerLocation());
+		}
+		bottomSplit.setDividerLocation(state.getBottomSplitDividerLocation());
+	}
+	/*
+	 * End IStateKeeping implementation
+	 * ============================================================= */
 }

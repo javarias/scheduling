@@ -24,7 +24,9 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
+import alma.exec.extension.subsystemplugin.IStateKeeping;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.exec.extension.subsystemplugin.SessionProperties;
 import alma.exec.extension.subsystemplugin.SubsystemPlugin;
@@ -35,11 +37,11 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.14 2011/09/29 20:59:37 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.15 2012/02/06 22:44:19 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
-										   implements SubsystemPlugin {
+			                implements SubsystemPlugin, IStateKeeping {
 
     /*
      * ================================================================
@@ -301,6 +303,17 @@ public abstract class AbstractArrayPanel extends JPanel
 			return "<i>No container services</i>";
 		}
 	}
+    
+    protected double calculateSplitPaneDividerLocation(JSplitPane split) {
+		final double t = (split.getOrientation() == JSplitPane.HORIZONTAL_SPLIT)?
+							split.getTopComponent().getWidth():
+							split.getTopComponent().getHeight();
+		final double b = (split.getOrientation() == JSplitPane.HORIZONTAL_SPLIT)?
+							split.getBottomComponent().getWidth():
+							split.getBottomComponent().getHeight();
+							
+		return t/(t+b);
+    }
 	/* End Stuff to do with being a superclass
 	 * ============================================================= */
 }

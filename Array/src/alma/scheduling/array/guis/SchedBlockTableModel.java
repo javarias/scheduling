@@ -42,7 +42,7 @@ import alma.scheduling.formatting.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.18 2011/09/29 20:59:37 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.19 2012/02/06 22:44:19 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -155,6 +155,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Note,
 				Column_RA,
 				Column_Dec,
+				Column_Frequency,
+				Column_Band,
 				Column_HourAngle,
 				Column_Elevation,
 				Column_Azimuth,
@@ -189,6 +191,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Note,
 				Column_RA,
 				Column_Dec,
+				Column_Frequency,
+				Column_Band,
 				Column_HourAngle,
 				Column_Elevation,
 				Column_Azimuth,
@@ -315,6 +319,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int Column_Elevation = 17;
 	private static final int   Column_Azimuth = 18;
 	private static final int      Column_Mode = 19;
+	private static final int Column_Frequency = 20;
+	private static final int      Column_Band = 21;
 	
 	/**
 	 * All  of the columns which should be updated in (near) real time
@@ -440,6 +446,20 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			}
 		case Column_Mode:
 			return schedBlock.getSchedulingConstraints().getSchedBlockMode().toString();
+		case Column_Frequency:
+			double f = schedBlock.getRepresentativeFrequency();
+			if (f > 0) {
+				return String.format("% 7.3f", f);
+			} else {
+				return "n/a";
+			}
+		case Column_Band:
+			int b = schedBlock.getRepresentativeBand();
+			if (b > 0) {
+				return String.format("%2d", b);
+			} else {
+				return "n/a";
+			}
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -494,6 +514,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_Azimuth:
 			return String.class;
 		case Column_Mode:
+			return String.class;
+		case Column_Frequency:
+			return String.class;
+		case Column_Band:
 			return String.class;
 		default:
 			logger.severe(String.format(
@@ -553,6 +577,10 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Az";
 		case Column_Mode:
 			return "Mode";
+		case Column_Frequency:
+			return "Freq.";
+		case Column_Band:
+			return "Band";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",

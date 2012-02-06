@@ -27,15 +27,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
@@ -81,9 +79,10 @@ import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
-import alma.scheduling.utils.SchedBlockFormatter;
 import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.ErrorHandling;
+import alma.scheduling.utils.SchedBlockFormatter;
 import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
 import alma.statearchiveexceptions.wrappers.AcsJNoSuchEntityEx;
@@ -92,7 +91,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.26 2011/12/02 23:24:08 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.27 2012/02/06 22:44:19 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -171,6 +170,11 @@ public class InteractivePanel extends AbstractArrayPanel
     private JLabel statusMessage;
     /** Button to initiate getting updates from the project store */
     private JButton update;
+    
+    /** The split-panes which hold various sub-panels */
+	private JSplitPane split;
+	private JSplitPane subSplit;
+
     
     private JPanel details;
     private JTextPane opDetails;
@@ -567,8 +571,9 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbPanel.setLayout(l);
 		addSBWidgets(sbPanel, l, c);
 		
-		final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
-		final JSplitPane subSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		subSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		
 		subSplit.setTopComponent(opPanel);
 		subSplit.setBottomComponent(sbPanel);
 		subSplit.setDividerLocation(2.0/3.0);
@@ -659,10 +664,10 @@ public class InteractivePanel extends AbstractArrayPanel
 	 * Create the a filter for the SchedBlock table based upon the
 	 * state of the ProjectTable.
 	 * <ul>
-	 * <li>if their are items selected in the project table, then
+	 * <li>if there are items selected in the project table, then
 	 *     the filter should include all the SchedBlocks for those
 	 *     Projects.
-	 * <li>if their is no selection in the project table, then the
+	 * <li>if there is no selection in the project table, then the
 	 *     filter should include all the SchedBlocks for all the
 	 *     Projects shown in the project table (which is filtered, so
 	 *     be careful to start from the view rows).
@@ -1521,5 +1526,39 @@ public class InteractivePanel extends AbstractArrayPanel
     }
 	/*
 	 * End Running stand-alone
+	 * ============================================================= */
+
+	
+	
+	/*
+	 * ================================================================
+	 * IStateKeeping implementation
+	 * ================================================================
+	 */
+	@Override
+	public InteractivePanelState getState() {
+		logger.info(String.format("%s.getState():%n%s",
+				this.getClass().getSimpleName(),
+				ErrorHandling.printedStackTrace(new Exception())));
+		final InteractivePanelState state = new InteractivePanelState();
+		
+		state.setSplitDividerLocation(calculateSplitPaneDividerLocation(split));
+		state.setSubsplitDividerLocation(calculateSplitPaneDividerLocation(subSplit));
+
+		return state;
+	}
+
+	@Override
+	public void setState(Serializable inState) throws Exception {
+		logger.info(String.format("%s.setState(Serializable):%n%s",
+				this.getClass().getSimpleName(),
+				ErrorHandling.printedStackTrace(new Exception())));
+		final InteractivePanelState state = (InteractivePanelState) inState;
+		
+		split.setDividerLocation(state.getSplitDividerLocation());
+		subSplit.setDividerLocation(state.getSubsplitDividerLocation());
+	}
+	/*
+	 * End IStateKeeping implementation
 	 * ============================================================= */
 }

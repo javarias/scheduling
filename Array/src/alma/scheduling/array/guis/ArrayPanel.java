@@ -21,6 +21,7 @@
 package alma.scheduling.array.guis;
 
 import java.awt.BorderLayout;
+import java.io.Serializable;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -183,4 +184,32 @@ public class ArrayPanel extends AbstractArrayPanel {
     	});
     }
 
+	
+	
+	/*
+	 * ================================================================
+	 * IStateKeeping implementation
+	 * ================================================================
+	 */
+	@Override
+	public Serializable getState() {
+		final ArrayPanelState state = new ArrayPanelState();
+
+		state.setCurrentActivityPanelState(cup.getState());
+		state.setInteractivePanelState(ip.getState());
+		
+    	state.setSplitPaneDividerLocation(calculateSplitPaneDividerLocation(splitPane));
+    	
+		return state;
+	}
+
+	@Override
+	public void setState(Serializable inState) throws Exception {
+		final ArrayPanelState state = (ArrayPanelState) inState;
+		
+		splitPane.setDividerLocation(state.getSplitPaneDividerLocation());
+	}
+	/*
+	 * End IStateKeeping implementation
+	 * ============================================================= */
 }
