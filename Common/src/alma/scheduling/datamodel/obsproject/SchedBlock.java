@@ -21,13 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.15 2011/10/24 17:32:36 dclarke Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.16 2012/02/06 22:54:54 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
@@ -339,6 +338,26 @@ public class SchedBlock extends ObsUnit {
 				getCoordinates();
 		} catch (NullPointerException npe) {
 			return null;
+		}
+	}
+	
+	public int getRepresentativeBand() {
+		try {
+			return this.
+				getSchedulingConstraints().
+				getRepresentativeBand();
+		} catch (NullPointerException npe) {
+			return -1;
+		}
+	}
+	
+	public double getRepresentativeFrequency() {
+		try {
+			return this.
+				getSchedulingConstraints().
+				getRepresentativeFrequency();
+		} catch (NullPointerException npe) {
+			return -1.0;
 		}
 	}
 
