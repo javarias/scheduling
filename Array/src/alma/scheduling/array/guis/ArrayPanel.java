@@ -206,9 +206,8 @@ public class ArrayPanel extends AbstractArrayPanel {
 
 	@Override
 	public void setState(Serializable inState) throws Exception {
-		logger.info(String.format("%s.setState(Serializable):%n%s",
-				this.getClass().getSimpleName(),
-				ErrorHandling.printedStackTrace(new Exception())));
+		logger.info(String.format("%s.setState(Serializable)",
+				this.getClass().getSimpleName()));
 		if (inState == null) {
 			logger.info("\tinState is null, returning");
 			return;

@@ -91,7 +91,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.27 2012/02/06 22:44:19 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.28 2012/02/06 23:49:09 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1553,6 +1553,10 @@ public class InteractivePanel extends AbstractArrayPanel
 		logger.info(String.format("%s.setState(Serializable):%n%s",
 				this.getClass().getSimpleName(),
 				ErrorHandling.printedStackTrace(new Exception())));
+		if (inState == null) {
+			logger.info("\tinState is null, returning");
+			return;
+		}
 		final InteractivePanelState state = (InteractivePanelState) inState;
 		
 		split.setDividerLocation(state.getSplitDividerLocation());

@@ -83,7 +83,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.19 2012/02/06 22:44:19 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.20 2012/02/06 23:49:09 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -1206,6 +1206,10 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 		logger.info(String.format("%s.setState(Serializable):%n%s",
 				this.getClass().getSimpleName(),
 				ErrorHandling.printedStackTrace(new Exception())));
+		if (inState == null) {
+			logger.info("\tinState is null, returning");
+			return;
+		}
 		final CurrentActivityPanelState state = (CurrentActivityPanelState) inState;
 		
 		if (!getArray().isManual()) {
