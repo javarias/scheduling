@@ -21,7 +21,7 @@
 #*******************************************************************************
 # ALMA Project
 #
-# "@(#) $Id: Makefile,v 1.15 2012/02/06 18:21:24 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.16 2012/02/06 20:19:45 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -59,7 +59,7 @@ endif
 SUBSYSTEM = SCHEDULING
 
 # MODULES =  Scheduling 
-MODULES = Common DSA Array ArchiveUpdater Master PlanningModeSim
+MODULES = Common DSA Array ArchiveUpdater Master
 
 
 MAKE_FLAGS = "-k"
