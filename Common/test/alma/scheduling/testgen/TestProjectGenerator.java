@@ -35,7 +35,7 @@ import alma.scheduling.SchedulingException;
  * template projects into masses of real projects.
  * 
  * @author dclarke
- * $Id: TestProjectGenerator.java,v 1.2 2011/09/14 20:35:11 dclarke Exp $
+ * $Id: TestProjectGenerator.java,v 1.3 2012/02/06 22:54:06 dclarke Exp $
  */
 public class TestProjectGenerator {
 
@@ -107,16 +107,26 @@ public class TestProjectGenerator {
 	
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			inner("-name", "Lots_%05d",
+			inner("-name", "FineGarland_%03d",
 					"-template", "R81Template",
-					"-script",   "lots.script",
-					"-ra", "0:359:45",
-					"-dec", "60:-85:-10",
-					"-minHA", "0,12",
-					"-maxHA", "12,24",
-					"-freq", "38.15,78.5,100,144,187,243,324,442.5,661,868.5",
-					"-grade", "abc",
+					"-script",   "finegrain.script",
+					"-ra", "0:359:1",
+					"-dec", "0",
+					"-minHA", "0",
+					"-maxHA", "24",
+					"-freq", "100",
+					"-grade", "a",
 					"-exec", "eu");
+//			inner("-name", "Lots_%05d",
+//					"-template", "R81Template",
+//					"-script",   "lots.script",
+//					"-ra", "0:359:45",
+//					"-dec", "65:-85:-45",
+//					"-minHA", "0",
+//					"-maxHA", "24",
+//					"-freq", "100,868.5",
+//					"-grade", "a",
+//					"-exec", "eu");
 //			inner("-name", "Various_RA_Dec_%03d",
 //					"-template", "R81Template",
 //					"-script",   "Various_RA_Dec.script",
