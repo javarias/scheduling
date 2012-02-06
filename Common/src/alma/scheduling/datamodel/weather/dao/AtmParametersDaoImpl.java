@@ -81,6 +81,10 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
     
     /* returns the lower bound, always*/
     private int getFreqPosition(Double freq){
+    	if (freq < 20) {
+    		logger.error("Frequency is less than 20 Ghz, check your project and fix it. Using the minimum usable 20 Ghz");
+    		freq = 20.0;
+    	}
         int pos = new Integer((int)(freq * 10 - 200));
         return pos;
     }
