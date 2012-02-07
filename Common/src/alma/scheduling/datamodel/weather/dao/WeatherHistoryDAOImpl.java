@@ -97,13 +97,14 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
     public TemperatureHistRecord getTemperatureForTime(Date ut) {
     	Calendar cal = Calendar.getInstance();
 		cal.setTime(ut);
-		//This calculate the number of hours of the current year
+		//This calculate the number of days of the current year
 		cal.set(cal.get(Calendar.YEAR), 0, 0, 0, 0, 0);
 		Date b_y = cal.getTime(); //first instant of the current year
 		long diff = ut.getTime() - b_y.getTime();
 		double days = diff /1000.0 /60.0 /60.0 /24.0;
-        double dt = (long)(Math.round(days * 1000000.0))/1000000.0; // time (hours) since the begin of the current year
+        double dt = (long)(Math.round(days * 1000000.0))/1000000.0; // time (days) since the begin of the current year
         //approximated at 6 decimal places
+        cal.setTime(ut);
         logger.debug("dt = " + dt);
         Query query;
         query = getSession().getNamedQuery("TemperatureHistRecord.getMaxTime");
