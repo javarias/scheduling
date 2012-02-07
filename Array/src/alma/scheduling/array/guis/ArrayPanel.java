@@ -30,7 +30,6 @@ import javax.swing.JSplitPane;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArraySchedulerMode;
-import alma.scheduling.utils.ErrorHandling;
 
 /**
  * This class is the main panel shown by the OMC. It contains a
@@ -206,10 +205,10 @@ public class ArrayPanel extends AbstractArrayPanel {
 
 	@Override
 	public void setState(Serializable inState) throws Exception {
-		logger.info(String.format("%s.setState(Serializable)",
+		safeInfo(String.format("%s.setState(Serializable)",
 				this.getClass().getSimpleName()));
 		if (inState == null) {
-			logger.info("\tinState is null, returning");
+			safeInfo("\tinState is null, returning");
 			return;
 		}
 		final ArrayPanelState state = (ArrayPanelState) inState;

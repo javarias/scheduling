@@ -37,7 +37,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.15 2012/02/06 22:44:19 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.16 2012/02/07 00:06:39 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -313,6 +313,14 @@ public abstract class AbstractArrayPanel extends JPanel
 							split.getBottomComponent().getHeight();
 							
 		return t/(t+b);
+    }
+    
+    protected void safeInfo(String string) {
+    	if (logger == null) {
+    		System.out.println(string);
+    	} else {
+    		logger.info(string);
+    	}
     }
 	/* End Stuff to do with being a superclass
 	 * ============================================================= */
