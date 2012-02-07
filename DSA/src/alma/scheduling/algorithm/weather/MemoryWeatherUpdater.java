@@ -99,17 +99,17 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             ErrorHandling.getInstance().info("curr tsys: " + zenithTsys);
             
             double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
-//            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
-//            tau_zero = tmp[0];
-//            Tatm = tmp[1];
-//            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
-//                    latitude, frequency, tau_zero, Tatm, date);
+            tmp = interpolateOpacityAndTemperature(ppwv, frequency);
+            tau_zero = tmp[0];
+            Tatm = tmp[1];
+            double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+                    latitude, frequency, tau_zero, Tatm, date);
 
             
             WeatherDependentVariables vars = new WeatherDependentVariables();
             vars.setTsys(tsys);
-//            vars.setProjectedTsys(ptsys);
-//            vars.setProjectionTimeIncr(projTimeIncr);
+            vars.setProjectedTsys(ptsys);
+            vars.setProjectionTimeIncr(projTimeIncr);
             vars.setOpacity(tau);
             vars.setZenithTsys(zenithTsys);
             sb.setWeatherDependentVariables(vars);
@@ -174,17 +174,17 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         
         double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
         System.out.println("tau_zero:" + tau_zero + "; " + "tau: " + tau);
-//        tmp = interpolateOpacityAndTemperature(ppwv, frequency);
-//        tau_zero = tmp[0];
-//        Tatm = tmp[1];
-//        double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
-//                latitude, frequency, tau_zero, Tatm, date);
+        tmp = interpolateOpacityAndTemperature(ppwv, frequency);
+        tau_zero = tmp[0];
+        Tatm = tmp[1];
+        double ptsys = SystemTemperatureCalculator.getTsys(ra, decl,
+                latitude, frequency, tau_zero, Tatm, date);
 
         
         WeatherDependentVariables vars = new WeatherDependentVariables();
         vars.setTsys(tsys);
-//        vars.setProjectedTsys(ptsys);
-//        vars.setProjectionTimeIncr(projTimeIncr);
+        vars.setProjectedTsys(ptsys);
+        vars.setProjectionTimeIncr(projTimeIncr);
         vars.setOpacity(tau);
         vars.setZenithOpacity(tau_zero);
         vars.setZenithTsys(currTsys);

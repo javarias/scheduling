@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: NoSbSelectedException.java,v 1.2 2010/03/02 23:19:15 javarias Exp $"
+ * "@(#) $Id: NoSbSelectedException.java,v 1.3 2012/02/07 21:48:03 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -35,6 +35,15 @@ public class NoSbSelectedException extends Exception {
     public NoSbSelectedException(String message){
         super(message);
     }
+    
+    public NoSbSelectedException(Throwable ex){
+        super(ex);
+    }
+    
+    public NoSbSelectedException(String message, Throwable ex) {
+    	super(message, ex);
+    }
+    
     
     
 }
