@@ -1,3 +1,0 @@
-#! /bin/bash
-
-acsStartJava -endorsed alma.scheduling.test.TestALMAPublishEvent

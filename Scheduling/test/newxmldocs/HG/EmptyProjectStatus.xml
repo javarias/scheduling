@@ -1,7 +1,0 @@
-   <ProjectStatus almatype="APDM::ProjectStatus" xsi:type="ProjectStatus">
-      <ProjectStatusEntity entityId="uid://X000000000000011a/X00000013" entityIdEncrypted="none" entityTypeName="ProjectStatus" schemaVersion="1" documentVersion="1"/>
-      <ObsProjectRef entityId="entityId_-1016080366" 
-            partId="X00000000" entityTypeName="ObsProject" documentVersion="1"/>
-      <ObsProposalRef entityId="entityId_-5922812" 
-            partId="X00000000" entityTypeName="ObsProposal" documentVersion="1"/>
-   </ProjectStatus>

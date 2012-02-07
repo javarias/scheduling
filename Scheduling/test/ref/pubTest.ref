@@ -1,5 +1,0 @@
-1 - FINER: Logging configuration has been initialized, but not from CDB settings.
-1 - ----------T--:--:--.--- INFO [Scheduling Publisher Test] component 'Scheduling Publisher Test' requested AdvancedContainerServices
-1 - ----------T--:--:--.--- INFO [Scheduling Publisher Test] SCHED_TEST: received StartSessionEvent Event
-1 - ----------T--:--:--.--- INFO [Scheduling Publisher Test] SCHED_TEST: Received NothingCanBeScheduledEvent
-1 - ----------T--:--:--.--- INFO [Scheduling Publisher Test] SCHED_TEST: received EndSessionEvent Event

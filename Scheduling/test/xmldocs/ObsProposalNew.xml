@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ObsProposal xmlns="Alma/ObsPrep/ObsProposal"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    almatype="APDM::ObsProposal" xsi:type="ObsProposal">
-    <ObsProposalEntity entityId="uid://X000000000000011a/X00000010"
-        entityIdEncrypted="-- id encryption not yet implemented --" entityTypeName="ObsProposal"/>
-</ObsProposal>

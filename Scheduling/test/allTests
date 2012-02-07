@@ -1,7 +1,0 @@
-#! /bin/bash
-
-#set ACS instance for tests that require ACS
-export ACS_INSTANCE=`cat sched_acs_instance.log`
-
-#run all the tests!
-acsStartJava -endorsed alma.acs.testsupport.tat.TATJUnitRunner alma.scheduling.test.AllTests

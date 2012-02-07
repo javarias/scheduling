@@ -1,2 +1,0 @@
-#!/bin/bash
-acsStartJava -endorsed junit.textui.TestRunner alma.scheduling.test.InitControlMaster
