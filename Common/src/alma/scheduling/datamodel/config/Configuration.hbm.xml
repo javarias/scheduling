@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         	<property name="nGradeCPrj" column="SCI_GRADE_CONFIG_C_PRJS"/>
         	<property name="nGradeDPrj" column="SCI_GRADE_CONFIG_D_PRJS"/>
         </component>
+        <property name="dataModelVersion" column="MODEL_VERSION"/>
     </class>
 	
 </hibernate-mapping>    

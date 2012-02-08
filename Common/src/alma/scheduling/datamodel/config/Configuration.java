@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.13 2010/05/19 21:00:32 ahoffsta Exp $"
+ * "@(#) $Id: Configuration.java,v 1.14 2012/02/08 23:14:51 javarias Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -35,7 +35,9 @@ import java.util.List;
  */
 public class Configuration {
 
-    private String workDirectory;
+	private static final long version = 1L;
+	
+	private String workDirectory;
     private String projectDirectory;
     private String weatherDirectory;
     private String observatoryDirectory;
@@ -45,6 +47,7 @@ public class Configuration {
     private Date lastLoad;
     private Date simulationStartTime;
     private String contextFilePath;
+    private long dataModelVersion;
     
     /**
      * Contains the configuration of the grade of the projects.
@@ -65,7 +68,9 @@ public class Configuration {
     private Date nextStepTime;
     
    
-    public Configuration() { }
+    public Configuration() { 
+    	this.dataModelVersion = version;
+    }
     
 	public String getWorkDirectory() {
         return workDirectory;
@@ -256,4 +261,30 @@ public class Configuration {
         this.simulationStartTime = simulationStartTime;
     }
 
+    public long getDataModelVersion() {
+		return dataModelVersion;
+	}
+
+	public void setDataModelVersion(long dataModelversion) {
+		this.dataModelVersion = dataModelversion;
+	}
+	
+	public void checkDataModelVersion() throws IncompatibleModelVersionException {
+		if (version != dataModelVersion) {
+			throw new IncompatibleModelVersionException();
+		}
+	}
+	
+	public class IncompatibleModelVersionException extends Exception {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 113605899953680840L;
+		
+		public IncompatibleModelVersionException() {
+			super("Model version expected: " + version + ". Version get from database: " + dataModelVersion);
+		}
+		
+	}
 }
