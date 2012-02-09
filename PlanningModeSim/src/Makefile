@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.21 2011/10/25 15:25:39 dclarke Exp $"
+# "@(#) $Id: Makefile,v 1.22 2012/02/09 18:48:32 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -147,7 +147,19 @@ SchedulingPMS_EXTRAS=alma/scheduling/psm/reports/general_report.xsl \
 					 alma/scheduling/psm/reports/lstRangesBeforeSim.jasper \
 					 alma/scheduling/psm/reports/lstRangesAfterSim.jasper \
 					 alma/scheduling/psm/reports/completionReport.jasper \
-					 alma/scheduling/psm/reports/images/alma-logo.jpg
+					 alma/scheduling/psm/reports/images/alma-logo.jpg \
+					 alma/scheduling/algorithm/weather/data/simulation/Opacity_average_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/Opacity_good_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/Temp_average_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/Temp_bad_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/Temp_good_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/WindDirection_average_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/WindDirection_bad_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/WindDirection_good_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_average_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_bad_15min_all.dat \
+					 alma/scheduling/algorithm/weather/data/simulation/WindSpeed_good_15min_all.dat
+					 
 SchedulingPMSCli_DIRS=alma/scheduling/psm/cli
 
 #
