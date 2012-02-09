@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.11 2011/10/25 15:22:05 dclarke Exp $"
+# "@(#) $Id: Makefile,v 1.12 2012/02/09 18:37:12 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -144,7 +144,14 @@ SchedulingDSA_EXTRAS := log4j.properties alma/scheduling/algorithm/SchedulingPol
 						 alma/scheduling/algorithm/SchedulingPolicy.xsl \
 						 alma/scheduling/algorithm/sbranking/SBRank.hbm.xml \
 						 alma/scheduling/algorithm/results/Result.hbm.xml \
-						 alma/scheduling/algorithm/DSAContext.xml
+						 alma/scheduling/algorithm/DSAContext.xml \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0001.trim \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0002.trim \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0003.trim \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0004.trim \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0005.trim \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0006.trim \
+						 alma/scheduling/algorithm/weather/data/SKY.SPE0007.trim
 #
 # java sources in Jarfile on/off
 DEBUG=on
