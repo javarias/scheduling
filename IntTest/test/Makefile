@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.4 2011/10/25 15:21:00 dclarke Exp $"
+# "@(#) $Id: Makefile,v 1.5 2012/02/13 23:10:49 dclarke Exp $"
 #
 # Makefile of ........
 #
@@ -103,7 +103,7 @@ TCL_SCRIPTS_L   =
 PY_SCRIPTS         =
 PY_SCRIPTS_L       =
 
-PY_MODULES         =
+PY_MODULES         = ArrayConfiguration
 PY_MODULES_L       =
 
 PY_PACKAGES        =

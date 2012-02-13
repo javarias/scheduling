@@ -31,6 +31,8 @@ public abstract class SchedulingProperties {
 
 	private static String PROP_autoPopupPlugin      = "scheduling.autoPopupPlugin";
 	private static String PROP_convertPhase2ToReady = "scheduling.convertPhase2ToReady";
+	private static String PROP_davidTesting      = "scheduling.dclarke";
+	private static String PROP_jorgeTesting      = "scheduling.javarias";
 	
 	public static String autoPopupPluginPropertyName() {
 		return PROP_autoPopupPlugin;
@@ -48,5 +50,19 @@ public abstract class SchedulingProperties {
 	public static boolean isConvertPhase2ToReady() {
 		final String env = System.getProperty(PROP_convertPhase2ToReady);
 		return env != null;
+	}
+	
+	public static boolean isDavidTesting() {
+		final String env = System.getProperty(PROP_davidTesting);
+		return env != null;
+	}
+	
+	public static boolean isJorgeTesting() {
+		final String env = System.getProperty(PROP_jorgeTesting);
+		return env != null;
+	}
+	
+	public static boolean isTesting() {
+		return isDavidTesting() || isJorgeTesting();
 	}
 }
