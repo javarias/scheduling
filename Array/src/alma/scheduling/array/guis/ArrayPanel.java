@@ -21,8 +21,16 @@
 package alma.scheduling.array.guis;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,6 +38,7 @@ import javax.swing.JSplitPane;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArraySchedulerMode;
+import alma.scheduling.utils.SchedulingProperties;
 
 /**
  * This class is the main panel shown by the OMC. It contains a
@@ -70,6 +79,9 @@ public class ArrayPanel extends AbstractArrayPanel {
 		JPanel right = new JPanel(new BorderLayout());
 		right.add(cup, BorderLayout.CENTER);
 		left.add(ip, BorderLayout.CENTER);
+		if (SchedulingProperties.isDavidTesting()) {
+			doExtraForStandaloneTesting(left);
+		}
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
 		splitPane.setOneTouchExpandable(true);
@@ -214,6 +226,50 @@ public class ArrayPanel extends AbstractArrayPanel {
 		final ArrayPanelState state = (ArrayPanelState) inState;
 
 		splitPane.setDividerLocation(state.getSplitPaneDividerLocation());
+		cup.setState(state.getCurrentActivityPanelState());
+		ip.setState(state.getInteractivePanelState());
+	}
+
+	private JComboBox choices;
+	private Map<String, Serializable> states;
+	
+	private void doExtraForStandaloneTesting(JPanel panel) {
+		JPanel controls = new JPanel();
+		controls.setLayout(new FlowLayout());
+		
+		JButton save = new JButton("Save State");
+		choices = new JComboBox();
+		
+		controls.add(save);
+		controls.add(choices);
+		
+		states = new TreeMap<String, Serializable>();
+		
+		save.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String label = String.format("%02d - %TT", states.size()+1, new Date());
+				Serializable state = getState();
+				
+				states.put(label, state);
+				choices.addItem(label);
+//				choices.setSelectedItem(label);
+			}});
+		
+		choices.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String label = (String)choices.getSelectedItem();
+				Serializable state = states.get(label);
+				
+				try {
+					setState(state);
+				} catch (Exception ex) {
+					ex.printStackTrace(System.out);
+				}
+			}});
+		
+		panel.add(controls, BorderLayout.NORTH);
 	}
 	/*
 	 * End IStateKeeping implementation

@@ -81,7 +81,6 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.swingx.CallbackFilter;
 import alma.scheduling.utils.DSAContextFactory;
-import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.SchedBlockFormatter;
 import alma.statearchiveexceptions.wrappers.AcsJEntitySerializationFailedEx;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
@@ -91,7 +90,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.29 2012/02/07 00:06:39 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.30 2012/02/13 23:11:38 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -174,6 +173,7 @@ public class InteractivePanel extends AbstractArrayPanel
     /** The split-panes which hold various sub-panels */
 	private JSplitPane split;
 	private JSplitPane subSplit;
+	private JSplitPane detailsSplit;
 
     
     private JPanel details;
@@ -390,14 +390,14 @@ public class InteractivePanel extends AbstractArrayPanel
 		sbDetailsPanel.add(scroll, BorderLayout.CENTER);
 
 		
-		final JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
-		split.setTopComponent(opDetailsPanel);
-		split.setBottomComponent(sbDetailsPanel);
-		split.setDividerLocation(1.0/2.0);
-		split.setOneTouchExpandable(true);
+		detailsSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
+		detailsSplit.setTopComponent(opDetailsPanel);
+		detailsSplit.setBottomComponent(sbDetailsPanel);
+		detailsSplit.setDividerLocation(1.0/2.0);
+		detailsSplit.setOneTouchExpandable(true);
 		details = new JPanel();
 		details.setLayout(new BorderLayout());
-		details.add(split, BorderLayout.CENTER);
+		details.add(detailsSplit, BorderLayout.CENTER);
 
 	}
 	
@@ -1537,30 +1537,39 @@ public class InteractivePanel extends AbstractArrayPanel
 	 */
 	@Override
 	public InteractivePanelState getState() {
-		safeInfo(String.format("%s.getState():%n%s",
-				this.getClass().getSimpleName(),
-				ErrorHandling.printedStackTrace(new Exception())));
+		safeInfo(String.format("%s.getState()",	this.getClass().getSimpleName()));
 		final InteractivePanelState state = new InteractivePanelState();
 		
 		state.setSplitDividerLocation(calculateSplitPaneDividerLocation(split));
 		state.setSubsplitDividerLocation(calculateSplitPaneDividerLocation(subSplit));
-
+		state.setDetailssplitDividerLocation(calculateSplitPaneDividerLocation(detailsSplit));
+		state.setOPState(new TableState(opTable));
+		state.setSBState(new TableState(sbTable));
+				
 		return state;
 	}
-
+	
 	@Override
 	public void setState(Serializable inState) throws Exception {
-		safeInfo(String.format("%s.setState(Serializable):%n%s",
-				this.getClass().getSimpleName(),
-				ErrorHandling.printedStackTrace(new Exception())));
+		safeInfo(String.format("%s.setState()",	this.getClass().getSimpleName()));
 		if (inState == null) {
 			safeInfo("\tinState is null, returning");
 			return;
 		}
 		final InteractivePanelState state = (InteractivePanelState) inState;
 		
-		split.setDividerLocation(state.getSplitDividerLocation());
+		state.getOPState().restore(opTable, logger);
+		state.getSBState().restore(sbTable, logger);
+		detailsSplit.setDividerLocation(state.getDetailssplitDividerLocation());
 		subSplit.setDividerLocation(state.getSubsplitDividerLocation());
+		split.setDividerLocation(state.getSplitDividerLocation());
+		
+		((JComponent)(subSplit.getTopComponent())).revalidate();
+		((JComponent)(subSplit.getBottomComponent())).revalidate();
+		((JComponent)(split.getTopComponent())).revalidate();
+		((JComponent)(split.getBottomComponent())).revalidate();
+		revalidate();
+		repaint();
 	}
 	/*
 	 * End IStateKeeping implementation

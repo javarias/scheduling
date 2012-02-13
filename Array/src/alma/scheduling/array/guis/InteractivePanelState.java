@@ -23,13 +23,28 @@ import java.io.Serializable;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanelState.java,v 1.1 2012/02/06 22:44:19 dclarke Exp $
+ * $Id: InteractivePanelState.java,v 1.2 2012/02/13 23:11:38 dclarke Exp $
  */
 public class InteractivePanelState implements Serializable {
 
-	/**  */
-	private static final long serialVersionUID = -7022390644408915777L;
 	
+	/**  */
+	private static final long serialVersionUID = -2646904187473846890L;
+
+	/*
+	 * ================================================================
+	 * Construction
+	 * ================================================================
+	 */
+	public InteractivePanelState() {
+		opState = null;
+		sbState = null;
+	}
+	/* End of Construction
+	 * ============================================================= */
+
+
+
 	/*
 	 * ================================================================
 	 * State of this panel
@@ -37,6 +52,9 @@ public class InteractivePanelState implements Serializable {
 	 */
 	private double splitDividerLocation;
 	private double subsplitDividerLocation;
+	private double detailssplitDividerLocation;
+	private TableState opState;
+	private TableState sbState;
 
 	/**
 	 * @param splitPaneDividerLocation the splitPaneDividerLocation to set
@@ -57,11 +75,52 @@ public class InteractivePanelState implements Serializable {
 	public void setSubsplitDividerLocation(double subsplitDividerLocation) {
 		this.subsplitDividerLocation = subsplitDividerLocation;
 	}
+	
 	/**
 	 * @return the subsplitDividerLocation
 	 */
 	public double getSubsplitDividerLocation() {
 		return subsplitDividerLocation;
+	}
+
+	/**
+	 * @param detailssplitDividerLocation the detailssplitDividerLocation to set
+	 */
+	public void setDetailssplitDividerLocation(double detailssplitDividerLocation) {
+		this.detailssplitDividerLocation = detailssplitDividerLocation;
+	}
+	
+	/**
+	 * @return the detailssplitDividerLocation
+	 */
+	public double getDetailssplitDividerLocation() {
+		return detailssplitDividerLocation;
+	}
+
+	/**
+	 * @param opState the opState to set
+	 */
+	public void setOPState(TableState opState) {
+		this.opState = opState;
+	}
+	/**
+	 * @return the opState
+	 */
+	public TableState getOPState() {
+		return opState;
+	}
+	
+	/**
+	 * @param sbState the sbState to set
+	 */
+	public void setSBState(TableState sbState) {
+		this.sbState = sbState;
+	}
+	/**
+	 * @return the sbState
+	 */
+	public TableState getSBState() {
+		return sbState;
 	}
 	/* End of State of this panel
 	 * ============================================================= */

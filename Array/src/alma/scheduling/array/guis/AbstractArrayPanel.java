@@ -19,12 +19,15 @@ package alma.scheduling.array.guis;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import alma.exec.extension.subsystemplugin.IStateKeeping;
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
@@ -37,7 +40,7 @@ import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
  * Abstract superclass for panels associated with a single array.
  * 
  * @author dclarke
- * $Id: AbstractArrayPanel.java,v 1.16 2012/02/07 00:06:39 dclarke Exp $
+ * $Id: AbstractArrayPanel.java,v 1.17 2012/02/13 23:11:38 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractArrayPanel extends JPanel
@@ -314,6 +317,26 @@ public abstract class AbstractArrayPanel extends JPanel
 							
 		return t/(t+b);
     }
+
+    protected void printColumnModel(String label, TableColumnModel columnModel) {
+		final StringBuilder s = new StringBuilder();
+		s.append("Column model for ");
+		s.append(label);
+		s.append("\n\n");
+		
+		Enumeration<TableColumn> cols = columnModel.getColumns();
+		while (cols.hasMoreElements()) {
+			final TableColumn col = cols.nextElement();
+			final Object      id  = col.getIdentifier();
+			
+			s.append(String.format("\tId is a %s, value '%s', width %d%n",
+					id.getClass().getSimpleName(),
+					id, col.getWidth()));
+		}
+		
+		s.append('\n');
+		safeInfo(s.toString());
+	}
     
     protected void safeInfo(String string) {
     	if (logger == null) {

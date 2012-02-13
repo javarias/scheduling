@@ -83,7 +83,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.21 2012/02/07 00:06:39 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.22 2012/02/13 23:11:38 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -1184,9 +1184,7 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 	 */
 	@Override
 	public CurrentActivityPanelState getState() {
-		safeInfo(String.format("%s.getState():%n%s",
-				this.getClass().getSimpleName(),
-				ErrorHandling.printedStackTrace(new Exception())));
+		safeInfo(String.format("%s.getState()",	this.getClass().getSimpleName()));
 		final CurrentActivityPanelState state = new CurrentActivityPanelState();
 		
 		if (getArray().isManual()) {
@@ -1194,18 +1192,21 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 			state.setTopSplitDividerLocation(0.0);
 			state.setBottomSplitDividerLocation(calculateSplitPaneDividerLocation(bottomSplit));
 		} else {
-			state.setTopSplitDividerLocation(calculateSplitPaneDividerLocation((JSplitPane)bottomSplit.getTopComponent()));
+			final JSplitPane topSpilt = (JSplitPane)bottomSplit.getTopComponent();
+			state.setTopSplitDividerLocation(calculateSplitPaneDividerLocation(topSpilt));
 			state.setBottomSplitDividerLocation(calculateSplitPaneDividerLocation(bottomSplit));
+			state.setPendingState(new TableState(pendingTable));
 		}
+		state.setCurrentState(new TableState(currentTable));
+		state.setPastState(new TableState(pastTable));
 
 		return state;
 	}
 
 	@Override
 	public void setState(Serializable inState) throws Exception {
-		safeInfo(String.format("%s.setState(Serializable):%n%s",
-				this.getClass().getSimpleName(),
-				ErrorHandling.printedStackTrace(new Exception())));
+		safeInfo(String.format("%s.setState()",	this.getClass().getSimpleName()));
+
 		if (inState == null) {
 			safeInfo("\tinState is null, returning");
 			return;
@@ -1216,8 +1217,11 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 			// Top pane showing, so restore it
 			final JSplitPane topSplit = (JSplitPane) bottomSplit.getTopComponent();
 			topSplit.setDividerLocation(state.getTopSplitDividerLocation());
+			state.getPendingState().restore(pendingTable, logger);
 		}
 		bottomSplit.setDividerLocation(state.getBottomSplitDividerLocation());
+		state.getCurrentState().restore(currentTable, logger);
+		state.getPastState().restore(pastTable, logger);
 	}
 	/*
 	 * End IStateKeeping implementation

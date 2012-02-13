@@ -23,12 +23,13 @@ import java.io.Serializable;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanelState.java,v 1.1 2012/02/06 22:44:19 dclarke Exp $
+ * $Id: CurrentActivityPanelState.java,v 1.2 2012/02/13 23:11:38 dclarke Exp $
  */
 public class CurrentActivityPanelState implements Serializable {
 
+
 	/**  */
-	private static final long serialVersionUID = -6501061530929735196L;
+	private static final long serialVersionUID = 417112467070396624L;
 	/*
 	 * ================================================================
 	 * State of this panel
@@ -36,6 +37,9 @@ public class CurrentActivityPanelState implements Serializable {
 	 */
 	private double topSplitDividerLocation;
 	private double bottomSplitDividerLocation;
+	private TableState pendingState;
+	private TableState currentState;
+	private TableState pastState;
 
 	/**
 	 * @param topSplitDividerLocation the topSplitDividerLocation to set
@@ -61,5 +65,44 @@ public class CurrentActivityPanelState implements Serializable {
 	 */
 	public double getBottomSplitDividerLocation() {
 		return bottomSplitDividerLocation;
+	}
+
+	/**
+	 * @param state the pendingState to set
+	 */
+	public void setPendingState(TableState state) {
+		this.pendingState = state;
+	}
+	/**
+	 * @return the pendingState
+	 */
+	public TableState getPendingState() {
+		return pendingState;
+	}
+
+	/**
+	 * @param state the currentState to set
+	 */
+	public void setCurrentState(TableState state) {
+		this.currentState = state;
+	}
+	/**
+	 * @return the currentState
+	 */
+	public TableState getCurrentState() {
+		return currentState;
+	}
+
+	/**
+	 * @param state the pastState to set
+	 */
+	public void setPastState(TableState state) {
+		this.pastState = state;
+	}
+	/**
+	 * @return the pastState
+	 */
+	public TableState getPastState() {
+		return pastState;
 	}
 }
