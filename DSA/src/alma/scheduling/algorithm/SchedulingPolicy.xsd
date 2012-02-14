@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 			<xs:sequence>
 				<xs:element name="SchedulingPolicy" type="SchedulingPolicyT" minOccurs="1" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute name="sim" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -43,6 +44,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
     	<xs:sequence>
     		<xs:choice minOccurs="0" maxOccurs="unbounded">
     			<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
+<!--  There is no weather forecast available in the online system for this selector -->    			
 <!--   			<xs:element name="WeatherSelector" type="WeatherSelectorT"/>   --> 
 <!--    		<xs:element name="SourceSelector" type="SourceSelectorT"/> -->
     			<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>

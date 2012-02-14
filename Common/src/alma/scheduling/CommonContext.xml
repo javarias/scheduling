@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-ALMA - Atacama Large Millimeter Array
-Copyright (c) AUI - Associated Universities Inc., 2011
-(in the framework of the ALMA collaboration).
-All rights reserved.
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
--->
+<!-- ALMA - Atacama Large Millimeter Array Copyright (c) AUI - Associated 
+	Universities Inc., 2011 (in the framework of the ALMA collaboration). All 
+	rights reserved. This library is free software; you can redistribute it and/or 
+	modify it under the terms of the GNU Lesser General Public License as published 
+	by the Free Software Foundation; either version 2.1 of the License, or (at 
+	your option) any later version. This library is distributed in the hope that 
+	it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
+	of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser 
+	General Public License for more details. You should have received a copy 
+	of the GNU Lesser General Public License along with this library; if not, 
+	write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+	Boston, MA 02111-1307 USA -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
@@ -31,27 +21,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-		<!--<property name="user" value="hibernate" />
-		<property name="password" value="aprc" />
-		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver" />
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" />--> 
-<!--		<property name="user" value="sa"/>
-	 	<property name="password" value=""/>
-		<property name="driverClass" value="org.hsqldb.jdbcDriver"/>
-		<property name="jdbcUrl" value="jdbc:hsqldb:hsql://localhost:9001/data_model"/>-->
-		<property name="user" value="${db.user}"/>
-		<property name="password" value="${db.password}"/>
-		<property name="driverClass" value="${db.driverClass}"/>
-		<property name="jdbcUrl" value="${db.url}"/> 
-		<property name="initialPoolSize" value="5"/>
-		<property name="maxPoolSize" value="20"/>
-		<property name="minPoolSize" value="1"/>
-		<property name="acquireIncrement" value="1"/>
-		<property name="acquireRetryAttempts" value="5"/>
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<!--<property name="user" value="hibernate" /> <property name="password" 
+			value="aprc" /> <property name="driverClass" value="oracle.jdbc.driver.OracleDriver" 
+			/> <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" /> -->
+		<!-- <property name="user" value="sa"/> <property name="password" value=""/> 
+			<property name="driverClass" value="org.hsqldb.jdbcDriver"/> <property name="jdbcUrl" 
+			value="jdbc:hsqldb:hsql://localhost:9001/data_model"/> -->
+		<property name="user" value="${db.user}" />
+		<property name="password" value="${db.password}" />
+		<property name="driverClass" value="${db.driverClass}" />
+		<property name="jdbcUrl" value="${db.url}" />
+		<property name="initialPoolSize" value="5" />
+		<property name="maxPoolSize" value="20" />
+		<property name="minPoolSize" value="1" />
+		<property name="acquireIncrement" value="1" />
+		<property name="acquireRetryAttempts" value="5" />
 	</bean>
-	
-	<bean id="dataSource.test" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+	<bean id="dataSource.test"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName">
 			<value>org.hsqldb.jdbcDriver</value>
 		</property>
@@ -62,36 +52,45 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 			<value>sa</value>
 		</property>
 		<property name="password">
-			<value/>
+			<value />
 		</property>
 	</bean>
 
 	<!-- Hibernate SessionFactory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"/>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
 		<property name="mappingResources">
 			<list>
 				<value>alma/scheduling/datamodel/executive/Executive.hbm.xml</value>
-				<value>alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml</value>
+				<value>alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml
+				</value>
 				<value>alma/scheduling/datamodel/obsproject/ObsUnit.hbm.xml</value>
-				<value>alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml</value>
-				<value>alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml</value>
+				<value>alma/scheduling/datamodel/obsproject/ObservingParameters.hbm.xml
+				</value>
+				<value>alma/scheduling/datamodel/obsproject/FieldSource.hbm.xml
+				</value>
 				<value>alma/scheduling/datamodel/obsproject/Target.hbm.xml</value>
-				<value>alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml</value>
-				<value>alma/scheduling/datamodel/weather/AtmParameters.hbm.xml</value>
+				<value>alma/scheduling/datamodel/weather/WeatherHistRecord.hbm.xml
+				</value>
+				<value>alma/scheduling/datamodel/weather/AtmParameters.hbm.xml
+				</value>
 				<value>alma/scheduling/datamodel/output/Output.hbm.xml</value>
-				<value>alma/scheduling/datamodel/config/Configuration.hbm.xml</value>
-				<value>alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml</value>
+				<value>alma/scheduling/datamodel/config/Configuration.hbm.xml
+				</value>
+				<value>alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml
+				</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<!--<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>-->
-				<!--<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop>-->
+				<!--<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop> -->
+				<!--<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
 				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.format_sql">true</prop>
-				<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+				<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory
+				</prop>
 				<prop key="hibernate.connection.autocommit">false</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.cache.use_query_cache">true</prop>
@@ -115,86 +114,92 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 	</bean>
 
 	<!-- enable transactional behavior based on annotations -->
-	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- The transaction manager -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<!-- DAO Beans -->
-	<bean id="execDao" class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="execDao"
+		class="alma.scheduling.datamodel.executive.dao.ExecutiveDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<bean id="outDao" class="alma.scheduling.datamodel.output.dao.OutputDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="sbDao" class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-	<bean id="weatherDao" class="alma.scheduling.datamodel.weather.dao.MemoryWeatherHistoryDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="configurationDao" ref="configDao"/>
+	<bean id="sbDao"
+		class="alma.scheduling.datamodel.obsproject.dao.SchedBlockDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<bean id="weatherStationDao" class="alma.scheduling.datamodel.weather.dao.WeatherStationDao">
-		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="atmDao" class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="atmDao"
+		class="alma.scheduling.datamodel.weather.dao.AtmParametersDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="obsProjectDao" class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="obsProjectDao"
+		class="alma.scheduling.datamodel.obsproject.dao.ObsProjectDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="sourceDao" class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="sourceDao"
+		class="alma.scheduling.datamodel.obsproject.dao.FieldSourceDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<!-- XML DAO Beans -->
-	<bean id="configDao" class="alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl"/>
-	<bean id="xmlExecDao" class="alma.scheduling.datamodel.executive.dao.XmlExecutiveDaoImpl">
-		<property name="configDao" ref="configDao"/>
+<!-- XML DAO Beans -->
+	<bean id="configDao"
+		class="alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl" />
+	<bean id="xmlExecDao"
+		class="alma.scheduling.datamodel.executive.dao.XmlExecutiveDaoImpl">
+		<property name="configDao" ref="configDao" />
 	</bean>
 	<bean id="xmlObsProjectDao"
 		class="alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDaoImpl">
-		<property name="configurationDao" ref="configDao"/>
+		<property name="configurationDao" ref="configDao" />
 	</bean>
 	<bean id="xmlObservatoryDao"
 		class="alma.scheduling.datamodel.observatory.dao.XmlObservatoryDaoImpl">
-		<property name="configurationDao" ref="configDao"/>
+		<property name="configurationDao" ref="configDao" />
 	</bean>
-	<bean id="observatoryDao" class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl">
-		<property name="sessionFactory" ref="sessionFactory"/>
+	<bean id="observatoryDao"
+		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<!-- DataLoaders Beans -->
+<!-- DataLoaders Beans -->
 	<bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
-		<property name="sbDao" ref="sbDao"/>
-		<property name="execDao" ref="execDao"/>
-		<property name="configDao" ref="configDao"/>
-		<property name="obsPrjDao" ref="obsProjectDao"/>
+		<property name="sbDao" ref="sbDao" />
+		<property name="execDao" ref="execDao" />
+		<property name="configDao" ref="configDao" />
+		<property name="obsPrjDao" ref="obsProjectDao" />
 	</bean>
 	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
 		<property name="loaders">
 			<list>
 				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
-					<property name="xmlDao" ref="xmlObsProjectDao"/>
-					<property name="dao" ref="obsProjectDao"/>
+					<property name="xmlDao" ref="xmlObsProjectDao" />
+					<property name="dao" ref="obsProjectDao" />
 				</bean>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
-					<property name="dbDao" ref="execDao"/>
-					<property name="xmlDao" ref="xmlExecDao"/>
+					<property name="dbDao" ref="execDao" />
+					<property name="xmlDao" ref="xmlExecDao" />
 				</bean>
 				<bean class="alma.scheduling.dataload.observatory.ObservatoryDataLoader">
-					<property name="dao" ref="observatoryDao"/>
-					<property name="xmlDao" ref="xmlObservatoryDao"/>
+					<property name="dao" ref="observatoryDao" />
+					<property name="xmlDao" ref="xmlObservatoryDao" />
 				</bean>
- 				<ref bean="dataLinker"/>
+				<ref bean="dataLinker" />
 			</list>
 		</property>
 	</bean>
-	<bean id="fullDataUnloader" class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
-		<property name="xmlDao" ref="xmlObsProjectDao"/>
-		<property name="dao" ref="obsProjectDao"/>
+	<bean id="fullDataUnloader"
+		class="alma.scheduling.dataload.obsproject.ObsProjectDataUnloader">
+		<property name="xmlDao" ref="xmlObsProjectDao" />
+		<property name="dao" ref="obsProjectDao" />
 	</bean>
+
 </beans>
