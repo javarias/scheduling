@@ -74,7 +74,7 @@ public class DynamicSchedulingPolicyFactory {
 			modifiedBeansNames.add("uuid" + container.getUuid().toString() + "-" + beanName);
 		}
 		System.out.println(xmlContextString);
-		//Now read now the modified XML
+		//Now read the modified XML
 		is = new ByteArrayInputStream(xmlContextString.getBytes());
 		isr = new InputStreamResource(is);
 		xmlFactory = new XmlStreamBeanFactory(isr, ctx.getBeanFactory());
@@ -115,8 +115,6 @@ public class DynamicSchedulingPolicyFactory {
 	public static synchronized DynamicSchedulingPolicyFactory getInstance() {
 		if (DynamicSchedulingPolicyFactory.instance == null) {
 			DynamicSchedulingPolicyFactory.instance = 
-				//TODO: Change this to read default file from properties,
-				//TODO: Otherwise use default context
 				new DynamicSchedulingPolicyFactory((GenericApplicationContext) 
 						DSAContextFactory.getContext());
 		}

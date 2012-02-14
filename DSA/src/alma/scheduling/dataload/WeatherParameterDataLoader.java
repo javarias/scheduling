@@ -21,14 +21,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherParameterDataLoader.java,v 1.3 2010/03/13 02:56:15 rhiriart Exp $"
+ * "@(#) $Id: WeatherParameterDataLoader.java,v 1.4 2012/02/14 22:37:37 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import alma.scheduling.dataload.WeatherDataReader.WeatherData;
 import alma.scheduling.datamodel.config.Configuration;
@@ -62,15 +65,21 @@ public abstract class WeatherParameterDataLoader implements DataLoader {
         this.configurationDao = configurationDao;
     }
     
-    private void createDataReader() throws FileNotFoundException {
-        Configuration config = configurationDao.getConfiguration(); 
-        String workDir = config.getWorkDirectory();
-        String weatherDir = config.getWeatherDirectory();
-        String weatherDirFullPath = workDir + "/" + weatherDir + "/";
-        File weatherfile = new File(weatherDirFullPath + file);
-        FileReader fr = new FileReader(weatherfile);
-        reader = new WeatherDataReader(fr);                
-    }
+	private void createDataReader() throws FileNotFoundException {
+		if (file.startsWith("classpath:")) {
+			Reader br = new BufferedReader(new InputStreamReader(getClass()
+					.getClassLoader().getResourceAsStream(file.substring(10))));
+			reader = new WeatherDataReader(br);
+		} else {
+			Configuration config = configurationDao.getConfiguration();
+			String workDir = config.getWorkDirectory();
+			String weatherDir = config.getWeatherDirectory();
+			String weatherDirFullPath = workDir + "/" + weatherDir + "/";
+			File weatherfile = new File(weatherDirFullPath + file);
+			FileReader fr = new FileReader(weatherfile);
+			reader = new WeatherDataReader(fr);
+		}
+	}
 
     protected WeatherData getNextWeatherDatum() throws NumberFormatException,
             IOException {

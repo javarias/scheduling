@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -31,13 +33,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.springframework.context.support.AbstractApplicationContext;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import com.thoughtworks.xstream.persistence.FileStreamStrategy;
-
-import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
 import alma.scheduling.algorithm.PoliciesContainer;
 import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.SchedulingPolicyValidator;
@@ -49,14 +61,12 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.16 2011/10/24 19:28:48 dclarke Exp $
+ * $Id: DSAContextFactory.java,v 1.17 2012/02/14 22:37:37 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
 	private static final String DSA_POLICY_FILE_PROP = "dsa.policy.file"; 
 	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
-	//protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "file:/export/home/griffin/javarias/scm/ALMA/HEAD/SCHEDULING/DSA/test/testPolicy.xml.context.xml";
-//	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "file:/export/home/flaminia/dclarke/ALMA/Development/TRUNK/HEAD/SCHEDULING/DSA/test/testPolicy.xml.context.xml";
 	public static final String SCHEDULING_DSA_RESULTS_DAO_BEAN="DSAResultDAO";
 	
 	private static AbstractApplicationContext context = null;
@@ -93,7 +103,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	public static synchronized AbstractApplicationContext getContextFromPropertyFile(){
 		if (context != null)
 			return context;
-		String path = SchedulingContextFactory.setPropertyFilePath();
+		String path = SchedulingContextFactory.getPropertyFilePath();
 		InputStream isProp;
 		try {
 			isProp = new FileInputStream(path);
@@ -129,6 +139,42 @@ public class DSAContextFactory extends CommonContextFactory {
 		return context;
 	}
 	
+	public static synchronized AbstractApplicationContext getSimulationContextFromPropertyFile() throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
+		if (context != null)
+			return context;
+		String path = SchedulingContextFactory.getPropertyFilePath();
+		InputStream isProp;
+		isProp = new FileInputStream(path);
+		Properties properties = new Properties();
+		properties.load(isProp);
+		String policyFilePath = properties.getProperty(DSA_POLICY_FILE_PROP);
+		if(policyFilePath == null)
+			return getContext();
+		InputStream isPolicies = new FileInputStream(policyFilePath);
+		StringBuilder str =  new StringBuilder();
+		int c;
+		while ((c = isPolicies.read()) > -1)
+			str.append((char) c);
+		isPolicies.close();
+		String simPoliciesStr = transformSchedulingPoliciesForSimulation(str.toString());
+		String contextString = SchedulingPolicyValidator.convertPolicyString(simPoliciesStr);
+		context = SchedulingContextFactory.getContext(contextString.getBytes());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> policies = context.getBeansOfType(alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl.class);
+		PoliciesContainer container = null;
+		try {
+			container = new PoliciesContainer(
+					InetAddress.getLocalHost().getHostName(), "system", true);
+		} catch (UnknownHostException e) {
+			container = new PoliciesContainer("system", "system", true);
+		}
+		for (String name: policies.keySet()) {
+			container.getPolicies().add(name);
+		}
+		PoliciesContainersDirectory.getInstance().put(container.getUuid(), container);
+		return context;
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static List<String> getPolicyNames() {
 		if (context == null) {
@@ -139,6 +185,28 @@ public class DSAContextFactory extends CommonContextFactory {
 			availablePolicies = new ArrayList<String>(policies.keySet());
 		}
 		return availablePolicies;
+	}
+	
+	public static String transformSchedulingPoliciesForSimulation(String xmlString) throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		InputSource is = new InputSource(new StringReader(xmlString));
+		Document doc = builder.parse(is);
+		if (doc.getFirstChild().getAttributes().getNamedItem("sim") == null) {
+			Attr sim = doc.createAttribute("sim");
+			sim.setValue("true");
+			doc.getFirstChild().getAttributes().setNamedItem(sim);
+		} else {
+			doc.getFirstChild().getAttributes().getNamedItem("sim").setNodeValue("true");
+		}
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+		StreamResult result = new StreamResult(new StringWriter());
+		DOMSource source = new DOMSource(doc);
+		transformer.transform(source, result);
+		
+		return result.getWriter().toString();
 	}
 	
 }
