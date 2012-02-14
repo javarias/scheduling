@@ -26,11 +26,17 @@
 package alma.scheduling.psm.cli;
 
 import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.xml.sax.SAXException;
 
 import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.psm.sim.InputActions;
@@ -40,6 +46,7 @@ import alma.scheduling.psm.util.Ph1mSynchronizer;
 import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
 import alma.scheduling.psm.util.Porter;
 import alma.scheduling.psm.util.PsmContext;
+import alma.scheduling.utils.DSAContextFactory;
 
 public class Console {
 
@@ -61,7 +68,7 @@ public class Console {
         return console;
     }
     
-    public void run(String[] args){
+    public void run(String[] args) throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
     	workDir = parseWorkDir(args);
     	verboseLvl = parseVerboseLevel(args);
     	try {
@@ -73,7 +80,7 @@ public class Console {
 		}
     }
     
-    private void selectAction(String[] args) throws IllegalArgumentException{
+    private void selectAction(String[] args) throws IllegalArgumentException, IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
     	//TODO Obtain context.xml location properly
     	
         if(args[0].compareTo("createWorkDir") == 0){
@@ -83,10 +90,16 @@ public class Console {
         	simulator.createWorkDir(workDir);
         }
         else if (args[0].compareTo("fullload") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	//PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
-        	inputActions.fullLoad();
+        	try {
+				inputActions.fullLoad();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }        	
         else if (args[0].compareTo("load") == 0){
         	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
@@ -107,7 +120,8 @@ public class Console {
         	inputActions.clean();
         }
         else if (args[0].compareTo("run") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	//PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
         	simulator.run();

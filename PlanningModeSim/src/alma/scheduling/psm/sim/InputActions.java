@@ -31,48 +31,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import alma.scheduling.dataload.CompositeDataLoader;
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
-import alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl;
 import alma.scheduling.psm.cli.RemoteConsole;
 import alma.scheduling.psm.util.PsmContext;
 
 public class InputActions extends PsmContext {
 	
+	public static final String WEATHER_PARAMS_LOADER_BEAN = "weatherSimDataLoader";
+	public static final String FULL_DATA_LOADER_BEAN = "fullDataLoader";
+	
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
 	private static InputActions instance = null;
-	private static String[] loadersNames = null;
 	private static String[] cfgBeans = null;
 		
     private InputActions(String workDir) {
 		super(workDir);
 	}
 	
-    public void fullLoad() {
+    public void fullLoad() throws Exception {
         ApplicationContext ctx = getApplicationContext();
-        if (loadersNames == null)
-        	loadersNames = ctx.getBeanNamesForType(CompositeDataLoader.class);
-        if	(cfgBeans == null)
-        	cfgBeans = ctx.getBeanNamesForType(ConfigurationDaoImpl.class);
-        if(cfgBeans.length == 0){
-            logger.error(contextFile + 
-            		" file doesn't contain a bean of the type " +
-            		"alma.scheduling.datamodel.config.dao.ConfigurationDaoImpl");
-            //System.exit(3); // Exit code 3: No necessary bean in scheduling context file.
-        }
-        for(int i = 0; i < loadersNames.length ; i++){
-            DataLoader loader = (DataLoader) ctx.getBean(loadersNames[i]);
-            try {
-				loader.load();
-			} catch (Exception e) {
-				logger.error("Data loading error during fullload, in bean: " + loadersNames[i]);
-				e.printStackTrace();
-			}
-        }
-        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(cfgBeans[0]);
+        DataLoader weatherLoader = 
+        		(DataLoader) ctx.getBean(WEATHER_PARAMS_LOADER_BEAN);
+        DataLoader fullDataLoader = 
+        		(DataLoader) ctx.getBean(FULL_DATA_LOADER_BEAN);
+        weatherLoader.load();
+        fullDataLoader.load();
+        
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
         configDao.updateConfig();
     }
 

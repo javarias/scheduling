@@ -27,14 +27,32 @@ package alma.scheduling.psm.util;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import alma.scheduling.algorithm.SchedulingPolicyValidator;
+import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 
 public class XsltTransformer {
 	
@@ -62,4 +80,40 @@ public class XsltTransformer {
 		}
 	}
 
+	public static String transformSchedulingPoliciesFile(String xmlString) throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		InputSource is = new InputSource(new StringReader(xmlString));
+		Document doc = builder.parse(is);
+		if (doc.getFirstChild().getAttributes().getNamedItem("sim") == null) {
+			Attr sim = doc.createAttribute("sim");
+			sim.setValue("true");
+			doc.getFirstChild().getAttributes().setNamedItem(sim);
+		} else {
+			doc.getFirstChild().getAttributes().getNamedItem("sim").setNodeValue("true");
+		}
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+		//initialize StreamResult with File object to save to file
+		StreamResult result = new StreamResult(new StringWriter());
+		DOMSource source = new DOMSource(doc);
+		transformer.transform(source, result);
+		
+		String resStr = result.getWriter().toString();
+		String contextStr = SchedulingPolicyValidator.convertPolicyString(resStr);
+		return contextStr;
+	}
+	
+	public static void main (String args[]) throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException {
+		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+"<Policies><SchedulingPolicy name=\"LalaFile-NoSelectors\"><SelectionCriteria>" +
+    "</SelectionCriteria><Scorers><HourAngleScorer><weight>1.0</weight>" +
+"</HourAngleScorer><TsysScorer><weight>1.0</weight></TsysScorer></Scorers></SchedulingPolicy>"+
+"<SchedulingPolicy name=\"AllEqual\"><SelectionCriteria><ExecutiveSelector/>" +
+"<OpacitySelector/><ArrayConfigSelector/></SelectionCriteria><Scorers><HourAngleScorer>" +
+"<weight>1.0</weight></HourAngleScorer><TsysScorer><weight>1.0</weight></TsysScorer> " +
+"</Scorers></SchedulingPolicy></Policies>";
+		transformSchedulingPoliciesFile(xmlString);
+	}
 }

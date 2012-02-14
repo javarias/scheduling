@@ -41,8 +41,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithm;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
+import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.SchedBlockExecutor;
 import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.config.Configuration;
@@ -61,6 +63,8 @@ import alma.scheduling.psm.sim.TimeEvent;
 import alma.scheduling.psm.util.PsmContext;
 import alma.scheduling.psm.sim.ResultComposer;
 import alma.scheduling.psm.sim.TimeHandler;
+import alma.scheduling.utils.DSAContextFactory;
+import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 import alma.scheduling.utils.TimeUtil;
 
 public class Simulator extends PsmContext {
@@ -439,16 +443,18 @@ public class Simulator extends PsmContext {
     }
     
     private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) throws IllegalArgumentException {
+    	for (String n: ctx.getBeanDefinitionNames())
+    		System.out.println(n);
         if (DSAName == null) {
-            String[] dsaNames = ctx
-                    .getBeanNamesForType(DynamicSchedulingAlgorithmImpl.class);
+            SchedulingPolicyFile[] dsaNames = PoliciesContainersDirectory.getInstance().getAllPoliciesFiles();
             if (dsaNames.length == 0)
                 throw new IllegalArgumentException(
                         "There is not a Dynamic Scheduling Algorithm bean defined in the context.xml file");
             if (dsaNames.length > 1)
                 throw new IllegalArgumentException(
                         "There are more than 1 Dynamic Scheduling Algorithm Beans defined in the context.xml file");
-            DSAName = dsaNames[0];
+    //TODO: Add the policy name as parameter
+            DSAName = dsaNames[0].schedulingPolicies[0];
         }
         DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx
                 .getBean(DSAName);

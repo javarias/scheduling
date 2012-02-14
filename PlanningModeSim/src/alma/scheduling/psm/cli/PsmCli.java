@@ -25,12 +25,25 @@
 
 package alma.scheduling.psm.cli;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+
+import org.xml.sax.SAXException;
+
 public class PsmCli {
 
 	/**
 	 * @param args
+	 * @throws TransformerException 
+	 * @throws TransformerFactoryConfigurationError 
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException {
 		System.out.println(	"\n" +
 							"Planning Mode Simulator - APRC Tool \n" +
 							"Version 0.8.1 \n" + 
