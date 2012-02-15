@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
- * $Id: SchedulingContextFactory.java,v 1.5 2011/07/21 23:13:49 javarias Exp $
+ * $Id: SchedulingContextFactory.java,v 1.6 2012/02/15 23:57:19 javarias Exp $
  */
 
 package alma.scheduling.utils;
@@ -68,7 +68,7 @@ public class SchedulingContextFactory {
     	return result;
     }
     
-    public static String setPropertyFilePath() {
+    public static String getPropertyFilePath() {
         if (path == null) {
             try {
                 path = System.getProperty("alma.scheduling.properties");
@@ -103,7 +103,7 @@ public class SchedulingContextFactory {
      */
 	public static AbstractApplicationContext getContext(String contextFileURL) {
         XmlBeanFactory factory = null;
-        setPropertyFilePath();
+        getPropertyFilePath();
         if (contextFileURL.startsWith("file:")) {
             factory = new XmlBeanFactory(new FileSystemResource(contextFileURL
                     .substring(5)));
@@ -144,7 +144,7 @@ public class SchedulingContextFactory {
 	 * @since ALMA 8.1.1
 	 */
 	public static AbstractApplicationContext getContext(byte[] context) {
-		setPropertyFilePath();
+		getPropertyFilePath();
 		if (context == null) {
 			throw new IllegalArgumentException("Spring context byte array cannot be null");
 		}

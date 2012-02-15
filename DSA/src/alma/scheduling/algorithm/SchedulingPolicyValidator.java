@@ -37,6 +37,7 @@ import javax.xml.validation.Validator;
 
 
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.xml.sax.SAXException;
 
@@ -131,7 +132,7 @@ public class SchedulingPolicyValidator {
 	
 	private void loadContext(String file) {
 		System.out.println("Loading DSA application context file ... ");
-		AbstractApplicationContext context = DSAContextFactory.getContext(file);
+		ApplicationContext context = DSAContextFactory.getContext(file);
 		System.out.println("Available Algorithm Policies: ");
 		for (String policyName: DSAContextFactory.getPolicyNames()) {
 			System.out.println("   * " + policyName);

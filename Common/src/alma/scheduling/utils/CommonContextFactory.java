@@ -20,6 +20,7 @@
  *******************************************************************************/
 package alma.scheduling.utils;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
 /**
@@ -33,7 +34,7 @@ import org.springframework.context.support.AbstractApplicationContext;
  */
 public class CommonContextFactory {
 	
-	private static AbstractApplicationContext context = null;
+	private static ApplicationContext context = null;
 	
 	/** URL for Scheduling/Common Spring context configuration*/
 	protected static final String SCHEDULING_COMMON_SPRING_CONFIG = "classpath:alma/scheduling/CommonContext.xml";
@@ -50,7 +51,7 @@ public class CommonContextFactory {
 	 * 
 	 * @return the instance of the context created
 	 */
-	public static synchronized AbstractApplicationContext getContext(){
+	public static synchronized ApplicationContext getContext(){
 		System.out.println(CommonContextFactory.class);
 		if(context == null){
 			context = SchedulingContextFactory.getContext(SCHEDULING_COMMON_SPRING_CONFIG);

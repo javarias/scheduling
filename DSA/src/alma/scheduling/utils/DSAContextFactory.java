@@ -44,7 +44,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -61,7 +65,7 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.17 2012/02/14 22:37:37 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.18 2012/02/15 23:57:19 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -69,14 +73,15 @@ public class DSAContextFactory extends CommonContextFactory {
 	protected static final String SCHEDULING_DSA_DEFAULT_SPRING_CONFIG = "classpath:alma/scheduling/algorithm/DSAContext.xml";
 	public static final String SCHEDULING_DSA_RESULTS_DAO_BEAN="DSAResultDAO";
 	
-	private static AbstractApplicationContext context = null;
+	private static ApplicationContext context = null;
 	private static ArrayList<String> availablePolicies = null;
 	
+	private static Logger logger = LoggerFactory.getLogger(DSAContextFactory.class);
 	/**
 	 * It will return the default ApplicationContext for the DSA.
 	 * @return the context defined in SCHEDULING_DSA_DEFAULT_SPRING_CONFIG
 	 */
-	public static synchronized AbstractApplicationContext getContext() {
+	public static synchronized ApplicationContext getContext() {
 		System.out.println(DSAContextFactory.class);
 		if (context == null) {
 			context = SchedulingContextFactory.getContext(SCHEDULING_DSA_DEFAULT_SPRING_CONFIG);
@@ -84,7 +89,7 @@ public class DSAContextFactory extends CommonContextFactory {
 		return context;
 	}
 	
-	public static synchronized AbstractApplicationContext getContext(String contextPath) {
+	public static synchronized ApplicationContext getContext(String contextPath) {
 		if (context == null) {
 			context = SchedulingContextFactory.getContext(contextPath);
 		}
@@ -100,7 +105,7 @@ public class DSAContextFactory extends CommonContextFactory {
 	 * 
 	 * @since ALMA 8.1.1
 	 */
-	public static synchronized AbstractApplicationContext getContextFromPropertyFile(){
+	public static synchronized ApplicationContext getContextFromPropertyFile(){
 		if (context != null)
 			return context;
 		String path = SchedulingContextFactory.getPropertyFilePath();
@@ -139,7 +144,7 @@ public class DSAContextFactory extends CommonContextFactory {
 		return context;
 	}
 	
-	public static synchronized AbstractApplicationContext getSimulationContextFromPropertyFile() throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
+	public static synchronized ApplicationContext getSimulationContextFromPropertyFile() throws IOException, ParserConfigurationException, SAXException, TransformerFactoryConfigurationError, TransformerException{
 		if (context != null)
 			return context;
 		String path = SchedulingContextFactory.getPropertyFilePath();
@@ -209,4 +214,9 @@ public class DSAContextFactory extends CommonContextFactory {
 		return result.getWriter().toString();
 	}
 	
+	public static void setWebApplicationContext(WebApplicationContext ctx) {
+		if(context != null)
+			logger.warn("Overriding already set context. This could be disastrous if the context was already set!");
+		context = ctx;
+	}
 }
