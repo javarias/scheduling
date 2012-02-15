@@ -24,7 +24,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-
+/**
+ * Custom scheduling property place holder configurator. It will look for scheduling properties file set in:</br>
+ * <ol>
+ * <li><b>alma.scheduling.properties</b> jvm property if it set.</li>
+ * <li><b>$APRC_WORK_DIR/scheduling.properties</b> if the APRC_WORK_DIR env variable is set.</li>
+ * <li>Use the default scheduling.properties files included in the war. Which configuration is the following: </br>
+ * <code>
+db.user=sa </br>
+db.password= </br>
+db.driverClass=org.hsqldb.jdbcDriver </br>
+db.url=jdbc:hsqldb:hsql://localhost:8090/data_model </br>
+hibernate.dialect=org.hibernate.dialect.HSQLDialect </br>
+dsa.policy.file=
+ * </code></li>
+ * </ol>
+ * 
+ * @author javarias
+ * @since ALMA-9.0
+ */
 public class SchedulingPropertyPlaceholderConfigurer extends
 		PropertyPlaceholderConfigurer {
 
@@ -55,6 +73,8 @@ public class SchedulingPropertyPlaceholderConfigurer extends
 			logger.warn("Using default default scheduling policies set on webContextfile inside the web application. " +
 					"Property file " +f.getAbsolutePath() + " cannot be accessed.");
 		}
+		if (location != null )
+			this.setLocation(location);
 	}
 	
 	@Override
