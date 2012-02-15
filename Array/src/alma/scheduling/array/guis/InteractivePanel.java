@@ -61,6 +61,7 @@ import javax.swing.event.RowSorterEvent;
 import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableRowSorter;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -90,7 +91,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.30 2012/02/13 23:11:38 dclarke Exp $
+ * $Id: InteractivePanel.java,v 1.31 2012/02/15 23:58:43 javarias Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -1447,7 +1448,7 @@ public class InteractivePanel extends AbstractArrayPanel
 	private void getFirstScoresAndRanks() {
 		Result result;
 		
-		AbstractApplicationContext ctx = DSAContextFactory.getContextFromPropertyFile();
+		ApplicationContext ctx = DSAContextFactory.getContextFromPropertyFile();
 		resultsDao = (ResultsDao) ctx.getBean(
 				DSAContextFactory.SCHEDULING_DSA_RESULTS_DAO_BEAN);
 		
