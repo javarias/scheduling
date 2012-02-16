@@ -28,8 +28,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -41,11 +43,11 @@ import alma.scheduling.algorithm.sbranking.SchedBlockRanker;
 
 public class DynamicSchedulingPolicyFactory {
 	
-	private GenericApplicationContext ctx;
+	private AbstractApplicationContext ctx;
 	private static DynamicSchedulingPolicyFactory instance;
 	
 	
-	private DynamicSchedulingPolicyFactory(GenericApplicationContext ctx) {
+	private DynamicSchedulingPolicyFactory(AbstractApplicationContext ctx) {
 		this.ctx = ctx;
 	}
 
@@ -79,10 +81,11 @@ public class DynamicSchedulingPolicyFactory {
 		isr = new InputStreamResource(is);
 		xmlFactory = new XmlStreamBeanFactory(isr, ctx.getBeanFactory());
 		
+		BeanDefinitionRegistry c = (BeanDefinitionRegistry) ctx; 
 		for (String beanName: modifiedBeansNames) {
 			System.out.println("Trying to register bean: " + beanName);
 			try {
-				ctx.registerBeanDefinition(beanName, xmlFactory.getBeanDefinition(beanName));
+				c.registerBeanDefinition(beanName, xmlFactory.getBeanDefinition(beanName));
 			} catch (org.springframework.beans.factory.NoSuchBeanDefinitionException ex) {
 				System.out.println(ex.getMessage());
 			}
@@ -93,19 +96,21 @@ public class DynamicSchedulingPolicyFactory {
 	}
 	
 	public String createEmptyDsaPolicy() {
+		BeanDefinitionRegistry c = (BeanDefinitionRegistry) ctx; 
 		BeanDefinitionBuilder builder =  BeanDefinitionBuilder.rootBeanDefinition(DynamicSchedulingAlgorithmImpl.class);
-		ctx.registerBeanDefinition("Dynamic DSA Policy Test", builder.getBeanDefinition());
+		c.registerBeanDefinition("Dynamic DSA Policy Test", builder.getBeanDefinition());
 		return "Dynamic DSA Policy Test";
 	}
 	
 	public synchronized void removePolicies(PoliciesContainer container) {
 		final String prefix = "uuid" + container.getUuid() + "-";
+		BeanDefinitionRegistry c = (BeanDefinitionRegistry) ctx; 
 		for (String policy: container.getPolicies()) {
-			ctx.removeBeanDefinition(prefix + policy);
-			ctx.removeBeanDefinition(prefix + "preUpdateSelector_" + policy);
-			ctx.removeBeanDefinition(prefix + "postUpdateSelectorAndUpdater_" + policy);
+			c.removeBeanDefinition(prefix + policy);
+			c.removeBeanDefinition(prefix + "preUpdateSelector_" + policy);
+			c.removeBeanDefinition(prefix + "postUpdateSelectorAndUpdater_" + policy);
 			try {
-				ctx.removeBeanDefinition(prefix + "weatherTsysSelector_" + policy);
+				c.removeBeanDefinition(prefix + "weatherTsysSelector_" + policy);
 			} catch (NoSuchBeanDefinitionException ex) {
 				//Bean not registered... continue
 			}
@@ -115,7 +120,7 @@ public class DynamicSchedulingPolicyFactory {
 	public static synchronized DynamicSchedulingPolicyFactory getInstance() {
 		if (DynamicSchedulingPolicyFactory.instance == null) {
 			DynamicSchedulingPolicyFactory.instance = 
-				new DynamicSchedulingPolicyFactory((GenericApplicationContext) 
+				new DynamicSchedulingPolicyFactory((AbstractApplicationContext) 
 						DSAContextFactory.getContext());
 		}
 		return DynamicSchedulingPolicyFactory.instance;
