@@ -41,7 +41,7 @@ import alma.xmlstore.OperationalPackage.TimestampInconsistency;
 /**
  * A facade for the XMLstore Operational which logs calls made to it.
  *
- * @version $Id: ProfilingOperational.java,v 1.2 2011/10/10 17:39:24 javarias Exp $
+ * @version $Id: ProfilingOperational.java,v 1.3 2012/02/17 20:50:55 javarias Exp $
  * @author David Clarke
  */
 public class ProfilingOperational
@@ -426,4 +426,14 @@ public class ProfilingOperational
 	}
 	/* Delegation
 	 * ------------------------------------------------------------- */
+
+
+
+	@Override
+	public String[][] querySubmissions(short fieldID, String searchString,
+			boolean caseSensitive, boolean containsQuery, String PiCoIfilter)
+			throws ArchiveInternalError {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
