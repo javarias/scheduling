@@ -21,13 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.24 2010/09/03 22:27:50 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.25 2012/02/22 21:35:20 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.Query;
 import org.slf4j.Logger;
@@ -45,6 +46,8 @@ import alma.scheduling.datamodel.executive.PIMembership;
 public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
     private static Logger logger = LoggerFactory.getLogger(ExecutiveDaoImpl.class);
+    
+    private static final ConcurrentHashMap<String, PI> emailPiCache = new ConcurrentHashMap<String, PI>();
     
     @Override
     @Transactional(readOnly=true)
@@ -104,27 +107,33 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
     @Override
     @Transactional(readOnly=true)
-    public PI getPIFromEmail(String piEmail) {
-        Query query = getSession().createQuery("from PI as p where p.email = ?");
-        query.setParameter(0, piEmail);
-        PI pi = (PI) query.uniqueResult();
-        if(pi == null){
-            pi = new PI();
-            pi.setName(piEmail);
-            pi.setEmail(piEmail);
-            pi.setPIMembership(new HashSet<PIMembership>());
-            PIMembership pim = new PIMembership();
-            pim.setExecutive(getAllExecutive().get(0));
-            pim.setMembershipPercentage(1);
-            pi.getPIMembership().add(pim);
-            System.out.println("WARNING: Adding new PI: " + piEmail);
-            saveOrUpdate(pi);
-        }
-        for( PIMembership pim : pi.getPIMembership() ){
-        	pim.getMembershipPercentage();
-        }
-        return pi;
-    }
+	public PI getPIFromEmail(String piEmail) {
+		PI pi = null;
+		pi = emailPiCache.get(piEmail);
+		if (pi == null) {
+			Query query = getSession().createQuery(
+					"from PI as p where p.email = ?");
+			query.setParameter(0, piEmail);
+			pi = (PI) query.uniqueResult();
+			if (pi == null) {
+				pi = new PI();
+				pi.setName(piEmail);
+				pi.setEmail(piEmail);
+				pi.setPIMembership(new HashSet<PIMembership>());
+				PIMembership pim = new PIMembership();
+				pim.setExecutive(getAllExecutive().get(0));
+				pim.setMembershipPercentage(1);
+				pi.getPIMembership().add(pim);
+				logger.warn("Adding new PI: " + piEmail);
+				saveOrUpdate(pi);
+			}
+			emailPiCache.put(piEmail, pi);
+		}
+		for (PIMembership pim : pi.getPIMembership()) {
+			pim.getMembershipPercentage();
+		}
+		return pi;
+	}
     
     @Override
     @Transactional(readOnly=true)
