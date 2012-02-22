@@ -166,7 +166,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         double Tatm = tmp[1];
         double tsys = SystemTemperatureCalculator.getTsys(ra, decl,
                 latitude, frequency, tau_zero, Tatm, date);
-        ErrorHandling.getInstance().info("tsys: " + tsys);
+        ErrorHandling.getInstance().debug("tsys: " + tsys);
 
         double currTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
         		tau_zero, Tatm);
