@@ -188,7 +188,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         vars.setZenithOpacity(tau_zero);
         vars.setZenithTsys(currTsys);
         sb.setWeatherDependentVariables(vars);
-        schedBlockDao.saveOrUpdate(sb);
+        //schedBlockDao.saveOrUpdate(sb); //TODO: Remove this? This should not be here, degrade a lot the performance of the simulator
     }
 
     private class PWV{
