@@ -21,11 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SystemTemperatureCalculator.java,v 1.12 2011/08/30 23:05:02 javarias Exp $"
+ * "@(#) $Id: SystemTemperatureCalculator.java,v 1.13 2012/02/22 16:28:14 javarias Exp $"
  */
 package alma.scheduling.algorithm.astro;
 
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.CoordinatesUtil;
@@ -35,7 +38,7 @@ import alma.scheduling.utils.ErrorHandling;
  * 
  */
 public class SystemTemperatureCalculator {
-    
+	private static Logger logger = LoggerFactory.getLogger(SystemTemperatureCalculator.class);
 	/**
 	 * 
 	 * @param tau_zero opacity at the zenith
@@ -50,18 +53,18 @@ public class SystemTemperatureCalculator {
         double latitudeRad = Math.toRadians(latitude);
         double decRad = Math.toRadians(declination);
 
-        System.out.println("getOpacity: lat: " + latitude + "; dec: " + declination);
+        logger.debug("getOpacity: lat: " + latitude + "; dec: " + declination);
         double sinDec = Math.sin(decRad);
         double sinLat = Math.sin(latitudeRad);
         double cosDec = Math.cos(decRad);
         double cosLat = Math.cos(latitudeRad);
         double haHours = CoordinatesUtil.getHourAngle(ut, ra/15.0, Constants.CHAJNANTOR_LONGITUDE);
         double ha = Math.PI * haHours / 12;
-        System.out.println("getOpacity: ha = " + haHours);
+        logger.debug("getOpacity: ha = " + haHours);
         double cosHa = Math.cos(ha);
 		double sinAltitude = sinDec * sinLat + cosDec * cosLat * cosHa;
-		System.out.println("getOpacity: sinDec=" + sinDec + "; sinLat=" + sinLat + "; cosDec=" + cosDec + "; cosLat=" + cosLat + "; cosHa=" + cosHa);
-		System.out.println("getOpacity: sinAlt = " + sinAltitude);
+		logger.debug("getOpacity: sinDec=" + sinDec + "; sinLat=" + sinLat + "; cosDec=" + cosDec + "; cosLat=" + cosLat + "; cosHa=" + cosHa);
+		logger.debug("getOpacity: sinAlt = " + sinAltitude);
 		double tau = tau_zero / sinAltitude;
 		return tau;
 	}
@@ -109,7 +112,7 @@ public class SystemTemperatureCalculator {
         double cosLat = Math.cos(latitudeRad);
         double haHours = CoordinatesUtil.getHourAngle(ut, ra/15.0, Constants.CHAJNANTOR_LONGITUDE);
         double ha = Math.PI * haHours / 12;
-        System.out.println("getTsys: ha = " + haHours);
+        logger.debug("getTsys: ha = " + haHours);
         double cosHa = Math.cos(ha);
 
         double sinAltitude = sinDec * sinLat + cosDec * cosLat * cosHa;
