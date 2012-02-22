@@ -170,7 +170,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
 
         double currTsys = SystemTemperatureCalculator.getZenithTsys(frequency,
         		tau_zero, Tatm);
-        ErrorHandling.getInstance().info("curr tsys: " + currTsys);
+        ErrorHandling.getInstance().debug("curr tsys: " + currTsys);
         
         double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
         ErrorHandling.getInstance().debug("tau_zero:" + tau_zero + "; " + "tau: " + tau);
