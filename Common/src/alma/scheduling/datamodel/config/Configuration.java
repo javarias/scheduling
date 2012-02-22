@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.14 2012/02/08 23:14:51 javarias Exp $"
+ * "@(#) $Id: Configuration.java,v 1.15 2012/02/22 00:19:43 dclarke Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -47,7 +47,7 @@ public class Configuration {
     private Date lastLoad;
     private Date simulationStartTime;
     private String contextFilePath;
-    private long dataModelVersion;
+    private Long dataModelVersion;
     
     /**
      * Contains the configuration of the grade of the projects.
@@ -261,11 +261,11 @@ public class Configuration {
         this.simulationStartTime = simulationStartTime;
     }
 
-    public long getDataModelVersion() {
+    public Long getDataModelVersion() {
 		return dataModelVersion;
 	}
 
-	public void setDataModelVersion(long dataModelversion) {
+	public void setDataModelVersion(Long dataModelversion) {
 		this.dataModelVersion = dataModelversion;
 	}
 	
