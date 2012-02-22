@@ -47,7 +47,6 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
     
     @Override
     public synchronized void update(Date date, Collection<SchedBlock> sbs) {
-        /*this is to assure of the atomicity of the update operation*/
         if(needsToUpdate(date) == false)
             return;
         lastUpdate = date;
@@ -113,7 +112,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             vars.setOpacity(tau);
             vars.setZenithTsys(zenithTsys);
             sb.setWeatherDependentVariables(vars);
-            schedBlockDao.saveOrUpdate(sb);
+            //schedBlockDao.saveOrUpdate(sb); //TODO: Remove this? This should not be here, degrade a lot the performance of the simulator
         }
     }
 
