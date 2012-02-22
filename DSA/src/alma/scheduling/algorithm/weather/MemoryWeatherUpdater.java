@@ -128,10 +128,10 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
             System.out.println("Start Calculations");
             Date t1 = new Date();
             TemperatureHistRecord tr = weatherDao.getTemperatureForTime(date);
-            ErrorHandling.getInstance().info("temperature record: time = " + tr.getTime()
+            ErrorHandling.getInstance().debug("temperature record: time = " + tr.getTime()
                     + "; value = " + tr.getValue());
             HumidityHistRecord hr = weatherDao.getHumidityForTime(date);
-            ErrorHandling.getInstance().info("humidity record: time = " + hr.getTime()
+            ErrorHandling.getInstance().debug("humidity record: time = " + hr.getTime()
                     + "; value = " + hr.getValue());
             double pwv = estimatePWV(hr.getValue(), tr.getValue()); // mm
 
@@ -173,7 +173,7 @@ public class MemoryWeatherUpdater extends WeatherUpdater implements
         ErrorHandling.getInstance().info("curr tsys: " + currTsys);
         
         double tau = SystemTemperatureCalculator.getOpacity(tau_zero, ra, decl, latitude, date);
-        System.out.println("tau_zero:" + tau_zero + "; " + "tau: " + tau);
+        ErrorHandling.getInstance().debug("tau_zero:" + tau_zero + "; " + "tau: " + tau);
         tmp = interpolateOpacityAndTemperature(ppwv, frequency);
         tau_zero = tmp[0];
         Tatm = tmp[1];

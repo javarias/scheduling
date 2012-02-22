@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static alma.scheduling.utils.Constants.CHAJNANTOR_LATITUDE;
 import static alma.scheduling.utils.Constants.CHAJNANTOR_LONGITUDE;
 import alma.scheduling.algorithm.sbranking.AbstractBaseRanker;
@@ -35,6 +38,7 @@ import alma.scheduling.utils.CoordinatesUtil;
 
 public class HourAngleRanker extends AbstractBaseRanker {
 
+//	private static Logger logger = LoggerFactory.getLogger(HourAngleRanker.class);
 	private ArrayList<SBRank> ranks;
 	
 	public HourAngleRanker(String rankerName) {
@@ -65,11 +69,11 @@ public class HourAngleRanker extends AbstractBaseRanker {
 					.getSource().getCoordinates().getDec());
 			//Chajnantor longitude in rads
 			double phi = Math.toRadians(CHAJNANTOR_LATITUDE);
-			System.out.println("ha=" + ha + "(" + CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) +")" + "; delta=" + delta +"; phi=" + phi);
+//			logger.debug("ha=" + ha + "(" + CoordinatesUtil.getHourAngle(ut, ra, CHAJNANTOR_LONGITUDE) +")" + "; delta=" + delta +"; phi=" + phi);
 			double score = (Math.cos(ha) + Math.tan(delta) * Math.tan(phi)) /
 					(1 + Math.tan(delta) * Math.tan(phi));
-			System.out.println("up=" + (Math.cos(ha) + Math.tan(delta) * Math.tan(phi))
-					+ "; down=" + (1 + Math.tan(delta) * Math.tan(phi)) + "; score=" + score);
+//			logger.debug("up=" + (Math.cos(ha) + Math.tan(delta) * Math.tan(phi))
+//					+ "; down=" + (1 + Math.tan(delta) * Math.tan(phi)) + "; score=" + score);
 			rank.setRank(score);
 			ranks.add(rank);
 		}
