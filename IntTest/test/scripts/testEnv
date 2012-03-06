@@ -162,6 +162,7 @@ startACS() {
     # echo $pid > $ACS_TMP/archive.pid
     # acsutilBlock -t 60 -f $LOGFILE -b "Initialized Archive subsystem."
     printf "Starting archive\n"
+	userrepository start
     archive start &> $ACS_TMP/archive.log
 	#LDAP deletion
 	ldapdelete -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -r "dc=alma,dc=info" &> $ACS_TMP/ur-ldapdelete.out
@@ -173,9 +174,10 @@ startACS() {
 
 stopACS() {
     acsutilTATEpilogue
-    printf "Stopping Tomcat\n"
+    printf "Stopping Archive\n"
     if [ -r "$ACS_TMP/archive.pid" ]; then
 	    archive stop &> $ACS_TMP/archiveStop.log
+		userrepository stop
     fi
 }
 
