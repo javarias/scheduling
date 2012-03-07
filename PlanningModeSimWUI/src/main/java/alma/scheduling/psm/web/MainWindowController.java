@@ -58,6 +58,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowBeforeSimBand");
     	param.put("title", "Frequency Bands Usage (Before simulation)");
+    	param.put("controller", ReportBandBeforeSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -70,6 +71,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowBeforeSimLST");
     	param.put("title", "Right Ascension Distribution (Before simulation)");
+    	param.put("controller", ReportLstBeforeSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -82,6 +84,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimExec");
     	param.put("title", "Executive Percentage Balance");
+    	param.put("controller", ReportExecAfterSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -94,6 +97,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimLST");
     	param.put("title", "Right Ascension Distribution (After simulation)");
+    	param.put("controller",  ReportLstAfterSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -106,6 +110,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimBand");
     	param.put("title", "Frequency Bands Usage (After simulation)");
+    	param.put("controller", ReportBandAfterSimController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }
@@ -118,6 +123,7 @@ public class MainWindowController extends GenericForwardComposer {
     	HashMap<String, String> param = new HashMap<String, String>();
     	param.put("id", "reportWindowAfterSimCompletion");
     	param.put("title", "Observation Projects Completion");
+    	param.put("controller", ReportObsProjectCompletionController.class.getCanonicalName());
     	Window reportsWindow = (Window) Executions.createComponents("reports.zul", mainWindow , param);
     	reportsWindow.doOverlapped();
     }

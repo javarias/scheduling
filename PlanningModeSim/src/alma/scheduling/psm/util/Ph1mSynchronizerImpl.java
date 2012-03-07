@@ -114,9 +114,9 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			return;
 		}
 		p.setScienceRank(prop.getAprcRank());
-		p.setScienceScore(prop.getAprcScore().floatValue());
+		p.setScienceScore(prop.getArpScore().floatValue());
 		p.setLetterGrade(ScienceGrade.valueOf(prop.getAprcLetterGrade().toString()));
-		if (prop.getAprcScore() == null || 
+		if (prop.getArpScore() == null || 
 				prop.getAprcRank() == null || 
 				prop.getAprcLetterGrade() == null ){
 			p.setStatus("CANCELLED");
@@ -166,19 +166,19 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			
 			propC.setEntityID(p.getUid());
 
-			if (prop.getAprcScore() == null || prop.getAprcLetterGrade() == null
+			if (prop.getArpScore() == null || prop.getAprcLetterGrade() == null
 					|| prop.getAprcRank() == null) {
 				System.out
 						.println("ERROR: Ph1m return null on prop.getAssessment()");
 				continue;
 			}
-			if (prop.getAprcScore() == null) {
+			if (prop.getArpScore() == null) {
 				System.out
 						.println("ERROR: Ph1m return null on prop.getAssessment().getAprcScore()");
 				propC.setPh1mScore(9999);
 				continue;
 			}
-			propC.setPh1mScore(prop.getAprcScore());
+			propC.setPh1mScore(prop.getArpScore());
 			propC.setLocalScore(p.getScienceScore());
 			propC.setPh1mRank(prop.getAprcRank());
 			propC.setLocalRank(p.getScienceRank());
@@ -186,7 +186,7 @@ public class Ph1mSynchronizerImpl extends PsmContext implements
 			propC.setLocalGrade(p.getLetterGrade());
 			retList.add(propC);
 			String line = p.getUid() + "\t";
-			line += prop.getAprcScore() + "\t";
+			line += prop.getArpScore() + "\t";
 			line += prop.getAprcRank() + "\t";
 			line += prop.getAprcLetterGrade() + "\t";
 			System.out.println(line);

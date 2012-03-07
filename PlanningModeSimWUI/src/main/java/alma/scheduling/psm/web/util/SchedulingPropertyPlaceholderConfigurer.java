@@ -51,6 +51,7 @@ public class SchedulingPropertyPlaceholderConfigurer extends
 	private static final String CONFIG_PROPS_FILENAME = "alma.scheduling.properties";
 	private Resource location = null;
 	
+	
 	public SchedulingPropertyPlaceholderConfigurer() {
 		super();
 		String fileToCheck = null;
@@ -69,9 +70,12 @@ public class SchedulingPropertyPlaceholderConfigurer extends
 		if(f.exists() && f.isFile() && f.canRead()) {
 			logger.info("Using " + f.getAbsolutePath() + " as scheduling properties.");
 			location = new FileSystemResource(f);
+			System.setProperty(CONFIG_PROPS_FILENAME, f.getAbsolutePath());
 		} else {
 			logger.warn("Using default default scheduling policies set on webContextfile inside the web application. " +
 					"Property file " +f.getAbsolutePath() + " cannot be accessed.");
+			if (props_file != null)
+				System.getProperties().remove(CONFIG_PROPS_FILENAME);
 		}
 		if (location != null )
 			this.setLocation(location);

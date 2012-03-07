@@ -9,24 +9,6 @@
 		sizable="true" maximizable="true" closable="true" width="600px"
 		height="500px" apply="${sessionScope.simulationController}"
 		id="simulationWindow">
-
-<!-- 		
-		<zscript>
-	    import alma.scheduling.psm.web.SimRunner;
-	    import java.util.Date;
-	    
-	    SimRunner thread;
-	    
-	    void startServerpush(){    
-	        //enable server push        
-	        desktop.enableServerPush(true);
- 
-	        //invoke working thread and passing required component as parameter (in this case we are passing the desktop)            
-	        thread= new SimRunner(desktop);
-	        thread.start();        
-	    }       
-		</zscript>
- -->
 		<borderlayout>
 			<west border="none" splittable="true" width="200"
 				minsize="200" size="34%">
@@ -46,7 +28,7 @@
 						<panel title="Tasks" border="normal"
 							framable="true" style="margin-bottom:10px; margin-right:5px">
 							<panelchildren>
-								<grid>
+								<grid >
 									<rows>
 										<row>
 											<button
@@ -156,18 +138,35 @@
 						</row>
 						<row>
 							DSA configuration
-							<combobox width="100%"
-								value="DSA Version 0.2">
-								<comboitem label="DSA Version 0.4" />
-								<comboitem label="DSA Version 0.6" />
-								<comboitem label="DSA Version 0.8-R1" />
+							<combobox id="DSAPoliciesComboBox" width="100%">
+								<zscript><![CDATA[
+								         alma.scheduling.SchedulingPolicyFile[] files 
+								         = alma.scheduling.algorithm.PoliciesContainersDirectory.getInstance().getAllPoliciesFiles();
+								         for (alma.scheduling.SchedulingPolicyFile f: files) {
+								        	 for(String p: f.schedulingPolicies) {
+								        		 alma.scheduling.psm.util.SchedulingPolicyWrapper wrapper = 
+								        				 new alma.scheduling.psm.util.SchedulingPolicyWrapper(f, p);
+								        		 Comboitem item =
+								        				 DSAPoliciesComboBox.appendItem(wrapper.getUIName());
+								        		 item.setValue(wrapper);
+								        	 }
+								         }
+								         DSAPoliciesComboBox.setSelectedIndex(0);
+								]]></zscript>
 							</combobox>
 						</row>
 					</rows>
 				</grid>
 
 			</center>
-			<south border="normal">Status bar</south>
+			<south border="normal">
+			<hlayout width="100%">
+			<label id="simulationPercentageLabel" value="Stopped "/>
+			<progressmeter id="simulationProgress" value="0" width="300px" />
+			<zscript><![CDATA[
+			]]></zscript>
+			</hlayout>
+			</south>
 		</borderlayout>
 	</window>
 </zk>

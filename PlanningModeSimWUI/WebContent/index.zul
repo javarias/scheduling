@@ -73,6 +73,6 @@
 			</menu>
 		</menubar>
 	</window>
-
+	<timer id="timerKeepAliveSession" repeats="true" delay="600000"/>
 
 </zk>

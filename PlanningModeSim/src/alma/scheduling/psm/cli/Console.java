@@ -84,13 +84,12 @@ public class Console {
     	//TODO Obtain context.xml location properly
     	
         if(args[0].compareTo("createWorkDir") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
         	simulator.createWorkDir(workDir);
         }
         else if (args[0].compareTo("fullload") == 0){
-        	//PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
@@ -102,45 +101,46 @@ public class Console {
 			}
         }        	
         else if (args[0].compareTo("load") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.load();
         }
         else if (args[0].compareTo("unload") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.unload();
         }
         else if (args[0].compareTo("clean") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.clean();
         }
         else if (args[0].compareTo("run") == 0){
-        	//PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
-        	simulator.run();
+        	//TODO:Fix This
+        	simulator.run(args[1]);
         }
         else if (args[0].compareTo("step") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
         	simulator.setToBeInterrupted(true);
-        	simulator.run();
+        	//TODO:Fix This
+        	simulator.run(args[1]);
         }
         else if (args[0].compareTo("remoteFullLoad") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);;
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteFullLoad();
         }
         else if (args[0].compareTo("remoteLoad") == 0){
-        	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	InputActions inputActions = InputActions.getInstance(workDir);
         	inputActions.setVerboseLvl(verboseLvl);
         	inputActions.remoteLoad();
@@ -151,39 +151,39 @@ public class Console {
         		}else if(args[1].compareTo("help") == 0){
                     reportHelp();
         		}else if(args[1].compareTo("1") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.bandsBeforeSim();
         		}else if(args[1].compareTo("2") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.bandsAfterSim();
         		}else if(args[1].compareTo("3") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.lstRangesBeforeSim();
         		}else if(args[1].compareTo("4") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.lstRangesAfterSim();
         		}else if(args[1].compareTo("5") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.executiveBeforeSim();
         		}else if(args[1].compareTo("6") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.executiveAfterSim();
         		}else if(args[1].compareTo("7") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.completionReport();
         		}else if(args[1].compareTo("8") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.finalreport();
         		}else if(args[1].compareTo("all") == 0){
-                	PsmContext.setApplicationContext( new FileSystemXmlApplicationContext( "file:///" + workDir + "/context.xml") );
+        			PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
                 	ReportGenerator reportGenerator = new ReportGenerator( workDir );
                 	reportGenerator.createAllReports();
         		}else

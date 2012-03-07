@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -163,10 +164,10 @@ public class ReportGenerator extends PsmContext {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+//		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+//		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
+//		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+//		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Right Ascension Distribution");
 		props.put("subtitle", "Requested time per RA range");
 
@@ -338,10 +339,10 @@ public class ReportGenerator extends PsmContext {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+//		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+//		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
+//		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+//		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Executive Percentage Balance");
 		props.put("subtitle", "Observed time dedicated per executive");
 		synchronized (this) {
@@ -443,7 +444,7 @@ public class ReportGenerator extends PsmContext {
 		ArrayList<SchedBlockReportBean> data =  new ArrayList<SchedBlockReportBean>();
 		
 		// Create inmediately the entries for bands, so we keep order (if we rely on DB, the may not be ordered
-		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerBand = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerBand = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		for( int i = ReportGenerator.ReceiverBandsRange.length -1; i >= 0; i--) {
 			ArrayList<SchedBlockReportBean> list = new ArrayList<SchedBlockReportBean>();
 			SBPerBand.put( determineBand( ReportGenerator.ReceiverBandsRange[i][0] + 0.1), list );
@@ -456,7 +457,8 @@ public class ReportGenerator extends PsmContext {
 		for(SchedBlock sb: sbs){
 			sbDao.hydrateSchedBlockObsParams( sb );
 			// We exclude all SBs that will not be scheduled.
-			if(sb.getSchedBlockControl().getState() == SchedBlockState.CANCELED || sb.getLetterGrade() == ScienceGrade.D )
+			if(sb.getSchedBlockControl().getState() == SchedBlockState.CANCELED 
+					|| sb.getLetterGrade() == ScienceGrade.D )
 				continue;
 			
 			SchedBlockReportBean sbrb = new SchedBlockReportBean();
@@ -496,9 +498,9 @@ public class ReportGenerator extends PsmContext {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+//		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+//		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+//		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Frequency Bands Usage");
 		props.put("subtitle", "Requested time per frequency bands");
 		JRDataSource dataSource = getBandsBeforeSimData();

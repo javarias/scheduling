@@ -63,8 +63,6 @@ import alma.scheduling.psm.sim.TimeEvent;
 import alma.scheduling.psm.util.PsmContext;
 import alma.scheduling.psm.sim.ResultComposer;
 import alma.scheduling.psm.sim.TimeHandler;
-import alma.scheduling.utils.DSAContextFactory;
-import alma.scheduling.utils.DynamicSchedulingPolicyFactory;
 import alma.scheduling.utils.TimeUtil;
 
 public class Simulator extends PsmContext {
@@ -140,7 +138,7 @@ public class Simulator extends PsmContext {
 
     
     @Transactional
-    public void run() throws IllegalArgumentException{
+    public void run(String DSAPolicyName) throws IllegalArgumentException{
     	ApplicationContext ctx = getApplicationContext();
         // Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UT"));
         ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
@@ -162,7 +160,7 @@ public class Simulator extends PsmContext {
         }
                 
 //        setPreconditions(ctx, new Date());
-        setPreconditions(ctx, time );
+        setPreconditions(ctx, time, DSAPolicyName );
         SchedBlockExecutor sbExecutor =
             (SchedBlockExecutor) ctx.getBean("schedBlockExecutor");
         ObservatoryDao observatoryDao = (ObservatoryDao) ctx.getBean("observatoryDao");
@@ -232,9 +230,13 @@ public class Simulator extends PsmContext {
         // Stop at end of season
         while( time.before(stopTime) && !timesToCheck.isEmpty() ){
             Date t1 = new Date();
+        	setChanged();
+        	notifyObservers(
+        			new SimulationProgressEvent(time,
+        					timesToCheck.get(0).getTime(), stopTime));
         	step(timesToCheck, stopTime, rc, 
         			ctx, 
-        			arraysCreated, freeArrays, sbExecutor);
+        			arraysCreated, freeArrays, sbExecutor, DSAPolicyName);
         	Date t2 = new Date();
         	System.out.println("Step takes: "+ (t2.getTime() - t1.getTime()));
         	if(isToBeInterrupted())
@@ -258,7 +260,8 @@ public class Simulator extends PsmContext {
             ApplicationContext ctx,
             Hashtable<ArrayConfiguration, DynamicSchedulingAlgorithm> arraysCreated,
             ArrayList<ArrayConfiguration> freeArrays,
-            SchedBlockExecutor sbExecutor) throws IllegalArgumentException {
+            SchedBlockExecutor sbExecutor,
+            String DSAPolicyName) throws IllegalArgumentException {
 
 		TimeEvent ev = timesToCheck.remove();
         // Change the current simulation time to event time
@@ -273,7 +276,8 @@ public class Simulator extends PsmContext {
             System.out.println(TimeUtil.getUTString(time) + "Array "
                     + ev.getArray().getId() + " created");
             rc.notifyArrayCreation(ev.getArray());
-            dsa = getDSA(ctx);
+            //TODO: Fix this
+            dsa = getDSA(ctx, DSAPolicyName);
             dsa.setVerboseLevel(verboseLvl);
             dsa.setArray(ev.getArray());
             arraysCreated.put(ev.getArray(), dsa);
@@ -442,7 +446,7 @@ public class Simulator extends PsmContext {
         Collections.sort(timesToCheck);
     }
     
-    private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx) throws IllegalArgumentException {
+    private DynamicSchedulingAlgorithm getDSA(ApplicationContext ctx, String DSAPolicyName) throws IllegalArgumentException {
     	for (String n: ctx.getBeanDefinitionNames())
     		System.out.println(n);
         if (DSAName == null) {
@@ -456,18 +460,16 @@ public class Simulator extends PsmContext {
     //TODO: Add the policy name as parameter
             DSAName = dsaNames[0].schedulingPolicies[0];
         }
+        System.out.println("Using Policy: " + DSAPolicyName);
         DynamicSchedulingAlgorithm dsa = (DynamicSchedulingAlgorithm) ctx
-                .getBean(DSAName);
+                .getBean(DSAPolicyName);
         return dsa;
     }
     
-    private void setPreconditions(ApplicationContext ctx, Date time) throws IllegalArgumentException {
-        String[] whDaos = ctx.getBeanNamesForType(WeatherHistoryDAO.class);
-        for(int i = 0; i < whDaos.length; i++) {
-            WeatherHistoryDAO whDao = (WeatherHistoryDAO) ctx.getBean(whDaos[i]);
-            whDao.setSimulationStartTime(time);
-        }
-        DynamicSchedulingAlgorithm dsa = getDSA(ctx);
+    private void setPreconditions(ApplicationContext ctx, Date time, String DSAPolicyName) throws IllegalArgumentException {
+        WeatherHistoryDAO wheatherDao = (WeatherHistoryDAO) ctx.getBean("weatherSimDao");
+        wheatherDao.setSimulationStartTime(time);
+        DynamicSchedulingAlgorithm dsa = getDSA(ctx, DSAPolicyName);
         System.out.println("Running first update " + new Date());
         dsa.initialize(time);
         System.out.println("Finishing first update " + new Date());

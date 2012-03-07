@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Observable;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -14,13 +15,13 @@ import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.input.config.generated.Configuration;
 
-public class PsmContext {
+public class PsmContext extends Observable {
 	
 	protected String workDir = null;
 	protected String outputDir = null;
 	protected String reportDir = null;
 	protected String contextFile = null;
-    protected VerboseLevel verboseLvl = null;
+    protected VerboseLevel verboseLvl = VerboseLevel.NONE;
     static private ApplicationContext ctx = null;
     
     protected ConfigurationDao configDao = null;

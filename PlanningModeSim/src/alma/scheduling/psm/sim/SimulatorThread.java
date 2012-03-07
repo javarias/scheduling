@@ -43,10 +43,10 @@ public class SimulatorThread extends Thread{
 		this.stopDate = stopDate;
 	}
 
-	public void run(){
+	public void run(String DSAPolicyName){
 		Simulator simulator = new Simulator( workDir, this );
     	simulator.setVerboseLvl(verboseLvl);
-    	simulator.run();
+    	simulator.run(DSAPolicyName);
 	}
 
 }
