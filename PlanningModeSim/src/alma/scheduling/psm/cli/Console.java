@@ -38,6 +38,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.xml.sax.SAXException;
 
+import alma.scheduling.SchedulingPolicyFile;
+import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
+import alma.scheduling.algorithm.PoliciesContainersDirectory;
 import alma.scheduling.algorithm.VerboseLevel;
 import alma.scheduling.psm.sim.InputActions;
 import alma.scheduling.psm.sim.ReportGenerator;
@@ -46,6 +49,7 @@ import alma.scheduling.psm.util.Ph1mSynchronizer;
 import alma.scheduling.psm.util.Ph1mSynchronizerImpl;
 import alma.scheduling.psm.util.Porter;
 import alma.scheduling.psm.util.PsmContext;
+import alma.scheduling.psm.util.SchedulingPolicyWrapper;
 import alma.scheduling.utils.DSAContextFactory;
 
 public class Console {
@@ -119,11 +123,25 @@ public class Console {
         	inputActions.clean();
         }
         else if (args[0].compareTo("run") == 0){
+        	if (args.length < 2) {
+        		System.out.println("Missing DSA Policy name. Use command list to get the available DSA Policies");
+        		System.exit(1);
+        	}
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
         	Simulator simulator = new Simulator( workDir );
         	simulator.setVerboseLvl(verboseLvl);
-        	//TODO:Fix This
         	simulator.run(args[1]);
+        }
+        else if (args[0].compareTo("list") == 0) { 
+        	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
+        	System.out.println("Available DSA policies:");
+        	SchedulingPolicyFile[] files = PoliciesContainersDirectory.getInstance().getAllPoliciesFiles();
+        	for(SchedulingPolicyFile file: files) { 
+        		for (String policy: file.schedulingPolicies) {
+        			SchedulingPolicyWrapper fileW = new SchedulingPolicyWrapper(file, policy);
+        			System.out.println(fileW.getSpringBeanName());
+        		}
+        	}
         }
         else if (args[0].compareTo("step") == 0){
         	PsmContext.setApplicationContext(DSAContextFactory.getSimulationContextFromPropertyFile());
@@ -240,7 +258,8 @@ public class Console {
         System.out.println("unload:\t\t ");
         System.out.println("clean:\t\t unload from database obsproject, executive, results, and observatory data.");
         System.out.println("step:\t\t step through each cycle of simulation, returning to command prompt.");
-        System.out.println("run:\t\t runs a simulation, generating an output file.");
+        System.out.println("run DSA_POLICY:\t\t runs a simulation using the given DSA_POLICY, generating an output file.");
+        System.out.println("list:\t\t lists available DSA policies");
         System.out.println("ph1m <list, sync>:\t\t synchronizes the proposals with the Phase 1 Manager.");
         System.out.println("help:\t\t Display this helpful message.");
         System.out.println("report <help, 1, 2>:\t\t Generate reports from the results of the simulation.");
