@@ -33,7 +33,7 @@ import alma.scheduling.datamodel.obsproject.ScienceGrade;
  * alma.scheduling.datamodel.obsproject.ObsProjects.
  * 
  * @author dclarke
- * $Id: ObsProjectTableModel.java,v 1.5 2011/02/24 22:42:50 javarias Exp $
+ * $Id: ObsProjectTableModel.java,v 1.6 2012/03/08 21:00:25 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class ObsProjectTableModel extends AbstractTableModel {
@@ -108,13 +108,13 @@ public class ObsProjectTableModel extends AbstractTableModel {
 	 * ================================================================
 	 */
 	private static final int               Column_Name =  0;
-	private static final int            Column_Version =  1;
-	private static final int               Column_Code =  2;
+	private static final int               Column_Code =  1;
+	private static final int            Column_Version =  2;
 	private static final int                 Column_PI =  3;
-	private static final int       Column_ScienceScore =  4;
-	private static final int        Column_ScienceRank =  5;
-	private static final int        Column_LetterGrade =  6;
-	private static final int              Column_State =  7;
+	private static final int              Column_State =  4;
+	private static final int       Column_ScienceScore =  5;
+	private static final int        Column_ScienceRank =  6;
+	private static final int        Column_LetterGrade =  7;
 	private static final int           Column_EntityId =  8;
 	private static final int                Column_CSV =  9;
 	private static final int Column_TotalExecutionTime = 10;

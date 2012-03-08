@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
-package alma.scheduling.array.guis;
+package alma.scheduling.array.guis.state;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,12 +29,13 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import alma.scheduling.array.guis.ColumnProperties;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
  *
  * @author dclarke
- * $Id: TableState.java,v 1.1 2012/02/13 23:11:38 dclarke Exp $
+ * $Id: TableState.java,v 1.1 2012/03/08 21:00:25 dclarke Exp $
  */
 public class TableState implements Serializable {
 

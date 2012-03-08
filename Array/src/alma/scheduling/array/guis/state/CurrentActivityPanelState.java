@@ -16,14 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
-package alma.scheduling.array.guis;
+package alma.scheduling.array.guis.state;
 
 import java.io.Serializable;
+
 
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanelState.java,v 1.2 2012/02/13 23:11:38 dclarke Exp $
+ * $Id: CurrentActivityPanelState.java,v 1.1 2012/03/08 21:00:25 dclarke Exp $
  */
 public class CurrentActivityPanelState implements Serializable {
 

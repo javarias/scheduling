@@ -42,7 +42,7 @@ import alma.scheduling.formatting.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.19 2012/02/06 22:44:19 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.20 2012/03/08 21:00:25 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -145,18 +145,19 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	 */
 	private int[] defaultMap() {
 		final int[] result = {
-				Column_EntityId,
 				Column_PI,
-				Column_Executive,
 				Column_Name,
+				Column_Revision,
+				Column_Executive,
 				Column_State,
+				Column_Band,
+				Column_Frequency,
+				Column_EntityId,
 				Column_CSV,
 				Column_Project,
 				Column_Note,
 				Column_RA,
 				Column_Dec,
-				Column_Frequency,
-				Column_Band,
 				Column_HourAngle,
 				Column_Elevation,
 				Column_Azimuth,
@@ -181,18 +182,19 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				Column_Score,
 				Column_PrevRank,
 				Column_PrevScore,
-				Column_EntityId,
 				Column_PI,
-				Column_Executive,
 				Column_Name,
+				Column_Revision,
+				Column_Executive,
 				Column_State,
+				Column_Band,
+				Column_Frequency,
+				Column_EntityId,
 				Column_CSV,
 				Column_Project,
 				Column_Note,
 				Column_RA,
 				Column_Dec,
-				Column_Frequency,
-				Column_Band,
 				Column_HourAngle,
 				Column_Elevation,
 				Column_Azimuth,
@@ -321,6 +323,7 @@ public class SchedBlockTableModel extends AbstractTableModel {
 	private static final int      Column_Mode = 19;
 	private static final int Column_Frequency = 20;
 	private static final int      Column_Band = 21;
+	private static final int  Column_Revision = 22;
 	
 	/**
 	 * All  of the columns which should be updated in (near) real time
@@ -460,6 +463,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			} else {
 				return "n/a";
 			}
+		case Column_Revision:
+			return schedBlock.getRevision();
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -518,6 +523,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 		case Column_Frequency:
 			return String.class;
 		case Column_Band:
+			return String.class;
+		case Column_Revision:
 			return String.class;
 		default:
 			logger.severe(String.format(
@@ -581,6 +588,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 			return "Freq.";
 		case Column_Band:
 			return "Band";
+		case Column_Revision:
+			return "Revision";
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getColumnName(%d)",

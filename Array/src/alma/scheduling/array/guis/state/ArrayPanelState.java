@@ -1,6 +1,7 @@
-package alma.scheduling.array.guis;
+package alma.scheduling.array.guis.state;
 
 import java.io.Serializable;
+
 
 public class ArrayPanelState implements Serializable {
 

@@ -38,6 +38,7 @@ import javax.swing.JSplitPane;
 
 import alma.exec.extension.subsystemplugin.PluginContainerServices;
 import alma.scheduling.ArraySchedulerMode;
+import alma.scheduling.array.guis.state.ArrayPanelState;
 import alma.scheduling.utils.SchedulingProperties;
 
 /**

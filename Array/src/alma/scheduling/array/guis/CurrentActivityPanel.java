@@ -73,6 +73,8 @@ import alma.scheduling.array.executor.RunningExecutionState;
 import alma.scheduling.array.executor.StartingExecutionState;
 import alma.scheduling.array.executor.StoppingExecutionState;
 import alma.scheduling.array.guis.SBExecutionTableModel.When;
+import alma.scheduling.array.guis.state.CurrentActivityPanelState;
+import alma.scheduling.array.guis.state.TableState;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
 import alma.scheduling.policy.gui.PolicyChangeListener;
@@ -83,7 +85,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.22 2012/02/13 23:11:38 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.23 2012/03/08 21:00:25 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel

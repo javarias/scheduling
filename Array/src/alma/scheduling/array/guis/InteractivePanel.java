@@ -19,6 +19,7 @@
 package alma.scheduling.array.guis;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -62,7 +63,6 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.table.TableRowSorter;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.gui.standards.StandardIcons;
@@ -75,6 +75,8 @@ import alma.scheduling.SchedulingException;
 import alma.scheduling.algorithm.results.Result;
 import alma.scheduling.algorithm.results.dao.ResultsDao;
 import alma.scheduling.algorithm.sbranking.SBRank;
+import alma.scheduling.array.guis.state.InteractivePanelState;
+import alma.scheduling.array.guis.state.TableState;
 import alma.scheduling.array.util.FilterSet;
 import alma.scheduling.array.util.FilterSetPanel;
 import alma.scheduling.array.util.StatusCollection;
@@ -91,7 +93,7 @@ import alma.statearchiveexceptions.wrappers.AcsJNullEntityIdEx;
 /**
  *
  * @author dclarke
- * $Id: InteractivePanel.java,v 1.31 2012/02/15 23:58:43 javarias Exp $
+ * $Id: InteractivePanel.java,v 1.32 2012/03/08 21:00:25 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class InteractivePanel extends AbstractArrayPanel
@@ -577,10 +579,11 @@ public class InteractivePanel extends AbstractArrayPanel
 		
 		subSplit.setTopComponent(opPanel);
 		subSplit.setBottomComponent(sbPanel);
-		subSplit.setDividerLocation(2.0/3.0);
+		subSplit.setDividerLocation(0.5);
 		split.setTopComponent(subSplit);
 		split.setBottomComponent(details);
-		split.setDividerLocation(2.0/3.0);
+//		split.setDividerLocation(1.0);
+		details.setPreferredSize(new Dimension(details.getWidth(), 0));
 		split.setOneTouchExpandable(true);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -1564,12 +1567,16 @@ public class InteractivePanel extends AbstractArrayPanel
 		detailsSplit.setDividerLocation(state.getDetailssplitDividerLocation());
 		subSplit.setDividerLocation(state.getSubsplitDividerLocation());
 		split.setDividerLocation(state.getSplitDividerLocation());
-		
-		((JComponent)(subSplit.getTopComponent())).revalidate();
-		((JComponent)(subSplit.getBottomComponent())).revalidate();
-		((JComponent)(split.getTopComponent())).revalidate();
-		((JComponent)(split.getBottomComponent())).revalidate();
+		detailsSplit.revalidate();
+		subSplit.revalidate();
+		split.revalidate();
+		repaint();
+
+		split.setDividerLocation(state.getSplitDividerLocation());
+		subSplit.setDividerLocation(state.getSubsplitDividerLocation());
+		detailsSplit.setDividerLocation(state.getDetailssplitDividerLocation());
 		revalidate();
+
 		repaint();
 	}
 	/*
