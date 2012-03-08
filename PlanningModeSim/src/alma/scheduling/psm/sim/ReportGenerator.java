@@ -89,7 +89,7 @@ public class ReportGenerator extends PsmContext {
 		{787  ,950}
 		};
 	
-	private static final String Executives[] = {"EU", "NA", "EA", "EA", "CHILE", "NONALMA"};
+	private static final String Executives[] = {"EU", "NA", "EA", "CHILE", "NONALMA"};
 
 	public ReportGenerator(String workDir){
 		super(workDir);
@@ -319,7 +319,11 @@ public class ReportGenerator extends PsmContext {
 				}
 			}
 		for( int i = 0; i < Executives.length ; i++ )
+			try {
 			data.addAll( OPPerExecutive.get( Executives[i] ) );
+			} catch (NullPointerException ex ){ 
+				logger.info("No data available for " + Executives[i]);
+			}
 		dataSource =  new JRBeanCollectionDataSource(data);
 		return dataSource;
 	}
