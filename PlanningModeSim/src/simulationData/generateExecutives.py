@@ -43,12 +43,12 @@ countryToExecutive = {
 executiveHeaderXmlTmpl = """<?xml version="1.0" encoding="UTF-8"?>
 <ExecutiveData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 """
-executiveXmlTmpl = """    <Executive name="North America" defaultPercentage="60"/>
-    <Executive name="Europe" defaultPercentage="20"/>
-    <Executive name="Asia" defaultPercentage="10"/>
-    <Executive name="Chile" defaultPercentage="10"/>
+executiveXmlTmpl = """    <Executive name="NA" defaultPercentage="60"/>
+    <Executive name="EU" defaultPercentage="20"/>
+    <Executive name="EA" defaultPercentage="10"/>
+    <Executive name="CHILE" defaultPercentage="10"/>
 """
-executiveSeasonHeaderXmlTmpl = """    <ObservingSeason name="EarlyScience2011" startDate="2011-01-01" endDate="2011-06-01">
+executiveSeasonHeaderXmlTmpl = """    <ObservingSeason name="EarlyScience2011" startDate="2011-01-01T00:00:00Z" endDate="2011-07-01T00:00:00Z">
 """
 executiveSeasonPercentXmlTmpl = """        <ExecutivePercentage executiveRef="%execname%" percentage="%percent%"/>
 """

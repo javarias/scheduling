@@ -15,7 +15,7 @@ from sensitivity import pointSourceSensitivity
 #
 
 # Number of SchedBlocks that this script will generate
-nschedblks = 1000
+nschedblks = 2000
 
 pis = []
 for user in users:
