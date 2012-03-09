@@ -322,7 +322,7 @@ public class ReportGenerator extends PsmContext {
 			try {
 			data.addAll( OPPerExecutive.get( Executives[i] ) );
 			} catch (NullPointerException ex ){ 
-				logger.info("No data available for " + Executives[i]);
+				logger.warn("No data available for " + Executives[i]);
 			}
 		dataSource =  new JRBeanCollectionDataSource(data);
 		return dataSource;
