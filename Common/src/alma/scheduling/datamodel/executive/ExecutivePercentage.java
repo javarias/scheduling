@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutivePercentage.java,v 1.17 2012/03/09 23:14:37 javarias Exp $"
+ * "@(#) $Id: ExecutivePercentage.java,v 1.18 2012/03/09 23:15:29 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive;
 
@@ -95,10 +95,10 @@ public class ExecutivePercentage {
 	private Double totalObsTimeForSeason;
 	
 	/**
-	 * Remaining time for Observing in seconds. Initally this has the same value
+	 * Remaining time for Observing in hours. Initially this has the same value
 	 * than totalObsTimeForSeason.
 	 * TODO When populating from the XML Store this field should be calculated from
-	 * the correspoding ObsUnitStatus.
+	 * the corresponding ObsUnitStatus.
 	 */
     private Double remainingObsTime;
 
