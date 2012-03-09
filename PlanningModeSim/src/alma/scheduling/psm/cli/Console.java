@@ -35,8 +35,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.xml.sax.SAXException;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import alma.scheduling.SchedulingPolicyFile;
 import alma.scheduling.algorithm.DynamicSchedulingAlgorithmImpl;
