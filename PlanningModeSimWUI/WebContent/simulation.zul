@@ -39,22 +39,47 @@
 											<button label="Full Load data"
 												width="100%" id="buttonFullLoad" />
 										</row>
-										<row>
+<!-- 										<row>
 											<button
 												label="Ph1m Sync" width="100%" id="buttonPh1mSynch" />
-										</row>
-<!-- 									<row>
+										</row> -->
+ 									<row>
 											<button label="Load data"
 												width="100%" id="buttonLoad" />
 										</row>
 										<row>
 											<button label="Clean data"
-												width="100%"  />
-										</row>  -->
+												width="100%" id="buttonClean" />
+										</row>
 										<row>
 											<button
-												label="Run simulation" width="100%" id="buttonRun" />
-<!-- 												onClick="startServerpush()" /> -->
+												label="Run simulation" width="100%" id="buttonRun" >
+											<attribute name="onClick"> <![CDATA[
+EventQueue eq = EventQueues.lookup(alma.scheduling.psm.web.SimulationController.PROGRESS_QUEUE,
+		EventQueues.APPLICATION, true);
+eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
+	public void onEvent(Event event) throws Exception {
+		if ("endSimulation".compareTo(event.getName()) == 0) {
+			EventQueues.remove(alma.scheduling.psm.web.SimulationController.PROGRESS_QUEUE, EventQueues.APPLICATION);
+			simulationPercentageLabel.setValue("Simulation Completed");
+			simulationProgress.setValue(100);
+		} else if ("progressUpdate".compareTo(event.getName()) == 0) {
+			alma.scheduling.psm.sim.SimulationProgressEvent e = 
+					(alma.scheduling.psm.sim.SimulationProgressEvent) event.getData();
+			if (simulationProgress != null) 
+				simulationProgress.setValue((int) e.getProgressPercentage());
+			if (simulationPercentageLabel != null) {
+				simulationPercentageLabel.setValue("Running: "
+						+ e.getFormattedProgressPercentage() + " % ");
+			}
+		} else if ("startSimulation".compareTo(event.getName()) == 0) {
+			simulationPercentageLabel.setValue("Starting simulation 0 % ");
+		}
+	}
+});
+											]]>
+											</attribute>	
+											</button>
 												
 										</row>
 									</rows>
@@ -162,7 +187,34 @@
 			<south border="normal">
 			<hlayout width="100%">
 			<label id="simulationPercentageLabel" value="Stopped "/>
-			<progressmeter id="simulationProgress" value="0" width="300px" />
+			<progressmeter id="simulationProgress" value="0" width="300px" >
+			<attribute name="onCreate"><![CDATA[
+			if (EventQueues.exists(alma.scheduling.psm.web.SimulationController.PROGRESS_QUEUE, EventQueues.APPLICATION)) {
+			EventQueue eq = EventQueues.lookup(alma.scheduling.psm.web.SimulationController.PROGRESS_QUEUE,
+					EventQueues.APPLICATION, true);
+			eq.subscribe(new org.zkoss.zk.ui.event.EventListener() {
+				public void onEvent(Event event) throws Exception {
+					if ("endSimulation".compareTo(event.getName()) == 0) {
+						EventQueues.remove(alma.scheduling.psm.web.SimulationController.PROGRESS_QUEUE, EventQueues.APPLICATION);
+						simulationPercentageLabel.setValue("Simulation Completed");
+						simulationProgress.setValue(100);
+					} else if ("progressUpdate".compareTo(event.getName()) == 0) {
+						alma.scheduling.psm.sim.SimulationProgressEvent e = 
+								(alma.scheduling.psm.sim.SimulationProgressEvent) event.getData();
+						if (simulationProgress != null) 
+							simulationProgress.setValue((int) e.getProgressPercentage());
+						if (simulationPercentageLabel != null)
+							simulationPercentageLabel.setValue("Running: "
+									+ e.getFormattedProgressPercentage() + " % ");
+					} else if ("startSimulation".compareTo(event.getName()) == 0) {
+						simulationPercentageLabel.setValue("Starting simulation 0 % ");
+					}
+				}
+			});
+			}
+			]]>
+			</attribute>
+			</progressmeter>
 			<zscript><![CDATA[
 			]]></zscript>
 			</hlayout>

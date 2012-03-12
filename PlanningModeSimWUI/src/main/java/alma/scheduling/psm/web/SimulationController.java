@@ -11,6 +11,7 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.Path;
@@ -62,6 +63,8 @@ public class SimulationController extends GenericForwardComposer implements
 	private Panelchildren panelChildrenStatus;
 
 	private WebApp webapp;
+	
+	public static final String PROGRESS_QUEUE = "simulationRun";
 
 	public void onClick$buttonBasicConfiguration(Event event) {
 		System.out.println("Basic Configuration button pressed");
@@ -105,7 +108,7 @@ public class SimulationController extends GenericForwardComposer implements
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
 		try {
-			inputActions.remoteLoad();
+			inputActions.load();
 		} catch (NoSuchBeanDefinitionException e) {
 			logger.warn("No remote operations available, fallback to local");
 			inputActions.load();
@@ -132,7 +135,7 @@ public class SimulationController extends GenericForwardComposer implements
 		InputActions inputActions = InputActions.getInstance(((String) Sessions
 				.getCurrent().getAttribute("workDir")));
 		try {
-			inputActions.remoteClean();
+			inputActions.clean();
 		} catch (NoSuchBeanDefinitionException e) {
 			logger.warn("No remote operations available, fallback to local");
 			inputActions.clean();
@@ -158,7 +161,7 @@ public class SimulationController extends GenericForwardComposer implements
 		final String workDir = (String) Sessions.getCurrent().getAttribute("workDir");
 		final Observer o =  this;
 		logger.info("Using APRC_WORK_DIR: " + workDir);
-		final EventQueue eq = EventQueues.lookup("simulationRun", EventQueues.APPLICATION, true);
+		final EventQueue eq = EventQueues.lookup(PROGRESS_QUEUE, EventQueues.APPLICATION, true);
 		eq.subscribe(new EventListener() {
 			@Override
 			public void onEvent(Event event) throws Exception {
@@ -174,33 +177,6 @@ public class SimulationController extends GenericForwardComposer implements
 				}
 			}
 		}, true);
-		
-		
-		eq.subscribe(new EventListener() {
-			@Override
-			public void onEvent(Event event) throws Exception {
-				System.out.println(event.getName());
-				if ("endSimulation".compareTo(event.getName()) == 0) {
-					EventQueues.remove("simulationRun");
-					simulationPercentageLabel.setValue("Simulation Completed");
-					simulationProgress.setValue(100);
-				} else if ("progressUpdate".compareTo(event.getName()) == 0) {
-					SimulationProgressEvent e = (SimulationProgressEvent) event
-							.getData();
-					double p = (1.0 - (((double)(e.getStopTime().getTime() - e.getCurrentTime().getTime()))
-							/ ((double)(e.getStopTime().getTime() - e.getStartTime().getTime())))) * 100.0;
-					simulationProgress.setValue((int) p);
-					simulationPercentageLabel.setValue("Running: "  
-					+ String.format("%.2f", p) + " % ");
-					System.out.println("Start: " + e.getStartTime().getTime() + 
-							" Current: " + e.getCurrentTime().getTime() + 
-							" End: " + e.getStopTime().getTime());
-					System.out.println("Running: "  + p + "%");
-				} else if ("startSimulation".compareTo(event.getName()) == 0) {
-					simulationPercentageLabel.setValue("Starting simulation 0 % ");
-				}
-			}
-		});
 		eq.publish(new Event("startSimulation"));
 	}
 
@@ -234,11 +210,33 @@ public class SimulationController extends GenericForwardComposer implements
 	@Override
 	public void update(Observable o, Object arg) {
 		SimulationProgressEvent e = (SimulationProgressEvent) arg;
-		final EventQueue eq = EventQueues.lookup("simulationRun", 
+		final EventQueue eq = EventQueues.lookup(PROGRESS_QUEUE, 
 				WebManager.getWebApp(DSAPoliciesLoaderListener.servletContext),
 				true);
 		Event event = new Event("progressUpdate", null, e);
 		eq.publish((event));
 	}
+	
+	private final EventListener simMonitoringListener = new EventListener() {
+		@Override
+		public void onEvent(Event event) throws Exception {
+			System.out.println(event.getName());
+			if ("endSimulation".compareTo(event.getName()) == 0) {
+				EventQueues.remove(PROGRESS_QUEUE, EventQueues.APPLICATION);
+				simulationPercentageLabel.setValue("Simulation Completed");
+				simulationProgress.setValue(100);
+			} else if ("progressUpdate".compareTo(event.getName()) == 0) {
+				SimulationProgressEvent e = (SimulationProgressEvent) event
+						.getData();
+				if (simulationProgress != null) 
+					simulationProgress.setValue((int) e.getProgressPercentage());
+				if (simulationPercentageLabel != null)
+					simulationPercentageLabel.setValue("Running: "
+							+ e.getFormattedProgressPercentage() + " % ");
+			} else if ("startSimulation".compareTo(event.getName()) == 0) {
+				simulationPercentageLabel.setValue("Starting simulation 0 % ");
+			}
+		}
+	};
 	
 }
