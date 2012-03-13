@@ -163,7 +163,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-		HashMap<String, String> props = new HashMap<String, String>();
+		TreeMap<String, String> props = new TreeMap<String, String>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 //		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
 //		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
@@ -209,7 +209,7 @@ public class ReportGenerator extends PsmContext {
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
-		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerLST = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLST = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		for(int i = 0; i < 24; i++)
 			SBPerLST.put(i + " - " + (i+1), new ArrayList<SchedBlockReportBean>());
 		List<Results> result = outDao.getResults();
@@ -254,7 +254,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-		HashMap<String, String> props = new HashMap<String, String>();
+		TreeMap<String, String> props = new TreeMap<String, String>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
 		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
@@ -296,7 +296,7 @@ public class ReportGenerator extends PsmContext {
 		JRBeanCollectionDataSource dataSource = null;
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
-		HashMap<String, ArrayList<ObsProjectReportBean>> OPPerExecutive = new HashMap<String, ArrayList<ObsProjectReportBean>>();
+		TreeMap<String, ArrayList<ObsProjectReportBean>> OPPerExecutive = new TreeMap<String, ArrayList<ObsProjectReportBean>>();
 		ArrayList<ObsProjectReportBean> data = new ArrayList<ObsProjectReportBean>();
 		logger.info("Retrieving Data...");
 		List<Results> results = outDao.getResults();
@@ -342,11 +342,11 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-		HashMap<String, String> props = new HashMap<String, String>();
-//		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
-//		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
-//		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
-//		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
+		TreeMap<String, String> props = new TreeMap<String, String>();
+		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
+		props.put("scientificTime", Double.toString( outDao.getResults().get(0).getScientificTime() ) );
+		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
+		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
 		props.put("title", "Executive Percentage Balance");
 		props.put("subtitle", "Observed time dedicated per executive");
 		synchronized (this) {
@@ -398,7 +398,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-		HashMap<String, String> props = new HashMap<String, String>();
+		TreeMap<String, String> props = new TreeMap<String, String>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
 		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
@@ -501,7 +501,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-		HashMap<String, String> props = new HashMap<String, String>();
+		TreeMap<String, String> props = new TreeMap<String, String>();
 //		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 //		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
 //		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
@@ -538,7 +538,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
 		// Create inmediately the entries for bands, so we keep order (if we rely on DB, the may not be ordered
-		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerBand = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerBand = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		for( int i = ReportGenerator.ReceiverBandsRange.length -1; i >= 0; i--) {
 			ArrayList<SchedBlockReportBean> list = new ArrayList<SchedBlockReportBean>();
 			SBPerBand.put( determineBand( ReportGenerator.ReceiverBandsRange[i][0] + 0.1), list );
@@ -586,7 +586,7 @@ public class ReportGenerator extends PsmContext {
 		OutputDao outDao = (OutputDao) ctx.getBean("outDao");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-		HashMap<String, String> props = new HashMap<String, String>();
+		TreeMap<String, String> props = new TreeMap<String, String>();
 		props.put("totalAvailableTime", Double.toString( outDao.getResults().get(0).getAvailableTime() ) );
 		props.put("seasonStart", formatter.format( outDao.getResults().get(0).getObsSeasonStart() ) );
 		props.put("seasonEnd", formatter.format( outDao.getResults().get(0).getObsSeasonEnd() ) );
