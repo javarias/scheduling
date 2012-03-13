@@ -24,6 +24,7 @@ public class SimulationProgressEvent {
 	private Date startTime;
 	private Date currentTime;
 	private Date stopTime;
+	private Double p = null;
 	
 	public SimulationProgressEvent(Date startTime, Date currentTime, Date stopTime) {
 		this.startTime = startTime;
@@ -43,4 +44,14 @@ public class SimulationProgressEvent {
 		return stopTime;
 	}
 	
+	public double getProgressPercentage() {
+		if (p == null) 
+			p = (1.0 - (((double)(getStopTime().getTime() - getCurrentTime().getTime()))
+					/ ((double)(getStopTime().getTime() - getStartTime().getTime())))) * 100.0;
+		return p;
+	}
+	
+	public String getFormattedProgressPercentage() {
+		return String.format("%.2f", p);
+	}
 }
