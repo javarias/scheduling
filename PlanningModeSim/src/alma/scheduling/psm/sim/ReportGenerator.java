@@ -96,7 +96,7 @@ public class ReportGenerator extends PsmContext {
 	}
 
 	/** Retrieves data por LST Ranges report, previous any simulation execution.
-	 * Retrieves frequencies, bands, time requested, and executive, but orders entries acoording to LST Range.
+	 * Retrieves frequencies, bands, time requested, and executive, but orders entries according to LST Range.
 	 * FIXME: At this moment, only uses RA. Change to LST.
 	 * @return A collection of beans containing the data of all ScheckBlocks.
 	 */
@@ -105,7 +105,7 @@ public class ReportGenerator extends PsmContext {
 		ApplicationContext ctx = ReportGenerator.getApplicationContext();
 		SchedBlockDao sbDao = (SchedBlockDao) ctx.getBean("sbDao");
 		ExecutiveDAO execDao = (ExecutiveDAO) ctx.getBean("execDao");
-		HashMap<String, ArrayList<SchedBlockReportBean>> SBPerLstRange = new HashMap<String, ArrayList<SchedBlockReportBean>>();
+		TreeMap<String, ArrayList<SchedBlockReportBean>> SBPerLstRange = new TreeMap<String, ArrayList<SchedBlockReportBean>>();
 		ArrayList<SchedBlockReportBean> data = new ArrayList<SchedBlockReportBean>();
 		List<SchedBlock> sbs = sbDao.findAll();
 
