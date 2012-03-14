@@ -29,7 +29,7 @@ import alma.ACS.MasterComponentImpl.MasterComponentImplBase;
 import alma.ACS.MasterComponentImpl.statemachine.AlmaSubsystemActions;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.genfw.runtime.sm.AcsStateActionException;
-import alma.acs.nc.SimpleSupplier;
+import alma.acs.nc.AcsEventPublisher;
 import alma.scheduling.Master;
 import alma.scheduling.SchedulingState;
 import alma.scheduling.SchedulingStateEvent;
@@ -37,7 +37,7 @@ import alma.scheduling.SchedulingStateEvent;
 /**
   *
   * @author Jorge Avarias <javarias[at]nrao.edu>
-  * @version $Id: SchedulingMasterComponentImpl.java,v 1.4 2011/10/24 20:04:36 javarias Exp $
+  * @version $Id: SchedulingMasterComponentImpl.java,v 1.5 2012/03/14 16:07:26 hsommer Exp $
   */
 //TODO: Start archive poller
 public class SchedulingMasterComponentImpl extends MasterComponentImplBase 
@@ -47,7 +47,8 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     private Master masterScheduler;
 //    private ArchiveUpdater archiveUpdater;
     
-    private SimpleSupplier nc;
+    private AcsEventPublisher<SchedulingStateEvent> nc;
+
     /**
       *
       */
@@ -176,8 +177,9 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
     
     private void getNC(){
         try {
-            nc = new SimpleSupplier(
-                alma.scheduling.CHANNELNAME_SCHEDULING.value, m_containerServices);
+            nc = m_containerServices.createNotificationChannelPublisher(
+                alma.scheduling.CHANNELNAME_SCHEDULING.value, 
+                SchedulingStateEvent.class );
             m_logger.fine("SchedulingStateEvent sent");
         }catch(Exception e){
         	m_logger.severe("can not get the Scheduling notification");
@@ -185,7 +187,7 @@ public class SchedulingMasterComponentImpl extends MasterComponentImplBase
         }
     }
 
-    private void publishSchedulingStateEvent(SchedulingState x) {        
+    private void publishSchedulingStateEvent(SchedulingState x) {
         SchedulingStateEvent e = new SchedulingStateEvent();
         e.state = x;
         try {
