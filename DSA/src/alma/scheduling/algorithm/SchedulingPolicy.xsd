@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
     			<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
     			<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT"/>
     			<xs:element name="OpacitySelector" type="OpacitySelectorT"/>
+    			<xs:element name="AltitudeSelector" type="AltitudeSelectorT"/>
 <!--   			<xs:element name="InteractiveProjectsSelector" type="InteractiveProjectsSelectorT"/> -->
     		</xs:choice>
     	</xs:sequence>
@@ -110,6 +111,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 	<xs:complexType name="OpacitySelectorT"/>
 	
 	<xs:complexType name="InteractiveProjectsSelectorT"/>
+	
+	<xs:complexType name="AltitudeSelectorT"/>
 	
 <!-- Definition of available scorers -->
 	

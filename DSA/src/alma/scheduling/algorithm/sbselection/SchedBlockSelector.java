@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlockSelector.java,v 1.11 2011/08/05 18:23:05 javarias Exp $"
+ * "@(#) $Id: SchedBlockSelector.java,v 1.12 2012/03/20 22:38:10 javarias Exp $"
  */
 package alma.scheduling.algorithm.sbselection;
 
@@ -79,8 +79,9 @@ public interface SchedBlockSelector {
       * Determine if the SchedBlock passed as parameter can be selected by the class
       * implementing this interface.
       * 
-      * @param sb The SchedBlock to be evaluated
+      * @param sb The SchedBlock to be evaluated.
+      * @date the date to evaluate if the sb can be selected or not.
       * @return True if the SchedBlock can be selected or False otherwise
       */
-     public boolean canBeSelected(SchedBlock sb);
+     public boolean canBeSelected(SchedBlock sb, Date date);
 }

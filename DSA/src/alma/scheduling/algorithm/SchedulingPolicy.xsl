@@ -88,12 +88,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             <bean id="{concat('postUpdateSelectorAndUpdater', '_', @name)}" class="alma.scheduling.algorithm.sbselection.MasterSelectorWithUpdater">
                 <property name="selectors">
                     <set>
+                    	<xsl:if test="count(SelectionCriteria/AltitudeSelector) = 1">
+                    		<ref bean="altitudeSelector" />
+                    	</xsl:if>
+						<xsl:if test="count(SelectionCriteria/OpacitySelector) = 1">
+							<ref bean="opacitySelector" />
+						</xsl:if> 
                         <xsl:if test="count(SelectionCriteria/WeatherSelector) = 1">
                             <ref bean="{concat('weatherTsysSelector', '_', @name)}" />
                         </xsl:if>
-                        <xsl:if test="count(SelectionCriteria/OpacitySelector) = 1">
-                            <ref bean="opacitySelector" />
-                        </xsl:if> 
                     </set>
                 </property>
                 <property name="partialUpdates">

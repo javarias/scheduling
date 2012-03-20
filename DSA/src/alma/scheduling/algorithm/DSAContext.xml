@@ -61,7 +61,7 @@
 
 	<bean id="moonAvoidanceSelector"
 		class="alma.scheduling.algorithm.obsproject.MoonAvoidanceSelector"
-		scope="prototype">
+		scope="singleton">
 		<constructor-arg>
 			<value>moonAvoidanceSelector</value>
 		</constructor-arg>
@@ -70,7 +70,7 @@
 
 	<bean id="sunAvoidanceSelector"
 		class="alma.scheduling.algorithm.obsproject.SunAvoidanceSelector"
-		scope="prototype">
+		scope="singleton">
 		<constructor-arg>
 			<value>sunAvoidanceSelector</value>
 		</constructor-arg>
@@ -79,7 +79,7 @@
 
 	<bean id="sbStatusSelector"
 		class="alma.scheduling.algorithm.obsproject.SchedBlockStatusSelector"
-		scope="prototype">
+		scope="singleton">
 		<constructor-arg>
 			<value>sbStatusSelector</value>
 		</constructor-arg>
@@ -88,7 +88,7 @@
 
 	<bean id="projectQualitySelector"
 		class="alma.scheduling.algorithm.obsproject.ProjectQualitySelector"
-		scope="prototype">
+		scope="singleton">
 		<constructor-arg>
 			<value>sbStatusSelector</value>
 		</constructor-arg>
@@ -104,7 +104,7 @@
 	</bean>
 
 	<bean id="opacitySelector" class="alma.scheduling.algorithm.weather.OpacitySelector"
-		scope="prototype">
+		scope="singleton">
 		<constructor-arg>
 			<value>opacitySelector</value>
 		</constructor-arg>
@@ -112,9 +112,17 @@
 
 	<bean id="interactiveProjectsSelector"
 		class="alma.scheduling.algorithm.obsproject.InteractiveSchedBlockSelector"
-		scope="prototype">
+		scope="singleton">
 		<constructor-arg>
 			<value>interactiveProjectsSelector</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="altitudeSelector"
+		class="alma.scheduling.algorithm.obsproject.InteractiveSchedBlockSelector"
+		scope="singleton">
+		<constructor-arg>
+			<value>altitudeSelector</value>
 		</constructor-arg>
 	</bean>
 

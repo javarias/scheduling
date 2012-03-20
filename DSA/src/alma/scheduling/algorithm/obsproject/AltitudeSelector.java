@@ -1,8 +1,5 @@
-/*******************************************************************************
- * ALMA - Atacama Large Millimeter Array
- * Copyright (c) AUI - Associated Universities Inc., 2011
- * (in the framework of the ALMA collaboration).
- * All rights reserved.
+/* ALMA - Atacama Large Millimiter Array
+ * (c) Associated Universities Inc., 2006 
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -11,14 +8,14 @@
  * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- *******************************************************************************/
-package alma.scheduling.algorithm.weather;
+ */
+package alma.scheduling.algorithm.obsproject;
 
 import java.util.Collection;
 import java.util.Date;
@@ -30,44 +27,39 @@ import alma.scheduling.algorithm.sbselection.NoSbSelectedException;
 import alma.scheduling.datamodel.observatory.ArrayConfiguration;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 
-public class OpacitySelector extends AbstractBaseSelector {
+public class AltitudeSelector extends AbstractBaseSelector {
 
-	public OpacitySelector(String selectorName) {
+	private double altitude = 15.0;
+	
+	public AltitudeSelector(String selectorName) {
 		super(selectorName);
 	}
 
 	@Override
 	public Collection<SchedBlock> select(Date ut, ArrayConfiguration arrConf)
 			throws NoSbSelectedException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new java.lang.RuntimeException("Not Implemented");
 	}
 
 	@Override
 	public Criterion getCriterion(Date ut, ArrayConfiguration arrConf) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new java.lang.RuntimeException("Not Implemented");
+	}
+
+	public double getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(double altitude) {
+		this.altitude = altitude;
 	}
 
 	@Override
 	public boolean canBeSelected(SchedBlock sb, Date date) {
-		double opacity = sb.getWeatherDependentVariables().getZenithOpacity();
-        double frequency = sb.getSchedulingConstraints()
-                .getRepresentativeFrequency(); // GHz
-        if (frequency > 370.0){
-        	if (opacity <= 0.037)
-        		return true;
-        }
-        else if (frequency < 370.0 && frequency >= 270.0) {
-        	if (opacity <= 0.061)
-        		return true;
-        }
-        else if (frequency < 270.0) {
-        	if (opacity <= 0.6)
-        		return true;
-        }
-        return false;
+		double currElevetion = sb.getRepresentativeCoordinates().getElevation(date);
+		if (currElevetion >= 15.0)
+			return true;
+		return false;
 	}
-	
 
 }

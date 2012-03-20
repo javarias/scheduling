@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherTsysSelector.java,v 1.7 2010/07/20 23:07:00 javarias Exp $"
+ * "@(#) $Id: WeatherTsysSelector.java,v 1.8 2012/03/20 22:37:57 javarias Exp $"
  */
 package alma.scheduling.algorithm.weather;
 
@@ -87,7 +87,7 @@ public class WeatherTsysSelector extends AbstractBaseSelector {
     }
 
     @Override
-    public boolean canBeSelected(SchedBlock sb) {
+    public boolean canBeSelected(SchedBlock sb, Date date) {
         return ((sb.getWeatherDependentVariables().getProjectedTsys() 
                 - sb.getWeatherDependentVariables().getTsys()) / 
                 sb.getWeatherDependentVariables().getProjectedTsys() ) < tsysVariation;

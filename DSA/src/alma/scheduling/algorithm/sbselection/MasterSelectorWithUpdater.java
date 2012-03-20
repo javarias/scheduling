@@ -79,7 +79,7 @@ public class MasterSelectorWithUpdater extends MasterSelector implements
             }
             for(SchedBlockSelector s: selectors){
             	try {
-            		if(!s.canBeSelected(sb)){
+            		if(!s.canBeSelected(sb, date)){
             			trash.add(sb);
             			break;
             		}
