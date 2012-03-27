@@ -415,7 +415,7 @@ public class APDMtoSchedulingConverter {
 		}
 		
 		try {
-			obsProject.setAffiliation(apdmProposal.getPrincipalInvestigator().getAssociatedArc().toString());
+			obsProject.setAffiliation(apdmProposal.getPrincipalInvestigator().getAssociatedExec().toString());
 		} catch (java.lang.NullPointerException e) {
 			throw new ConversionException(String.format(
 					"No PI information in APDM ObsProposal %s for APDM Obs Project %s",
