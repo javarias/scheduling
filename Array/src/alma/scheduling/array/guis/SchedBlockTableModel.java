@@ -42,7 +42,7 @@ import alma.scheduling.formatting.Format;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SchedBlockTableModel.java,v 1.20 2012/03/08 21:00:25 dclarke Exp $
+ * $Id: SchedBlockTableModel.java,v 1.21 2012/03/27 20:03:39 javarias Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SchedBlockTableModel extends AbstractTableModel {
@@ -448,7 +448,11 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				return "n/a";
 			}
 		case Column_Mode:
-			return schedBlock.getSchedulingConstraints().getSchedBlockMode().toString();
+			try {
+				return schedBlock.getSchedulingConstraints().getSchedBlockMode().toString();
+			} catch (NullPointerException npe) {
+				return "UNKNOWN";
+			}
 		case Column_Frequency:
 			double f = schedBlock.getRepresentativeFrequency();
 			if (f > 0) {
@@ -464,7 +468,8 @@ public class SchedBlockTableModel extends AbstractTableModel {
 				return "n/a";
 			}
 		case Column_Revision:
-			return schedBlock.getRevision();
+			return "1";
+			//return schedBlock.getRevision();
 		default:
 			logger.severe(String.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
