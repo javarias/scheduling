@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
-import alma.QlDisplayExceptions.InvalidStateErrorEx;
 import alma.acs.container.ContainerServices;
 import alma.acs.exceptions.AcsJException;
 import alma.acs.logging.AcsLogger;
@@ -35,6 +34,8 @@ import alma.acs.util.UTCUtility;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.SessionT;
+import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
+import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.entity.xmlbinding.valuetypes.ExecBlockRefT;
 import alma.lifecycle.persistence.StateArchive;
 import alma.pipelineql.QlDisplayManager;
@@ -47,8 +48,8 @@ import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.dao.ModelAccessor;
-import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.AudienceFlogger;
+import alma.scheduling.utils.Constants;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.FakeAudienceFlogger;
 import alma.statearchiveexceptions.wrappers.AcsJInappropriateEntityTypeEx;
@@ -61,7 +62,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.10 2012/01/11 23:56:25 dclarke Exp $
+ * $Id: SessionManager.java,v 1.11 2012/03/27 22:50:59 dclarke Exp $
  */
 public class SessionManager {
 
@@ -430,7 +431,7 @@ public class SessionManager {
 			currentSessionRef.entityTypeName  = ouss.getOUSStatusEntity().getEntityTypeName();
 			currentSessionRef.instanceVersion = "1.0";
 			
-			currentSession = createSessionObject(currentSessionRef);
+			currentSession = createSessionObject(currentSessionRef, sb);
 			ouss.addSession(currentSession);
 			updateOUSStatus(ouss);
 
@@ -465,13 +466,33 @@ public class SessionManager {
 		}
 		
 	}
+    
+    /**
+     * Create an RefT to the given EntityT.
+     * 
+     * @param entity - the SBStatusEntityT to which we need a reference
+     * @return
+     */
+    private SBStatusRefT createReferenceTo(SBStatusEntityT entity) {
+    	final SBStatusRefT result = new SBStatusRefT();
+
+    	result.setDocumentVersion(entity.getDocumentVersion());
+    	result.setEntityId(entity.getEntityId());
+    	result.setEntityTypeName(entity.getEntityTypeName());
+    	// No need to do PartId as it's a whole entity reference.
+
+    	return result;
+    }
 	
-    private SessionT createSessionObject(IDLEntityRef reference) {
+    private SessionT createSessionObject(IDLEntityRef reference, SchedBlock sb) {
 		final SessionT result = new SessionT();
 		result.setEntityPartId(reference.partId);
 		result.setStartTime(dateFormat.format(new Date()));
 		result.setEndTime("End time not known yet.");
 		result.clearExecBlockRef();
+		
+		SBStatusRefT statusRef = createReferenceTo(sb.getStatusEntity());
+		result.setSBStatusRef(statusRef);
 		
 		return result;
 	}
