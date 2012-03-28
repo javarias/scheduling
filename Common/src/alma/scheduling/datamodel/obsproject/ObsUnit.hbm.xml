@@ -69,6 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
     name="runQuicklook" type="boolean"/>
    <property column="CSV" generated="never" lazy="false" name="csv"/>
    <property column="MANUAL" generated="never" lazy="false" name="manual"/>
+   <property column="REVISION" generated="never" lazy="false" name="revision"/>
    <component class="WeatherConstraints" name="weatherConstraints">
     <property column="MAX_WIND_VELOCITY" generated="never" lazy="false"
      name="maxWindVelocity" type="double"/>

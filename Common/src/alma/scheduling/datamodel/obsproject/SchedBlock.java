@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.16 2012/02/06 22:54:54 dclarke Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.17 2012/03/28 15:22:56 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -72,6 +72,8 @@ public class SchedBlock extends ObsUnit {
     private SBStatusEntityT statusEntity;
     
     private Boolean runQuicklook;
+    
+    private String revision;
     
     /**
      * Is this a commissioning SchedBlock or not?
@@ -359,6 +361,14 @@ public class SchedBlock extends ObsUnit {
 		} catch (NullPointerException npe) {
 			return -1.0;
 		}
+	}
+    
+    public String getRevision() {
+		return revision;
+	}
+
+	public void setRevision(String revision) {
+		this.revision = revision;
 	}
 
 	public boolean isOnCSVLifecycle(SBStatus sbStatus) {
