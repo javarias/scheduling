@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchiveUpdaterPanel.java,v 1.4 2011/02/09 00:03:33 javarias Exp $
+ * $Id: ArchiveUpdaterPanel.java,v 1.5 2012/03/30 21:15:49 dclarke Exp $
  */
 
 package alma.scheduling.archiveupd.gui;
@@ -106,8 +106,8 @@ public class ArchiveUpdaterPanel extends JPanel implements SubsystemPlugin {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				updateButton.setEnabled(false);
 				services.getThreadFactory().newThread(new UpdateCommand()).start();
-				
 			}
 		});
 	}
@@ -117,6 +117,7 @@ public class ArchiveUpdaterPanel extends JPanel implements SubsystemPlugin {
 		refreshButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				refreshButton.setEnabled(false);
 				services.getThreadFactory().newThread(new RefreshCommand()).start();
 			}
 		});
@@ -137,6 +138,7 @@ public class ArchiveUpdaterPanel extends JPanel implements SubsystemPlugin {
 		@Override
 		public void run() {
 			archiveUpdRef.refresh();
+			refreshButton.setEnabled(true);
 		}
 	}
 	
@@ -145,6 +147,7 @@ public class ArchiveUpdaterPanel extends JPanel implements SubsystemPlugin {
 		@Override
 		public void run() {
 			archiveUpdRef.update();
+			updateButton.setEnabled(true);
 		}
 	}
 	
