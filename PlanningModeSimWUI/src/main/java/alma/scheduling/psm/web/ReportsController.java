@@ -90,7 +90,7 @@ public class ReportsController extends GenericForwardComposer implements
 	void showReport(JasperPrint print, org.zkoss.zul.api.Iframe report) {
 		JRExporter exporter = null;
 		String localString = null;
-		//Pdf Rendering. Saving it to future reference
+		//Pdf Rendering. Saving it for future reference
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		exporter = new JRPdfExporter();
 		exporter.setParameter(JRPdfExporterParameter.OUTPUT_STREAM, out);
@@ -101,12 +101,7 @@ public class ReportsController extends GenericForwardComposer implements
 			e.printStackTrace();
 			return;
 		}
-		try {
-			localString = out.toString("ISO-8859-1");
-		} catch (java.io.UnsupportedEncodingException ex) {
-			ex.printStackTrace();
-		}
-		InputStream mediais = new ByteArrayInputStream(localString.getBytes());
+		InputStream mediais = new ByteArrayInputStream(out.toByteArray());
 		pdfMedia = new AMedia(print.getName() + ".pdf", "pdf",
 				"application/pdf", mediais);
 		
