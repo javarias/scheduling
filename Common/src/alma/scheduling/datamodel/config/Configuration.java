@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: Configuration.java,v 1.15 2012/02/22 00:19:43 dclarke Exp $"
+ * "@(#) $Id: Configuration.java,v 1.16 2012/04/11 22:03:28 dclarke Exp $"
  */
 package alma.scheduling.datamodel.config;
 
@@ -35,7 +35,15 @@ import java.util.List;
  */
 public class Configuration {
 
-	private static final long version = 1L;
+	/** 
+	 * <h3>Changes from v1 to v2.</h3>
+	 * <dl>
+	 * <dt>SchedBlock field "revision"</dt>
+	 * <dd>Added the <code>String</code> field <em>revision</em> to SchedBlock.
+	 * This basically contains the version of the SchedBlock</dd>
+	 * </dl>
+	 */
+	private static final long version = 2L;
 	
 	private String workDirectory;
     private String projectDirectory;
