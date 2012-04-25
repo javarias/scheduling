@@ -34,6 +34,11 @@ public abstract class SchedulingProperties {
 	private static String PROP_davidTesting      = "scheduling.dclarke";
 	private static String PROP_jorgeTesting      = "scheduling.javarias";
 	
+	/**
+	 * This should enable the import of XML projects.
+	 */
+	private static String PROP_PMS_XML_PROJECT_IMPORT = "scheduling.pms.xmlProjects";
+	
 	public static String autoPopupPluginPropertyName() {
 		return PROP_autoPopupPlugin;
 	}
@@ -64,5 +69,10 @@ public abstract class SchedulingProperties {
 	
 	public static boolean isTesting() {
 		return isDavidTesting() || isJorgeTesting();
+	}
+	
+	public static boolean isPMSUsingXMLProjects() {
+		final String env = System.getProperty(PROP_PMS_XML_PROJECT_IMPORT);
+		return env != null;
 	}
 }

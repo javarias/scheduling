@@ -21,11 +21,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoader.java,v 1.6 2011/05/15 22:24:30 ahoffsta Exp $"
+ * "@(#) $Id: ObsProjectDataLoader.java,v 1.7 2012/04/25 22:25:01 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -41,6 +40,7 @@ import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
+import alma.scheduling.utils.SchedulingProperties;
 
 @Transactional
 public class ObsProjectDataLoader implements DataLoader {
@@ -75,7 +75,7 @@ public class ObsProjectDataLoader implements DataLoader {
     @Transactional
     public void load() {
     	List<ObsProject> projects = null;
-    	if (xmlDao != null) {
+    	if (xmlDao != null && SchedulingProperties.isPMSUsingXMLProjects()) {
     		projects = xmlDao.getAllObsProjects();
     	} else if (archProjectDao != null) {
     		try {
