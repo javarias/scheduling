@@ -187,6 +187,7 @@
 				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
 					<property name="xmlDao" ref="xmlObsProjectDao" />
 					<property name="dao" ref="obsProjectDao" />
+					<property name="archProjectDao" ref="archProjectDao"/>
 				</bean>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao" />
