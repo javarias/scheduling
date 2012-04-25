@@ -169,6 +169,10 @@
 		class="alma.scheduling.datamodel.observatory.dao.ObservatoryDaoImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	<!-- Archive/XMLStore Data Loader -->
+	<bean id="archProjectDao"
+		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
+	</bean>
 
 <!-- DataLoaders Beans -->
 	<bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
