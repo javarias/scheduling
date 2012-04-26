@@ -371,7 +371,11 @@ public class APDMtoSchedulingConverter {
 		obsProject.setPrincipalInvestigator(apdmProject.getPI());
 		obsProject.setScienceRank(apdmProject.getScientificRank());
 		obsProject.setScienceScore((float)apdmProject.getScientificScore());
-		obsProject.setLetterGrade(ScienceGrade.valueOf(apdmProject.getLetterGrade()));
+		try {
+			obsProject.setLetterGrade(ScienceGrade.valueOf(apdmProject.getLetterGrade()));
+		} catch (java.lang.IllegalArgumentException ex) {
+			//Do nothing, the value of xml letter grade is invalid for scheduling
+		}
 		obsProject.setCsv(apdmProject.getIsCommissioning());
 		obsProject.setManual(apdmProject.getManualMode());
 		
