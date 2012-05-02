@@ -34,6 +34,7 @@ import alma.scheduling.datamodel.config.Configuration;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
+import alma.scheduling.datamodel.weather.PathFluctHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WeatherHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
@@ -87,6 +88,12 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
     public void loadWindSpeedHistory(List<WindSpeedHistRecord> records) {
         saveOrUpdate(records);
     }
+    
+	@Override
+	public void loadPathFluctHistory(List<PathFluctHistRecord> records) {
+		saveOrUpdate(records);
+		
+	}
 
     @Override
     public HumidityHistRecord getHumidityForTime(Date ut) {
@@ -153,7 +160,5 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
         Query q = this.getSession().createQuery("from " + t.getName() +" wp order by wp.time asc");
         return q.list();
     }
-    
-    
 
 }

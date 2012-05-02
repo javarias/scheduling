@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherHistoryDAO.java,v 1.4 2010/03/02 02:21:30 rhiriart Exp $"
+ * "@(#) $Id: WeatherHistoryDAO.java,v 1.5 2012/05/02 23:22:01 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
@@ -30,6 +30,7 @@ import java.util.List;
 
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
+import alma.scheduling.datamodel.weather.PathFluctHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 
@@ -42,6 +43,8 @@ public interface WeatherHistoryDAO {
     public void loadOpacityHistory(List<OpacityHistRecord> records);
     
     public void loadWindSpeedHistory(List<WindSpeedHistRecord> records);
+    
+    public void loadPathFluctHistory(List<PathFluctHistRecord> records);
     
     public HumidityHistRecord getHumidityForTime(Date ut);
     

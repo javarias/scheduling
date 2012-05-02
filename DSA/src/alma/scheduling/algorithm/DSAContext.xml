@@ -223,6 +223,13 @@
 					<property name="dao" ref="weatherSimDao" />
 					<property name="maxNumRecords" value="-1" />
 				</bean>
+				<bean class="alma.scheduling.dataload.PathFluctDataLoader">
+					<property name="configurationDao" ref="configDao" />
+					<property name="file"
+						value="classpath:alma/scheduling/algorithm/weather/data/simulation/PathLenght_fluct_zenith_ave_all.dat" />
+					<property name="dao" ref="weatherSimDao" />
+					<property name="maxNumRecords" value="-1" />
+				</bean>
 				<bean class="alma.scheduling.dataload.WindSpeedDataLoader">
 					<property name="configurationDao" ref="configDao" />
 					<property name="file"

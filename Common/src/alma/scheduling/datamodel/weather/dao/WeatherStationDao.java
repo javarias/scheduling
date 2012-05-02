@@ -34,6 +34,7 @@ import alma.acs.exceptions.CorbaExceptionConverter;
 import alma.scheduling.datamodel.GenericDaoImpl;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
+import alma.scheduling.datamodel.weather.PathFluctHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 
@@ -155,6 +156,12 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 	
 	public static void setWeatherStation(CurrentWeather comp) {
 		WeatherStationDao.weatherStationComponent = comp;
+	}
+
+	@Override
+	public void loadPathFluctHistory(List<PathFluctHistRecord> records) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -27,7 +27,9 @@ import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import alma.scheduling.datamodel.weather.PathFluctHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
+import alma.scheduling.datamodel.weather.WeatherHistRecord;
 
 /**
  * Cached Weather DAO. This class load  all the data from DB and store them in the memory
@@ -41,46 +43,73 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
 
     private static Logger logger = LoggerFactory.getLogger(MemoryWeatherHistoryDAOImpl.class);
     
-    private TemperatureHistRecord cache[] = null;
+    private TemperatureHistRecord tempCache[] = null;
+    private PathFluctHistRecord phaseCache[] = null;
     private Long startTime = null;
     private Double maxTime = null;
 
-    @Override
+    
     public TemperatureHistRecord getTemperatureForTime(Date ut) {
-        //Cache init
-        if(cache == null)
+        if(tempCache == null)
             fillCache();
-        if(startTime == null)
+        return getWeatherRecordForTime(ut, tempCache);
+    }
+    
+    public PathFluctHistRecord getPathFluctForTime(Date ut) {
+        if(phaseCache == null)
+            fillCache();
+        return getWeatherRecordForTime(ut, phaseCache);
+    }
+    
+    
+    /**
+     * 
+     * @param ut the time
+     * @param cache the cache where to extract ten weather data
+     * @return the weather data for the given time 
+     */
+    @SuppressWarnings("unchecked")
+	private <T extends WeatherHistRecord> T getWeatherRecordForTime(Date ut, T[] cache) {
+    	if(startTime == null)
             startTime = getSimulationStartTime().getTime();
         if(maxTime == null){
             Query query;
             query = getSession().getNamedQuery("TemperatureHistRecord.getMaxTime");
             maxTime = (Double) query.uniqueResult();
-            logger.info("max time in temperature historical records: " + maxTime);
+            logger.debug("max time in temperature historical records: " + maxTime);
         }
         double dt = ( ut.getTime() - getSimulationStartTime().getTime() ) / ( 3600000.0); // difference in time (hours)
         dt = dt % maxTime;
         int pos = (int) (dt / 0.010416667 + 0.1);
-        System.out.println(pos);
+        logger.debug("Time to get" + dt + " Position to get: " + pos );
         
-        Double temperature = cache[pos].getValue();
+        Double temperature = tempCache[pos].getValue();
         if (temperature < -500) {
             logger.info("lower bound not a valid value, looking at the next 5 values");
             for (int i = 0; i < 5 ; i++) {
-                TemperatureHistRecord t = cache[pos + i];
+                WeatherHistRecord t = cache[pos + i];
                 if (t.getValue() > -500) {
-                    return t;
+                    return (T) t;
                 }
             }
         }
         return cache[pos];
     }
     
-    private void fillCache(){
-        cache =  new TemperatureHistRecord[35065];
-        List<TemperatureHistRecord> tmp = findAllOrdered();
-        for(int i = 0; i < cache.length; i++){
-            cache[i] = tmp.get(i);
-        }
-    }
+	private void fillCache() {
+		{
+			tempCache = new TemperatureHistRecord[35065];
+			List<TemperatureHistRecord> tmp = findAllOrdered(TemperatureHistRecord.class);
+			for (int i = 0; i < tempCache.length; i++) {
+				tempCache[i] = tmp.get(i);
+			}
+		}
+		{
+			phaseCache = new PathFluctHistRecord[35065];
+			List<PathFluctHistRecord> tmp = findAllOrdered(PathFluctHistRecord.class);
+			for (int i = 0; i < phaseCache.length; i++) {
+				phaseCache[i] = tmp.get(i);
+			}
+		}
+	}
 }
