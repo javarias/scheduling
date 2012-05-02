@@ -35,6 +35,7 @@ import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.weather.HumidityHistRecord;
 import alma.scheduling.datamodel.weather.OpacityHistRecord;
 import alma.scheduling.datamodel.weather.TemperatureHistRecord;
+import alma.scheduling.datamodel.weather.WeatherHistRecord;
 import alma.scheduling.datamodel.weather.WindSpeedHistRecord;
 
 public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHistoryDAO {
@@ -93,7 +94,12 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
         return new HumidityHistRecord(0.0, h, 0.1, 0.1);
     }
 
+    /**
+     * @deprecated As of release ALMA-9.1. Replaced by {@link MemoryWeatherHistoryDAOImpl#getTemperatureForTime(Date)}
+     * 
+     */
     @Override
+    @Deprecated 
     public TemperatureHistRecord getTemperatureForTime(Date ut) {
     	Calendar cal = Calendar.getInstance();
 		cal.setTime(ut);
@@ -137,9 +143,14 @@ public class WeatherHistoryDAOImpl extends GenericDaoImpl implements WeatherHist
          //return new TemperatureHistRecord(0.0, 0.20, 0.1, 0.1);
     }
 
+    /**
+     * 
+     * @param t the class to do the query it must be a subclass of {@link WeatherHistRecord}
+     * @return All the {@link WeatherHistRecords} og type t found in Database ordered by time ascending
+     */
     @SuppressWarnings("unchecked")
-    public List<TemperatureHistRecord> findAllOrdered() {
-        Query q = this.getSession().createQuery("from TemperatureHistRecord temp order by temp.time asc");
+    public <T extends WeatherHistRecord> List<T> findAllOrdered(Class<T> t) {
+        Query q = this.getSession().createQuery("from " + t.getName() +" wp order by wp.time asc");
         return q.list();
     }
     

@@ -71,6 +71,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
         <property name="slope" column="SLOPE"/>
         
     </class>
+    
+    <class name="PathFluctHistRecord" table="HIST_PATHFLUCT">
+        
+        <id name="time">
+            <column name="TIME"/>
+        </id>
+        
+        <property name="value" column="VALUE"/>
+        <property name="rms" column="RMS"/>
+        <property name="slope" column="SLOPE"/>
+        
+    </class>
 
     <query name="TemperatureHistRecord.getMaxTime">
         <![CDATA[
