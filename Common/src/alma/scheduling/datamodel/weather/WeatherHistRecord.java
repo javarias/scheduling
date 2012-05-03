@@ -76,4 +76,12 @@ public class WeatherHistRecord {
         this.slope = slope;
     }
 
+	@Override
+	public String toString() {
+		return this.getClass().getCanonicalName() + 
+				"(time: " + time + ", value: "+ value +", rms: " + rms + ", slope: " + slope + ")";
+	}
+    
+    
+
 }
