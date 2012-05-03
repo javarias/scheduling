@@ -157,7 +157,6 @@ public abstract class WeatherHistoryDAOImpl extends GenericDaoImpl implements We
      */
     @SuppressWarnings("unchecked")
     public <T extends WeatherHistRecord> List<T> findAllOrdered(Class<T> t) {
-    	System.out.println("from " + t.getName() +" wp order by wp.time asc");
         Query q = this.getSession().createQuery("from " + t.getName() +" wp order by wp.time asc");
         return q.list();
     }
