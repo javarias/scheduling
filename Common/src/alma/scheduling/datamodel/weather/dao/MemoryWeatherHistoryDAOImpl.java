@@ -20,8 +20,10 @@
  *******************************************************************************/
 package alma.scheduling.datamodel.weather.dao;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.hibernate.Query;
 import org.slf4j.Logger;
@@ -48,7 +50,6 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
     private Long startTime = null;
     private Double maxTime = null;
 
-    
     public TemperatureHistRecord getTemperatureForTime(Date ut) {
         if(tempCache == null)
             fillCache();
@@ -70,18 +71,25 @@ public class MemoryWeatherHistoryDAOImpl extends WeatherHistoryDAOImpl
      */
     @SuppressWarnings("unchecked")
 	private <T extends WeatherHistRecord> T getWeatherRecordForTime(Date ut, T[] cache) {
-    	if(startTime == null)
-            startTime = getSimulationStartTime().getTime();
         if(maxTime == null){
             Query query;
             query = getSession().getNamedQuery("TemperatureHistRecord.getMaxTime");
             maxTime = (Double) query.uniqueResult();
             logger.debug("max time in temperature historical records: " + maxTime);
         }
-        double dt = ( ut.getTime() - getSimulationStartTime().getTime() ) / ( 3600000.0); // difference in time (hours)
+        //Get time in hours relative to the beginning of current year given by the date
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(ut.getTime());
+        cal.set(Calendar.DAY_OF_YEAR, 1);
+        cal.set(Calendar.AM_PM, Calendar.AM);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        double dt = ( ut.getTime() - cal.getTimeInMillis()) / ( 86400000.0); // difference in time (days)
         dt = dt % maxTime;
         int pos = (int) (dt / 0.010416667 + 0.1);
-        logger.debug("Time to get" + dt + " Position to get: " + pos );
+        logger.debug("Time to get " + dt + " Position to get: " + pos );
         
         Double temperature = tempCache[pos].getValue();
         if (temperature < -500) {

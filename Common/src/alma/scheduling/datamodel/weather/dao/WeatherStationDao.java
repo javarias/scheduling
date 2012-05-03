@@ -164,4 +164,10 @@ public class WeatherStationDao extends GenericDaoImpl implements WeatherHistoryD
 		
 	}
 
+	@Override
+	public PathFluctHistRecord getPathFluctForTime(Date ut) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

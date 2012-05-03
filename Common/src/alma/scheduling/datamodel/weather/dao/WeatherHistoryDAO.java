@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherHistoryDAO.java,v 1.5 2012/05/02 23:22:01 javarias Exp $"
+ * "@(#) $Id: WeatherHistoryDAO.java,v 1.6 2012/05/03 21:54:08 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
@@ -49,6 +49,8 @@ public interface WeatherHistoryDAO {
     public HumidityHistRecord getHumidityForTime(Date ut);
     
     public TemperatureHistRecord getTemperatureForTime(Date ut);
+    
+    public PathFluctHistRecord getPathFluctForTime(Date ut);
     
     /**
      * Each record in the historic weather data files is identified by a time column,
