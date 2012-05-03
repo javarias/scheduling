@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: DataLoaderTest.java,v 1.3 2012/05/03 21:54:06 javarias Exp $"
+ * "@(#) $Id: DataLoaderTest.java,v 1.4 2012/05/03 23:21:52 javarias Exp $"
  */
 package alma.scheduling.dataload;
 
@@ -45,7 +45,6 @@ public class DataLoaderTest extends TestCase {
     
     public DataLoaderTest(String name) throws Exception {
         super(name);    	
-        System.setProperty("alma.scheduling.properties", System.getProperty("user.dir") + "/test/scheduling.properties");
         ApplicationContext ctx = DSAContextFactory.getContextFromPropertyFile();
     	DataLoader loader = (DataLoader) ctx.getBean("weatherSimDataLoader");
       	loader.load();

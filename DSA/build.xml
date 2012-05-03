@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. -->
 <project basedir="." default="build" name="DSA">
 	<property environment="env" />
 	<property name="ArchiveUpdater.location" value="../ArchiveUpdater" />
@@ -100,6 +95,15 @@
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="cobertura.ser" />
 			<formatter type="xml" />
 			<test name="alma.scheduling.algorithm.PoliciesContainerDirectoryTests" todir="${junit.output.dir}" />
+			<classpath>
+				<path refid="test.path" />
+			</classpath>
+		</junit>
+		<junit fork="yes" printsummary="withOutAndErr">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="cobertura.ser" />
+			<formatter type="xml" />
+			<jvmarg value="-Dalma.scheduling.properties=Common/src/scheduling.properties" />
+			<test name="alma.scheduling.dataload.DataLoaderTest" todir="${junit.output.dir}" />
 			<classpath>
 				<path refid="test.path" />
 			</classpath>
