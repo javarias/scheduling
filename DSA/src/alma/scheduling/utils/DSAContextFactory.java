@@ -65,7 +65,7 @@ import alma.scheduling.algorithm.SchedulingPolicyValidator;
  * 
  * @since ALMA 8.1.0
  * @author javarias
- * $Id: DSAContextFactory.java,v 1.19 2012/02/16 00:27:09 javarias Exp $
+ * $Id: DSAContextFactory.java,v 1.20 2012/05/03 21:54:32 javarias Exp $
  */
 public class DSAContextFactory extends CommonContextFactory {
 
@@ -98,7 +98,9 @@ public class DSAContextFactory extends CommonContextFactory {
 	
 	/**
 	 * Create a new instance of a spring context using the resource defined in 
-	 * scheduling properties file. The property to be read is <b>dsa.policy.file</b>
+	 * scheduling properties file. 
+	 * <br/>
+	 * The property to be read from file is <b>dsa.policy.file</b>
 	 * 
 	 * @see SchedulingContextFactory#getContext(String)
 	 * @return a spring Context initialized and ready to be used.
