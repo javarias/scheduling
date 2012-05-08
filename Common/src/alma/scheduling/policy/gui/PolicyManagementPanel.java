@@ -244,6 +244,8 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 				} catch (SchedulingInternalExceptionEx ex) {
 					showErrorDialog(ex);
 					ex.printStackTrace();
+				} finally {
+					refreshPolicyList();
 				}
 			}
 		});
@@ -255,10 +257,11 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 			public void actionPerformed(ActionEvent e) {
 				try {
 					master.removeSchedulingPolicies(selectedPolicyFile.uuid);
-					refreshPolicyList();
 				} catch (SchedulingInternalExceptionEx e1) {
 					showErrorDialog(e1);
 					e1.printStackTrace();
+				} finally {
+					refreshPolicyList();
 				}
 			}
 		});
@@ -287,6 +290,8 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 		public void run() {
 			try {
 				policiesTree.setModel(new PoliciesTreeModel(master.getSchedulingPolicies()));
+				policiesTree.invalidate();
+				policiesTree.validate();
 			} catch (org.omg.CORBA.SystemException ex) {
 				//Add dialog showing the error and details 
 			} catch (Exception ex) {}
@@ -406,6 +411,8 @@ public class PolicyManagementPanel extends JPanel implements PolicyChangeListene
 								") trying to ingest " +
 								file.getPath());
 						e.printStackTrace();
+					} finally {
+						refreshPolicyList();
 					}
 				}
 				
