@@ -332,7 +332,7 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 						Subsystem.SCHEDULING,
 						Role.AOD);
 				worked ++;
-			} catch (UserException e) {
+			} catch (Exception e) {
 				logger.warning(String.format(
 						"cannot convert project status %s from %s to %s - %s",
 						psID, from, to, e.getLocalizedMessage()));
