@@ -18,10 +18,10 @@
 package alma.scheduling.datamodel.obsproject.dao;
 
 import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
+import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_ATM_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_EXECUTIVE_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_OBSPROJECT_DAO_BEAN;
 import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_SCHEDBLOCK_DAO_BEAN;
-import static alma.scheduling.utils.CommonContextFactory.SCHEDULING_ATM_DAO_BEAN;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
-import alma.archive.database.helpers.wrappers.StateArchiveDbConfig;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
@@ -80,8 +79,7 @@ public class ModelAccessor extends Observable {
 		synchronized (ModelAccessor.class) {
 			if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
 				final RoleProvider roleProvider = new RoleProviderMock();
-				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
-						new StateArchiveDbConfig(logger));
+				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG, logger);
 				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 				stateArchive.initStateArchive(logger);
 				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
