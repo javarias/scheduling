@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.22 2011/10/25 15:22:42 dclarke Exp $"
+# "@(#) $Id: Makefile,v 1.23 2012/05/15 18:04:58 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -139,7 +139,7 @@ USER_IDL =
 # Jarfiles and their directories
 #
 JARFILES=SchedulingCommon
-SchedulingCommon_DIRS=alma
+SchedulingCommon_DIRS := alma org
 SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
                         alma/scheduling/datamodel/obsproject/ObsProject.hbm.xml \
                         alma/scheduling/datamodel/obsproject/ObsUnit.hbm.xml \
