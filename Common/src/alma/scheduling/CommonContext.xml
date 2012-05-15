@@ -23,12 +23,6 @@
 
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
-		<!--<property name="user" value="hibernate" /> <property name="password" 
-			value="aprc" /> <property name="driverClass" value="oracle.jdbc.driver.OracleDriver" 
-			/> <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:xe" /> -->
-		<!-- <property name="user" value="sa"/> <property name="password" value=""/> 
-			<property name="driverClass" value="org.hsqldb.jdbcDriver"/> <property name="jdbcUrl" 
-			value="jdbc:hsqldb:hsql://localhost:9001/data_model"/> -->
 		<property name="user" value="${db.user}" />
 		<property name="password" value="${db.password}" />
 		<property name="driverClass" value="${db.driverClass}" />
@@ -38,22 +32,6 @@
 		<property name="minPoolSize" value="1" />
 		<property name="acquireIncrement" value="1" />
 		<property name="acquireRetryAttempts" value="5" />
-	</bean>
-
-	<bean id="dataSource.test"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName">
-			<value>org.hsqldb.jdbcDriver</value>
-		</property>
-		<property name="url">
-			<value>jdbc:hsqldb:hsql://localhost:9001/statearchive</value>
-		</property>
-		<property name="username">
-			<value>sa</value>
-		</property>
-		<property name="password">
-			<value />
-		</property>
 	</bean>
 
 	<!-- Hibernate SessionFactory -->
@@ -87,7 +65,7 @@
 				<!--<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop> -->
 				<!--<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
 				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
-				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory
 				</prop>
