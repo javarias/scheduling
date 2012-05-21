@@ -37,7 +37,7 @@ public abstract class SchedulingProperties {
 	/**
 	 * This should enable the import of XML projects.
 	 */
-	private static String PROP_PMS_XML_PROJECT_IMPORT = "scheduling.pms.xmlProjects";
+	public static String PROP_PMS_XML_PROJECT_IMPORT = "scheduling.pms.xmlProjects";
 	
 	public static String autoPopupPluginPropertyName() {
 		return PROP_autoPopupPlugin;
