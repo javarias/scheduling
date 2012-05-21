@@ -149,7 +149,8 @@
 	</bean>
 	<!-- Archive/XMLStore Data Loader -->
 	<bean id="archProjectDao"
-		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao">
+		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao"
+		scope="prototype">
 	</bean>
 
 <!-- DataLoaders Beans -->
@@ -159,14 +160,18 @@
 		<property name="configDao" ref="configDao" />
 		<property name="obsPrjDao" ref="obsProjectDao" />
 	</bean>
-	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader">
+	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader"
+	scope="singleton">
 		<property name="loaders">
 			<list>
-				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoader">
+
+				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl">
 					<property name="xmlDao" ref="xmlObsProjectDao" />
 					<property name="dao" ref="obsProjectDao" />
-					<property name="archProjectDao" ref="archProjectDao"/>
-				</bean>
+<!-- The following property must be set manually according java properties already set
+check -DACS.manager and -Dscheduling.pms.xmlProjects -->
+<!--				<property name="archProjectDao" ref="archProjectDao"/> -->
+				</bean> 
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao" />
 					<property name="xmlDao" ref="xmlExecDao" />
