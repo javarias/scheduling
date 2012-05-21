@@ -33,7 +33,9 @@ import org.springframework.context.ApplicationContext;
 
 import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.dataload.DataUnloader;
+import alma.scheduling.dataload.obsproject.ObsProjectDataLoader;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.psm.cli.RemoteConsole;
 import alma.scheduling.psm.util.PsmContext;
 
@@ -41,11 +43,12 @@ public class InputActions extends PsmContext {
 	
 	public static final String WEATHER_PARAMS_LOADER_BEAN = "weatherSimDataLoader";
 	public static final String FULL_DATA_LOADER_BEAN = "fullDataLoader";
+	public static final String ARCHIVE_PROJECT_DAO_BEAN = "archProjectDao";
+	public static final String CONFIGURATION_DAO_BEAN = "configDao";
 	
 	private static Logger logger = LoggerFactory.getLogger(InputActions.class);
 	
 	private static InputActions instance = null;
-	private static String[] cfgBeans = null;
 		
     private InputActions(String workDir) {
 		super(workDir);
@@ -60,20 +63,20 @@ public class InputActions extends PsmContext {
         weatherLoader.load();
         fullDataLoader.load();
         
-        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.updateConfig();
     }
 
     public void load(){
     	ApplicationContext ctx = getApplicationContext();
-        DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
+        DataLoader loader = getDataLoader(ctx);
         try {
 			loader.load();
 		} catch (Exception e) {
 			logger.error("Data loading error: load()");
 			e.printStackTrace();
 		}
-        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.updateConfig();
     }
 
@@ -85,9 +88,9 @@ public class InputActions extends PsmContext {
 
     public void clean() {
     	ApplicationContext ctx = getApplicationContext();
-    	DataLoader loader = (DataLoader) ctx.getBean("fullDataLoader");
+    	DataLoader loader = getDataLoader(ctx);;
     	loader.clear();
-        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean("configDao");
+        ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.deleteAll();
     }
     
@@ -103,6 +106,7 @@ public class InputActions extends PsmContext {
     	return false;
     }
 
+    @Deprecated
 	public void remoteFullLoad() {
 		ApplicationContext ctx = getApplicationContext();
 		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
@@ -117,6 +121,7 @@ public class InputActions extends PsmContext {
 		
 	}
 
+	@Deprecated
 	public void remoteLoad() {
 		ApplicationContext ctx = getApplicationContext();
 		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
@@ -131,6 +136,7 @@ public class InputActions extends PsmContext {
 		
 	}
 	
+	@Deprecated
 	public void remoteClean() {
 		ApplicationContext ctx = getApplicationContext();
 		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
@@ -145,6 +151,7 @@ public class InputActions extends PsmContext {
 		
 	}    
 
+	@Deprecated
 	public void remoteRun() {
 		ApplicationContext ctx = getApplicationContext();
 		RemoteConsole console = (RemoteConsole) ctx.getBean("remoteConsoleService");
@@ -163,5 +170,17 @@ public class InputActions extends PsmContext {
 		if (InputActions.instance == null)
 			InputActions.instance = new InputActions(workDir);
 		return InputActions.instance;
+	}
+	
+	private DataLoader getDataLoader(ApplicationContext ctx) {
+		String prop = System.getProperty("ACS.manager");
+		ObsProjectDataLoader loader = null;
+		loader = (ObsProjectDataLoader) ctx.getBean(FULL_DATA_LOADER_BEAN);
+		if (prop == null) {
+			loader.setArchProjectDao(null);
+		} else {
+			loader.setArchProjectDao((ProjectDao) ctx.getBean("ARCHIVE_PROJECT_DAO_BEAN"));
+		}
+		return loader;
 	}
 }
