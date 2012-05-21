@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDao.java,v 1.7 2010/08/18 16:11:15 dclarke Exp $"
+ * "@(#) $Id: ObsProjectDao.java,v 1.8 2012/05/21 19:51:30 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
@@ -46,4 +46,22 @@ public interface ObsProjectDao extends GenericDao {
     ObsProject getObsProject(ObsUnit ou);
 
     public ObsProject findByEntityId(String entityId);
+    
+    public void deleteAll();
+    
+    /**
+     * This method must first remove the ObsProject if it exists and its entire hierarchy
+     * from the Data Base, then reinsert it into DB. This method must be executed
+     * in just one transaction ensuring completely isolation.
+     * 
+     * @param prj the ObsProject to refresh
+     */
+    public void refreshProject(ObsProject prj);
+    
+    /**
+     * See {@link refreshProject}
+     * 
+     * @param list of projects to refresh.
+     */
+    public void refreshProjects(List<ObsProject> list);
 }

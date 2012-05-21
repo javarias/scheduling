@@ -28,6 +28,8 @@ import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -39,7 +41,7 @@ import alma.scheduling.datamodel.obsproject.ObservingParameters;
 import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.Target;
 
-@Transactional
+@Transactional(readOnly = true)
 public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, Remote {
 
     private static Logger logger = LoggerFactory.getLogger(ObsProjectDaoImpl.class);
@@ -123,10 +125,31 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
     }
 
     @Override
+    @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE)
     public void saveOrUpdate(ObsProject prj) {
         super.saveOrUpdate(prj);
     }
-
+    
+    @Override
+    @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE, propagation=Propagation.REQUIRES_NEW)
+    public void refreshProject(ObsProject prj) {
+    	logger.debug("Refreshing project with entity ID: " + prj.getUid());
+    	ObsProject ret = findByEntityId(prj.getUid());
+    	if (ret != null) {
+    		delete(prj.getObsUnit());
+    		delete(ret);
+    	}
+    	super.saveOrUpdate(prj);
+    }
+	
+    @Override
+	@Transactional(readOnly=false)
+	public void refreshProjects(List<ObsProject> list) {
+		for (ObsProject p: list) {
+			refreshProject(p);
+		}
+		
+	}
 
     @Override
     @Transactional(readOnly=true)
@@ -161,6 +184,13 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
         Query query = null;
         query = getSession().createQuery("select count(x) from ObsProject x ");
         return ((Long)query.uniqueResult()).intValue();
+	}
+
+
+	@Override
+	@Transactional(readOnly=false)
+	public  synchronized void deleteAll() {
+		getSession().createQuery("delete from " + ObsProject.class.getCanonicalName()).executeUpdate();
 	}
 
 }
