@@ -148,10 +148,10 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	<!-- Archive/XMLStore Data Loader -->
-	<bean id="archProjectDao"
+<!-- <bean id="archProjectDao"
 		class="alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao"
 		scope="prototype">
-	</bean>
+	</bean> -->
 
 <!-- DataLoaders Beans -->
 	<bean id="dataLinker" class="alma.scheduling.dataload.DataLinker">
