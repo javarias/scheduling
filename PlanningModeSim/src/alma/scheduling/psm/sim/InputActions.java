@@ -35,6 +35,7 @@ import alma.scheduling.dataload.DataLoader;
 import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.dataload.obsproject.ObsProjectDataLoader;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
+import alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.psm.cli.RemoteConsole;
 import alma.scheduling.psm.util.PsmContext;
@@ -43,6 +44,7 @@ public class InputActions extends PsmContext {
 	
 	public static final String WEATHER_PARAMS_LOADER_BEAN = "weatherSimDataLoader";
 	public static final String FULL_DATA_LOADER_BEAN = "fullDataLoader";
+	public static final String OBSPROJECT_DATA_LOADER_BEAN = "obsProjectDataLoader";
 	public static final String ARCHIVE_PROJECT_DAO_BEAN = "archProjectDao";
 	public static final String CONFIGURATION_DAO_BEAN = "configDao";
 	
@@ -175,11 +177,15 @@ public class InputActions extends PsmContext {
 	private DataLoader getDataLoader(ApplicationContext ctx) {
 		String prop = System.getProperty("ACS.manager");
 		ObsProjectDataLoader loader = null;
-		loader = (ObsProjectDataLoader) ctx.getBean(FULL_DATA_LOADER_BEAN);
+		loader = (ObsProjectDataLoader) ctx.getBean(OBSPROJECT_DATA_LOADER_BEAN);
 		if (prop == null) {
 			loader.setArchProjectDao(null);
 		} else {
-			loader.setArchProjectDao((ProjectDao) ctx.getBean("ARCHIVE_PROJECT_DAO_BEAN"));
+			try {
+				loader.setArchProjectDao(new Phase1XMLStoreProjectDao());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 		return loader;
 	}
