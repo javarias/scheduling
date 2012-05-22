@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.1 2012/05/21 23:21:14 javarias Exp $"
+ * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.2 2012/05/22 17:35:23 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
@@ -101,6 +101,7 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
 
     @Override
     public void clear() {
+    	logger.info("Deleting Projects");
     	dao.deleteAll();
     }
 
