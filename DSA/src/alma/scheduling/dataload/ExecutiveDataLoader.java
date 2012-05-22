@@ -62,6 +62,7 @@ public class ExecutiveDataLoader implements DataLoader {
 
     @Override
     public void clear() {
+    	logger.info("Deleting Executive data");
         xmlDao.deleteAll();
         dbDao.deleteAll();
     }
