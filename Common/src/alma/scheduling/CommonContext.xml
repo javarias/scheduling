@@ -160,14 +160,17 @@
 		<property name="configDao" ref="configDao" />
 		<property name="obsPrjDao" ref="obsProjectDao" />
 	</bean>
+	
+	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl">
+		<property name="xmlDao" ref="xmlObsProjectDao" />
+		<property name="dao" ref="obsProjectDao" />
+	</bean> 
+	
 	<bean id="fullDataLoader" class="alma.scheduling.dataload.CompositeDataLoader"
 	scope="singleton">
 		<property name="loaders">
 			<list>
-				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl">
-					<property name="xmlDao" ref="xmlObsProjectDao" />
-					<property name="dao" ref="obsProjectDao" />
-				</bean> 
+				<ref bean="obsProjectDataLoader"/>
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao" />
 					<property name="xmlDao" ref="xmlExecDao" />
