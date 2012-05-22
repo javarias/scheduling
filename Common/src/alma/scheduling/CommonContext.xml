@@ -164,13 +164,9 @@
 	scope="singleton">
 		<property name="loaders">
 			<list>
-
 				<bean class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl">
 					<property name="xmlDao" ref="xmlObsProjectDao" />
 					<property name="dao" ref="obsProjectDao" />
-<!-- The following property must be set manually according java properties already set
-check -DACS.manager and -Dscheduling.pms.xmlProjects -->
-<!--				<property name="archProjectDao" ref="archProjectDao"/> -->
 				</bean> 
 				<bean class="alma.scheduling.dataload.ExecutiveDataLoader">
 					<property name="dbDao" ref="execDao" />
