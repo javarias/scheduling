@@ -23,6 +23,7 @@
  */
 package alma.scheduling.datamodel.obsproject.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -76,7 +77,6 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	protected void getAPDMProjectsFor(
 			ArchiveInterface                                     archive,
 			List<alma.entity.xmlbinding.obsproposal.ObsProposal> apdmProposals) {
-	
 		for (alma.entity.xmlbinding.obsproposal.ObsProposal apdmProposal : apdmProposals ) {
 			alma.entity.xmlbinding.obsproject.ObsProjectRefT projectRef = apdmProposal.getObsProjectRef();
 			String                                           projectId = projectRef.getEntityId();
@@ -181,10 +181,15 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 	@Override
 	protected void getInterestingProjects(ArchiveInterface archive) {
 		List<alma.entity.xmlbinding.obsproposal.ObsProposal> apdmProposals;
-		
+		Date start = new Date();
 		apdmProposals = fetchInterestingAPDMProposals();
+		Date end = new Date();
+		logger.info("Fetching apdm proposals from archive took " + (end.getTime() - start.getTime()) + " ms");
+		start = new Date();
 		getAPDMProjectsFor(archive, apdmProposals);
-	}
+		end = new Date();
+		logger.info("Getting apdm project from archive took " + (end.getTime() - start.getTime()) + " ms");
+		}
 
 	@Override
 	protected ObsUnitSetT getTopLevelOUSForProject(

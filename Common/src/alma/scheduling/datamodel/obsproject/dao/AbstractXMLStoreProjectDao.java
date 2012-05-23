@@ -219,7 +219,7 @@ public abstract class AbstractXMLStoreProjectDao
 	 */
 	@Override
 	public List<ObsProject> getAllObsProjects() throws DAOException {
-        
+        Date start, end;
         logger.info(String.format("%s.getAllObsProjects()",
         		this.getClass().getSimpleName()));
         // Use the State Archive to convert all the Phase2Submitted
@@ -246,12 +246,13 @@ public abstract class AbstractXMLStoreProjectDao
 //        	}
 //        	logStatuses(archive);
 //        }
-        
+        start = new Date();
         // Get all the corresponding APDM SchedBlocks
         for (alma.entity.xmlbinding.obsproject.ObsProject apdmProject : archive.obsProjects()) {
         	getAPDMSchedBlocksFor(archive, apdmProject);
         }
-        
+        end = new Date();
+        logger.fine("Getting apdm SchedBlocks from archive took " + (end.getTime() - start.getTime()) + " ms");
         try {
             logAPDMSchedBlocks(archive);
         } catch (NullPointerException ex) {
@@ -260,7 +261,10 @@ public abstract class AbstractXMLStoreProjectDao
         }
         
         // Convert them to Scheduling stylee ObsProjects
+        start = new Date();
         result = convertAPDMProjectsToDataModel(archive, logger);
+        end = new Date();
+        logger.fine("Conversion from APDM model to SWDB model took " + (end.getTime() - start.getTime()) + " ms");
         logObsProjects(result);
 
         return result;

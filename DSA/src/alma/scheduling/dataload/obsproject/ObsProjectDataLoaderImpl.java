@@ -21,10 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.2 2012/05/22 17:35:23 javarias Exp $"
+ * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.3 2012/05/23 21:51:00 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -32,10 +33,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.DAOException;
+import alma.scheduling.datamodel.executive.Executive;
+import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
+import alma.scheduling.input.executive.generated.ObservingSeason;
 import alma.scheduling.utils.SchedulingProperties;
 
 @Transactional
@@ -76,8 +80,11 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     		projects = xmlDao.getAllObsProjects();
     	} else if (archProjectDao != null) {
     		try {
+    			Date start = new Date();
 				projects = archProjectDao.getAllObsProjects();
-				System.out.println("Project Size: " + projects.size());
+				Date end = new Date();
+				logger.info("To convert projects from archive took " + (end.getTime() - start.getTime()) + " ms");
+				logger.info("Total projects: " + projects.size());
 			} catch (DAOException ex) {
 				logger.error("error getting projects from XML Store");
 				ex.printStackTrace();
