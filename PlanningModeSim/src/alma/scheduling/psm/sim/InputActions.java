@@ -26,6 +26,7 @@
 package alma.scheduling.psm.sim;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +61,18 @@ public class InputActions extends PsmContext {
         ApplicationContext ctx = getApplicationContext();
         DataLoader weatherLoader = 
         		(DataLoader) ctx.getBean(WEATHER_PARAMS_LOADER_BEAN);
-        DataLoader fullDataLoader = 
-        		(DataLoader) ctx.getBean(FULL_DATA_LOADER_BEAN);
+        DataLoader fullDataLoader = getDataLoader(ctx);
+        Date start = new Date();
         weatherLoader.load();
+        Date end = new Date();
+        logger.info("Weather data load took " + (end.getTime() - start.getTime()) + " ms");
+        start = new Date();
         fullDataLoader.load();
+        end = new Date();
+        logger.info("FullDataLoader load took " + (end.getTime() - start.getTime()) + " ms");
         
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
+        configDao.getConfiguration();
         configDao.updateConfig();
     }
 
@@ -90,7 +97,7 @@ public class InputActions extends PsmContext {
 
     public void clean() {
     	ApplicationContext ctx = getApplicationContext();
-    	DataLoader loader = getDataLoader(ctx);;
+    	DataLoader loader = getDataLoader(ctx);
     	loader.clear();
         ConfigurationDao configDao = (ConfigurationDao) ctx.getBean(CONFIGURATION_DAO_BEAN);
         configDao.deleteAll();
