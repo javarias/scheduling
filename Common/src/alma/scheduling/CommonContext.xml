@@ -161,7 +161,8 @@
 		<property name="obsPrjDao" ref="obsProjectDao" />
 	</bean>
 	
-	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl">
+	<bean id="obsProjectDataLoader" class="alma.scheduling.dataload.obsproject.ObsProjectDataLoaderImpl"
+	scope="singleton">
 		<property name="xmlDao" ref="xmlObsProjectDao" />
 		<property name="dao" ref="obsProjectDao" />
 	</bean> 
