@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.25 2012/02/22 21:35:20 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.26 2012/05/24 17:07:17 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
@@ -158,9 +160,10 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE, propagation=Propagation.REQUIRES_NEW)
     public void saveObservingSeasonsAndExecutives(List<ObservingSeason> seasons,
             List<Executive> executives) {
+    	logger.debug("Storing into DB the season and executives...");
         List<ExecutivePercentage> eps = new ArrayList<ExecutivePercentage>();
         ArrayList<ObservingSeason> ss = new ArrayList<ObservingSeason>();
         List<Executive> execs = new ArrayList<Executive>();
@@ -192,6 +195,7 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
         for (Executive e : executives) {
             saveOrUpdate(e);
         }
+        logger.debug("Done");
     }
 
     @SuppressWarnings("unchecked")
