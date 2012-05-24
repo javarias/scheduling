@@ -188,7 +188,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
 
 
 	@Override
-	@Transactional(readOnly=false)
+	@Transactional(readOnly=false, isolation=Isolation.SERIALIZABLE, propagation=Propagation.REQUIRES_NEW)
 	public  synchronized void deleteAll() {
 		getSession().createQuery("delete from " + ObsProject.class.getCanonicalName()).executeUpdate();
 	}
