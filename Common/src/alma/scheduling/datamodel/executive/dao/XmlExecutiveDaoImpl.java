@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.10 2010/09/03 16:47:05 javarias Exp $"
+ * "@(#) $Id: XmlExecutiveDaoImpl.java,v 1.11 2012/05/24 20:38:57 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -284,10 +284,11 @@ public class XmlExecutiveDaoImpl implements XmlExecutiveDAO {
     
     @Override
     public void deleteAll() {
-        exec.clear();
-        pi.clear();
-        ep.clear();
-        os.clear();
+    	logger.info("Deleting XML Executive Data");
+        exec = new ArrayList<Executive>();
+        pi = new ArrayList<PI>();
+        ep = new ArrayList<ExecutivePercentage>();
+        os = new ArrayList<ObservingSeason>();
         System.gc();
         xmlDataHasBeenLoaded = false;
         

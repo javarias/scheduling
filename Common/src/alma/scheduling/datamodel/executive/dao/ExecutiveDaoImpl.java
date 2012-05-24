@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.26 2012/05/24 17:07:17 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.27 2012/05/24 20:38:57 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -149,7 +149,9 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     }
     
     @Override
+    @Transactional(readOnly=false, propagation=Propagation.REQUIRES_NEW, isolation=Isolation.SERIALIZABLE)
     public void deleteAll() {
+    	logger.debug("Deleting Executive data from DB");
         getHibernateTemplate().bulkUpdate("delete PIMembership");        
         getHibernateTemplate().bulkUpdate("delete PI");
         getHibernateTemplate().bulkUpdate("delete ExecutivePercentage");
@@ -202,20 +204,13 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
     @Override
     @Transactional(readOnly=true)
     public ExecutivePercentage getExecutivePercentage(Executive exec, ObservingSeason os) {
-    	logger.info("Passed x0");
         List<ExecutivePercentage> ep;
         Query query = getSession().createQuery("from ExecutivePercentage as ep " +
                 "where ep.season = ? and ep.executive = ?");
-        logger.info("Passed x1");
         query.setMaxResults(1);
-        logger.info("Passed x2");
         query.setParameter(0, os);
-        logger.info("Passed x3: observing season: " + os.getId() );
         query.setParameter(1, exec);
-        logger.info("Passed x4: executive: " + exec );
         ep = query.list();
-        logger.info("Passed x4.5: Return size of query: " + ep.size() );
-        logger.info("Passed x5");
         return ep.get(0);        
     }
 }
