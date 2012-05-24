@@ -194,6 +194,6 @@ public class InputActions extends PsmContext {
 				throw new RuntimeException(e);
 			}
 		}
-		return loader;
+		return (DataLoader) ctx.getBean(FULL_DATA_LOADER_BEAN);
 	}
 }
