@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ExecutiveDaoImpl.java,v 1.27 2012/05/24 20:38:57 javarias Exp $"
+ * "@(#) $Id: ExecutiveDaoImpl.java,v 1.28 2012/05/24 21:44:54 javarias Exp $"
  */
 package alma.scheduling.datamodel.executive.dao;
 
@@ -158,6 +158,7 @@ public class ExecutiveDaoImpl extends GenericDaoImpl implements ExecutiveDAO {
         getHibernateTemplate().bulkUpdate("delete ExecutiveTimeSpent");
         getHibernateTemplate().bulkUpdate("delete Executive");
         getHibernateTemplate().bulkUpdate("delete ObservingSeason");
+        emailPiCache.clear();
     }
 
 
