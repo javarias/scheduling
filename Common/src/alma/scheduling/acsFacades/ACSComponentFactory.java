@@ -23,6 +23,7 @@
  */
 package alma.scheduling.acsFacades;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.List;
@@ -31,8 +32,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.UserException;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import alma.ACS.ACSComponent;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
@@ -463,7 +462,7 @@ public class ACSComponentFactory implements ComponentFactory {
 				try {
 					containerServices.releaseComponent(comp.name());
 				} catch (Exception ex) {
-					ByteOutputStream os = new ByteOutputStream();
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					PrintWriter pw = new PrintWriter(os);
 					pw.write("Problem trying to release component ");
 					pw.write(comp.name()); pw.write(". Problem is: ");
