@@ -37,7 +37,7 @@ import alma.xmlstore.OperationalOperations;
  * Done as an interface so that we can insert facades for them and do
  * useful things like tracing.
  *
- * @version $Id: ComponentFactory.java,v 1.2 2010/04/23 23:35:23 dclarke Exp $
+ * @version $Id: ComponentFactory.java,v 1.3 2012/05/29 17:46:36 dclarke Exp $
  * @author David Clarke
  */
 public interface ComponentFactory {
@@ -87,4 +87,9 @@ public interface ComponentFactory {
 			String name,
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx;
+
+	// Tidying up
+	// ==========
+	public void tidyUp();
+
 }

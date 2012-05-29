@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.12 2011/08/12 17:03:38 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.13 2012/05/29 17:46:35 dclarke Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -60,7 +60,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.12 2011/08/12 17:03:38 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.13 2012/05/29 17:46:35 dclarke Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -234,6 +234,7 @@ public class ArchivePoller implements Observer{
 		event.setEntityType("<html><i>none</i></html>");
 		event.setDetails("");
 		inDao.getNotifer().notifyEvent(event);
+		inDao.tidyUp();
     }
     
 	private void deleteExistingProjectsInSWDB(List<ObsProject> prjs) {
@@ -468,6 +469,7 @@ public class ArchivePoller implements Observer{
 		event.setEntityType("<html><i>none</i></html>");
 		event.setDetails("");
 		inDao.getNotifer().notifyEvent(event);
+		inDao.tidyUp();
     }
 	/* End Incremental Polling of the ALMA Archives
 	 * ============================================================= */

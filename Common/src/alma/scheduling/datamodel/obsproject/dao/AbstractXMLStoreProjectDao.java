@@ -119,10 +119,10 @@ public abstract class AbstractXMLStoreProjectDao
     
     
     /*
-     * ================================================================
-     * Construction
-     * ================================================================
-     */
+ 	 * ================================================================
+ 	 * Construction and Finalisation
+ 	 * ================================================================
+ 	 */
 	/**
 	 * @throws Exception
 	 */
@@ -171,7 +171,11 @@ public abstract class AbstractXMLStoreProjectDao
 		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
-	/* End Construction
+	
+	protected void finalize() throws Throwable {
+		tidyUp();
+	}
+    /* end of Construction and Finalisation
 	 * ============================================================= */
 
     
@@ -970,4 +974,18 @@ public abstract class AbstractXMLStoreProjectDao
 		}
 		
 	}
+
+
+    
+    
+    /*
+	 * ================================================================
+	 * Tidying up
+	 * ================================================================
+	 */
+	public void tidyUp() {
+		componentFactory.tidyUp();
+	}
+	/* end of Tidying up
+	 * -------------------------------------------------------------- */
 }

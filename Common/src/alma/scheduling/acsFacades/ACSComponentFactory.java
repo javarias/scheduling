@@ -24,22 +24,28 @@
 package alma.scheduling.acsFacades;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.omg.CORBA.UserException;
 
+import alma.ACS.ACSComponent;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.alarmsystem.source.ACSAlarmSystemInterface;
 import alma.alarmsystem.source.ACSAlarmSystemInterfaceFactory;
 import alma.alarmsystem.source.ACSFaultState;
+import alma.projectlifecycle.StateSystem;
 import alma.projectlifecycle.StateSystemHelper;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.xmlstore.ArchiveConnection;
 import alma.xmlstore.ArchiveConnectionHelper;
+import alma.xmlstore.Identifier;
 import alma.xmlstore.IdentifierHelper;
 import alma.xmlstore.IdentifierOperations;
+import alma.xmlstore.Operational;
 import alma.xmlstore.OperationalOperations;
 
 /**
@@ -60,6 +66,9 @@ public class ACSComponentFactory implements ComponentFactory {
 	
     /** Container services for anything we need */
     private ContainerServices containerServices;
+	
+    /** Component handles we have, for later tidying */
+    private List<ACSComponent> components;
     /* end of Fields
      * -------------------------------------------------------------- */
 
@@ -67,7 +76,7 @@ public class ACSComponentFactory implements ComponentFactory {
      
      /*
  	 * ================================================================
- 	 * Construction
+ 	 * Construction and Finalisation
  	 * ================================================================
  	 */
 	/**
@@ -76,8 +85,13 @@ public class ACSComponentFactory implements ComponentFactory {
 	public ACSComponentFactory(ContainerServices containerServices) {
 		this.containerServices = containerServices;
 		this.logger = containerServices.getLogger();
+		components = new Vector<ACSComponent>();
 	}
-    /* end of Construction
+	
+	protected void finalize() throws Throwable {
+		tidyUp();
+	}
+    /* end of Construction and Finalisation
      * -------------------------------------------------------------- */
 
      
@@ -170,12 +184,18 @@ public class ACSComponentFactory implements ComponentFactory {
 	public StateSystemOperations getDefaultStateSystem(
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx {
-       final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(StateSystemIFName);
-       final StateSystemOperations ops = StateSystemHelper.narrow(obj);
-       if (ops == null) {
-    	   logger.warning("SCHEDULING: Cannot find default ALMA State System component.");
-       }
-       return wrapStateSystemComponent(ops, diags);
+		
+		final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(StateSystemIFName);
+		final StateSystem con = StateSystemHelper.narrow(obj);
+		StateSystemOperations result = null;
+
+		if (con != null) {
+			components.add(con);
+			result = wrapStateSystemComponent(con, diags);
+		} else {
+			logger.warning("SCHEDULING: Cannot find default ALMA State System component.");
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -186,14 +206,20 @@ public class ACSComponentFactory implements ComponentFactory {
 			String name,
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx {
-       final org.omg.CORBA.Object obj = containerServices.getComponent(name);
-       final StateSystemOperations ops = StateSystemHelper.narrow(obj);
-       if (ops == null) {
-    	   logger.warning(String.format(
-    			   "SCHEDULING: Cannot find ALMA State System component called %s.",
-    			   name));
-       }
-       return wrapStateSystemComponent(ops, diags);
+		
+		final org.omg.CORBA.Object obj = containerServices.getComponent(name);
+		final StateSystem con = StateSystemHelper.narrow(obj);
+		StateSystemOperations result = null;
+
+		if (con != null) {
+			components.add(con);
+			result = wrapStateSystemComponent(con, diags);
+		} else {
+			logger.warning(String.format(
+					"SCHEDULING: Cannot find ALMA State System component called %s.",
+					name));
+		}
+		return result;
 	}
    /* end of State System
     * -------------------------------------------------------------- */
@@ -267,11 +293,21 @@ public class ACSComponentFactory implements ComponentFactory {
 		throws AcsJContainerServicesEx, UserException {
 	       final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(ArchiveIFName);
 	       final ArchiveConnection con = ArchiveConnectionHelper.narrow(obj);
-	       final OperationalOperations ops = con.getOperational("SCHEDULING");
-	       if (ops == null) {
+	       OperationalOperations result = null;
+	       
+	       if (con != null) {
+	    	   final Operational ops = con.getOperational("SCHEDULING");
+	    	   if (ops != null) {
+	               result = wrapArchiveComponent(ops, diags);
+	    	   } else {
+	    		   logger.warning("SCHEDULING: Cannot get Operational offshoot from default ALMA Archive.");
+	    	   }
+	    	   components.add(con);
+	       } else {
 	    	   logger.warning("SCHEDULING: Cannot find default ALMA Archive component.");
 	       }
-	       return wrapArchiveComponent(ops, diags);
+
+	       return result;
 	}
 
 	/* (non-Javadoc)
@@ -284,13 +320,25 @@ public class ACSComponentFactory implements ComponentFactory {
 		throws AcsJContainerServicesEx, UserException {
        final org.omg.CORBA.Object obj = containerServices.getComponent(name);
        final ArchiveConnection con = ArchiveConnectionHelper.narrow(obj);
-       final OperationalOperations ops = con.getOperational("SCHEDULING");
-       if (ops == null) {
+       OperationalOperations result = null;
+       
+       if (con != null) {
+    	   final Operational ops = con.getOperational("SCHEDULING");
+    	   if (ops != null) {
+               result = wrapArchiveComponent(ops, diags);
+    	   } else {
+    		   logger.warning(String.format(
+    				   "SCHEDULING: Cannot get Operational offshoot from ALMA Archive component called %s.",
+    				   name));
+    	   }
+    	   components.add(con);
+       } else {
     	   logger.warning(String.format(
     			   "SCHEDULING: Cannot find ALMA Archive component called %s.",
     			   name));
        }
-       return wrapArchiveComponent(ops, diags);
+
+       return result;
 	}
    /* end of Archive XMLStore
     * -------------------------------------------------------------- */
@@ -357,8 +405,18 @@ public class ACSComponentFactory implements ComponentFactory {
 	public IdentifierOperations getDefaultIdentifier(
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx {
-	       final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(IdentifierIFName);
-	       return wrapIdentifierComponent(IdentifierHelper.narrow(obj), diags);
+		
+		final org.omg.CORBA.Object obj = containerServices.getDefaultComponent(IdentifierIFName);
+		final Identifier con = IdentifierHelper.narrow(obj);
+		IdentifierOperations result = null;
+		
+		if (con != null) {
+			components.add(con);
+			result = wrapIdentifierComponent(con, diags);
+		} else {
+			logger.warning("SCHEDULING: Cannot find default ALMA Identifier component.");
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -369,9 +427,41 @@ public class ACSComponentFactory implements ComponentFactory {
 			String name,
 			ComponentDiagnosticTypes... diags)
 		throws AcsJContainerServicesEx {
-       final org.omg.CORBA.Object obj = containerServices.getComponent(name);
-       return wrapIdentifierComponent(IdentifierHelper.narrow(obj), diags);
+		
+		final org.omg.CORBA.Object obj = containerServices.getComponent(name);
+		final Identifier con = IdentifierHelper.narrow(obj);
+		IdentifierOperations result = null;
+
+		if (con != null) {
+			components.add(con);
+			result = wrapIdentifierComponent(con, diags);
+		} else {
+			logger.warning(String.format(
+					"SCHEDULING: Cannot find ALMA Identifier component called %s.",
+					name));
+		}
+		return result;
 	}
 	/* end of Archive Identifiers
+	 * -------------------------------------------------------------- */
+
+
+    
+    
+    /*
+	 * ================================================================
+	 * Tidying up
+	 * ================================================================
+	 */
+	@Override
+	public void tidyUp() {
+		if (components != null) {
+			for (ACSComponent comp : components) {
+				containerServices.releaseComponent(comp.name());
+			}
+			components = null;
+		}
+	}
+	/* end of Tidying up
 	 * -------------------------------------------------------------- */
 }
