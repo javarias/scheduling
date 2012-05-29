@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prj:ObsProject xmlns:ent="Alma/CommonEntity"
+    xmlns:val="Alma/ValueTypes" xmlns:prp="Alma/ObsPrep/ObsProposal"
+    xmlns:orv="Alma/ObsPrep/ObsReview"
+    xmlns:ps="Alma/ObsPrep/ProjectStatus"
+    xmlns:oat="Alma/ObsPrep/ObsAttachment"
+    xmlns:prj="Alma/ObsPrep/ObsProject"
+    xmlns:sbl="Alma/ObsPrep/SchedBlock"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    schemaVersion="13" revision="1.102.2.1" almatype="APDM::ObsProject"
+    status="NewPhase2" xsi:type="prj:ObsProject">
+    <prj:ObsProjectEntity entityId="entityId_-1615548405"
+        entityIdEncrypted="-- id encryption not implemented --"
+        entityTypeName="ObsProject" schemaVersion="13" documentVersion="1"/>
+    <prj:ObsProposalRef entityId="entityId_-58266312"
+        entityTypeName="ObsProposal" documentVersion="1"/>
+    <prj:projectName>_NAME_</prj:projectName>
+    <prj:pI>john</prj:pI>
+    <prj:version>1</prj:version>
+    <prj:code>None Assigned</prj:code>
+    <prj:timeOfCreation>0000-00-00</prj:timeOfCreation>
+    <prj:manualMode>false</prj:manualMode>
+    <prj:simulationMode>false</prj:simulationMode>
+    <prj:isCommissioning>true</prj:isCommissioning>
+    <prj:isCalibration>false</prj:isCalibration>
+    <prj:letterGrade>_GRADE_</prj:letterGrade>
+    <prj:staffProjectNote></prj:staffProjectNote>
+    <prj:taPhase2Comments></prj:taPhase2Comments>
+    <prj:taMainComments></prj:taMainComments>
+    <prj:consensusReport></prj:consensusReport>
+    <prj:ObsProgram>
+        <prj:ScienceGoal>
+            <prj:name>_NAME_</prj:name>
+            <prj:note>_NOTE_</prj:note>
+            <prj:ObsUnitSetRef entityId="entityId_-1615548405"
+                partId="X29962774" entityTypeName="ObsProject" documentVersion="1"/>
+            <prj:estimatedTotalTime unit="h">0.0</prj:estimatedTotalTime>
+            <prj:userPriority>0</prj:userPriority>
+            <prj:CalibrationSetupParameters selection="system"/>
+            <prj:PerformanceParameters desiredSensitivityFrequencyMeasure="AggregateBandWidth">
+                <prj:desiredAngularResolution unit="arcsec" userUnit="arcsec">0.1</prj:desiredAngularResolution>
+                <prj:desiredLargestScale unit="arcsec">0.0</prj:desiredLargestScale>
+                <prj:desiredSensitivity unit="mJy" userUnit="mJy">3.0</prj:desiredSensitivity>
+                <prj:desiredDynamicRange>25.0</prj:desiredDynamicRange>
+                <prj:representativeFrequency unit="GHz">_FREQ_</prj:representativeFrequency>
+                <prj:useACA>false</prj:useACA>
+                <prj:isTimeConstrained>false</prj:isTimeConstrained>
+                <prj:useTP>false</prj:useTP>
+                <prj:desiredSDSensitivity unit="Jy" userUnit="Jy">0.0</prj:desiredSDSensitivity>
+                <prj:isPointSource>false</prj:isPointSource>
+                <prj:desiredSensitivityReferenceFrequencyWidth unit="GHz">8.0</prj:desiredSensitivityReferenceFrequencyWidth>
+                <prj:needsMoreTime>false</prj:needsMoreTime>
+                <prj:TemporalParameters>
+                    <prj:startTime></prj:startTime>
+                    <prj:endTime></prj:endTime>
+                    <prj:allowedMargin unit="s">0.0</prj:allowedMargin>
+                </prj:TemporalParameters>
+            </prj:PerformanceParameters>
+            <prj:SpectralSetupParameters polarisation="DOUBLE" type="full">
+                <prj:representativeFrequency unit="GHz">_FREQ_</prj:representativeFrequency>
+                <prj:userRepresentativeFrequency>true</prj:userRepresentativeFrequency>
+                <prj:ScienceSpectralWindow groupResourceUse="FULL">
+                    <prj:index>0</prj:index>
+                    <prj:transitionName>Transition</prj:transitionName>
+                    <prj:centerFrequency unit="GHz">_FREQ_</prj:centerFrequency>
+                    <prj:bandWidth unit="MHz" userUnit="GHz">62.5</prj:bandWidth>
+                    <prj:spectralResolution unit="kHz" userUnit="GHz">15.258789062500002</prj:spectralResolution>
+                    <prj:groupIndex>0</prj:groupIndex>
+                    <prj:isSkyFrequency>false</prj:isSkyFrequency>
+                    <prj:representativeWindow>true</prj:representativeWindow>
+                </prj:ScienceSpectralWindow>
+            </prj:SpectralSetupParameters>
+            <prj:TargetParameters type="F_MultiplePoints">
+                <prj:sourceName>_NAME_</prj:sourceName>
+                <prj:sourceCoordinates system="J2000" type="ABSOLUTE">
+                    <val:longitude unit="deg">_RA_</val:longitude>
+                    <val:latitude unit="deg">_DEC_</val:latitude>
+                </prj:sourceCoordinates>
+                <prj:pmRA unit="mas/yr">0.0</prj:pmRA>
+                <prj:pmDec unit="mas/yr">0.0</prj:pmDec>
+                <prj:parallax unit="mas">7.0</prj:parallax>
+                <prj:nonSiderealMotion>false</prj:nonSiderealMotion>
+                <prj:sourceEphemeris></prj:sourceEphemeris>
+                <prj:sourceVelocity referenceSystem="lsr" dopplerCalcType="RADIO">
+                    <val:centerVelocity unit="km/s">0.0</val:centerVelocity>
+                </prj:sourceVelocity>
+                <prj:index>-1</prj:index>
+                <prj:ExpectedProperties>
+                    <prj:expectedPeakFluxDensity unit="Jy">5.0</prj:expectedPeakFluxDensity>
+                    <prj:desiredPolarizationPercentage>0.0</prj:desiredPolarizationPercentage>
+                    <prj:expectedLineWidth unit="GHz" userUnit="km/s">0.0</prj:expectedLineWidth>
+                    <prj:referenceFrequency unit="GHz">1.0</prj:referenceFrequency>
+                    <prj:expectedPeakLineFluxDensity unit="Jy">0.0</prj:expectedPeakLineFluxDensity>
+                    <prj:expectedSpectralDynamicRange>0.0</prj:expectedSpectralDynamicRange>
+                    <prj:expectedImageDynamicRange>0.0</prj:expectedImageDynamicRange>
+                </prj:ExpectedProperties>
+                <prj:SinglePoint>
+                    <prj:centre system="J2000" type="RELATIVE">
+                        <val:longitude unit="arcsec">0.0</val:longitude>
+                        <val:latitude unit="arcsec">0.0</val:latitude>
+                        <val:fieldName>_NAME_-1</val:fieldName>
+                    </prj:centre>
+                </prj:SinglePoint>
+            </prj:TargetParameters>
+        </prj:ScienceGoal>
+        <prj:ObsPlan status="NewPhase2" entityPartId="X23502497" almatype="APDM::ObsUnitSet">
+            <prj:name>Observing Program</prj:name>
+            <prj:note></prj:note>
+            <prj:ObsProjectRef entityId="entityId_-1615548405"
+                entityTypeName="ObsProject" documentVersion="1"/>
+            <prj:runSciencePipeline>false</prj:runSciencePipeline>
+            <prj:ObsUnitSet status="NewPhase2" entityPartId="X29962774" almatype="APDM::ObsUnitSet">
+                <prj:name>_NAME_-SI</prj:name>
+                <prj:note></prj:note>
+                <prj:ObsProjectRef entityId="entityId_-1615548405"
+                    entityTypeName="ObsProject" documentVersion="1"/>
+                <prj:runSciencePipeline>false</prj:runSciencePipeline>
+                <prj:DataProcessingParameters projectType="Continuum">
+                    <prj:angularResolution unit="arcsec"
+                        userUnit="arcsec" xsi:type="val:UserAngleT">0.1</prj:angularResolution>
+                </prj:DataProcessingParameters>
+                <prj:SchedBlockRef entityId="entityId_1408536722"
+                    entityTypeName="SchedBlock" documentVersion="1"/>
+            </prj:ObsUnitSet>
+        </prj:ObsPlan>
+    </prj:ObsProgram>
+</prj:ObsProject>
