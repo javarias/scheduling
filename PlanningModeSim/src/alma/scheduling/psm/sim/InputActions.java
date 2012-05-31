@@ -193,7 +193,9 @@ public class InputActions extends PsmContext {
 					prjDao.tidyUp();
 				}
 				loader.setArchProjectDao(new Phase1XMLStoreProjectDao());
+				logger.info("Phase1XMLStoreProjectDao was created");
 			} catch (Exception e) {
+				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
 		}

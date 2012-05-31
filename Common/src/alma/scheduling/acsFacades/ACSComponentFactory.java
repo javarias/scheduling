@@ -460,7 +460,9 @@ public class ACSComponentFactory implements ComponentFactory {
 		if (components != null) {
 			for (ACSComponent comp : components) {
 				try {
+					logger.fine("Trying to release component: " + comp.name());
 					containerServices.releaseComponent(comp.name());
+					logger.info("Released component: " + comp.name());
 				} catch (Exception ex) {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					PrintWriter pw = new PrintWriter(os);
