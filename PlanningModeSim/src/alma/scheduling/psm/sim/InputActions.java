@@ -37,7 +37,6 @@ import alma.scheduling.dataload.DataUnloader;
 import alma.scheduling.dataload.obsproject.ObsProjectDataLoader;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.dao.Phase1XMLStoreProjectDao;
-import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.psm.cli.RemoteConsole;
 import alma.scheduling.psm.util.PsmContext;
 
@@ -189,6 +188,10 @@ public class InputActions extends PsmContext {
 			loader.setArchProjectDao(null);
 		} else {
 			try {
+				Phase1XMLStoreProjectDao prjDao = (Phase1XMLStoreProjectDao) loader.getArchProjectDao();
+				if(prjDao != null) {
+					prjDao.tidyUp();
+				}
 				loader.setArchProjectDao(new Phase1XMLStoreProjectDao());
 			} catch (Exception e) {
 				throw new RuntimeException(e);
