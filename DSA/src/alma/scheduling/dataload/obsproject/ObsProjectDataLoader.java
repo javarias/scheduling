@@ -27,5 +27,7 @@ public interface ObsProjectDataLoader extends DataLoader {
 	 * @param archProjectDao the Archive project DAO to set, it could be null
 	 */
 	public void setArchProjectDao(ProjectDao archProjectDao);
+
+	public ProjectDao getArchProjectDao();
 	
 }

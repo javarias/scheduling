@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.3 2012/05/23 21:51:00 javarias Exp $"
+ * "@(#) $Id: ObsProjectDataLoaderImpl.java,v 1.4 2012/05/31 16:46:13 javarias Exp $"
  */
 package alma.scheduling.dataload.obsproject;
 
@@ -33,13 +33,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.DAOException;
-import alma.scheduling.datamodel.executive.Executive;
-import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.dao.ObsProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.XmlObsProjectDao;
-import alma.scheduling.input.executive.generated.ObservingSeason;
 import alma.scheduling.utils.SchedulingProperties;
 
 @Transactional
@@ -61,6 +58,8 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     ProjectDao archProjectDao;
     @Override
     public void setArchProjectDao(ProjectDao archProjectDao) {
+    	if (this.archProjectDao != null)
+    		
     	this.archProjectDao  = archProjectDao;
     }
     
@@ -73,7 +72,7 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     }
 
     @Override
-    @Transactional
+    @Transactional (readOnly=false)
     public void load() {
     	List<ObsProject> projects = null;
     	if (xmlDao != null && SchedulingProperties.isPMSUsingXMLProjects()) {
@@ -111,5 +110,10 @@ public class ObsProjectDataLoaderImpl implements ObsProjectDataLoader {
     	logger.info("Deleting Projects");
     	dao.deleteAll();
     }
+
+	@Override
+	public ProjectDao getArchProjectDao() {
+		return archProjectDao;
+	}
 
 }
