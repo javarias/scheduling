@@ -459,15 +459,17 @@ public class ACSComponentFactory implements ComponentFactory {
 	public void tidyUp() {
 		if (components != null) {
 			for (ACSComponent comp : components) {
+				String compName = null;
 				try {
-					logger.fine("Trying to release component: " + comp.name());
-					containerServices.releaseComponent(comp.name());
-					logger.info("Released component: " + comp.name());
+					compName = comp.name();
+					logger.fine("Trying to release component: " + compName);
+					containerServices.releaseComponent(compName);
+					logger.info("Released component: " + compName);
 				} catch (Exception ex) {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					PrintWriter pw = new PrintWriter(os);
 					pw.write("Problem trying to release component ");
-					pw.write(comp.name()); pw.write(". Problem is: ");
+					pw.write(compName); pw.write(". Problem is: ");
 					pw.println(ex.getMessage()); 
 					ex.printStackTrace(pw);
 					pw.flush();
