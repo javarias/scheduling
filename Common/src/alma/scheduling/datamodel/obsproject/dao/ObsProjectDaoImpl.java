@@ -192,6 +192,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
 	public  synchronized void deleteAll() {
 		getSession().createQuery("delete from " + ObsProject.class.getCanonicalName()).executeUpdate();
 		getSession().createQuery("delete from " + ObsUnit.class.getCanonicalName()).executeUpdate();
+		getSession().createQuery("delete from " + ObsUnitSet.class.getCanonicalName()).executeUpdate();
 		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
 	}
 
