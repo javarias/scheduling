@@ -43,6 +43,8 @@ import alma.entity.xmlbinding.obsproject.ObsProject;
 import alma.entity.xmlbinding.obsproject.ObsProjectEntityT;
 import alma.entity.xmlbinding.obsproposal.ObsProposal;
 import alma.entity.xmlbinding.obsproposal.ObsProposalEntityT;
+import alma.entity.xmlbinding.obsreview.ObsReview;
+import alma.entity.xmlbinding.obsreview.ObsReviewEntityT;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
 import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
@@ -87,6 +89,7 @@ public class ArchiveInterface  {
 	 * ================================================================
 	 */
 	private Map<String, ObsProposal>   obsProposals;
+	private Map<String, ObsReview>     obsReviews;
 	private Map<String, ObsProject>    obsProjects;
 	private Map<String, SchedBlock>    schedBlocks;
 	private Map<String, ProjectStatus> projectStatuses;
@@ -137,6 +140,7 @@ public class ArchiveInterface  {
 		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
 		obsProposals    = new HashMap<String, ObsProposal>();
+		obsReviews      = new HashMap<String, ObsReview>();
 		obsProjects     = new HashMap<String, ObsProject>();
 		schedBlocks     = new HashMap<String, SchedBlock>();
 		projectStatuses = new HashMap<String, ProjectStatus>();
@@ -151,6 +155,7 @@ public class ArchiveInterface  {
 		this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
 		obsProposals    = new HashMap<String, ObsProposal>();
+		obsReviews      = new HashMap<String, ObsReview>();
 		obsProjects     = new HashMap<String, ObsProject>();
 		schedBlocks     = new HashMap<String, SchedBlock>();
 		projectStatuses = new HashMap<String, ProjectStatus>();
@@ -287,6 +292,135 @@ public class ArchiveInterface  {
 		return obsProposals.size();
 	}
 	/* End of ObsProposals
+	 * ============================================================= */
+
+
+	
+	/*
+	 * ================================================================
+	 * ObsReviews
+	 * ================================================================
+	 */
+	/**
+	 * Do we have an ObsReview with the specified id in the cache?
+	 * Does not check that the given id is actually that of an
+	 * ObsReview.
+	 * 
+	 * @param id - the String id of the ObsReview we're after.
+	 * @return <code>true</code> if the indicated ObsReview is in the
+	 *         cache, <code>false</code> otherwise.
+	 */
+	public boolean hasObsReview(String id) {
+		return obsReviews.containsKey(id);
+	}
+
+	/**
+	 * Remember the given ObsReview.
+	 * 
+	 * @param op - the ObsReview to cache
+	 */
+	public void cache(ObsReview or) {
+		final ObsReviewEntityT ent = or.getObsReviewEntity();
+		obsReviews.put(ent.getEntityId(), or);
+	}
+
+	/**
+	 * Get the specified ObsReview. Will go looking in the archive if
+	 * necessary.
+	 * 
+	 * @param id - the String id of the ObsReview we're after.
+	 * @throws EntityException
+	 * @throws UserException
+	 * @return The indicated ObsReview.
+	 */
+	public ObsReview getObsReview(String id)
+								throws EntityException, UserException {
+		ObsReview result = null;
+		if (hasObsReview(id)) {
+			result = cachedObsReview(id);
+		} else {
+			final XmlEntityStruct xml = archive.retrieve(id);
+			result = (ObsReview) entityDeserializer.
+				deserializeEntity(xml, ObsReview.class);
+			obsReviews.put(id, result);
+		}
+		return result;
+	}
+	
+	/**
+	 * Get the specified ObsReview. Doesn't look in the archive.
+	 * 
+	 * @param id - the String id of the ObsReview we're after.
+	 * @return The indicated ObsReview, or <code>null</code> if it's
+	 *         not in the cache.
+	 */
+	public ObsReview cachedObsReview(String id) {
+		return obsReviews.get(id);
+	}
+	
+	/**
+	 * Clear the given ObsReview from the cache. Does not check that
+	 * the given id is actually that of an ObsReview, or that the
+	 * cache actually contains such an ObsReview. 
+	 * 
+	 * @param id
+	 */
+	public void forgetObsReview(String id) {
+		obsReviews.remove(id);
+	}
+	
+	
+	/**
+	 * Clear the given ObsReview from the cache. Does not check that
+	 * the given id is actually that of an ObsReview, or that the
+	 * cache actually contains such an ObsReview.
+	 * 
+	 * @param op - the ObsReview to forget about.
+	 */
+	public void forgetObsReview(ObsReview or) {
+		final ObsReviewEntityT ent = or.getObsReviewEntity();
+		forgetObsReview(ent.getEntityId());
+	}
+	
+	/**
+	 * Refresh any cache of the given ObsReview - i.e. drop the
+	 * current copy from the cache and fetch a new copy from the archive.
+	 * 
+	 * @param id
+	 * @return the newly refreshed ObsReview
+	 * @throws UserException 
+	 * @throws EntityException 
+	 */
+	public ObsReview refreshObsReview(String id)
+								throws EntityException, UserException {
+		forgetObsReview(id);
+		return getObsReview(id);
+	}
+	
+	/**
+	 * Refresh any cache of the given ObsReview - i.e. drop the
+	 * current copy from the cache and fetch a new copy from the archive.
+	 * 
+	 * @param op
+	 * @return the newly refreshed ObsReview
+	 * @throws UserException 
+	 * @throws EntityException 
+	 */
+	public ObsReview refreshObsReview(ObsReview or)
+								throws EntityException, UserException {
+		final ObsReviewEntityT ent = or.getObsReviewEntity();
+		return refreshObsReview(ent.getEntityId());
+	}
+	
+	/**
+	 * How many ObsReviews do we have cached?
+	 * 
+	 * @return int
+	 */
+	public int numObsReviews() {
+		return obsReviews.size();
+	}
+	/* End of ObsReviews
 	 * ============================================================= */
 
 
@@ -1085,6 +1219,10 @@ public class ArchiveInterface  {
 	 */
 	public Iterable<ObsProposal> obsProposals() {
 		return obsProposals.values();
+	}
+	
+	public Iterable<ObsReview> obsReviews() {
+		return obsReviews.values();
 	}
 	
 	public Iterable<ObsProject> obsProjects() {
