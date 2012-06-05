@@ -20,12 +20,12 @@
  *******************************************************************************/
 package alma.scheduling.datamodel.obsproject.dao;
 
-import java.rmi.Remote;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.LockMode;
 import org.hibernate.Query;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Isolation;
@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import alma.scheduling.datamodel.GenericDaoImpl;
-import alma.scheduling.datamodel.obsproject.FieldSource;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.datamodel.obsproject.ObsUnit;
 import alma.scheduling.datamodel.obsproject.ObsUnitSet;
@@ -42,7 +41,7 @@ import alma.scheduling.datamodel.obsproject.SchedBlock;
 import alma.scheduling.datamodel.obsproject.Target;
 
 @Transactional(readOnly = true)
-public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, Remote {
+public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 
     private static Logger logger = LoggerFactory.getLogger(ObsProjectDaoImpl.class);
     
@@ -188,12 +187,12 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao, 
 
 
 	@Override
-	@Transactional(readOnly=false)
-	public  synchronized void deleteAll() {
-		getSession().createQuery("delete from " + ObsUnit.class.getCanonicalName()).executeUpdate();
-		getSession().createQuery("delete from " + ObsUnitSet.class.getCanonicalName()).executeUpdate();
-		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
+	public void deleteAll() {
 		getSession().createQuery("delete from " + ObsProject.class.getCanonicalName()).executeUpdate();
+//		getSession().createQuery("delete from " + ObsUnit.class.getCanonicalName()).executeUpdate();
+		getSession().createSQLQuery("DELETE FROM OBSUNIT").executeUpdate();
+//		getSession().createQuery("delete from " + ObsUnitSet.class.getCanonicalName()).executeUpdate();
+//		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
 	}
 
 }
