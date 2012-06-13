@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./scripts/sqltool "\\i config/userreg-hsqldb-ddl.sql"

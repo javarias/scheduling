@@ -15,6 +15,7 @@ From SCHEDULING/IntTest/test:
 		archiveLoadSchema $ACSROOT/idl
 		archiveLoadSchema <Location of your ICD installation>/idl
 		./scripts/initializeStateArchive
+		./scripts/initializeUserRegistry
 
 	./scripts/populate.sh projects/R80*.aot
 

@@ -1,0 +1,30 @@
+<Context>
+<!--    <Realm          className="org.apache.catalina.realm.JDBCRealm"
+                   driverName="org.hsqldb.jdbcDriver"
+                connectionURL="jdbc:hsqldb:hsql://localhost/relational"
+               connectionName="SA"
+           connectionPassword=""
+                    userTable="ACCOUNT"
+                  userNameCol="ACCOUNT_ID"
+                  userCredCol="PASSWORD_DIGEST"
+                userRoleTable="SUBMISSION_SERVICE_ROLES"
+                  roleNameCol="NAME"
+                       digest="MD5" />
+-->
+    <Realm     className="org.apache.catalina.realm.JNDIRealm"
+                   debug="99"
+           connectionURL="ldap://127.0.0.1:1389"
+             userPattern="uid={0},ou=people,ou=master,dc=alma,dc=info"
+                roleBase="ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info"
+                roleName="cn"
+              roleSearch="(member={0})" />
+         
+    <!-- Make sure that mail.smtp.host points to your SMTP server! For the OSF,
+         this should be smtp.alma.cl -->
+	<Resource name="mail/Session"
+			  auth="Container"
+    		  type="javax.mail.Session"
+			  mail.smtp.sendpartial="true"
+              mail.smtp.host="not-a-valid-host" />
+              
+</Context>

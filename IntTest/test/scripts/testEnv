@@ -73,11 +73,12 @@ stop() {
 
 startHSQLDB() {
     printf "Starting HSQLDB\n"
-    acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT" &> ${ACS_TMP}/hsqldb.log &
+    acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -database.1 file:"$DBDIR/userRegistry" -dbname.1 "userRegistry" -port "$DBPORT" &> ${ACS_TMP}/hsqldb.log &
     # allow some time for the database to start
     sleep 5
 #	./scripts/sqltool "\\i config/hsqldb-ddl.sql"
 #    acsStartJava alma.lifecycle.clients.CreateEmptyDatabase Server "$DBNAME" localhost:9001 sql/hsqldb-ddl.sql &> $ACS_TMP/hsqldb-ddl.log
+#	acsStartJava  alma.lifecycle.clients.CreateEmptyDatabase Server userRegistry localhost config/userreg-hsqldb-ddl.sql 2>&1 >> $ACS_TMP/hsqldb-ddl.log
 }
 
 stopHSQLDB() {
@@ -89,6 +90,7 @@ stopHSQLDB() {
         HSQLDB_JAR=$INTROOT/lib/sqltool.jar
     fi
     java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "shutdown;" "$DBNAME"
+	java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "shutdown;" "userRegistry"
 }
 
 startACS() {
@@ -100,6 +102,22 @@ startACS() {
         cd - &> /dev/null
     fi
     
+	#Replace archiveConfig.properties
+	if [ -w $ACSDATA/config/archiveConfig.properties ]; then
+		mv $ACSDATA/config/archiveConfig.properties $ACSDATA/config/archiveConfig.properties.orig
+		ln -s $(pwd)/archiveConfig.properties $ACSDATA/config/archiveConfig.properties
+	else
+		echo "$ACSDATA/config/archiveConfig.properties could not be replaced."
+	fi
+
+	#Replace obopsConfig.properties
+	if [ -w $ACSDATA/config/obopsConfig.properties ]; then
+		mv $ACSDATA/config/obopsConfig.properties $ACSDATA/config/obopsConfig.properties.orig
+		ln -s $(pwd)/config/obopsConfig.properties $ACSDATA/config/obopsConfig.properties
+	else
+		echo "$ACSDATA/config/obopsConfig.properties could not be replaced"
+	fi
+
     # Now see if we should wait for the interface repository to load
     if [ -n "$IDL_FILES_TO_LOAD" ]; then
         noloadifr='-noloadifr'
@@ -161,9 +179,21 @@ startACS() {
     # pid=$!
     # echo $pid > $ACS_TMP/archive.pid
     # acsutilBlock -t 60 -f $LOGFILE -b "Initialized Archive subsystem."
-    printf "Starting archive\n"
-	userrepository start
-    archive start &> $ACS_TMP/archive.log
+    printf "Starting archive\n"i
+    if [ -w $ACSDATA/tomcat5/conf/catalina.properties ]; then
+        cp $ACSDATA/tomcat5/conf/catalina.properties $ACS_TMP/catalina.properties.orig
+        sed -i "s|^obsprep.userreg.ldap=[[:graph:]]*||" $ACSDATA/tomcat5/conf/catalina.properties
+        echo "obsprep.userreg.ldap=true" >> $ACSDATA/tomcat5/conf/catalina.properties
+    fi
+    if [ -w $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml ]; then
+        cp $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml $ACS_TMP/ObsprepSubmissionService.xml.orig
+        cp config/ObsprepSubmissionService.xml $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml
+    else 
+        echo "Submission service not installed or $ACSDATA/conf/Catalina/localhost/ObsprepSubmissionService.xml not writable."
+        echo "Check if Submission service is installed or the permission of the file, otherwise submission of aot files could fail."
+    fi
+	userrepository start &> $ACS_TMP/archive.log
+    archive start 2>&1 >> $ACS_TMP/archive.log
 	#LDAP deletion
 	ldapdelete -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -r "dc=alma,dc=info" &> $ACS_TMP/ur-ldapdelete.out
 	#LDAP tree creation
@@ -178,7 +208,21 @@ stopACS() {
     if [ -r "$ACS_TMP/archive.pid" ]; then
 	    archive stop &> $ACS_TMP/archiveStop.log
 		userrepository stop
+        cp $ACS_TMP/catalina.properties.orig $ACSDATA/tomcat5/conf/catalina.properties
+        cp $ACS_TMP/ObsprepSubmissionService.xml.orig $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml
     fi
+	
+	#Replace archiveConfig.properties
+	if [ -w $ACSDATA/config/archiveConfig.properties ]; then
+		rm -rf $ACSDATA/config/archiveConfig.properties
+		mv $ACSDATA/config/archiveConfig.properties.orig $ACSDATA/config/archiveConfig.properties
+	fi
+
+	#Replace obopsConfig.properties
+	if [ -w $ACSDATA/config/obopsConfig.properties ]; then
+		rm -rf $ACSDATA/config/obopsConfig.properties
+		mv $ACSDATA/config/obopsConfig.properties.orig $ACSDATA/config/obopsConfig.properties
+	fi
 }
 
 case "$1" in
