@@ -35,7 +35,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: TableState.java,v 1.1 2012/03/08 21:00:25 dclarke Exp $
+ * $Id: TableState.java,v 1.2 2012/06/15 19:27:14 dclarke Exp $
  */
 public class TableState implements Serializable {
 
@@ -80,7 +80,7 @@ public class TableState implements Serializable {
 				props.restore(current);
 				tableColumnModel.moveColumn(currentIndex, i);
 			} catch (Exception e) {
-				String message = String.format("Error restoring OP column %d", i);
+				String message = String.format("Error restoring table column %d", i);
 				if (logger != null) {
 					ErrorHandling.warning(logger, message, e);
 				} else {
@@ -97,7 +97,7 @@ public class TableState implements Serializable {
 
 	/*
 	 * ================================================================
-	 * State of this panel
+	 * State of this table
 	 * ================================================================
 	 */
 	private Map<Object, Integer> indices;
@@ -141,6 +141,6 @@ public class TableState implements Serializable {
 			return null;
 		}
 	}
-	/* End of State of this panel
+	/* End of State of this table
 	 * ============================================================= */
 }
