@@ -54,6 +54,7 @@ import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
 import alma.projectlifecycle.StateSystemOperations;
+import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
 import alma.statearchiveexceptions.InappropriateEntityTypeEx;
 import alma.statearchiveexceptions.NoSuchEntityEx;
 import alma.statearchiveexceptions.NullEntityIdEx;
@@ -96,6 +97,17 @@ public class ArchiveInterface  {
 	private Map<String, OUSStatus>     ousStatuses;
 	private Map<String, SBStatus>      sbStatuses;
 	/* End of caches for the various Entities
+	 * ============================================================= */
+
+    
+    
+	/*
+	 * ================================================================
+	 * Where to look for Phase 1 SBs
+	 * ================================================================
+	 */
+	private Map<String, Phase1SBSourceValue> phase1SBSources;
+	/* End of Where to look for Phase 1 SBs
 	 * ============================================================= */
 
 
@@ -146,6 +158,7 @@ public class ArchiveInterface  {
 		projectStatuses = new HashMap<String, ProjectStatus>();
 		ousStatuses     = new HashMap<String, OUSStatus>();
 		sbStatuses      = new HashMap<String, SBStatus>();
+		phase1SBSources = null;
 	}
 
 	protected ArchiveInterface(ArchiveInterface that) {
@@ -161,6 +174,7 @@ public class ArchiveInterface  {
 		projectStatuses = new HashMap<String, ProjectStatus>();
 		ousStatuses     = new HashMap<String, OUSStatus>();
 		sbStatuses      = new HashMap<String, SBStatus>();
+		phase1SBSources = null;
 	}
 	/* End of construction
 	 * ============================================================= */
@@ -1247,4 +1261,24 @@ public class ArchiveInterface  {
 	/* End of iteration
 	 * ============================================================= */
 
+
+	
+	/*
+	 * ================================================================
+	 * Location of Phase 1 SBs
+	 * ================================================================
+	 */
+	public void rememberPhase1Location(String              projectId,
+			                           Phase1SBSourceValue location) {
+		if (phase1SBSources == null) {
+			phase1SBSources = new HashMap<String, Phase1SBSourceValue>();
+		}
+		phase1SBSources.put(projectId, location);
+	}
+
+	public Phase1SBSourceValue getPhase1Location(String projectId) {
+		return phase1SBSources.get(projectId);
+	}
+	/* End of Location of Phase 1 SBs
+	 * ============================================================= */
 }
