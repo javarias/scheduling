@@ -38,6 +38,7 @@ import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 
 /**
@@ -105,54 +106,64 @@ public class Executor extends Observable {
         			}
         			logger.info("executor consumer took item " + item);
 
-        			currentExecution = new ExecutionContext(item, executor, manual);
-        			// Blocks until the execution has finished.
-        			logger.finer(String.format("(%s) %s for %s just before %s.startObservation()",
-        					this.getName(),
-        					this.getClass().getSimpleName(),
-        					item.getUid(),
-        					currentExecution.getClass().getSimpleName()));
-        			currentExecution.startObservation();
-        			logger.finer(String.format("(%s) %s for %s just after %s.startObservation()",
-        					this.getName(),
-        					this.getClass().getSimpleName(),
-        					item.getUid(),
-        					currentExecution.getClass().getSimpleName()));
+        			try {
+        				currentExecution = new ExecutionContext(item, executor, manual);
+         				// Blocks until the execution has finished.
+        				logger.finer(String.format("(%s) %s for %s just before %s.startObservation()",
+        						this.getName(),
+        						this.getClass().getSimpleName(),
+        						item.getUid(),
+        						currentExecution.getClass().getSimpleName()));
+        				currentExecution.startObservation();
+        				logger.finer(String.format("(%s) %s for %s just after %s.startObservation()",
+        						this.getName(),
+        						this.getClass().getSimpleName(),
+        						item.getUid(),
+        						currentExecution.getClass().getSimpleName()));
 
-        			currentExecution.observe();
-        			logger.finer(String.format("(%s) %s for %s just after %s.observe()",
-        					this.getName(),
-        					this.getClass().getSimpleName(),
-        					item.getUid(),
-        					currentExecution.getClass().getSimpleName()));
-        			isRunning.set(false);
+        				currentExecution.observe();
+        				logger.finer(String.format("(%s) %s for %s just after %s.observe()",
+        						this.getName(),
+        						this.getClass().getSimpleName(),
+        						item.getUid(),
+        						currentExecution.getClass().getSimpleName()));
+           			} catch (Exception e) {
+           				currentExecution = null;
+           				ErrorHandling.warning(logger,
+           						String.format("Problem creating execution for SchedBlock %s",
+           								item.getUid()), e);
+        			} finally {
+        				isRunning.set(false);
+        			}
         			// The observation finished or failed.
 
-        			// Pass on the execution to the pastExecutions list, where it will
-        			// wait for the ASDMArchivedEvent.
-        			ArchivalWaitThread wthr = new ArchivalWaitThread(currentExecution);
-        			try {
-        				pastExecutionsLock.lock();
-        				pastExecutions.add(wthr);
-        				logger.finer(String.format("(%s) %s for %s just before %s.start()",
-        						this.getName(),
-        						this.getClass().getSimpleName(),
-        						item.getUid(),
-        						wthr.getClass().getSimpleName()));
-        				wthr.start();
-        				logger.finer(String.format("(%s) %s for %s just after %s.start()",
-        						this.getName(),
-        						this.getClass().getSimpleName(),
-        						item.getUid(),
-        						wthr.getClass().getSimpleName()));
-        				currentExecution = null;
-        			} finally {
-        				logger.finer(String.format("(%s) %s for %s in finally block after %s.start()",
-        						this.getName(),
-        						this.getClass().getSimpleName(),
-        						item.getUid(),
-        						wthr.getClass().getSimpleName()));
-        				pastExecutionsLock.unlock();
+        			if (currentExecution != null) {
+        				// Pass on the execution to the pastExecutions list, where it will
+        				// wait for the ASDMArchivedEvent.
+        				ArchivalWaitThread wthr = new ArchivalWaitThread(currentExecution);
+        				try {
+        					pastExecutionsLock.lock();
+        					pastExecutions.add(wthr);
+        					logger.finer(String.format("(%s) %s for %s just before %s.start()",
+        							this.getName(),
+        							this.getClass().getSimpleName(),
+        							item.getUid(),
+        							wthr.getClass().getSimpleName()));
+        					wthr.start();
+        					logger.finer(String.format("(%s) %s for %s just after %s.start()",
+        							this.getName(),
+        							this.getClass().getSimpleName(),
+        							item.getUid(),
+        							wthr.getClass().getSimpleName()));
+        					currentExecution = null;
+        				} finally {
+        					logger.finer(String.format("(%s) %s for %s in finally block after %s.start()",
+        							this.getName(),
+        							this.getClass().getSimpleName(),
+        							item.getUid(),
+        							wthr.getClass().getSimpleName()));
+        					pastExecutionsLock.unlock();
+        				}
         			}
         		}
         		inCriticalSection.set(true);
