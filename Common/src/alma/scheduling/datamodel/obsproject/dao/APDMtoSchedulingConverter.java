@@ -411,12 +411,6 @@ public class APDMtoSchedulingConverter {
 					obsProject.getUid(),
 					e1.getMessage()));
 		}
-		if (phase == Phase.PHASE1) {
-			apdmOUS = apdmProposal.getObsPlan();
-			logger.info("Proposal with uid: " + obsProject.getId() + "  had a status in ObsPlan of :" + apdmProposal.getObsPlan().getStatus().toString() );
-		} else {
-			apdmOUS = apdmProject.getObsProgram().getObsPlan();
-		}
 		
 		try {
 			obsProject.setAffiliation(apdmProposal.getPrincipalInvestigator().getAssociatedExec().toString());
@@ -425,6 +419,28 @@ public class APDMtoSchedulingConverter {
 					"No PI information in APDM ObsProposal %s for APDM Obs Project %s",
 					proposalRef.getEntityId(),
 					obsProject.getUid()));
+		}
+
+		if (phase == Phase.PHASE1) {
+			switch (archive.getPhase1Location(apdmProject.getObsProjectEntity().getEntityId())) {
+				case REVIEW_ONLY:
+					alma.entity.xmlbinding.obsreview.ObsReview apdmReview =
+						archive.cachedObsReview(apdmProject.getObsReviewRef().getEntityId());
+					apdmOUS = apdmReview.getObsPlan();
+					logger.info("Proposal with uid: " + obsProject.getId() +
+							"  had a status in ObsReview's ObsPlan of :"
+							+ apdmOUS.getStatus().toString() );
+					break;
+				case PROPOSAL_ONLY:
+				default:
+					apdmOUS = apdmProposal.getObsPlan();
+					logger.info("Proposal with uid: " + obsProject.getId() +
+							"  had a status in ObsProposal's ObsPlan of :"
+							+ apdmOUS.getStatus().toString() );
+					break;
+			}
+		} else {
+			apdmOUS = apdmProject.getObsProgram().getObsPlan();
 		}
 		
 		ObsUnitSet obsProgram = createObsUnitSet(
