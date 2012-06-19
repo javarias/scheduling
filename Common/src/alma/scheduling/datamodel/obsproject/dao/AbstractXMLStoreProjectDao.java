@@ -687,7 +687,8 @@ public abstract class AbstractXMLStoreProjectDao
 		lines = 1;
 		
 		for (final alma.entity.xmlbinding.obsproject.ObsProject op : archive.obsProjects()) {
-			f.format("\tOP %s, PS %s, name is %s, proposal %s%n",
+			f.format("\tOP %s (%s), PS %s, name is %s, proposal %s%n",
+					op.getCode(),
 					op.getObsProjectEntity().getEntityId(),
 					op.getProjectStatusRef().getEntityId(),
 					op.getProjectName(),
@@ -720,7 +721,8 @@ public abstract class AbstractXMLStoreProjectDao
 			if (archive.hasObsProject(id)) {
 				alma.entity.xmlbinding.obsproject.ObsProject op
 					= archive.cachedObsProject(id);
-				f.format("\tOP %s, PS %s, name is %s%n",
+				f.format("\tOP %s (%s), PS %s, name is %s%n",
+						op.getCode(),
 						op.getObsProjectEntity().getEntityId(),
 						op.getProjectStatusRef().getEntityId(),
 						op.getProjectName());

@@ -96,9 +96,11 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			alma.entity.xmlbinding.obsproject.ObsProjectRefT projectRef = apdmProposal.getObsProjectRef();
 			String                                           projectId = projectRef.getEntityId();
 			try {
-				result.add(archive.getObsProject(projectId));
+				alma.entity.xmlbinding.obsproject.ObsProject apdmProject = archive.getObsProject(projectId);
+				result.add(apdmProject);
 				logger.info(String.format(
-						"Succesfully got APDM ObsProject %s for APDM ObsProposal %s",
+						"Succesfully got APDM ObsProject %s (%s) for APDM ObsProposal %s",
+						apdmProject.getCode(),
 						projectId,
 						apdmProposal.getObsProposalEntity().getEntityId()));
 			} catch (EntityException e) {
@@ -137,25 +139,29 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 				try {
 					archive.getObsReview(reviewId);
 					logger.info(String.format(
-							"Succesfully got APDM ObsReview %s for APDM ObsProject %s",
+							"Succesfully got APDM ObsReview %s for APDM ObsProject %s (%s)",
 							reviewId,
+							apdmProject.getCode(),
 							apdmProject.getObsProjectEntity().getEntityId()));
 				} catch (EntityException e) {
 					logger.warning(String.format(
-							"Cannot get APDM ObsReview %s for APDM ObsProject %s - %s",
+							"Cannot get APDM ObsReview %s for APDM ObsProject %s (%s) - %s",
 							reviewId,
+							apdmProject.getCode(),
 							apdmProject.getObsProjectEntity().getEntityId(),
 							e.getMessage()));
 				} catch (UserException e) {
 					logger.warning(String.format(
-							"Cannot get APDM ObsReview %s for APDM ObsProject %s - %s",
+							"Cannot get APDM ObsReview %s for APDM ObsProject %s (%s) - %s",
 							reviewId,
+							apdmProject.getCode(),
 							apdmProject.getObsProjectEntity().getEntityId(),
 							e.getMessage()));
 				}
 			} else {
 				logger.warning(String.format(
-						"APDM ObsProject %s has no APDM ObsReview",
+						"APDM ObsProject %s (%s) has no APDM ObsReview",
+						apdmProject.getCode(),
 						apdmProject.getObsProjectEntity().getEntityId()));
 			}
 		}
@@ -189,25 +195,29 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 					try {
 						archive.getObsReview(reviewId);
 						logger.info(String.format(
-								"Succesfully got APDM ObsReview %s for APDM ObsProject %s",
+								"Succesfully got APDM ObsReview %s for APDM ObsProject %s (%s)",
 								reviewId,
+								apdmProject.getCode(),
 								apdmProject.getObsProjectEntity().getEntityId()));
 					} catch (EntityException e) {
 						logger.warning(String.format(
-								"Cannot get APDM ObsReview %s for APDM ObsProject %s - %s",
+								"Cannot get APDM ObsReview %s for APDM ObsProject %s (%s) - %s",
 								reviewId,
+								apdmProject.getCode(),
 								apdmProject.getObsProjectEntity().getEntityId(),
 								e.getMessage()));
 					} catch (UserException e) {
 						logger.warning(String.format(
-								"Cannot get APDM ObsReview %s for APDM ObsProject %s - %s",
+								"Cannot get APDM ObsReview %s for APDM ObsProject %s (%s) - %s",
 								reviewId,
+								apdmProject.getCode(),
 								apdmProject.getObsProjectEntity().getEntityId(),
 								e.getMessage()));
 					}
 				} else {
 					logger.warning(String.format(
-							"APDM ObsProject %s has no APDM ObsReview",
+							"APDM ObsProject %s (%s) has no APDM ObsReview",
+							apdmProject.getCode(),
 							apdmProject.getObsProjectEntity().getEntityId()));
 				}
 			}
@@ -264,7 +274,6 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 						alma.entity.xmlbinding.obsproposal.ObsProposal proposal =
 							archive.getObsProposal(res.identifier);
 						result.add(proposal);
-						archive.cache(proposal);
 						logger.info(String.format(
 								"Succesfully got %d APDM ObsProposal %s", result.size(), 
 								res.identifier));
@@ -412,12 +421,16 @@ public class Phase1XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			
 			if (resolvedLocation == Phase1SBSourceValue.PROPOSAL_ONLY) {
 				logger.info(String.format(
-						"Using APDM ObsProposal %s as source for Phase 1 SchedBlocks for ObsProject %s",
-						apdmProject.getObsProposalRef().getEntityId(), projectId));
+						"Using APDM ObsProposal %s as source for Phase 1 SchedBlocks for ObsProject %s (%s)",
+						apdmProject.getObsProposalRef().getEntityId(),
+						apdmProject.getCode(),
+						projectId));
 			} else {
 				logger.info(String.format(
-						"Using APDM ObsReview %s as source for Phase 1 SchedBlocks for ObsProject %s",
-						apdmProject.getObsReviewRef().getEntityId(), projectId));
+						"Using APDM ObsReview %s as source for Phase 1 SchedBlocks for ObsProject %s (%s)",
+						apdmProject.getObsReviewRef().getEntityId(),
+						apdmProject.getCode(),
+						projectId));
 			}
 			archive.rememberPhase1Location(projectId, resolvedLocation);
 		}

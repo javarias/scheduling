@@ -216,9 +216,10 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 			alma.entity.xmlbinding.obsproject.ObsProjectRefT projectRef = projectStatus.getObsProjectRef();
 			String                                           projectId = projectRef.getEntityId();
 			try {
-				archive.getObsProject(projectId);
+				alma.entity.xmlbinding.obsproject.ObsProject apdmProject = archive.getObsProject(projectId);
 				logger.info(String.format(
-						"Succesfully got APDM ObsProject %s for APDM ProjectStatus %s",
+						"Succesfully got APDM ObsProject %s (%s) for APDM ProjectStatus %s",
+						apdmProject.getCode(),
 						projectId,
 						projectStatus.getProjectStatusEntity().getEntityId()));
 			} catch (EntityException e) {
@@ -472,7 +473,8 @@ public class Phase2XMLStoreProjectDao extends AbstractXMLStoreProjectDao {
 		} catch (Exception e) {
 			ErrorHandling.warning(
 					logger,
-					String.format("Cannot get SBStatuses for APDM Project %s [Project Status ID: %s] - %s",
+					String.format("Cannot get SBStatuses for APDM Project %s (%s) [Project Status ID: %s] - %s",
+							apdmProject.getCode(),
 							apdmProjectId, 
 							projectStatusId,
 							e.getMessage()),
