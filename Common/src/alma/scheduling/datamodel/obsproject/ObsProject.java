@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.13 2011/02/24 23:00:17 javarias Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.14 2012/06/19 23:12:20 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -265,5 +265,23 @@ public class ObsProject {
         return Id == null ? System.identityHashCode(this) : Id.hashCode();
     }
     
-    
+    /*
+     * ================================================================
+     * Extensions
+     * ================================================================
+     */
+	public void ident(StringBuilder buffer) {
+		buffer.append(getCode());
+		buffer.append(" (");
+		buffer.append(getUid());
+		buffer.append(")");
+	}
+	
+	public String ident() {
+		final StringBuilder buffer = new StringBuilder();
+		ident(buffer);
+		return buffer.toString();
+	}
+	/* End Extensions
+	 * ============================================================= */
 }

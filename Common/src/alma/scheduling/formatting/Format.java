@@ -42,7 +42,7 @@ import java.util.Vector;
  * 
  * @author dclarke
  * <br>
- * $Id: Format.java,v 1.1 2011/09/29 20:57:20 dclarke Exp $
+ * $Id: Format.java,v 1.2 2012/06/19 23:12:20 dclarke Exp $
  */
 public final class Format {
 
@@ -84,6 +84,28 @@ public final class Format {
 		return format(collection, "", ", ", "");
 	}
 	/* End Collections
+	 * ============================================================= */
+
+    
+    
+    /*
+	 * ================================================================
+	 * Entities
+	 * ================================================================
+	 */
+	public static void ident(StringBuilder buffer, alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
+		buffer.append(apdmProject.getCode());
+		buffer.append(" (");
+		buffer.append(apdmProject.getObsProjectEntity().getEntityId());
+		buffer.append(")");
+	}
+	
+	public static String ident(alma.entity.xmlbinding.obsproject.ObsProject apdmProject) {
+		final StringBuilder buffer = new StringBuilder();
+		ident(buffer, apdmProject);
+		return buffer.toString();
+	}
+	/* End Entities
 	 * ============================================================= */
 
     

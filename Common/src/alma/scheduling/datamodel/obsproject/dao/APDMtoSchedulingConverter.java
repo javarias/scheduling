@@ -77,6 +77,7 @@ import alma.scheduling.datamodel.obsproject.ScienceParameters;
 import alma.scheduling.datamodel.obsproject.SkyCoordinates;
 import alma.scheduling.datamodel.obsproject.Target;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
+import alma.scheduling.formatting.Format;
 import alma.scheduling.utils.ErrorHandling;
 
 /**
@@ -181,7 +182,7 @@ public class APDMtoSchedulingConverter {
 //						apdmProject.getObsProjectEntity().getEntityId()));
 				logger.info(String.format(
 						"ObsProject %s successfully converted to Scheduling Data Model",
-						apdmProject.getObsProjectEntity().getEntityId()));
+						Format.ident(apdmProject)));
 				ProjectImportEvent event = new ProjectImportEvent();
 				event.setTimestamp(new Date());
 				event.setEntityId(apdmProject.getObsProjectEntity().getEntityId());
@@ -196,7 +197,7 @@ public class APDMtoSchedulingConverter {
 //						e.getMessage()));
 				logger.warning(String.format(
 						"cannot convert APDM ObsProject %s to Scheduling Data Model - %s",
-						apdmProject.getObsProjectEntity().getEntityId(),
+						Format.ident(apdmProject),
 						e.getMessage()));
 				ProjectImportEvent event = new ProjectImportEvent();
 				event.setTimestamp(new Date());
@@ -213,7 +214,7 @@ public class APDMtoSchedulingConverter {
 //						e.getMessage()));
 				ErrorHandling.severe(logger, String.format(
 						"error converting APDM ObsProject %s to Scheduling Data Model - %s",
-						apdmProject.getObsProjectEntity().getEntityId(),
+						Format.ident(apdmProject),
 						e.getMessage()), e);
 				e.printStackTrace();
 				ProjectImportEvent event = new ProjectImportEvent();
@@ -254,7 +255,7 @@ public class APDMtoSchedulingConverter {
 				} catch (ConversionException e) {
 					logger.warning(String.format(
 						"cannot convert APDM ObsProject %s to Scheduling Data Model - %s",
-						apdmProject.getObsProjectEntity().getEntityId(),
+						Format.ident(apdmProject),
 						e.getMessage()));
 				}
 			} else {
@@ -296,9 +297,10 @@ public class APDMtoSchedulingConverter {
 		
 		{
 			// Everything in this block is about logging.
-			String projectId = "<<didn't get far enough to set>>";
-			String statusId  = "<<didn't get far enough to set>>";
-			String programId = "<<didn't get far enough to set>>";
+			String projectId   = "<<didn't get far enough to set>>";
+			String projectCode = apdmProject.getCode();
+			String statusId    = "<<didn't get far enough to set>>";
+			String programId   = "<<didn't get far enough to set>>";
 			
 			alma.entity.xmlbinding.obsproject.ObsProjectEntityT
 					opEnt = apdmProject.getObsProjectEntity();
@@ -311,8 +313,13 @@ public class APDMtoSchedulingConverter {
 				projectId = "<<APDM ObsProject has no entity object>>";
 			}
 
+			if (projectCode == null) {
+				projectCode = "<<APDM ObsProject has no project code>>";
+			}
+			
 			logger.info(String.format(
-					"Processing project %s, is %sin dictionary",
+					"Processing project %s (%s), is %sin dictionary",
+					projectCode,
 					projectId,
 					archive.hasObsProject(projectId)? "": "NOT "));
 
@@ -406,9 +413,9 @@ public class APDMtoSchedulingConverter {
 			apdmProposal = archive.getObsProposal(proposalRef.getEntityId());
 		} catch (Exception e1) {
 			throw new ConversionException(String.format(
-					"Error getting APDM ObsProposal %s for APDM Obs Project %s - %s",
+					"Error getting APDM ObsProposal %s for APDM ObsProject %s - %s",
 					proposalRef.getEntityId(),
-					obsProject.getUid(),
+					obsProject.ident(),
 					e1.getMessage()));
 		}
 		
@@ -416,9 +423,9 @@ public class APDMtoSchedulingConverter {
 			obsProject.setAffiliation(apdmProposal.getPrincipalInvestigator().getAssociatedExec().toString());
 		} catch (java.lang.NullPointerException e) {
 			throw new ConversionException(String.format(
-					"No PI information in APDM ObsProposal %s for APDM Obs Project %s",
+					"No PI information in APDM ObsProposal %s for APDM ObsProject %s",
 					proposalRef.getEntityId(),
-					obsProject.getUid()));
+					obsProject.ident()));
 		}
 
 		if (phase == Phase.PHASE1) {
@@ -427,14 +434,14 @@ public class APDMtoSchedulingConverter {
 					alma.entity.xmlbinding.obsreview.ObsReview apdmReview =
 						archive.cachedObsReview(apdmProject.getObsReviewRef().getEntityId());
 					apdmOUS = apdmReview.getObsPlan();
-					logger.info("Proposal with uid: " + obsProject.getId() +
+					logger.info("Proposal " + obsProject.ident() +
 							"  had a status in ObsReview's ObsPlan of :"
 							+ apdmOUS.getStatus().toString() );
 					break;
 				case PROPOSAL_ONLY:
 				default:
 					apdmOUS = apdmProposal.getObsPlan();
-					logger.info("Proposal with uid: " + obsProject.getId() +
+					logger.info("Proposal " + obsProject.ident() +
 							"  had a status in ObsProposal's ObsPlan of :"
 							+ apdmOUS.getStatus().toString() );
 					break;
@@ -624,7 +631,7 @@ public class APDMtoSchedulingConverter {
 			throw new ConversionException(String.format(
 					"APDM ObsUnitSet %s of APDM ObsProject %s has no children",
 					apdmOUS.getEntityPartId(),
-					apdmProject.getObsProjectEntity().getEntityId()));
+					Format.ident(apdmProject)));
 		}
 		for (alma.entity.xmlbinding.obsproject.ObsUnitSetT
 					childOUS : choice.getObsUnitSet()) {
@@ -661,7 +668,7 @@ public class APDMtoSchedulingConverter {
 					logger.info(String.format(
 							"Skipping SchedBlock %s in Project %s - %s",
 							apdmSB.getSchedBlockEntity().getEntityId(),
-							apdmProject.getObsProjectEntity().getEntityId(),
+							Format.ident(apdmProject),
 							e.getMessage()));
 					ProjectImportEvent event = new ProjectImportEvent();
 					event.setTimestamp(new Date());
@@ -677,7 +684,7 @@ public class APDMtoSchedulingConverter {
 					"No APDM SchedBlock %s for ObsUnitSet %s of APDM ObsProject %s - skipping",
 					childDomainUID,
 					apdmOUS.getEntityPartId(),
-					apdmProject.getObsProjectEntity().getEntityId()));
+					Format.ident(apdmProject)));
 			}
 		}
 		
@@ -775,7 +782,7 @@ public class APDMtoSchedulingConverter {
 			logger.info(String.format(
 					"Cannot create ObsUnitControl object for SchedBlock %s in Project %s - %s",
 					apdmSB.getSchedBlockEntity().getEntityId(),
-					apdmProject.getObsProjectEntity().getEntityId(),
+					Format.ident(apdmProject),
 					e.getMessage()));
 			ProjectImportEvent event = new ProjectImportEvent();
 			event.setTimestamp(new Date());
@@ -794,7 +801,7 @@ public class APDMtoSchedulingConverter {
 			logger.info(String.format(
 					"Cannot create Preconditions object for SchedBlock %s in Project %s - %s",
 					apdmSB.getSchedBlockEntity().getEntityId(),
-					apdmProject.getObsProjectEntity().getEntityId(),
+					Format.ident(apdmProject),
 					e.getMessage()));
 			ProjectImportEvent event = new ProjectImportEvent();
 			event.setTimestamp(new Date());
@@ -813,7 +820,7 @@ public class APDMtoSchedulingConverter {
 			logger.info(String.format(
 				"Cannot create SchedulingConstraints object for SchedBlock %s in Project %s - %s",
 				apdmSB.getSchedBlockEntity().getEntityId(),
-				apdmProject.getObsProjectEntity().getEntityId(),
+				Format.ident(apdmProject),
 				e.getMessage()));
 			ProjectImportEvent event = new ProjectImportEvent();
 			event.setTimestamp(new Date());
@@ -839,7 +846,7 @@ public class APDMtoSchedulingConverter {
 			logger.info(String.format(
 				"Cannot create SchedBlockControl object for SchedBlock %s in Project %s - %s",
 				apdmSB.getSchedBlockEntity().getEntityId(),
-				apdmProject.getObsProjectEntity().getEntityId(),
+				Format.ident(apdmProject),
 				e.getMessage()));
 			ProjectImportEvent event = new ProjectImportEvent();
 			event.setTimestamp(new Date());
