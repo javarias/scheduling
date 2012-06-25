@@ -86,13 +86,7 @@ startHSQLDB() {
 
 stopHSQLDB() {
     printf "Stopping HSQLDB\n"
-    # Get the location of hsqldb.jar.
-    if test -a $ACSROOT/lib/hsqldb.jar; then
-        HSQLDB_JAR=$ACSROOT/lib/hsqldb.jar
-    elif test -a $INTROOT/lib/hsqldb.jar; then
-        HSQLDB_JAR=$INTROOT/lib/hsqldb.jar
-    fi
-    java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "shutdown;" "$DBNAME"
+    echo -e "SHUTDOWN;\n" | acsStartJava org.hsqldb.cmdline.SqlTool --inlineRc=url=jdbc:hsqldb:hsql://localhost:$DBPORT/$DBNAME,user=sa,password= &> tmp/shutdownHSQLDB.log
 }
 
 startACS() {
