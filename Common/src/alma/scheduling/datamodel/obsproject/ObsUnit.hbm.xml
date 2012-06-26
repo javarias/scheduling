@@ -166,6 +166,7 @@
 		</joined-subclass>
 		<joined-subclass name="ObsUnitSet" table="OBSUNITSET">
 			<key column="OBSUNITSETID" />
+			<property column="ENTITY_PART_ID" name="entityPartId" type="string" />
 			<set cascade="save-update, lock, delete, delete-orphan" inverse="true"
 				name="obsUnits" sort="unsorted">
 				<key column="PARENTID" />

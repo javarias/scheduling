@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnitSet.java,v 1.2 2010/08/20 19:22:48 rhiriart Exp $"
+ * "@(#) $Id: ObsUnitSet.java,v 1.3 2012/06/26 18:07:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -32,6 +32,8 @@ import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
 
 public class ObsUnitSet extends ObsUnit {
 
+	private String entityPartId;
+	
     private Set<ObsUnit> obsUnits = new HashSet<ObsUnit>();
     
     private OUSStatusEntityT statusEntity;
@@ -56,4 +58,30 @@ public class ObsUnitSet extends ObsUnit {
     public void setStatusEntity(OUSStatusEntityT statusEntity) {
         this.statusEntity = statusEntity;
     }
+
+	public String getEntityPartId() {
+		return entityPartId;
+	}
+
+	public void setEntityPartId(String entityPartId) {
+		this.entityPartId = entityPartId;
+	}
+
+	@Override
+	public int hashCode() {
+		String concatId = this.getUid() + this.getEntityPartId();
+		return concatId.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof ObsUnitSet))
+			return false;
+		ObsUnitSet ous = (ObsUnitSet) obj;
+		if (this.getProjectUid().compareTo(ous.getProjectUid()) == 0 &&
+				this.getEntityPartId().compareTo(ous.getEntityPartId()) == 0)
+			return true;
+		return false;
+	}
+	
 }

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsProject.java,v 1.14 2012/06/19 23:12:20 dclarke Exp $"
+ * "@(#) $Id: ObsProject.java,v 1.15 2012/06/26 18:07:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -253,16 +253,17 @@ public class ObsProject {
 
 	@Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (Id == null) return false;
-        if ( !(obj instanceof ObsProject)) return false;
-        final ObsProject that = (ObsProject) obj;
-        return this.Id.equals(that.getId());
+		if (!(obj instanceof ObsProject))
+			return false;
+		ObsProject p = (ObsProject) obj;
+		if (this.getUid().compareTo(p.getUid()) == 0 )
+			return true;
+		return false;
     }
 
     @Override
     public int hashCode() {
-        return Id == null ? System.identityHashCode(this) : Id.hashCode();
+        return this.getUid().hashCode();
     }
     
     /*

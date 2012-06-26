@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: WeatherConstraints.java,v 1.1 2010/01/29 21:50:49 rhiriart Exp $"
+ * "@(#) $Id: WeatherConstraints.java,v 1.2 2012/06/26 18:07:36 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -33,7 +33,7 @@ public class WeatherConstraints {
     /** Maximum opacity (nepers) */
     Double maxOpacity;
     
-    /** Minimum phase stability (m, measured as delta path length) */
+    /** Minimum phase stability (degrees) */
     Double minPhaseStability;
     
     /** Maximum seeing (arcseconds) */
