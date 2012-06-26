@@ -61,6 +61,7 @@ import alma.scheduling.datamodel.bookkeeping.Bookkeeper;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.obsproject.ObsProject;
 import alma.scheduling.utils.ErrorHandling;
+import alma.scheduling.utils.SchedulingProperties;
 import alma.statearchiveexceptions.StateIOFailedEx;
 import alma.xmlstore.OperationalOperations;
 
@@ -154,7 +155,10 @@ public abstract class AbstractXMLStoreProjectDao
         		client.getContainerServices().getLogger());
 		this.entitySerializer = EntitySerializer.getEntitySerializer(
         		client.getContainerServices().getLogger());
-		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+		if (SchedulingProperties.isSchedulingUsingExperimetalArchiveIF())
+			archive = new HibernateArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+		else
+			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
 	
@@ -168,7 +172,10 @@ public abstract class AbstractXMLStoreProjectDao
         		containerServices.getLogger());
 		this.entitySerializer = EntitySerializer.getEntitySerializer(
         		containerServices.getLogger());
-		archive = new ArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+		if (SchedulingProperties.isSchedulingUsingExperimetalArchiveIF())
+			archive = new HibernateArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
+		else
+			archive = new CorbaComponentArchiveInterface(this.xmlStore, this.stateSystem, entityDeserializer, entitySerializer);
 		bookie = new Bookkeeper(archive, logger);
 	}
 	

@@ -585,7 +585,10 @@ public class APDMtoSchedulingConverter {
 			if (ousPartId == null) {
 				ousPartId = "<<APDM ObsUnitSet has null entity id>>";
 			}
-
+			
+			obsUnitSet.setProjectUid(apdmProject.getObsProjectEntity().getEntityId());
+			obsUnitSet.setEntityPartId(ousPartId);
+			
 			logger.info(String.format(
 					"Processing OUS %s",
 					ousPartId));

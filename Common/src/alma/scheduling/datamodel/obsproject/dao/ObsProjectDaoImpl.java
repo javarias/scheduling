@@ -190,6 +190,7 @@ public class ObsProjectDaoImpl extends GenericDaoImpl implements ObsProjectDao{
 	public void deleteAll() {
 		getSession().createQuery("delete from " + ObsProject.class.getCanonicalName()).executeUpdate();
 //		getSession().createQuery("delete from " + ObsUnit.class.getCanonicalName()).executeUpdate();
+//		TODO: Find out why the statement of above doesn't work in HSQLDB, instead the one of below is used and it works!
 		getSession().createSQLQuery("DELETE FROM OBSUNIT").executeUpdate();
 //		getSession().createQuery("delete from " + ObsUnitSet.class.getCanonicalName()).executeUpdate();
 //		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();

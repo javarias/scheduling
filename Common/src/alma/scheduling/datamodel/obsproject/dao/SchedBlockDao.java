@@ -59,4 +59,6 @@ public interface SchedBlockDao extends GenericDao {
     public List<SchedBlock> findSchedBlocksForProject(ObsProject project);
     
     public void hydrateObsUnitSet(ObsUnitSet ous);
+    
+    public void deleteAll();
 }

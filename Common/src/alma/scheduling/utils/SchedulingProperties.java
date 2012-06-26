@@ -23,7 +23,7 @@
  * Centralised place for querying the scheduling properties.
  * 
  * @author dclarke
- * $Id: SchedulingProperties.java,v 1.8 2012/06/15 19:49:28 dclarke Exp $
+ * $Id: SchedulingProperties.java,v 1.9 2012/06/26 18:00:30 javarias Exp $
  */
 package alma.scheduling.utils;
 
@@ -59,6 +59,7 @@ public abstract class SchedulingProperties {
 	/** This should enable the import of XML projects. */
 	public static String PROP_PMS_XML_PROJECT_IMPORT_FLAG = "scheduling.pms.xmlProjects";
 	
+	private static String PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF = "scheduling.archive.hibernate";
 	/* End of the properties we know about
 	 * ============================================================= */
 	
@@ -95,6 +96,11 @@ public abstract class SchedulingProperties {
 	
 	public static boolean isPMSUsingXMLProjects() {
 		final String env = System.getProperty(PROP_PMS_XML_PROJECT_IMPORT_FLAG);
+		return env != null;
+	}
+	
+	public static boolean isSchedulingUsingExperimetalArchiveIF() {
+		final String env = System.getProperty(PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF);
 		return env != null;
 	}
 	/* End of Boolean properties

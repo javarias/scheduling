@@ -15,26 +15,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
-package org.hibernate.dialect;
+package alma.archive.xml;
 
-public class ExtendedOracle10gDialect extends Oracle10gDialect {
+public class ObsReviewEntity extends XmlEntity {
 
-	public ExtendedOracle10gDialect() {
-		super();
-        registerHibernateType(oracle.xdb.XMLType._SQL_TYPECODE, "xmltype");
-        registerColumnType(oracle.xdb.XMLType._SQL_TYPECODE, "xmltype");
-	}
-	
-	// Added method to enable the deletion on cascade
-	@Override
-	public String getAddForeignKeyConstraintString(String constraintName,
-			String[] foreignKey, String referencedTable, String[] primaryKey,
-			boolean referencesPrimaryKey) {
-		String str = super.getAddForeignKeyConstraintString(constraintName, foreignKey,
-				referencedTable, primaryKey, referencesPrimaryKey);
-		return str + " on delete cascade";
-	}
-	
-	
-	
 }

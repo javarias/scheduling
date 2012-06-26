@@ -272,4 +272,10 @@ public class SchedBlockDaoImpl extends GenericDaoImpl implements SchedBlockDao {
         ous.getStatusEntity().getEntityId();
     }
 
+	@Override
+	public void deleteAll() {
+		getSession().createQuery("delete from " + SchedBlock.class.getCanonicalName()).executeUpdate();
+		
+	}
+
 }

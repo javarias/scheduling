@@ -19,6 +19,14 @@ package org.hibernate.dialect;
 
 public class ExtendedHSQLDialect extends HSQLDialect {
 
+
+	public ExtendedHSQLDialect() {
+		super();
+        registerHibernateType(oracle.xdb.XMLType._SQL_TYPECODE, "xmltype");
+        registerColumnType(oracle.xdb.XMLType._SQL_TYPECODE, "xmltype");
+	}
+	
+	
 	@Override
 	public String getAddForeignKeyConstraintString(String constraintName,
 			String[] foreignKey, String referencedTable, String[] primaryKey,

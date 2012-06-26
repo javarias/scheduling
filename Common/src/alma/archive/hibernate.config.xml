@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+       "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+       "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+
+		<property name="connection.url">jdbc:oracle:thin:@localhost:1521:ALMA</property>
+		<property name="connection.username">alma</property>
+		<property name="connection.password">alma$dba</property>
+		<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+		<property name="cache.provider_class"> org.hibernate.cache.NoCacheProvider </property>
+		<property name="dialect">org.hibernate.dialect.ExtendedOracle10gDialect</property>
+		<property name="show_sql">false</property>
+		<property name="hbm2ddl.auto">validate</property>
+		<mapping resource="alma/archive/xmlstore.hbm.xml" />
+	</session-factory>
+
+</hibernate-configuration>
