@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.13 2012/05/29 17:46:35 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.14 2012/06/26 18:01:37 javarias Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -60,7 +60,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.13 2012/05/29 17:46:35 dclarke Exp $
+ * $Id: ArchivePoller.java,v 1.14 2012/06/26 18:01:37 javarias Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -489,15 +489,14 @@ public class ArchivePoller implements Observer{
     public void reset() {
     	logger.info("Resetting scheduling working database");
     	donePollArchive = false;
-    	obsProjectDao.deleteAll(
-    			obsProjectDao.findAll(ObsProject.class));
-    	schedBlockDao.deleteAll(
-    			schedBlockDao.findAll(SchedBlock.class));
-    	execDao.deleteAll(execDao.findAll(ExecutivePercentage.class));
-    	execDao.deleteAll(execDao.findAll(ExecutiveTimeSpent.class));
-    	execDao.deleteAll(execDao.findAll(ObservingSeason.class));
-    	execDao.deleteAll(execDao.findAll(Executive.class));
-    	atmDao.deleteAll(atmDao.findAll(AtmParameters.class));
+    	obsProjectDao.deleteAll();
+//    	schedBlockDao.deleteAll(
+//    			schedBlockDao.findAll(SchedBlock.class));
+//    	execDao.deleteAll(execDao.findAll(ExecutivePercentage.class));
+//    	execDao.deleteAll(execDao.findAll(ExecutiveTimeSpent.class));
+//    	execDao.deleteAll(execDao.findAll(ObservingSeason.class));
+//    	execDao.deleteAll(execDao.findAll(Executive.class));
+//    	atmDao.deleteAll(atmDao.findAll(AtmParameters.class));
     }
     
     
