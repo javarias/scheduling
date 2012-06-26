@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: AtmParametersDao.java,v 1.4 2011/05/04 23:21:21 javarias Exp $"
+ * "@(#) $Id: AtmParametersDao.java,v 1.5 2012/06/26 18:00:18 javarias Exp $"
  */
 package alma.scheduling.datamodel.weather.dao;
 
@@ -42,5 +42,9 @@ public interface AtmParametersDao extends GenericDao{
     public AtmParameters[] getEnclosingIntervalForPwvAndFreq(Double pwv, Double freq);
     
     public List<AtmParameters> getAllAtmParameters();
+    
+    public long getRowsCount();
+    
+    public void deleteAll();
 
 }

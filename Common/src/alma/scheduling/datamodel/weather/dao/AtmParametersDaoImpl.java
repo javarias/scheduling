@@ -124,4 +124,15 @@ public class AtmParametersDaoImpl extends GenericDaoImpl implements AtmParameter
                            [getPwvPosition(atm.getPWV())] = atm;         
         }
     }
+
+	@Override
+	public long getRowsCount() {
+		return (Long) getSession().createQuery("select count(*) from AtmParameters atm").uniqueResult();
+	}
+
+	@Override
+	public void deleteAll() {
+		getSession().createQuery("delete from " + AtmParameters.class.getCanonicalName()).executeUpdate();
+		
+	}
 }
