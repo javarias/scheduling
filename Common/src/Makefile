@@ -21,7 +21,7 @@
 #*******************************************************************************
 # PPPPPPPP
 #
-# "@(#) $Id: Makefile,v 1.23 2012/05/15 18:04:58 javarias Exp $"
+# "@(#) $Id: Makefile,v 1.24 2012/07/03 21:05:26 javarias Exp $"
 #
 # Makefile of ........
 #
@@ -151,6 +151,7 @@ SchedulingCommon_EXTRAS=alma/scheduling/datamodel/executive/Executive.hbm.xml \
                         alma/scheduling/datamodel/output/Output.hbm.xml \
                         alma/scheduling/datamodel/config/Configuration.hbm.xml \
                         alma/scheduling/datamodel/observatory/TelescopeEquipment.hbm.xml \
+						alma/archive/xmlstore.hbm.xml alma/archive/hibernate.config.xml \
                         alma/scheduling/CommonContext.xml \
                         ../config/hibernate.cfg.xml ehcache.xml
 #
