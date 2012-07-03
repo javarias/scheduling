@@ -135,9 +135,9 @@ public final class HibernateArchiveInterface extends AbstractArchiveInterface
 		System.out.println(archive_db_connection + " " + archive_oracle_user
 				+ " " + archive_oracle_passwd);
 		Configuration hibConf = new Configuration().configure("alma/archive/hibernate.config.xml");
-		hibConf.setProperty("connection.url", archive_db_connection);
-		hibConf.setProperty("connection.username", archive_oracle_user);
-		hibConf.setProperty("connection.password", archive_oracle_passwd);
+		hibConf.setProperty("hibernate.connection.url", archive_db_connection);
+		hibConf.setProperty("hibernate.connection.username", archive_oracle_user);
+		hibConf.setProperty("hibernate.connection.password", archive_oracle_passwd);
 //		hibConf.setProperty("connection.driver_class",
 //				"oracle.jdbc.driver.OracleDriver");
 //		hibConf.setProperty("cache.provider_class",
