@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: ObsUnitSet.java,v 1.3 2012/06/26 18:07:36 javarias Exp $"
+ * "@(#) $Id: ObsUnitSet.java,v 1.4 2012/07/04 16:24:18 javarias Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -69,6 +69,8 @@ public class ObsUnitSet extends ObsUnit {
 
 	@Override
 	public int hashCode() {
+		if (this.getUid() == null || this.getEntityPartId() == null)
+			return super.hashCode();
 		String concatId = this.getUid() + this.getEntityPartId();
 		return concatId.hashCode();
 	}
@@ -78,6 +80,8 @@ public class ObsUnitSet extends ObsUnit {
 		if (!(obj instanceof ObsUnitSet))
 			return false;
 		ObsUnitSet ous = (ObsUnitSet) obj;
+		if (this.getUid() == null || this.getEntityPartId() == null)
+			return super.equals(obj);
 		if (this.getProjectUid().compareTo(ous.getProjectUid()) == 0 &&
 				this.getEntityPartId().compareTo(ous.getEntityPartId()) == 0)
 			return true;
