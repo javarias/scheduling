@@ -140,6 +140,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 </bean>
             </xsl:if>
             
+            <xsl:if test="count(Scorers/ExecutiveBalancingScorer) = 1">
+                <bean id="{concat('executiveBalancingScorer', '_', @name)}" class="alma.scheduling.algorithm.weather.TsysScorer" scope="prototype">
+                    <constructor-arg><value>executiveBalancingScorer</value></constructor-arg>
+                    <property name="execBalance">
+                        <xsl:for-each select="Scorers/ExecutiveBalancingScorer/Executive">
+                            <entry key="{@name}" value="{@value}"/>
+                        </xsl:for-each>
+                    </property>
+                </bean>
+            </xsl:if>
+            
             <bean id="{concat('finalRanker', '_', @name)}" class="alma.scheduling.algorithm.sbranking.FinalRanker" scope="prototype">
                 <constructor-arg><value>finalRanker</value></constructor-arg>
                 <property name="rankers">
@@ -152,6 +163,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         </xsl:if>
                         <xsl:if test="count(Scorers/TsysScorer) = 1">
                             <ref bean="{concat('TsysScorer', '_', @name)}"/>
+                        </xsl:if>
+                        <xsl:if test="count(Scorers/ExecutiveBalancingScorer) = 1" >
+                        	<ref bean="{concat('executiveBalancingScorer', '_', @name)}"/>
                         </xsl:if>
                     </set>
                 </property>

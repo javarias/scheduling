@@ -1,32 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-ALMA - Atacama Large Millimeter Array
-Copyright (c) AUI - Associated Universities Inc., 2011
-(in the framework of the ALMA collaboration).
-All rights reserved.
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
--->
+<!-- ALMA - Atacama Large Millimeter Array Copyright (c) AUI - Associated 
+	Universities Inc., 2011 (in the framework of the ALMA collaboration). All 
+	rights reserved. This library is free software; you can redistribute it and/or 
+	modify it under the terms of the GNU Lesser General Public License as published 
+	by the Free Software Foundation; either version 2.1 of the License, or (at 
+	your option) any later version. This library is distributed in the hope that 
+	it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
+	of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser 
+	General Public License for more details. You should have received a copy 
+	of the GNU Lesser General Public License along with this library; if not, 
+	write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+	Boston, MA 02111-1307 USA -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	
+
 	<xs:element name="Policies">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="SchedulingPolicy" type="SchedulingPolicyT" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element name="SchedulingPolicy" type="SchedulingPolicyT"
+					minOccurs="1" maxOccurs="unbounded" />
 			</xs:sequence>
-			<xs:attribute name="sim" type="xs:boolean" use="optional"/>
+			<xs:attribute name="sim" type="xs:boolean" use="optional" />
 		</xs:complexType>
 	</xs:element>
 
@@ -39,99 +32,122 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 		<xs:attribute name="name" type="xs:ID" use="required" />
 		<xs:attribute name="version" type="xs:string" use="optional" />
 	</xs:complexType>
-	
-    <xs:complexType name="SelectionCriteriaT">
-    	<xs:sequence>
-    		<xs:choice minOccurs="0" maxOccurs="unbounded">
-    			<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT"/>
-<!--  There is no weather forecast available in the online system for this selector -->    			
-<!--   			<xs:element name="WeatherSelector" type="WeatherSelectorT"/>   --> 
-<!--    		<xs:element name="SourceSelector" type="SourceSelectorT"/> -->
-    			<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT"/>
-    			<xs:element name="HourAngleSelector" type="HourAngleSelectorT"/>
-    			<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT"/>
-    			<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT"/>
-    			<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT"/>
-    			<xs:element name="OpacitySelector" type="OpacitySelectorT"/>
-    			<xs:element name="AltitudeSelector" type="AltitudeSelectorT"/>
-<!--   			<xs:element name="InteractiveProjectsSelector" type="InteractiveProjectsSelectorT"/> -->
-    		</xs:choice>
-    	</xs:sequence>
-    </xs:complexType>
 
-    <xs:complexType name="ScorersT">
-    	<xs:sequence>
-    		<xs:choice minOccurs="0" maxOccurs="unbounded">
-    			<xs:element name="SciScorer" type="SciScorerT" />
-    			<xs:element name="HourAngleScorer" type="HourAngleScorerT" />
-    			<xs:element name="TsysScorer" type="TsysScorerT" />
-    		</xs:choice>
-    	</xs:sequence>
-    </xs:complexType>
-	
+	<xs:complexType name="SelectionCriteriaT">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="ExecutiveSelector" type="ExecutiveSelectorT" />
+				<!-- There is no weather forecast available in the online system for 
+					this selector -->
+				<!-- <xs:element name="WeatherSelector" type="WeatherSelectorT"/> -->
+				<!-- <xs:element name="SourceSelector" type="SourceSelectorT"/> -->
+				<xs:element name="ArrayConfigSelector" type="ArrayConfigSelectorT" />
+				<xs:element name="HourAngleSelector" type="HourAngleSelectorT" />
+				<xs:element name="MoonAvoidanceSelector" type="MoonAvoidanceSelectorT" />
+				<xs:element name="SunAvoidanceSelector" type="SunAvoidanceSelectorT" />
+				<xs:element name="SchedBlockGradeSelector" type="SchedBlockGradeSelectorT" />
+				<xs:element name="OpacitySelector" type="OpacitySelectorT" />
+				<xs:element name="AltitudeSelector" type="AltitudeSelectorT" />
+				<!-- <xs:element name="InteractiveProjectsSelector" type="InteractiveProjectsSelectorT"/> -->
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ScorersT">
+		<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="SciScorer" type="SciScorerT" />
+				<xs:element name="HourAngleScorer" type="HourAngleScorerT" />
+				<xs:element name="TsysScorer" type="TsysScorerT" />
+				<xs:element name="ExecutiveBalancingScorer" type="ExecutiveBalancingScorerT"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+
 	<xs:complexType name="ScorerT">
 		<xs:sequence>
 			<xs:element name="weight">
 				<xs:simpleType>
-					<xs:restriction base="xs:double">
-						<xs:minInclusive value="0.0"/>
-					</xs:restriction>
+					<xs:restriction base="xs:double"/>
 				</xs:simpleType>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-  
-<!-- Definition of available selection Criterion -->  
-   	<xs:complexType name="ExecutiveSelectorT" />
-	
-	<xs:complexType name="WeatherSelectorT" >
+
+	<!-- Definition of available selection Criterion -->
+	<xs:complexType name="ExecutiveSelectorT" />
+
+	<xs:complexType name="WeatherSelectorT">
 		<xs:sequence>
 			<xs:element name="tsysVariation" minOccurs="1" maxOccurs="1">
 				<xs:simpleType>
-					<xs:restriction base="xs:double">
-						<xs:minInclusive value="0.0" />
-					</xs:restriction>
+					<xs:restriction base="xs:double"/>
 				</xs:simpleType>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	
+
 	<xs:complexType name="SourceSelectorT" />
-	
-	<xs:complexType name="ArrayConfigSelectorT"/>
-	
+
+	<xs:complexType name="ArrayConfigSelectorT" />
+
 	<xs:complexType name="HourAngleSelectorT" />
-	
+
 	<xs:complexType name="SunAvoidanceSelectorT" />
-	
+
 	<xs:complexType name="MoonAvoidanceSelectorT" />
-	
+
 	<xs:complexType name="SchedBlockGradeSelectorT" />
-	
-	<xs:complexType name="OpacitySelectorT"/>
-	
-	<xs:complexType name="InteractiveProjectsSelectorT"/>
-	
-	<xs:complexType name="AltitudeSelectorT"/>
-	
-<!-- Definition of available scorers -->
-	
-	<xs:complexType name="SciScorerT" >
+
+	<xs:complexType name="OpacitySelectorT" />
+
+	<xs:complexType name="InteractiveProjectsSelectorT" />
+
+	<xs:complexType name="AltitudeSelectorT" />
+
+	<!-- Definition of available scorers -->
+
+	<xs:complexType name="SciScorerT">
 		<xs:complexContent>
 			<xs:extension base="ScorerT" />
 		</xs:complexContent>
 	</xs:complexType>
-	
-	<xs:complexType name="HourAngleScorerT" >
+
+	<xs:complexType name="HourAngleScorerT">
 		<xs:complexContent>
 			<xs:extension base="ScorerT" />
 		</xs:complexContent>
 	</xs:complexType>
-	
-	<xs:complexType name="TsysScorerT" >
+
+	<xs:complexType name="TsysScorerT">
 		<xs:complexContent>
 			<xs:extension base="ScorerT" />
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ExecutiveBalancingScorerT">
+		<xs:sequence>
+			<xs:element name="Executive" minOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="name">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="CHILE"/>
+								<xs:enumeration value="EA"/>
+								<xs:enumeration value="EU"/>
+								<xs:enumeration value="NA"/>
+								<xs:enumeration value="OTHER"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="value">
+						<xs:simpleType>
+							<xs:restriction base="xs:double"/>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 
 </xs:schema>
