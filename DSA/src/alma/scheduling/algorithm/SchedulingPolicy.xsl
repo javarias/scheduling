@@ -141,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             </xsl:if>
             
             <xsl:if test="count(Scorers/ExecutiveBalancingScorer) = 1">
-                <bean id="{concat('executiveBalancingScorer', '_', @name)}" class="alma.scheduling.algorithm.weather.TsysScorer" scope="prototype">
+                <bean id="{concat('executiveBalancingScorer', '_', @name)}" class="alma.scheduling.algorithm.executive.ExecutiveBalancingScorer" scope="prototype">
                     <constructor-arg><value>executiveBalancingScorer</value></constructor-arg>
                     <property name="execBalance">
                         <map>
