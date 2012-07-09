@@ -144,9 +144,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                 <bean id="{concat('executiveBalancingScorer', '_', @name)}" class="alma.scheduling.algorithm.weather.TsysScorer" scope="prototype">
                     <constructor-arg><value>executiveBalancingScorer</value></constructor-arg>
                     <property name="execBalance">
+                        <map>
                         <xsl:for-each select="Scorers/ExecutiveBalancingScorer/Executive">
                             <entry key="{@name}" value="{@value}"/>
                         </xsl:for-each>
+                         </map>
                     </property>
                 </bean>
             </xsl:if>
