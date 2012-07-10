@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import org.springframework.context.support.AbstractApplicationContext;
 
 import alma.ACSErrTypeCommon.wrappers.AcsJIllegalArgumentEx;
+import alma.archive.database.helpers.wrappers.StateArchiveDbConfig;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
 import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
 import alma.lifecycle.config.StateSystemContextFactory;
@@ -79,7 +80,9 @@ public class ModelAccessor extends Observable {
 		synchronized (ModelAccessor.class) {
 			if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
 				final RoleProvider roleProvider = new RoleProviderMock();
-				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG, logger);
+//				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG, logger);
+				StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG,
+						new StateArchiveDbConfig(logger));
 				stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
 				stateArchive.initStateArchive(logger);
 				stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
