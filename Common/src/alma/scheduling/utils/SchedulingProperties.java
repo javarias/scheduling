@@ -23,7 +23,7 @@
  * Centralised place for querying the scheduling properties.
  * 
  * @author dclarke
- * $Id: SchedulingProperties.java,v 1.9 2012/06/26 18:00:30 javarias Exp $
+ * $Id: SchedulingProperties.java,v 1.10 2012/07/10 20:57:06 dclarke Exp $
  */
 package alma.scheduling.utils;
 
@@ -35,29 +35,29 @@ public abstract class SchedulingProperties {
 	 * ================================================================
 	 */
 
-	// Properties which we call blah-blah-Flag are booleans. If they
+	// Properties which we call BLAH_BLAH_FLAG are booleans. If they
 	// are set, they are interpreted as being "true", regardless of
 	// the value to which they are set.
-	// Properties which we call blah-blah-Value have their values
+	// Properties which we call BLAH_BLAH_VALUE have their values
 	// parsed.
 
 	/** Do we automatically pop up the Scheduling panel when we start up? (test only) */
-	private static String PROP_autoPopupPluginFlag      = "scheduling.autoPopupPlugin";
+	private static String PROP_AUTO_POPUP_PLUGIN_FLAG       = "scheduling.autoPopupPlugin";
 	
 	/** Do we automatically convert Phase2Submitted projects to Ready? (test only) */
-	private static String PROP_convertPhase2ToReadyFlag = "scheduling.convertPhase2ToReady";
+	private static String PROP_CONVERT_PHASE2_TO_READY_FLAG = "scheduling.convertPhase2ToReady";
 	
 	/** Is this David running tests? */
-	private static String PROP_davidTestingFlag      = "scheduling.dclarke";
+	private static String PROP_DAVID_TESTING_FLAG           = "scheduling.dclarke";
 	
 	/** Is this Jorge running tests? */
-	private static String PROP_jorgeTestingFlag      = "scheduling.javarias";
+	private static String PROP_JORGE_TESTING_FLAG           = "scheduling.javarias";
 	
 	/** Where should we look for the Phase1 SBs? */
-	private static String PROP_phase1SBSourceValue   = "scheduling.phase1SBsource";
+	private static String PROP_PHASE1_SB_SOURCE_VALUE       = "scheduling.phase1SBsource";
 	
 	/** This should enable the import of XML projects. */
-	public static String PROP_PMS_XML_PROJECT_IMPORT_FLAG = "scheduling.pms.xmlProjects";
+	private static String PROP_PMS_XML_PROJECT_IMPORT_FLAG  = "scheduling.pms.xmlProjects";
 	
 	private static String PROP_USE_EXPERIMENTAL_HIBERNATE_XMLSTORE_IF = "scheduling.archive.hibernate";
 	/* End of the properties we know about
@@ -71,22 +71,22 @@ public abstract class SchedulingProperties {
 	 * ================================================================
 	 */
 	public static boolean isAutoPopupArrayPlugin() {
-		final String env = System.getProperty(PROP_autoPopupPluginFlag);
+		final String env = System.getProperty(PROP_AUTO_POPUP_PLUGIN_FLAG);
 		return env != null;
 	}
 	
 	public static boolean isConvertPhase2ToReady() {
-		final String env = System.getProperty(PROP_convertPhase2ToReadyFlag);
+		final String env = System.getProperty(PROP_CONVERT_PHASE2_TO_READY_FLAG);
 		return env != null;
 	}
 	
 	public static boolean isDavidTesting() {
-		final String env = System.getProperty(PROP_davidTestingFlag);
+		final String env = System.getProperty(PROP_DAVID_TESTING_FLAG);
 		return env != null;
 	}
 	
 	public static boolean isJorgeTesting() {
-		final String env = System.getProperty(PROP_jorgeTestingFlag);
+		final String env = System.getProperty(PROP_JORGE_TESTING_FLAG);
 		return env != null;
 	}
 	
@@ -192,7 +192,7 @@ public abstract class SchedulingProperties {
 	 * @throws InvalidPropertyValueException
 	 */
 	public static Phase1SBSourceValue getUncheckedPhase1SBSource() {
-		final String env = System.getProperty(PROP_phase1SBSourceValue);
+		final String env = System.getProperty(PROP_PHASE1_SB_SOURCE_VALUE);
 		if (env == null) {
 			return Phase1SBSourceValue.getDefault();
 		}
@@ -213,7 +213,7 @@ public abstract class SchedulingProperties {
 	 * @throws InvalidPropertyValueException
 	 */
 	public static Phase1SBSourceValue getPhase1SBSource() throws InvalidPropertyValueException {
-		final String env = System.getProperty(PROP_phase1SBSourceValue);
+		final String env = System.getProperty(PROP_PHASE1_SB_SOURCE_VALUE);
 		if (env == null) {
 			return Phase1SBSourceValue.getDefault();
 		}
@@ -222,7 +222,7 @@ public abstract class SchedulingProperties {
 				return val;
 			}
 		}
-		throw new InvalidPropertyValueException(PROP_phase1SBSourceValue, env, Phase1SBSourceValue.possibilities());
+		throw new InvalidPropertyValueException(PROP_PHASE1_SB_SOURCE_VALUE, env, Phase1SBSourceValue.possibilities());
 	}
 	
 	/* End of Phase 1 SB Source property
