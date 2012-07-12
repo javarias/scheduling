@@ -3,7 +3,7 @@
  * Author: amchavan, ESO, 17-Feb-2010
  */
  
- /* $Id: userreg-hsqldb-ddl.sql,v 1.1 2012/06/13 18:20:29 javarias Exp $ */ 
+ /* $Id: userreg-hsqldb-ddl.sql,v 1.2 2012/07/12 14:19:33 javarias Exp $ */ 
 
 -- Ordering of 'drop table' statements is important!
 
@@ -12,6 +12,7 @@ drop table account if exists;
 drop table role if exists;
 drop table institution if exists;
 drop table country if exists;
+drop table SUBMISSION_SERVICE_ROLES if exists;
 drop sequence hibernate_sequence if exists;
 drop sequence inst_seq if exists;
 
@@ -24,6 +25,7 @@ create table country (
 
 alter table country add constraint country_pk primary key (country_id);
 alter table country add constraint unique_country_name unique(country_name);
+
 
 create table institution ( 
     inst_no    		bigint,
@@ -100,3 +102,20 @@ alter table account_role add constraint fk_account foreign key (account_id) refe
 
 create sequence inst_seq start with 32800;
 create sequence hibernate_sequence;
+
+create table SUBMISSION_SERVICE_ROLES (
+		account_id			varchar(32)		not null,
+		name				varchar(32)		not null
+);
+alter table SUBMISSION_SERVICE_ROLES add constraint SUBMISSION_SERVICE_ROLES_pk primary key (account_id, name);
+
+insert into country (version, country_name, executive) values (1, 'United Kingdom', 'eu');
+
+insert into institution (inst_no, name1, executive) values (1, 'Abbey Road', 'eu')
+
+insert into account (account_id, version, password_digest, firstName, lastName, initials, email, executive, inst_no) 
+	values ('john', 1, '527bd5b5d689e2c32ae974c6229ff785', 'John', 'Lennon', 'JL', 'john@thebeatles.com','eu', 1);
+
+insert into SUBMISSION_SERVICE_ROLES values ('john', 'USER');
+
+commit;

@@ -10,7 +10,7 @@
 export ACS_INSTANCE
 export ACS_TMP
 export ACS_CDB
-export ACS_LOG_STDOUT=1
+export ACS_LOG_STDOUT=4
 export RUNLOCATION
 JAVA_OPTIONS="$JAVA_OPTIONS -Dscheduling.convertPhase2ToReady"
 export JAVA_OPTIONS
@@ -73,7 +73,7 @@ stop() {
 
 startHSQLDB() {
     printf "Starting HSQLDB\n"
-    acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -database.1 file:"$DBDIR/userRegistry" -dbname.1 "userRegistry" -port "$DBPORT" &> ${ACS_TMP}/hsqldb.log &
+    acsStartJava org.hsqldb.Server -database.0 file:"$DBDIR/$DBNAME" -dbname.0 "$DBNAME" -port "$DBPORT" &> ${ACS_TMP}/hsqldb.log &
     # allow some time for the database to start
     sleep 5
 #	./scripts/sqltool "\\i config/hsqldb-ddl.sql"
@@ -90,11 +90,11 @@ stopHSQLDB() {
         HSQLDB_JAR=$INTROOT/lib/sqltool.jar
     fi
     java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "shutdown;" "$DBNAME"
-	java -jar "$HSQLDB_JAR" --rcFile "$SQLTOOL_RC_FILE" --sql "shutdown;" "userRegistry"
 }
 
 startACS() {
     # Unpack the CDB
+	echo "Start ACS"
     if test -n "$CDB_PACKED_FILE"; then
         CDB_ABS_LOC=`pwd`/$CDB_PACKED_FILE
         cd $ACS_CDB
@@ -179,12 +179,12 @@ startACS() {
     # pid=$!
     # echo $pid > $ACS_TMP/archive.pid
     # acsutilBlock -t 60 -f $LOGFILE -b "Initialized Archive subsystem."
-    printf "Starting archive\n"i
-    if [ -w $ACSDATA/tomcat5/conf/catalina.properties ]; then
-        cp $ACSDATA/tomcat5/conf/catalina.properties $ACS_TMP/catalina.properties.orig
-        sed -i "s|^obsprep.userreg.ldap=[[:graph:]]*||" $ACSDATA/tomcat5/conf/catalina.properties
-        echo "obsprep.userreg.ldap=true" >> $ACSDATA/tomcat5/conf/catalina.properties
-    fi
+    printf "Starting archive\n"
+#    if [ -w $ACSDATA/tomcat5/conf/catalina.properties ]; then
+#        cp $ACSDATA/tomcat5/conf/catalina.properties $ACS_TMP/catalina.properties.orig
+#        sed -i "s|^obsprep.userreg.ldap=[[:graph:]]*||" $ACSDATA/tomcat5/conf/catalina.properties
+#        echo "obsprep.userreg.ldap=true" >> $ACSDATA/tomcat5/conf/catalina.properties
+#    fi
     if [ -w $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml ]; then
         cp $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml $ACS_TMP/ObsprepSubmissionService.xml.orig
         cp config/ObsprepSubmissionService.xml $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml
@@ -192,23 +192,24 @@ startACS() {
         echo "Submission service not installed or $ACSDATA/conf/Catalina/localhost/ObsprepSubmissionService.xml not writable."
         echo "Check if Submission service is installed or the permission of the file, otherwise submission of aot files could fail."
     fi
-	userrepository start &> $ACS_TMP/archive.log
+#	userrepository start &> $ACS_TMP/archive.log
     archive start 2>&1 >> $ACS_TMP/archive.log
 	#LDAP deletion
-	ldapdelete -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -r "dc=alma,dc=info" &> $ACS_TMP/ur-ldapdelete.out
+#	ldapdelete -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -r "dc=alma,dc=info" &> $ACS_TMP/ur-ldapdelete.out
 	#LDAP tree creation
-	ldapadd -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -f config/test_data.ldif &> $ACS_TMP/ur-ldapadd.out
+#	ldapadd -H ldap://127.0.0.1:1389 -x -w alma -D "cn=Manager,dc=alma,dc=info" -f config/test_data.ldif &> $ACS_TMP/ur-ldapadd.out
     PID=$!
     echo $PID > $ACS_TMP/archive.pid
 }
 
 stopACS() {
+	echo "Stopping ACS"
     acsutilTATEpilogue
     printf "Stopping Archive\n"
     if [ -r "$ACS_TMP/archive.pid" ]; then
 	    archive stop &> $ACS_TMP/archiveStop.log
 		userrepository stop
-        cp $ACS_TMP/catalina.properties.orig $ACSDATA/tomcat5/conf/catalina.properties
+#        cp $ACS_TMP/catalina.properties.orig $ACSDATA/tomcat5/conf/catalina.properties
         cp $ACS_TMP/ObsprepSubmissionService.xml.orig $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml
     fi
 	

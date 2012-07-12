@@ -1,7 +1,7 @@
 <Context>
-<!--    <Realm          className="org.apache.catalina.realm.JDBCRealm"
+    <Realm          className="org.apache.catalina.realm.JDBCRealm"
                    driverName="org.hsqldb.jdbcDriver"
-                connectionURL="jdbc:hsqldb:hsql://localhost/relational"
+                connectionURL="jdbc:hsqldb:hsql://localhost:9001/statearchive"
                connectionName="SA"
            connectionPassword=""
                     userTable="ACCOUNT"
@@ -10,7 +10,7 @@
                 userRoleTable="SUBMISSION_SERVICE_ROLES"
                   roleNameCol="NAME"
                        digest="MD5" />
--->
+<!--
     <Realm     className="org.apache.catalina.realm.JNDIRealm"
                    debug="99"
            connectionURL="ldap://127.0.0.1:1389"
@@ -18,7 +18,7 @@
                 roleBase="ou=OBSPREP,ou=roles,ou=master,dc=alma,dc=info"
                 roleName="cn"
               roleSearch="(member={0})" />
-         
+    -->     
     <!-- Make sure that mail.smtp.host points to your SMTP server! For the OSF,
          this should be smtp.alma.cl -->
 	<Resource name="mail/Session"
