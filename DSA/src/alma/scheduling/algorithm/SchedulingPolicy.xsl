@@ -141,6 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
             </xsl:if>
             
             <xsl:if test="count(Scorers/ExecutiveBalancingScorer) = 1">
+                <xsl:variable name="weight" select="Scorers/ExecutiveBalancingScorer/weight"/>
                 <bean id="{concat('executiveBalancingScorer', '_', @name)}" class="alma.scheduling.algorithm.executive.ExecutiveBalancingScorer" scope="prototype">
                     <constructor-arg><value>executiveBalancingScorer</value></constructor-arg>
                     <property name="execBalance">
@@ -150,6 +151,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
                         </xsl:for-each>
                          </map>
                     </property>
+                    <property name="factor" value="{$weight}"/>
                 </bean>
             </xsl:if>
             

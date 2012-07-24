@@ -28,7 +28,22 @@ public class ExecutiveBalancingScorer extends AbstractBaseRanker {
 	@Override
 	public List<SBRank> rank(List<SchedBlock> sbs, ArrayConfiguration arrConf,
 			Date ut, int nProjects) {
+		//Assuming that all the SBs has the same duration
+		//TODO: In the future this has to be replaced by reading the current execution time of a executive for the given season
 		scores = new ArrayList<SBRank>();
+		
+		//find the chosen ExecId
+		double randN = Math.random() * 100.0;
+		String execIdToScore = null;
+		for (String execId: execBalance.keySet()) {
+			if (randN < execBalance.get(execId)) {
+				execIdToScore = execId;
+				break;
+			}
+			else
+				randN = randN - execBalance.get(execId);
+		}
+		
         double score;
         ArrayList<DSAErrorStruct> errors =  new ArrayList<DSAErrorStruct>();
 		for(SchedBlock sb: sbs) {
@@ -36,14 +51,18 @@ public class ExecutiveBalancingScorer extends AbstractBaseRanker {
 				if (!execBalance.containsKey(sb.getExecutive().getName())){
 					logger.warn("executive with name: " + sb.getExecutive().getName() 
 							+ " is not part of the executive balancing map. Setting the score to default (0)");
-					score = 0;
-				} else
-					score = execBalance.get(sb.getExecutive().getName());
+					score = 0.0;
+				} else {
+					if (sb.getExecutive().getName().equals(execIdToScore))
+						score = 1.0;
+					else
+						score = 0.0;
+				}
 	            SBRank rank = new SBRank();
 	            rank.setUid(sb.getUid());
 	            rank.setRank(score);
 	            scores.add(rank);
-	            logger.debug("rank: " + rank);
+	            logger.debug("SchedBlock: " + sb.getUid() + "rank: " + rank);
 			} catch(RuntimeException ex) {
 				errors.add(new DSAErrorStruct(this.getClass().getCanonicalName(), 
         				sb.getUid(), "SchedBlock", ex));
@@ -70,6 +89,15 @@ public class ExecutiveBalancingScorer extends AbstractBaseRanker {
 
 	public void setExecBalance(Map<String, Double> execBalance) {
 		this.execBalance = execBalance;
+		logger.debug("Checking if executive balance map is normalized to 100");
+		double totalChance = 0.0;
+		for(String execId: execBalance.keySet())
+			totalChance += execBalance.get(execId);
+		if (totalChance > 100.0) {
+			logger.info("Normalizing exec balance map");
+			for(String execId: execBalance.keySet())
+				execBalance.put(execId, execBalance.get(execId)/totalChance * 100.0);
+		}
 	}
 
 	@Override

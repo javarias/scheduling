@@ -126,28 +126,34 @@
 	</xs:complexType>
 
 	<xs:complexType name="ExecutiveBalancingScorerT">
-		<xs:sequence>
-			<xs:element name="Executive" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:attribute name="name">
-						<xs:simpleType>
-							<xs:restriction base="xs:string">
-								<xs:enumeration value="CHILE"/>
-								<xs:enumeration value="EA"/>
-								<xs:enumeration value="EU"/>
-								<xs:enumeration value="NA"/>
-								<xs:enumeration value="OTHER"/>
-							</xs:restriction>
-						</xs:simpleType>
-					</xs:attribute>
-					<xs:attribute name="value">
-						<xs:simpleType>
-							<xs:restriction base="xs:double"/>
-						</xs:simpleType>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
+		<xs:complexContent>
+			<xs:extension base="ScorerT">
+				<xs:sequence>
+					<xs:element name="Executive" minOccurs="1" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="name">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="CHILE" />
+										<xs:enumeration value="EA" />
+										<xs:enumeration value="EU" />
+										<xs:enumeration value="NA" />
+										<xs:enumeration value="OTHER" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="value">
+								<xs:simpleType>
+									<xs:restriction base="xs:double" >
+										<xs:minInclusive value="0.0"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 </xs:schema>
