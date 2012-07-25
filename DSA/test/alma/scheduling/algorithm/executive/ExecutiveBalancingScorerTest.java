@@ -25,7 +25,7 @@ import junit.framework.TestCase;
  *
  * @author javarias
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ExecutiveBalancingScorerTest extends TestCase {
 
@@ -90,11 +90,11 @@ public class ExecutiveBalancingScorerTest extends TestCase {
 		}
 		Map<String, Double> stats = getStats(res);
 		assertEquals(45.0, stats.get("NA"), 1.0);
-		assertEquals(10.0, stats.get("CL"), 0.5);
+		assertEquals(10.0, stats.get("CL"), 1.0);
 		assertEquals(25.0, stats.get("EU"), 1.0);
-		assertEquals(10.0, stats.get("EA"), 0.5);
-		assertEquals(5.0, stats.get("OTHER"), 0.5);
-		assertEquals(5.0, stats.get("NA_EA"), 0.5);
+		assertEquals(10.0, stats.get("EA"), 1.0);
+		assertEquals(5.0, stats.get("OTHER"), 1.0);
+		assertEquals(5.0, stats.get("NA_EA"), 1.0);
 	}
 	
 	private List<SchedBlock> createSBs() {
