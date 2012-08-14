@@ -38,6 +38,7 @@ import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.sbstatus.SBStatusRefT;
 import alma.entity.xmlbinding.valuetypes.ExecBlockRefT;
 import alma.lifecycle.persistence.StateArchive;
+import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.pipelineql.QlDisplayManager;
 import alma.scheduling.EndSessionEvent;
 import alma.scheduling.SchedulingException;
@@ -62,7 +63,7 @@ import alma.statearchiveexceptions.wrappers.AcsJStateIOFailedEx;
  * appropriate.
  * 
  * @author dclarke
- * $Id: SessionManager.java,v 1.11 2012/03/27 22:50:59 dclarke Exp $
+ * $Id: SessionManager.java,v 1.12 2012/08/14 16:27:18 javarias Exp $
  */
 public class SessionManager {
 
@@ -406,7 +407,7 @@ public class SessionManager {
 				throws AcsJStateIOFailedEx,
 					   AcsJNoSuchEntityEx {
        final StateArchive stateArchive = model.getStateArchive();
-       stateArchive.update(ouss);
+       stateArchive.insertOrUpdate(ouss, Subsystem.SCHEDULING);
 	}
 	
 	/**

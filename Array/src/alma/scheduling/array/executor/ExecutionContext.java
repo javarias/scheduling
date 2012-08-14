@@ -674,7 +674,7 @@ public class ExecutionContext {
 
     	projectStatus.setTimeOfUpdate(endTime);
     	try {
-    		getModel().getStateArchive().update(projectStatus);
+    		getModel().getStateArchive().insertOrUpdate(projectStatus, Subsystem.SCHEDULING);
     	} catch (Exception e) {
     		ErrorHandling.warning(logger,
     				String.format(
@@ -723,7 +723,7 @@ public class ExecutionContext {
     		ousStatus.setTotalUsedTimeInSec(time + timeInSec);
     		ousStatus.setTimeOfUpdate(endTime);
     		try {
-    			getModel().getStateArchive().update(ousStatus);
+    			getModel().getStateArchive().insertOrUpdate(ousStatus, Subsystem.SCHEDULING);
     			final OUSStatus parent = getContainingOUSStatus(ousStatus);
     			if (parent != null) {
     				updateForSuccess(parent,
@@ -779,7 +779,7 @@ public class ExecutionContext {
     	
     	sbStatus.setTimeOfUpdate(endTime);
     	try {
-    		getModel().getStateArchive().update(sbStatus);
+    		getModel().getStateArchive().insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
     		updateForSuccess(getContainingOUSStatus(sbStatus),
     				         endTime,
     				         secs,
@@ -821,7 +821,7 @@ public class ExecutionContext {
         	projectStatus.setTimeOfUpdate(endTime);
         	
     		try {
-    			getModel().getStateArchive().update(projectStatus);
+    			getModel().getStateArchive().insertOrUpdate(projectStatus, Subsystem.SCHEDULING);
     		} catch (Exception e) {
         		ErrorHandling.warning(logger,
         				String.format(
@@ -863,7 +863,7 @@ public class ExecutionContext {
     		}
     		ousStatus.setTimeOfUpdate(endTime);
     		try {
-    			getModel().getStateArchive().update(ousStatus);
+    			getModel().getStateArchive().insertOrUpdate(ousStatus, Subsystem.SCHEDULING);
     			final OUSStatus parent = getContainingOUSStatus(ousStatus);
     			if (parent != null) {
         			updateForFailure(getContainingOUSStatus(ousStatus),
@@ -912,7 +912,7 @@ public class ExecutionContext {
     	// TODO: sensitivity
     	
     	try {
-    		getModel().getStateArchive().update(sbStatus);
+    		getModel().getStateArchive().insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
     		updateForFailure(getContainingOUSStatus(sbStatus),
     				         endTime,
     				         secs,

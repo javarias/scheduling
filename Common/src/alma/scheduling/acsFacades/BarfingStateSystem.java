@@ -30,6 +30,7 @@ import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.asdmIDLTypes.IDLArrayTime;
+import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemHelper;
 import alma.projectlifecycle.StateSystemOperations;
@@ -48,7 +49,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: BarfingStateSystem.java,v 1.2 2011/01/31 19:17:02 javarias Exp $
+ * @version $Id: BarfingStateSystem.java,v 1.3 2012/08/14 16:22:53 javarias Exp $
  * @author David Clarke
  */
 public class BarfingStateSystem implements StateSystemOperations {
@@ -461,7 +462,7 @@ public class BarfingStateSystem implements StateSystemOperations {
 	public void updateOUSStatus(XmlEntityStruct entity) throws NoSuchEntityEx,
 			StateIOFailedEx {
 		barf();
-		delegate.updateOUSStatus(entity);
+		delegate.insertOrUpdateOUSStatus(entity, Subsystem.SCHEDULING);
 	}
 
 	/**
@@ -473,7 +474,7 @@ public class BarfingStateSystem implements StateSystemOperations {
 	public void updateProjectStatus(XmlEntityStruct entity)
 			throws NoSuchEntityEx, StateIOFailedEx {
 		barf();
-		delegate.updateProjectStatus(entity);
+		delegate.insertOrUpdateProjectStatus(entity, Subsystem.SCHEDULING);
 	}
 
 	/**
@@ -485,7 +486,7 @@ public class BarfingStateSystem implements StateSystemOperations {
 	public void updateSBStatus(XmlEntityStruct entity) throws NoSuchEntityEx,
 			StateIOFailedEx {
 		barf();
-		delegate.updateSBStatus(entity);
+		delegate.insertOrUpdateSBStatus(entity, Subsystem.SCHEDULING);
 	}
 	
     @Override
@@ -517,4 +518,25 @@ public class BarfingStateSystem implements StateSystemOperations {
 	}
 	/* Formatting utils
 	 * ------------------------------------------------------------- */
+
+	@Override
+	public void insertOrUpdateProjectStatus(XmlEntityStruct entity,
+			String userId) throws NoSuchEntityEx, StateIOFailedEx {
+		updateProjectStatus(entity);
+		
+	}
+
+	@Override
+	public void insertOrUpdateOUSStatus(XmlEntityStruct entity, String userId)
+			throws NoSuchEntityEx, StateIOFailedEx {
+		updateOUSStatus(entity);
+		
+	}
+
+	@Override
+	public void insertOrUpdateSBStatus(XmlEntityStruct entity, String userId)
+			throws NoSuchEntityEx, StateIOFailedEx {
+		updateSBStatus(entity);
+		
+	}
 }

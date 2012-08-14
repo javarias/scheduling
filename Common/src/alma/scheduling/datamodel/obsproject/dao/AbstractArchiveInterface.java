@@ -53,6 +53,7 @@ import alma.entity.xmlbinding.sbstatus.SBStatus;
 import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
 import alma.entity.xmlbinding.schedblock.SchedBlock;
 import alma.entity.xmlbinding.schedblock.SchedBlockEntityT;
+import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.utils.SchedulingProperties.Phase1SBSourceValue;
 import alma.statearchiveexceptions.InappropriateEntityTypeEx;
@@ -603,7 +604,7 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			throws EntityException, UserException {
 		XmlEntityStruct e = entitySerializer.serializeEntity(
 				status, status.getProjectStatusEntity());
-		stateSystem.updateProjectStatus(e);
+		stateSystem.insertOrUpdateProjectStatus(e, Subsystem.SCHEDULING);
 		refreshProjectStatus(status);	// Forces a refresh when asked
 	}
 	/* End of ProjectStatuses
@@ -712,7 +713,7 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			throws EntityException, UserException {
 		XmlEntityStruct e = entitySerializer.serializeEntity(
 				status, status.getOUSStatusEntity());
-		stateSystem.updateOUSStatus(e);
+		stateSystem.insertOrUpdateOUSStatus(e, Subsystem.SCHEDULING);
 		refreshOUSStatus(status);	// Forces a refresh when asked
 	}
 	/* End of OUSStatuses
@@ -823,7 +824,7 @@ public abstract class AbstractArchiveInterface implements ArchiveInterface  {
 			throws EntityException, UserException {
 		XmlEntityStruct e = entitySerializer.serializeEntity(
 				status, status.getSBStatusEntity());
-		stateSystem.updateSBStatus(e);
+		stateSystem.insertOrUpdateSBStatus(e, Subsystem.SCHEDULING);
 		refreshSBStatus(status);	// Forces a refresh when asked
 	}
 	/* End of SBStatuses

@@ -28,6 +28,7 @@ import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.asdmIDLTypes.IDLArrayTime;
+import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.utils.Profiler;
@@ -46,7 +47,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: ProfilingStateSystem.java,v 1.1 2010/04/23 23:35:23 dclarke Exp $
+ * @version $Id: ProfilingStateSystem.java,v 1.2 2012/08/14 16:22:53 javarias Exp $
  * @author David Clarke
  */
 public class ProfilingStateSystem
@@ -473,7 +474,7 @@ public class ProfilingStateSystem
 	public void updateOUSStatus(XmlEntityStruct entity) throws NoSuchEntityEx,
 			StateIOFailedEx {
 		profiler.start("updateOUSStatus()");
-		delegate.updateOUSStatus(entity);
+		delegate.insertOrUpdateOUSStatus(entity, Subsystem.SCHEDULING);
 		profiler.end();
 	}
 
@@ -486,7 +487,7 @@ public class ProfilingStateSystem
 	public void updateProjectStatus(XmlEntityStruct entity)
 			throws NoSuchEntityEx, StateIOFailedEx {
 		profiler.start("updateProjectStatus()");
-		delegate.updateProjectStatus(entity);
+		delegate.insertOrUpdateProjectStatus(entity, Subsystem.SCHEDULING);
 		profiler.end();
 	}
 
@@ -499,7 +500,7 @@ public class ProfilingStateSystem
 	public void updateSBStatus(XmlEntityStruct entity) throws NoSuchEntityEx,
 			StateIOFailedEx {
 		profiler.start("updateSBStatus()");
-		delegate.updateSBStatus(entity);
+		delegate.insertOrUpdateSBStatus(entity, Subsystem.SCHEDULING);
 		profiler.end();
 	}
 	
@@ -512,4 +513,31 @@ public class ProfilingStateSystem
     }
 	/* Delegation
 	 * ------------------------------------------------------------- */
+
+
+
+	@Override
+	public void insertOrUpdateProjectStatus(XmlEntityStruct entity,
+			String userId) throws NoSuchEntityEx, StateIOFailedEx {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void insertOrUpdateOUSStatus(XmlEntityStruct entity, String userId)
+			throws NoSuchEntityEx, StateIOFailedEx {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void insertOrUpdateSBStatus(XmlEntityStruct entity, String userId)
+			throws NoSuchEntityEx, StateIOFailedEx {
+		// TODO Auto-generated method stub
+		
+	}
 }

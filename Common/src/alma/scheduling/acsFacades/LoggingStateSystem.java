@@ -28,6 +28,7 @@ import alma.ACSErrTypeCommon.IllegalArgumentEx;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.container.ContainerServices;
 import alma.asdmIDLTypes.IDLArrayTime;
+import alma.lifecycle.stateengine.constants.Subsystem;
 import alma.projectlifecycle.StateChangeData;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.statearchiveexceptions.EntitySerializationFailedEx;
@@ -45,7 +46,7 @@ import alma.xmlentity.XmlEntityStruct;
 /**
  * A facade for the StateSystem which logs calls made to it.
  *
- * @version $Id: LoggingStateSystem.java,v 1.1 2010/04/20 23:04:14 dclarke Exp $
+ * @version $Id: LoggingStateSystem.java,v 1.2 2012/08/14 16:22:53 javarias Exp $
  * @author David Clarke
  */
 public class LoggingStateSystem
@@ -475,7 +476,7 @@ public class LoggingStateSystem
 		logger.fine(String.format(
 				"calling StateSystem.updateOUSStatus(%s %s)",
 				entity.entityTypeName, entity.entityId));
-		delegate.updateOUSStatus(entity);
+		delegate.insertOrUpdateOUSStatus(entity, Subsystem.SCHEDULING);
 	}
 
 	/**
@@ -489,7 +490,7 @@ public class LoggingStateSystem
 		logger.fine(String.format(
 				"calling StateSystem.updateProjectStatus(%s %s)",
 				entity.entityTypeName, entity.entityId));
-		delegate.updateProjectStatus(entity);
+		delegate.insertOrUpdateProjectStatus(entity, Subsystem.SCHEDULING);
 	}
 
 	/**
@@ -503,7 +504,7 @@ public class LoggingStateSystem
 		logger.fine(String.format(
 				"calling StateSystem.updateSBStatus(%s %s)",
 				entity.entityTypeName, entity.entityId));
-		delegate.updateSBStatus(entity);
+		delegate.insertOrUpdateSBStatus(entity, Subsystem.SCHEDULING);
 	}
 	
     @Override
@@ -513,4 +514,31 @@ public class LoggingStateSystem
     }
 	/* Delegation
 	 * ------------------------------------------------------------- */
+
+
+
+	@Override
+	public void insertOrUpdateProjectStatus(XmlEntityStruct entity,
+			String userId) throws NoSuchEntityEx, StateIOFailedEx {
+		updateProjectStatus(entity);
+		
+	}
+
+
+
+	@Override
+	public void insertOrUpdateOUSStatus(XmlEntityStruct entity, String userId)
+			throws NoSuchEntityEx, StateIOFailedEx {
+		updateOUSStatus(entity);
+		
+	}
+
+
+
+	@Override
+	public void insertOrUpdateSBStatus(XmlEntityStruct entity, String userId)
+			throws NoSuchEntityEx, StateIOFailedEx {
+		updateSBStatus(entity);
+		
+	}
 }
