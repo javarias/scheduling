@@ -180,7 +180,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
-			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, with(Subsystem.SCHEDULING));
+			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
 			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).insertOrUpdate(with(any(OUSStatus.class)), with(Subsystem.SCHEDULING));
 			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
@@ -236,7 +236,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
-			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, with(Subsystem.SCHEDULING));
+			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
 			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).insertOrUpdate(with(any(OUSStatus.class)), with(Subsystem.SCHEDULING));
 			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
@@ -342,7 +342,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
-			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, with(Subsystem.SCHEDULING));
+			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
 			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).insertOrUpdate(with(any(OUSStatus.class)), with(Subsystem.SCHEDULING));
 			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
@@ -395,7 +395,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
-			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, with(Subsystem.SCHEDULING));
+			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
 			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).insertOrUpdate(with(any(OUSStatus.class)), with(Subsystem.SCHEDULING));
 			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
@@ -450,7 +450,7 @@ public class ExecutorUnitTests extends MockObjectTestCase {
 			atLeast(1).of(array).observe(with(any(IDLEntityRef.class)), with(any(IDLEntityRef.class)));
 			oneOf(sessions).addExecution(startEvent.execId.entityId);
 			allowing(model).getObsProjectDao(); will(returnValue(prjDao));
-			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, with(Subsystem.SCHEDULING));
+			atMost(2).of(stateArchive).insertOrUpdate(sbStatus, Subsystem.SCHEDULING);
 			atMost(2).of(stateArchive).getOUSStatus(with(any(OUSStatusEntityT.class))); will(returnValue(ousStatus));
 			atMost(2).of(stateArchive).insertOrUpdate(with(any(OUSStatus.class)), with(Subsystem.SCHEDULING));
 			atMost(1).of(stateArchive).getProjectStatus(with(any(ProjectStatusEntityT.class))); will(returnValue(prjStatus));
