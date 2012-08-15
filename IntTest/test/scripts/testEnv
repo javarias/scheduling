@@ -107,7 +107,8 @@ startACS() {
 		mv $ACSDATA/config/archiveConfig.properties $ACSDATA/config/archiveConfig.properties.orig
 		ln -s $(pwd)/archiveConfig.properties $ACSDATA/config/archiveConfig.properties
 	else
-		echo "$ACSDATA/config/archiveConfig.properties could not be replaced."
+		ln -s $(pwd)/archiveConfig.properties $ACSDATA/config/archiveConfig.properties.orig
+		ln -s $(pwd)/archiveConfig.properties $ACSDATA/config/archiveConfig.properties
 	fi
 
 	#Replace obopsConfig.properties
@@ -189,7 +190,7 @@ startACS() {
         cp $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml $ACS_TMP/ObsprepSubmissionService.xml.orig
         cp config/ObsprepSubmissionService.xml $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml
     else 
-        echo "Submission service not installed or $ACSDATA/conf/Catalina/localhost/ObsprepSubmissionService.xml not writable."
+        echo "Submission service not installed or $ACSDATA/tomcat5/conf/Catalina/localhost/ObsprepSubmissionService.xml not writable."
         echo "Check if Submission service is installed or the permission of the file, otherwise submission of aot files could fail."
     fi
 #	userrepository start &> $ACS_TMP/archive.log
