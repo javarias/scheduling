@@ -20,8 +20,11 @@
  *******************************************************************************/
 package alma.scheduling.projectmanager;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,22 +34,25 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import alma.acs.entityutil.EntityDeserializer;
 import alma.entity.xmlbinding.ousstatus.OUSStatus;
+import alma.entity.xmlbinding.ousstatus.OUSStatusEntityT;
 import alma.entity.xmlbinding.projectstatus.ProjectStatus;
+import alma.entity.xmlbinding.projectstatus.ProjectStatusEntityT;
+import alma.entity.xmlbinding.projectstatus.StatusBaseT;
 import alma.entity.xmlbinding.sbstatus.SBStatus;
+import alma.entity.xmlbinding.sbstatus.SBStatusEntityT;
+import alma.entity.xmlbinding.valuetypes.types.StatusTStateType;
+import alma.lifecycle.persistence.StateArchive;
+import alma.lifecycle.stateengine.StateEngine;
 import alma.lifecycle.stateengine.constants.Role;
 import alma.lifecycle.stateengine.constants.Subsystem;
-import alma.projectlifecycle.StateSystemOperations;
-import alma.xmlentity.XmlEntityStruct;
-import alma.xmlstore.OperationalOperations;
 
 public class StateArchiveDAO {
 
-	public  Logger                logger;
-	private OperationalOperations xmlStore;
-	private StateSystemOperations stateSystem;
-	private EntityDeserializer    entityDeserializer;
+	public  Logger       logger;
+	private StateArchive stateArchive;
+	private StateEngine  stateEngine;
+	private boolean      buggered = false;
 
 	/*
 	 * ================================================================
@@ -60,18 +66,47 @@ public class StateArchiveDAO {
 	 * @throws Exception
 	 */
 	protected StateArchiveDAO(Logger                logger,
-			                  OperationalOperations xmlStore,
-			                  StateSystemOperations stateSystem)
+			                  StateArchive          stateArchive,
+			                  StateEngine           stateEngine)
 											throws Exception {
 		this.logger = logger;
-		this.xmlStore = xmlStore;
-		this.stateSystem = stateSystem;
-		this.entityDeserializer = EntityDeserializer.
-									getEntityDeserializer(logger);
+        this.stateArchive = stateArchive;
+        this.stateEngine  = stateEngine;
 		refresh();
 		getTransitionInfo();
 	}
 	/* End Construction
+	 * ============================================================= */
+
+
+
+	/*
+	 * ================================================================
+	 * Identity Building
+	 * ================================================================
+	 */
+	private ProjectStatusEntityT projectStatusEntity(String id) {
+		final ProjectStatusEntityT result = new ProjectStatusEntityT();
+		result.setEntityId(id);
+		return result;
+	}
+	
+	private OUSStatusEntityT ousStatusEntity(String id) {
+		final OUSStatusEntityT result = new OUSStatusEntityT();
+		result.setEntityId(id);
+		return result;
+	}
+	
+	private SBStatusEntityT sbStatusEntity(String id) {
+		final SBStatusEntityT result = new SBStatusEntityT();
+		result.setEntityId(id);
+		return result;
+	}
+	
+	private StatusTStateType state(String label) {
+		return StatusTStateType.valueOf(label);
+	}
+	/* End Identity Building
 	 * ============================================================= */
 
 
@@ -88,9 +123,7 @@ public class StateArchiveDAO {
 	private ProjectStatus fetchProjectStatus(String id) {
 		ProjectStatus result = null;
 		try {
-			XmlEntityStruct xml = stateSystem.getProjectStatus(id);
-			result = (ProjectStatus) entityDeserializer.
-						deserializeEntity(xml, ProjectStatus.class);
+			result = stateArchive.getProjectStatus(projectStatusEntity(id));
 		} catch (Exception e) {
 			logger.warning(String.format(
 					"Can not pull ProjectStatus %s from State System - %s",
@@ -103,9 +136,7 @@ public class StateArchiveDAO {
 	private OUSStatus fetchOUSStatus(String id) {
 		OUSStatus result = null;
 		try {
-			XmlEntityStruct xml = stateSystem.getOUSStatus(id);
-			result = (OUSStatus) entityDeserializer.
-						deserializeEntity(xml, OUSStatus.class);
+			result = stateArchive.getOUSStatus(ousStatusEntity(id));
 		} catch (Exception e) {
 			logger.warning(String.format(
 					"Can not pull OUSStatus %s from State System - %s",
@@ -118,9 +149,7 @@ public class StateArchiveDAO {
 	private SBStatus fetchSBStatus(String id) {
 		SBStatus result = null;
 		try {
-			XmlEntityStruct xml = stateSystem.getSBStatus(id);
-			result = (SBStatus) entityDeserializer.
-						deserializeEntity(xml, SBStatus.class);
+			result = stateArchive.getSBStatus(sbStatusEntity(id));
 		} catch (Exception e) {
 			logger.warning(String.format(
 					"Can not pull SBStatus %s from State System - %s",
@@ -167,29 +196,13 @@ public class StateArchiveDAO {
 		final SortedSet<ProjectStatus> result = newProjectStatusSet();
 		final String[] states = getObsProjectStates().toArray(new String[0]);
 
-		XmlEntityStruct xml[] = null;
 		try {
-			xml = stateSystem.findProjectStatusByState(states);
+			ProjectStatus[] statuses = stateArchive.findProjectStatusByState(states);
+			result.addAll(Arrays.asList(statuses));
 		} catch (Exception e) {
 			logger.warning(String.format(
 					"Can not pull ProjectStatuses from State System - %s",
 					e.getMessage()));
-		}
-
-		if (xml != null) {
-			for (final XmlEntityStruct xes : xml) {
-				try {
-					final ProjectStatus ps = (ProjectStatus) entityDeserializer.
-					deserializeEntity(xes, ProjectStatus.class);
-					result.add(ps);
-				} catch (Exception e) {
-					logger.warning(String.format(
-							"Can not deserialise %s %s from State System - %s",
-							xes.entityTypeName,
-							xes.entityId,
-							e.getMessage()));
-				}
-			}
 		}
 
 		return result;
@@ -200,32 +213,19 @@ public class StateArchiveDAO {
 			                        Set<SBStatus>      sbStatuses) {
 		for (final ProjectStatus ps : projectStatuses) {
 			try {
-				final XmlEntityStruct[] xml
-					= stateSystem.getProjectStatusList(
-						ps.getProjectStatusEntity().getEntityId());
-				for (XmlEntityStruct xes : xml) {
-					try {
-						if (xes.entityTypeName.equals("OUSStatus")) {
-							final OUSStatus ouss = (OUSStatus) entityDeserializer.
-							deserializeEntity(xes, OUSStatus.class);
-							ousStatuses.add(ouss);
-						} else if (xes.entityTypeName.equals("SBStatus")) {
-							final SBStatus sbs = (SBStatus) entityDeserializer.
-							deserializeEntity(xes, SBStatus.class);
-							sbStatuses.add(sbs);
-						} else if (!xes.entityTypeName.equals("ProjectStatus")) {
+				final StatusBaseT[] xml
+					= stateArchive.getProjectStatusList(
+						projectStatusEntity(ps.getProjectStatusEntity().getEntityId()));
+				for (StatusBaseT xes : xml) {
+						if (xes instanceof OUSStatus) {
+							ousStatuses.add((OUSStatus)xes);
+						} else if (xes instanceof SBStatus) {
+							sbStatuses.add((SBStatus) xes);
+						} else if (!(xes instanceof ProjectStatus)) {
 							logger.warning(String.format(
-									"Unrecognised entity type for entity %s from State System - type is %s",
-									xes.entityId,
-									xes.entityTypeName));
+									"Unrecognised entity type for entity from State System - type is %s",
+									xes.getClass().getName()));
 						}
-					} catch (Exception e) {
-						logger.warning(String.format(
-								"Can not deserialise %s %s from State System - %s",
-								xes.entityTypeName,
-								xes.entityId,
-								e.getMessage()));
-					}
 				}
 			} catch (Exception e) {
 				logger.warning(String.format(
@@ -256,6 +256,7 @@ public class StateArchiveDAO {
 		projectStatuses = null;
 		ousStatuses     = null;
 		sbStatuses      = null;
+		buggered        = false;
 	}
 	
 	public Set<ProjectStatus> getAllProjectStatuses() {
@@ -282,9 +283,9 @@ public class StateArchiveDAO {
 	private void changeProjectStatus(String id, String to, String subsystem) throws Exception {
 		for (final String role : Role.ALL_ROLES) {
 			try {
-				stateSystem.changeProjectStatus(
-						id,
-						to,
+				stateEngine.changeState(
+						projectStatusEntity(id),
+						state(to),
 						subsystem,
 						role);
 				return;
@@ -299,9 +300,9 @@ public class StateArchiveDAO {
 	private void changeOUSStatus(String id, String to, String subsystem) throws Exception {
 		for (final String role : Role.ALL_ROLES) {
 			try {
-				stateSystem.changeOUSStatus(
-						id,
-						to,
+				stateEngine.changeState(
+						ousStatusEntity(id),
+						state(to),
 						subsystem,
 						role);
 				return;
@@ -316,9 +317,9 @@ public class StateArchiveDAO {
 	private void changeSBStatus(String id, String to, String subsystem) throws Exception {
 		for (final String role : Role.ALL_ROLES) {
 			try {
-				stateSystem.changeSBStatus(
-						id,
-						to,
+				stateEngine.changeState(
+						sbStatusEntity(id),
+						state(to),
 						subsystem,
 						role);
 				return;
@@ -373,6 +374,11 @@ public class StateArchiveDAO {
 		final String from = status.getStatus().getState().toString();
 		final String subsystem = subsystemForSchedBlock(from, to);
 		try {
+			logger.info(String.format(
+					"Setting %s %s to %s",
+					status.getClass().getSimpleName(),
+					id,
+					to));
 			changeSBStatus(id, to, subsystem);
 			updateSB(id);
 		} catch (Exception e) {
@@ -434,6 +440,10 @@ public class StateArchiveDAO {
 		}
 		return null;
 	}
+	
+	public boolean isBuggered() {
+		return buggered;
+	}
 	/* End Public interface
 	 * ============================================================= */
 
@@ -471,29 +481,36 @@ public class StateArchiveDAO {
 		logger.fine("Getting OBS_PROJECT transitions");
 		for (final String subsystem : Subsystem.ALL_SUBSYSTEMS) {
 			if (!subsystem.equals(Subsystem.STATE_ENGINE)) {
-				final String states = stateSystem.getObsProjectStates(subsystem);
+				final String states = stateEngine.getObsProjectStates(subsystem);
 				parseAndStore(psTransitions, obsProjectStates, states, subsystem);
 			}
 		}
 		logger.fine("Getting SCHED_BLOCK transitions");
 		for (final String subsystem : Subsystem.ALL_SUBSYSTEMS) {
 			if (!subsystem.equals(Subsystem.STATE_ENGINE)) {
-				final String states = stateSystem.getSchedBlockStates(subsystem);
+				final String states = stateEngine.getSchedBlockStates(subsystem);
 				parseAndStore(sbsTransitions, schedBlockStates, states, subsystem);
 			}
 		}
 		logger.fine("Getting OBS_UNIT_SET transitions");
 		for (final String subsystem : Subsystem.ALL_SUBSYSTEMS) {
 			if (!subsystem.equals(Subsystem.STATE_ENGINE)) {
-				final String states = stateSystem.getObsUnitSetStates(subsystem);
+				final String states = stateEngine.getObsUnitSetStates(subsystem);
 				parseAndStore(oussTransitions, obsUnitSetStates, states, subsystem);
 			}
 		}
 		
+		logAllStates();
 		logTransitions("ProjectStatuses", psTransitions, obsProjectStates);
 		logTransitions("SBStatuses", sbsTransitions, schedBlockStates);
 		logTransitions("OUSStatuses", oussTransitions, obsUnitSetStates);
+		
+		if (buggered) {
+			logger.severe("Serious errors found, this will probably not work (see logs above for clues).");
+		}
 	}
+
+
 
 	/**
 	 * Split the given state string up and store it in the given
@@ -521,7 +538,7 @@ public class StateArchiveDAO {
 			final String[] split = forFrom.split(":");
 			// split is now {"from1", "to1,to2"}
 			final String   from = split[0];
-			// from now hold the From state
+			// from now holds the From state
 			final String[] tos  = split[1].split(",");
 			// tos is now a list of the To states
 
@@ -529,6 +546,27 @@ public class StateArchiveDAO {
 				storeTransition(transitions, knownStates, from, to, subsystem);
 			}
 		}
+	}
+
+	private void logAllStates() {
+		StringBuilder b = new StringBuilder();
+		@SuppressWarnings("unchecked")
+		Enumeration<StatusTStateType> e = StatusTStateType.enumerate();
+		SortedSet<String> states = new TreeSet<String>();
+		
+		while (e.hasMoreElements()) {
+			StatusTStateType t = e.nextElement();
+			states.add(t.toString());
+		}
+		
+		b.append("All known states from StatusTStateType:");
+		
+		for (String state : states) {
+			b.append("\n\t");
+			b.append(state);
+		}
+		
+		logger.info(b.toString());
 	}
 	
 	private void logTransitions(
@@ -582,6 +620,19 @@ public class StateArchiveDAO {
 		logger.finer(String.format("Adding transition %s to %s for %s",
 				from, to, subsystem));
 
+		try {
+			StatusTStateType.valueOf(from);
+		} catch (IllegalArgumentException e) {
+			logger.warning(String.format("State %s (the 'from' state, given by the StateEngine) is not known to StatusTStateType", from));
+			buggered = true;
+		}
+		try {
+			StatusTStateType.valueOf(to);
+		} catch (IllegalArgumentException e) {
+			logger.warning(String.format("State %s (the 'to' state, given by the StateEngine) is not known to StatusTStateType", to));
+			buggered = true;
+		}
+		
 		if (transitions.containsKey(from)) {
 			toPart = transitions.get(from);
 		} else {

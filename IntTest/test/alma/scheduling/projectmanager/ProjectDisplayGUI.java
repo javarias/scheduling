@@ -24,6 +24,7 @@
 package alma.scheduling.projectmanager;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -34,8 +35,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.swing.BoxLayout;
+import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -46,8 +48,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
-
-import alma.scheduling.array.guis.ObsProjectTableModel;
 
 /**
  * @author dclarke
@@ -202,6 +202,12 @@ public class ProjectDisplayGUI extends JPanel {
 	private Component createApplicationButtons() {
 		final JPanel result = new JPanel();
 		result.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		if (sa.isBuggered()) {
+			JLabel label = new JLabel("<html><b>Problems during analysis of the state archive</b></html>");
+			label.setForeground(Color.RED);
+			result.add(label);
+		}
 		exitB = new JButton("Exit");
 		refreshB = new JButton("Refresh");
 		result.add(refreshB);

@@ -24,6 +24,8 @@
  */
 package alma.scheduling.projectmanager;
 
+import static alma.lifecycle.config.SpringConstants.STATE_SYSTEM_SPRING_CONFIG;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +37,9 @@ import org.omg.CORBA.UserException;
 import alma.JavaContainerError.wrappers.AcsJContainerServicesEx;
 import alma.acs.component.client.ComponentClient;
 import alma.acs.logging.AcsLogger;
+import alma.lifecycle.config.StateSystemContextFactory;
+import alma.lifecycle.persistence.StateArchive;
+import alma.lifecycle.stateengine.StateEngine;
 import alma.projectlifecycle.StateSystemHelper;
 import alma.projectlifecycle.StateSystemOperations;
 import alma.scheduling.SchedulingException;
@@ -55,14 +60,9 @@ public class ProjectsDisplay extends ComponentClient {
 	
 	private StateArchiveDAO sa;
 
-	private static final String archiveIFName
-					= "IDL:alma/xmlstore/ArchiveConnection:1.0";
-	private static final String stateIFName
-					= "IDL:alma/projectlifecycle/StateSystem:1.0";
-	
 	private AcsLogger             logger;
-	private OperationalOperations xmlStore;
-	private StateSystemOperations stateSystem;
+	private StateArchive          stateArchive;
+	private StateEngine           stateEngine;
 	
 
 
@@ -92,9 +92,8 @@ public class ProjectsDisplay extends ComponentClient {
 											throws Exception {
 		super(willBeNull, managerLoc, clientName);
 		this.logger = getContainerServices().getLogger();
-		this.xmlStore = getArchive(archiveIFName);
-		this.stateSystem = getStateSystem(stateIFName);
-		sa = new StateArchiveDAO(this.logger, xmlStore, stateSystem);
+		getStateSystem(this.logger);
+		sa = new StateArchiveDAO(this.logger, stateArchive, stateEngine);
 	}
 	/* End Construction
 	 * ============================================================= */
@@ -114,32 +113,16 @@ public class ProjectsDisplay extends ComponentClient {
 		}
 		return result;
 	}
-    
-   private OperationalOperations getArchive(String name)
-   						throws AcsJContainerServicesEx, UserException {
-	   final org.omg.CORBA.Object obj
-	   				= getContainerServices().getDefaultComponent(name);
-	   final ArchiveConnection con = ArchiveConnectionHelper.narrow(obj);
-	   final OperationalOperations ops = con.getOperational("SCHEDULING");
-	   if (ops == null) {
-		   logger.warning(String.format(
-				   "SCHEDULING: Cannot find ALMA Archive component called %s.",
-				   name));
-	   }
-	   return ops;
-   }
    
-	private StateSystemOperations getStateSystem(String name)
+	private void getStateSystem(Logger logger)
 						throws AcsJContainerServicesEx {
-		final org.omg.CORBA.Object obj
-					= getContainerServices().getDefaultComponent(name);
-		final StateSystemOperations ops = StateSystemHelper.narrow(obj);
-		if (ops == null) {
-			logger.warning(String.format(
-					"SCHEDULING: Cannot find ALMA State System component called %s.",
-					name));
+		
+		if (!StateSystemContextFactory.INSTANCE.isInitialized()) {
+			StateSystemContextFactory.INSTANCE.init(STATE_SYSTEM_SPRING_CONFIG, logger);
 		}
-		return ops;
+		
+		stateArchive = StateSystemContextFactory.INSTANCE.getStateArchive();
+		stateEngine = StateSystemContextFactory.INSTANCE.getStateEngine();
 	}
 	/* End ACS Bookkeeping
 	 * ============================================================= */
