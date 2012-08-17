@@ -36,7 +36,7 @@ import alma.common.gui.standards.StandardColors;
  * alma.scheduling.datamodel.obsproject.SchedBlocks.
  * 
  * @author dclarke
- * $Id: SBExecutionTableModel.java,v 1.5 2012/01/04 00:37:19 dclarke Exp $
+ * $Id: SBExecutionTableModel.java,v 1.6 2012/08/17 22:18:33 dclarke Exp $
  */
 @SuppressWarnings("serial") // We are unlikely to need to serialise
 public class SBExecutionTableModel extends AbstractTableModel {
@@ -145,7 +145,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 				Column_Timestamp,
 				Column_Executive,
 				Column_Name,
-				Column_State,
+				Column_Lifecycle_State,
 				Column_Project,
 				Column_Note
 		};
@@ -165,7 +165,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 				Column_Timestamp,
 				Column_Executive,
 				Column_Name,
-				Column_State,
+				Column_Internal_State,
 				Column_Project,
 				Column_Note
 		};
@@ -186,7 +186,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 				Column_Timestamp,
 				Column_Executive,
 				Column_Name,
-				Column_State,
+				Column_Internal_State,
 				Column_Note,
 		};
 		return result;
@@ -355,7 +355,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	 * Support methods
 	 * ================================================================
 	 */
-	public TableCellRenderer getSchedBlockStateRenderer() {
+	public TableCellRenderer getSchedBlockInternalStateRenderer() {
 		return new DefaultTableCellRenderer() {
 			public void setValue(Object value) {
 				try {
@@ -374,6 +374,27 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			}
 		};
 	}
+	
+	
+	public TableCellRenderer getSchedBlockLifecycleStateRenderer() {
+		return new DefaultTableCellRenderer() {
+			public void setValue(Object value) {
+				try {
+					final String es = ((String) value).toLowerCase();
+					if (es.endsWith("ready")) {
+						setForeground(StandardColors.STATUS_OKAY_BG.color);
+					} else if (es.endsWith("running")) {
+						setForeground(StandardColors.STATUS_WARNING_BG.color);
+					} else {
+						setForeground(StandardColors.STATUS_ERROR_BG.color);
+					}
+					setText(es);
+				} catch (ClassCastException e) {
+					setText(value.getClass().getSimpleName());
+				}
+			}
+		};
+	}
 	/* End Support methods
 	 * ============================================================= */
 
@@ -384,15 +405,16 @@ public class SBExecutionTableModel extends AbstractTableModel {
 	 * TableModel implementation
 	 * ================================================================
 	 */
-	private static final int  Column_EntityId = 0;
-	private static final int        Column_PI = 1;
-	private static final int Column_Executive = 2;
-	private static final int      Column_Name = 3;
-	private static final int     Column_State = 4;
-	private static final int   Column_Project = 5;
-	private static final int  Column_Position = 6;
-	private static final int      Column_Note = 7;
-	private static final int Column_Timestamp = 8;
+	private static final int        Column_EntityId = 0;
+	private static final int              Column_PI = 1;
+	private static final int       Column_Executive = 2;
+	private static final int            Column_Name = 3;
+	private static final int  Column_Internal_State = 4;
+	private static final int         Column_Project = 5;
+	private static final int        Column_Position = 6;
+	private static final int            Column_Note = 7;
+	private static final int       Column_Timestamp = 8;
+	private static final int Column_Lifecycle_State = 9;
 	
 
 	/* (non-Javadoc)
@@ -436,24 +458,8 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return schedBlock.getExecutive().getName();
 		case Column_Name:
 			return schedBlock.getName();
-		case Column_State:
+		case Column_Internal_State:
 			return schedBlock.getExecutionState();
-//			final StringBuffer sb = new StringBuffer();
-//			final String       es = schedBlock.getExecutionState();
-//			sb.append("<html>");
-//			if (es.startsWith("Failed")) {
-//				sb.append("<font color=\"RED\">");
-//				sb.append(es);
-//				sb.append("</font>");
-//			} else if (es.startsWith("Complete")) {
-//				sb.append("<b><font color=\"GREEN\">");
-//				sb.append(es);
-//				sb.append("</font></b>");
-//			} else {
-//				sb.append(es);
-//			}
-//			sb.append("</html>");
-//			return sb.toString();
 		case Column_Project:
 			return schedBlock.getProjectUid();
 		case Column_Position:
@@ -462,6 +468,8 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return formattedOffsetTime(schedBlock.getItem().timestamp);
 		case Column_Note:
 			return schedBlock.getNote();
+		case Column_Lifecycle_State:
+			return schedBlock.getSchedBlockControl().getState();
 		default:
 			System.out.format(
 					"column out of bounds in %s.getValueAt(%d, %d)",
@@ -506,7 +514,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return String.class;
 		case Column_Name:
 			return String.class;
-		case Column_State:
+		case Column_Internal_State:
 			return String.class;
 		case Column_Project:
 			return String.class;
@@ -515,6 +523,8 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		case Column_Timestamp:
 			return String.class;
 		case Column_Note:
+			return String.class;
+		case Column_Lifecycle_State:
 			return String.class;
 		default:
 			System.out.format(
@@ -541,7 +551,7 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return "Executive";
 		case Column_Name:
 			return "Name";
-		case Column_State:
+		case Column_Internal_State:
 			return "State";
 		case Column_Project:
 			return "Project";
@@ -551,6 +561,8 @@ public class SBExecutionTableModel extends AbstractTableModel {
 			return "Time";
 		case Column_Note:
 			return "Note";
+		case Column_Lifecycle_State:
+			return "Status";
 		default:
 			System.out.format(
 					"column out of bounds in %s.getColumnName(%d)",
@@ -586,8 +598,12 @@ public class SBExecutionTableModel extends AbstractTableModel {
 		return unmap(Column_Project);
 	}
 	
-	public int stateColumn() {
-		return unmap(Column_State);
+	public int internalStateColumn() {
+		return unmap(Column_Internal_State);
+	}
+	
+	public int lifecycleStateColumn() {
+		return unmap(Column_Lifecycle_State);
 	}
 	
 	public String getSchedBlockId(int row) {

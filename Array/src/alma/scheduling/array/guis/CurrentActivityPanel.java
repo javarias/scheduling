@@ -85,7 +85,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: CurrentActivityPanel.java,v 1.23 2012/03/08 21:00:25 dclarke Exp $
+ * $Id: CurrentActivityPanel.java,v 1.24 2012/08/17 22:18:33 dclarke Exp $
  */
 @SuppressWarnings("serial")
 public class CurrentActivityPanel extends AbstractArrayPanel
@@ -259,13 +259,23 @@ public class CurrentActivityPanel extends AbstractArrayPanel
 		pastTable = new JTable(pastModel);
 		pastTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		final int stateColumn = pastModel.stateColumn();
+		int stateColumn = pastModel.internalStateColumn();
 		if (stateColumn >= 0) {
 			// -1 is used to denote "none", so if we get here there
 			// should be a State column.
 			final TableColumn tc = pastTable.getColumnModel().getColumn(stateColumn);
 			if (tc != null) {
-				tc.setCellRenderer(pastModel.getSchedBlockStateRenderer());
+				tc.setCellRenderer(pastModel.getSchedBlockInternalStateRenderer());
+			}
+		}
+		
+		stateColumn = pastModel.lifecycleStateColumn();
+		if (stateColumn >= 0) {
+			// -1 is used to denote "none", so if we get here there
+			// should be a State column.
+			final TableColumn tc = pastTable.getColumnModel().getColumn(stateColumn);
+			if (tc != null) {
+				tc.setCellRenderer(pastModel.getSchedBlockLifecycleStateRenderer());
 			}
 		}
 
