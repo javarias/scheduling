@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307  USA
  *
- * "@(#) $Id: SchedBlock.java,v 1.19 2012/07/04 16:24:18 javarias Exp $"
+ * "@(#) $Id: SchedBlock.java,v 1.20 2012/08/17 22:16:44 dclarke Exp $"
  */
 package alma.scheduling.datamodel.obsproject;
 
@@ -233,25 +233,77 @@ public class SchedBlock extends ObsUnit {
 		this.manual = manual;
 	}
 
-	public void initialiseBookkeeping(SBStatus status) {
-		if (schedBlockControl.getIndefiniteRepeat()) {
+	/**
+	 * @param apdmSB 
+	 * @param status
+	 */
+	private void initialiseExecutionCount(SBStatus status) {
+		if (getSchedBlockControl().getIndefiniteRepeat()) {
 			status.setHasExecutionCount(false);
+			status.setExecutionsRemaining(0);
 		} else {
 			status.setHasExecutionCount(true);
+			status.setExecutionsRemaining(getSchedBlockControl().getExecutionCount());
 		}
 	}
 
+	/**
+	 * @param status
+	 */
+	private void initialiseExecutionTime(alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+										 SBStatus                                     status) {
+		double s = getObsUnitControl().getMaximumTime() * 3600; // convert from hours to seconds
+
+		if (s <= 0.001 ) {
+			status.setHasTimeLimit(false);
+			status.setSecondsRemaining(0);
+		} else {
+			status.setHasTimeLimit(true);
+			status.setSecondsRemaining((int)s);
+		}
+	}
+
+	/**
+	 * @param status
+	 */
+	private void initialiseSensitivity(alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+									   SBStatus                                     status) {
+		
+		Target target = getSchedulingConstraints().getRepresentativeTarget();
+		ScienceParameters science = null;
+		
+		for (ObservingParameters op : target.getObservingParameters()) {
+			if (op instanceof ScienceParameters) {
+				science = (ScienceParameters) op;
+			}
+		}
+
+		
+		double j = (science == null)? -1: science.getSensitivityGoal();
+		
+		if (j <= 0.001 ) {
+			status.setHasSensitivityGoal(false);
+			status.setSensitivityGoalJy(-1);
+		} else {
+			status.setHasSensitivityGoal(true);
+			status.setSensitivityGoalJy(j);
+		}
+	}
+	
+	
+	public void initialiseBookkeeping(alma.entity.xmlbinding.schedblock.SchedBlock apdmSB,
+			                          SBStatus                                     status) {
+		initialiseExecutionCount(status);
+		initialiseExecutionTime(apdmSB, status);
+		initialiseSensitivity(apdmSB, status);
+//		status.setBookkeepingInitialized(true);
+	}
+
 	public boolean bookkeepingIsInitialised(SBStatus status) {
-		return isOnCSVLifecycle(status) ||
-				status.getHasExecutionCount() ||
-				status.getHasTimeLimit() ||
-				status.getHasSensitivityGoal();
+		return status.getBookkeepingInitialized();
 	}
 
 	public boolean needsMoreExecutions(SBStatus status) {
-//		if (schedBlockControl.getIndefiniteRepeat()) {
-//			return true;
-//		}
 		if (status.getHasExecutionCount() &&
 				status.getExecutionsRemaining() <= 0) {
 			// No more executions allowed
@@ -398,7 +450,5 @@ public class SchedBlock extends ObsUnit {
 			return true;
 		return false;
 	}
-	
-	
 
 }
