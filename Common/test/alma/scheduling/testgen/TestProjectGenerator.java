@@ -35,7 +35,7 @@ import alma.scheduling.SchedulingException;
  * template projects into masses of real projects.
  * 
  * @author dclarke
- * $Id: TestProjectGenerator.java,v 1.3 2012/02/06 22:54:06 dclarke Exp $
+ * $Id: TestProjectGenerator.java,v 1.4 2012/08/17 21:28:47 dclarke Exp $
  */
 public class TestProjectGenerator {
 
@@ -107,16 +107,26 @@ public class TestProjectGenerator {
 	
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			inner("-name", "FineGarland_%03d",
+			inner("-name", "Ville_%04d",
 					"-template", "R81Template",
-					"-script",   "finegrain.script",
+					"-script",   "ville.script",
 					"-ra", "0:359:1",
-					"-dec", "0",
+					"-dec", "-15:10, 2",
 					"-minHA", "0",
 					"-maxHA", "24",
 					"-freq", "100",
 					"-grade", "a",
 					"-exec", "eu");
+//			inner("-name", "FineGarland_%03d",
+//					"-template", "R81Template",
+//					"-script",   "finegrain.script",
+//					"-ra", "0:359:1",
+//					"-dec", "0",
+//					"-minHA", "0",
+//					"-maxHA", "24",
+//					"-freq", "100",
+//					"-grade", "a",
+//					"-exec", "eu");
 //			inner("-name", "Lots_%05d",
 //					"-template", "R81Template",
 //					"-script",   "lots.script",
