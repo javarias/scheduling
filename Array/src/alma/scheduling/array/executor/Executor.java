@@ -32,12 +32,15 @@ import alma.Control.ExecBlockStartedEvent;
 import alma.SchedulingExceptions.InvalidOperationEx;
 import alma.asdmIDLTypes.IDLEntityRef;
 import alma.offline.ASDMArchivedEvent;
+import alma.offline.SubScanProcessedEvent;
+import alma.offline.SubScanSequenceEndedEvent;
 import alma.scheduling.ArrayGUIOperation;
 import alma.scheduling.SchedBlockExecutionItem;
 import alma.scheduling.array.executor.services.Services;
 import alma.scheduling.array.guis.ArrayGUINotification;
 import alma.scheduling.array.sbQueue.SchedBlockItem;
 import alma.scheduling.array.sessions.SessionManager;
+import alma.scheduling.formatting.Format;
 import alma.scheduling.utils.ErrorHandling;
 import alma.scheduling.utils.LoggerFactory;
 
@@ -379,6 +382,48 @@ public class Executor extends Observable {
         }
     }
     
+    public void receive(SubScanProcessedEvent event) {
+    	final String sep = ",\n\t";
+    	StringBuilder b = new StringBuilder();
+
+    	b.append("Received ");
+    	b.append("SubScanProcessedEvent(");
+    	b.append(sep); b.append("execBlockId: "); b.append(event.processedExecBlockId.entityId);
+    	b.append(sep); b.append("status: ");      b.append(event.status);
+    	b.append(sep); b.append("finishedAt: ");  b.append(event.finishedAt);
+    	b.append(sep); b.append("scanNum: ");     b.append(event.processedScanNum);
+    	b.append(sep); b.append("subScanNum: ");  b.append(event.processedSubScanNum);
+    	b.append(sep); b.append("startTime: ");   b.append(event.subscanStartTime);
+    	b.append(sep); b.append("endTime: ");     b.append(event.subscanEndTime);
+    	b.append(sep); b.append("science?: ");    b.append(event.representativeScienceSubScan);
+    	b.append(")");
+
+    	logger.info(b.toString());
+    }
+    
+    public void receive(SubScanSequenceEndedEvent event) {
+    	final String sep = ",\n\t";
+    	StringBuilder b = new StringBuilder();
+
+    	b.append("Received ");
+    	b.append("SubScanSequenceEndedEvent(");
+    	b.append(sep); b.append("execBlockId: "); b.append(event.processedExecBlockId.entityId);
+    	b.append(sep); b.append("status: ");      b.append(event.status);
+    	b.append(sep); b.append("finishedAt: ");  b.append(event.finishedAt);
+    	b.append(sep); b.append("scanNum: ");     b.append(event.scanNumber);
+    	b.append(sep); b.append("successfulSubscans: ");  b.append(event.successfulSubscans);
+    	b.append(")");
+
+    	logger.info(b.toString());
+    }
+    
+	public static void main(String[] args) {
+    	int[] j = {2, 3, 5, 7, 11};
+    	
+    	System.out.println(j);
+    	System.out.println(Format.formatArray(j));
+    }
+	
     public ExecutionContext getCurrentExecution() {
         return currentExecution;
     }
@@ -460,7 +505,7 @@ public class Executor extends Observable {
     	if (activeDynamic != on) {
     		activeDynamic = on;
     		final ArrayGUINotification agn = new ArrayGUINotification(
-    				on? ArrayGUIOperation.FULLAUTO: ArrayGUIOperation.SEMIAUTO,
+    				on? ArrayGUIOperation.ACTIVEDYNAMIC: ArrayGUIOperation.PASSIVEDYNAMIC,
     						name,
     						role);
     		notify(agn);

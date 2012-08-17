@@ -174,6 +174,11 @@ public class ArrayImpl implements ComponentLifecycle,
 				"alma.Control.ExecBlockEndedEvent", executor);
 		serviceProvider.getControlEventReceiver().attach(
 				"alma.offline.ASDMArchivedEvent", executor);
+		serviceProvider.getControlEventReceiver().attach(
+				"alma.offline.SubScanProcessedEvent", executor);
+		serviceProvider.getControlEventReceiver().attach(
+				"alma.offline.SubScanSequenceEndedEvent", executor);
+
 		serviceProvider.getControlEventReceiver().begin();
 
 		if (manual) {
