@@ -48,7 +48,7 @@ public class ArchivePollerTest extends TestCase {
     	boolean keepGoing = true;
     	
 //    	while (keepGoing) {
-    		ap.pollArchive();
+    		ap.pollArchive(false);
 //    		int r = javax.swing.JDialog.showConfirmDialog(
 //    				null, "Archive Poll has run. Do more?",
 //    				"Keep Polling", javax.swing.JOptionPane.YES_NO_OPTION);

@@ -27,7 +27,6 @@ import alma.acs.logging.AcsLogger;
 import alma.acs.logging.domainspecific.OperatorLogger;
 import alma.scheduling.ArchiveUpdaterCallback;
 import alma.scheduling.ArchiveUpdaterOperations;
-import alma.scheduling.SchedulingException;
 import alma.scheduling.archiveupd.functionality.ArchivePoller;
 import alma.scheduling.utils.ErrorHandling;
 
@@ -102,14 +101,8 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 	synchronized public void update() {
 		getPoller(m_containerServices);
 		if (poller != null) {
-			try {
-				m_logger.info("Polling archive");
-				poller.pollArchive();
-			} catch (SchedulingException e) {
-				handler.warning(String.format(
-						"Error polling archive - %s",
-						e.getMessage()), e);
-			}
+			m_logger.info("Polling archive");
+			poller.pollArchive(false);
 		}
 	}
     
@@ -117,14 +110,8 @@ public class ArchiveUpdaterImpl implements ComponentLifecycle,
 	synchronized public void refresh() {
 		getPoller(m_containerServices);
 		if (poller != null) {
-			try {
-				m_logger.info("Refreshing SWDB");
-				poller.refreshSWDB();
-			} catch (SchedulingException e) {
-				handler.warning(String.format(
-						"Error refreshing SWDB - %s",
-						e.getMessage()), e);
-			}
+			m_logger.info("Refreshing SWDB");
+			poller.pollArchive(true);
 		}
 	}
 

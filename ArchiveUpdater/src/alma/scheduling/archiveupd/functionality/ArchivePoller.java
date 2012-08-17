@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * $Id: ArchivePoller.java,v 1.14 2012/06/26 18:01:37 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.15 2012/08/17 22:21:00 dclarke Exp $
  */
 
 package alma.scheduling.archiveupd.functionality;
@@ -38,7 +38,6 @@ import alma.scheduling.datamodel.DAOException;
 import alma.scheduling.datamodel.config.dao.ConfigurationDao;
 import alma.scheduling.datamodel.executive.Executive;
 import alma.scheduling.datamodel.executive.ExecutivePercentage;
-import alma.scheduling.datamodel.executive.ExecutiveTimeSpent;
 import alma.scheduling.datamodel.executive.ObservingSeason;
 import alma.scheduling.datamodel.executive.dao.ExecutiveDAO;
 import alma.scheduling.datamodel.obsproject.ObsProject;
@@ -51,7 +50,6 @@ import alma.scheduling.datamodel.obsproject.dao.Phase2XMLStoreProjectDao;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent;
 import alma.scheduling.datamodel.obsproject.dao.ProjectImportEvent.ImportStatus;
 import alma.scheduling.datamodel.obsproject.dao.SchedBlockDao;
-import alma.scheduling.datamodel.weather.AtmParameters;
 import alma.scheduling.datamodel.weather.dao.AtmParametersDao;
 import alma.scheduling.utils.CommonContextFactory;
 import alma.scheduling.utils.DSAContextFactory;
@@ -60,7 +58,7 @@ import alma.scheduling.utils.ErrorHandling;
 /**
  *
  * @author dclarke
- * $Id: ArchivePoller.java,v 1.14 2012/06/26 18:01:37 javarias Exp $
+ * $Id: ArchivePoller.java,v 1.15 2012/08/17 22:21:00 dclarke Exp $
  */
 public class ArchivePoller implements Observer{
 
@@ -80,15 +78,12 @@ public class ArchivePoller implements Observer{
 	
 	private ContainerServices containerServices;
 	
-	private Date lastUpdate;
+	private boolean pollerBusy = false;
 	
 	private ConfigurationDao configDao;
 	
 	private HashMap<String, ArchiveUpdaterCallback> callbacks 
 		= new HashMap<String, ArchiveUpdaterCallback>();
-//    private SBQueue                     sbQueue;
-//    private ProjectQueue                projectQueue;
-//    private StatusEntityQueueBundle     statusQs;
 	/* End Fields
 	 * ============================================================= */
 
@@ -113,6 +108,7 @@ public class ArchivePoller implements Observer{
 		this.obsProjectDao = ma.getObsProjectDao();
 		this.execDao = ma.getExecutiveDao();
 		this.atmDao = ma.getAtmDao();
+		this.pollerBusy = false;
 		configDao = (ConfigurationDao) DSAContextFactory
 				.getContextFromPropertyFile()
 				.getBean(CommonContextFactory.SCHEDULING_CONFIGURATION_DAO_BEAN);
@@ -150,6 +146,9 @@ public class ArchivePoller implements Observer{
 		return projects.size();
 	}
 	
+	/**
+	 * Log the numbers of Projects and SBs we've got.
+	 */
 	private void logNumbers() {
 		final int numOPs = obsProjectDao.countAll();
 		final int numSBs = schedBlockDao.countAll();
@@ -161,6 +160,60 @@ public class ArchivePoller implements Observer{
 				numSBs,
 				numSBs==1? "": "s"));
 	}
+	
+    /**
+     * Report that we're busy.
+     */
+    private void reportBusy() {
+    	String message = "The ArchiveUpdater is currently busy, and thus is ignoring the new request";
+    	
+    	Phase2XMLStoreProjectDao inDao;
+		try {
+			inDao = new Phase2XMLStoreProjectDao(containerServices);
+			inDao.getNotifer().addObserver(this);
+			ProjectImportEvent event = new ProjectImportEvent();
+			event.setEntityId(message);
+			event.setTimestamp(new Date());
+			event.setStatus(ImportStatus.STATUS_INFO);
+			event.setEntityType("<html><i>none</i></html>");
+			event.setDetails("");
+			inDao.getNotifer().notifyEvent(event);
+		} catch (Exception e) {
+			// Do nothing. We're only using this dao to report that we're
+			// not doing anything. It might have sorted itself out when we
+			// really need it, and if not the issue will be reported then
+			// anyway.
+		}
+		logger.info(message);
+    }
+
+	/**
+	 * Determine when the last refresh took place. We use a result of
+	 * <code>null</code> to denote that there has never been a refresh
+	 * (or that we don't know when it was). If <code>forceRefresh</code>
+	 * is <code>true</code>, then pretend there has never been a refresh
+	 * and return <code>null</code> to force a full refresh.
+	 * 
+	 * @param forceRefresh
+	 * @return
+	 */
+	private Date lastRefresh(boolean forceRefresh) {
+		if (forceRefresh) {
+			return null;
+		}
+
+		logger.fine("Checking for last update in the Scheduling Working DB");
+		Date savedTime = configDao.getConfiguration().getLastLoad();
+		logger.fine("Last time saved in the Scheduling Working DB is: " + savedTime);
+		
+		if (savedTime != null) {
+			logger.fine("Restoring saved time as last update and doing an incremental polling after that");
+			return new Date(savedTime.getTime());
+		} else {
+			logger.fine("Ignoring saved time in Scheduling Working DB because it is null");
+			return null;
+		}
+	}
 	/* End Utilities
 	 * ============================================================= */
 	
@@ -171,6 +224,21 @@ public class ArchivePoller implements Observer{
 	 * Initial Polling of the ALMA Archives 
 	 * ================================================================
 	 */
+    /**
+     * Reset back to the initial state
+     */
+    private void reset() {
+    	logger.info("Resetting scheduling working database");
+    	obsProjectDao.deleteAll();
+//    	schedBlockDao.deleteAll(
+//    			schedBlockDao.findAll(SchedBlock.class));
+//    	execDao.deleteAll(execDao.findAll(ExecutivePercentage.class));
+//    	execDao.deleteAll(execDao.findAll(ExecutiveTimeSpent.class));
+//    	execDao.deleteAll(execDao.findAll(ObservingSeason.class));
+//    	execDao.deleteAll(execDao.findAll(Executive.class));
+//    	atmDao.deleteAll(atmDao.findAll(AtmParameters.class));
+    }
+    
     /**
      * Get all projects that we're interested in, starting afresh.
      * 
@@ -481,69 +549,46 @@ public class ArchivePoller implements Observer{
 	 * External interface 
 	 * ================================================================
 	 */
-    private boolean donePollArchive = false;
-    
-    /**
-     * Reset back to the initial state
-     */
-    public void reset() {
-    	logger.info("Resetting scheduling working database");
-    	donePollArchive = false;
-    	obsProjectDao.deleteAll();
-//    	schedBlockDao.deleteAll(
-//    			schedBlockDao.findAll(SchedBlock.class));
-//    	execDao.deleteAll(execDao.findAll(ExecutivePercentage.class));
-//    	execDao.deleteAll(execDao.findAll(ExecutiveTimeSpent.class));
-//    	execDao.deleteAll(execDao.findAll(ObservingSeason.class));
-//    	execDao.deleteAll(execDao.findAll(Executive.class));
-//    	atmDao.deleteAll(atmDao.findAll(AtmParameters.class));
-    }
-    
-    
-    /**
-     * Completely refresh the SWDB by clearing it out and then doing a
-     * pollArchive(). The clear out will cause the pollArchive() to be
-     * complete rather than incremental.
-     */
-    public void refreshSWDB() throws SchedulingException {
-    	reset();
-    	pollArchive();
-    }
-    
-    synchronized public void pollArchive() throws SchedulingException {
-    	//First Check into the DB for the last update
-		if (lastUpdate == null && !donePollArchive){
-			logger.fine("Checking for last update in the Scheduling Working DB");
-			Date savedTime = configDao.getConfiguration().getLastLoad();
-			logger.fine("Last time saved in the Scheduling Working DB is: " + savedTime);
-			if(savedTime != null){
-				logger.fine("Restoring saved time as last update and doing an incremental polling after that");
-				lastUpdate = new Date(savedTime.getTime());
-				donePollArchive = true;
+	/**
+	 * Poll the archive (i.e. the <code>XMLStore</code> and the <code>
+	 * StateArchive</code>) for ObsProjects and SchedBlocks in which we
+	 * are interested. 
+	 * 
+	 * If this is the first time the archive has been polled, or if the
+	 * <code>forceRefresh</code> parameter is <code>true</code> then we
+	 * clear out the current SWDB and load everything from scratch.
+	 * Otherwise we just look for changes since the last update.
+	 * 
+	 * @param forceRefresh - do we want to force a full refresh?
+	 */
+	public void pollArchive(boolean forceRefresh) {
+		Date lastUpdate;
+		Date startTime;
+		
+		synchronized (this) {
+			if (pollerBusy) {	// Already doing something
+				reportBusy();
+				return;
 			}
-			else
-				logger.fine("Ignoring saved time in Scheduling Working DB because it is null");
+			pollerBusy = true;
 		}
-		logger.fine("Polling archive for runnable projects");
-		final Date now = new Date();
-        
-        if (!donePollArchive) {
-    		initialPollArchive();
-    		donePollArchive = true;
-    	} else {
-    		incrementalPollArchive(lastUpdate);
-    	}
+		
+		startTime = new Date();
+		lastUpdate = lastRefresh(forceRefresh);
+		
+		if (lastUpdate == null) {
+			reset();
+			initialPollArchive();
+		} else {
+			incrementalPollArchive(lastUpdate);
+		}
+		
+		configDao.getConfiguration().setLastLoad(startTime);
 
-        lastUpdate = now;
-        final Date toSave =  now;
-        //Save only the last update time
-        configDao.deleteAll();
-        configDao.getConfiguration();
-        configDao.updateConfig(toSave);
-        
-//        logNumbers(String.format("at end of pollArchive(%s)", prjuid));
-//        logDetails(String.format("at end of pollArchive(%s)", prjuid));
-    }
+		synchronized (this) {
+			pollerBusy = false;
+		}
+	}
     
     public void deregisterCallback(String arg0) {
     	synchronized(callbacks){
