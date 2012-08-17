@@ -1460,8 +1460,7 @@ public class APDMtoSchedulingConverter {
 	private int sbExecutionCount(SBStatus sbStatus) {
 		int result = 0;
 		for (ExecStatusT exec : sbStatus.getExecStatus()) {
-			if (exec.getStatus().getState().getType()
-					== StatusTStateType.FULLYOBSERVED_TYPE) {
+			if (exec.getStatus().getState() == StatusTStateType.FULLYOBSERVED) {
 				result ++;
 			}
 		}
