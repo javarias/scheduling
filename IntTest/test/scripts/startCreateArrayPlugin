@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston,
 # MA 02111-1307  USA
 #
-# $Id: startCreateArrayPlugin,v 1.8 2012/06/13 18:20:29 javarias Exp $
+# $Id: startCreateArrayPlugin,v 1.9 2012/08/17 21:27:39 dclarke Exp $
 #
 
 # Documentation about the test goes here.
@@ -40,11 +40,11 @@ declare PLUGIN=alma.scheduling.master.gui.SchedulingPanelMainFrame
 
 if [[ $# == 0 ]]
 then
-   acsStartJava -maxHeapSize 2g -debugport 4099 -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &
+   acsStartJava -maxHeapSize 2g -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &
 else
    LOGFILE=${ACS_TMP}/$1.log
    echo "logging to ${LOGFILE}"
-   acsStartJava -maxHeapSize 2g -debugport 4099 -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &> ${LOGFILE} &
+   acsStartJava -maxHeapSize 2g -endorsed $SCHEDULING_TEST_OPTIONS "$PLUGIN_STARTER" "$PLUGIN" &> ${LOGFILE} &
 fi
 
 # __oOo__
