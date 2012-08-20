@@ -78,6 +78,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockStartedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockEndedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.offline.ASDMArchivedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).attach(with(equal("alma.offline.SubScanProcessedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).begin();
 			oneOf(model).getSchedBlockFromEntityId("uid://X001/X002/X003");
 			allowing(stateArchive);
@@ -117,6 +118,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockStartedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockEndedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.offline.ASDMArchivedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).attach(with(equal("alma.offline.SubScanProcessedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).begin();
 			oneOf(model).getSchedBlockFromEntityId("uid://X001/X002/X003");
 			allowing(stateArchive);
@@ -151,6 +153,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockStartedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockEndedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.offline.ASDMArchivedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).attach(with(equal("alma.offline.SubScanProcessedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).begin();
 		}});
 		ArrayDescriptor descriptor = new ArrayDescriptor();
@@ -182,6 +185,7 @@ public class ArrayImplUnitTests extends MockObjectTestCase  {
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockStartedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.Control.ExecBlockEndedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).attach(with(equal("alma.offline.ASDMArchivedEvent")), with(any(Executor.class)));
+			oneOf(controlEventReceiver).attach(with(equal("alma.offline.SubScanProcessedEvent")), with(any(Executor.class)));
 			oneOf(controlEventReceiver).begin();
 		}});
 		ArrayDescriptor descriptor = new ArrayDescriptor();
